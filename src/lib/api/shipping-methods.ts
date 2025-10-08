@@ -1,4 +1,4 @@
-import type { unstable_RouterContextProvider } from 'react-router';
+import type { RouterContextProvider } from 'react-router';
 import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
 import createClient from '@/lib/scapi';
 
@@ -7,7 +7,7 @@ import createClient from '@/lib/scapi';
  * This follows the PWA Kit pattern for fetching real shipping methods
  */
 export async function getShippingMethodsForShipment(
-    context: Readonly<unstable_RouterContextProvider>,
+    context: Readonly<RouterContextProvider>,
     basketId: string,
     shipmentId: string = 'me'
 ): Promise<ShopperBasketsTypes.ShippingMethodResult> {

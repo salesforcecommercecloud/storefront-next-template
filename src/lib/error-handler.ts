@@ -1,4 +1,4 @@
-import { extractResponseError } from '@/lib/util';
+import { extractResponseError } from '@/lib/utils';
 
 /**
  * Extracts error details from Commerce Cloud API responses

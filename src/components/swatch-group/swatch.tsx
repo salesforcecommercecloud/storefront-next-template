@@ -1,32 +1,63 @@
-import {
-    type FC,
-    type MouseEvent,
-    type ReactNode,
-    type TouchEvent,
-    useCallback,
-    useEffect,
-    useState,
-    memo,
-} from 'react';
+import { type FC, type MouseEvent, type ReactNode, type TouchEvent, useCallback } from 'react';
 import { NavLink } from 'react-router';
 import { cn } from '@/lib/utils';
 import { swatchVariants } from './swatch-variants';
 import type { VariantProps } from 'class-variance-authority';
 
+/**
+ * Props for the Swatch component
+ */
 interface SwatchProps extends VariantProps<typeof swatchVariants> {
+    /** Content to render inside the swatch */
     children?: ReactNode;
+    /** Whether the swatch is disabled and non-interactive */
     disabled?: boolean;
+    /** URL to navigate to when swatch is clicked */
     href?: string;
+    /** Accessible label for the swatch */
     label?: string;
+    /** Name attribute for the swatch */
     name?: string;
+    /** Whether the swatch is currently selected */
     selected?: boolean;
+    /** Whether the swatch can receive keyboard focus */
     isFocusable?: boolean;
+    /** Value associated with this swatch */
     value?: string;
+    /** Callback function called when swatch is selected. Can't be used when href is defined. */
     handleSelect?: (value: string) => void;
+    /** Click event handler */
     onClick?: (e: MouseEvent | TouchEvent) => void;
+    /** Interaction mode: 'click' for click interaction, 'hover' for hover interaction. Only applies when handleSelect is provided. */
+    mode?: 'hover' | 'click';
 }
 
-const SwatchComponent: FC<SwatchProps> = ({
+/**
+ * An interactive swatch component for selecting options like colors, sizes, or variants.
+ *
+ * Behavior:
+ * - When href is provided: Renders as a NavLink for navigation on click
+ * - When handleSelect is provided: Uses mode prop to determine interaction (hover or click)
+ *
+ * @example
+ * ```tsx
+ * // Click mode swatch
+ * <Swatch value="red" handleSelect={onSelectColor} mode="click">
+ *   Red
+ * </Swatch>
+ *
+ * // Hover mode swatch
+ * <Swatch value="blue" handleSelect={onSelectColor} mode="hover">
+ *   Blue
+ * </Swatch>
+ *
+ * // Navigation swatch
+ * <Swatch href="/product/blue">
+ *   Blue Variant
+ * </Swatch>
+ * ```
+ */
+export const Swatch: FC<SwatchProps> = ({
     children,
     disabled = false,
     href,
@@ -36,11 +67,10 @@ const SwatchComponent: FC<SwatchProps> = ({
     isFocusable = false,
     value = '',
     handleSelect,
-    size = 'md',
+    size = 'lg',
     shape = 'circle',
+    mode = 'click',
 }) => {
-    const [selectHandlers, setSelectHandlers] = useState<Record<string, (e: MouseEvent | TouchEvent) => void>>({});
-
     const onSelect = useCallback(
         (e: MouseEvent | TouchEvent) => {
             e.preventDefault();
@@ -51,38 +81,28 @@ const SwatchComponent: FC<SwatchProps> = ({
         [handleSelect, value]
     );
 
-    useEffect(() => {
-        if (!handleSelect) {
-            return;
-        }
-
-        const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
-
-        setSelectHandlers({
-            [isDesktop ? 'onMouseEnter' : 'onClick']: onSelect,
-        });
-    }, [onSelect, handleSelect]);
+    // Build event handlers based on mode
+    const selectHandlers = handleSelect ? (mode === 'click' ? { onClick: onSelect } : { onMouseEnter: onSelect }) : {};
 
     const baseClasses = cn(
         swatchVariants({
             size,
             shape,
-            variant: selected ? 'selected' : 'default',
-        }),
-        {
-            'opacity-50 cursor-not-allowed': disabled,
-            'cursor-pointer': !disabled && !href,
-        }
+            selected,
+            disabled,
+        })
     );
 
-    const innerClasses = 'flex items-center justify-center w-full h-full text-sm font-medium text-foreground';
+    const innerClasses = 'flex items-center justify-center w-full h-full text-sm font-medium';
 
     const commonProps = {
         'aria-label': name || label,
         'aria-checked': selected,
+        position: 'relative',
         role: 'radio',
         tabIndex: isFocusable ? 0 : -1,
         className: baseClasses,
+        // if href exists, we do not want to attach selectHandlers since they are not compatible with each other
         ...(href ? {} : selectHandlers),
     };
 
@@ -106,6 +126,3 @@ const SwatchComponent: FC<SwatchProps> = ({
         </button>
     );
 };
-
-export const Swatch = memo(SwatchComponent);
-Swatch.displayName = 'Swatch';

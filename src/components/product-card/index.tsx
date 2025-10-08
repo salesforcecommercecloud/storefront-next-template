@@ -16,7 +16,7 @@ interface ProductCardProps extends ComponentProps<'div'>, ProductCardVariantsPro
 const ProductCard = forwardRef<HTMLDivElement, ProductCardProps>(({ className, product, variant, ...props }, ref) => {
     return (
         <div ref={ref} className={cn(productCardVariants({ variant }), className)} {...props}>
-            <Card className="ring-secondary/40 bg-muted/50">
+            <Card className="ring-secondary/40 bg-muted/50 h-full">
                 <CardContent className="text-secondary border-destructive/30">
                     <div className="group">
                         {/* Product Tile (Client Component) */}

@@ -1,5 +1,5 @@
 import createClient from '@/lib/scapi';
-import type { unstable_RouterContextProvider } from 'react-router';
+import type { RouterContextProvider } from 'react-router';
 import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
 
 /**
@@ -20,7 +20,7 @@ export function getBasketCurrency(basket: ShopperBasketsTypes.Basket | undefined
  * Add a payment instrument to the basket using the Commerce API
  */
 export async function addPaymentInstrumentToBasket(
-    context: Readonly<unstable_RouterContextProvider>,
+    context: Readonly<RouterContextProvider>,
     basketId: string,
     paymentInstrument: ShopperBasketsTypes.OrderPaymentInstrument
 ): Promise<ShopperBasketsTypes.Basket> {
@@ -34,7 +34,7 @@ export async function addPaymentInstrumentToBasket(
  * Update the billing address for the basket using the Commerce API
  */
 export async function updateBillingAddressForBasket(
-    context: Readonly<unstable_RouterContextProvider>,
+    context: Readonly<RouterContextProvider>,
     basketId: string,
     billingAddress: ShopperBasketsTypes.OrderAddress
 ): Promise<ShopperBasketsTypes.Basket> {
@@ -53,7 +53,7 @@ export async function updateBillingAddressForBasket(
  * @param currency - Currency code (should come from basket.currency, defaults to USD for backward compatibility)
  */
 export async function calculateBasket(
-    context: Readonly<unstable_RouterContextProvider>,
+    context: Readonly<RouterContextProvider>,
     basketId: string,
     currency?: string
 ): Promise<ShopperBasketsTypes.Basket> {

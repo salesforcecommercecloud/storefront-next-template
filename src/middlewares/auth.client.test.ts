@@ -1,14 +1,14 @@
 import { afterEach, describe, expect, test, vi } from 'vitest';
-import { unstable_RouterContextProvider } from 'react-router';
+import { RouterContextProvider } from 'react-router';
 import type { SessionData as AuthData } from '@/lib/api/types';
 import type { AuthStorageData } from '@/middlewares/auth.utils';
 import { getAuth, updateAuth } from '@/middlewares/auth.client';
 
 function expectStorage(data: AuthStorageData = {}): {
-    provider: unstable_RouterContextProvider;
+    provider: RouterContextProvider;
     storage: Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>;
 } {
-    const provider = new unstable_RouterContextProvider();
+    const provider = new RouterContextProvider();
     const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>(
         Object.entries(data) as [keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]][]
     );

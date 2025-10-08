@@ -7,7 +7,7 @@
 import { data, type ActionFunctionArgs } from 'react-router';
 import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
 import { getBasket, updateBasket } from '@/middlewares/basket.client';
-import { extractResponseError } from '@/lib/util';
+import { extractResponseError } from '@/lib/utils';
 import createClient, { type CommerceSdkClient } from '@/lib/scapi';
 import uiStrings from '@/temp-ui-string';
 

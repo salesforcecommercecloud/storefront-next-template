@@ -1,6 +1,6 @@
 import type { ActionFunctionArgs } from 'react-router';
 import { flashAuth } from '@/middlewares/auth.server';
-import { extractResponseError, stringToBase64, getAppOrigin } from '@/lib/util';
+import { extractResponseError, stringToBase64, getAppOrigin } from '@/lib/utils';
 import createClient from '@/lib/scapi';
 
 export const getPasswordResetToken = async (

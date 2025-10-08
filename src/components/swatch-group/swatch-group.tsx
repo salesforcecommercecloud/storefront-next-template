@@ -15,13 +15,23 @@ interface SwatchChild {
     };
 }
 
+/**
+ * Props for the SwatchGroup component
+ */
 interface SwatchGroupProps {
+    /** Accessible label for screen readers */
     ariaLabel?: string;
+    /** Display name shown next to the label */
     displayName?: string;
+    /** Swatch components to render within the group */
     children: React.ReactNode;
+    /** Label text displayed above the swatches */
     label?: string;
+    /** Currently selected swatch value */
     value?: string;
+    /** Callback function called when a swatch is selected. */
     handleChange?: (value: string) => void;
+    /** Additional CSS classes to apply to the container */
     className?: string;
 }
 
@@ -29,6 +39,27 @@ const noop = (..._args: unknown[]): void => {
     // Intentionally empty - default no-op function for handleChange
 };
 
+/**
+ * A container component that manages a group of swatch components with keyboard navigation and selection.
+ *
+ * Features:
+ * - Keyboard navigation with arrow keys (wraps around at start/end)
+ * - Accessible radio group implementation
+ * - Automatic focus management
+ * - Customizable labels and styling
+ *
+ * @example
+ * ```tsx
+ * <SwatchGroup
+ *   label="Color"
+ *   value={selectedColor}
+ *   handleChange={setSelectedColor}
+ * >
+ *   <Swatch value="red" mode="hover">Red</Swatch>
+ *   <Swatch value="blue" mode="hover">Blue</Swatch>
+ * </SwatchGroup>
+ * ```
+ */
 export const SwatchGroup: React.FC<SwatchGroupProps> = ({
     ariaLabel,
     displayName,
@@ -92,6 +123,7 @@ export const SwatchGroup: React.FC<SwatchGroupProps> = ({
         [children]
     );
 
+    // Initialize the component state on mount, this includes the selected index value.
     useEffect(() => {
         if (!value) {
             return;
@@ -102,23 +134,22 @@ export const SwatchGroup: React.FC<SwatchGroupProps> = ({
             return childElement.props?.value === value;
         });
 
-        if (index !== -1) {
-            setSelectedIndex(index);
-        }
-    }, [value, children]);
+        setSelectedIndex(index);
+        // we only want to initlize on first mount, not when value/child change
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
+    // Whenever the selected index changes ensure that we call the change handler.
     useEffect(() => {
         const childrenArray = Children.toArray(children);
-        const selectedChild = childrenArray[selectedIndex] as React.ReactElement<SwatchChild['props']>;
-        const newValue = selectedChild?.props?.value;
+        const childElement = childrenArray[selectedIndex] as React.ReactElement<SwatchChild['props']>;
+        const newValue = childElement?.props?.value;
 
-        // Only call handleChange if the new value is different from the current value
-        // and avoid calling it on initial render or when value prop changes externally
-        if (newValue && handleChange && newValue !== value) {
+        if (newValue) {
             handleChange(newValue);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedIndex, children]);
+    }, [selectedIndex]);
 
     const containerClasses = cn('space-y-3', className);
 

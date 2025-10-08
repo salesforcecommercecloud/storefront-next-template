@@ -45,30 +45,37 @@ export default function HeroCarousel({
         return () => clearInterval(interval);
     }, [api, autoPlay, autoPlayInterval, isPaused]);
 
-    useEffect(() => {
+    const onSelect = useCallback(() => {
         if (!api) return;
 
-        const onSelect = () => {
-            setCurrentSlide(api.selectedScrollSnap());
-            setCanScrollPrev(api.canScrollPrev());
-            setCanScrollNext(api.canScrollNext());
-        };
+        const currentIndex = api.selectedScrollSnap();
+        const canPrev = api.canScrollPrev();
+        const canNext = api.canScrollNext();
 
-        api.on('select', onSelect);
+        setCurrentSlide(currentIndex);
+        setCanScrollPrev(canPrev);
+        setCanScrollNext(canNext);
+    }, [api]);
+
+    useEffect(() => {
+        if (!api) return;
         onSelect();
+        api.on('select', onSelect);
+        api.on('reInit', onSelect);
 
         return () => {
             api.off('select', onSelect);
+            api.off('reInit', onSelect);
         };
-    }, [api]);
+    }, [api, onSelect]);
 
     const goToSlide = useCallback(
         (index: number) => {
-            if (api) {
-                api.scrollTo(index);
-            }
+            if (!api || index < 0 || index >= slides.length) return;
+
+            api.scrollTo(index);
         },
-        [api]
+        [api, slides.length]
     );
 
     const handleFocus = useCallback(() => setIsPaused(true), []);

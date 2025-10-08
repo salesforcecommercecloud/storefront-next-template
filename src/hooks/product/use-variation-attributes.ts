@@ -31,14 +31,18 @@ const buildVariantValueHref = ({
 }) => {
     const [allParams, productParams] = existingParams;
 
+    // Create copies to avoid mutating the original params
+    const newAllParams = new URLSearchParams(allParams);
+    const newProductParams = new URLSearchParams(productParams);
+
     if (isChildProduct) {
-        updateSearchParams(productParams, newParams);
-        allParams.set(productId, productParams.toString());
+        updateSearchParams(newProductParams, newParams);
+        newAllParams.set(productId, newProductParams.toString());
     } else {
-        updateSearchParams(allParams, newParams);
+        updateSearchParams(newAllParams, newParams);
     }
 
-    return `${pathname}?${allParams.toString()}`;
+    return `${pathname}?${newAllParams.toString()}`;
 };
 
 /**
@@ -98,7 +102,7 @@ interface UseVariationAttributesParams {
  *
  * @example
  * // Basic usage with a suit product
- * const suitVariations = useVariationAttributes({ product: navySuitProduct });
+ * const variationAttributes = useVariationAttributes({ product: navySuitProduct });
  * // Returns: [
  * //   {
  * //     id: 'color',
@@ -119,9 +123,9 @@ interface UseVariationAttributesParams {
  *
  * @example
  * // URL: /?color=NAVYWL&size=040
- * const variations = useVariationAttributes({ product: navySuitProduct });
- * variations[0].selectedValue; // { name: 'Navy', value: 'NAVYWL' }
- * variations[1].selectedValue; // { name: '40', value: '040' }
+ * const variationAttributes = useVariationAttributes({ product: navySuitProduct });
+ * variationAttributes[0].selectedValue; // { name: 'Navy', value: 'NAVYWL' }
+ * variationAttributes[1].selectedValue; // { name: '40', value: '040' }
  */
 export const useVariationAttributes = ({
     product,
@@ -131,11 +135,11 @@ export const useVariationAttributes = ({
     const selectedVariations = useSelectedVariations({ product, isChildProduct });
 
     return useMemo(() => {
-        if (!product.variationAttributes || !product.id) return [];
+        if (!product?.variationAttributes || !product?.id) return [];
 
         const existingParams = getProductViewSearchParams(location.search, product.id);
 
-        return product.variationAttributes.map((variationAttribute) => {
+        return product?.variationAttributes.map((variationAttribute) => {
             const currentValue = selectedVariations[variationAttribute.id || ''];
             const selectedValueObj = variationAttribute.values?.find(({ value }) => value === currentValue);
 

@@ -1,26 +1,17 @@
-import { describe, test, expect, vi, beforeEach } from 'vitest';
+import { describe, test, expect, vi, beforeEach, afterAll } from 'vitest';
 import {
     lookupCustomerByEmail,
     isRegisteredCustomer,
     getCurrentCustomer,
     customerLookup,
     extractNameFromEmail,
+    registerGuestUser,
 } from './customer';
 // Removed unused commerceClient import
 import { getAuth } from '@/middlewares/auth.client';
 import createClient from '@/lib/scapi';
 import type { ActionFunctionArgs } from 'react-router';
 
-// Define proper types for the mock client
-interface MockShopperCustomersClient {
-    getCustomer: ReturnType<typeof vi.fn>;
-}
-
-interface MockCreateClientReturn {
-    ShopperCustomers: MockShopperCustomersClient;
-}
-
-// Mock the dependencies
 vi.mock('@/middlewares/auth.client');
 vi.mock('@/lib/scapi');
 
@@ -48,7 +39,7 @@ describe('Customer API', () => {
 
         test('should check current user email when logged in as registered user', async () => {
             const mockSession = {
-                userType: 'registered',
+                userType: 'registered' as const,
                 customer_id: 'cust123',
                 access_token: 'token',
                 access_token_expiry: Date.now() + 10000,
@@ -66,7 +57,7 @@ describe('Customer API', () => {
             vi.mocked(getAuth).mockReturnValue(mockSession);
             vi.mocked(createClient).mockReturnValue({
                 ShopperCustomers: mockClient,
-            } as MockCreateClientReturn);
+            } as any);
 
             const result = await lookupCustomerByEmail(mockContext, 'test@example.com');
 
@@ -80,7 +71,7 @@ describe('Customer API', () => {
 
         test('should handle case mismatch in email comparison', async () => {
             const mockSession = {
-                userType: 'registered',
+                userType: 'registered' as const,
                 customer_id: 'cust123',
             };
 
@@ -96,7 +87,7 @@ describe('Customer API', () => {
             vi.mocked(getAuth).mockReturnValue(mockSession);
             vi.mocked(createClient).mockReturnValue({
                 ShopperCustomers: mockClient,
-            } as MockCreateClientReturn);
+            } as any);
 
             const result = await lookupCustomerByEmail(mockContext, 'test@example.com');
 
@@ -106,7 +97,7 @@ describe('Customer API', () => {
 
         test('should return guest result when current user email does not match', async () => {
             const mockSession = {
-                userType: 'registered',
+                userType: 'registered' as const,
                 customer_id: 'cust123',
             };
 
@@ -122,7 +113,7 @@ describe('Customer API', () => {
             vi.mocked(getAuth).mockReturnValue(mockSession);
             vi.mocked(createClient).mockReturnValue({
                 ShopperCustomers: mockClient,
-            } as MockCreateClientReturn);
+            } as any);
 
             const result = await lookupCustomerByEmail(mockContext, 'test@example.com');
 
@@ -132,7 +123,7 @@ describe('Customer API', () => {
 
         test('should handle API errors gracefully', async () => {
             const mockSession = {
-                userType: 'registered',
+                userType: 'registered' as const,
                 customer_id: 'cust123',
             };
 
@@ -143,7 +134,7 @@ describe('Customer API', () => {
             vi.mocked(getAuth).mockReturnValue(mockSession);
             vi.mocked(createClient).mockReturnValue({
                 ShopperCustomers: mockClient,
-            } as MockCreateClientReturn);
+            } as any);
 
             const result = await lookupCustomerByEmail(mockContext, 'test@example.com');
 
@@ -153,7 +144,7 @@ describe('Customer API', () => {
 
         test('should return guest result for guest session', async () => {
             const mockSession = {
-                userType: 'guest',
+                userType: 'guest' as const,
             };
 
             vi.mocked(getAuth).mockReturnValue(mockSession);
@@ -168,7 +159,7 @@ describe('Customer API', () => {
     describe('isRegisteredCustomer', () => {
         test('should return true for valid registered user session', () => {
             const mockSession = {
-                userType: 'registered',
+                userType: 'registered' as const,
                 customer_id: 'cust123',
                 access_token: 'token',
                 access_token_expiry: Date.now() + 10000,
@@ -182,7 +173,7 @@ describe('Customer API', () => {
 
         test('should return false for guest user', () => {
             const mockSession = {
-                userType: 'guest',
+                userType: 'guest' as const,
             };
 
             vi.mocked(getAuth).mockReturnValue(mockSession);
@@ -193,7 +184,7 @@ describe('Customer API', () => {
 
         test('should return false for expired token', () => {
             const mockSession = {
-                userType: 'registered',
+                userType: 'registered' as const,
                 customer_id: 'cust123',
                 access_token: 'token',
                 access_token_expiry: Date.now() - 10000, // Expired
@@ -207,7 +198,7 @@ describe('Customer API', () => {
 
         test('should return false for missing customer_id', () => {
             const mockSession = {
-                userType: 'registered',
+                userType: 'registered' as const,
                 access_token: 'token',
                 access_token_expiry: Date.now() + 10000,
             };
@@ -222,7 +213,7 @@ describe('Customer API', () => {
     describe('getCurrentCustomer', () => {
         test('should return customer for valid registered user', async () => {
             const mockSession = {
-                userType: 'registered',
+                userType: 'registered' as const,
                 customer_id: 'cust123',
                 access_token: 'token',
                 access_token_expiry: Date.now() + 10000,
@@ -240,7 +231,7 @@ describe('Customer API', () => {
             vi.mocked(getAuth).mockReturnValue(mockSession);
             vi.mocked(createClient).mockReturnValue({
                 ShopperCustomers: mockClient,
-            } as MockCreateClientReturn);
+            } as any);
 
             const result = await getCurrentCustomer(mockContext);
 
@@ -252,7 +243,7 @@ describe('Customer API', () => {
 
         test('should return null for guest user', async () => {
             const mockSession = {
-                userType: 'guest',
+                userType: 'guest' as const,
             };
 
             vi.mocked(getAuth).mockReturnValue(mockSession);
@@ -263,7 +254,7 @@ describe('Customer API', () => {
 
         test('should return null on API error', async () => {
             const mockSession = {
-                userType: 'registered',
+                userType: 'registered' as const,
                 customer_id: 'cust123',
                 access_token: 'token',
                 access_token_expiry: Date.now() + 10000,
@@ -276,7 +267,7 @@ describe('Customer API', () => {
             vi.mocked(getAuth).mockReturnValue(mockSession);
             vi.mocked(createClient).mockReturnValue({
                 ShopperCustomers: mockClient,
-            } as MockCreateClientReturn);
+            } as any);
 
             const result = await getCurrentCustomer(mockContext);
             expect(result).toBeNull();
@@ -286,7 +277,7 @@ describe('Customer API', () => {
     describe('customerLookup', () => {
         test('should return current_user recommendation for matching email', async () => {
             const mockSession = {
-                userType: 'registered',
+                userType: 'registered' as const,
                 customer_id: 'cust123',
             };
 
@@ -302,7 +293,7 @@ describe('Customer API', () => {
             vi.mocked(getAuth).mockReturnValue(mockSession);
             vi.mocked(createClient).mockReturnValue({
                 ShopperCustomers: mockClient,
-            } as MockCreateClientReturn);
+            } as any);
 
             const result = await customerLookup(mockContext, 'test@example.com');
 
@@ -313,7 +304,7 @@ describe('Customer API', () => {
 
         test('should return guest recommendation for unknown email', async () => {
             const mockSession = {
-                userType: 'guest',
+                userType: 'guest' as const,
             };
 
             vi.mocked(getAuth).mockReturnValue(mockSession);
@@ -501,6 +492,176 @@ describe('Customer API', () => {
                 const result = extractNameFromEmail('marie-claire@company.fr');
                 expect(result).toEqual({ firstName: 'Marie', lastName: 'Claire' });
             });
+        });
+    });
+
+    describe('register guest user', () => {
+        const fetchSpy = vi.spyOn(globalThis, 'fetch');
+
+        afterAll(() => {
+            fetchSpy.mockRestore();
+        });
+
+        beforeEach(() => {
+            vi.clearAllMocks();
+            fetchSpy.mockImplementation((url, _options) => {
+                const urlString = url.toString();
+
+                if (urlString.includes('/resource/auth/login-registered')) {
+                    return Promise.resolve(
+                        new Response(
+                            JSON.stringify({
+                                success: true,
+                                data: {
+                                    access_token: 'mock-access-token',
+                                    customer_id: 'new-customer-123',
+                                    refresh_token: 'mock-refresh-token',
+                                    access_token_expiry: Date.now() + 3600000,
+                                    userType: 'registered' as const,
+                                },
+                            }),
+                            { status: 200, statusText: 'OK' }
+                        )
+                    );
+                }
+
+                // For any unmocked endpoints, return a descriptive error
+                return Promise.resolve(
+                    new Response(
+                        JSON.stringify({
+                            error: `Endpoint not mocked: ${urlString}`,
+                            availableEndpoints: ['/resource/auth/login-registered'],
+                        }),
+                        { status: 404, statusText: 'Not Found' }
+                    )
+                );
+            });
+        });
+
+        test('should validate email format', async () => {
+            // Test invalid email
+            const result1 = await registerGuestUser(mockContext, 'invalid-email');
+            expect(result1.success).toBe(false);
+            expect(result1.error).toBe('Invalid email format');
+
+            // Test empty email
+            const result2 = await registerGuestUser(mockContext, '');
+            expect(result2.success).toBe(false);
+            expect(result2.error).toBe('Invalid email format');
+        });
+
+        test('should register customer and auto-login successfully', async () => {
+            const mockRegisterCustomer = vi.fn().mockResolvedValue({
+                customerId: 'new-customer-123',
+                login: 'test@example.com',
+            });
+
+            const mockClient = {
+                registerCustomer: mockRegisterCustomer,
+                getCustomer: vi.fn(),
+            };
+
+            vi.mocked(createClient).mockReturnValue({
+                ShopperCustomers: mockClient,
+            } as any);
+
+            vi.mocked(getAuth).mockReturnValue({
+                customer_id: 'new-customer-123',
+                userType: 'registered' as const,
+            } as any);
+
+            const result = await registerGuestUser(mockContext, 'test@example.com');
+
+            expect(result.success).toBe(true);
+            expect(result.customerId).toBe('new-customer-123');
+            expect(result.password).toBeDefined();
+            expect(result.autoLoggedIn).toBe(true);
+            expect(result.error).toBeUndefined();
+
+            // Verify registration was called
+            expect(mockRegisterCustomer).toHaveBeenCalledWith({
+                body: expect.objectContaining({
+                    customer: expect.objectContaining({
+                        login: 'test@example.com',
+                        email: 'test@example.com',
+                    }),
+                    password: expect.any(String),
+                }),
+            });
+
+            expect(result.success).toBe(true);
+            expect(result.autoLoggedIn).toBe(true);
+        });
+
+        test('should handle registration success but auto-login failure', async () => {
+            const mockRegisterCustomer = vi.fn().mockResolvedValue({
+                customerId: 'new-customer-123',
+            });
+
+            const mockClient = {
+                registerCustomer: mockRegisterCustomer,
+                getCustomer: vi.fn(),
+            };
+
+            vi.mocked(createClient).mockReturnValue({
+                ShopperCustomers: mockClient,
+            } as any);
+
+            // Override fetch implementation for this specific test
+            fetchSpy.mockImplementation((url, _options) => {
+                const urlString = url.toString();
+
+                if (urlString.includes('/resource/auth/login-registered')) {
+                    return Promise.resolve(
+                        new Response(
+                            JSON.stringify({
+                                success: false,
+                                error: 'Login failed',
+                            }),
+                            { status: 401, statusText: 'Unauthorized' }
+                        )
+                    );
+                }
+
+                return Promise.resolve(
+                    new Response(
+                        JSON.stringify({
+                            error: `Endpoint not mocked: ${urlString}`,
+                            availableEndpoints: ['/resource/auth/login-registered'],
+                        }),
+                        { status: 404, statusText: 'Not Found' }
+                    )
+                );
+            });
+
+            const result = await registerGuestUser(mockContext, 'test@example.com');
+
+            expect(result.success).toBe(true);
+            expect(result.password).toBeDefined();
+            expect(result.autoLoggedIn).toBe(false);
+            expect(result.error).toBe('Account created successfully, but auto-login failed. Please log in manually.');
+            expect(result.customerId).toBeUndefined();
+        });
+
+        test('should handle registration failure', async () => {
+            const mockRegisterCustomer = vi.fn().mockRejectedValue(new Error('Registration failed'));
+
+            const mockClient = {
+                registerCustomer: mockRegisterCustomer,
+                getCustomer: vi.fn(),
+            };
+
+            vi.mocked(createClient).mockReturnValue({
+                ShopperCustomers: mockClient,
+            } as any);
+
+            const result = await registerGuestUser(mockContext, 'test@example.com');
+
+            expect(result.success).toBe(false);
+            expect(result.error).toBe('Registration failed. Please try again.');
+            expect(result.customerId).toBeUndefined();
+            expect(result.password).toBeUndefined();
+            expect(result.autoLoggedIn).toBeUndefined();
         });
     });
 });

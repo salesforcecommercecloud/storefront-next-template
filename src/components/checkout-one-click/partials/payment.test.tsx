@@ -77,20 +77,23 @@ interface MockCardComponentProps {
 }
 
 vi.mock('@/components/toggle-card', () => ({
-    ToggleCard: ({ children, title, editing, disabled, onEdit, isLoading, ...props }: MockToggleCardProps) => (
-        <div
-            data-testid="toggle-card"
-            data-editing={editing}
-            data-disabled={disabled}
-            data-loading={isLoading}
-            {...props}>
-            <div data-testid="toggle-card-title">{title}</div>
-            <button onClick={onEdit} data-testid="edit-button">
-                Edit
-            </button>
-            {children}
-        </div>
-    ),
+    ToggleCard: ({ children, title, editing, disabled, onEdit, isLoading, ...props }: MockToggleCardProps) => {
+        const domProps = Object.fromEntries(Object.entries(props).filter(([key]) => key !== 'editLabel'));
+        return (
+            <div
+                data-testid="toggle-card"
+                data-editing={editing}
+                data-disabled={disabled}
+                data-loading={isLoading}
+                {...domProps}>
+                <div data-testid="toggle-card-title">{title}</div>
+                <button onClick={onEdit} data-testid="edit-button">
+                    Edit
+                </button>
+                {children}
+            </div>
+        );
+    },
     ToggleCardEdit: ({ children, ...props }: MockCardComponentProps) => (
         <div data-testid="toggle-card-edit" {...props}>
             {children}
@@ -145,16 +148,39 @@ interface MockFormComponentProps {
 }
 
 vi.mock('@/components/ui/form', () => ({
-    Form: ({ children, ...props }: MockFormComponentProps) => (
-        <form data-testid="mock-form" {...props}>
-            {children}
-        </form>
-    ),
-    FormField: ({ children, ...props }: MockFormComponentProps) => (
-        <div data-testid="form-field" {...props}>
-            {children}
-        </div>
-    ),
+    Form: ({ children, ...props }: MockFormComponentProps) => {
+        const hookFormProps = [
+            'control',
+            'formState',
+            'handleSubmit',
+            'watch',
+            'setValue',
+            'trigger',
+            'reset',
+            'getValues',
+        ];
+        const domProps = Object.fromEntries(Object.entries(props).filter(([key]) => !hookFormProps.includes(key)));
+        return (
+            <div data-testid="mock-form" {...domProps}>
+                {children}
+            </div>
+        );
+    },
+
+    FormField: ({
+        children,
+        render: renderProp,
+        ...props
+    }: MockFormComponentProps & { render?: (props: any) => React.ReactNode }) => {
+        const domProps = Object.fromEntries(
+            Object.entries(props).filter(([key]) => !['control', 'name'].includes(key))
+        );
+        return (
+            <div data-testid="form-field" {...domProps}>
+                {renderProp ? renderProp({ field: { value: '', onChange: vi.fn(), onBlur: vi.fn() } }) : children}
+            </div>
+        );
+    },
     FormItem: ({ children, ...props }: MockFormComponentProps) => (
         <div data-testid="form-item" {...props}>
             {children}

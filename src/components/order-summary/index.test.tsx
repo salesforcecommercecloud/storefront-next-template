@@ -19,7 +19,7 @@ vi.mock('@/components/product-items-list', () => ({
     ),
 }));
 
-// Mock useFetcher from react-router
+// Mock useFetcher, useNavigate, and Link from react-router
 vi.mock('react-router', () => ({
     useFetcher: () => ({
         submit: vi.fn(),
@@ -36,6 +36,24 @@ vi.mock('react-router', () => ({
             <form {...props}>{children}</form>
         ),
     }),
+    useNavigate: () => vi.fn(),
+    Link: ({
+        to,
+        children,
+        onClick,
+        className,
+        ...props
+    }: {
+        to: string;
+        children: React.ReactNode;
+        onClick?: () => void;
+        className?: string;
+        [key: string]: unknown;
+    }) => (
+        <a href={to} onClick={onClick} className={className} {...props}>
+            {children}
+        </a>
+    ),
 }));
 
 // Mock the useToast hook
@@ -191,6 +209,7 @@ describe('OrderSummary', () => {
     test('shows free shipping when shipping promotion is applied', () => {
         const basketWithFreeShipping = {
             ...mockBasket,
+            shippingTotal: 0,
             shippingItems: [
                 {
                     itemId: 'shipping1',
@@ -199,7 +218,7 @@ describe('OrderSummary', () => {
                         {
                             priceAdjustmentId: 'shipping-adj1',
                             appliedDiscount: {
-                                type: 'free', // Use literal value instead of accessing truncated uiStrings
+                                type: 'free' as const, // Use const assertion for test simplicity
                             },
                         },
                     ],
@@ -213,7 +232,46 @@ describe('OrderSummary', () => {
         expect(screen.getByText(uiStrings.cart.summary.shippingFree)).toBeInTheDocument();
     });
 
-    test('shows tax as TBD when taxTotal is null', () => {
+    test('shows TBD when shippingTotal is undefined', () => {
+        const basketWithUndefinedShipping = {
+            ...mockBasket,
+            shippingTotal: undefined,
+        };
+
+        render(<OrderSummary basket={basketWithUndefinedShipping} />);
+
+        expect(screen.getByText(uiStrings.cart.summary.shippingTbd)).toBeInTheDocument();
+        expect(screen.queryByText(uiStrings.cart.summary.shippingFree)).not.toBeInTheDocument();
+        expect(screen.queryByText('$0.00')).not.toBeInTheDocument();
+    });
+
+    test('shows TBD when shippingTotal is null', () => {
+        const basketWithNullShipping = {
+            ...mockBasket,
+            shippingTotal: null as unknown as number,
+        };
+
+        render(<OrderSummary basket={basketWithNullShipping} />);
+
+        expect(screen.getByText(uiStrings.cart.summary.shippingTbd)).toBeInTheDocument();
+        expect(screen.queryByText(uiStrings.cart.summary.shippingFree)).not.toBeInTheDocument();
+        expect(screen.queryByText('$0.00')).not.toBeInTheDocument();
+    });
+
+    test('shows formatted currency when shippingTotal is positive number', () => {
+        const basketWithPositiveShipping = {
+            ...mockBasket,
+            shippingTotal: 15.99,
+        };
+
+        render(<OrderSummary basket={basketWithPositiveShipping} />);
+
+        expect(screen.getByText('$15.99')).toBeInTheDocument();
+        expect(screen.queryByText(uiStrings.cart.summary.shippingFree)).not.toBeInTheDocument();
+        expect(screen.queryByText(uiStrings.cart.summary.shippingTbd)).not.toBeInTheDocument();
+    });
+
+    test('shows TBD when taxTotal is undefined', () => {
         const basketWithoutTax = {
             ...mockBasket,
             taxTotal: undefined,
@@ -222,6 +280,41 @@ describe('OrderSummary', () => {
         render(<OrderSummary basket={basketWithoutTax} />);
 
         expect(screen.getByText(uiStrings.cart.summary.taxTbd)).toBeInTheDocument();
+    });
+
+    test('shows TBD when taxTotal is null', () => {
+        const basketWithNullTax = {
+            ...mockBasket,
+            taxTotal: null as unknown as number,
+        };
+
+        render(<OrderSummary basket={basketWithNullTax} />);
+
+        expect(screen.getByText(uiStrings.cart.summary.taxTbd)).toBeInTheDocument();
+    });
+
+    test('shows formatted currency when taxTotal is zero', () => {
+        const basketWithZeroTax = {
+            ...mockBasket,
+            taxTotal: 0,
+        };
+
+        render(<OrderSummary basket={basketWithZeroTax} />);
+
+        expect(screen.getByText('$0.00')).toBeInTheDocument();
+        expect(screen.queryByText(uiStrings.cart.summary.taxTbd)).not.toBeInTheDocument();
+    });
+
+    test('shows formatted currency when taxTotal is positive number', () => {
+        const basketWithPositiveTax = {
+            ...mockBasket,
+            taxTotal: 12.75,
+        };
+
+        render(<OrderSummary basket={basketWithPositiveTax} />);
+
+        expect(screen.getByText('$12.75')).toBeInTheDocument();
+        expect(screen.queryByText(uiStrings.cart.summary.taxTbd)).not.toBeInTheDocument();
     });
 
     test('displays applied coupon items with remove buttons', () => {

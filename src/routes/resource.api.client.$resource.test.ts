@@ -1,9 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { type ClientLoaderFunctionArgs, type LoaderFunctionArgs, unstable_RouterContextProvider } from 'react-router';
+import { type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from 'react-router';
 import { encodeBase64Url } from '@/lib/url';
 import { clientLoader, loader } from './resource.api.client.$resource';
-import { authContext } from '@/middlewares/auth.utils';
-import type { SessionData } from '@/lib/api/types';
+import { createTestContext } from '@/lib/test-utils';
 
 // Mock dependencies
 vi.mock('@/middlewares/auth.server');
@@ -26,19 +25,12 @@ describe('Commerce SDK resource', () => {
     const validResource = ['ShopperCustomers', 'getCustomer', [{ parameters: { customerId: 'customer-123' } }]];
     const encodedValidResource = encodeBase64Url(JSON.stringify(validResource));
     const mockResponseData = { customerId: 'customer-123', email: 'test@example.com' };
-    let mockContextProvider: unstable_RouterContextProvider;
+    let mockContextProvider: ReturnType<typeof createTestContext>;
 
     beforeEach(() => {
         vi.clearAllMocks();
 
-        mockContextProvider = new unstable_RouterContextProvider();
-        mockContextProvider.set(authContext, {
-            ref: Promise.resolve({
-                access_token: 'test-access-token',
-                customer_id: 'test-customer-id',
-                userType: 'registered',
-            } satisfies SessionData),
-        });
+        mockContextProvider = createTestContext();
 
         mockShopperCustomersGetCustomer.mockResolvedValue(mockResponseData);
     });

@@ -78,6 +78,9 @@ html.dark [data-theme='inverse'] {
     --destructive: #ef4444;
     --destructive-foreground: #ffffff;
 
+    --success: #29a73a;
+    --success-foreground: #ffffff;
+
     --border: #fafafa;
     --input: #fafafa;
     --ring: #3b82f6;

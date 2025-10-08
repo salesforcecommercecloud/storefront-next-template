@@ -7,10 +7,13 @@ import { createPage, type RouteComponentProps } from '@/components/create-page';
 import ProductView from '@/components/product-view';
 import ProductAccordion from '@/components/product-view/product-accordion';
 import { Typography } from '@/components/typography';
+import ChildProducts from '@/components/product-view/child-products';
+import { isProductSet, isProductBundle } from '@/lib/product-utils';
 
 type ProductPageData = {
     product: Promise<ShopperProductsTypes.Product>;
     category: Promise<ShopperProductsTypes.Category | undefined>;
+    pageKey: string;
 };
 
 /**
@@ -19,8 +22,8 @@ type ProductPageData = {
  * @returns Promise that resolves to an object containing product and category data promises
  */
 function getPageData({ request, params, context }: LoaderFunctionArgs): ProductPageData {
-    const { searchParams } = new URL(request.url);
     const { productId = '' } = params;
+    const { searchParams } = new URL(request.url);
 
     // Check for variant product ID in search params (for product variants)
     const client = createClient(context);
@@ -59,6 +62,7 @@ function getPageData({ request, params, context }: LoaderFunctionArgs): ProductP
     return {
         product: productPromise,
         category: categoryPromise,
+        pageKey: productId,
     };
 }
 /**
@@ -77,7 +81,34 @@ export function loader(args: LoaderFunctionArgs) {
  * @returns Promise that resolves to an object containing product and category promises
  */
 export function clientLoader(args: ClientLoaderFunctionArgs) {
+    // For variant navigation, return current data immediately to prevent skeleton
+    // Background fetching will be handled by the component
     return getPageData(args);
+}
+
+/**
+ * Prevent loader from re-running on variant parameter changes to avoid skeleton
+ * https://reactrouter.com/start/data/route-object#shouldrevalidate
+ * we don't want the page to show skeleton when loading variant product after first initial load
+ */
+export function shouldRevalidate({ currentUrl, nextUrl }: { currentUrl: string; nextUrl: string }) {
+    const currentUrlObj = new URL(currentUrl);
+    const nextUrlObj = new URL(nextUrl);
+
+    // Revalidate if pathname changes (different product)
+    if (currentUrlObj.pathname !== nextUrlObj.pathname) {
+        return true;
+    }
+
+    // Revalidate if pid parameter changes (different variant product)
+    const currentPid = currentUrlObj.searchParams.get('pid');
+    const nextPid = nextUrlObj.searchParams.get('pid');
+    if (currentPid !== nextPid) {
+        return true;
+    }
+
+    // Don't revalidate for other search parameter changes (color, size, etc.)
+    return false;
 }
 
 /**
@@ -90,6 +121,9 @@ export function clientLoader(args: ClientLoaderFunctionArgs) {
 function ProductDetailView({ loaderData: { product, category } }: RouteComponentProps<ProductPageData>) {
     const productData = use(product);
     const categoryData = use(category);
+
+    const isProductASet = isProductSet(productData);
+    const isProductABundle = isProductBundle(productData);
 
     return (
         <div className="min-h-screen bg-background">
@@ -106,13 +140,19 @@ function ProductDetailView({ loaderData: { product, category } }: RouteComponent
                             </Typography>
                         )}
                     </div>
-                    <ProductView product={productData} category={categoryData} />
+                    {isProductASet || isProductABundle ? (
+                        <>
+                            <ProductView product={productData} category={categoryData} />
+                            <ChildProducts parentProduct={productData} />
+                        </>
+                    ) : (
+                        <>
+                            <ProductView product={productData} category={categoryData} />
+                            <ProductAccordion product={productData} />
+                        </>
+                    )}
                 </div>
 
-                {/* Product Information Accordion */}
-                <div className="mt-16">
-                    <ProductAccordion product={productData} />
-                </div>
                 {/* Recommended Products Section */}
                 <div className="mt-16">
                     {/*<ProductCarousel title={uiStrings.product.recommendedProductsTitle} />*/}
@@ -133,4 +173,10 @@ function ProductDetailView({ loaderData: { product, category } }: RouteComponent
 export default createPage<ProductPageData>({
     component: ProductDetailView,
     fallback: <ProductSkeleton />,
+    getPageKey: (_loaderData) => {
+        // we only want to show skeleton again if the product has changed and don't worry about params
+        // changes. This will give us the ability to fetch variant product lazily in the background
+        // (using pid search params) without interupting UX
+        return _loaderData.pageKey;
+    },
 });

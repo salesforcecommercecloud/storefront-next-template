@@ -1,7 +1,7 @@
 import type { ActionFunctionArgs } from 'react-router';
 import { helpers } from 'commerce-sdk-isomorphic';
 import { flashAuth, getAuth, updateAuth } from '@/middlewares/auth.server';
-import { extractResponseError, isSlasPrivate } from '@/lib/util';
+import { extractResponseError, isSlasPrivate } from '@/lib/utils';
 import uiStrings from '@/temp-ui-string';
 import createClient from '@/lib/scapi';
 

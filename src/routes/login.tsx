@@ -11,7 +11,7 @@ import uiStrings from '@/temp-ui-string';
 import StandardLoginForm from '@/components/login/standard-login-form';
 import PasswordlessLoginForm from '@/components/login/passwordless-login-form';
 import { SocialLoginButtons } from '@/components/buttons/social-login-buttons';
-import { isSlasPrivate, getAppOrigin } from '@/lib/util';
+import { isSlasPrivate, getAppOrigin } from '@/lib/utils';
 
 // services
 import { getAuth } from '@/middlewares/auth.server';

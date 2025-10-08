@@ -8,7 +8,7 @@ export default {
     serverModuleFormat: 'cjs',
     ssr: true,
     future: {
-        unstable_middleware: true,
+        v8_middleware: true,
         unstable_viteEnvironmentApi: true,
     },
 } satisfies Config;

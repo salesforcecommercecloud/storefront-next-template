@@ -34,7 +34,12 @@ export default function CheckoutOneClickProvider({ children, customerProfile }: 
     if (autoAdvanceEnabled && customerProfile) {
         // For returning customers, try to compute the final step directly
         const finalStep = computeFinalStepForReturningCustomer(basket, customerProfile);
-        computedStep = finalStep || computeStepFromBasket(basket, hasCompletedShippingOptions, true);
+
+        // If finalStep computation fails or returns a step that might get stuck,
+        // force auto-advance mode in the basket computation
+        const fallbackStep = computeStepFromBasket(basket, true, true);
+
+        computedStep = finalStep || fallbackStep;
     } else {
         // Regular step computation
         computedStep = computeStepFromBasket(basket, hasCompletedShippingOptions);

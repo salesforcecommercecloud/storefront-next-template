@@ -23,35 +23,38 @@ function computeFinalStepForReturningCustomer(
     basket: ShopperBasketsTypes.Basket | undefined,
     customerProfile: CustomerProfile
 ): CheckoutStep | null {
-    if (!customerProfile?.customer) {
+    if (!customerProfile?.customer || !basket) {
         return null;
     }
 
-    const hasEmail = basket?.customerInfo?.email || customerProfile.customer.login;
-    const hasShippingAddress = basket?.shipments?.[0]?.shippingAddress;
-    const hasShippingMethod = basket?.shipments?.[0]?.shippingMethod;
-    const paymentInstrument = basket?.paymentInstruments?.[0];
+    // For returning registered customers, determine step based on customer profile data
+    // since the basket will be prefilled during checkout initialization
+    const hasCustomerEmail = customerProfile.customer.login;
+    const hasCustomerAddresses = customerProfile.addresses && customerProfile.addresses.length > 0;
+    const hasCustomerPaymentMethods =
+        customerProfile.paymentInstruments && customerProfile.paymentInstruments.length > 0;
 
-    if (!hasEmail) {
-        return CHECKOUT_STEPS.CONTACT_INFO;
+    // If customer has complete profile (email, addresses, payment methods), go straight to review/place order
+    if (hasCustomerEmail && hasCustomerAddresses && hasCustomerPaymentMethods) {
+        return CHECKOUT_STEPS.REVIEW_ORDER;
     }
 
-    if (!hasShippingAddress || !hasShippingAddress.address1) {
-        return CHECKOUT_STEPS.SHIPPING_ADDRESS;
-    }
-
-    if (!hasShippingMethod) {
-        return CHECKOUT_STEPS.SHIPPING_OPTIONS;
-    }
-
-    const hasValidBasketPayment = hasValidPaymentCard(paymentInstrument);
-    const hasValidPayment =
-        hasValidBasketPayment || (customerProfile.paymentInstruments && customerProfile.paymentInstruments.length > 0);
-
-    if (!hasValidPayment) {
+    // If customer has email and addresses but no saved payment methods, go to payment step
+    if (hasCustomerEmail && hasCustomerAddresses && !hasCustomerPaymentMethods) {
         return CHECKOUT_STEPS.PAYMENT;
     }
 
+    // If customer has email but no addresses, go to shipping address
+    if (hasCustomerEmail && !hasCustomerAddresses) {
+        return CHECKOUT_STEPS.SHIPPING_ADDRESS;
+    }
+
+    // If customer has no email (shouldn't happen for registered users), go to contact info
+    if (!hasCustomerEmail) {
+        return CHECKOUT_STEPS.CONTACT_INFO;
+    }
+
+    // Fallback to review if we can't determine the step
     return CHECKOUT_STEPS.REVIEW_ORDER;
 }
 
@@ -78,12 +81,15 @@ export function computeStepFromBasket(
         return CHECKOUT_STEPS.SHIPPING_OPTIONS;
     }
 
-    if (!autoAdvanceMode && !hasUserSelectedShippingOptions) {
+    // For auto-advance mode (returning customers), skip shipping options if they have a valid method
+    if (autoAdvanceMode && hasShippingMethod) {
+        // Skip shipping options step for returning customers with valid shipping method
+    } else if (!hasUserSelectedShippingOptions) {
         return CHECKOUT_STEPS.SHIPPING_OPTIONS;
     }
 
     const paymentInstrument = basket.paymentInstruments?.[0];
-    if (!hasValidPaymentCard(paymentInstrument)) {
+    if (!paymentInstrument || !hasValidPaymentCard(paymentInstrument)) {
         return CHECKOUT_STEPS.PAYMENT;
     }
 
@@ -165,6 +171,7 @@ export async function initializeBasketForReturningCustomer(
 ): Promise<ShopperBasketsTypes.Basket | null> {
     try {
         const basket = getBasket(context);
+
         if (!basket?.basketId || !customerProfile?.customer) {
             return null;
         }
@@ -219,21 +226,25 @@ export async function initializeBasketForReturningCustomer(
         if (!updatedBasket.billingAddress && hasUpdates) {
             const shippingAddr = updatedBasket.shipments?.[0]?.shippingAddress;
             if (shippingAddr) {
-                updatedBasket = await basketClient.updateBillingAddressForBasket({
-                    parameters: { basketId: updatedBasket.basketId },
-                    body: {
-                        firstName: shippingAddr.firstName,
-                        lastName: shippingAddr.lastName,
-                        address1: shippingAddr.address1,
-                        address2: shippingAddr.address2,
-                        city: shippingAddr.city,
-                        stateCode: shippingAddr.stateCode,
-                        postalCode: shippingAddr.postalCode,
-                        countryCode: shippingAddr.countryCode,
-                        phone: shippingAddr.phone,
-                    },
-                });
-                updateBasket(context, updatedBasket);
+                try {
+                    updatedBasket = await basketClient.updateBillingAddressForBasket({
+                        parameters: { basketId: updatedBasket.basketId },
+                        body: {
+                            firstName: shippingAddr.firstName,
+                            lastName: shippingAddr.lastName,
+                            address1: shippingAddr.address1,
+                            address2: shippingAddr.address2,
+                            city: shippingAddr.city,
+                            stateCode: shippingAddr.stateCode,
+                            postalCode: shippingAddr.postalCode,
+                            countryCode: shippingAddr.countryCode,
+                            phone: shippingAddr.phone,
+                        },
+                    });
+                    updateBasket(context, updatedBasket);
+                } catch {
+                    // Billing address update failed - continue without it (not critical)
+                }
             }
         }
 
@@ -257,9 +268,35 @@ export async function initializeBasketForReturningCustomer(
                         body: { id: defaultMethod.id },
                     });
                     updateBasket(context, updatedBasket);
+                    hasUpdates = true;
                 }
             } catch {
-                // Continue without shipping method
+                // Shipping method update failed - continue without it (not critical)
+            }
+        }
+
+        // Add payment instrument if missing and customer has saved payment methods
+        if (!updatedBasket.paymentInstruments?.[0] && customerProfile.paymentInstruments?.length > 0) {
+            try {
+                const { addPaymentInstrumentToBasket } = await import('@/lib/api/basket');
+                const { getPaymentMethodsFromCustomer } = await import('@/lib/customer-profile-utils');
+
+                const savedPaymentMethods = getPaymentMethodsFromCustomer(customerProfile);
+                if (savedPaymentMethods.length > 0) {
+                    const preferredMethod =
+                        savedPaymentMethods.find((method) => method.preferred) || savedPaymentMethods[0];
+
+                    const paymentInfo = {
+                        paymentMethodId: 'CREDIT_CARD',
+                        customerPaymentInstrumentId: preferredMethod.id,
+                    };
+
+                    updatedBasket = await addPaymentInstrumentToBasket(context, updatedBasket.basketId, paymentInfo);
+                    updateBasket(context, updatedBasket);
+                    hasUpdates = true;
+                }
+            } catch {
+                // Payment instrument addition failed - continue without it (not critical)
             }
         }
 

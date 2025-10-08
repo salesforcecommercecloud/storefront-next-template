@@ -244,4 +244,56 @@ describe('HeroCarousel', () => {
             expect(screen.getByRole('link')).toHaveAttribute('href', '/');
         });
     });
+
+    describe('Initial Load and State Management (PR #164)', () => {
+        test('initializes navigation state and sets up event listeners', () => {
+            renderWithRouter(<HeroCarousel slides={mockSlides} />);
+
+            // Verify that onSelect is called immediately to set initial state
+            expect(mockCarouselApi?.selectedScrollSnap).toHaveBeenCalled();
+            expect(mockCarouselApi?.canScrollPrev).toHaveBeenCalled();
+            expect(mockCarouselApi?.canScrollNext).toHaveBeenCalled();
+
+            // Verify event listeners are set up
+            expect(mockCarouselApi?.on).toHaveBeenCalledWith('select', expect.any(Function));
+            expect(mockCarouselApi?.on).toHaveBeenCalledWith('reInit', expect.any(Function));
+        });
+
+        test('validates navigation and cleans up properly', () => {
+            const { unmount } = renderWithRouter(<HeroCarousel slides={mockSlides} />);
+
+            // Test keyboard navigation with valid indices
+            const carousel = screen.getByRole('region');
+            fireEvent.keyDown(carousel, { key: 'Home' });
+            expect(mockCarouselApi?.scrollTo).toHaveBeenCalledWith(0);
+
+            fireEvent.keyDown(carousel, { key: 'End' });
+            expect(mockCarouselApi?.scrollTo).toHaveBeenCalledWith(2);
+
+            // Test cleanup on unmount
+            unmount();
+            expect(mockCarouselApi?.off).toHaveBeenCalledWith('select', expect.any(Function));
+            expect(mockCarouselApi?.off).toHaveBeenCalledWith('reInit', expect.any(Function));
+        });
+
+        test('handles onSelect callback state updates', () => {
+            renderWithRouter(<HeroCarousel slides={mockSlides} />);
+
+            // Get and trigger the onSelect callback
+            const onMock = mockCarouselApi?.on as any;
+            const selectCall = onMock?.mock?.calls?.find((call: any[]) => call[0] === 'select');
+            const onSelectCallback = selectCall?.[1];
+
+            if (onSelectCallback) {
+                act(() => {
+                    onSelectCallback();
+                });
+            }
+
+            // Verify state update methods are called
+            expect(mockCarouselApi?.selectedScrollSnap).toHaveBeenCalled();
+            expect(mockCarouselApi?.canScrollPrev).toHaveBeenCalled();
+            expect(mockCarouselApi?.canScrollNext).toHaveBeenCalled();
+        });
+    });
 });

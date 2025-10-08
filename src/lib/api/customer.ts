@@ -1,13 +1,10 @@
 import type { ActionFunctionArgs } from 'react-router';
-import {
-    helpers,
-    type ShopperCustomersTypes,
-    type ShopperBasketsTypes,
-    type ShopperLoginTypes,
-} from 'commerce-sdk-isomorphic';
-import { nanoid, customAlphabet } from 'nanoid';
+import { type ShopperBasketsTypes, type ShopperCustomersTypes } from 'commerce-sdk-isomorphic';
+import { customAlphabet, nanoid } from 'nanoid';
 import createClient from '@/lib/scapi';
 import { getAuth, updateAuth } from '@/middlewares/auth.client';
+import uiStrings from '@/temp-ui-string';
+import { extractResponseError } from '@/lib/utils';
 
 /**
  * Customer lookup result
@@ -17,6 +14,33 @@ export interface CustomerLookupResult {
     customer?: ShopperCustomersTypes.Customer;
     requiresLogin?: boolean;
     error?: string;
+}
+
+/**
+ * Validates that an address has all required fields for customer address creation.
+ *
+ * @param address - The address to validate
+ * @throws Error if any required field is missing
+ */
+function validateAddress(address: ShopperBasketsTypes.OrderAddress): void {
+    if (!address.countryCode) {
+        throw new Error(uiStrings.errors.customer.countryCodeRequired);
+    }
+    if (!address.address1) {
+        throw new Error(uiStrings.errors.customer.addressLine1Required);
+    }
+    if (!address.city) {
+        throw new Error(uiStrings.errors.customer.cityRequired);
+    }
+    if (!address.firstName) {
+        throw new Error(uiStrings.errors.customer.firstNameRequired);
+    }
+    if (!address.lastName) {
+        throw new Error(uiStrings.errors.customer.lastNameRequired);
+    }
+    if (!address.postalCode) {
+        throw new Error(uiStrings.errors.customer.postalCodeRequired);
+    }
 }
 
 /**
@@ -37,7 +61,7 @@ export async function lookupCustomerByEmail(
         if (!email || !email.includes('@')) {
             return {
                 isRegistered: false,
-                error: 'Invalid email format',
+                error: uiStrings.errors.customer.invalidEmailFormat,
             };
         }
 
@@ -76,7 +100,7 @@ export async function lookupCustomerByEmail(
     } catch {
         return {
             isRegistered: false,
-            error: 'Customer lookup service unavailable',
+            error: uiStrings.errors.customer.customerLookupUnavailable,
         };
     }
 }
@@ -120,11 +144,9 @@ export async function getCurrentCustomer(
 
         const shopperCustomersClient = createClient(context).ShopperCustomers;
 
-        const customer = await shopperCustomersClient.getCustomer({
+        return await shopperCustomersClient.getCustomer({
             parameters: { customerId: session.customer_id },
         });
-
-        return customer;
     } catch {
         return null;
     }
@@ -151,21 +173,19 @@ export async function customerLookup(
 
     // If current user is logged in and email matches
     if (basicResult.customer && !basicResult.requiresLogin) {
-        const result = {
+        return {
             ...basicResult,
             recommendation: 'current_user' as const,
-            message: 'Using your account information',
+            message: uiStrings.customer.messages.currentUserRecommendation,
         };
-        return result;
     }
 
     // For unknown emails, suggest they can continue as guest or login if they have an account
-    const result = {
+    return {
         ...basicResult,
         recommendation: 'guest' as const,
-        message: 'Continuing as guest. You can login later if you have an account.',
+        message: uiStrings.customer.messages.guestRecommendation,
     };
-    return result;
 }
 
 /**
@@ -198,13 +218,19 @@ export function generateRandomPassword(): string {
 export function extractNameFromEmail(email: string): { firstName: string; lastName: string } {
     // Input validation and sanitization
     if (!email || typeof email !== 'string') {
-        return { firstName: 'Guest', lastName: 'User' };
+        return {
+            firstName: uiStrings.customer.defaults.guestFirstName,
+            lastName: uiStrings.customer.defaults.guestLastName,
+        };
     }
 
     // Extract and clean the username part before @
     const username = email.split('@')[0]?.toLowerCase().trim();
     if (!username) {
-        return { firstName: 'Guest', lastName: 'User' };
+        return {
+            firstName: uiStrings.customer.defaults.guestFirstName,
+            lastName: uiStrings.customer.defaults.guestLastName,
+        };
     }
 
     // Remove common number suffixes and normalize
@@ -241,8 +267,8 @@ export function extractNameFromEmail(email: string): { firstName: string; lastNa
 
     // Fallback: use cleaned username as first name
     return {
-        firstName: capitalizeFirstLetter(cleanUsername) || 'Guest',
-        lastName: 'User',
+        firstName: capitalizeFirstLetter(cleanUsername) || uiStrings.customer.defaults.guestFirstName,
+        lastName: uiStrings.customer.defaults.guestLastName,
     };
 }
 
@@ -273,42 +299,29 @@ async function loginCustomerAfterRegistration(
     success: boolean;
     error?: string;
 }> {
-    try {
-        const slasClient = await createClient(context).ShopperLogin.getInstance();
-        const { redirectURI } = slasClient.clientConfig.parameters;
-        const isSlasPrivate = import.meta.env.VITE_COMMERCE_API_SLAS_PRIVATE === 'true';
+    const loginResponse = await fetch('/resource/auth/login-registered', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            email,
+            password,
+        }),
+    });
 
-        const tokenResponse: ShopperLoginTypes.TokenResponse = await helpers.loginRegisteredUserB2C({
-            slasClient,
-            credentials: {
-                username: email,
-                password,
-                ...(isSlasPrivate && {
-                    clientSecret: import.meta.env.VITE_COMMERCE_API_SLAS_SECRET,
-                }),
-            },
-            parameters: {
-                redirectURI,
-            },
-        });
+    const loginResult = await loginResponse.json();
 
-        // Update session with user tokens and info
+    if (loginResult.success) {
+        // Update session with user tokens and info returned by resource.auth
+        const tokenResponse = loginResult.data;
         updateAuth(context, tokenResponse);
         updateAuth(context, (session) => ({
             ...session,
             userType: 'registered',
         }));
-
-        return {
-            success: true,
-        };
-    } catch {
-        // Auto-login failed - continue without login
-        return {
-            success: false,
-            error: 'Auto-login failed. Please log in manually.',
-        };
     }
+    return loginResult;
 }
 
 /**
@@ -339,7 +352,7 @@ export async function registerGuestUser(
         if (!email || !email.includes('@')) {
             return {
                 success: false,
-                error: 'Invalid email format',
+                error: uiStrings.errors.customer.invalidEmailFormat,
             };
         }
 
@@ -395,14 +408,14 @@ export async function registerGuestUser(
                 success: true,
                 password,
                 autoLoggedIn: false,
-                error: 'Account created successfully, but auto-login failed. Please log in manually.',
+                error: uiStrings.errors.customer.autoLoginAfterRegistrationFailed,
             };
         }
     } catch {
         // Guest user registration failed
         return {
             success: false,
-            error: 'Registration failed. Please try again.',
+            error: uiStrings.errors.customer.registrationFailed,
         };
     }
 }
@@ -420,22 +433,25 @@ export async function saveShippingAddressToCustomer(
     context: ActionFunctionArgs['context'],
     customerId: string,
     address: ShopperBasketsTypes.OrderAddress,
-    _addressName: string = 'Home'
+    _addressName: string = uiStrings.customer.defaults.defaultAddressName
 ): Promise<boolean> {
     try {
         const client = createClient(context).ShopperCustomers;
 
-        // Create the address for the customer
+        // Validate required address fields
+        validateAddress(address);
+
+        // Create the address for the customer with validated fields
         const customerAddress = {
             addressId: `shipping_${Date.now()}`, // Generate unique address ID
-            address1: address.address1,
+            address1: address.address1 as string,
             address2: address.address2,
-            city: address.city,
-            countryCode: address.countryCode,
-            firstName: address.firstName,
-            lastName: address.lastName,
+            city: address.city as string,
+            countryCode: address.countryCode as string,
+            firstName: address.firstName as string,
+            lastName: address.lastName as string,
             phone: address.phone,
-            postalCode: address.postalCode,
+            postalCode: address.postalCode as string,
             stateCode: address.stateCode,
             preferred: true, // Set as preferred shipping address
         };
@@ -465,22 +481,25 @@ export async function saveBillingAddressToCustomer(
     context: ActionFunctionArgs['context'],
     customerId: string,
     address: ShopperBasketsTypes.OrderAddress,
-    _addressName: string = 'Billing'
+    _addressName: string = uiStrings.customer.defaults.defaultBillingAddressName
 ): Promise<boolean> {
     try {
         const client = createClient(context).ShopperCustomers;
 
-        // Create the address for the customer
+        // Validate required address fields
+        validateAddress(address);
+
+        // Create the address for the customer with validated fields
         const customerAddress = {
             addressId: `billing_${Date.now()}`, // Generate unique address ID
-            address1: address.address1,
+            address1: address.address1 as string,
             address2: address.address2,
-            city: address.city,
-            countryCode: address.countryCode,
-            firstName: address.firstName,
-            lastName: address.lastName,
+            city: address.city as string,
+            countryCode: address.countryCode as string,
+            firstName: address.firstName as string,
+            lastName: address.lastName as string,
             phone: address.phone,
-            postalCode: address.postalCode,
+            postalCode: address.postalCode as string,
             stateCode: address.stateCode,
             preferred: false, // Will be set as preferred billing in the profile logic
         };
@@ -613,7 +632,7 @@ export async function getCustomerProfileForCheckout(
     paymentInstruments: ShopperCustomersTypes.CustomerPaymentInstrument[];
     preferredShippingAddress?: ShopperCustomersTypes.CustomerAddress;
     preferredBillingAddress?: ShopperCustomersTypes.CustomerAddress;
-}> {
+} | null> {
     try {
         const client = createClient(context).ShopperCustomers;
 
@@ -646,11 +665,11 @@ export async function getCustomerProfileForCheckout(
             preferredShippingAddress,
             preferredBillingAddress,
         };
-    } catch (error) {
+    } catch (error: unknown) {
         // Failed to get customer profile for checkout
-
+        const { status_code } = await extractResponseError(error);
         // Handle specific error cases
-        if (error.status === 404) {
+        if (status_code === '404') {
             // Customer not found - invalid customer ID in auth storage
             // For client-side code, we need to clear the auth cookies
             try {

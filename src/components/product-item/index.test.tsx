@@ -584,7 +584,7 @@ describe('ProductItem', () => {
                 ...mockProduct,
                 price: 50.0,
                 priceAfterItemDiscount: 40.0,
-                priceAdjustments: [{ promotionId: 'promo-1', itemText: '20% discount applied' }],
+                priceAdjustments: [{ promotionId: 'promo-1', itemText: '20% discount applied', price: -10 }],
             };
 
             renderWithRouter(<ProductItem product={productWithPromotions} promotionMap={mockPromotions} />);
@@ -595,7 +595,8 @@ describe('ProductItem', () => {
             expect(infoButton).toBeVisible();
             // Check that the discount amount is displayed
             expect(screen.getByText('Promotions:')).toBeInTheDocument();
-            expect(screen.getByText('$10.00')).toBeInTheDocument(); // 50.00 - 40.00
+
+            expect(screen.getByText(/-\$10.00/)).toBeInTheDocument();
         });
 
         test('displays promotion messages in PromoPopover on hover', async () => {
@@ -685,12 +686,13 @@ describe('ProductItem', () => {
                 ...mockProduct,
                 price: 999.99,
                 priceAfterItemDiscount: 0.01, // Almost free
+                priceAdjustments: [{ promotionId: 'promo-1', itemText: 'Large discount', price: -999.98 }],
             };
 
             renderWithRouter(<ProductItem product={productWithLargeDiscount} />);
 
             // Should display the large discount amount correctly
-            expect(screen.getByText('$999.98')).toBeInTheDocument(); // 999.99 - 0.01
+            expect(screen.getByText(/-\$999.98/)).toBeInTheDocument();
         });
 
         // NOTE: adjust this test when display price is implemented

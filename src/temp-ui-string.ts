@@ -7,6 +7,21 @@ export default {
         loading: 'Loading',
         product: 'the product',
     },
+    search: {
+        results: 'Search Results for',
+    },
+    customer: {
+        defaults: {
+            guestFirstName: 'Guest',
+            guestLastName: 'User',
+            defaultAddressName: 'Home',
+            defaultBillingAddressName: 'Billing',
+        },
+        messages: {
+            currentUserRecommendation: 'Using your account information',
+            guestRecommendation: 'Continuing as guest. You can login later if you have an account.',
+        },
+    },
     removeItem: {
         success: 'Item removed successfully',
         failed: 'Failed to remove item',
@@ -162,6 +177,20 @@ export default {
             promoCodeInvalid: 'Invalid promo code. Please check and try again.',
             stockNotAvailable: 'Insufficient stock for one or more items in your cart.',
         },
+        customer: {
+            countryCodeRequired: 'Country code is required for customer address',
+            addressLine1Required: 'Address line 1 is required for customer address',
+            cityRequired: 'City is required for customer address',
+            firstNameRequired: 'First name is required for customer address',
+            lastNameRequired: 'Last name is required for customer address',
+            postalCodeRequired: 'Postal code is required for customer address',
+            invalidEmailFormat: 'Invalid email format',
+            customerLookupUnavailable: 'Customer lookup service unavailable',
+            registrationFailed: 'Registration failed. Please try again.',
+            autoLoginFailed: 'Auto-login failed. Please log in manually.',
+            autoLoginAfterRegistrationFailed:
+                'Account created successfully, but auto-login failed. Please log in manually.',
+        },
     },
     quantitySelector: {
         quantity: 'Quantity:',
@@ -183,6 +212,10 @@ export default {
         from: 'from',
         outOfStock: 'Out of stock for {productName}',
         onlyLeft: 'Only {stockLevel} left for {productName}!',
+        inStock: 'In stock',
+        preOrder: 'Available for pre-order',
+        backOrder: 'Available for back order',
+        outOfStockLabel: 'Out of stock',
         selectAllOptions: 'Please select all your options above',
         addingToCart: 'Adding to Cart...',
         addToCart: 'Add to Cart',
@@ -291,7 +324,8 @@ export default {
             subtotal: 'Subtotal',
             shipping: 'Shipping',
             shippingPromotionApplied: '(Promotion applied)',
-            shippingFree: 'Free',
+            shippingFree: 'FREE',
+            shippingTbd: 'TBD',
             tax: 'Tax',
             taxTbd: 'TBD',
             estimatedTotal: 'Estimated Total',
@@ -351,6 +385,9 @@ export default {
             type: {
                 free: 'free',
             },
+        },
+        badge: {
+            ariaLabel: 'My cart, number of items: {count}',
         },
     },
     checkout: {
@@ -477,6 +514,18 @@ export default {
             actions: {
                 continueShopping: 'Continue Shopping',
                 viewAccount: 'View Account',
+            },
+        },
+        errorBoundary: {
+            title: 'Checkout Temporarily Unavailable',
+            description:
+                "We're experiencing some technical difficulties with the checkout process. Your cart items are safe and saved.",
+            tryAgain: 'Try Again',
+            returnToCart: 'Return to Cart',
+            componentError: {
+                title: 'Component temporarily unavailable',
+                description: "This section couldn't load properly. You can continue with checkout or try refreshing.",
+                tryAgain: 'Try again',
             },
         },
     },

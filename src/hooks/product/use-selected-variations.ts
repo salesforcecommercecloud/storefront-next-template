@@ -16,7 +16,7 @@ interface UseSelectedVariationsParams {
  * @returns Object of selected variations with attribute IDs as keys
  *
  * @example
- * // URL: /?color=NAVYWL&someOtherParam=ignored
+ * // URL: /?color=NAVYWL&size=040&someOtherParam=ignored
  * const product = {
  *   variationAttributes: [
  *     { id: 'color', name: 'Color', values: [...] },
@@ -37,23 +37,23 @@ interface UseSelectedVariationsParams {
  * // Note: Empty object when no variations are selected and no defaults
  *
  * @example
- * // Bundle/Set product with nested URL parameters
- * // URL: /?bundle123=color%3DRED%26size%3DL&otherParam=value
- * const bundleProduct = { id: 'bundle123', variationAttributes: [...] }
- * const selections = useSelectedVariations({ product: bundleProduct, isChildProduct: true });
+ * // Child product within a bundle/set with nested URL parameters
+ * // URL: /?childProduct456=color%3DRED%26size%3DL&otherParam=value
+ * const childProduct = { id: 'childProduct456', variationAttributes: [...] }
+ * const selections = useSelectedVariations({ product: childProduct, isChildProduct: true });
  * // Returns: { color: 'RED', size: 'L' }
- * // Note: Extracts and decodes nested parameters for bundle/set products
+ * // Note: Extracts and decodes nested parameters for individual products within bundles/sets
  */
 export const useSelectedVariations = ({ product, isChildProduct = false }: UseSelectedVariationsParams) => {
     const [searchParams] = useSearchParams();
 
     return useMemo(() => {
-        if (!product.variationAttributes) return {};
+        if (!product?.variationAttributes) return {};
 
         let params: URLSearchParams;
 
         if (isChildProduct) {
-            // For child products (bundle/set): params are nested like ?productId=color%3DRED%26size%3DL
+            // For child products (individual products within bundles/sets): params are nested like ?childProductId=color%3DRED%26size%3DL
             const productParamsString = searchParams.get(product.id) || '';
             params = new URLSearchParams(productParamsString);
         } else {
@@ -63,7 +63,7 @@ export const useSelectedVariations = ({ product, isChildProduct = false }: UseSe
 
         // Build object of currently selected variation values from URL parameters with fallback to defaults
         // URL parameters and the product's default variationValues (for variant products)
-        return product.variationAttributes.reduce(
+        const result = product?.variationAttributes?.reduce(
             (selections, attribute) => {
                 // First priority: Get the value from URL params for this specific variation attribute
                 // For example: if attribute.id is 'color', look for ?color=NAVYWL in URL
@@ -81,5 +81,7 @@ export const useSelectedVariations = ({ product, isChildProduct = false }: UseSe
             },
             {} as Record<string, string>
         );
+
+        return result;
     }, [product, searchParams, isChildProduct]);
 };

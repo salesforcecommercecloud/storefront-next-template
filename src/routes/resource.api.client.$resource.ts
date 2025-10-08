@@ -2,7 +2,7 @@
 import type { ClientLoaderFunctionArgs, LoaderFunctionArgs } from 'react-router';
 import type { InstanceMethodKeysOf } from '+types/lang';
 import { decodeBase64Url } from '@/lib/url';
-import { extractResponseError } from '@/lib/util';
+import { extractResponseError } from '@/lib/utils';
 import createClient, { type CommerceSdkCtorFromKey, type CommerceSdkKeyMap } from '@/lib/scapi';
 
 function load<

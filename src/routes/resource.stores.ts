@@ -7,7 +7,7 @@
 /** @sfdc-extension-file SFDC_EXT_STORE_LOCATOR */
 import { type ClientLoaderFunctionArgs, data, type LoaderFunctionArgs } from 'react-router';
 import type { ShopperStoresTypes } from 'commerce-sdk-isomorphic';
-import { extractResponseError } from '@/lib/util';
+import { extractResponseError } from '@/lib/utils';
 import createClient from '@/lib/scapi';
 
 /**

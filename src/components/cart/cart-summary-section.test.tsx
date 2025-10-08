@@ -48,7 +48,7 @@ describe('CartSummarySection', () => {
 
             // Verify checkout button is a link to /checkout
             const checkoutLink = screen.getByRole('link', {
-                name: `${uiStrings.cart.checkout.proceedToCheckout} ${uiStrings.cart.checkout.secure}`,
+                name: `${uiStrings.cart.checkout.proceedToCheckout}${uiStrings.cart.checkout.secure}`,
             });
             expect(checkoutLink).toHaveAttribute('href', '/checkout');
         });
@@ -83,7 +83,7 @@ describe('CartSummarySection', () => {
 
             // Verify checkout button is a link to /checkout
             const checkoutLink = screen.getByRole('link', {
-                name: `${uiStrings.cart.checkout.proceedToCheckout} ${uiStrings.cart.checkout.secure}`,
+                name: `${uiStrings.cart.checkout.proceedToCheckout}${uiStrings.cart.checkout.secure}`,
             });
             expect(checkoutLink).toHaveAttribute('href', '/checkout');
 

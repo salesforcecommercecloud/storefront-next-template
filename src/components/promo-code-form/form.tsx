@@ -124,7 +124,7 @@ export const PromoCodeForm = ({ basketId }: PromoCodeFormProps) => {
                     <AccordionContent className="px-0 py-0">
                         <div className="bg-background p-2">
                             <Form {...form}>
-                                <form onSubmit={() => void handleSubmit()} data-testid="promo-code-form">
+                                <form onSubmit={(e) => void handleSubmit(e)} data-testid="promo-code-form">
                                     <PromoCodeFields form={form} applyFetcher={applyFetcher} />
                                 </form>
                             </Form>

@@ -1,7 +1,7 @@
 import type { ClientActionFunctionArgs } from 'react-router';
 import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
 import { getBasket, updateBasket } from '@/middlewares/basket.client';
-import { extractResponseError } from '@/lib/util';
+import { extractResponseError } from '@/lib/utils';
 import createClient from '@/lib/scapi';
 import { promoCodeFormSchema } from '@/components/promo-code-form';
 import uiStrings from '@/temp-ui-string';

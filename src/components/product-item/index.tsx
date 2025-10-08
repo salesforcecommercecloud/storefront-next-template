@@ -166,9 +166,10 @@ function ProductItemVariantAttributes({
                         {uiStrings.cart.attributes.promotions}{' '}
                         <span className="text-success font-medium">
                             {/*TODO: adjust this after we have i18n set up*/}
-                            {hasItemDiscount && product.priceAfterItemDiscount
-                                ? formatCurrency((product.price || 0) - (product.priceAfterItemDiscount || 0))
-                                : formatCurrency(0)}
+                            {hasItemDiscount &&
+                                formatCurrency(
+                                    product?.priceAdjustments?.reduce((acc, adj) => acc + (adj.price ?? 0), 0) ?? 0
+                                )}
                         </span>
                     </span>
                     <div className="flex items-center">

@@ -1,4 +1,4 @@
-import { unstable_createContext, type unstable_RouterContextProvider } from 'react-router';
+import { createContext, type RouterContextProvider } from 'react-router';
 import type { ShopperLoginTypes } from 'commerce-sdk-isomorphic';
 import type { SessionData as AuthData } from '@/lib/api/types';
 import {
@@ -10,7 +10,7 @@ import {
 } from '@/lib/middleware';
 
 export type AuthStorageData = AuthData & StorageMetaData & StorageErrorData;
-export const authContext = unstable_createContext<{ ref: Promise<AuthData | undefined> }>();
+export const authContext = createContext<{ ref: Promise<AuthData | undefined> }>();
 
 /**
  * Shared utility to write Commerce API auth information from a given token response into the given storage container.
@@ -80,7 +80,7 @@ export const updateAuthStorageData = (
  * Used by both server and client auth logic
  */
 export const updateStorageAndCache = async (
-    context: Readonly<unstable_RouterContextProvider>,
+    context: Readonly<RouterContextProvider>,
     storage: Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>,
     cache: { ref: AuthData | undefined },
     tokenResponse: ShopperLoginTypes.TokenResponse,
@@ -103,7 +103,7 @@ export const updateStorageAndCache = async (
  * promise reference is always resolved/returned.
  */
 export const createAuthPromise = (
-    context: Readonly<unstable_RouterContextProvider>,
+    context: Readonly<RouterContextProvider>,
     data: AuthData | undefined
 ): Promise<AuthData | undefined> => {
     const promise = Promise.resolve(data).then(

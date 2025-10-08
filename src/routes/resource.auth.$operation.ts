@@ -1,5 +1,5 @@
-import type { ActionFunctionArgs, unstable_RouterContextProvider } from 'react-router';
-import { extractResponseError } from '@/lib/util';
+import type { ActionFunctionArgs, RouterContextProvider } from 'react-router';
+import { extractResponseError } from '@/lib/utils';
 import { refreshAccessToken, loginGuestUser, loginRegisteredUser } from '@/middlewares/auth.server';
 
 interface RefreshTokenRequest {
@@ -16,7 +16,7 @@ interface LoginRegisteredRequest {
     customParameters?: Record<string, unknown>;
 }
 
-type AuthHandler = (request: Request, context: Readonly<unstable_RouterContextProvider>) => Promise<unknown>;
+type AuthHandler = (request: Request, context: Readonly<RouterContextProvider>) => Promise<unknown>;
 
 /**
  * Map of auth operations to their handlers
@@ -59,7 +59,7 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
 /**
  * Handle refresh token operation using auth functions
  */
-async function handleRefreshToken(request: Request, context: Readonly<unstable_RouterContextProvider>) {
+async function handleRefreshToken(request: Request, context: Readonly<RouterContextProvider>) {
     const body: RefreshTokenRequest = await request.json();
     return await refreshAccessToken(context, body.refreshToken);
 }
@@ -67,7 +67,7 @@ async function handleRefreshToken(request: Request, context: Readonly<unstable_R
 /**
  * Handle guest login operation using auth functions
  */
-async function handleLoginGuest(request: Request, context: Readonly<unstable_RouterContextProvider>) {
+async function handleLoginGuest(request: Request, context: Readonly<RouterContextProvider>) {
     const body: LoginGuestRequest = await request.json();
 
     return await loginGuestUser(context, {
@@ -78,7 +78,7 @@ async function handleLoginGuest(request: Request, context: Readonly<unstable_Rou
 /**
  * Handle registered user login operation using auth functions
  */
-async function handleLoginRegistered(request: Request, context: Readonly<unstable_RouterContextProvider>) {
+async function handleLoginRegistered(request: Request, context: Readonly<RouterContextProvider>) {
     const body: LoginRegisteredRequest = await request.json();
 
     return await loginRegisteredUser(context, body.email, body.password, {

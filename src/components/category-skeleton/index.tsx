@@ -1,6 +1,72 @@
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 
+export function CategoryBreadcrumbsSkeleton() {
+    return (
+        <div className="mb-4">
+            <nav aria-label="Breadcrumb" className="mb-6">
+                <div className="flex flex-wrap items-center text-sm">
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="mx-1 h-3 w-3" />
+                    <Skeleton className="h-4 w-24" />
+                </div>
+            </nav>
+        </div>
+    );
+}
+
+export function CategoryHeaderSkeleton() {
+    return (
+        <>
+            <Skeleton className="h-9 w-64" />
+            <div className="flex-shrink-0">
+                <div className="flex items-center space-x-2">
+                    <Skeleton className="h-4 w-12" />
+                    <Skeleton className="h-10 w-32" />
+                </div>
+            </div>
+        </>
+    );
+}
+
+export function CategoryRefinementsSkeleton() {
+    return (
+        <div className="space-y-4">
+            {/* Active filters */}
+            <div className="border rounded-md p-4">
+                <Skeleton className="h-4 w-24 mb-2" />
+                <div className="flex flex-wrap gap-2">
+                    <Skeleton className="h-6 w-16 rounded-full" />
+                    <Skeleton className="h-6 w-20 rounded-full" />
+                </div>
+            </div>
+
+            {/* Filter accordions */}
+            <div className="border rounded-md">
+                <div className="p-4 border-b">
+                    <Skeleton className="h-5 w-32" />
+                </div>
+                <div className="p-4 space-y-2">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
+                </div>
+            </div>
+
+            <div className="border rounded-md">
+                <div className="p-4 border-b">
+                    <Skeleton className="h-5 w-24" />
+                </div>
+                <div className="p-4 space-y-2">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-5/6" />
+                    <Skeleton className="h-4 w-2/3" />
+                </div>
+            </div>
+        </div>
+    );
+}
+
 /**
  * CategorySkeleton component provides a loading state placeholder for category pages.
  *
@@ -18,91 +84,25 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
  */
 export default function CategorySkeleton() {
     return (
-        <div className="pb-16">
-            <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Breadcrumbs skeleton */}
-                <div className="mb-4">
-                    <nav aria-label="Breadcrumb" className="mb-6">
-                        <div className="flex flex-wrap items-center text-sm">
-                            <Skeleton className="h-4 w-20" />
-                            <Skeleton className="mx-1 h-3 w-3" />
-                            <Skeleton className="h-4 w-24" />
-                        </div>
-                    </nav>
-                </div>
+        <>
+            {/* Product grid skeleton */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-8">
+                {Array.from({ length: 12 }, (_, i) => i).map((index) => (
+                    <ProductCardSkeleton key={index} />
+                ))}
+            </div>
 
-                {/* Header section skeleton */}
-                <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <Skeleton className="h-9 w-64" />
-                    <div className="flex-shrink-0">
-                        <div className="flex items-center space-x-2">
-                            <Skeleton className="h-4 w-12" />
-                            <Skeleton className="h-10 w-32" />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="flex flex-col lg:flex-row gap-8">
-                    {/* Sidebar filters skeleton */}
-                    <div className="hidden lg:block w-64 flex-shrink-0">
-                        <div className="space-y-4">
-                            {/* Active filters */}
-                            <div className="border rounded-md p-4">
-                                <Skeleton className="h-4 w-24 mb-2" />
-                                <div className="flex flex-wrap gap-2">
-                                    <Skeleton className="h-6 w-16 rounded-full" />
-                                    <Skeleton className="h-6 w-20 rounded-full" />
-                                </div>
-                            </div>
-
-                            {/* Filter accordions */}
-                            <div className="border rounded-md">
-                                <div className="p-4 border-b">
-                                    <Skeleton className="h-5 w-32" />
-                                </div>
-                                <div className="p-4 space-y-2">
-                                    <Skeleton className="h-4 w-full" />
-                                    <Skeleton className="h-4 w-3/4" />
-                                    <Skeleton className="h-4 w-1/2" />
-                                </div>
-                            </div>
-
-                            <div className="border rounded-md">
-                                <div className="p-4 border-b">
-                                    <Skeleton className="h-5 w-24" />
-                                </div>
-                                <div className="p-4 space-y-2">
-                                    <Skeleton className="h-4 w-full" />
-                                    <Skeleton className="h-4 w-5/6" />
-                                    <Skeleton className="h-4 w-2/3" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Main content skeleton */}
-                    <div className="flex-grow">
-                        {/* Product grid skeleton */}
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-8">
-                            {Array.from({ length: 12 }, (_, i) => i).map((index) => (
-                                <ProductCardSkeleton key={index} />
-                            ))}
-                        </div>
-
-                        {/* Pagination skeleton */}
-                        <div className="mt-10 flex justify-center">
-                            <div className="flex items-center space-x-2">
-                                <Skeleton className="h-10 w-10" />
-                                <Skeleton className="h-10 w-10" />
-                                <Skeleton className="h-10 w-10" />
-                                <Skeleton className="h-10 w-10" />
-                                <Skeleton className="h-10 w-10" />
-                            </div>
-                        </div>
-                    </div>
+            {/* Pagination skeleton */}
+            <div className="mt-10 flex justify-center">
+                <div className="flex items-center space-x-2">
+                    <Skeleton className="h-10 w-10" />
+                    <Skeleton className="h-10 w-10" />
+                    <Skeleton className="h-10 w-10" />
+                    <Skeleton className="h-10 w-10" />
+                    <Skeleton className="h-10 w-10" />
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 

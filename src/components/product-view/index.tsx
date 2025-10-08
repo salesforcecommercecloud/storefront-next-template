@@ -8,55 +8,68 @@ import { type ReactElement } from 'react';
 import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
 import ImageGallery from '@/components/image-gallery';
 import ProductInfo from './product-info';
-import ProductSetBundle from './product-set-bundle';
-import { useProductColorImage } from '@/hooks/product/use-product-color-image';
+import { useProductImages } from '@/hooks/product/use-product-images';
+import { useSelectedVariations } from '@/hooks/product/use-selected-variations';
 import CategoryBreadcrumbs from '../category-breadcrumbs';
+import { isProductSet, isProductBundle } from '@/lib/product-utils';
 
 interface ProductViewProps {
     product: ShopperProductsTypes.Product;
-    category: ShopperProductsTypes.Category | undefined;
+    category?: ShopperProductsTypes.Category;
 }
 
+/**
+ * ProductView component renders a complete product detail view with image gallery and product information.
+ *
+ * @param props - The component props
+ * @param props.product - The product data from Salesforce Commerce Cloud containing all product details,
+ *                        variants, pricing, and metadata
+ * @param props.category - Optional category data used for breadcrumb navigation. If not provided,
+ *                         no breadcrumbs will be rendered in the product view
+ *
+ * @returns A React element containing the complete product view layout
+ *
+ * @example
+ * ```tsx
+ * // With category for breadcrumbs
+ * <ProductView product={productData} category={categoryData} />
+ *
+ * // Without category (no breadcrumbs will be shown)
+ * <ProductView product={productData} />
+ * ```
+ */
 export default function ProductView({ product, category }: ProductViewProps): ReactElement {
     // Calculate directly without useMemo since these are simple operations
-    const isProductASet = product?.type?.set;
-    const isProductABundle = product?.type?.bundle;
+    const isProductASet = isProductSet(product);
+    const isProductABundle = isProductBundle(product);
     const breadcrumbData = category?.parentCategoryTree || [];
-    // Use color image hook for managing selected color and filtered images
-    const { galleryImages, setSelectedColor } = useProductColorImage({
+
+    // Get selected attributes from URL parameters for image gallery
+    const selectedAttributes = useSelectedVariations({ product });
+    const { galleryImages } = useProductImages({
         product,
+        selectedAttributes,
     });
 
     return (
         <>
-            {/* Product Sets/Bundles or Regular Product */}
-            {isProductASet || isProductABundle ? (
-                <ProductSetBundle product={product} isProductASet={isProductASet} isProductABundle={isProductABundle} />
-            ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-                    {/* Left Column - Image Gallery */}
-                    <div className="order-1">
-                        <ImageGallery images={galleryImages} eager={!isProductASet && !isProductABundle} />
-                    </div>
-
-                    {/* Right Column - Product Info */}
-                    <div className="order-2">
-                        {/* Breadcrumbs */}
-                        {breadcrumbData.length > 0 && category && (
-                            <div className="hidden md:block">
-                                <CategoryBreadcrumbs category={category} />
-                            </div>
-                        )}
-                        <ProductInfo
-                            product={product}
-                            key={product.id}
-                            isProductASet={isProductASet}
-                            isProductABundle={isProductABundle}
-                            onColorChange={setSelectedColor}
-                        />
-                    </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+                {/* Left Column - Image Gallery */}
+                <div className="order-1">
+                    <ImageGallery images={galleryImages} eager={!isProductASet && !isProductABundle} />
                 </div>
-            )}
+
+                {/* Right Column - Product Info */}
+                <div className="order-2">
+                    {/* Breadcrumbs */}
+                    {breadcrumbData.length > 0 && category && (
+                        <div className="hidden md:block">
+                            <CategoryBreadcrumbs category={category} />
+                        </div>
+                    )}
+                    <ProductInfo product={product} key={product.id} />
+                </div>
+            </div>
         </>
     );
 }

@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import uiStrings from '@/temp-ui-string';
 
 // Password validation functions
-import { validatePassword, isPasswordValid } from '@/lib/util';
+import { validatePassword, isPasswordValid } from '@/lib/utils';
 
 interface PasswordRequirementsProps {
     password: string;

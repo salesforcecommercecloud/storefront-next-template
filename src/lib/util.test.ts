@@ -9,20 +9,20 @@ describe('stringTo64Base', () => {
 
     test('uses btoa in browser-like env and encodes correctly', async () => {
         vi.stubGlobal('btoa', (s: string) => Buffer.from(s, 'binary').toString('base64'));
-        const util = await import('@/lib/util');
+        const util = await import('@/lib/utils');
         expect(util.stringToBase64('hello')).toBe('aGVsbG8=');
     });
 
     test('falls back to Buffer in non-browser env', async () => {
         vi.stubGlobal('window', undefined);
-        const util = await import('@/lib/util');
+        const util = await import('@/lib/utils');
         expect(util.stringToBase64('hello')).toBe('aGVsbG8=');
     });
 });
 
 describe('validatePassword', () => {
     test('returns all true for a strong password', async () => {
-        const util = await import('@/lib/util');
+        const util = await import('@/lib/utils');
         expect(util.validatePassword('Abcdef1!')).toEqual({
             minLength: true,
             hasUppercase: true,
@@ -33,7 +33,7 @@ describe('validatePassword', () => {
     });
 
     test('returns correct flags for a weak password', async () => {
-        const util = await import('@/lib/util');
+        const util = await import('@/lib/utils');
         expect(util.validatePassword('abcdefg')).toEqual({
             minLength: false,
             hasUppercase: false,

@@ -12,33 +12,29 @@ import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
 import ProductQuantityPicker from '@/components/product-quantity-picker';
 import { useToast } from '@/components/toast';
 import { Button } from '@/components/ui/button';
-import ProductAttributeSelector from '@/components/product-attribute-selector';
+import { SwatchGroup, Swatch } from '@/components/swatch-group';
+import { useVariationAttributes } from '@/hooks/product/use-variation-attributes';
 import { useProductActions } from '@/hooks/product/use-product-actions';
-import { useVariantSelection } from '@/hooks/product/use-variant-selection';
+import { useCurrentVariant } from '@/hooks/product/use-current-variant';
 import uiStrings from '@/temp-ui-string';
 import ProductPrice from '../product-price';
+import { isProductSet, isProductBundle } from '@/lib/product-utils';
+import InventoryMessage from '../inventory-message';
 
 interface ProductInfoProps {
     product: ShopperProductsTypes.Product;
-    isProductASet?: boolean;
-    isProductABundle?: boolean;
-    onColorChange?: (colorValue: string | null) => void;
 }
 
-export default function ProductInfo({
-    product,
-    isProductASet = false,
-    isProductABundle = false,
-    onColorChange,
-}: ProductInfoProps): ReactElement {
-    // Use variant selection hook
-    const { currentVariant, selectedAttributes, isVariantFullySelected, handleAttributeChange, getAvailableValues } =
-        useVariantSelection({
-            product,
-        });
-
+export default function ProductInfo({ product }: ProductInfoProps): ReactElement {
+    const isProductASet = isProductSet(product);
+    const isProductABundle = isProductBundle(product);
+    // Use variation attributes hook for URL-aware swatches
+    const variationAttributes = useVariationAttributes({ product });
     // Inventory and stock calculations
     const inventory = product.inventory;
+
+    // Get current variant for UI display
+    const currentVariant = useCurrentVariant({ product });
 
     // Use product actions hook
     const {
@@ -47,51 +43,27 @@ export default function ProductInfo({
         quantity,
         canAddToCart,
         isOutOfStock,
-        hasVariants,
+        isMasterOrVariantProduct,
         stockLevel,
         handleAddToCart,
         handleAddToWishlist,
         setQuantity,
     } = useProductActions({
         product,
-        isProductASet,
-        isProductABundle,
-        currentVariant,
         stockLevel: inventory?.ats || 0,
     });
 
     const { addToast } = useToast();
 
-    const onAddToCart = async () => {
-        const productToAdd = hasVariants ? currentVariant : product;
-
-        try {
-            await handleAddToCart(productToAdd, quantity);
-        } catch {
-            addToast(uiStrings.product.failedToAddProductToCartError, 'error');
-        }
-    };
-
     const onAddToWishlist = async () => {
-        const productToAdd = hasVariants ? currentVariant || product : product;
+        const productToAdd = isMasterOrVariantProduct ? currentVariant : product;
         try {
+            // TODO: later refactor this to be similar to handleAddToCart
             await handleAddToWishlist(productToAdd as ShopperProductsTypes.Variant);
         } catch {
             addToast(uiStrings.product.failedToAddProductToWishlistError, 'error');
         }
     };
-
-    // Convert variation attributes to the format expected by ProductAttributeSelector
-    const productAttributes =
-        product.variationAttributes?.map((attr) => ({
-            id: attr.id,
-            name: attr.name || '',
-            values: getAvailableValues(attr.id).map((value) => ({
-                value: value.value,
-                name: value.name || String(value.value),
-                orderable: value.orderable,
-            })),
-        })) || [];
 
     return (
         <div className="space-y-6">
@@ -117,29 +89,51 @@ export default function ProductInfo({
                 />
             </div>
 
-            {/* Unified Attribute Selection */}
-            {productAttributes.length > 0 && (
-                <ProductAttributeSelector
-                    product={product}
-                    attributes={productAttributes}
-                    selected={selectedAttributes}
-                    onAttributeChange={(attributeId, value) => {
-                        handleAttributeChange(attributeId, value);
-                        // For click-only mode, update color immediately when clicked
-                        if (attributeId === 'color') {
-                            onColorChange?.(value);
-                        }
-                    }}
-                    maxSwatches={8}
-                    swatchSize="md"
-                    interactionMode="click-only"
-                />
-            )}
+            {/* Inventory Status Message */}
+            <InventoryMessage product={product} currentVariant={currentVariant} />
+
+            {/* Swatch Groups for Product Variations */}
+            {variationAttributes.map(({ id, name, selectedValue, values }) => {
+                const swatches = values.map((value) => {
+                    const { href, name: valueName, image, value: swatchValue, orderable } = value;
+                    const content = image ? (
+                        <div
+                            className="w-full h-full bg-cover bg-center bg-no-repeat rounded-full"
+                            style={{ backgroundImage: `url(${image.link})` }}
+                            aria-label={image.alt || valueName}
+                        />
+                    ) : (
+                        <span className="text-xs font-medium">{valueName}</span>
+                    );
+
+                    return (
+                        <Swatch
+                            key={swatchValue}
+                            href={href}
+                            disabled={!orderable}
+                            value={swatchValue}
+                            name={valueName}
+                            shape={id === 'color' ? 'circle' : 'square'}>
+                            {content}
+                        </Swatch>
+                    );
+                });
+
+                return (
+                    <SwatchGroup
+                        key={id}
+                        value={selectedValue?.value}
+                        displayName={selectedValue?.name || ''}
+                        label={name}>
+                        {swatches}
+                    </SwatchGroup>
+                );
+            })}
 
             {/* Quantity and Add to Cart */}
             <div className="space-y-4">
                 {/* Options Selection Message */}
-                {hasVariants && !isVariantFullySelected && !isProductASet && !isProductABundle && (
+                {isMasterOrVariantProduct && !currentVariant && !isProductASet && !isProductABundle && (
                     <div className="text-destructive font-medium">{uiStrings.product.selectAllOptions}</div>
                 )}
 
@@ -156,13 +150,15 @@ export default function ProductInfo({
 
                 {/* Action Buttons */}
                 <div className="space-y-3">
-                    <Button
-                        onClick={() => void onAddToCart()}
-                        disabled={!canAddToCart || isAddingToCart}
-                        className="w-full"
-                        size="lg">
-                        {isAddingToCart ? uiStrings.product.addingToCart : uiStrings.product.addToCart}
-                    </Button>
+                    {!isProductASet && !isProductABundle && (
+                        <Button
+                            onClick={() => void handleAddToCart()}
+                            disabled={!canAddToCart || isAddingToCart}
+                            className="w-full"
+                            size="lg">
+                            {isAddingToCart ? uiStrings.product.addingToCart : uiStrings.product.addToCart}
+                        </Button>
+                    )}
 
                     <Button
                         onClick={() => void onAddToWishlist()}

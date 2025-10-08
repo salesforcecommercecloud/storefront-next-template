@@ -1,8 +1,4 @@
-import {
-    unstable_createContext,
-    type unstable_MiddlewareFunction,
-    type unstable_RouterContextProvider,
-} from 'react-router';
+import { createContext, type MiddlewareFunction, type RouterContextProvider } from 'react-router';
 import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
 import {
     clearStorage,
@@ -12,7 +8,7 @@ import {
     updateStorage,
     updateStorageObject,
 } from '@/lib/middleware';
-import { extractResponseError } from '@/lib/util';
+import { extractResponseError } from '@/lib/utils';
 import createClient from '@/lib/scapi';
 
 type BasketStorageData = ShopperBasketsTypes.Basket & StorageMetaData & StorageErrorData;
@@ -22,11 +18,10 @@ type BasketStorageData = ShopperBasketsTypes.Basket & StorageMetaData & StorageE
  */
 const basketCache: { ref: ShopperBasketsTypes.Basket | undefined } = { ref: undefined };
 const basketStorageKey = '__sfdc_basket';
-const basketStorageContext =
-    unstable_createContext<Map<keyof BasketStorageData, BasketStorageData[keyof BasketStorageData]>>();
+const basketStorageContext = createContext<Map<keyof BasketStorageData, BasketStorageData[keyof BasketStorageData]>>();
 
 const retrieveBasket = (
-    context: Readonly<unstable_RouterContextProvider>,
+    context: Readonly<RouterContextProvider>,
     storage: Map<keyof BasketStorageData, BasketStorageData[keyof BasketStorageData]>
 ): Promise<ShopperBasketsTypes.Basket> => {
     const client = createClient(context).ShopperBaskets;
@@ -85,7 +80,7 @@ const retrieveBasket = (
 };
 
 const retrieveBasketStorageData = (
-    context: Readonly<unstable_RouterContextProvider>,
+    context: Readonly<RouterContextProvider>,
     storage: Map<keyof BasketStorageData, BasketStorageData[keyof BasketStorageData]>
 ): Promise<void> => {
     return retrieveBasket(context, storage).then(
@@ -118,7 +113,7 @@ const retrieveBasketStorageData = (
  *
  * TODO: This middleware should also handle aspects like basket TTL.
  */
-const basketMiddleware: unstable_MiddlewareFunction<void> = async ({ context }, next) => {
+const basketMiddleware: MiddlewareFunction<void> = async ({ context }, next) => {
     // Before calling the handler: Load current basket data from `basketCache` or `localStorage`, if applicable
     const basketData = (basketCache.ref ??
         JSON.parse(globalThis.localStorage?.getItem?.(basketStorageKey) ?? '{}')) satisfies BasketStorageData;
@@ -163,9 +158,7 @@ const basketMiddleware: unstable_MiddlewareFunction<void> = async ({ context }, 
     }
 };
 
-export const getBasket = (
-    context: Readonly<unstable_RouterContextProvider>
-): ShopperBasketsTypes.Basket & StorageErrorData => {
+export const getBasket = (context: Readonly<RouterContextProvider>): ShopperBasketsTypes.Basket & StorageErrorData => {
     const storage = context.get(basketStorageContext);
     if (!storage) {
         throw new Error('getBasket must be used within the basket middleware');
@@ -174,7 +167,7 @@ export const getBasket = (
 };
 
 export const updateBasket = (
-    context: Readonly<unstable_RouterContextProvider>,
+    context: Readonly<RouterContextProvider>,
     updater:
         | undefined
         | (ShopperBasketsTypes.Basket & StorageErrorData)
@@ -196,7 +189,7 @@ export const updateBasket = (
  *
  * @param context - Router context for basket storage access
  */
-export const destroyBasket = (context: Readonly<unstable_RouterContextProvider>): void => {
+export const destroyBasket = (context: Readonly<RouterContextProvider>): void => {
     const storage = context.get(basketStorageContext);
     if (!storage) {
         throw new Error('destroyBasket must be used within the basket middleware');

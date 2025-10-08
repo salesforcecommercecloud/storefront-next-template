@@ -46,26 +46,32 @@ export default function ProductCarousel({
 
     return (
         <>
-            {title && <h2 className="text-2xl font-bold pb-4">{title}</h2>}
+            {title && (
+                <div className="text-center mb-8">
+                    <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">{title}</h2>
+                </div>
+            )}
 
-            <Carousel
-                opts={{
-                    align: 'start',
-                    // loop: true,
-                    slidesToScroll: 'auto',
-                }}>
-                <CarouselContent className="-ml-1">
-                    {products.map((product) => (
-                        <CarouselItem key={product.productId} className="pl-1 sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
-                            <div className="flex-none w-60 md:w-72 snap-start">
-                                <ProductCard product={product} />
-                            </div>
-                        </CarouselItem>
-                    ))}
-                </CarouselContent>
-                <CarouselPrevious />
-                <CarouselNext />
-            </Carousel>
+            <div className="px-4 sm:px-6 lg:px-8">
+                <Carousel
+                    className="w-full max-w-screen-2xl px-12 mx-auto"
+                    opts={{
+                        align: 'start',
+                        slidesToScroll: 'auto',
+                    }}>
+                    <CarouselContent className="-ml-4 items-stretch">
+                        {products.map((product) => (
+                            <CarouselItem
+                                key={product.productId}
+                                className="pl-4 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 py-1">
+                                <ProductCard product={product} className="h-full" />
+                            </CarouselItem>
+                        ))}
+                    </CarouselContent>
+                    <CarouselPrevious />
+                    <CarouselNext />
+                </Carousel>
+            </div>
         </>
     );
 }

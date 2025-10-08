@@ -41,7 +41,10 @@ export declare type InstanceMethodReturn<C extends Ctor, K extends InstanceMetho
 >;
 
 declare type JsonPrimitive = string | number | boolean | null;
-declare type JsonArray = Json[];
-declare type JsonObject = { [key: string]: Json };
-declare type JsonComposite = JsonArray | JsonObject;
-export declare type Json = JsonPrimitive | JsonComposite;
+declare type JsonArray = Json[] | readonly Json[];
+declare type JsonObject = {
+    [Key in string]: Json;
+} & {
+    [Key in string]?: Json | undefined;
+};
+export declare type Json = JsonPrimitive | JsonArray | JsonObject;

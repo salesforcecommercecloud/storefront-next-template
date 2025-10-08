@@ -3,13 +3,14 @@ import { useEffect, type ReactElement } from 'react';
 
 // Third-party
 import { ShoppingCart } from 'lucide-react';
+import { Link } from 'react-router';
 
 // Commerce SDK
 import type { ShopperBasketsTypes, ShopperProductsTypes } from 'commerce-sdk-isomorphic';
 
 // Components
 import { Typography } from '@/components/typography';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Card, CardContent } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -24,6 +25,7 @@ import { usePromoCodeActions } from '@/hooks/use-promo-code-actions';
 import { formatCurrency } from '@/lib/currency';
 import { FETCHER_STATES } from '@/lib/fetcher-states';
 import uiStrings from '@/temp-ui-string';
+import PromoPopover from '@/components/promo-popover';
 
 /**
  * Props for the OrderSummary component
@@ -37,6 +39,9 @@ import uiStrings from '@/temp-ui-string';
  * @property {boolean} [isEstimate] - Whether to show "Est." prefix for totals
  * @property {Record<string, ShopperProductsTypes.Product>} [productMap] - Optional product ID to product
  *   details mapping
+ * @property {() => void} [onEditCart] - Optional callback function called when the "Edit Cart" button is clicked.
+ *   If not provided, the component will navigate to '/cart' using the default navigation behavior.
+ *   This is useful for custom actions like closing a cart sheet before navigation.
  */
 interface OrderSummaryProps {
     basket: ShopperBasketsTypes.Basket;
@@ -46,6 +51,7 @@ interface OrderSummaryProps {
     itemsExpanded?: boolean;
     isEstimate?: boolean;
     productMap?: Record<string, ShopperProductsTypes.Product>;
+    onEditCart?: () => void;
 }
 
 /**
@@ -60,16 +66,19 @@ interface OrderSummaryProps {
  * @param {ShopperBasketsTypes.Basket} props.basket - The shopping basket containing product items
  * @param {Record<string, ShopperProductsTypes.Product>} [props.productMap] - Optional product details mapping
  * @param {boolean} [props.itemsExpanded] - Whether the accordion should be expanded by default
+ * @param {() => void} [props.onEditCart] - Optional callback for "Edit Cart" button click. If not provided, navigates to '/cart'
  * @returns JSX element representing the cart items summary accordion
  */
 function CartItemsSummary({
     basket,
     productMap = {},
     itemsExpanded = false,
+    onEditCart,
 }: {
     basket: ShopperBasketsTypes.Basket;
     productMap?: Record<string, ShopperProductsTypes.Product>;
     itemsExpanded?: boolean;
+    onEditCart?: () => void;
 }): ReactElement {
     const totalItems = basket?.productItems?.reduce((acc, item) => acc + (item.quantity ?? 0), 0) || 0;
 
@@ -96,9 +105,13 @@ function CartItemsSummary({
                             productMap={productMap}
                             variant="summary"
                         />
-                        <Button variant="link" className="w-full p-0 h-auto">
+                        {/* Edit Cart link: navigates to cart page with optional callback */}
+                        <Link
+                            to="/cart"
+                            onClick={onEditCart}
+                            className={buttonVariants({ variant: 'link', className: 'w-full justify-center' })}>
                             {uiStrings.cart.items.editCart}
-                        </Button>
+                        </Link>
                     </div>
                 </AccordionContent>
             </AccordionItem>
@@ -136,10 +149,10 @@ export default function OrderSummary({
     itemsExpanded = false,
     isEstimate = false,
     productMap = {},
+    onEditCart,
 }: OrderSummaryProps): ReactElement {
     const { removePromoCode, removeFetcher } = usePromoCodeActions(basket?.basketId);
     const { addToast } = useToast();
-
     useEffect(() => {
         if (removeFetcher.data) {
             if (removeFetcher.data.success) {
@@ -161,6 +174,16 @@ export default function OrderSummary({
     const shippingItem = basket.shippingItems?.[0];
     const hasShippingPromos = (shippingItem?.priceAdjustments?.length ?? 0) > 0;
 
+    const renderShippingInfo = () => {
+        if (basket.shippingTotal === 0) {
+            return <span className="text-primary font-medium">{uiStrings.cart.summary.shippingFree}</span>;
+        } else if (typeof basket.shippingTotal === 'number' && basket.shippingTotal > 0) {
+            return <span>{formatCurrency(basket.shippingTotal)}</span>;
+        } else {
+            return <span className="text-muted-foreground">{uiStrings.cart.summary.shippingTbd}</span>;
+        }
+    };
+
     return (
         <Card>
             <CardContent className="p-6">
@@ -174,7 +197,12 @@ export default function OrderSummary({
                     <div className="space-y-4" role="region" aria-labelledby="order-summary-heading">
                         {/* Cart Items Accordion */}
                         {showCartItems && (
-                            <CartItemsSummary basket={basket} productMap={productMap} itemsExpanded={itemsExpanded} />
+                            <CartItemsSummary
+                                basket={basket}
+                                productMap={productMap}
+                                itemsExpanded={itemsExpanded}
+                                onEditCart={onEditCart}
+                            />
                         )}
 
                         {/* Order Summary Details */}
@@ -182,43 +210,45 @@ export default function OrderSummary({
                             {/* Subtotal */}
                             <div className="flex justify-between items-center">
                                 <span className="font-bold">{uiStrings.cart.summary.subtotal}</span>
-                                <span className="font-bold">{formatCurrency(basket?.productSubTotal || 0)}</span>
+                                <span className="font-bold">{formatCurrency(basket?.productSubTotal ?? 0)}</span>
                             </div>
 
                             {/* Order Price Adjustments */}
                             {basket.orderPriceAdjustments?.map((adjustment) => (
                                 <div key={adjustment.priceAdjustmentId} className="flex justify-between items-center">
                                     <span>{adjustment.itemText}</span>
-                                    <span className="text-primary">{formatCurrency(adjustment.price ?? 0)}</span>
+                                    <span className="text-success">{formatCurrency(adjustment.price ?? 0)}</span>
                                 </div>
                             ))}
 
                             {/* Shipping */}
                             <div className="flex justify-between items-center">
                                 <div className="flex items-center">
-                                    <span>{uiStrings.cart.summary.shipping}</span>
+                                    <span>
+                                        {uiStrings.cart.summary.shipping}
+                                        {hasShippingPromos && (
+                                            <span className="ml-1 text-sm text-muted-foreground">
+                                                {uiStrings.cart.summary.shippingPromotionApplied}
+                                            </span>
+                                        )}
+                                    </span>
                                     {hasShippingPromos && (
-                                        <span className="ml-1 text-sm text-muted-foreground">
-                                            {uiStrings.cart.summary.shippingPromotionApplied}
-                                        </span>
+                                        <PromoPopover className="ml-1">
+                                            {shippingItem?.priceAdjustments?.map((adjustment) => (
+                                                <div key={adjustment.priceAdjustmentId} className="text-sm">
+                                                    {adjustment.itemText}
+                                                </div>
+                                            ))}
+                                        </PromoPopover>
                                     )}
                                 </div>
-                                {shippingItem?.priceAdjustments?.some(
-                                    ({ appliedDiscount }) =>
-                                        appliedDiscount?.type === (uiStrings.cart.discount?.type?.free || 'free')
-                                ) ? (
-                                    <span className="text-primary uppercase font-medium">
-                                        {uiStrings.cart.summary.shippingFree}
-                                    </span>
-                                ) : (
-                                    <span>{formatCurrency(basket.shippingTotal || 0)}</span>
-                                )}
+                                {renderShippingInfo()}
                             </div>
 
                             {/* Tax */}
                             <div className="flex justify-between items-center">
                                 <span>{uiStrings.cart.summary.tax}</span>
-                                {basket.taxTotal != null ? (
+                                {typeof basket.taxTotal === 'number' && basket.taxTotal >= 0 ? (
                                     <span>{formatCurrency(basket.taxTotal)}</span>
                                 ) : (
                                     <span className="text-muted-foreground">{uiStrings.cart.summary.taxTbd}</span>

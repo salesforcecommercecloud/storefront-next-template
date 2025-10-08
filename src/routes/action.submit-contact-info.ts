@@ -1,6 +1,6 @@
 import type { ActionFunctionArgs } from 'react-router';
 import { getBasket, updateBasket } from '@/middlewares/basket.client';
-import { extractResponseError } from '@/lib/util';
+import { extractResponseError } from '@/lib/utils';
 import createClient from '@/lib/scapi';
 import { contactInfoSchema, parseContactInfoFromFormData } from '@/lib/checkout-schemas';
 import { customerLookup } from '@/lib/api/customer';

@@ -18,7 +18,7 @@
  * // returns { "Colour": "royal" }
  */
 
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import { type ShopperProductsTypes, type ShopperSearchTypes } from 'commerce-sdk-isomorphic';
 import { findImageGroupBy } from '@/lib/image-groups-utils';
 
 /**
@@ -206,4 +206,91 @@ export function getImagesForColor(
 
     // Return images from the matching group, or fallback to default images
     return imageGroup?.images || [];
+}
+
+/**
+ * Decorated variation attribute with href and swatch image
+ */
+export type DecoratedVariationAttribute = ShopperProductsTypes.VariationAttribute & {
+    values: DecoratedVariationAttributeValue[];
+};
+
+/**
+ * Decorated variation attribute value with href and swatch image
+ */
+export type DecoratedVariationAttributeValue = ShopperProductsTypes.VariationAttributeValue & {
+    href: string;
+    swatch?: ShopperProductsTypes.Image;
+};
+
+/**
+ * Provided a product this function will return the variation attributes decorated with
+ * `href` and `swatch` image for the given attribute values. This allows easier access
+ * when creating components that commonly use this information.
+ *
+ * @param {ShopperProductsTypes.Product} product - The product to decorate attributes for
+ * @param {object} [opts={}] - Options for decoration
+ * @param {string} [opts.swatchViewType='swatch'] - The viewType for the swatch image
+ *
+ * @returns {DecoratedVariationAttribute[]} decoratedVariationAttributes
+ */
+export const getDecoratedVariationAttributes = (
+    product: ShopperSearchTypes.ProductSearchHit,
+    opts: { swatchViewType?: string } = {}
+): DecoratedVariationAttribute[] => {
+    const { swatchViewType = 'swatch' } = opts;
+
+    if (!product?.variationAttributes) {
+        return [];
+    }
+
+    return product.variationAttributes.map((variationAttribute) => ({
+        ...variationAttribute,
+        values: (variationAttribute.values || []).map((value) => {
+            // Create URL search params for this variation value
+            const searchParams = new URLSearchParams();
+            if (variationAttribute.id && value.value) {
+                searchParams.set(variationAttribute.id, value.value);
+            }
+
+            // Build href for this variation
+            const href = `/product/${product.productId}?${searchParams.toString()}`;
+
+            // Find swatch image for this variation value
+            const swatchImageGroup = findImageGroupBy(product.imageGroups || [], {
+                viewType: swatchViewType,
+                selectedVariationAttributes: {
+                    [variationAttribute.id || '']: value.value,
+                },
+            });
+
+            const swatch = swatchImageGroup?.images?.[0];
+
+            return {
+                ...value,
+                href,
+                swatch,
+            };
+        }),
+    }));
+};
+
+/**
+ * Determines if a product is a product set.
+ * A product set is a collection of related products that can be purchased together.
+ * @param product - The product to check
+ * @returns true if the product is a product set, false otherwise
+ */
+export function isProductSet(product: ShopperProductsTypes.Product): boolean {
+    return Boolean(product?.type?.set);
+}
+
+/**
+ * Determines if a product is a product bundle.
+ * A product bundle is a group of products sold together as a single unit.
+ * @param product - The product to check
+ * @returns true if the product is a product bundle, false otherwise
+ */
+export function isProductBundle(product: ShopperProductsTypes.Product): boolean {
+    return Boolean(product?.type?.bundle);
 }

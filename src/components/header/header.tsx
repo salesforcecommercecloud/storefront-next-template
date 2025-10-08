@@ -19,7 +19,7 @@ export default function Header({ children }: PropsWithChildren): ReactElement {
                         <div className="text-xl font-bold text-primary-600">{uiStrings.header.brand}</div>
                     </Link>
 
-                    {/* Desktop Navigation */}
+                    {/* Mega Menu */}
                     {children}
 
                     {/* Search, User Actions, Cart */}

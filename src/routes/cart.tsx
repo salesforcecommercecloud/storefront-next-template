@@ -45,7 +45,6 @@ async function fetchPromotionsForBasket(
     }
     // Extract all unique promotion IDs from basket items
     const promotionIdsSet = new Set<string>();
-
     productItems.forEach((item) => {
         if (item.priceAdjustments?.length) {
             item.priceAdjustments.forEach((adjustment) => {

@@ -2,7 +2,7 @@ import type { ReactElement } from 'react';
 import { Link } from 'react-router';
 import { SiFacebook, SiInstagram, SiX, SiYoutube } from '@icons-pack/react-simple-icons';
 import Signup from './signup';
-import uiStrings from '../../temp-ui-string';
+import uiStrings from '@/temp-ui-string';
 // @sfdc-extension-line SFDC_EXT_STORE_LOCATOR
 import uiStringsSL from '@/extensions/store-locator/temp-ui-string-store-locator';
 // @sfdc-extension-line SFDC_EXT_INTERNAL_THEME_SWITCHER

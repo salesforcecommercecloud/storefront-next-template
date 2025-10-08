@@ -11,7 +11,7 @@ import type { ClientActionFunctionArgs } from 'react-router';
 import { getBasket, updateBasket } from '@/middlewares/basket.client';
 
 // Utils
-import { extractResponseError } from '@/lib/util';
+import { extractResponseError } from '@/lib/utils';
 import createClient from '@/lib/scapi';
 import { cartItemQuantityUpdateSchema, parseCartItemQuantityUpdateFromFormData } from '@/lib/checkout-schemas';
 import {

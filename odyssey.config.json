@@ -1,0 +1,204 @@
+{
+    "metadata": {
+      "projectName": "Odyssey Retail App",
+      "projectSlug": "odyssey-retail-app",
+      "version": "1.0.0",
+      "generatedAt": "2025-01-26T00:00:00Z"
+    },
+    "mrt": {
+      "defaultMrtProject": "",
+      "defaultMrtTarget": "",
+      "ssrOnly": [
+        "loader.js",
+        "ssr.js",
+        "!static/**/*"
+      ],
+      "ssrShared": [
+        "static/**/*",
+        "**/*.css",
+        "**/*.png",
+        "**/*.jpg",
+        "**/*.jpeg",
+        "**/*.gif",
+        "**/*.svg",
+        "**/*.ico",
+        "**/*.woff",
+        "**/*.woff2",
+        "**/*.ttf",
+        "**/*.eot"
+      ],
+      "ssrParameters": {
+        "ssrFunctionNodeVersion": "22.x"
+      }
+    },
+    "commerce": {
+      "api": {
+        "clientId": "c9c45bfd-0ed3-4aa2-9971-40f88962b836",
+        "organizationId": "f_ecom_zzrf_001",
+        "siteId": "RefArchGlobal",
+        "shortCode": "kv7kzm78",
+        "proxy": "/mobify/proxy/api",
+        "callback": "/callback",
+        "privateKeyEnabled": false
+      }
+    },
+    "site": {
+      "locale": "en-US",
+      "currency": "USD",
+      "features": {
+        "passwordlessLogin": false,
+        "socialLogin": {
+          "enabled": true,
+          "providers": ["Apple", "Google"]
+        },
+        "guestCheckout": true
+      }
+    },
+    "ui": {
+      "branding": {
+        "name": "Performer",
+        "logoAlt": "Home"
+      },
+      "productListing": {
+        "productsPerPage": 24,
+        "enableInfiniteScroll": false,
+        "sortOptions": ["relevance", "price-asc", "price-desc", "name-asc"],
+        "enableQuickView": true
+      },
+      "cart": {
+        "quantityUpdateDebounce": 750,
+        "enableRemoveConfirmation": true,
+        "maxQuantityPerItem": 999,
+        "enableSaveForLater": false,
+        "removeAction": "/action/remove-cart-item"
+      },
+      "search": {
+        "placeholder": "Search",
+        "enableSearchSuggestions": true,
+        "maxSuggestions": 8,
+        "enableRecentSearches": true
+      },
+      "badges": [
+        {
+          "propertyName": "c_isNew",
+          "label": "New",
+          "color": "green",
+          "priority": 1
+        },
+        {
+          "propertyName": "c_isSale",
+          "label": "Sale",
+          "color": "orange",
+          "priority": 2
+        },
+        {
+          "propertyName": "c_isLimited",
+          "label": "Limited",
+          "color": "purple",
+          "priority": 3
+        },
+        {
+          "propertyName": "c_isExclusive",
+          "label": "Exclusive",
+          "color": "blue",
+          "priority": 4
+        },
+        {
+          "propertyName": "c_isTrending",
+          "label": "Trending",
+          "color": "pink",
+          "priority": 5
+        },
+        {
+          "propertyName": "c_isBestSeller",
+          "label": "Best Seller",
+          "color": "yellow",
+          "priority": 6
+        },
+        {
+          "propertyName": "c_isOutOfStock",
+          "label": "Out of Stock",
+          "color": "red",
+          "priority": 7
+        }
+      ]
+    },
+    "strings": {
+      "actionCard": {
+        "edit": "Edit",
+        "remove": "Remove"
+      },
+      "common": {
+        "loading": "Loading",
+        "product": "the product"
+      },
+      "search": {
+        "results": "Search Results for"
+      },
+      "removeItem": {
+        "success": "Item removed successfully",
+        "failed": "Failed to remove item",
+        "title": "Remove item",
+        "button": "Remove",
+        "removing": "Removing...",
+        "confirmTitle": "Confirm Remove Item",
+        "cancelButton": "No, keep item",
+        "keepItemButton": "Keep Item",
+        "confirmAction": "Yes, remove item",
+        "keepItemAriaLabel": "Keep Item - Keep this item in your cart",
+        "removeItemAriaLabel": "Yes, remove item - Remove this item from your cart"
+      },
+      "editItem": {
+        "title": "Edit Cart Item"
+      },
+      "header": {
+        "brand": "Performer",
+        "logoAlt": "Home",
+        "searchPlaceholder": "Search",
+        "welcomeBack": "Welcome back!",
+        "signIn": "Sign In",
+        "signOut": "Sign Out",
+        "signingOut": "Signing out...",
+        "cartTitle": "Your Shopping Cart",
+        "checkout": "Checkout",
+        "continueShopping": "Continue Shopping"
+      },
+      "login": {
+        "title": "Sign in to your account",
+        "subtitle": "Enter your credentials to access your account",
+        "continueWithProvider": "Continue with {provider}",
+        "socialOrContinueWith": "or continue with",
+        "checkEmailTitle": "Check Your Email",
+        "checkEmailDescription": "We've sent a login link to {email}. Click the link to sign in.",
+        "backToLogin": "Back to Login",
+        "emailLabel": "Email address",
+        "emailPlaceholder": "Enter your email",
+        "passwordLabel": "Password",
+        "sendingLoginLink": "Sending login link...",
+        "signingIn": "Signing in...",
+        "sendLoginLink": "Send Login Link",
+        "signIn": "Sign In"
+      }
+    },
+    "performance": {
+      "images": {
+        "quality": 80,
+        "formats": ["webp", "jpeg"],
+        "lazyLoading": true
+      },
+      "caching": {
+        "apiCacheTtl": 300,
+        "staticAssetCacheTtl": 31536000
+      },
+      "metrics": {
+        "serverPerformanceMetricsEnabled": true,
+        "serverTimingHeaderEnabled": false,
+        "clientPerformanceMetricsEnabled": true
+      }
+    },
+    "development": {
+      "enableDevtools": true,
+      "hotReload": true,
+      "strictMode": true
+    }
+}

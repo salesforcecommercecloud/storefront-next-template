@@ -1,0 +1,24 @@
+{
+    "extensions": {
+        "SFDC_EXT_STORE_LOCATOR": {
+            "name": "Store Locator",
+            "description": "Store Locator allows a shopper to find the closest store to them.",
+            "installationInstructions": "instructions/install-store-locator.mdc",
+            "uninstallationInstructions": "instructions/uninstall-store-locator.mdc"
+        },
+        "SFDC_EXT_SOCIAL_LOGIN": {
+            "name": "Social Login",
+            "description": "Social login allows a shopper to sign in with their social media account."
+        },
+        "SFDC_EXT_WISHLIST": {
+            "name": "Wishlist",
+            "description": "Wishlist allows a shopper to add products to their wishlist."
+        },
+        "SFDC_EXT_INTERNAL_THEME_SWITCHER": {
+            "name": "Theme Switcher",
+            "description": "Theme Switcher allows a developer to switch the theme of the store.",
+            "installationInstructions": "instructions/install-theme-switcher.mdc",
+            "uninstallationInstructions": "instructions/uninstall-theme-switcher.mdc"
+        }
+    }
+}

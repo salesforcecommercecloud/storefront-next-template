@@ -1,9 +1,10 @@
-'use client';
-
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
 import { ProductImageContainer } from '../product-image';
-import ProductAttributeSelector from '../product-attribute-selector';
+import { SwatchGroup, Swatch } from '@/components/swatch-group';
+import { getDecoratedVariationAttributes } from '@/lib/product-utils';
+
+const PRODUCT_TILE_SELECTABLE_ATTRIBUTE_ID = 'color';
 
 interface ProductTileProps {
     product: ShopperSearchTypes.ProductSearchHit;
@@ -11,75 +12,68 @@ interface ProductTileProps {
     className?: string;
 }
 
-/**
- * Extracts the default color value from product image groups
- * @param product - The product to extract default color from
- * @returns The default color value or null if not found
- */
-const getDefaultColor = (product: ShopperSearchTypes.ProductSearchHit): string | null => {
-    if (!product.imageGroups) return null;
-
-    // Find swatch image group
-    const swatchGroup = product.imageGroups.find((group) => group.viewType === 'swatch');
-    if (!swatchGroup?.images?.length) return null;
-
-    // Get the first swatch's color value
-    if (swatchGroup.variationAttributes) {
-        for (const attr of swatchGroup.variationAttributes) {
-            if (attr.id === 'color' && attr.values?.length) {
-                return attr.values[0].value;
-            }
-        }
-    }
-
-    return null;
-};
-
 const ProductTile = ({ product, maxSwatches = 4, className }: ProductTileProps) => {
-    const defaultColor = useMemo(() => getDefaultColor(product), [product]);
+    const isMasterProd = !!product?.variants;
+    const initialVariationValue =
+        isMasterProd && !!product?.representedProduct
+            ? product?.variants?.find((variant) => variant?.productId == product?.representedProduct?.id)
+                  ?.variationValues?.[PRODUCT_TILE_SELECTABLE_ATTRIBUTE_ID]
+            : undefined;
+    const [selectedAttributeValue, setSelectedAttributeValue] = useState(initialVariationValue);
+    const variationAttributes = useMemo(() => getDecoratedVariationAttributes(product), [product]);
 
-    const [currentDisplayColor, setCurrentDisplayColor] = useState<string | null>(defaultColor);
-
-    // Convert product variation attributes to format expected by ProductAttributeSelector
-    const colorAttributes = useMemo(() => {
-        if (!product.variationAttributes) return [];
-
-        return product.variationAttributes
-            .filter((attr) => attr.id === 'color') // Only show color for PLP
-            .map((attr) => ({
-                id: attr.id,
-                name: attr.name || 'Color',
-                values: (attr.values || []).map((value) => ({
-                    value: value.value,
-                    name: value.name || String(value.value),
-                    orderable: value.orderable,
-                })),
-            }));
-    }, [product]);
-
-    const handleAttributeChange = useCallback((attributeId: string, value: string) => {
-        if (attributeId === 'color') {
-            setCurrentDisplayColor(value);
+    // Detect if we're on desktop (≥1024px) to determine swatch interaction mode
+    const swatchMode = useMemo(() => {
+        if (typeof window === 'undefined') {
+            return 'click'; // Default to click on server
         }
+        const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
+        return isDesktop ? 'hover' : 'click';
     }, []);
 
     return (
         <div className={className}>
             {/* Product Image Container with color-aware image */}
-            <ProductImageContainer product={product} selectedColorValue={currentDisplayColor} />
+            <ProductImageContainer product={product} selectedColorValue={selectedAttributeValue} />
 
-            {/* Color Attribute Selector - Only show if color attributes exist */}
-            {colorAttributes.length > 0 && (
-                <ProductAttributeSelector
-                    product={product}
-                    attributes={colorAttributes}
-                    selected={{ color: currentDisplayColor || '' }}
-                    onAttributeChange={handleAttributeChange}
-                    maxSwatches={maxSwatches}
-                    swatchSize="sm"
-                    interactionMode="hover"
-                />
-            )}
+            {/* Color Swatch Group - Render color attributes if they exist */}
+            {variationAttributes
+                ?.filter(({ id }) => PRODUCT_TILE_SELECTABLE_ATTRIBUTE_ID === id)
+                ?.map(({ id, name, values }) => (
+                    <SwatchGroup
+                        ariaLabel={name}
+                        key={id}
+                        value={selectedAttributeValue}
+                        handleChange={(value: string) => {
+                            setSelectedAttributeValue(value);
+                        }}>
+                        {values?.slice(0, maxSwatches).map(({ name: valueName, swatch, value }) => {
+                            const content = swatch ? (
+                                <div
+                                    className="bg-no-repeat bg-cover bg-center rounded-full min-w-6 min-h-6 w-ful h-full"
+                                    style={{
+                                        backgroundColor: valueName?.toLowerCase(),
+                                        backgroundImage: `url(${swatch?.disBaseLink || swatch.link})`,
+                                    }}
+                                />
+                            ) : (
+                                <span className="text-xs font-medium truncate">{valueName}</span>
+                            );
+
+                            return (
+                                <Swatch
+                                    key={value}
+                                    value={value}
+                                    name={valueName}
+                                    shape="circle"
+                                    isFocusable={true}
+                                    mode={swatchMode}>
+                                    {content}
+                                </Swatch>
+                            );
+                        })}
+                    </SwatchGroup>
+                ))}
         </div>
     );
 };

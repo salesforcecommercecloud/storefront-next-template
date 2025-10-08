@@ -88,10 +88,7 @@ export function createPage<TLoaderData = any>(config: {
     return function PageComponent(props: RouteComponentProps<TLoaderData> = {} as RouteComponentProps<TLoaderData>) {
         const loaderData = props.loaderData;
         const location = useLocation();
-
-        // Use provided getPageKey or default to pathname + search
-        const pageKey = getPageKey?.(loaderData) ?? `${location.pathname}?${location.search}`;
-
+        const pageKey = getPageKey?.(loaderData) ?? `${location.pathname}${location.search}${location.hash}`;
         const content = <ComponentWithSuspense {...(props as any)} />;
 
         if (pageKey) {

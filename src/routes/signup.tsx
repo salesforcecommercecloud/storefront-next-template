@@ -1,16 +1,24 @@
 import type { ReactElement } from 'react';
-import { redirect, Link, Form, type LoaderFunctionArgs, type ActionFunctionArgs } from 'react-router';
+import {
+    redirect,
+    Link,
+    Form,
+    type LoaderFunctionArgs,
+    type ActionFunctionArgs,
+    type ClientActionFunctionArgs,
+} from 'react-router';
 import { Card } from '@/components/ui/card';
 import uiStrings from '@/temp-ui-string';
 
 // services
 import { registerCustomer } from '@/lib/api/auth/register';
+import { updateAuth } from '@/middlewares/auth.client';
 
 // components
 import { SignupForm } from '@/components/signup/password-requirements';
 
 // utils
-import { isPasswordValid } from '@/lib/util';
+import { isPasswordValid } from '@/lib/utils';
 import { flashAuth, getAuth } from '@/middlewares/auth.server';
 
 type SignupLoaderData = {
@@ -28,31 +36,35 @@ export function loader({ context }: LoaderFunctionArgs) {
     };
 }
 
-// Server action required for authentication - user registration must be handled server-side
-// for security and to properly integrate with SFCC's authentication system
+/**
+ * This server action is required for authentication, because registration must be handled server-side for security reasons,
+ * and proper integration with session management and Salesforce Commerce Cloud's authentication system. It operates
+ * together with the client action to ensure a smooth signup process.
+ */
 // eslint-disable-next-line react-refresh/only-export-components, custom/no-server-actions
-export async function action({ request, context }: ActionFunctionArgs) {
+export async function action({ request, context }: ActionFunctionArgs): Promise<[string, ReturnType<typeof getAuth>]> {
     const formData = await request.formData();
     const firstName = formData.get('firstName')?.toString();
     const lastName = formData.get('lastName')?.toString();
     const email = formData.get('email')?.toString();
     const password = formData.get('password')?.toString();
     const confirmPassword = formData.get('confirmPassword')?.toString();
+    const resolve = (target: string): [string, ReturnType<typeof getAuth>] => [target, getAuth(context)];
 
     // Validation
     if (!firstName || !lastName || !email || !password || !confirmPassword) {
         flashAuth(context, uiStrings.signup.allFieldsRequired);
-        return redirect('/signup');
+        return resolve('/signup');
     }
 
     if (password !== confirmPassword) {
         flashAuth(context, uiStrings.signup.passwordsDoNotMatch);
-        return redirect('/signup');
+        return resolve('/signup');
     }
 
     if (!isPasswordValid(password)) {
         flashAuth(context, uiStrings.signup.passwordNotSecure);
-        return redirect('/signup');
+        return resolve('/signup');
     }
 
     // Register the customer
@@ -68,12 +80,25 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
     if (result.success) {
         // Registration and auto-login successful - redirect to home
-        return redirect('/');
+        return resolve('/');
     }
 
     // Registration failed - redirect back to signup with error
-    return redirect('/signup');
+    return resolve('/signup');
 }
+
+/**
+ * This client action operates together with the server action to ensure a smooth signup process. It ensures that the
+ * session gets updated on both server and client side, and that the user is redirected to the correct route afterward.
+ */
+// eslint-disable-next-line react-refresh/only-export-components
+export async function clientAction({ context, serverAction }: ClientActionFunctionArgs) {
+    const [target, session] = await serverAction<[string, ReturnType<typeof getAuth>]>();
+    updateAuth(context, () => session);
+    return redirect(target);
+}
+
+clientAction.hydrate = true as const;
 
 export default function Signup({ loaderData }: { loaderData: SignupLoaderData }): ReactElement {
     const { error } = loaderData;

@@ -14,7 +14,7 @@ export const fetchSearchProducts = (
         expand?: ShopperSearchTypes.ProductSearchExpandEnum[];
         refine?: string[];
         select?: string;
-        currency?: string;
+        currency?: ShopperSearchTypes.CurrencyCode;
         allImages?: boolean;
         allVariationProperties?: boolean;
         perPricebook?: boolean;

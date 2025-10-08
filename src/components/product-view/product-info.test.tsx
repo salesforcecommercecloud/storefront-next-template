@@ -7,8 +7,7 @@
 
 // Testing libraries
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { test, vi } from 'vitest';
+import { describe, test, expect } from 'vitest';
 // Commerce SDK
 import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
 // React Router
@@ -131,21 +130,29 @@ describe('ProductInfo', () => {
         test('should render variant selector for non-color attributes', () => {
             renderProductInfo({ product: mockProduct });
 
-            expect(screen.getByText('Size')).toBeInTheDocument();
+            expect(screen.getByText(new RegExp('Size'))).toBeInTheDocument();
         });
 
-        test('should handle color selection via swatches', async () => {
-            const mockOnColorChange = vi.fn();
-            const user = userEvent.setup();
+        test('should generate correct URLs for swatch selection', () => {
+            renderProductInfo({ product: mockProduct });
 
-            renderProductInfo({ product: mockProduct, onColorChange: mockOnColorChange });
-
-            // Find swatch images by alt text (the actual alt text is just the color name)
-            const redSwatch = screen.getByAltText('Red');
+            // Find color swatches and verify their URLs contain the correct search params
+            const redSwatch = screen.getByLabelText('Red');
             expect(redSwatch).toBeInTheDocument();
+            expect(redSwatch).toHaveAttribute('href', '/product/test-product?color=red');
 
-            await user.click(redSwatch);
-            expect(mockOnColorChange).toHaveBeenCalledWith('red');
+            const blueSwatch = screen.getByLabelText('Blue');
+            expect(blueSwatch).toBeInTheDocument();
+            expect(blueSwatch).toHaveAttribute('href', '/product/test-product?color=blue');
+
+            // Find size swatches and verify their URLs contain the correct search params
+            const smallSwatch = screen.getByLabelText('Small');
+            expect(smallSwatch).toBeInTheDocument();
+            expect(smallSwatch).toHaveAttribute('href', '/product/test-product?size=S');
+
+            const mediumSwatch = screen.getByLabelText('Medium');
+            expect(mediumSwatch).toBeInTheDocument();
+            expect(mediumSwatch).toHaveAttribute('href', '/product/test-product?size=M');
         });
     });
 
@@ -183,6 +190,78 @@ describe('ProductInfo', () => {
             // Without selecting variants, the message should appear
             expect(screen.getByText(uiStrings.product.selectAllOptions)).toBeInTheDocument();
         });
+
+        test('should display in-stock inventory message when product has stock', () => {
+            const inStockProduct = {
+                ...mockProduct,
+                inventory: {
+                    ats: 10,
+                    orderable: true,
+                    id: 'test-inventory',
+                    backorderable: false,
+                    preorderable: false,
+                },
+                variationAttributes: [],
+            };
+
+            renderProductInfo({ product: inStockProduct });
+
+            expect(screen.getByText(uiStrings.product.inStock)).toBeInTheDocument();
+        });
+
+        test('should display pre-order inventory message when product is preorderable', () => {
+            const preOrderProduct = {
+                ...mockProduct,
+                inventory: {
+                    ats: 0,
+                    orderable: true,
+                    id: 'test-inventory',
+                    preorderable: true,
+                    backorderable: false,
+                },
+                variationAttributes: [],
+            };
+
+            renderProductInfo({ product: preOrderProduct });
+
+            expect(screen.getByText(uiStrings.product.preOrder)).toBeInTheDocument();
+        });
+
+        test('should display back-order inventory message when product is backorderable', () => {
+            const backOrderProduct = {
+                ...mockProduct,
+                inventory: {
+                    ats: 0,
+                    orderable: true,
+                    id: 'test-inventory',
+                    backorderable: true,
+                    preorderable: false,
+                },
+                variationAttributes: [],
+            };
+
+            renderProductInfo({ product: backOrderProduct });
+
+            expect(screen.getByText(uiStrings.product.backOrder)).toBeInTheDocument();
+        });
+
+        test('should display out-of-stock inventory message when product is not orderable', () => {
+            const outOfStockProduct = {
+                ...mockProduct,
+                inventory: {
+                    ats: 0,
+                    orderable: false,
+                    id: 'test-inventory',
+                    backorderable: false,
+                    preorderable: false,
+                },
+                variationAttributes: [],
+            };
+
+            renderProductInfo({ product: outOfStockProduct });
+
+            expect(screen.getByText(uiStrings.product.outOfStockLabel)).toBeInTheDocument();
+        });
     });
 
     describe('quantity selector', () => {
@@ -208,13 +287,15 @@ describe('ProductInfo', () => {
         });
 
         test('should not render quantity selector for product sets', () => {
-            renderProductInfo({ product: mockProduct, isProductASet: true });
+            const productSet = { ...mockProduct, type: { set: true } };
+            renderProductInfo({ product: productSet });
 
             expect(screen.queryByLabelText(uiStrings.quantitySelector.quantity)).not.toBeInTheDocument();
         });
 
         test('should not render quantity selector for product bundles', () => {
-            renderProductInfo({ product: mockProduct, isProductABundle: true });
+            const productBundle = { ...mockProduct, type: { bundle: true } };
+            renderProductInfo({ product: productBundle });
 
             expect(screen.queryByLabelText(uiStrings.quantitySelector.quantity)).not.toBeInTheDocument();
         });

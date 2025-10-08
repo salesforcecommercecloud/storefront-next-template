@@ -1,4 +1,4 @@
-import { type PropsWithChildren, useRef } from 'react';
+import { type PropsWithChildren, Suspense, useRef } from 'react';
 import favicon from '/favicon.ico';
 import {
     type ClientLoaderFunction,
@@ -8,10 +8,13 @@ import {
     type LoaderFunction,
     type LoaderFunctionArgs,
     Meta,
+    type MiddlewareFunction,
     Outlet,
     Scripts,
     ScrollRestoration,
-    type unstable_MiddlewareFunction,
+    type UIMatch,
+    useLocation,
+    useMatches,
 } from 'react-router';
 import type { ShopperBasketsTypes, ShopperProductsTypes } from 'commerce-sdk-isomorphic';
 // @sfdc-extension-line SFDC_EXT_STORE_LOCATOR
@@ -19,22 +22,27 @@ import StoreLocatorProvider from '@/extensions/store-locator/providers/store-loc
 import authMiddlewareServer, { getAuth as getAuthServer } from '@/middlewares/auth.server';
 import authMiddlewareClient, { getAuth as getAuthClient } from '@/middlewares/auth.client';
 import basketMiddlewareClient, { getBasket } from '@/middlewares/basket.client';
+import {
+    performanceMetricsMiddlewareServer,
+    performanceMetricsMiddlewareClient,
+} from '@/middlewares/performance-metrics';
 import AuthProvider from '@/providers/auth';
 import BasketProvider from '@/providers/basket';
 import type { SessionData } from '@/lib/api/types';
 import createClient from '@/lib/scapi';
 import Header from '@/components/header';
-import NavigationDesktop from '@/components/navigation/desktop';
+import CategoryNavigationMenuMega from '@/components/navigation-menu-mega';
 import Footer from '@/components/footer';
 import { Toaster } from '@/components/toast';
 import Loading from '@/components/loading';
 import './app.css';
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const unstable_middleware: unstable_MiddlewareFunction<Response>[] = [authMiddlewareServer];
+export const middleware: MiddlewareFunction<Response>[] = [performanceMetricsMiddlewareServer, authMiddlewareServer];
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const unstable_clientMiddleware: unstable_MiddlewareFunction<void>[] = [
+export const clientMiddleware: MiddlewareFunction<void>[] = [
+    performanceMetricsMiddlewareClient,
     authMiddlewareClient,
     basketMiddlewareClient,
 ];
@@ -42,7 +50,7 @@ export const unstable_clientMiddleware: unstable_MiddlewareFunction<void>[] = [
 const getCategoryData = (
     client: ReturnType<typeof createClient>,
     id: string,
-    levels: 0 | 1 | 2
+    levels: ShopperProductsTypes.GetCategoryLevelsEnum
 ): Promise<ShopperProductsTypes.Category> =>
     client.ShopperProducts.getCategory({
         parameters: {
@@ -185,16 +193,29 @@ export default function App({
         refSubs.current = subs;
     }
 
+    // We're using the location information to force our outlet-level `<Suspense/>` boundary to re-mount on every
+    // navigation, so every time it's a new boundary without a resolved state. Because otherwise, once resolved,
+    // React's default behavior would prevent the boundary from going back to pending state. To be compatible with
+    // the `createPage` higher order utility component, we use the `pageKey` from the loader data if available,
+    // otherwise we simply fall back to information from the current location.
+    const location = useLocation();
+    const match = useMatches().at(-1) as UIMatch<{ pageKey?: string }>;
+    const pageKey = match?.loaderData?.pageKey ?? `${location.pathname}${location.search}${location.hash}`;
+
     return (
         <AuthProvider value={auth?.()}>
             <BasketProvider value={basket?.()}>
                 {/* @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */}
                 <StoreLocatorProvider>
                     <Header>
-                        <NavigationDesktop resolve={refRoot.current} resolveSubs={refSubs.current} />
+                        <CategoryNavigationMenuMega resolve={refRoot.current} defer={refSubs.current} />
                     </Header>
                     <main className="flex-grow pt-8">
-                        <Outlet />
+                        {/* Outlet-level `<Suspense/>` boundary to contain pending promises. */}
+                        {/* This at least prevents suspended components without a suggested local `<Suspense/>` boundary from further affecting global layout sections. */}
+                        <Suspense key={pageKey} fallback={null}>
+                            <Outlet />
+                        </Suspense>
                     </main>
                     <Footer />
                     {/* @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */}

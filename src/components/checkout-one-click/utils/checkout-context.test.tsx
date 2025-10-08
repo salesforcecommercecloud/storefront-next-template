@@ -52,6 +52,7 @@ const mockBasketWithAllInfo = {
 
 const mockCustomerProfile = {
     customer: {
+        login: 'test@example.com', // SFCC uses 'login' for email
         email: 'test@example.com',
         firstName: 'John',
         lastName: 'Doe',
@@ -186,65 +187,63 @@ describe('Checkout Context Functions', () => {
 
     describe('computeFinalStepForReturningCustomer', () => {
         it('should return REVIEW when all profile data is complete', () => {
+            // With complete customer profile (email, addresses, payment methods)
             const result = computeFinalStepForReturningCustomer(mockBasketWithAllInfo, mockCustomerProfile);
             expect(result).toBe(CHECKOUT_STEPS.REVIEW_ORDER);
         });
 
-        it('should return PAYMENT when payment info is missing', () => {
+        it('should return PAYMENT when payment info is missing from profile', () => {
+            // Customer profile has email and addresses but no saved payment methods
             const profileWithoutPayment = {
                 ...mockCustomerProfile,
                 paymentInstruments: [],
             };
-            const basketWithoutPayment = {
-                ...mockBasketWithAllInfo,
-                paymentInstruments: [],
-            };
-            const result = computeFinalStepForReturningCustomer(basketWithoutPayment, profileWithoutPayment);
+            // Note: Basket state doesn't matter, only profile matters for returning customers
+            const result = computeFinalStepForReturningCustomer(mockBasketWithAllInfo, profileWithoutPayment);
             expect(result).toBe(CHECKOUT_STEPS.PAYMENT);
         });
 
-        it('should return SHIPPING_OPTIONS when shipping method is missing', () => {
-            const basketWithoutShipping = {
-                ...mockBasketWithAllInfo,
-                shipments: [
-                    {
-                        shippingAddress: {
-                            firstName: 'John',
-                            lastName: 'Doe',
-                            address1: '123 Main St',
-                        },
-                        // No shippingMethod
-                    },
-                ],
+        it('should return SHIPPING_ADDRESS when addresses are missing from profile', () => {
+            // Customer profile has email but no saved addresses
+            const profileWithoutAddresses = {
+                ...mockCustomerProfile,
+                addresses: [],
             };
-            const result = computeFinalStepForReturningCustomer(basketWithoutShipping, mockCustomerProfile);
-            expect(result).toBe(CHECKOUT_STEPS.SHIPPING_OPTIONS);
-        });
-
-        it('should return SHIPPING_ADDRESS when shipping address is missing', () => {
-            const basketWithoutAddress = {
-                customerInfo: { email: 'test@example.com' },
-                shipments: [],
-            };
-            const result = computeFinalStepForReturningCustomer(basketWithoutAddress, mockCustomerProfile);
+            // Note: Basket state doesn't matter, only profile matters for returning customers
+            const result = computeFinalStepForReturningCustomer(mockBasketWithAllInfo, profileWithoutAddresses);
             expect(result).toBe(CHECKOUT_STEPS.SHIPPING_ADDRESS);
         });
 
-        it('should return CONTACT_INFO when customer info is missing', () => {
-            const basketWithoutCustomer = {};
-            const result = computeFinalStepForReturningCustomer(basketWithoutCustomer, mockCustomerProfile);
+        it('should return SHIPPING_ADDRESS when shipping address is missing from profile', () => {
+            // Customer profile has no addresses
+            const profileWithoutAddress = {
+                ...mockCustomerProfile,
+                addresses: [],
+            };
+            const result = computeFinalStepForReturningCustomer(mockBasketWithAllInfo, profileWithoutAddress);
+            expect(result).toBe(CHECKOUT_STEPS.SHIPPING_ADDRESS);
+        });
+
+        it('should return CONTACT_INFO when customer email is missing from profile', () => {
+            // Customer profile has no email (shouldn't happen for registered users, but edge case)
+            const profileWithoutEmail = {
+                ...mockCustomerProfile,
+                customer: {},
+            };
+            const result = computeFinalStepForReturningCustomer(mockBasketWithAllInfo, profileWithoutEmail);
             expect(result).toBe(CHECKOUT_STEPS.CONTACT_INFO);
         });
 
-        it('should handle customer profile with minimal data', () => {
+        it('should return SHIPPING_ADDRESS for customer profile with minimal data', () => {
+            // Customer has email but no addresses or payment instruments
             const minimalProfile = {
-                customer: { email: 'test@example.com' },
+                customer: { login: 'test@example.com' },
                 addresses: [],
                 paymentInstruments: [],
             };
+            // Should go to SHIPPING_ADDRESS because profile has no addresses
             const result = computeFinalStepForReturningCustomer(mockBasketWithAllInfo, minimalProfile);
-            // Should return REVIEW_ORDER because basket has all required info including payment
-            expect(result).toBe(CHECKOUT_STEPS.REVIEW_ORDER);
+            expect(result).toBe(CHECKOUT_STEPS.SHIPPING_ADDRESS);
         });
     });
 });

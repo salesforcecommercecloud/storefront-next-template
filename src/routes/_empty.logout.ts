@@ -1,6 +1,7 @@
 import { type ActionFunctionArgs, type ClientActionFunctionArgs, redirect } from 'react-router';
 import { destroyAuth as destroyAuthServer, getAuth } from '@/middlewares/auth.server';
 import { destroyAuth as destroyAuthClient } from '@/middlewares/auth.client';
+import { destroyBasket } from '@/middlewares/basket.client';
 import createClient from '@/lib/scapi';
 
 /**
@@ -29,11 +30,14 @@ export async function action({ context }: ActionFunctionArgs) {
 
 /**
  * This client action operates together with the server action to ensure a smooth logout process. It ensures that the
- * session gets destroyed on both server and client side, and that the user is redirected to the home page afterward.
+ * session gets destroyed on both server and client side, clears the basket to prevent customer mismatch errors,
+ * and redirects the user to the home page afterward.
  */
 export async function clientAction({ context, serverAction }: ClientActionFunctionArgs) {
     await serverAction();
     destroyAuthClient(context);
+    destroyBasket(context);
+
     return redirect('/');
 }
 

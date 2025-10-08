@@ -1,107 +1,113 @@
-import { use, type ReactElement } from 'react';
-import type { ClientLoaderFunctionArgs } from 'react-router';
-import { getBasket } from '@/middlewares/basket.client';
-import { getShippingMethodsForShipment } from '@/lib/api/shipping-methods';
-import { getAuth as getAuthClient } from '@/middlewares/auth.client';
-import { getCustomerProfileForCheckout, isRegisteredCustomer } from '@/lib/api/customer';
+import { type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from 'react-router';
+import { use, useMemo } from 'react';
+import { getAuth as getAuthServer } from '@/middlewares/auth.server';
 import {
-    initializeBasketForReturningCustomer,
-    shouldPrefillBasket,
-} from '@/components/checkout-one-click/utils/checkout-utils';
-import createPage, { type RouteComponentProps } from '@/components/create-page';
+    getServerCustomerProfileData,
+    getServerShippingMethodsData,
+    clientLoader as getClientLoaderData,
+    type CheckoutPageData,
+} from '@/lib/checkout-loaders';
+import { createPage, type RouteComponentProps } from '@/components/create-page';
 import CheckoutFormPage from '@/components/checkout-one-click/checkout-form-page';
 import CheckoutOneClickProvider from '@/components/checkout-one-click/utils/checkout-context';
+import { CheckoutErrorBoundary } from '@/components/checkout-error-boundary';
+import { Skeleton } from '@/components/ui/skeleton';
 import Loading from '@/components/loading';
-import type { ShopperBasketsTypes, ShopperCustomersTypes } from 'commerce-sdk-isomorphic';
-import type { CustomerProfile } from '@/components/checkout-one-click/utils/checkout-context-types';
 
 /**
- * Data structure returned by checkout loader functions
- * Contains promises that are resolved in the main component
+ * Server-side loader function for checkout route
+ *
+ * This function runs on the server during SSR and prepares checkout data:
+ * - Uses server middleware for authenticated data access
+ * - Handles errors gracefully with fallback to empty data
+ *
+ * @returns Object containing checkout data promises
  */
-type CheckoutPageData = {
-    shippingMethods?: Promise<ShopperBasketsTypes.ShippingMethodResult>;
-    customerProfile?: Promise<{
-        customer?: ShopperCustomersTypes.Customer;
-        addresses: ShopperCustomersTypes.CustomerAddress[];
-        paymentInstruments: ShopperCustomersTypes.CustomerPaymentInstrument[];
-        preferredShippingAddress?: ShopperCustomersTypes.CustomerAddress;
-        preferredBillingAddress?: ShopperCustomersTypes.CustomerAddress;
-    } | null>;
-    isRegisteredCustomer?: boolean;
-};
+// eslint-disable-next-line react-refresh/only-export-components
+export function loader(args: LoaderFunctionArgs): CheckoutPageData {
+    const { context } = args;
 
-function getPageData({ context }: { context: Readonly<ClientLoaderFunctionArgs['context']> }): CheckoutPageData {
-    // Get current basket
-    const basket = getBasket(context);
+    try {
+        const authSession = getAuthServer(context);
+        const isRegistered = authSession?.userType === 'registered';
 
-    let shippingMethodsPromise: Promise<ShopperBasketsTypes.ShippingMethodResult> | undefined;
-    let customerProfilePromise: Promise<CustomerProfile | null> | undefined;
+        // Fetch customer profile for registered users
+        // TODO: Right now basket middleware is client-side only. Revisit this after the server side basket is available
+        const customerProfilePromise = isRegistered
+            ? getServerCustomerProfileData(context, authSession)
+            : Promise.resolve(null);
 
-    // Only fetch shipping methods if we have a basket with shipping address
-    // (This means user is at shipping options step or beyond)
-    if (basket?.basketId && basket.shipments?.[0]?.shippingAddress) {
-        shippingMethodsPromise = getShippingMethodsForShipment(context, basket.basketId);
+        const shippingMethodsPromise = getServerShippingMethodsData(context, authSession);
+
+        // Return promises for streaming
+        return {
+            customerProfile: customerProfilePromise,
+            shippingMethods: shippingMethodsPromise,
+            isRegisteredCustomer: isRegistered,
+        };
+    } catch {
+        // Fallback to minimal data
+        return {
+            customerProfile: Promise.resolve(null),
+            shippingMethods: Promise.resolve(null),
+            isRegisteredCustomer: false,
+        };
     }
-
-    // Check if user is a registered customer and fetch their profile
-    // Use proper function that checks userType === 'registered', not just presence of customer_id
-    // This prevents treating auto-registered guest users as fully registered customers
-    const userIsRegistered = isRegisteredCustomer(context);
-    const session = getAuthClient(context);
-
-    if (userIsRegistered && session.customer_id) {
-        customerProfilePromise = getCustomerProfileForCheckout(context, session.customer_id)
-            .then(async (profile) => {
-                // Prefill basket for returning customers with complete profiles
-                // Wait for prefill to complete before step computation
-                if (profile && shouldPrefillBasket(basket, profile)) {
-                    try {
-                        await initializeBasketForReturningCustomer(context, profile);
-                    } catch {
-                        // Prefill failed, but continue with checkout
-                        // Step computation will work with existing basket state
-                    }
-                }
-                return profile;
-            })
-            .catch((_error) => {
-                // Customer profile fetch failed in loader, treating as guest
-                // If customer profile fails, clear the invalid auth data immediately
-                // This is a fallback in case the customer.ts clearing doesn't work
-                if (typeof window !== 'undefined') {
-                    // Clear cookies and storage in browser
-                    document.cookie = '__sfdc_auth=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/';
-                    localStorage.removeItem('__sfdc_auth');
-                    sessionStorage.clear();
-                }
-                return null; // Return null to indicate guest user
-            });
-    }
-
-    return {
-        shippingMethods: shippingMethodsPromise,
-        customerProfile: customerProfilePromise,
-        isRegisteredCustomer: userIsRegistered,
-    };
 }
 
 /**
  * Client-side loader function for checkout route
  *
- * This loader function handles checkout data loading on the client side:
- * - Retrieves basket data from the basket middleware (requires localStorage access)
- * - Fetches customer profile and auth data (requires browser-specific APIs)
- * - Handles basket prefill for returning customers
- * - Returns promises for async data loading
- * @returns CheckoutPageData with basket, customer profile, and shipping methods
- * TODO: Implement server loader to have the checkout page take part in the SSR phase
+ * This function handles data loading for client-side navigation:
+ * - Uses client middleware for basket and auth data
+ * - Initializes basket for returning customers
+ * - Handles errors gracefully with fallback to empty data
+ * @returns Object containing checkout data promises
  */
-// TODO: Implement server loader to have the checkout page take part in the SSR phase
-// eslint-disable-next-line react-refresh/only-export-components,custom/no-universal-loaders
-export const clientLoader = ({ context }: ClientLoaderFunctionArgs): CheckoutPageData => {
-    return getPageData({ context });
-};
+// eslint-disable-next-line react-refresh/only-export-components
+export function clientLoader(args: ClientLoaderFunctionArgs): CheckoutPageData {
+    return getClientLoaderData(args);
+}
+
+/**
+ * Skeleton loader for checkout sections
+ * Uses the project's standardized Skeleton component for consistent styling
+ */
+function CheckoutSkeleton() {
+    return (
+        <div className="space-y-6">
+            {/* Header skeleton */}
+            <div className="space-y-2">
+                <Skeleton className="h-8 w-64" />
+                <Skeleton className="h-4 w-96" />
+            </div>
+
+            {/* Progress indicator skeleton */}
+            <div className="flex space-x-4">
+                {Array.from({ length: 4 }, (_, index) => (
+                    <div key={`progress-item-${index}`} className="flex items-center space-x-2">
+                        <Skeleton className="h-8 w-8 rounded-full" />
+                        <Skeleton className="h-4 w-16" />
+                    </div>
+                ))}
+            </div>
+
+            {/* Form sections skeleton */}
+            <div className="space-y-6">
+                {Array.from({ length: 3 }, (_, index) => (
+                    <div key={`form-section-item-${index}`} className="rounded-lg border p-6">
+                        <Skeleton className="h-6 w-32 mb-4" />
+                        <div className="space-y-3">
+                            <Skeleton className="h-10 w-full" />
+                            <Skeleton className="h-10 w-full" />
+                            <Skeleton className="h-10 w-2/3" />
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
 
 /**
  * Hydrate fallback component displayed during client-side hydration
@@ -116,43 +122,42 @@ export function HydrateFallback() {
 }
 
 /**
- * Checkout route component that displays the checkout page
- *
- * This component serves as the main checkout page route that:
- * - Receives customer profile data promises from the loader function for registered users
- * - Uses React's use() hook to resolve the promises within Suspense boundaries
- * - Provides checkout context to child components with customer data
- * - Uses CheckoutFormPage for checkout functionality with prefill
- *
- * @param props - Component props with loader data including customer profile promises
- * @returns JSX element representing the checkout page
+ * Checkout view component that handles parallel data loading with clean error boundaries.
+ * Uses Promise.all for parallel loading - errors bubble up to ErrorBoundary for proper handling.
  */
-function Checkout({ loaderData }: RouteComponentProps<CheckoutPageData>): ReactElement {
-    // Resolve all promises at the main component level (following category page pattern)
-    const resolvedProfile = loaderData.customerProfile ? use(loaderData.customerProfile) : undefined;
-    // Convert null to undefined for the context type
-    const customerProfile = resolvedProfile === null ? undefined : resolvedProfile;
+function CheckoutView({ loaderData: { customerProfile, shippingMethods } }: RouteComponentProps<CheckoutPageData>) {
+    // Stabilize promises to prevent "uncached promise" errors, with fallbacks for optional promises
+    const stablePromises = useMemo(
+        () => Promise.all([customerProfile ?? Promise.resolve(null), shippingMethods ?? Promise.resolve(null)]),
+        [customerProfile, shippingMethods]
+    );
 
-    // Resolve shipping methods promise if it exists
-    const shippingMethods = loaderData.shippingMethods ? use(loaderData.shippingMethods) : undefined;
+    // Clean parallel loading - let errors bubble up to ErrorBoundary
+    const [customerProfileData, shippingMethodsData] = use(stablePromises);
 
     return (
-        <CheckoutOneClickProvider customerProfile={customerProfile}>
-            <CheckoutFormPage shippingMethods={shippingMethods} />
+        <CheckoutOneClickProvider customerProfile={customerProfileData ?? undefined}>
+            <CheckoutFormPage shippingMethods={shippingMethodsData ?? undefined} />
         </CheckoutOneClickProvider>
     );
 }
 
 /**
- * Checkout page component with loading fallback
- *
- * This creates a page component that wraps the Checkout component with a loading fallback.
- * The createPage utility provides consistent loading states and error handling.
- *
- * @returns Page component with checkout functionality and loading states
+ * Checkout page component that displays the checkout form with customer profile, shipping methods, and basket data.
+ * Uses createPage HOC for consistency with other pages and optimal streaming performance.
+ * Wrapped with ErrorBoundary for graceful error handling.
  */
-// eslint-disable-next-line react-refresh/only-export-components
-export default createPage<CheckoutPageData>({
-    component: Checkout,
-    fallback: <Loading />,
+const CheckoutPageWithErrorBoundary = createPage({
+    component: CheckoutView,
+    fallback: <CheckoutSkeleton />,
 });
+
+function CheckoutPage(props: RouteComponentProps<CheckoutPageData>) {
+    return (
+        <CheckoutErrorBoundary>
+            <CheckoutPageWithErrorBoundary {...props} />
+        </CheckoutErrorBoundary>
+    );
+}
+
+export default CheckoutPage;

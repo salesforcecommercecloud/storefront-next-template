@@ -7,76 +7,108 @@ import createClient from '@/lib/scapi';
 import createPage, { type RouteComponentProps } from '@/components/create-page';
 import type { ShopperOrdersTypes } from 'commerce-sdk-isomorphic';
 import AddressDisplay from '@/components/address-display';
-import Loading from '@/components/loading';
 import { getCardTypeDisplay, getFormattedMaskedCardNumber } from '@/lib/payment-utils';
 import uiStrings from '@/temp-ui-string';
+import OrderSkeleton from '@/components/order-skeleton';
 
 type CheckoutConfirmationLoaderData = {
-    order?: Promise<ShopperOrdersTypes.Order | undefined>;
-    error?: string;
+    order: Promise<ShopperOrdersTypes.Order>;
 };
 
+/**
+ * Internal helper function that fetches order data for the confirmation page.
+ * This function handles the actual data fetching logic shared between server and client loaders.
+ * @param context - The request context containing authentication and configuration
+ * @param params - Route parameters containing the order number
+ * @returns Promise that resolves to an object containing the order data promise
+ */
 function getPageData({ context, params }: LoaderFunctionArgs): CheckoutConfirmationLoaderData {
     const { orderNo } = params;
-    if (!orderNo) {
-        return {
-            error: uiStrings.checkout.confirmation.orderNumberRequired,
-        };
-    }
+
+    const orderPromise = createClient(context).ShopperOrders.getOrder({
+        parameters: { orderNo },
+    });
+
     return {
-        order: createClient(context)
-            .ShopperOrders.getOrder({
-                parameters: { orderNo },
-            })
-            .catch(() => undefined),
+        order: orderPromise,
     };
 }
 
+/**
+ * Server-side loader function that fetches order data for the confirmation page.
+ * This function runs on the server during SSR and prepares data for the order confirmation page.
+ * @param args - Loader function arguments containing context and parameters
+ * @returns Promise that resolves to an object containing the order data promise
+ */
 // eslint-disable-next-line react-refresh/only-export-components
 export function loader(args: LoaderFunctionArgs) {
     return getPageData(args);
 }
 
+/**
+ * Client-side loader function that handles data loading for client-side navigation.
+ * This function ensures React Router doesn't block navigation by returning promises
+ * directly instead of wrapped in a data object.
+ * @param args - Client loader function arguments containing context and parameters
+ * @returns Promise that resolves to an object containing the order data promise
+ */
 // eslint-disable-next-line react-refresh/only-export-components
 export function clientLoader(args: ClientLoaderFunctionArgs) {
     return getPageData(args);
 }
 
 /**
- * Hydrate fallback component displayed during client-side hydration
- * TODO: This requires a fitting skeleton to be used as the hydrate fallback
+ * Hydrate fallback component displayed during client-side hydration.
+ * This component is shown while the order data is being loaded and hydrated on the client.
+ * @returns JSX element representing the order skeleton loading state
  */
 export function HydrateFallback() {
-    return <Loading />;
+    return <OrderSkeleton />;
 }
 
-function CheckoutConfirmation({
-    loaderData: { order: orderPromise, error },
-}: RouteComponentProps<CheckoutConfirmationLoaderData>): ReactElement {
-    const order = orderPromise ? use(orderPromise) : undefined;
-    if (!order) {
-        return (
-            <div className="min-h-screen bg-background">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-center">
-                                {uiStrings.checkout.confirmation.orderNotFound}
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="text-center space-y-4">
-                            <Typography variant="p" className="text-muted-foreground">
-                                {error || uiStrings.checkout.confirmation.orderNotFoundDescription}
-                            </Typography>
-                            <Button asChild>
-                                <Link to="/">{uiStrings.checkout.confirmation.actions.continueShopping}</Link>
-                            </Button>
-                        </CardContent>
-                    </Card>
-                </div>
+/**
+ * Error boundary component for handling order not found and other errors.
+ * This component catches errors thrown in the loader and displays an appropriate error message
+ * to the user with options to continue shopping or view their account.
+ * @returns JSX element representing the error state with user-friendly messaging
+ */
+export function ErrorBoundary() {
+    // NOTE: We are making the decision to use custom error messages. If you want to use the default messages
+    // from the API, you can use the `useRouteError` hook to get the error message.
+    const errorMessage: string = uiStrings.checkout.confirmation.orderNotFoundDescription;
+
+    return (
+        <div className="min-h-screen bg-background">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-center">{uiStrings.checkout.confirmation.orderNotFound}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="text-center space-y-4">
+                        <Typography variant="p" className="text-muted-foreground">
+                            {errorMessage}
+                        </Typography>
+                        <Button asChild>
+                            <Link to="/">{uiStrings.checkout.confirmation.actions.continueShopping}</Link>
+                        </Button>
+                    </CardContent>
+                </Card>
             </div>
-        );
-    }
+        </div>
+    );
+}
+
+/**
+ * Order confirmation component that displays the order details and confirmation information.
+ * This component receives loader data and renders the complete order confirmation page including
+ * success header, order summary, shipping details, payment details, and action buttons.
+ * @param loaderData - The loader data containing the order promise
+ * @returns JSX element representing the order confirmation page layout
+ */
+function CheckoutConfirmation({
+    loaderData: { order: orderPromise },
+}: RouteComponentProps<CheckoutConfirmationLoaderData>): ReactElement {
+    const order = use(orderPromise);
 
     return (
         <div className="min-h-screen bg-background">
@@ -211,9 +243,9 @@ function CheckoutConfirmation({
     );
 }
 
-// TODO: This requires a fitting skeleton
 const OrderConfirmationPage = createPage({
     component: CheckoutConfirmation,
+    fallback: <OrderSkeleton />,
 });
 
 export default OrderConfirmationPage;

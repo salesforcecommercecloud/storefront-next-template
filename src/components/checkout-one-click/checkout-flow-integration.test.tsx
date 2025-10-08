@@ -64,7 +64,8 @@ const server = setupServer(
 
     // Customer lookup API
     http.post('/api/customer-lookup', async ({ request }) => {
-        const { email } = await request.json();
+        const body = (await request.json()) as { email: string };
+        const { email } = body;
 
         if (email === 'returning@example.com') {
             return HttpResponse.json({
@@ -450,7 +451,6 @@ describe('Checkout Flow Integration Tests', () => {
         test('displays all main checkout sections', () => {
             render(<CheckoutFormPage />);
 
-            // Debug: Check how many elements we have
             const progressElements = screen.getAllByTestId('checkout-progress');
 
             // Core components should be present - use testId for mocked components

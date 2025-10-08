@@ -51,7 +51,7 @@ export const findImageGroupBy = (
         {}
     );
 
-    // Find the image group that has all the all the selected variation value attributes.
+    // Find the image group that has all the selected variation value attributes.
     const foundImageGroup = imageGroups.find(({ variationAttributes = [] }) => {
         const selectedIds = Object.keys(selectedVariationAttributes);
 

@@ -27,9 +27,12 @@ export default function ImageGallery({ images, eager = false }: ImageGalleryProp
     const location = useLocation();
 
     useEffect(() => {
-        // reset the selected index when location search changes
+        // reset the selected index
         setSelectedImageIndex(0);
-    }, [location.search]);
+    }, [location.search, images]);
+
+    // The first image is the fallback image. It's needed for when `images` are just updated, and the `selectedImageIndex` goes out of bound and is soon to be reset.
+    const selectedImage = images[selectedImageIndex] ?? images[0];
 
     if (!images || images.length === 0) {
         return (
@@ -41,8 +44,6 @@ export default function ImageGallery({ images, eager = false }: ImageGalleryProp
             </div>
         );
     }
-
-    const selectedImage = images[selectedImageIndex];
 
     return (
         <div className="space-y-4">

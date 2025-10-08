@@ -2,7 +2,7 @@ import type { ActionFunctionArgs } from 'react-router';
 import { helpers } from 'commerce-sdk-isomorphic';
 import { flashAuth, getAuth } from '@/middlewares/auth.server';
 import createClient from '@/lib/scapi';
-import { extractResponseError, getAppOrigin } from '@/lib/util';
+import { extractResponseError, getAppOrigin } from '@/lib/utils';
 
 // Passwordless requires slas to be private
 export const authorizePasswordless = async (

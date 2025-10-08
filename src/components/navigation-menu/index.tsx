@@ -1,0 +1,150 @@
+import { type ReactNode, Suspense, useEffect, useState, cloneElement, isValidElement } from 'react';
+import { Await } from 'react-router';
+import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import CategoryNavigationMenu from './impl';
+
+export type { CategoryNavigationMenuListCtx, CategoryNavigationMenuListItemCtx } from './impl';
+
+export default CategoryNavigationMenu;
+
+type CategoryNavigationMenuChildProps = {
+    categories: ShopperProductsTypes.Category[];
+};
+
+type WithCategoryNavigationMenuProps = {
+    children: ReactNode | ((props: CategoryNavigationMenuChildProps) => ReactNode);
+    resolve?: Promise<ShopperProductsTypes.Category>;
+    defer?: Promise<ShopperProductsTypes.Category[]>;
+    fallback?: ReactNode;
+    errorElement?: ReactNode;
+    // Programmatically filter out items that you do not want to show. Default: 'c_showInMenu'
+    itemsFilter?: keyof ShopperProductsTypes.Category | ((category: ShopperProductsTypes.Category) => boolean);
+};
+
+function filterItem(
+    category: ShopperProductsTypes.Category,
+    itemsFilter: WithCategoryNavigationMenuProps['itemsFilter']
+): boolean {
+    if (typeof itemsFilter === 'function') {
+        return Boolean(itemsFilter(category));
+    }
+    return Boolean(category[itemsFilter ?? 'c_showInMenu']);
+}
+
+function WithCategoryNavigationMenuView({
+    root: rootCategory,
+    defer: subCategoriesPromise,
+    itemsFilter,
+    children,
+}: Omit<WithCategoryNavigationMenuProps, 'resolve' | 'fallback' | 'errorElement'> & {
+    root?: ShopperProductsTypes.Category;
+}) {
+    const [rootCategories, setRootCategories] = useState(
+        (rootCategory?.categories ?? []).filter((c: ShopperProductsTypes.Category) => filterItem(c, itemsFilter))
+    );
+
+    useEffect(() => {
+        // Once the subcategories promise resolves, update the root categories
+        void subCategoriesPromise?.then((subCategories: ShopperProductsTypes.Category[]) => {
+            const subCategoriesMap = subCategories.reduce(
+                (acc: Map<string, ShopperProductsTypes.Category>, category: ShopperProductsTypes.Category) =>
+                    acc.set(category.id, {
+                        ...category,
+                        categories: category.categories?.filter((c: ShopperProductsTypes.Category) =>
+                            filterItem(c, itemsFilter)
+                        ),
+                    }),
+                new Map<string, ShopperProductsTypes.Category>()
+            );
+
+            setRootCategories(
+                rootCategories.map(
+                    (category: ShopperProductsTypes.Category) => subCategoriesMap.get(category.id) ?? category
+                )
+            );
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [subCategoriesPromise]);
+
+    // Clone the child element and inject the `categories` prop
+    if (isValidElement<CategoryNavigationMenuChildProps>(children)) {
+        return cloneElement(children, { categories: rootCategories });
+    }
+
+    // If `children` is a function, call it with the `categories`
+    if (typeof children === 'function') {
+        return (children as (props: CategoryNavigationMenuChildProps) => ReactNode)({ categories: rootCategories });
+    }
+
+    // If children is not a valid element or function, return as-is
+    return children;
+}
+
+/**
+ * Higher-order component that provides category navigation data ({@link ShopperProductsTypes.Category}) to its
+ * children.
+ *
+ * This HOC consumes up to two promises / data streams (e.g.,returned by the route’s/layout’s loader). This allows
+ * consumers to defer the loading of the deeply nested subcategories data while the root-level category structure is
+ * already loaded and rendered:
+ * - Primary data (required): A {@link Promise} resolving to all root categories and their first-level subcategories.
+ * The component reads this `Promise` during render (via {@link Await}), so it will suspend and show the nearest
+ * {@link Suspense} fallback until it resolves.
+ * - Secondary data (prefetch): A {@link Promise} resolving deeper subcategory data for those first-level categories.
+ * The component does not read this `Promise` during render; instead it’s resolved in an effect to prefill the
+ * categories store. Because it’s not read during render, it doesn’t trigger any {@link Suspense} boundary.
+ *
+ * The HOC is tailored to communicate/interact with `children` that are instances/subclasses of the
+ * {@link CategoryNavigationMenu} component. It handles the async loading and filtering of category data, then passes
+ * the resolved categories to its children. Children can be either:
+ * - A React element that accepts a `categories` prop
+ * - A render function that receives `{ categories }` as its argument
+ *
+ * @example With a component as children
+ * ```tsx
+ * <WithCategoryNavigationMenu resolve={rootCategoryPromise} defer={subCategoriesPromise}>
+ *   <CustomNavigationMenu />
+ * </WithCategoryNavigationMenu>
+ * ```
+ *@example With a render function
+ * ```tsx
+ * <WithCategoryNavigationMenu resolve={rootCategoryPromise}>
+ *   {({ categories }) => <CustomNavigationMenu categories={categories} />}
+ * </WithCategoryNavigationMenu>
+ * ```
+ * @example With a custom item filter
+ * ```tsx
+ * <WithCategoryNavigationMenu resolve={rootCategoryPromise} itemsFilter="c_yourFilterProperty">
+ *   <CustomNavigationMenu maxDepth={3} />
+ * </WithCategoryNavigationMenu>
+ * ```
+ * @example With custom skeleton fallback and error element
+ * ```tsx
+ * <WithCategoryNavigationMenu
+ *   resolve={rootCategoryPromise}
+ *   fallback={<NavigationSkeleton />}
+ *   errorElement={<NavigationError />}
+ *   <CustomNavigationMenu maxDepth={3} />
+ * </WithCategoryNavigationMenu>
+ * ```
+ */
+export function WithCategoryNavigationMenu({
+    resolve: rootCategoryPromise,
+    defer: subCategoriesPromise,
+    fallback,
+    errorElement,
+    children,
+    ...props
+}: WithCategoryNavigationMenuProps) {
+    return rootCategoryPromise ? (
+        <Suspense fallback={fallback}>
+            <Await resolve={rootCategoryPromise} errorElement={errorElement}>
+                {(rootCategory) => (
+                    <WithCategoryNavigationMenuView {...props} root={rootCategory} defer={subCategoriesPromise}>
+                        {children}
+                    </WithCategoryNavigationMenuView>
+                )}
+            </Await>
+        </Suspense>
+    ) : null;
+}

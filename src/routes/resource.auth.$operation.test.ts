@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { type ActionFunctionArgs, unstable_RouterContextProvider } from 'react-router';
+import { type ActionFunctionArgs, RouterContextProvider } from 'react-router';
 import { action } from './resource.auth.$operation';
 import { refreshAccessToken, loginGuestUser, loginRegisteredUser } from '@/middlewares/auth.server';
-import { extractResponseError } from '@/lib/util';
+import { extractResponseError } from '@/lib/utils';
 
 // Mock dependencies
 vi.mock('@/middlewares/auth.server');
-vi.mock('@/lib/util');
+vi.mock('@/lib/utils');
 
 const mockRefreshAccessToken = vi.mocked(refreshAccessToken);
 const mockLoginGuestUser = vi.mocked(loginGuestUser);
@@ -14,7 +14,7 @@ const mockLoginRegisteredUser = vi.mocked(loginRegisteredUser);
 const mockExtractResponseError = vi.mocked(extractResponseError);
 
 describe('resource.auth.$operation action', () => {
-    let mockContextProvider: unstable_RouterContextProvider;
+    let mockContextProvider: RouterContextProvider;
     const mockTokenResponse = {
         access_token: 'test-access-token',
         id_token: 'test-id-token',
@@ -30,7 +30,7 @@ describe('resource.auth.$operation action', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        mockContextProvider = new unstable_RouterContextProvider();
+        mockContextProvider = new RouterContextProvider();
     });
 
     afterEach(() => {

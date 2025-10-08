@@ -1,9 +1,4 @@
-import {
-    createCookie,
-    unstable_createContext,
-    type unstable_MiddlewareFunction,
-    type unstable_RouterContextProvider,
-} from 'react-router';
+import { createCookie, createContext, type MiddlewareFunction, type RouterContextProvider } from 'react-router';
 import type { ShopperLoginTypes } from 'commerce-sdk-isomorphic';
 import type { SessionData as AuthData } from '@/lib/api/types';
 import { clearStorage, type StorageErrorData, unpackStorage } from '@/lib/middleware';
@@ -14,9 +9,10 @@ import {
     updateAuthStorageData,
     updateStorageAndCache,
 } from '@/middlewares/auth.utils';
-import { isSlasPrivate } from '@/lib/util';
+import { isSlasPrivate } from '@/lib/utils';
 import createClient from '@/lib/scapi';
 import uiStrings from '@/temp-ui-string';
+import { performanceTimerContext, PERFORMANCE_MARKS } from '@/middlewares/performance-metrics';
 
 /**
  * Utility to get the SLAS client secret with proper validation
@@ -34,58 +30,77 @@ const getSlasClientSecret = (): string => {
  * Refresh access token using refresh token
  */
 export async function refreshAccessToken(
-    context: Readonly<unstable_RouterContextProvider>,
+    context: Readonly<RouterContextProvider>,
     refreshToken: string
 ): Promise<ShopperLoginTypes.TokenResponse> {
     const { helpers } = await import('commerce-sdk-isomorphic');
     const slasClient = await createClient(context).ShopperLogin.getInstance();
+    const performanceTimer = context.get(performanceTimerContext);
+    performanceTimer?.mark(PERFORMANCE_MARKS.authRefreshAccessToken, 'start');
 
-    return helpers.refreshAccessToken({
-        slasClient,
-        parameters: {
-            refreshToken,
-        },
-        credentials: {
-            ...(isSlasPrivate && {
-                clientSecret: getSlasClientSecret(),
-            }),
-        },
-    });
+    return helpers
+        .refreshAccessToken({
+            slasClient,
+            parameters: {
+                refreshToken,
+            },
+            credentials: {
+                ...(isSlasPrivate && {
+                    clientSecret: getSlasClientSecret(),
+                }),
+            },
+        })
+        .finally(() => {
+            performanceTimer?.mark(PERFORMANCE_MARKS.authRefreshAccessToken, 'end');
+        });
 }
 
 /**
  * Login as guest user
  */
 export async function loginGuestUser(
-    context: Readonly<unstable_RouterContextProvider>,
+    context: Readonly<RouterContextProvider>,
     options?: { usid?: string }
 ): Promise<ShopperLoginTypes.TokenResponse> {
     const { helpers } = await import('commerce-sdk-isomorphic');
     const slasClient = await createClient(context).ShopperLogin.getInstance();
     const { redirectURI } = slasClient.clientConfig.parameters;
+    const performanceTimer = context.get(performanceTimerContext);
+    const performanceName = isSlasPrivate
+        ? PERFORMANCE_MARKS.authLoginGuestUserPrivate
+        : PERFORMANCE_MARKS.authLoginGuestUser;
+    performanceTimer?.mark(performanceName, 'start');
 
     return isSlasPrivate
-        ? helpers.loginGuestUserPrivate({
-              slasClient,
-              parameters: {
-                  ...(options?.usid && { usid: options.usid }),
-              },
-              credentials: { clientSecret: getSlasClientSecret() },
-          })
-        : helpers.loginGuestUser({
-              slasClient,
-              parameters: {
-                  redirectURI,
-                  ...(options?.usid && { usid: options.usid }),
-              },
-          });
+        ? helpers
+              .loginGuestUserPrivate({
+                  slasClient,
+                  parameters: {
+                      ...(options?.usid && { usid: options.usid }),
+                  },
+                  credentials: { clientSecret: getSlasClientSecret() },
+              })
+              .finally(() => {
+                  performanceTimer?.mark(performanceName, 'end');
+              })
+        : helpers
+              .loginGuestUser({
+                  slasClient,
+                  parameters: {
+                      redirectURI,
+                      ...(options?.usid && { usid: options.usid }),
+                  },
+              })
+              .finally(() => {
+                  performanceTimer?.mark(performanceName, 'end');
+              });
 }
 
 /**
  * Login as registered user with email and password
  */
 export async function loginRegisteredUser(
-    context: Readonly<unstable_RouterContextProvider>,
+    context: Readonly<RouterContextProvider>,
     email: string,
     password: string,
     options?: { customParameters?: Record<string, unknown> }
@@ -93,32 +108,38 @@ export async function loginRegisteredUser(
     const { helpers } = await import('commerce-sdk-isomorphic');
     const slasClient = await createClient(context).ShopperLogin.getInstance();
     const { redirectURI } = slasClient.clientConfig.parameters;
+    const performanceTimer = context.get(performanceTimerContext);
+    performanceTimer?.mark(PERFORMANCE_MARKS.authLoginRegisteredUser, 'start');
 
-    return helpers.loginRegisteredUserB2C({
-        slasClient,
-        credentials: {
-            username: email,
-            password,
-            ...(isSlasPrivate && {
-                clientSecret: getSlasClientSecret(),
-            }),
-        },
-        parameters: {
-            redirectURI,
-            // Include custom parameters if any
-            ...(options?.customParameters &&
-                Object.keys(options.customParameters).length > 0 && {
-                    body: options.customParameters,
+    return helpers
+        .loginRegisteredUserB2C({
+            slasClient,
+            credentials: {
+                username: email,
+                password,
+                ...(isSlasPrivate && {
+                    clientSecret: getSlasClientSecret(),
                 }),
-        },
-    });
+            },
+            parameters: {
+                redirectURI,
+                // Include custom parameters if any
+                ...(options?.customParameters &&
+                    Object.keys(options.customParameters).length > 0 && {
+                        body: options.customParameters,
+                    }),
+            },
+        })
+        .finally(() => {
+            performanceTimer?.mark(PERFORMANCE_MARKS.authLoginRegisteredUser, 'end');
+        });
 }
 
 /**
  * Server-side utility to retrieve/verify the validity of stored Commerce API auth information.
  */
 const retrieveAuthStorageData = async (
-    context: Readonly<unstable_RouterContextProvider>,
+    context: Readonly<RouterContextProvider>,
     storage: Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>,
     cache: { ref: AuthData | undefined }
 ): Promise<void> => {
@@ -133,6 +154,8 @@ const retrieveAuthStorageData = async (
 
     const refreshToken = storage.get('refresh_token');
     const refreshTokenExpiry = storage.get('refresh_token_expiry');
+    const performanceTimer = context.get(performanceTimerContext);
+
     if (
         typeof refreshToken === 'string' &&
         refreshToken.length &&
@@ -144,7 +167,9 @@ const retrieveAuthStorageData = async (
             const userType: 'guest' | 'registered' = storedUserType === 'registered' ? 'registered' : 'guest';
 
             // Use refresh token operation and update storage/cache
+            performanceTimer?.mark(PERFORMANCE_MARKS.authRefreshToken, 'start');
             const tokenResponse = await refreshAccessToken(context, refreshToken);
+            performanceTimer?.mark(PERFORMANCE_MARKS.authRefreshToken, 'end');
             await updateStorageAndCache(context, storage, cache, tokenResponse, userType);
             return;
         } catch {
@@ -160,9 +185,11 @@ const retrieveAuthStorageData = async (
         const usid = typeof storedUsid === 'string' ? storedUsid : undefined;
 
         // Use guest login operation and update storage/cache
+        performanceTimer?.mark(PERFORMANCE_MARKS.authGuestLogin, 'start');
         const tokenResponse = await loginGuestUser(context, {
             usid: typeof usid === 'string' && usid.length ? usid : undefined,
         });
+        performanceTimer?.mark(PERFORMANCE_MARKS.authGuestLogin, 'end');
         await updateStorageAndCache(context, storage, cache, tokenResponse, 'guest');
     } catch {
         storage.set('error', uiStrings.errors.guestAccessTokenFailed);
@@ -170,8 +197,8 @@ const retrieveAuthStorageData = async (
 };
 
 const authCookieName = '__sfdc_auth';
-const authStorageContext = unstable_createContext<Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>>();
-const authCacheContext = unstable_createContext<{ ref: AuthData | undefined }>();
+const authStorageContext = createContext<Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>>();
+const authCacheContext = createContext<{ ref: AuthData | undefined }>();
 
 /**
  * Middleware to retrieve or refresh the Commerce API token and provide it as part of the router `context`.
@@ -185,7 +212,7 @@ const authCacheContext = unstable_createContext<{ ref: AuthData | undefined }>()
  * The router context is available in other middlewares, loader and action functions. Use it as root middleware,
  * to ensure the Commerce API context portion becomes available throughout the whole application.
  */
-const authMiddleware: unstable_MiddlewareFunction<Response> = async ({ request, context }, next) => {
+const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }, next) => {
     // Before calling the handler: Load current Commerce API data from incoming cookies, if applicable
     const authCookie = createCookie(authCookieName, {
         httpOnly: false,
@@ -252,7 +279,7 @@ const authMiddleware: unstable_MiddlewareFunction<Response> = async ({ request, 
     return response;
 };
 
-export const getAuth = (context: Readonly<unstable_RouterContextProvider>): AuthData & StorageErrorData => {
+export const getAuth = (context: Readonly<RouterContextProvider>): AuthData & StorageErrorData => {
     const storage = context.get(authStorageContext);
     const cache = context.get(authCacheContext);
     if (!storage || !cache) {
@@ -262,7 +289,7 @@ export const getAuth = (context: Readonly<unstable_RouterContextProvider>): Auth
 };
 
 export const updateAuth = (
-    context: Readonly<unstable_RouterContextProvider>,
+    context: Readonly<RouterContextProvider>,
     updater: ShopperLoginTypes.TokenResponse | ((data: AuthData & StorageErrorData) => AuthData & StorageErrorData)
 ) => {
     const storage = context.get(authStorageContext);
@@ -280,7 +307,7 @@ export const updateAuth = (
         : createAuthPromise(context, cache.ref);
 };
 
-export const destroyAuth = (context: Readonly<unstable_RouterContextProvider>): void => {
+export const destroyAuth = (context: Readonly<RouterContextProvider>): void => {
     const storage = context.get(authStorageContext);
     const cache = context.get(authCacheContext);
     const promiseCache = context.get(authContext);
@@ -297,7 +324,7 @@ export const destroyAuth = (context: Readonly<unstable_RouterContextProvider>): 
     storage.set('isDestroyed', true);
 };
 
-export const flashAuth = (context: Readonly<unstable_RouterContextProvider>, message?: string): void => {
+export const flashAuth = (context: Readonly<RouterContextProvider>, message?: string): void => {
     const storage = context.get(authStorageContext);
     const cache = context.get(authCacheContext);
     const promiseCache = context.get(authContext);

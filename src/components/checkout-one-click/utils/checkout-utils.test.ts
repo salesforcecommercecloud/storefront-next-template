@@ -10,9 +10,7 @@ import {
     shouldPrefillBasket,
 } from './checkout-utils';
 import type { CustomerProfile } from './checkout-context-types';
-import { unstable_RouterContextProvider } from 'react-router';
-import { authContext } from '@/middlewares/auth.utils';
-import type { SessionData } from '@/lib/api/types';
+import { createTestContext } from '@/lib/test-utils';
 
 const mockShopperBasketsClient = {
     updateCustomerForBasket: vi.fn(),
@@ -377,21 +375,14 @@ describe('Checkout Utils', () => {
     });
 
     describe('initializeBasketForReturningCustomer', () => {
-        let mockContext: Readonly<unstable_RouterContextProvider>;
+        let mockContext: ReturnType<typeof createTestContext>;
         let mockBasket: ShopperBasketsTypes.Basket;
         let mockCustomerProfile: CustomerProfile;
 
         beforeEach(async () => {
             vi.clearAllMocks();
 
-            mockContext = new unstable_RouterContextProvider();
-            mockContext.set(authContext, {
-                ref: Promise.resolve({
-                    access_token: 'test-access-token',
-                    customer_id: 'test-customer-id',
-                    userType: 'registered',
-                } satisfies SessionData),
-            });
+            mockContext = createTestContext();
 
             mockBasket = {
                 basketId: 'test-basket',
@@ -560,22 +551,15 @@ describe('Checkout Utils', () => {
             expect(result).toBe(CHECKOUT_STEPS.SHIPPING_ADDRESS);
         });
 
-        it('should return REVIEW_ORDER when all data is available including saved payment methods', () => {
+        it('should return REVIEW_ORDER when customer has complete profile data', () => {
             const basket = {
                 basketId: 'test',
                 customerInfo: { email: 'test@example.com' },
-                shipments: [
-                    {
-                        shippingAddress: { address1: '123 Main St' },
-                        shippingMethod: { id: 'standard' },
-                    },
-                ],
-                paymentInstruments: [],
             } as ShopperBasketsTypes.Basket;
 
             const customerProfile = {
                 customer: { login: 'test@example.com' },
-                addresses: [],
+                addresses: [{ addressId: 'addr_1', countryCode: 'US', lastName: 'Doe' }],
                 paymentInstruments: [
                     {
                         paymentInstrumentId: 'card_123',
@@ -588,22 +572,15 @@ describe('Checkout Utils', () => {
             expect(result).toBe(CHECKOUT_STEPS.REVIEW_ORDER);
         });
 
-        it('should return PAYMENT when shipping is complete but no payment available', () => {
+        it('should return PAYMENT when customer has addresses but no saved payment methods', () => {
             const basket = {
                 basketId: 'test',
                 customerInfo: { email: 'test@example.com' },
-                shipments: [
-                    {
-                        shippingAddress: { address1: '123 Main St' },
-                        shippingMethod: { id: 'standard' },
-                    },
-                ],
-                paymentInstruments: [],
             } as ShopperBasketsTypes.Basket;
 
             const customerProfile = {
                 customer: { login: 'test@example.com' },
-                addresses: [],
+                addresses: [{ addressId: 'addr_1', countryCode: 'US', lastName: 'Doe' }],
                 paymentInstruments: [],
             } as CustomerProfile;
 

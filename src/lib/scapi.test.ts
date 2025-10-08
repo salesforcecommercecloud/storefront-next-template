@@ -1,13 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { unstable_RouterContextProvider } from 'react-router';
+import { type RouterContextProvider } from 'react-router';
 import { ShopperExperience } from 'commerce-sdk-isomorphic';
-import { authContext } from '@/middlewares/auth.utils';
-import type { SessionData } from '@/lib/api/types';
+import { createTestContext } from '@/lib/test-utils';
 import createClient, { clientClassCacheContext } from '@/lib/scapi';
 
 // Mock getAppOrigin
-vi.mock('@/lib/util', async () => {
-    const actual = await vi.importActual('@/lib/util');
+vi.mock('@/lib/utils', async () => {
+    const actual = await vi.importActual('@/lib/utils');
     return {
         ...actual,
         getAppOrigin: vi.fn(() => 'https://example.com'),
@@ -29,20 +28,13 @@ vi.mock('commerce-sdk-isomorphic', async () => {
 });
 
 describe('Commerce SDK fetch service', () => {
-    let mockContextProvider: unstable_RouterContextProvider;
+    let mockContextProvider: RouterContextProvider;
 
     beforeEach(() => {
         vi.clearAllMocks();
         clientClassCacheContext.defaultValue?.clear();
         mockShopperExperienceGetPage.mockClear();
-        mockContextProvider = new unstable_RouterContextProvider();
-        mockContextProvider.set(authContext, {
-            ref: Promise.resolve({
-                access_token: 'test-access-token',
-                customer_id: 'test-customer-id',
-                userType: 'registered',
-            } satisfies SessionData),
-        });
+        mockContextProvider = createTestContext();
     });
 
     afterEach(() => {
@@ -86,20 +78,21 @@ describe('Commerce SDK fetch service', () => {
             });
 
             it('throws TypeError when SDK client is not authenticated', () => {
-                mockContextProvider.set(authContext, { ref: Promise.resolve(undefined) });
+                const unauthenticatedContext = createTestContext({ authSession: null });
 
-                const client = createClient(mockContextProvider);
+                const client = createClient(unauthenticatedContext);
                 return expect(client.ShopperProducts.getProduct()).rejects.toThrow(
                     new TypeError('Client not authenticated: "ShopperProducts"')
                 );
             });
 
             it('throws TypeError when authContext promise rejects', () => {
-                mockContextProvider.set(authContext, {
-                    ref: Promise.reject(new Error('Auth failed')),
+                const failedAuthContext = createTestContext({
+                    rejectAuth: true,
+                    authError: new Error('Auth failed'),
                 });
 
-                const client = createClient(mockContextProvider);
+                const client = createClient(failedAuthContext);
                 return expect(client.ShopperExperience.getPage()).rejects.toThrow('Auth failed');
             });
 
@@ -212,15 +205,16 @@ describe('Commerce SDK fetch service', () => {
             });
 
             it('handles session without access_token', async () => {
-                mockContextProvider.set(authContext, {
-                    ref: Promise.resolve({
-                        customer_id: 'test-customer-id',
+                const guestContext = createTestContext({
+                    authSession: {
                         userType: 'guest',
-                    } satisfies SessionData),
+                        customer_id: 'test-customer-id',
+                        access_token: undefined, // explicitly undefined for guest users
+                    },
                 });
                 mockShopperExperienceGetPage.mockResolvedValue({ success: true });
 
-                const client = createClient(mockContextProvider);
+                const client = createClient(guestContext);
                 await client.ShopperExperience.getPage({ parameters: { pageId: 'home' } });
 
                 expect(ShopperExperience).toHaveBeenCalledWith({
@@ -263,15 +257,14 @@ describe('Commerce SDK fetch service', () => {
                 mockShopperExperienceGetPage.mockResolvedValue({ success: true });
 
                 const client1 = createClient(mockContextProvider);
-                const mockContextProvider2 = new unstable_RouterContextProvider();
-                mockContextProvider2.set(authContext, {
-                    ref: Promise.resolve({
+                const context2 = createTestContext({
+                    authSession: {
                         access_token: 'test-access-token-2',
                         customer_id: 'test-customer-id-2',
                         userType: 'registered',
-                    } satisfies SessionData),
+                    },
                 });
-                const client2 = createClient(mockContextProvider2);
+                const client2 = createClient(context2);
 
                 // Each context should create its own instance
                 await client1.ShopperExperience.getPage();
@@ -348,16 +341,15 @@ describe('Commerce SDK fetch service', () => {
                 mockShopperExperienceGetPage.mockResolvedValue(mockResult);
 
                 const client1 = createClient(mockContextProvider);
-                const mockContextProvider2 = new unstable_RouterContextProvider();
-                mockContextProvider2.set(authContext, {
-                    ref: Promise.resolve({
+                const context2 = createTestContext({
+                    authSession: {
                         access_token: 'test-access-token-2',
                         customer_id: 'test-customer-id-2',
                         userType: 'registered',
-                    } satisfies SessionData),
+                    },
                 });
 
-                const client2 = createClient(mockContextProvider2);
+                const client2 = createClient(context2);
 
                 // Same request from different contexts should not be deduplicated
                 const parameters = { parameters: { pageId: 'home' } };

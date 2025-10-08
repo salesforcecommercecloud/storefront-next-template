@@ -44,7 +44,6 @@ import { Suspense, use, type ReactNode, type ComponentType } from 'react';
  * }
  * ```
  */
-// eslint-disable-next-line react-refresh/only-export-components
 export default function withSuspense<TProps extends Record<string, unknown> = Record<string, unknown>>(
     Component: ComponentType<TProps>,
     config: {
@@ -71,7 +70,8 @@ export default function withSuspense<TProps extends Record<string, unknown> = Re
 }
 
 // Internal component that handles promise resolution
-export function ComponentWithData<TProps extends Record<string, unknown>>({
+// eslint-disable-next-line react-refresh/only-export-components
+function ComponentWithData<TProps extends Record<string, unknown>>({
     Component,
     resolve,
     props,

@@ -23,5 +23,18 @@ export default function PromoCallout({ product, className }: { product: Product;
     const promos = lowestPriceResult?.data?.productPromotions ?? product?.productPromotions ?? [];
     const promo = lowestPriceResult?.promotion ?? promos[0];
 
-    return <div className={cn('items-center gap-2', className)}>{promo?.calloutMsg as string}</div>;
+    if (!promo?.calloutMsg) {
+        return null;
+    }
+
+    // Safely get the callout message as a string
+    const calloutMsg = String(promo.calloutMsg || '');
+
+    return (
+        <div className={cn('items-center gap-2', className)}>
+            {/* BM content is trusted, safe to render HTML. Works for both plain text and HTML strings */}
+            {/* eslint-disable-next-line react/no-danger */}
+            <span dangerouslySetInnerHTML={{ __html: calloutMsg }} />
+        </div>
+    );
 }

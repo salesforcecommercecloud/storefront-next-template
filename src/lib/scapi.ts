@@ -1,14 +1,15 @@
 /* global __TEST__ */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { unstable_RouterContext, unstable_RouterContextProvider } from 'react-router';
+import type { RouterContext, RouterContextProvider } from 'react-router';
 // eslint-disable-next-line import/no-namespace
 import type * as CommerceSdk from 'commerce-sdk-isomorphic';
 import type { SessionData } from '@/lib/api/types';
 import type { CtorFromKey, CtorNameKeyMap } from '+types/classes';
 import type { Ctor, InstanceMethodKeysOf, InstancePropertiesKeysOf } from '+types/lang';
 import { authContext } from '@/middlewares/auth.utils';
+import { performanceTimerContext, PERFORMANCE_MARKS } from '@/middlewares/performance-metrics';
 import { encodeBase64Url } from '@/lib/url';
-import { getAppOrigin } from '@/lib/util';
+import { getAppOrigin } from '@/lib/utils';
 
 type CommerceSdkClientConfig = Readonly<{
     clientId: string;
@@ -92,19 +93,19 @@ export type CommerceSdkClient = {
 // classes is okay to have as the amount of classes to be expected is rather small.
 const clientClassCache = new Map<string, Ctor>();
 const clientClassLoadCache = new Map<string, Promise<Ctor>>();
-const clientInstanceCache = new WeakMap<Readonly<unstable_RouterContextProvider>, Map<string, any>>();
-const clientInstanceLoadCache = new WeakMap<Readonly<unstable_RouterContextProvider>, Map<string, Promise<Ctor>>>();
-const requestCache = new WeakMap<Readonly<unstable_RouterContextProvider>, Map<string, Promise<any>>>();
+const clientInstanceCache = new WeakMap<Readonly<RouterContextProvider>, Map<string, any>>();
+const clientInstanceLoadCache = new WeakMap<Readonly<RouterContextProvider>, Map<string, Promise<Ctor>>>();
+const requestCache = new WeakMap<Readonly<RouterContextProvider>, Map<string, Promise<any>>>();
 
-export let clientClassCacheContext: unstable_RouterContext<typeof clientClassCache>;
+export let clientClassCacheContext: RouterContext<typeof clientClassCache>;
 
 // @ts-expect-error: __TEST__ is a global variable existing to support dead code elimination
 if (__TEST__) {
     // Right now, only create the context in test mode. In other environments, dead code elimination will kick in.
     // In the future, we might want to create the context in other environments as well, for example, to support
     // prewarming with already loaded Commerce SDK clients.
-    void import('react-router').then(({ unstable_createContext }) => {
-        clientClassCacheContext = unstable_createContext<typeof clientClassCache>(clientClassCache);
+    void import('react-router').then(({ createContext }) => {
+        clientClassCacheContext = createContext<typeof clientClassCache>(clientClassCache);
     });
 }
 
@@ -189,7 +190,7 @@ function createCommerceSdkClient<T>(
  *   };
  * }
  */
-const factory = (context: Readonly<unstable_RouterContextProvider>): CommerceSdkClient =>
+const factory = (context: Readonly<RouterContextProvider>): CommerceSdkClient =>
     new Proxy({} as CommerceSdkClient, {
         get(_t1: CommerceSdkClient, className: CommerceSdkKeyMap) {
             // Return a class proxy that handles method calls
@@ -299,10 +300,33 @@ const factory = (context: Readonly<unstable_RouterContextProvider>): CommerceSdk
                             return cache.get(cacheKey);
                         }
 
-                        // Execute the method and cache the promise
-                        const promise = sdkClientInstance[methodName](...args).finally(() => {
-                            cache?.delete(cacheKey);
+                        const performanceTimer = context.get(performanceTimerContext);
+                        const performanceName = PERFORMANCE_MARKS.apiCall.create({
+                            className: String(className),
+                            methodName: String(methodName),
                         });
+
+                        // Start performance timing for the API call
+                        performanceTimer?.mark(performanceName, 'start');
+
+                        const promise = (sdkClientInstance[methodName](...args) as Promise<any>)
+                            .then((value) => {
+                                performanceTimer?.mark(performanceName, 'end');
+                                return value;
+                            })
+                            .catch((error) => {
+                                // End performance timing even on error
+                                performanceTimer?.mark(performanceName, 'end', {
+                                    detail: `API call failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                                });
+                                throw error;
+                            })
+                            .finally(() => {
+                                cache?.delete(cacheKey);
+                            });
+
+                        // Track the API call for performance monitoring
+                        performanceTimer?.trackOperation(promise);
 
                         cache?.set(cacheKey, promise);
                         return promise;
