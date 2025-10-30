@@ -11,13 +11,13 @@ import {
     Meta,
     type MiddlewareFunction,
     Outlet,
+    Scripts,
     ScrollRestoration,
     type UIMatch,
     useLocation,
     useMatches,
     useRouteLoaderData,
 } from 'react-router';
-import { Scripts } from '@salesforce/vite-plugin-odyssey/react-router/Scripts';
 import type { ShopperBasketsTypes, ShopperProductsTypes } from 'commerce-sdk-isomorphic';
 // @sfdc-extension-line SFDC_EXT_STORE_LOCATOR
 import StoreLocatorProvider from '@/extensions/store-locator/providers/store-locator';

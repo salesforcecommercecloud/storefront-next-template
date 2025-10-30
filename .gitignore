@@ -42,7 +42,9 @@ Thumbs.db
 # Vitest
 .vitest/
 
-# Packed dependencies (monorepo only - removed in mirror repo by sync workflow)
-# In monorepo: Ignored (temporary files for syncing)
-# In mirror repo: Tracked (customers need them for installation)
+# Workspace configuration and packages (monorepo only - included in mirror repo)
+# In monorepo: Ignored (created temporarily for syncing)
+# In mirror repo: Tracked (needed for standalone workspace)
+packages/
+pnpm-workspace.yaml
 
