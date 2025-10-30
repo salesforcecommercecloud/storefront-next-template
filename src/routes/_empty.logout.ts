@@ -15,9 +15,9 @@ export async function action({ context }: ActionFunctionArgs) {
     const { access_token, refresh_token } = session;
     if (access_token && refresh_token) {
         try {
-            const { helpers } = await import('commerce-sdk-isomorphic');
+            const { logout } = await import('commerce-sdk-isomorphic/helpers');
             const slasClient = await createClient(context).ShopperLogin.getInstance();
-            await helpers.logout({
+            await logout({
                 slasClient,
                 parameters: { accessToken: access_token, refreshToken: refresh_token },
             });

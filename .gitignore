@@ -1,2 +1,48 @@
-node_modules
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
 build/
+.react-router/
+*.tsbuildinfo
+
+# Environment variables (keep .env.default)
+.env
+.env.local
+.env.*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Coverage
+coverage/
+*.lcov
+.nyc_output
+
+# Storybook
+storybook-static/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Vitest
+.vitest/
+
+# Packed dependencies (monorepo only - removed in mirror repo by sync workflow)
+# In monorepo: Ignored (temporary files for syncing)
+# In mirror repo: Tracked (customers need them for installation)
+

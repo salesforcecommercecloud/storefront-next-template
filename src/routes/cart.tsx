@@ -23,8 +23,8 @@ import createPage from '@/components/create-page';
  */
 type CartPageData = {
     basket: ShopperBasketsTypes.Basket;
-    productMap: Promise<Record<string, ShopperProductsTypes.Product>>;
-    promotionMap?: Promise<Record<string, ShopperPromotionsTypes.Promotion>>;
+    productsByItemId: Promise<Record<string, ShopperProductsTypes.Product>>;
+    promotions?: Promise<Record<string, ShopperPromotionsTypes.Promotion>>;
 };
 
 /**
@@ -38,33 +38,33 @@ async function fetchPromotionsForBasket(
     context: ClientLoaderFunctionArgs['context'],
     productItems: ShopperBasketsTypes.ProductItem[]
 ): Promise<Record<string, ShopperPromotionsTypes.Promotion>> {
-    // Main product IDs from basket items
     const productIds = productItems?.map((item) => item.productId).filter(Boolean);
     if (!productIds) {
         return {};
     }
-    // Extract all unique promotion IDs from basket items
-    const promotionIdsSet = new Set<string>();
-    productItems.forEach((item) => {
-        if (item.priceAdjustments?.length) {
-            item.priceAdjustments.forEach((adjustment) => {
+
+    // Extract all unique promotion IDs from basket items' price adjustments
+    const promotionIds = new Set<string>();
+    productItems.forEach((productItem) => {
+        if (productItem.priceAdjustments?.length) {
+            productItem.priceAdjustments.forEach((adjustment) => {
                 if (adjustment.promotionId) {
-                    promotionIdsSet.add(adjustment.promotionId);
+                    promotionIds.add(adjustment.promotionId);
                 }
             });
         }
     });
 
-    // If no promotion IDs found, return undefined
-    if (promotionIdsSet.size === 0) {
+    // Early return if no promotions found
+    if (promotionIds.size === 0) {
         return {};
     }
 
-    // Fetch promotions for all unique promotion IDs
+    // Fetch promotion details for all unique promotion IDs
     const client = createClient(context);
     const promotionsResponse = await client.ShopperPromotions.getPromotions({
         parameters: {
-            ids: Array.from(promotionIdsSet),
+            ids: Array.from(promotionIds),
         },
     });
 
@@ -72,15 +72,15 @@ async function fetchPromotionsForBasket(
         return {};
     }
 
-    // Create a mapping from promotion ID to promotion data
-    const promotionsById: Record<string, ShopperPromotionsTypes.Promotion> = {};
+    // Transform API response into a lookup map: promotionId → promotion details
+    const promotions: Record<string, ShopperPromotionsTypes.Promotion> = {};
     promotionsResponse.data.forEach((promotion) => {
         if (promotion.id) {
-            promotionsById[promotion.id] = promotion;
+            promotions[promotion.id] = promotion;
         }
     });
 
-    return promotionsById;
+    return promotions;
 }
 
 /**
@@ -89,14 +89,32 @@ async function fetchPromotionsForBasket(
  * This function retrieves product details including images, pricing, and attributes
  * for each product in the basket. It creates a mapping from basket item IDs to
  * their corresponding product data for efficient lookup in the UI.
+ * For bundle products, it also fetches child product data and reconstructs the
+ * bundledProducts structure with product and quantity properties.
  * @returns Promise that resolves to a mapping of item IDs to product data.
  */
 async function fetchProductsInBasket(
     context: ClientLoaderFunctionArgs['context'],
     productItems: ShopperBasketsTypes.ProductItem[]
 ): Promise<Record<string, ShopperProductsTypes.Product>> {
-    // Main product IDs from basket items
-    const ids = productItems.map((item) => item.productId ?? '').filter(Boolean);
+    // Collect all product IDs (both parent products and bundled child products)
+    const ids: string[] = [];
+
+    productItems.forEach((item) => {
+        if (item.productId) {
+            ids.push(item.productId);
+        }
+
+        // If this is a bundle product, collect child product IDs
+        if (item.bundledProductItems && item.bundledProductItems.length > 0) {
+            const childProductIds = item.bundledProductItems
+                .map((child) => child.productId)
+                .filter(Boolean) as string[];
+
+            ids.push(...childProductIds);
+        }
+    });
+
     if (!ids.length) {
         return {};
     }
@@ -107,6 +125,7 @@ async function fetchProductsInBasket(
             ids,
             allImages: true,
             perPricebook: true,
+            // NOTE: if we do use `expand` parameter here, we can't pass in `bundled_products` for this API endpoint
         },
     });
 
@@ -122,11 +141,36 @@ async function fetchProductsInBasket(
         {} as Record<string, ShopperProductsTypes.Product>
     );
 
-    // Create productsByItemId mapping
     const productsByItemId: Record<string, ShopperProductsTypes.Product> = {};
+
     productItems.forEach((productItem) => {
-        if (productItem?.productId && productItem.itemId && products[productItem.productId]) {
-            productsByItemId[productItem.itemId] = products[productItem.productId];
+        if (!productItem.itemId || !productItem.productId || !products[productItem.productId]) {
+            return;
+        }
+
+        const product = products[productItem.productId];
+
+        // Check if this is a bundle product
+        if (productItem.bundledProductItems && productItem.bundledProductItems.length > 0) {
+            // Reconstruct the product with bundledProducts structure
+            // Why? Because the products API endpoint does not allow us to pass in expand=['bundled_products']
+            const bundledProducts: ShopperProductsTypes.BundledProduct[] = productItem.bundledProductItems
+                .map((bundledItem) => {
+                    const childProduct = bundledItem.productId ? products[bundledItem.productId] : null;
+                    if (!childProduct) return null;
+                    return {
+                        product: childProduct,
+                        quantity: bundledItem.quantity ?? 1,
+                    };
+                })
+                .filter((item): item is ShopperProductsTypes.BundledProduct => item !== null);
+
+            productsByItemId[productItem.itemId] = {
+                ...product,
+                bundledProducts,
+            };
+        } else {
+            productsByItemId[productItem.itemId] = product;
         }
     });
     return productsByItemId;
@@ -148,7 +192,8 @@ export function HydrateFallback() {
  *
  * This loader function handles cart data loading on the client side:
  * - Retrieves basket data from the basket middleware
- * - Fetches product details for all items in the basket
+ * - Fetches product details for all items (main + bundled children) in a single optimized API call
+ * - Fetches promotion details for items with promotions
  * - Handles errors gracefully with fallback to empty state
  * - Returns promises for async data loading
  * @returns Promise resolving to cart page data with basket and product details
@@ -156,12 +201,13 @@ export function HydrateFallback() {
  */
 // eslint-disable-next-line react-refresh/only-export-components,custom/no-universal-loaders
 export const clientLoader: ClientLoaderFunction = ({ context }: ClientLoaderFunctionArgs): CartPageData => {
-    // Fetch product details - handle errors gracefully
     const basket = getBasket(context);
+    const productItems = basket?.productItems ?? [];
+
     return {
         basket,
-        productMap: fetchProductsInBasket(context, basket?.productItems ?? []),
-        promotionMap: fetchPromotionsForBasket(context, basket?.productItems ?? []),
+        productsByItemId: fetchProductsInBasket(context, productItems),
+        promotions: fetchPromotionsForBasket(context, productItems),
     };
 };
 
@@ -179,14 +225,14 @@ export const clientLoader: ClientLoaderFunction = ({ context }: ClientLoaderFunc
  * @returns JSX element representing the cart page
  */
 function Cart({
-    loaderData: { basket, productMap: productMapPromise, promotionMap: promotionMapPromise },
+    loaderData: { basket, productsByItemId: productsByItemIdPromise, promotions: promotionsPromise },
 }: {
     loaderData: CartPageData;
 }): ReactElement {
-    const productMap = use(productMapPromise);
-    const promotionMap = use(promotionMapPromise ?? Promise.resolve({}));
+    const productsByItemId = use(productsByItemIdPromise);
+    const promotions = use(promotionsPromise ?? Promise.resolve({}));
 
-    return <CartContent basket={basket} productMap={productMap} promotionMap={promotionMap} />;
+    return <CartContent basket={basket} productsByItemId={productsByItemId} promotions={promotions} />;
 }
 
 /**

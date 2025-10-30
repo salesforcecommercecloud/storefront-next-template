@@ -1,23 +1,21 @@
 import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
-import { PRODUCT_BADGE_DETAILS, type BadgeDetail } from '../config/product-badges';
+import type { BadgeDetail } from '@/config';
 
 interface GetProductBadgesProps {
     product: ShopperSearchTypes.ProductSearchHit;
-    badgeDetails?: BadgeDetail[];
+    badgeDetails: BadgeDetail[];
     maxBadges?: number;
 }
 
 /**
  * Static utility function to determine which product badges should be displayed.
  *
+ * NOTE: badgeDetails must be provided from runtime config (use useConfig() in components)
+ *
  * @param props - Configuration for badge determination
  * @returns Object containing badges array and hasBadges boolean
  */
-export const getProductBadges = ({
-    product,
-    badgeDetails = PRODUCT_BADGE_DETAILS,
-    maxBadges = 3,
-}: GetProductBadgesProps) => {
+export const getProductBadges = ({ product, badgeDetails, maxBadges = 3 }: GetProductBadgesProps) => {
     if (!product) return { badges: [], hasBadges: false };
 
     const activeBadges: BadgeDetail[] = [];

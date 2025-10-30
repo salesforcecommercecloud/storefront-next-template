@@ -50,7 +50,7 @@ export default function CartTitle({ basket }: CartTitleProps): ReactElement {
     };
 
     return (
-        <Typography variant="h1" as="h1" className="text-xl lg:text-2xl font-bold">
+        <Typography variant="h2" as="h1" className="my-6">
             {getItemCountText(totalItems)}
         </Typography>
     );

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { type RouterContextProvider } from 'react-router';
-import { ShopperExperience } from 'commerce-sdk-isomorphic';
+import { ShopperExperience } from 'commerce-sdk-isomorphic/shopperExperience';
 import { createTestContext } from '@/lib/test-utils';
 import createClient, { clientClassCacheContext } from '@/lib/scapi';
 
@@ -13,14 +13,49 @@ vi.mock('@/lib/utils', async () => {
     };
 });
 
+// Mock config.server.ts to return test config values
+vi.mock('../../config.server.ts', () => ({
+    default: {
+        metadata: {
+            projectName: 'Test Project',
+            projectSlug: 'test-project',
+            version: '1.0.0',
+        },
+        app: {
+            commerce: {
+                api: {
+                    clientId: 'c9c45bfd-0ed3-4aa2-9971-40f88962b836',
+                    organizationId: 'f_ecom_zzrf_001',
+                    siteId: 'RefArchGlobal',
+                    shortCode: 'kv7kzm78',
+                    proxy: '/mobify/proxy/api',
+                    callback: '/callback',
+                    privateKeyEnabled: false,
+                },
+            },
+            site: {
+                locale: 'en-US',
+                currency: 'USD',
+                features: {
+                    passwordlessLogin: false,
+                    socialLogin: {
+                        enabled: true,
+                        providers: ['Apple', 'Google'],
+                    },
+                },
+            },
+        },
+    },
+}));
+
 const mockShopperExperienceGetPage = vi.fn();
 const mockShopperExperienceInstance = {
     invalidMethod: 'not a function',
     getPage: mockShopperExperienceGetPage,
 };
 
-vi.mock('commerce-sdk-isomorphic', async () => {
-    const actual = await vi.importActual('commerce-sdk-isomorphic');
+vi.mock('commerce-sdk-isomorphic/shopperExperience', async () => {
+    const actual = await vi.importActual('commerce-sdk-isomorphic/shopperExperience');
     return {
         ...actual,
         ShopperExperience: vi.fn(() => mockShopperExperienceInstance),
@@ -81,8 +116,8 @@ describe('Commerce SDK fetch service', () => {
                 const unauthenticatedContext = createTestContext({ authSession: null });
 
                 const client = createClient(unauthenticatedContext);
-                return expect(client.ShopperProducts.getProduct()).rejects.toThrow(
-                    new TypeError('Client not authenticated: "ShopperProducts"')
+                return expect(client.ShopperBaskets.getBasket()).rejects.toThrow(
+                    new TypeError('Client not authenticated: "ShopperBaskets"')
                 );
             });
 
@@ -96,9 +131,9 @@ describe('Commerce SDK fetch service', () => {
                 return expect(client.ShopperExperience.getPage()).rejects.toThrow('Auth failed');
             });
 
-            it('throws Error when internal SDK client instance validation fails', () => {
+            it('throws Error when internal SDK client instance validation fails', async () => {
                 const client = createClient(mockContextProvider);
-                return expect(client.ShopperProducts.getProducts()).rejects.toThrow(
+                await expect(client.ShopperProducts.getProducts()).rejects.toThrow(
                     'Missing required query parameter: ids'
                 );
             });
@@ -106,7 +141,7 @@ describe('Commerce SDK fetch service', () => {
 
         describe('clientConfig', () => {
             it('creates a client with a default client configuration', async () => {
-                const client = await createClient(mockContextProvider).ShopperBaskets.getInstance();
+                const client = await createClient(mockContextProvider).ShopperBasketsV2.getInstance();
                 expect(client.clientConfig.parameters).toStrictEqual({
                     clientId: 'c9c45bfd-0ed3-4aa2-9971-40f88962b836',
                     currency: 'USD',
@@ -127,50 +162,6 @@ describe('Commerce SDK fetch service', () => {
                     shortCode: 'kv7kzm78',
                     siteId: 'RefArchGlobal',
                     redirectURI: 'https://example.com/callback', // <-- This is special for the `ShopperLogin` client
-                });
-            });
-
-            it('uses default values when environment variables are missing', async () => {
-                vi.stubEnv('VITE_COMMERCE_API_SHORT_CODE', 'custom'); // <-- This must not be empty
-                vi.stubEnv('VITE_COMMERCE_API_CLIENT_ID', '');
-                vi.stubEnv('VITE_COMMERCE_API_ORG_ID', '');
-                vi.stubEnv('VITE_COMMERCE_API_SITE_ID', '');
-                vi.stubEnv('VITE_SITE_LOCALE', '');
-                vi.stubEnv('VITE_SITE_CURRENCY', '');
-                vi.stubEnv('VITE_COMMERCE_API_PROXY', '');
-                vi.stubEnv('VITE_COMMERCE_API_CALLBACK', '');
-
-                const client = await createClient(mockContextProvider).ShopperLogin.getInstance();
-                expect(client.clientConfig.parameters).toStrictEqual({
-                    clientId: '',
-                    currency: 'USD',
-                    locale: 'en-US',
-                    organizationId: '',
-                    shortCode: 'custom',
-                    siteId: '',
-                    redirectURI: 'https://example.com',
-                });
-            });
-
-            it('handles custom environment values', async () => {
-                vi.stubEnv('VITE_COMMERCE_API_SHORT_CODE', 'custom-short-code');
-                vi.stubEnv('VITE_COMMERCE_API_CLIENT_ID', 'custom-client-id');
-                vi.stubEnv('VITE_COMMERCE_API_ORG_ID', 'custom-org-id');
-                vi.stubEnv('VITE_COMMERCE_API_SITE_ID', 'custom-site-id');
-                vi.stubEnv('VITE_SITE_LOCALE', 'fr-FR');
-                vi.stubEnv('VITE_SITE_CURRENCY', 'EUR');
-                vi.stubEnv('VITE_COMMERCE_API_PROXY', '/custom/proxy');
-                vi.stubEnv('VITE_COMMERCE_API_CALLBACK', '/custom/callback');
-
-                const client = await createClient(mockContextProvider).ShopperLogin.getInstance();
-                expect(client.clientConfig.parameters).toStrictEqual({
-                    clientId: 'custom-client-id',
-                    currency: 'EUR',
-                    locale: 'fr-FR',
-                    organizationId: 'custom-org-id',
-                    redirectURI: 'https://example.com/custom/callback',
-                    shortCode: 'custom-short-code',
-                    siteId: 'custom-site-id',
                 });
             });
         });
@@ -359,6 +350,72 @@ describe('Commerce SDK fetch service', () => {
                 ]);
 
                 expect(mockShopperExperienceGetPage).toHaveBeenCalledTimes(2);
+            });
+        });
+
+        describe('dynamic import resolution', () => {
+            // Track counts locally
+            const importCounts = vi.hoisted(() => ({ subpath: 0, full: 0 }));
+
+            // Additional subpath to exercise a fresh subpath import independent of existing imports
+            vi.mock('commerce-sdk-isomorphic/shopperStores', async () => {
+                importCounts.subpath++;
+                const actual = await vi.importActual('commerce-sdk-isomorphic/shopperStores');
+                const instance = { getStores: vi.fn(), getStore: vi.fn() };
+                return {
+                    ...actual,
+                    ShopperStores: vi.fn(() => instance),
+                };
+            });
+
+            // Fallback full SDK path for unmapped client
+            vi.mock('commerce-sdk-isomorphic', async () => {
+                importCounts.full++;
+                const actual = await vi.importActual('commerce-sdk-isomorphic');
+                class NonMappedClientMock {}
+                return {
+                    ...actual,
+                    NonMappedClient: NonMappedClientMock,
+                } as any;
+            });
+
+            it('increments when importing a different SDK subpath (ShopperStores)', async () => {
+                expect(importCounts.subpath).toBe(0);
+                expect(importCounts.full).toBe(0);
+                const client = createClient(mockContextProvider);
+                await client.ShopperStores.getInstance();
+                expect(importCounts.subpath).toBe(1);
+                expect(importCounts.full).toBe(0);
+            });
+
+            it('falls back to the full SDK import when subpath importer is unavailable', async () => {
+                const originalSubpathCount = importCounts.subpath;
+                const client = createClient(mockContextProvider);
+                // @ts-expect-error: NonMappedClient is intentionally not part of the typed key map
+                const instance = await client.NonMappedClient.getInstance();
+                expect(instance).toBeTruthy();
+                expect(importCounts.subpath).toBe(originalSubpathCount);
+                expect(importCounts.full).toBe(1);
+            });
+
+            it('executes mapped SDK subpath importers for additional clients', async () => {
+                const client = createClient(mockContextProvider);
+
+                // Exercise additional mapped clients to increase function coverage of importers
+                await client.ShopperBaskets.getInstance();
+                await client.ShopperBasketsV2.getInstance();
+                await client.ShopperConsents.getInstance();
+                await client.ShopperContexts.getInstance();
+                await client.ShopperCustomers.getInstance();
+                await client.ShopperGiftCertificates.getInstance();
+                await client.ShopperOrders.getInstance();
+                await client.ShopperProducts.getInstance();
+                await client.ShopperPromotions.getInstance();
+                await client.ShopperSearch.getInstance();
+                await client.ShopperSEO.getInstance();
+
+                // If we reached here without throwing, subpath importers worked
+                expect(true).toBe(true);
             });
         });
     });

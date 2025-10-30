@@ -1,12 +1,12 @@
 import { type ReactNode } from 'react';
 import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import ProductCard from '@/components/product-card';
+import { ProductTile } from '@/components/product-tile';
 import withSuspense from '@/components/with-suspense';
 import ProductCarouselSkeleton from './skeleton';
 
 /**
- * ProductCarousel component displays a horizontal carousel of product cards.
+ * ProductCarousel component displays a horizontal carousel of product tiles.
  *
  * This component renders a responsive carousel with navigation controls that displays
  * a collection of products in a scrollable horizontal layout. It's commonly used
@@ -52,26 +52,23 @@ export default function ProductCarousel({
                 </div>
             )}
 
-            <div className="px-4 sm:px-6 lg:px-8">
-                <Carousel
-                    className="w-full max-w-screen-2xl px-12 mx-auto"
-                    opts={{
-                        align: 'start',
-                        slidesToScroll: 'auto',
-                    }}>
-                    <CarouselContent className="-ml-4 items-stretch">
-                        {products.map((product) => (
-                            <CarouselItem
-                                key={product.productId}
-                                className="pl-4 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 py-1">
-                                <ProductCard product={product} className="h-full" />
-                            </CarouselItem>
-                        ))}
-                    </CarouselContent>
-                    <CarouselPrevious />
-                    <CarouselNext />
-                </Carousel>
-            </div>
+            <Carousel
+                className="w-full"
+                opts={{
+                    align: 'start',
+                }}>
+                <CarouselContent className="items-stretch flex-nowrap">
+                    {products.map((product) => (
+                        <CarouselItem
+                            key={product.productId}
+                            className="basis-1/2 sm:basis-1/3 md:basis-1/4 py-1 flex justify-center pl-0">
+                            <ProductTile product={product} className="h-auto" />
+                        </CarouselItem>
+                    ))}
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+            </Carousel>
         </>
     );
 }

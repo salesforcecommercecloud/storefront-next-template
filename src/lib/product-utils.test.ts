@@ -4,7 +4,13 @@
 
 import { describe, it, expect } from 'vitest';
 import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
-import { getDisplayVariationValues, createProductUrl, getImagesForColor } from './product-utils';
+import {
+    getDisplayVariationValues,
+    createProductUrl,
+    getImagesForColor,
+    isProductBundle,
+    isStandardProduct,
+} from './product-utils';
 
 describe('product-utils', () => {
     describe('getDisplayVariationValues', () => {
@@ -173,6 +179,18 @@ describe('product-utils', () => {
             const result = createProductUrl('12345', 'red');
 
             expect(result).toBe('/product/12345?color=red');
+        });
+
+        it('should create product URL with custom attribute type', () => {
+            const result = createProductUrl('12345', 'L', 'size');
+
+            expect(result).toBe('/product/12345?size=L');
+        });
+
+        it('should default to color when attribute type not specified', () => {
+            const result = createProductUrl('12345', 'blue');
+
+            expect(result).toBe('/product/12345?color=blue');
         });
     });
 
@@ -367,6 +385,28 @@ describe('product-utils', () => {
 
             expect(result1).toEqual([]);
             expect(result2).toEqual([]);
+        });
+    });
+
+    describe('product type helpers', () => {
+        it('isProductBundle returns true when product.type.bundle is true', () => {
+            const product = { id: 'p1', type: { bundle: true } } as unknown as ShopperProductsTypes.Product;
+            expect(isProductBundle(product)).toBe(true);
+        });
+
+        it('isProductBundle returns false when product.type.bundle is falsy', () => {
+            const product = { id: 'p2', type: { item: true } } as unknown as ShopperProductsTypes.Product;
+            expect(isProductBundle(product)).toBe(false);
+        });
+
+        it('isStandardProduct returns true when product.type.item is true', () => {
+            const product = { id: 'p4', type: { item: true } } as unknown as ShopperProductsTypes.Product;
+            expect(isStandardProduct(product)).toBe(true);
+        });
+
+        it('isStandardProduct returns false when product.type.item is falsy', () => {
+            const product = { id: 'p5', type: { master: true } } as unknown as ShopperProductsTypes.Product;
+            expect(isStandardProduct(product)).toBe(false);
         });
     });
 });

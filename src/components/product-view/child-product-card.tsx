@@ -30,15 +30,59 @@ interface ProductSelectionValues {
 }
 
 interface ChildProductCardProps {
+    /** Child product from the parent set or bundle */
     childProduct: ShopperProductsTypes.Product;
+    /** Parent product (set or bundle) containing this child */
     parentProduct: ShopperProductsTypes.Product;
+    /** Callback to notify parent component of selection changes (variant, quantity) */
     onSelectionChange: (productId: string, selection: ProductSelectionValues) => void;
+    /** Mode for swatch interaction: 'uncontrolled' render as link button, controlled renders as normal button*/
+    swatchMode?: 'uncontrolled' | 'controlled';
 }
 
+/**
+ * Displays a child product card within a product set or bundle, with variant selection and quantity control.
+ *
+ * This component provides:
+ * - Product image gallery with variant-specific images
+ * - Interactive variant selection (color, size, etc.) with swatches
+ * - Quantity picker (for sets only - bundles use parent quantity)
+ * - Real-time selection validation and stock checks
+ * - Individual "Add to Cart" button (for sets only)
+ * - Automatic parent notification on selection changes
+ *
+ * Supports two swatch modes:
+ * - uncontrolled mode (default): Swatches use URL navigation for variant selection
+ * - controlled mode: Swatches use callbacks for controlled variant selection (used in modals)
+ *
+ * @example Basic usage in ChildProducts component
+ * ```tsx
+ * <ChildProductCard
+ *   childProduct={childProduct}
+ *   parentProduct={parentProduct}
+ *   onSelectionChange={setChildProductSelection}
+ *   mode="add"
+ * />
+ * ```
+ *
+ * @example Edit mode (in modal)
+ * ```tsx
+ * <ChildProductCard
+ *   childProduct={childProduct}
+ *   parentProduct={parentProduct}
+ *   onSelectionChange={setChildProductSelection}
+ *   mode="edit"
+ * />
+ * ```
+ *
+ * @param props - Component props
+ * @returns Card component with product details, variant selection, and cart controls
+ */
 export default function ChildProductCard({
     childProduct,
     parentProduct,
     onSelectionChange,
+    swatchMode,
 }: ChildProductCardProps): ReactElement {
     const isParentProductASet = isProductSet(parentProduct);
     // To avoid infinite loop, do not rely on `childProduct` because it'll always be new object reference
@@ -59,7 +103,7 @@ export default function ChildProductCard({
 
     // Use product actions hook for individual product cart operations
     const {
-        isAddingToCart: isAddingChildToCart,
+        isAddingToOrUpdatingCart: isAddingChildOrUpdatingToCart,
         canAddToCart: canAddChildToCart,
         stockLevel,
         isOutOfStock,
@@ -140,7 +184,8 @@ export default function ChildProductCard({
                         return (
                             <Swatch
                                 key={swatchValue}
-                                href={href}
+                                // Don't use link button if the component is rendered in edit mode
+                                href={swatchMode === 'uncontrolled' ? href : undefined}
                                 disabled={!orderable}
                                 value={swatchValue}
                                 name={valueName}
@@ -185,10 +230,10 @@ export default function ChildProductCard({
                 {isParentProductASet && (
                     <Button
                         onClick={() => void handleAddChildToCart()}
-                        disabled={!canAddChildToCart || isAddingChildToCart}
+                        disabled={!canAddChildToCart || isAddingChildOrUpdatingToCart}
                         size="sm"
                         className="w-full">
-                        {isAddingChildToCart ? uiStrings.product.addingToCart : uiStrings.product.addToCart}
+                        {isAddingChildOrUpdatingToCart ? uiStrings.product.addingToCart : uiStrings.product.addToCart}
                     </Button>
                 )}
             </CardContent>

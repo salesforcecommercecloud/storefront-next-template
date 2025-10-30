@@ -11,7 +11,7 @@ export async function getShippingMethodsForShipment(
     basketId: string,
     shipmentId: string = 'me'
 ): Promise<ShopperBasketsTypes.ShippingMethodResult> {
-    return createClient(context).ShopperBaskets.getShippingMethodsForShipment({
+    return createClient(context).ShopperBasketsV2.getShippingMethodsForShipment({
         parameters: {
             basketId,
             shipmentId,

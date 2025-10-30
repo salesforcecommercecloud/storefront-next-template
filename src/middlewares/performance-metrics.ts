@@ -1,10 +1,11 @@
 /* eslint-disable no-console */
-import { createContext, type MiddlewareFunction } from 'react-router';
-import odysseyConfig from '../../odyssey.config.json';
+import { createContext, type DataStrategyResult, type MiddlewareFunction } from 'react-router';
+import { appConfigContext } from '@/config';
 
 type MarkerType = 'start' | 'end';
 
 interface MarkOptions {
+    startTime?: number;
     detail?: string;
 }
 
@@ -38,12 +39,14 @@ export const PERFORMANCE_MARKS = {
     authLoginRegisteredUser: 'auth.loginRegisteredUser',
     authRefreshToken: 'auth.refreshToken',
     authGuestLogin: 'auth.guestLogin',
+    authAuthorizePasswordless: 'auth.authorizePasswordless',
+    authGetPasswordLessAccessToken: 'auth.getPasswordLessAccessToken',
 
     // API Call helpers - generate dynamic performance mark names
     apiCall: {
         /**
          * Generate a standardized performance mark name for API calls
-         * @param className - The SDK client class name (e.g., 'ShopperProducts', 'ShopperBaskets')
+         * @param className - The SDK client class name (e.g., 'ShopperProducts', 'ShopperBasketsV2')
          * @param methodName - The method name (e.g., 'getProduct', 'addItemToBasket')
          * @returns Standardized performance mark name
          */
@@ -51,6 +54,8 @@ export const PERFORMANCE_MARKS = {
             `apiCall.${className}.${methodName}`,
     },
 } as const;
+
+let sfdcPerformanceMetricsReported = false;
 
 /**
  * This is an internal class that is responsible for measuring server side performance.
@@ -66,15 +71,13 @@ export class PerformanceTimer {
         END: 'end',
     } as const;
 
-    private enabled: boolean;
-    private requestId: string;
-    private requestUrl: string;
+    private readonly enabled: boolean;
+    private readonly requestId: string;
+    private readonly requestUrl: string;
 
-    public marks: { start: Map<string, MarkEntry>; end: Map<string, MarkEntry> };
-
-    public metrics: MetricEntry[];
-
-    public pendingOperations: Set<Promise<unknown>>;
+    public readonly marks: { start: Map<string, MarkEntry>; end: Map<string, MarkEntry> };
+    public readonly metrics: MetricEntry[];
+    public readonly pendingOperations: Set<Promise<unknown>>;
 
     constructor(
         options: {
@@ -104,9 +107,15 @@ export class PerformanceTimer {
         this.pendingOperations.add(promise);
 
         // Remove from pending set when promise resolves/rejects
-        void promise.finally(() => {
-            this.pendingOperations.delete(promise);
-        });
+        // Note: Using finally → catch order (not catch → finally) to handle rejections
+        // from both the original promise AND any errors from the cleanup code
+        void promise
+            .finally(() => {
+                this.pendingOperations.delete(promise);
+            })
+            .catch(() => {
+                // This prevents unhandled promise rejection warnings
+            });
     }
 
     /**
@@ -152,13 +161,11 @@ export class PerformanceTimer {
      * @return {String}
      */
     buildServerTimingHeader(): string {
-        const header = this.metrics
+        return this.metrics
             .map((metric) => {
                 return `${metric.name};dur=${metric.duration.toFixed(2)}`;
             })
             .join(', ');
-
-        return header;
     }
 
     /**
@@ -322,7 +329,7 @@ export class PerformanceTimer {
             return;
         }
 
-        const timestamp = performance.now();
+        const timestamp = options?.startTime ?? performance.now();
         const isEnd = type === this.MARKER_TYPES.END;
         const storage = isEnd ? this.marks.end : this.marks.start;
         storage.set(name, {
@@ -352,7 +359,7 @@ export const performanceTimerContext = createContext<PerformanceTimer | undefine
 /**
  * This is a middleware that measures server side performance.
  *
- * It can be enabled by setting the `odysseyConfig.performance.metrics.serverPerformanceMetricsEnabled` flag to `true`.
+ * It can be enabled by setting the `config.performance.metrics.serverPerformanceMetricsEnabled` flag to `true`.
  *
  * It currently measures the time it takes to do the following:
  * - Server side rendering process
@@ -361,20 +368,23 @@ export const performanceTimerContext = createContext<PerformanceTimer | undefine
  * - Server side middleware operations
  */
 export const performanceMetricsMiddlewareServer: MiddlewareFunction<Response> = async ({ request, context }, next) => {
-    const enabled = odysseyConfig.performance?.metrics?.serverPerformanceMetricsEnabled ?? false;
-    const serverTimingHeaderEnabled = odysseyConfig.performance?.metrics?.serverTimingHeaderEnabled ?? false;
+    const config = context.get(appConfigContext);
+    const enabled = config?.performance?.metrics?.serverPerformanceMetricsEnabled ?? false;
+    const serverTimingHeaderEnabled = config?.performance?.metrics?.serverTimingHeaderEnabled ?? false;
+
+    const performanceTimer = new PerformanceTimer({
+        enabled,
+        requestId: `server-${Date.now()}`,
+        requestUrl: request.url,
+    });
+    // Always set the performance timer in context, even when disabled
+    context.set(performanceTimerContext, performanceTimer);
 
     if (!enabled) {
         return next();
     }
 
     // Start timing the total SSR process
-    const performanceTimer = new PerformanceTimer({
-        enabled,
-        requestId: `server-${Date.now()}`,
-        requestUrl: request.url,
-    });
-    context.set(performanceTimerContext, performanceTimer);
     performanceTimer.mark(PERFORMANCE_MARKS.serverTotal, 'start');
     performanceTimer.mark(PERFORMANCE_MARKS.serverMiddleware, 'start');
 
@@ -412,7 +422,7 @@ export const performanceMetricsMiddlewareServer: MiddlewareFunction<Response> = 
 /**
  * This is a middleware that measures client side performance.
  *
- * It can be enabled by setting the `odysseyConfig.performance.metrics.clientPerformanceMetricsEnabled` flag to `true`.
+ * It can be enabled by setting the `config.performance.metrics.clientPerformanceMetricsEnabled` flag to `true`.
  *
  * It currently measures the time it takes to do the following:
  * - Client side total time to fulfill the requests
@@ -420,12 +430,12 @@ export const performanceMetricsMiddlewareServer: MiddlewareFunction<Response> = 
  * - Client side authentication operations
  * - Client side middleware operations
  */
-export const performanceMetricsMiddlewareClient: MiddlewareFunction<void> = async ({ context }, next) => {
-    const enabled = odysseyConfig.performance?.metrics?.clientPerformanceMetricsEnabled ?? false;
-
-    if (!enabled) {
-        return next();
-    }
+export const performanceMetricsMiddlewareClient: MiddlewareFunction<Record<string, DataStrategyResult>> = async (
+    { context },
+    next
+) => {
+    const config = context.get(appConfigContext);
+    const enabled = config?.performance?.metrics?.clientPerformanceMetricsEnabled ?? false;
 
     // Create performance timer for client-side operations
     const performanceTimer = new PerformanceTimer({
@@ -433,11 +443,29 @@ export const performanceMetricsMiddlewareClient: MiddlewareFunction<void> = asyn
         requestId: `client-${Date.now()}`,
         requestUrl: typeof window !== 'undefined' ? window.location.href : 'client-side',
     });
+    // Always set the performance timer in context, even when disabled
+    context.set(performanceTimerContext, performanceTimer);
+
+    if (!enabled) {
+        return next();
+    }
+
+    // Start timing the total client-side process
     performanceTimer.mark(PERFORMANCE_MARKS.clientTotal, 'start');
     performanceTimer.mark(PERFORMANCE_MARKS.clientMiddleware, 'start');
 
-    // Store in context for client-side SCAPI calls
-    context.set(performanceTimerContext, performanceTimer);
+    // **Important:** By default, this client middleware runs **after** the client-side process has already finished its
+    // initial render cycle. That's due to how client middleware works in React Router if applied to a component that
+    // doesn't also provide a `HydrateFallback` component - which is the case in our default `root.tsx`. That's why we
+    // retrieve historical "first-paint" data from the performance API to adjust the start of our "clientTotal" mark
+    // accordingly - on initial navigations only.
+    if (!sfdcPerformanceMetricsReported) {
+        sfdcPerformanceMetricsReported = true;
+        const entry = performance.getEntriesByName('first-paint', 'paint').at(0);
+        if (entry) {
+            performanceTimer.mark(PERFORMANCE_MARKS.clientTotal, 'start', { startTime: entry.startTime });
+        }
+    }
 
     try {
         await next();

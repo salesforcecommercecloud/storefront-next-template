@@ -44,7 +44,7 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
     }
 
     try {
-        const client = createClient(context).ShopperBaskets;
+        const client = createClient(context).ShopperBasketsV2;
         const updatedBasket = await client.updateShippingAddressForShipment({
             parameters: {
                 basketId: basket.basketId,

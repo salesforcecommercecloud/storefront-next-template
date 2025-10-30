@@ -6,6 +6,8 @@ import { RemoveItemButtonWithConfirmation } from './remove-item-button-with-conf
 import type { ActionResponse } from '@/routes/types/action-responses';
 import uiStrings from '@/temp-ui-string';
 import { useItemFetcher } from '@/hooks/use-item-fetcher';
+import { ConfigProvider } from '@/config/context';
+import { mockConfig } from '@/test-utils/config';
 
 // Mock the toast hook
 const mockAddToast = vi.fn();
@@ -31,7 +33,7 @@ const mockUseItemFetcher = vi.mocked(useItemFetcher);
 
 describe('RemoveItemButtonWithConfirmation', () => {
     const defaultConfig = {
-        action: '/action/remove-cart-item',
+        action: '/action/cart-item-remove',
         confirmDescription: uiStrings.cart.removeItemConfirmDescription,
     };
 
@@ -44,7 +46,11 @@ describe('RemoveItemButtonWithConfirmation', () => {
     });
 
     test('renders remove button with correct text and attributes', () => {
-        render(<RemoveItemButtonWithConfirmation itemId="item-123" config={defaultConfig} />);
+        render(
+            <ConfigProvider config={mockConfig}>
+                <RemoveItemButtonWithConfirmation itemId="item-123" config={defaultConfig} />
+            </ConfigProvider>
+        );
 
         const button = screen.getByTestId('remove-item-item-123');
         expect(button).toBeInTheDocument();
@@ -55,7 +61,11 @@ describe('RemoveItemButtonWithConfirmation', () => {
     test('renders confirmation dialog content when opened', async () => {
         const user = userEvent.setup();
 
-        render(<RemoveItemButtonWithConfirmation itemId="item-123" config={defaultConfig} />);
+        render(
+            <ConfigProvider config={mockConfig}>
+                <RemoveItemButtonWithConfirmation itemId="item-123" config={defaultConfig} />
+            </ConfigProvider>
+        );
 
         // Click the trigger to open the dialog
         const triggerButton = screen.getByTestId('remove-item-item-123');
@@ -73,7 +83,11 @@ describe('RemoveItemButtonWithConfirmation', () => {
         mockFetcher.state = 'submitting';
         mockUseItemFetcher.mockReturnValue(mockFetcher);
 
-        render(<RemoveItemButtonWithConfirmation itemId="item-123" config={defaultConfig} />);
+        render(
+            <ConfigProvider config={mockConfig}>
+                <RemoveItemButtonWithConfirmation itemId="item-123" config={defaultConfig} />
+            </ConfigProvider>
+        );
 
         const button = screen.getByTestId('remove-item-item-123');
         expect(button).toHaveTextContent(uiStrings.removeItem.removing);
@@ -84,7 +98,11 @@ describe('RemoveItemButtonWithConfirmation', () => {
     test('calls removeItem when confirmed', async () => {
         const user = userEvent.setup();
 
-        render(<RemoveItemButtonWithConfirmation itemId="item-123" config={defaultConfig} />);
+        render(
+            <ConfigProvider config={mockConfig}>
+                <RemoveItemButtonWithConfirmation itemId="item-123" config={defaultConfig} />
+            </ConfigProvider>
+        );
 
         // Click the remove button to open dialog
         const removeButton = screen.getByTestId('remove-item-item-123');
@@ -110,7 +128,11 @@ describe('RemoveItemButtonWithConfirmation', () => {
         mockFetcher.data = { success: true };
         mockUseItemFetcher.mockReturnValue(mockFetcher);
 
-        render(<RemoveItemButtonWithConfirmation itemId="item-123" config={defaultConfig} />);
+        render(
+            <ConfigProvider config={mockConfig}>
+                <RemoveItemButtonWithConfirmation itemId="item-123" config={defaultConfig} />
+            </ConfigProvider>
+        );
 
         expect(mockAddToast).toHaveBeenCalledWith(uiStrings.removeItem.success, 'success');
     });
@@ -121,7 +143,11 @@ describe('RemoveItemButtonWithConfirmation', () => {
         mockFetcher.data = { success: false };
         mockUseItemFetcher.mockReturnValue(mockFetcher);
 
-        render(<RemoveItemButtonWithConfirmation itemId="item-123" config={defaultConfig} />);
+        render(
+            <ConfigProvider config={mockConfig}>
+                <RemoveItemButtonWithConfirmation itemId="item-123" config={defaultConfig} />
+            </ConfigProvider>
+        );
 
         expect(mockAddToast).toHaveBeenCalledWith(uiStrings.removeItem.failed, 'error');
     });
@@ -131,7 +157,11 @@ describe('RemoveItemButtonWithConfirmation', () => {
         mockFetcher.state = 'submitting';
         mockUseItemFetcher.mockReturnValue(mockFetcher);
 
-        render(<RemoveItemButtonWithConfirmation itemId="item-123" config={defaultConfig} />);
+        render(
+            <ConfigProvider config={mockConfig}>
+                <RemoveItemButtonWithConfirmation itemId="item-123" config={defaultConfig} />
+            </ConfigProvider>
+        );
 
         const removeButton = screen.getByTestId('remove-item-item-123');
         expect(removeButton).toBeDisabled();
@@ -142,7 +172,11 @@ describe('RemoveItemButtonWithConfirmation', () => {
     test('closes dialog when cancel button is clicked', async () => {
         const user = userEvent.setup();
 
-        render(<RemoveItemButtonWithConfirmation itemId="item-123" config={defaultConfig} />);
+        render(
+            <ConfigProvider config={mockConfig}>
+                <RemoveItemButtonWithConfirmation itemId="item-123" config={defaultConfig} />
+            </ConfigProvider>
+        );
 
         // Click the trigger to open the dialog
         const triggerButton = screen.getByTestId('remove-item-item-123');
@@ -160,7 +194,11 @@ describe('RemoveItemButtonWithConfirmation', () => {
     });
 
     test('applies custom className', () => {
-        render(<RemoveItemButtonWithConfirmation itemId="item-123" config={defaultConfig} className="custom-class" />);
+        render(
+            <ConfigProvider config={mockConfig}>
+                <RemoveItemButtonWithConfirmation itemId="item-123" config={defaultConfig} className="custom-class" />
+            </ConfigProvider>
+        );
 
         const button = screen.getByTestId('remove-item-item-123');
         expect(button).toHaveClass('custom-class');

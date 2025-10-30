@@ -13,7 +13,7 @@ export function getBasketCurrency(basket: ShopperBasketsTypes.Basket | undefined
     }
 
     // 2. Use site configuration currency or 3. Fallback to USD for backward compatibility
-    return import.meta.env.VITE_SITE_CURRENCY || 'USD';
+    return import.meta.env.PUBLIC_SITE_CURRENCY || 'USD';
 }
 
 /**
@@ -24,7 +24,7 @@ export async function addPaymentInstrumentToBasket(
     basketId: string,
     paymentInstrument: ShopperBasketsTypes.OrderPaymentInstrument
 ): Promise<ShopperBasketsTypes.Basket> {
-    return createClient(context).ShopperBaskets.addPaymentInstrumentToBasket({
+    return createClient(context).ShopperBasketsV2.addPaymentInstrumentToBasket({
         parameters: { basketId },
         body: paymentInstrument,
     });
@@ -38,7 +38,7 @@ export async function updateBillingAddressForBasket(
     basketId: string,
     billingAddress: ShopperBasketsTypes.OrderAddress
 ): Promise<ShopperBasketsTypes.Basket> {
-    return createClient(context).ShopperBaskets.updateBillingAddressForBasket({
+    return createClient(context).ShopperBasketsV2.updateBillingAddressForBasket({
         parameters: { basketId },
         body: billingAddress,
     });
@@ -66,8 +66,27 @@ export async function calculateBasket(
 
     // Use updateBasket with currency to trigger calculation
     // This follows the PWA Kit pattern - updating currency forces recalculation
-    return createClient(context).ShopperBaskets.updateBasket({
+    return createClient(context).ShopperBasketsV2.updateBasket({
         parameters: { basketId },
         body,
+    });
+}
+
+/**
+ * Merge guest basket with registered user basket
+ * Call this after login completes to preserve guest cart items
+ *
+ * This uses transferBasket with merge=true which:
+ * - Merges guest basket items into the registered user's basket
+ * - Handles case where registered user has no active basket (creates one)
+ * - Automatically finds the guest basket using the session's usid
+ *
+ * @param context - Router context for authentication
+ * @returns The merged basket
+ */
+export async function mergeBasket(context: Readonly<RouterContextProvider>): Promise<ShopperBasketsTypes.Basket> {
+    return createClient(context).ShopperBasketsV2.transferBasket({
+        parameters: { merge: true },
+        body: {},
     });
 }

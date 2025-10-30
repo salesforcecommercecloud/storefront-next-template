@@ -1,4 +1,12 @@
-export default {
+/**
+ * UI Strings Configuration
+ *
+ * This module contains UI strings used throughout the application.
+ * TODO: Move these to config.server.ts or implement a proper i18n system.
+ */
+
+// Additional UI strings not yet moved to config
+const additionalStrings = {
     actionCard: {
         edit: 'Edit',
         remove: 'Remove',
@@ -6,6 +14,7 @@ export default {
     common: {
         loading: 'Loading',
         product: 'the product',
+        noImageAvailable: 'No image available',
     },
     search: {
         results: 'Search Results for',
@@ -39,7 +48,7 @@ export default {
         title: 'Edit Cart Item',
     },
     header: {
-        brand: 'Performer',
+        brand: 'Market\nStreet',
         logoAlt: 'Home',
         searchPlaceholder: 'Search',
         welcomeBack: 'Welcome back!',
@@ -191,6 +200,25 @@ export default {
             autoLoginAfterRegistrationFailed:
                 'Account created successfully, but auto-login failed. Please log in manually.',
         },
+        // Passwordless login errors
+        passwordless: {
+            missingToken: 'Missing token',
+            missingCallbackToken: 'Missing x-slas-callback-token header',
+            missingRequiredFields: 'Missing required fields: email_id and token',
+        },
+        // JWKS proxy errors
+        jwks: {
+            missingEnvironmentVariables: 'Missing required configuration: shortCode and organizationId',
+            invalidResponse: 'Invalid JWKS response: missing or invalid keys array',
+            unknownError: 'Unknown error occurred',
+        },
+        // Marketing Cloud configuration errors
+        marketing: {
+            clientIdMissing: 'MARKETING_CLOUD_CLIENT_ID is not set in the environment variables.',
+            clientSecretMissing: 'MARKETING_CLOUD_CLIENT_SECRET is not set in the environment variables.',
+            subdomainMissing: 'MARKETING_CLOUD_SUBDOMAIN is not set in the environment variables.',
+            templateIdMissing: 'MARKETING_CLOUD_PASSWORDLESS_LOGIN_TEMPLATE is not set in the environment variables.',
+        },
     },
     quantitySelector: {
         quantity: 'Quantity:',
@@ -205,8 +233,12 @@ export default {
         onlyLeftForProduct: 'Only {stockLevel} left for {productName}!',
     },
     product: {
-        // Product detail page
-        recommendedProductsTitle: 'You might also like',
+        // Product recommendations
+        recommendations: {
+            youMightAlsoLike: 'You might also like',
+            completeTheLook: 'Complete the look',
+            recentlyViewed: 'Recently viewed',
+        },
 
         // Product info component
         from: 'from',
@@ -217,8 +249,12 @@ export default {
         backOrder: 'Available for back order',
         outOfStockLabel: 'Out of stock',
         selectAllOptions: 'Please select all your options above',
+        features: 'Features',
         addingToCart: 'Adding to Cart...',
         addToCart: 'Add to Cart',
+        moreOptions: 'More Options',
+        updatingCart: 'Updating...',
+        updateCart: 'Update',
         addingToWishlist: 'Adding to Wishlist...',
         addToWishlist: 'Add to Wishlist',
         productSetNotice: 'This is a product set. Select individual items below to add to cart.',
@@ -236,6 +272,11 @@ export default {
         freeShipping: 'Free shipping on orders over $50',
         standardShipping: 'Standard shipping: 3-5 business days',
         expressShipping: 'Express shipping: 1-2 business days',
+
+        // Price range input
+        priceMin: 'Min',
+        priceMax: 'Max',
+        priceTo: 'to',
         returns: 'Returns: 30-day return policy',
         reviews: 'Reviews',
         reviewsComingSoon: 'Customer reviews coming soon.',
@@ -258,9 +299,11 @@ export default {
 
         // Toast messages
         addedToCart: 'Added {productName} to cart',
+        updatedCart: 'Updated {productName} in cart',
         addedSetToCart: 'Added product set to cart',
         addedBundleToCart: 'Added product bundle to cart',
         failedToAddToCart: 'Failed to add to cart: {error}',
+        failedToUpdateCart: 'Failed to update cart: {error}',
         failedToAddItemsToCart: 'Failed to add items to cart: {error}',
         failedToAddBundleToCart: 'Failed to add bundle to cart: {error}',
         addedToWishlist: 'Added {productName} to wishlist',
@@ -272,8 +315,12 @@ export default {
         productItemsRequired: 'Product items data is required',
         bundleDataRequired: 'Bundle item and child selections data are required',
         failedToAddItemToCart: 'Failed to add item to cart',
+        failedToUpdateItemToCart: 'Failed to update item to cart',
+        failedToRemoveItem: 'Failed to remove item',
+        failedToUpdateItemQuantity: 'Failed to update item quantity',
         failedToAddItemsToCartError: 'Failed to add items to cart',
         failedToAddBundleToCartError: 'Failed to add bundle to cart',
+        failedToUpdateBundleToCartError: 'Failed to update bundle to cart',
         pleaseSelectOptionsFor: 'Please select options for {productName}',
         productNotOrderable: '{productName} is not orderable',
 
@@ -320,7 +367,8 @@ export default {
             signIn: 'Sign In',
         },
         summary: {
-            orderSummary: 'Order Summary',
+            orderSummary: 'Summary',
+            showOrderSummary: 'Show order summary',
             subtotal: 'Subtotal',
             shipping: 'Shipping',
             shippingPromotionApplied: '(Promotion applied)',
@@ -333,14 +381,12 @@ export default {
             noBasketData: 'No basket data available',
         },
         promoCode: {
-            placeholder: 'Enter promo code',
+            placeholder: 'Promo code...',
             apply: 'Apply',
             applying: 'Applying...',
-            promotionsApplied: 'Promotions applied:',
             remove: 'Remove',
             removing: 'Removing...',
-            accordionTitle: 'Do you have a promo code?',
-            label: 'Promo Code',
+            accordionTitle: 'Enter a Promotion Code',
             successMessage: 'Promotion applied successfully!',
             errorMessage: 'Check the code and try again, it may already be applied or the promo has expired.',
             removeSuccessMessage: 'Promotion removed successfully!',
@@ -389,18 +435,25 @@ export default {
         badge: {
             ariaLabel: 'My cart, number of items: {count}',
         },
+        bundle: {
+            selectedOptions: 'Selected Options',
+        },
     },
     checkout: {
         contactInfo: {
             title: 'Contact Information',
-            emailLabel: 'Email Address',
             emailPlaceholder: 'Enter your email address',
             emailRequired: 'Please enter your email address',
             emailInvalid: 'Please enter a valid email address',
+            countryCodeLabel: 'Country Code',
+            phoneLabel: 'Phone Number',
+            phonePlaceholder: 'Phone number',
+            notProvided: 'Not provided yet',
+            loginSuggestion: '💡 Have an account? You can continue as guest or ',
+            loginSuggestionLink: 'sign in for faster checkout',
+            usingRegisteredAccount: '✓ Using your registered account',
             continue: 'Continue to Shipping',
             saving: 'Saving...',
-            saved: 'Contact information saved',
-            failed: 'Failed to save contact information',
         },
         shippingAddress: {
             title: 'Shipping Address',
@@ -429,12 +482,14 @@ export default {
             saved: 'Shipping address saved',
             failed: 'Failed to save shipping address',
             confirmed: 'Shipping address confirmed',
+            notProvided: 'Shipping address not provided yet',
         },
         shippingOptions: {
             title: 'Shipping Options',
             selectRequired: 'Please select a shipping method',
             saving: 'Saving...',
             continue: 'Continue to Payment',
+            enterAddressFirst: 'Enter your shipping address to view available shipping methods.',
         },
         payment: {
             title: 'Payment Information',
@@ -481,6 +536,9 @@ export default {
         },
         orderSummary: {
             title: 'Order Summary',
+        },
+        myCart: {
+            title: 'My Cart',
         },
         placeOrder: {
             button: 'Place Order',
@@ -563,6 +621,55 @@ export default {
             hiddenPassword: '••••••••',
         },
     },
+    home: {
+        hero: {
+            slide1: {
+                title: 'The React Starter Store for High Performers',
+                subtitle: 'Discover our latest collection of products',
+                ctaText: 'Shop Now',
+                imageAlt: 'Minimalist white cube on clean background',
+            },
+            slide2: {
+                title: 'Premium Quality Products',
+                subtitle: 'Handpicked items for the modern lifestyle',
+                ctaText: 'Explore Collection',
+                imageAlt: 'Minimalist white cube on clean background',
+            },
+            slide3: {
+                title: 'Fast & Reliable Delivery',
+                subtitle: 'Get your orders delivered quickly and safely',
+                ctaText: 'Learn More',
+                imageAlt: 'Minimalist white cube on clean background',
+            },
+        },
+        featuredProducts: {
+            title: 'Featured Products',
+        },
+        newArrivals: {
+            title: 'New Arrivals',
+            description:
+                'Discover the latest additions to our collection. From statement pieces to everyday essentials.',
+            ctaText: 'SHOP NEW ARRIVALS',
+        },
+        categoryGrid: {
+            title: 'Step into Elegance',
+            shopNowButton: 'Shop Now',
+        },
+        featuredContent: {
+            women: {
+                title: 'Women',
+                description: 'Discover our curated collection of sophisticated footwear designed for the modern woman.',
+                ctaText: 'EXPLORE COLLECTION',
+                imageAlt: "Women's Collection",
+            },
+            men: {
+                title: 'Men',
+                description: "Timeless craftsmanship meets contemporary style in our men's footwear collection.",
+                ctaText: 'EXPLORE COLLECTION',
+                imageAlt: "Men's Collection",
+            },
+        },
+    },
     footer: {
         sections: {
             customerSupport: 'Customer Support',
@@ -587,3 +694,7 @@ export default {
             'Salesforce or its affiliates. All rights reserved. This is a demo store only. Orders made WILL NOT be processed.',
     },
 } as const;
+
+// Export UI strings
+// TODO: Move these strings to config.server.ts or a dedicated i18n system
+export default additionalStrings;

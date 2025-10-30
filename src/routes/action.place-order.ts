@@ -182,7 +182,7 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
 
         // Calculate basket totals before creating order (SFCC requirement)
         // Use the updated basket's currency or appropriate fallback
-        const currency = getBasketCurrency(updatedBasket);
+        const currency = getBasketCurrency(context, updatedBasket);
 
         if (!updatedBasket.basketId) {
             return Response.json(

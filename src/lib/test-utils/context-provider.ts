@@ -2,6 +2,9 @@ import { RouterContextProvider } from 'react-router';
 import { authContext } from '@/middlewares/auth.utils';
 import { type PerformanceTimer, performanceTimerContext } from '@/middlewares/performance-metrics';
 import type { SessionData } from '@/lib/api/types';
+import { appConfigContext } from '@/config';
+import type { Config } from '@/config/schema';
+import config from '@/config/server';
 
 /**
  * Configuration options for creating a test context provider
@@ -13,6 +16,8 @@ export interface TestContextConfig {
     performanceTimer?: unknown;
     /** Override the client class cache context */
     clientClassCache?: unknown;
+    /** Override the app config context */
+    appConfig?: Partial<Config['app']>;
     /** Whether to reject the auth promise (for testing auth failures) */
     rejectAuth?: boolean;
     /** Error to reject auth promise with */
@@ -59,13 +64,14 @@ const DEFAULT_SESSION_DATA: SessionData = {
  * });
  * ```
  */
-export function createTestContext(config: TestContextConfig = {}): RouterContextProvider {
+export function createTestContext(testConfig: TestContextConfig = {}): RouterContextProvider {
     const {
         authSession = DEFAULT_SESSION_DATA,
         performanceTimer = undefined,
+        appConfig = config.app,
         rejectAuth = false,
         authError = new Error('Auth failed'),
-    } = config;
+    } = testConfig;
 
     const contextProvider = new RouterContextProvider();
 
@@ -87,6 +93,9 @@ export function createTestContext(config: TestContextConfig = {}): RouterContext
 
     // Set up performance timer context
     contextProvider.set(performanceTimerContext, performanceTimer as PerformanceTimer | undefined);
+
+    // Set up app config context
+    contextProvider.set(appConfigContext, appConfig);
 
     return contextProvider;
 }

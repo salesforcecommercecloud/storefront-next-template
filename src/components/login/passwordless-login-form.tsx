@@ -7,11 +7,13 @@ import uiStrings from '@/temp-ui-string';
 interface PasswordlessLoginFormProps {
     error?: string;
     isPasswordlessEnabled: boolean;
+    redirectPath?: string;
 }
 
 export default function PasswordlessLoginForm({
     error,
     isPasswordlessEnabled,
+    redirectPath,
 }: PasswordlessLoginFormProps): ReactElement {
     return (
         <Form method="post" className="space-y-6">
@@ -38,6 +40,9 @@ export default function PasswordlessLoginForm({
 
             {/* Hidden input to track login mode */}
             <input type="hidden" name="loginMode" value="passwordless" />
+
+            {/* Hidden input to pass redirect URL */}
+            {redirectPath && <input type="hidden" name="redirectPath" value={redirectPath} />}
 
             <LoginSubmitButton passwordless={true} />
 

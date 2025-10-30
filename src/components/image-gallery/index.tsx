@@ -10,6 +10,7 @@
 import { useState, useEffect, type ReactElement } from 'react';
 import { DynamicImage } from '@/components/dynamic-image';
 import { useLocation } from 'react-router';
+import uiStrings from '@/temp-ui-string';
 
 export interface GalleryImage {
     src: string;
@@ -39,7 +40,7 @@ export default function ImageGallery({ images, eager = false }: ImageGalleryProp
             <div className="aspect-square bg-muted rounded-lg flex items-center justify-center">
                 <div className="text-center text-muted-foreground">
                     <div className="text-4xl mb-2">📷</div>
-                    <p>No image available</p>
+                    <p>{uiStrings.common.noImageAvailable}</p>
                 </div>
             </div>
         );

@@ -157,23 +157,29 @@ export const getDisplayVariationValues = (
 };
 
 /**
- * Creates a product URL with optional color parameter.
+ * Creates a product URL with optional attribute parameter.
  * Centralizes the path creation logic for product links.
  *
  * @param {string | undefined} productId - The product ID to create the URL for.
- * @param {string | null} [selectedColorValue=null] - Optional color value to append as a query parameter.
+ * @param {string | null} [selectedAttributeValue=null] - Optional attribute value to append as a query parameter.
+ * @param {string} [attributeType='color'] - The attribute type for the query parameter.
  * @returns {string} The formatted product URL or '#' if productId is undefined.
  *
  * @example
  * createProductUrl('12345'); // => '/product/12345'
  * createProductUrl('12345', 'red'); // => '/product/12345?color=red'
+ * createProductUrl('12345', 'L', 'size'); // => '/product/12345?size=L'
  * createProductUrl('12345', null); // => '/product/12345'
  * createProductUrl(undefined); // => '#'
  */
-export const createProductUrl = (productId: string | undefined, selectedColorValue: string | null = null): string => {
+export const createProductUrl = (
+    productId: string | undefined,
+    selectedAttributeValue: string | null = null,
+    attributeType: string = 'color'
+): string => {
     if (!productId) return '#';
     const baseUrl = `/product/${productId}`;
-    return selectedColorValue ? `${baseUrl}?color=${selectedColorValue}` : baseUrl;
+    return selectedAttributeValue ? `${baseUrl}?${attributeType}=${selectedAttributeValue}` : baseUrl;
 };
 
 /**
@@ -293,4 +299,14 @@ export function isProductSet(product: ShopperProductsTypes.Product): boolean {
  */
 export function isProductBundle(product: ShopperProductsTypes.Product): boolean {
     return Boolean(product?.type?.bundle);
+}
+
+/**
+ * Determines if a product is a standard product.
+ * A standard product is a product that does not have variants.
+ * @param product - The product to check
+ * @returns true if the product is a standard product, false otherwise
+ */
+export function isStandardProduct(product: ShopperProductsTypes.Product): boolean {
+    return Boolean(product?.type?.item);
 }

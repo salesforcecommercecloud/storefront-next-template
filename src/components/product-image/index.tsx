@@ -4,10 +4,7 @@ import { useCallback } from 'react';
 import { Link } from 'react-router';
 import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
 import { createProductUrl } from '@/lib/product-utils';
-import { ProductBadges } from '../product-badges';
-import { WishlistButton } from '@/components/buttons/wishlist-button';
-import { Button } from '@/components/ui/button';
-import { DynamicImage } from '@/components/dynamic-image';
+import { ProductImage } from './product-image';
 
 interface ProductImageContainerProps {
     product: ShopperSearchTypes.ProductSearchHit;
@@ -51,15 +48,15 @@ const ProductImageContainer = ({ product, selectedColorValue = null, className }
 
     return (
         <div
-            className={`relative aspect-square overflow-hidden rounded-lg bg-secondary/20 mb-4 border-secondary ${className || ''}`}>
+            className={`relative aspect-square overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col ${className || ''}`}>
             {/* Product Image */}
             <Link
                 to={createProductUrl(product.productId, selectedColorValue)}
-                className="block w-full h-full"
+                className="block w-full h-full flex-1"
                 aria-label={`View ${product.productName}`}>
-                <DynamicImage
-                    src={`${currentImageUrl}[?sw={width}&q=60]`}
-                    alt={product.productName}
+                <ProductImage
+                    src={`${currentImageUrl || ''}[?sw={width}&q=60]`}
+                    alt={product.productName || 'Product'}
                     className="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
                     loading="lazy"
                     widths={[
@@ -80,21 +77,6 @@ const ProductImageContainer = ({ product, selectedColorValue = null, className }
                     ]}
                 />
             </Link>
-
-            {/* Product Badges */}
-            <ProductBadges product={product} maxBadges={3} />
-
-            {/* Wishlist Button */}
-            <WishlistButton product={product} size="md" />
-
-            {/* Select Variant Button */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-4/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                <Button asChild variant="secondary" className="w-full">
-                    <Link to={createProductUrl(product.productId, selectedColorValue)} className="text-sm font-medium">
-                        Select Variant
-                    </Link>
-                </Button>
-            </div>
         </div>
     );
 };

@@ -674,7 +674,7 @@ export async function getCustomerProfileForCheckout(
             // For client-side code, we need to clear the auth cookies
             try {
                 // Import cookies utilities dynamically since this might be called server-side too
-                const { removeCookie } = await import('@/lib/cookies');
+                const { removeCookie } = await import('@/lib/cookies.client');
 
                 // Clear invalid auth data from cookies
                 removeCookie('__sfdc_auth');

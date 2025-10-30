@@ -1,4 +1,10 @@
-import { createCookie, createContext, type MiddlewareFunction, type RouterContextProvider } from 'react-router';
+import {
+    createCookie,
+    createContext,
+    type MiddlewareFunction,
+    type RouterContextProvider,
+    type ActionFunctionArgs,
+} from 'react-router';
 import type { ShopperLoginTypes } from 'commerce-sdk-isomorphic';
 import type { SessionData as AuthData } from '@/lib/api/types';
 import { clearStorage, type StorageErrorData, unpackStorage } from '@/lib/middleware';
@@ -9,10 +15,12 @@ import {
     updateAuthStorageData,
     updateStorageAndCache,
 } from '@/middlewares/auth.utils';
-import { isSlasPrivate } from '@/lib/utils';
+import { extractResponseError, getAppOrigin, isAbsoluteURL } from '@/lib/utils';
 import createClient from '@/lib/scapi';
 import uiStrings from '@/temp-ui-string';
 import { performanceTimerContext, PERFORMANCE_MARKS } from '@/middlewares/performance-metrics';
+import { getConfig } from '@/config';
+import { getCookieConfig } from '@/lib/cookie-utils';
 
 /**
  * Utility to get the SLAS client secret with proper validation
@@ -33,26 +41,26 @@ export async function refreshAccessToken(
     context: Readonly<RouterContextProvider>,
     refreshToken: string
 ): Promise<ShopperLoginTypes.TokenResponse> {
-    const { helpers } = await import('commerce-sdk-isomorphic');
+    const { refreshAccessToken: refreshAccessTokenHelper } = await import('commerce-sdk-isomorphic/helpers');
     const slasClient = await createClient(context).ShopperLogin.getInstance();
     const performanceTimer = context.get(performanceTimerContext);
+    const appConfig = getConfig(context);
+    const isSlasPrivate = appConfig.commerce.api.privateKeyEnabled;
     performanceTimer?.mark(PERFORMANCE_MARKS.authRefreshAccessToken, 'start');
 
-    return helpers
-        .refreshAccessToken({
-            slasClient,
-            parameters: {
-                refreshToken,
-            },
-            credentials: {
-                ...(isSlasPrivate && {
-                    clientSecret: getSlasClientSecret(),
-                }),
-            },
-        })
-        .finally(() => {
-            performanceTimer?.mark(PERFORMANCE_MARKS.authRefreshAccessToken, 'end');
-        });
+    return refreshAccessTokenHelper({
+        slasClient,
+        parameters: {
+            refreshToken,
+        },
+        credentials: {
+            ...(isSlasPrivate && {
+                clientSecret: getSlasClientSecret(),
+            }),
+        },
+    }).finally(() => {
+        performanceTimer?.mark(PERFORMANCE_MARKS.authRefreshAccessToken, 'end');
+    });
 }
 
 /**
@@ -62,38 +70,38 @@ export async function loginGuestUser(
     context: Readonly<RouterContextProvider>,
     options?: { usid?: string }
 ): Promise<ShopperLoginTypes.TokenResponse> {
-    const { helpers } = await import('commerce-sdk-isomorphic');
+    const { loginGuestUserPrivate: loginGuestUserPrivateHelper, loginGuestUser: loginGuestUserHelper } = await import(
+        'commerce-sdk-isomorphic/helpers'
+    );
     const slasClient = await createClient(context).ShopperLogin.getInstance();
     const { redirectURI } = slasClient.clientConfig.parameters;
     const performanceTimer = context.get(performanceTimerContext);
+    const appConfig = getConfig(context);
+    const isSlasPrivate = appConfig.commerce.api.privateKeyEnabled;
     const performanceName = isSlasPrivate
         ? PERFORMANCE_MARKS.authLoginGuestUserPrivate
         : PERFORMANCE_MARKS.authLoginGuestUser;
     performanceTimer?.mark(performanceName, 'start');
 
     return isSlasPrivate
-        ? helpers
-              .loginGuestUserPrivate({
-                  slasClient,
-                  parameters: {
-                      ...(options?.usid && { usid: options.usid }),
-                  },
-                  credentials: { clientSecret: getSlasClientSecret() },
-              })
-              .finally(() => {
-                  performanceTimer?.mark(performanceName, 'end');
-              })
-        : helpers
-              .loginGuestUser({
-                  slasClient,
-                  parameters: {
-                      redirectURI,
-                      ...(options?.usid && { usid: options.usid }),
-                  },
-              })
-              .finally(() => {
-                  performanceTimer?.mark(performanceName, 'end');
-              });
+        ? loginGuestUserPrivateHelper({
+              slasClient,
+              parameters: {
+                  ...(options?.usid && { usid: options.usid }),
+              },
+              credentials: { clientSecret: getSlasClientSecret() },
+          }).finally(() => {
+              performanceTimer?.mark(performanceName, 'end');
+          })
+        : loginGuestUserHelper({
+              slasClient,
+              parameters: {
+                  redirectURI,
+                  ...(options?.usid && { usid: options.usid }),
+              },
+          }).finally(() => {
+              performanceTimer?.mark(performanceName, 'end');
+          });
 }
 
 /**
@@ -105,34 +113,142 @@ export async function loginRegisteredUser(
     password: string,
     options?: { customParameters?: Record<string, unknown> }
 ): Promise<ShopperLoginTypes.TokenResponse> {
-    const { helpers } = await import('commerce-sdk-isomorphic');
+    const { loginRegisteredUserB2C } = await import('commerce-sdk-isomorphic/helpers');
     const slasClient = await createClient(context).ShopperLogin.getInstance();
     const { redirectURI } = slasClient.clientConfig.parameters;
     const performanceTimer = context.get(performanceTimerContext);
+    const appConfig = getConfig(context);
+    const isSlasPrivate = appConfig.commerce.api.privateKeyEnabled;
+    const session = getAuth(context);
+    const usid = session.usid;
     performanceTimer?.mark(PERFORMANCE_MARKS.authLoginRegisteredUser, 'start');
 
-    return helpers
-        .loginRegisteredUserB2C({
+    return loginRegisteredUserB2C({
+        slasClient,
+        credentials: {
+            username: email,
+            password,
+            ...(isSlasPrivate && {
+                clientSecret: getSlasClientSecret(),
+            }),
+        },
+        parameters: {
+            redirectURI,
+            ...(usid && { usid: String(usid) }),
+            // Include custom parameters if any
+            ...(options?.customParameters &&
+                Object.keys(options.customParameters).length > 0 && {
+                    body: options.customParameters,
+                }),
+        },
+    }).finally(() => {
+        performanceTimer?.mark(PERFORMANCE_MARKS.authLoginRegisteredUser, 'end');
+    });
+}
+
+/**
+ * Authorize passwordless login - sends magic link via email
+ */
+export const authorizePasswordless = async (
+    context: ActionFunctionArgs['context'],
+    parameters: {
+        userid: string;
+        callbackUri?: string;
+        redirectPath?: string;
+    }
+): Promise<{
+    success: boolean;
+    error?: string;
+}> => {
+    const performanceTimer = context.get(performanceTimerContext);
+    performanceTimer?.mark(PERFORMANCE_MARKS.authAuthorizePasswordless, 'start');
+
+    try {
+        const session = getAuth(context);
+        const slasClient = await createClient(context).ShopperLogin.getInstance();
+        const userid = parameters.userid;
+
+        const appConfig = getConfig(context);
+        const passwordlessCallback = appConfig.site.features.passwordlessLogin.callbackUri;
+
+        const passwordlessLoginCallbackUri = isAbsoluteURL(passwordlessCallback)
+            ? passwordlessCallback
+            : `${getAppOrigin()}${passwordlessCallback}`;
+
+        const callbackUri = parameters.callbackUri || passwordlessLoginCallbackUri;
+
+        const finalCallbackUri = parameters.redirectPath
+            ? `${callbackUri}?redirectUrl=${parameters.redirectPath}`
+            : callbackUri;
+
+        const usid = session.usid;
+        const mode = finalCallbackUri ? 'callback' : 'sms';
+
+        const { authorizePasswordless: authorizePasswordlessHelper } = await import('commerce-sdk-isomorphic/helpers');
+        const res = await authorizePasswordlessHelper({
             slasClient,
             credentials: {
-                username: email,
-                password,
-                ...(isSlasPrivate && {
-                    clientSecret: getSlasClientSecret(),
-                }),
+                clientSecret: getSlasClientSecret(),
             },
             parameters: {
-                redirectURI,
-                // Include custom parameters if any
-                ...(options?.customParameters &&
-                    Object.keys(options.customParameters).length > 0 && {
-                        body: options.customParameters,
-                    }),
+                ...(finalCallbackUri && { callbackURI: finalCallbackUri }),
+                ...(usid && { usid }),
+                userid,
+                mode,
             },
-        })
-        .finally(() => {
-            performanceTimer?.mark(PERFORMANCE_MARKS.authLoginRegisteredUser, 'end');
         });
+
+        if (res && res.status !== 200) {
+            const errorData = await res.json();
+            throw new Error(`${res.status} ${String(errorData.message)}`);
+        }
+
+        performanceTimer?.mark(PERFORMANCE_MARKS.authAuthorizePasswordless, 'end');
+        return {
+            success: true,
+        };
+    } catch (error) {
+        const { responseMessage } = await extractResponseError(error);
+
+        flashAuth(context, responseMessage);
+
+        performanceTimer?.mark(PERFORMANCE_MARKS.authAuthorizePasswordless, 'end');
+        return {
+            success: false,
+            error: responseMessage,
+        };
+    }
+};
+
+/**
+ * Get passwordless access token using the token from magic link
+ * Takes context and creates SLAS client internally, following auth.server.ts patterns
+ */
+export async function getPasswordLessAccessToken(
+    context: Readonly<RouterContextProvider>,
+    pwdlessLoginToken: string
+): Promise<ShopperLoginTypes.TokenResponse> {
+    const { getPasswordLessAccessToken: getPasswordLessAccessTokenHelper } = await import(
+        'commerce-sdk-isomorphic/helpers'
+    );
+    const slasClient = await createClient(context).ShopperLogin.getInstance();
+    const performanceTimer = context.get(performanceTimerContext);
+    const session = getAuth(context);
+    const usid = session.usid;
+    performanceTimer?.mark(PERFORMANCE_MARKS.authGetPasswordLessAccessToken, 'start');
+
+    return getPasswordLessAccessTokenHelper({
+        slasClient,
+        credentials: {
+            clientSecret: getSlasClientSecret(),
+        },
+        parameters: {
+            pwdlessLoginToken,
+            ...(usid && { usid: String(usid) }),
+        },
+    }).finally(() => {
+        performanceTimer?.mark(PERFORMANCE_MARKS.authGetPasswordLessAccessToken, 'end');
+    });
 }
 
 /**
@@ -214,12 +330,9 @@ const authCacheContext = createContext<{ ref: AuthData | undefined }>();
  */
 const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }, next) => {
     // Before calling the handler: Load current Commerce API data from incoming cookies, if applicable
-    const authCookie = createCookie(authCookieName, {
-        httpOnly: false,
-        path: '/',
-        sameSite: 'lax',
-        secure: true,
-    });
+    const appConfig = getConfig(context);
+    const cookieConfig = getCookieConfig({ httpOnly: false }, appConfig);
+    const authCookie = createCookie(authCookieName, cookieConfig);
     const authData = ((await authCookie.parse(request.headers.get('Cookie'))) || {}) satisfies AuthStorageData;
     const authStorage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>(
         Object.entries(authData) as [keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]][]
@@ -253,10 +366,16 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         // Destroy cookie/session
         response.headers.append(
             'Set-Cookie',
-            await authCookie.serialize('', {
-                maxAge: undefined,
-                expires: new Date(0),
-            })
+            await authCookie.serialize(
+                '',
+                getCookieConfig(
+                    {
+                        maxAge: undefined,
+                        expires: new Date(0),
+                    },
+                    appConfig
+                )
+            )
         );
     } else if (authStorage.has('isUpdated')) {
         // Clean up storage container metadata
@@ -266,13 +385,18 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         const entry = Object.fromEntries(authStorage);
         authCache.ref = entry;
         authPromiseCache.ref = createAuthPromise(context, entry);
+
         response.headers.append(
             'Set-Cookie',
-            await authCookie.serialize(entry, {
-                // TODO: Decide on the correct expiration date/strategy. The expiration also needs to depend
-                //  on the login/auth/flow type.
-                expires: new Date(authStorage.get('access_token_expiry') as number),
-            })
+            await authCookie.serialize(
+                entry,
+                getCookieConfig(
+                    {
+                        expires: new Date(authStorage.get('access_token_expiry') as number),
+                    },
+                    appConfig
+                )
+            )
         );
     }
 
@@ -295,12 +419,13 @@ export const updateAuth = (
     const storage = context.get(authStorageContext);
     const cache = context.get(authCacheContext);
     const promiseCache = context.get(authContext);
+    const appConfig = getConfig(context);
     if (!storage || !cache || !promiseCache) {
         throw new Error('updateAuth must be used within the Commerce API middleware');
     }
 
     // Update storage data
-    updateAuthStorageData(storage, updater);
+    updateAuthStorageData(storage, updater, appConfig);
     cache.ref = storage.has('error') ? undefined : unpackStorage<AuthData>(storage);
     promiseCache.ref = storage.has('error')
         ? createAuthPromise(context, undefined)

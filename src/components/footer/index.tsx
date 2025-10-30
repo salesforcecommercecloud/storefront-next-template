@@ -107,9 +107,7 @@ export default function Footer(): ReactElement {
 
                 <div className="mt-12 pt-8 border-t border-border/60">
                     <p className="text-center text-muted-foreground text-sm">
-                        © {new Date().getFullYear()} Salesforce or its affiliates. All rights reserved. This is a demo
-                        store only. Orders made WILL NOT be processed.
-                        {uiStrings.footer.copyright.replace('{year}', new Date().getFullYear().toString())}
+                        © {new Date().getFullYear()} {uiStrings.footer.copyright}
                     </p>
                 </div>
             </div>

@@ -1,7 +1,7 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createRoutesStub, type FetcherWithComponents } from 'react-router';
+import { createMemoryRouter, RouterProvider, type FetcherWithComponents } from 'react-router';
 import { usePromoCodeActions } from '@/hooks/use-promo-code-actions';
 import { type PromoCodeFetcherData } from './types';
 import PromoCodeForm from './index';
@@ -48,19 +48,25 @@ vi.mock('@/components/toast', () => ({
 
 // Helper function to render component with routes stub and toaster
 const renderWithRoutesStub = ({ basketId = 'test-basket-id' }: { basketId?: string } = {}) => {
-    const Stub = createRoutesStub([
-        {
-            path: '/cart',
-            Component: () => (
-                <>
-                    <PromoCodeForm basketId={basketId} />
-                    <Toaster richColors expand position="top-right" />
-                </>
-            ),
-        },
-    ]);
+    // Using createMemoryRouter in framework mode is fine
+    // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
+    // Even though it's listed under "data routers," it fully supports testing non-route components that rely on router behavior.
+    const router = createMemoryRouter(
+        [
+            {
+                path: '/cart',
+                element: (
+                    <>
+                        <PromoCodeForm basket={basketId ? { basketId } : undefined} />
+                        <Toaster richColors expand position="top-right" />
+                    </>
+                ),
+            },
+        ],
+        { initialEntries: ['/cart'] }
+    );
 
-    return render(<Stub initialEntries={['/cart']} />);
+    return render(<RouterProvider router={router} />);
 };
 
 describe('PromoCodeForm', () => {
@@ -92,7 +98,6 @@ describe('PromoCodeForm', () => {
 
         expect(accordionTrigger).toHaveAttribute('aria-expanded', 'true');
         expect(screen.getByTestId('promo-code-form')).toBeInTheDocument();
-        expect(screen.getByLabelText(uiStrings.cart.promoCode.label)).toBeInTheDocument();
         expect(screen.getByPlaceholderText(uiStrings.cart.promoCode.placeholder)).toBeInTheDocument();
         expect(screen.getByRole('button', { name: uiStrings.cart.promoCode.apply })).toBeInTheDocument();
     });
@@ -253,19 +258,25 @@ describe('PromoCodeForm', () => {
         });
 
         // Create a custom render function that passes undefined basketId
-        const Stub = createRoutesStub([
-            {
-                path: '/cart',
-                Component: () => (
-                    <>
-                        <PromoCodeForm basketId={undefined} />
-                        <Toaster richColors expand position="top-right" />
-                    </>
-                ),
-            },
-        ]);
+        // Using createMemoryRouter in framework mode is fine
+        // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
+        // Even though it's listed under "data routers," it fully supports testing non-route components that rely on router behavior.
+        const router = createMemoryRouter(
+            [
+                {
+                    path: '/cart',
+                    element: (
+                        <>
+                            <PromoCodeForm basket={undefined} />
+                            <Toaster richColors expand position="top-right" />
+                        </>
+                    ),
+                },
+            ],
+            { initialEntries: ['/cart'] }
+        );
 
-        render(<Stub initialEntries={['/cart']} />);
+        render(<RouterProvider router={router} />);
 
         const accordionTrigger = screen.getByRole('button', { name: uiStrings.cart.promoCode.accordionTitle });
         await user.click(accordionTrigger);

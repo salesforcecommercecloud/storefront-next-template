@@ -1,25 +1,55 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from 'react-router';
+import {
+    type ActionFunctionArgs,
+    type ClientActionFunctionArgs,
+    type ClientLoaderFunctionArgs,
+    type LoaderFunctionArgs,
+} from 'react-router';
 import { encodeBase64Url } from '@/lib/url';
-import { clientLoader, loader } from './resource.api.client.$resource';
+import { action, clientAction, clientLoader, loader, type ApiResponse } from './resource.api.client.$resource';
 import { createTestContext } from '@/lib/test-utils';
+import { extractResponseError } from '@/lib/utils';
 
 // Mock dependencies
 vi.mock('@/middlewares/auth.server');
 vi.mock('@/middlewares/auth.client');
+vi.mock('@/lib/utils', () => ({
+    extractResponseError: vi.fn(),
+    getAppOrigin: vi.fn(() => 'https://example.com'),
+}));
 
 // Type the mocked functions
 const mockShopperCustomersGetCustomer = vi.fn();
+const mockShopperCustomersUpdateCustomer = vi.fn();
+const mockShopperBasketsAddItemToBasket = vi.fn();
+const mockExtractResponseError = vi.mocked(extractResponseError);
 
-vi.mock('commerce-sdk-isomorphic', async () => {
-    const actual = await vi.importActual('commerce-sdk-isomorphic');
+vi.mock('commerce-sdk-isomorphic/shopperCustomers', async () => {
+    const actual = await vi.importActual('commerce-sdk-isomorphic/shopperCustomers');
     return {
         ...actual,
         ShopperCustomers: vi.fn(() => ({
             getCustomer: mockShopperCustomersGetCustomer,
+            updateCustomer: mockShopperCustomersUpdateCustomer,
+        })),
+        ShopperBaskets: vi.fn(() => ({
+            addItemToBasket: mockShopperBasketsAddItemToBasket,
         })),
     };
 });
+
+// Mock the createClient function
+vi.mock('@/lib/scapi', () => ({
+    default: vi.fn(() => ({
+        ShopperCustomers: {
+            getCustomer: mockShopperCustomersGetCustomer,
+            updateCustomer: mockShopperCustomersUpdateCustomer,
+        },
+        ShopperBaskets: {
+            addItemToBasket: mockShopperBasketsAddItemToBasket,
+        },
+    })),
+}));
 
 describe('Commerce SDK resource', () => {
     const validResource = ['ShopperCustomers', 'getCustomer', [{ parameters: { customerId: 'customer-123' } }]];
@@ -28,7 +58,10 @@ describe('Commerce SDK resource', () => {
     let mockContextProvider: ReturnType<typeof createTestContext>;
 
     beforeEach(() => {
-        vi.clearAllMocks();
+        mockShopperCustomersGetCustomer.mockClear();
+        mockShopperCustomersUpdateCustomer.mockClear();
+        mockShopperBasketsAddItemToBasket.mockClear();
+        mockExtractResponseError.mockClear();
 
         mockContextProvider = createTestContext();
 
@@ -57,15 +90,23 @@ describe('Commerce SDK resource', () => {
         });
 
         describe('error handling', () => {
-            it('should handle invalid resource format - not an array', () => {
+            it('should handle invalid resource format - not an array', async () => {
                 const args = createLoaderArgs('invalid-encoded-resource');
-                return expect(() => loader(args)).toThrow(TypeError);
+                const result = await loader(args);
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['The encoded data was not valid for encoding utf-8'],
+                });
             });
 
-            it('should handle invalid resource format - wrong array length', () => {
+            it('should handle invalid resource format - wrong array length', async () => {
                 const invalid = encodeBase64Url(JSON.stringify(['ShopperProducts', 'getProducts']));
                 const args = createLoaderArgs(invalid);
-                expect(() => loader(args)).toThrow(TypeError);
+                const result = await loader(args);
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Unexpected resource format'],
+                });
             });
 
             it('should handle fetch client errors with extractResponseError', async () => {
@@ -77,22 +118,26 @@ describe('Commerce SDK resource', () => {
                 Reflect.set(mockError, 'response', Response.json(mockExtractedError));
 
                 mockShopperCustomersGetCustomer.mockRejectedValue(mockError);
+                mockExtractResponseError.mockImplementationOnce(() => Promise.resolve(mockExtractedError));
 
                 const result = await loader(createLoaderArgs(encodedValidResource));
                 expect(result).toEqual({
                     success: false,
-                    error: mockExtractedError.responseMessage,
+                    errors: [mockExtractedError.responseMessage],
                 });
+
+                expect(mockExtractResponseError).toHaveBeenCalledWith(mockError);
             });
 
             it('should handle fetch client errors when extractResponseError fails', async () => {
                 const mockError = new Error('Network Error');
                 mockShopperCustomersGetCustomer.mockRejectedValue(mockError);
+                mockExtractResponseError.mockRejectedValue(new Error('Extract failed'));
 
                 const result = await loader(createLoaderArgs(encodedValidResource));
                 expect(result).toEqual({
                     success: false,
-                    error: 'Network Error',
+                    errors: ['Network Error'],
                 });
             });
 
@@ -103,7 +148,46 @@ describe('Commerce SDK resource', () => {
                 const result = await loader(createLoaderArgs(encodedValidResource));
                 expect(result).toEqual({
                     success: false,
-                    error: 'Unknown error',
+                    errors: ['Unknown error'],
+                });
+            });
+
+            it('should handle loader with null resource parameter', async () => {
+                const createLoaderArgsWithNullResource = (): LoaderFunctionArgs => ({
+                    params: { resource: null as any },
+                    context: mockContextProvider,
+                    request: new Request('http://localhost/test'),
+                });
+
+                const result = await loader(createLoaderArgsWithNullResource());
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Unexpected resource format'],
+                });
+            });
+
+            it('should handle loader with undefined resource parameter', async () => {
+                const createLoaderArgsWithUndefinedResource = (): LoaderFunctionArgs => ({
+                    params: { resource: undefined as any },
+                    context: mockContextProvider,
+                    request: new Request('http://localhost/test'),
+                });
+
+                const result = await loader(createLoaderArgsWithUndefinedResource());
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Unexpected resource format'],
+                });
+            });
+
+            it('should handle loader errors when reason is falsy', async () => {
+                // Mock a falsy reason (null, undefined, false, 0, empty string)
+                mockShopperCustomersGetCustomer.mockRejectedValue(null);
+
+                const result = await loader(createLoaderArgs(encodedValidResource));
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Unknown error'],
                 });
             });
         });
@@ -119,7 +203,7 @@ describe('Commerce SDK resource', () => {
 
         describe('successful requests', () => {
             it('should handle successful clientLoader call', async () => {
-                const result = await loader(createLoaderArgs(encodedValidResource));
+                const result = await clientLoader(createLoaderArgs(encodedValidResource));
                 expect(result).toEqual({
                     success: true,
                     data: mockResponseData,
@@ -128,15 +212,23 @@ describe('Commerce SDK resource', () => {
         });
 
         describe('error handling', () => {
-            it('should handle invalid resource format - not an array', () => {
+            it('should handle invalid resource format - not an array', async () => {
                 const args = createLoaderArgs('invalid-encoded-resource');
-                expect(() => clientLoader(args)).toThrow(TypeError);
+                const result = await clientLoader(args);
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['The encoded data was not valid for encoding utf-8'],
+                });
             });
 
-            it('should handle invalid resource format - wrong array length', () => {
+            it('should handle invalid resource format - wrong array length', async () => {
                 const invalid = encodeBase64Url(JSON.stringify(['ShopperProducts', 'getProducts']));
                 const args = createLoaderArgs(invalid);
-                expect(() => clientLoader(args)).toThrow(TypeError);
+                const result = await clientLoader(args);
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Unexpected resource format'],
+                });
             });
 
             it('should handle fetch client errors with extractResponseError', async () => {
@@ -148,22 +240,26 @@ describe('Commerce SDK resource', () => {
                 Reflect.set(mockError, 'response', Response.json(mockExtractedError));
 
                 mockShopperCustomersGetCustomer.mockRejectedValue(mockError);
+                mockExtractResponseError.mockImplementationOnce(() => Promise.resolve(mockExtractedError));
 
                 const result = await clientLoader(createLoaderArgs(encodedValidResource));
                 expect(result).toEqual({
                     success: false,
-                    error: mockExtractedError.responseMessage,
+                    errors: [mockExtractedError.responseMessage],
                 });
+
+                expect(mockExtractResponseError).toHaveBeenCalledWith(mockError);
             });
 
             it('should handle fetch client errors when extractResponseError fails', async () => {
                 const mockError = new Error('Network Error');
                 mockShopperCustomersGetCustomer.mockRejectedValue(mockError);
+                mockExtractResponseError.mockRejectedValue(new Error('Extract failed'));
 
                 const result = await clientLoader(createLoaderArgs(encodedValidResource));
                 expect(result).toEqual({
                     success: false,
-                    error: 'Network Error',
+                    errors: ['Network Error'],
                 });
             });
 
@@ -174,8 +270,702 @@ describe('Commerce SDK resource', () => {
                 const result = await clientLoader(createLoaderArgs(encodedValidResource));
                 expect(result).toEqual({
                     success: false,
-                    error: 'Unknown error',
+                    errors: ['Unknown error'],
                 });
+            });
+
+            it('should handle clientLoader with null resource parameter', async () => {
+                const createClientLoaderArgsWithNullResource = (): ClientLoaderFunctionArgs => ({
+                    serverLoader: vi.fn(),
+                    params: { resource: null as any },
+                    context: mockContextProvider,
+                    request: new Request('http://localhost/test'),
+                });
+
+                const result = await clientLoader(createClientLoaderArgsWithNullResource());
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Unexpected resource format'],
+                });
+            });
+
+            it('should handle clientLoader with undefined resource parameter', async () => {
+                const createClientLoaderArgsWithUndefinedResource = (): ClientLoaderFunctionArgs => ({
+                    serverLoader: vi.fn(),
+                    params: { resource: undefined as any },
+                    context: mockContextProvider,
+                    request: new Request('http://localhost/test'),
+                });
+
+                const result = await clientLoader(createClientLoaderArgsWithUndefinedResource());
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Unexpected resource format'],
+                });
+            });
+
+            it('should handle clientLoader errors when reason is falsy', async () => {
+                // Mock a falsy reason (null, undefined, false, 0, empty string)
+                mockShopperCustomersGetCustomer.mockRejectedValue(null);
+
+                const result = await clientLoader(createLoaderArgs(encodedValidResource));
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Unknown error'],
+                });
+            });
+        });
+    });
+
+    describe('action()', () => {
+        const validActionResource = [
+            'ShopperCustomers',
+            'updateCustomer',
+            [{ parameters: { customerId: 'customer-123' } }],
+        ];
+        const encodedValidActionResource = encodeBase64Url(JSON.stringify(validActionResource));
+        const mockActionResponseData = { customerId: 'customer-123', email: 'updated@example.com' };
+
+        const createActionArgs = (resource: string, formData?: Record<string, string>): ActionFunctionArgs => {
+            const body = new URLSearchParams(formData || {}).toString();
+
+            const request = new Request('http://localhost/test', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body,
+            });
+
+            return {
+                params: { resource },
+                context: mockContextProvider,
+                request,
+            };
+        };
+
+        beforeEach(() => {
+            mockShopperCustomersUpdateCustomer.mockResolvedValue(mockActionResponseData);
+        });
+
+        describe('successful requests', () => {
+            it('should handle successful action call with form data', async () => {
+                const formData = { email: 'updated@example.com', firstName: 'John' };
+                const result = await action(createActionArgs(encodedValidActionResource, formData));
+
+                expect(result).toEqual({
+                    success: true,
+                    data: mockActionResponseData,
+                });
+
+                // Verify the method was called with merged parameters
+                expect(mockShopperCustomersUpdateCustomer).toHaveBeenCalledWith({
+                    parameters: { customerId: 'customer-123' },
+                    body: formData,
+                });
+            });
+
+            it('should handle successful action call without form data', async () => {
+                const result = await action(createActionArgs(encodedValidActionResource));
+
+                expect(result).toEqual({
+                    success: true,
+                    data: mockActionResponseData,
+                });
+
+                // Verify the method was called with empty body
+                expect(mockShopperCustomersUpdateCustomer).toHaveBeenCalledWith({
+                    parameters: { customerId: 'customer-123' },
+                    body: {},
+                });
+            });
+
+            it('should handle action call with existing body parameter', async () => {
+                const resourceWithBody = [
+                    'ShopperCustomers',
+                    'updateCustomer',
+                    [{ parameters: { customerId: 'customer-123' } }, { body: { existingData: 'test' } }],
+                ];
+                const encodedResourceWithBody = encodeBase64Url(JSON.stringify(resourceWithBody));
+                const formData = { email: 'updated@example.com' };
+
+                const result = await action(createActionArgs(encodedResourceWithBody, formData));
+
+                expect(result).toEqual({
+                    success: true,
+                    data: mockActionResponseData,
+                });
+
+                // Verify the method was called with merged body
+                expect(mockShopperCustomersUpdateCustomer).toHaveBeenCalledWith(
+                    { parameters: { customerId: 'customer-123' } },
+                    { body: formData }
+                );
+            });
+
+            it('should add body parameter when no parameters exist', async () => {
+                const resourceWithNoParams = ['ShopperCustomers', 'updateCustomer', []];
+                const encodedResourceWithNoParams = encodeBase64Url(JSON.stringify(resourceWithNoParams));
+                const formData = { email: 'updated@example.com' };
+
+                const result = await action(createActionArgs(encodedResourceWithNoParams, formData));
+
+                expect(result).toEqual({
+                    success: true,
+                    data: mockActionResponseData,
+                });
+
+                // Verify the method was called with only the body parameter
+                expect(mockShopperCustomersUpdateCustomer).toHaveBeenCalledWith({ body: formData });
+            });
+
+            it('should add body parameter when last parameter has no body property', async () => {
+                const resourceWithNoBody = [
+                    'ShopperCustomers',
+                    'updateCustomer',
+                    [{ parameters: { customerId: 'customer-123' } }],
+                ];
+                const encodedResourceWithNoBody = encodeBase64Url(JSON.stringify(resourceWithNoBody));
+                const formData = { email: 'updated@example.com' };
+
+                const result = await action(createActionArgs(encodedResourceWithNoBody, formData));
+
+                expect(result).toEqual({
+                    success: true,
+                    data: mockActionResponseData,
+                });
+
+                // Verify the method was called with parameters and added body
+                expect(mockShopperCustomersUpdateCustomer).toHaveBeenCalledWith({
+                    parameters: { customerId: 'customer-123' },
+                    body: formData,
+                });
+            });
+        });
+
+        describe('error handling', () => {
+            it('should handle invalid resource format - not an array', async () => {
+                const args = createActionArgs('invalid-encoded-resource');
+                const result = await action(args);
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['The encoded data was not valid for encoding utf-8'],
+                });
+            });
+
+            it('should handle invalid resource format - wrong array length', async () => {
+                const invalid = encodeBase64Url(JSON.stringify(['ShopperCustomers', 'updateCustomer']));
+                const args = createActionArgs(invalid);
+                const result = await action(args);
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Unexpected resource format'],
+                });
+            });
+
+            it('should handle action errors with extractResponseError', async () => {
+                const mockError = new Error('API Error');
+                const mockExtractedError = {
+                    status_code: '400',
+                    responseMessage: 'Bad Request: Invalid customer data',
+                };
+                Reflect.set(mockError, 'response', Response.json(mockExtractedError));
+
+                mockShopperCustomersUpdateCustomer.mockRejectedValue(mockError);
+                mockExtractResponseError.mockImplementationOnce(() => Promise.resolve(mockExtractedError));
+
+                const result = await action(createActionArgs(encodedValidActionResource));
+                expect(result).toEqual({
+                    success: false,
+                    errors: [mockExtractedError.responseMessage],
+                });
+
+                expect(mockExtractResponseError).toHaveBeenCalledWith(mockError);
+            });
+
+            it('should handle action errors when extractResponseError fails', async () => {
+                const mockError = new Error('Network Error');
+                mockShopperCustomersUpdateCustomer.mockRejectedValue(mockError);
+                mockExtractResponseError.mockRejectedValue(new Error('Extract failed'));
+
+                const result = await action(createActionArgs(encodedValidActionResource));
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Network Error'],
+                });
+            });
+
+            it('should handle unknown errors without message', async () => {
+                const mockError = { someProperty: 'unknown error' };
+                mockShopperCustomersUpdateCustomer.mockRejectedValue(mockError);
+
+                const result = await action(createActionArgs(encodedValidActionResource));
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Unknown error'],
+                });
+            });
+
+            it('should handle action with null resource parameter', async () => {
+                const createActionArgsWithNullResource = (): ActionFunctionArgs => {
+                    const request = new Request('http://localhost/test', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: new URLSearchParams({ email: 'test@example.com' }).toString(),
+                    });
+
+                    return {
+                        params: { resource: null as any },
+                        context: mockContextProvider,
+                        request,
+                    };
+                };
+
+                const result = await action(createActionArgsWithNullResource());
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Unexpected resource format'],
+                });
+            });
+
+            it('should handle action with undefined resource parameter', async () => {
+                const createActionArgsWithUndefinedResource = (): ActionFunctionArgs => {
+                    const request = new Request('http://localhost/test', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: new URLSearchParams({ email: 'test@example.com' }).toString(),
+                    });
+
+                    return {
+                        params: { resource: undefined as any },
+                        context: mockContextProvider,
+                        request,
+                    };
+                };
+
+                const result = await action(createActionArgsWithUndefinedResource());
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Unexpected resource format'],
+                });
+            });
+
+            it('should handle action errors when reason is falsy', async () => {
+                // Mock a falsy reason (null, undefined, false, 0, empty string)
+                mockShopperCustomersUpdateCustomer.mockRejectedValue(null);
+
+                const result = await action(createActionArgs(encodedValidActionResource));
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Unknown error'],
+                });
+            });
+        });
+    });
+
+    describe('clientAction()', () => {
+        const validActionResource = ['ShopperBaskets', 'addItemToBasket', [{ parameters: { basketId: 'basket-123' } }]];
+        const encodedValidActionResource = encodeBase64Url(JSON.stringify(validActionResource));
+        const mockActionResponseData = { basketId: 'basket-123', items: [{ productId: 'product-123', quantity: 1 }] };
+
+        const createClientActionArgs = (
+            resource: string,
+            formData?: Record<string, string>
+        ): ClientActionFunctionArgs => {
+            const body = new URLSearchParams(formData || {}).toString();
+            const request = new Request('http://localhost/test', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body,
+            });
+            return {
+                serverAction: vi.fn(),
+                params: { resource },
+                context: mockContextProvider,
+                request,
+            };
+        };
+
+        beforeEach(() => {
+            mockShopperBasketsAddItemToBasket.mockResolvedValue(mockActionResponseData);
+        });
+
+        describe('successful requests', () => {
+            it('should handle successful clientAction call with form data', async () => {
+                const formData = { productId: 'product-123', quantity: '2' };
+                const result = await clientAction(createClientActionArgs(encodedValidActionResource, formData));
+
+                expect(result).toEqual({
+                    success: true,
+                    data: mockActionResponseData,
+                });
+
+                // Verify the method was called with merged parameters
+                expect(mockShopperBasketsAddItemToBasket).toHaveBeenCalledWith({
+                    parameters: { basketId: 'basket-123' },
+                    body: formData,
+                });
+            });
+
+            it('should handle successful clientAction call without form data', async () => {
+                const result = await clientAction(createClientActionArgs(encodedValidActionResource));
+
+                expect(result).toEqual({
+                    success: true,
+                    data: mockActionResponseData,
+                });
+
+                // Verify the method was called with empty body
+                expect(mockShopperBasketsAddItemToBasket).toHaveBeenCalledWith({
+                    parameters: { basketId: 'basket-123' },
+                    body: {},
+                });
+            });
+
+            it('should add body parameter when no parameters exist in clientAction', async () => {
+                const resourceWithNoParams = ['ShopperBaskets', 'addItemToBasket', []];
+                const encodedResourceWithNoParams = encodeBase64Url(JSON.stringify(resourceWithNoParams));
+                const formData = { productId: 'product-123', quantity: '2' };
+
+                const result = await clientAction(createClientActionArgs(encodedResourceWithNoParams, formData));
+
+                expect(result).toEqual({
+                    success: true,
+                    data: mockActionResponseData,
+                });
+
+                // Verify the method was called with only the body parameter
+                expect(mockShopperBasketsAddItemToBasket).toHaveBeenCalledWith({ body: formData });
+            });
+
+            it('should add body parameter when last parameter has no body property in clientAction', async () => {
+                const resourceWithNoBody = [
+                    'ShopperBaskets',
+                    'addItemToBasket',
+                    [{ parameters: { basketId: 'basket-123' } }],
+                ];
+                const encodedResourceWithNoBody = encodeBase64Url(JSON.stringify(resourceWithNoBody));
+                const formData = { productId: 'product-123', quantity: '2' };
+
+                const result = await clientAction(createClientActionArgs(encodedResourceWithNoBody, formData));
+
+                expect(result).toEqual({
+                    success: true,
+                    data: mockActionResponseData,
+                });
+
+                // Verify the method was called with parameters and added body
+                expect(mockShopperBasketsAddItemToBasket).toHaveBeenCalledWith({
+                    parameters: { basketId: 'basket-123' },
+                    body: formData,
+                });
+            });
+        });
+
+        describe('error handling', () => {
+            it('should handle invalid resource format - not an array', async () => {
+                const args = createClientActionArgs('invalid-encoded-resource');
+                const result = await clientAction(args);
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['The encoded data was not valid for encoding utf-8'],
+                });
+            });
+
+            it('should handle invalid resource format - wrong array length', async () => {
+                const invalid = encodeBase64Url(JSON.stringify(['ShopperBaskets', 'addItemToBasket']));
+                const args = createClientActionArgs(invalid);
+                const result = await clientAction(args);
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Unexpected resource format'],
+                });
+            });
+
+            it('should handle clientAction errors with extractResponseError', async () => {
+                const mockError = new Error('API Error');
+                const mockExtractedError = {
+                    status_code: '400',
+                    responseMessage: 'Bad Request: Invalid basket item',
+                };
+                Reflect.set(mockError, 'response', Response.json(mockExtractedError));
+
+                mockShopperBasketsAddItemToBasket.mockRejectedValue(mockError);
+                mockExtractResponseError.mockImplementationOnce(() => Promise.resolve(mockExtractedError));
+
+                const result = await clientAction(createClientActionArgs(encodedValidActionResource));
+                expect(result).toEqual({
+                    success: false,
+                    errors: [mockExtractedError.responseMessage],
+                });
+
+                expect(mockExtractResponseError).toHaveBeenCalledWith(mockError);
+            });
+
+            it('should handle clientAction errors when extractResponseError fails', async () => {
+                const mockError = new Error('Network Error');
+                mockShopperBasketsAddItemToBasket.mockRejectedValue(mockError);
+                mockExtractResponseError.mockRejectedValue(new Error('Extract failed'));
+
+                const result = await clientAction(createClientActionArgs(encodedValidActionResource));
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Network Error'],
+                });
+            });
+
+            it('should handle unknown errors without message', async () => {
+                const mockError = { someProperty: 'unknown error' };
+                mockShopperBasketsAddItemToBasket.mockRejectedValue(mockError);
+
+                const result = await clientAction(createClientActionArgs(encodedValidActionResource));
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Unknown error'],
+                });
+            });
+
+            it('should handle clientAction with null resource parameter', async () => {
+                const createClientActionArgsWithNullResource = (): ClientActionFunctionArgs => {
+                    const request = new Request('http://localhost/test', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: new URLSearchParams({ productId: 'product-123' }).toString(),
+                    });
+
+                    return {
+                        serverAction: vi.fn(),
+                        params: { resource: null as any },
+                        context: mockContextProvider,
+                        request,
+                    };
+                };
+
+                const result = await clientAction(createClientActionArgsWithNullResource());
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Unexpected resource format'],
+                });
+            });
+
+            it('should handle clientAction with undefined resource parameter', async () => {
+                const createClientActionArgsWithUndefinedResource = (): ClientActionFunctionArgs => {
+                    const request = new Request('http://localhost/test', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: new URLSearchParams({ productId: 'product-123' }).toString(),
+                    });
+
+                    return {
+                        serverAction: vi.fn(),
+                        params: { resource: undefined as any },
+                        context: mockContextProvider,
+                        request,
+                    };
+                };
+
+                const result = await clientAction(createClientActionArgsWithUndefinedResource());
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Unexpected resource format'],
+                });
+            });
+
+            it('should handle clientAction errors when reason is falsy', async () => {
+                // Mock a falsy reason (null, undefined, false, 0, empty string)
+                mockShopperBasketsAddItemToBasket.mockRejectedValue(null);
+
+                const result = await clientAction(createClientActionArgs(encodedValidActionResource));
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Unknown error'],
+                });
+            });
+        });
+    });
+
+    describe('ApiResponse interface', () => {
+        it('should have correct structure for success response', () => {
+            const successResponse: ApiResponse<{ id: string }> = {
+                success: true,
+                data: { id: 'test-123' },
+            };
+
+            expect(successResponse.success).toBe(true);
+            expect(successResponse.data).toEqual({ id: 'test-123' });
+            expect(successResponse.errors).toBeUndefined();
+        });
+
+        it('should have correct structure for error response', () => {
+            const errorResponse: ApiResponse = {
+                success: false,
+                errors: ['Error message'],
+            };
+
+            expect(errorResponse.success).toBe(false);
+            expect(errorResponse.errors).toEqual(['Error message']);
+            expect(errorResponse.data).toBeUndefined();
+        });
+
+        it('should support optional properties', () => {
+            const minimalSuccess: ApiResponse = {
+                success: true,
+            };
+
+            expect(minimalSuccess.success).toBe(true);
+            expect(minimalSuccess.data).toBeUndefined();
+            expect(minimalSuccess.errors).toBeUndefined();
+        });
+    });
+
+    describe('Edge cases and comprehensive coverage', () => {
+        const createLoaderArgs = (resource: string): LoaderFunctionArgs => ({
+            params: { resource },
+            context: mockContextProvider,
+            request: new Request('http://localhost/test'),
+        });
+
+        it('should handle empty form data in action', async () => {
+            const validActionResource = [
+                'ShopperCustomers',
+                'updateCustomer',
+                [{ parameters: { customerId: 'customer-123' } }],
+            ];
+            const encodedValidActionResource = encodeBase64Url(JSON.stringify(validActionResource));
+
+            // Set up the mock for this specific test
+            mockShopperCustomersUpdateCustomer.mockResolvedValue(mockResponseData);
+
+            const createActionArgsWithEmptyForm = (): ActionFunctionArgs => {
+                const request = new Request('http://localhost/test', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: '',
+                });
+
+                return {
+                    params: { resource: encodedValidActionResource },
+                    context: mockContextProvider,
+                    request,
+                };
+            };
+
+            const result = await action(createActionArgsWithEmptyForm());
+            expect(result).toEqual({
+                success: true,
+                data: mockResponseData,
+            });
+
+            // Verify the method was called with empty body
+            expect(mockShopperCustomersUpdateCustomer).toHaveBeenCalledWith({
+                parameters: { customerId: 'customer-123' },
+                body: {},
+            });
+        });
+
+        it('should handle malformed JSON in resource parameter', async () => {
+            const malformedResource = 'not-valid-json';
+            const args = createLoaderArgs(malformedResource);
+            const result = await loader(args);
+            expect(result).toEqual({
+                success: false,
+                errors: ['The encoded data was not valid for encoding utf-8'],
+            });
+        });
+
+        it('should handle extractResponseError returning null responseMessage', async () => {
+            const mockError = new Error('API Error');
+            const mockExtractedError = {
+                status_code: '400',
+                responseMessage: null as any,
+            };
+            Reflect.set(mockError, 'response', Response.json(mockExtractedError));
+
+            mockShopperCustomersGetCustomer.mockRejectedValue(mockError);
+            mockExtractResponseError.mockImplementationOnce(() => Promise.resolve(mockExtractedError));
+
+            const result = await loader(createLoaderArgs(encodedValidResource));
+            expect(result).toEqual({
+                success: false,
+                errors: ['Unknown error'],
+            });
+        });
+
+        it('should handle extractResponseError returning undefined responseMessage', async () => {
+            const mockError = new Error('API Error');
+            const mockExtractedError = {
+                status_code: '400',
+                responseMessage: undefined,
+            };
+            Reflect.set(mockError, 'response', Response.json(mockExtractedError));
+
+            mockShopperCustomersGetCustomer.mockRejectedValue(mockError);
+            mockExtractResponseError.mockImplementationOnce(() => Promise.resolve(mockExtractedError));
+
+            const result = await loader(createLoaderArgs(encodedValidResource));
+            expect(result).toEqual({
+                success: false,
+                errors: ['Unknown error'],
+            });
+        });
+
+        it('should handle extractResponseError returning empty string responseMessage', async () => {
+            const mockError = new Error('API Error');
+            const mockExtractedError = {
+                status_code: '400',
+                responseMessage: '',
+            };
+            Reflect.set(mockError, 'response', Response.json(mockExtractedError));
+
+            mockShopperCustomersGetCustomer.mockRejectedValue(mockError);
+            mockExtractResponseError.mockImplementationOnce(() => Promise.resolve(mockExtractedError));
+
+            const result = await loader(createLoaderArgs(encodedValidResource));
+            expect(result).toEqual({
+                success: false,
+                errors: ['Unknown error'],
+            });
+        });
+
+        it('should handle non-Error objects thrown', async () => {
+            const nonErrorObject = { message: 'Custom error', code: 500 };
+            mockShopperCustomersGetCustomer.mockRejectedValue(nonErrorObject);
+
+            const result = await loader(createLoaderArgs(encodedValidResource));
+            expect(result).toEqual({
+                success: false,
+                errors: ['Unknown error'],
+            });
+        });
+
+        it('should handle string errors', async () => {
+            const stringError = 'String error message';
+            mockShopperCustomersGetCustomer.mockRejectedValue(stringError);
+
+            const result = await loader(createLoaderArgs(encodedValidResource));
+            expect(result).toEqual({
+                success: false,
+                errors: ['Unknown error'],
+            });
+        });
+
+        it('should handle number errors', async () => {
+            const numberError = 404;
+            mockShopperCustomersGetCustomer.mockRejectedValue(numberError);
+
+            const result = await loader(createLoaderArgs(encodedValidResource));
+            expect(result).toEqual({
+                success: false,
+                errors: ['Unknown error'],
+            });
+        });
+
+        it('should handle boolean errors', async () => {
+            const booleanError = false;
+            mockShopperCustomersGetCustomer.mockRejectedValue(booleanError);
+
+            const result = await loader(createLoaderArgs(encodedValidResource));
+            expect(result).toEqual({
+                success: false,
+                errors: ['Unknown error'],
             });
         });
     });

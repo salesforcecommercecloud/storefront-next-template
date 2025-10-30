@@ -5,68 +5,69 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-'use client';
-
 import { type ReactElement } from 'react';
 import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
 import ProductQuantityPicker from '@/components/product-quantity-picker';
-import { useToast } from '@/components/toast';
-import { Button } from '@/components/ui/button';
 import { SwatchGroup, Swatch } from '@/components/swatch-group';
 import { useVariationAttributes } from '@/hooks/product/use-variation-attributes';
-import { useProductActions } from '@/hooks/product/use-product-actions';
-import { useCurrentVariant } from '@/hooks/product/use-current-variant';
+import { useProductView } from '@/providers/product-view';
 import uiStrings from '@/temp-ui-string';
 import ProductPrice from '../product-price';
 import { isProductSet, isProductBundle } from '@/lib/product-utils';
+import ProductFeatures from './product-features';
+import { DEFAULT_PRODUCT_FEATURES_CONFIG } from '@/config/product-features';
 import InventoryMessage from '../inventory-message';
+import { useCurrentVariant } from '@/hooks/product/use-current-variant';
 
-interface ProductInfoProps {
+type ProductInfoBaseProps = {
     product: ShopperProductsTypes.Product;
-}
-
-export default function ProductInfo({ product }: ProductInfoProps): ReactElement {
+};
+type ProductInfoUncontrolledProps = ProductInfoBaseProps & {
+    /** Mode for swatch interaction: 'uncontrolled' uses URL navigation */
+    swatchMode?: 'uncontrolled';
+    onAttributeChange?: never;
+    variationValues?: never;
+};
+type ProductInfoControlledProps = ProductInfoBaseProps & {
+    /** Mode for swatch interaction: 'controlled' uses callback */
+    swatchMode: 'controlled';
+    /** Callback when variant attribute changes in controlled mode */
+    onAttributeChange: (attributeId: string, value: string) => void;
+    /** Controlled variation values for controlled mode (e.g., {color: 'red', size: 'M'}) */
+    variationValues: { [key: string]: string };
+};
+type ProductInfoProps = ProductInfoUncontrolledProps | ProductInfoControlledProps;
+/**
+ * ProductInfo component displays product details including title, description, price, variants, and quantity picker
+ *
+ * Supports two swatch modes:
+ * - uncontrolled mode (default): Swatches use URL navigation for variant selection
+ * - controlled mode: Swatches use callbacks for controlled variant selection (used in modals)
+ *
+ * @param props - Component props
+ * @param props.product - The product data to display
+ * @param props.swatchMode - Swatch interaction mode ('uncontrolled' or 'controlled')
+ * @param props.onAttributeChange - Callback for controlled mode variant changes
+ * @param props.variationValues - Controlled variation values for controlled mode
+ * @returns JSX element with product information display
+ */
+export default function ProductInfo({
+    product,
+    swatchMode = 'uncontrolled',
+    onAttributeChange,
+    variationValues,
+}: ProductInfoProps): ReactElement {
     const isProductASet = isProductSet(product);
     const isProductABundle = isProductBundle(product);
     // Use variation attributes hook for URL-aware swatches
     const variationAttributes = useVariationAttributes({ product });
-    // Inventory and stock calculations
-    const inventory = product.inventory;
-
     // Get current variant for UI display
     const currentVariant = useCurrentVariant({ product });
-
-    // Use product actions hook
-    const {
-        isAddingToCart,
-        isAddingToWishlist,
-        quantity,
-        canAddToCart,
-        isOutOfStock,
-        isMasterOrVariantProduct,
-        stockLevel,
-        handleAddToCart,
-        handleAddToWishlist,
-        setQuantity,
-    } = useProductActions({
-        product,
-        stockLevel: inventory?.ats || 0,
-    });
-
-    const { addToast } = useToast();
-
-    const onAddToWishlist = async () => {
-        const productToAdd = isMasterOrVariantProduct ? currentVariant : product;
-        try {
-            // TODO: later refactor this to be similar to handleAddToCart
-            await handleAddToWishlist(productToAdd as ShopperProductsTypes.Variant);
-        } catch {
-            addToast(uiStrings.product.failedToAddProductToWishlistError, 'error');
-        }
-    };
+    // Get shared state from context
+    const { quantity, isOutOfStock, stockLevel, setQuantity } = useProductView();
 
     return (
-        <div className="space-y-6">
+        <div className="grid gap-4">
             {/* Desktop Product Title - hidden on mobile */}
             <div className="hidden md:block">
                 <h1 className="text-3xl font-bold text-foreground">{product.name}</h1>
@@ -76,7 +77,7 @@ export default function ProductInfo({ product }: ProductInfoProps): ReactElement
             </div>
 
             {/* Price - show unit price on PDP */}
-            <div className="space-y-1">
+            <div>
                 <ProductPrice
                     type="unit"
                     product={product}
@@ -109,7 +110,7 @@ export default function ProductInfo({ product }: ProductInfoProps): ReactElement
                     return (
                         <Swatch
                             key={swatchValue}
-                            href={href}
+                            href={swatchMode === 'uncontrolled' ? href : undefined}
                             disabled={!orderable}
                             value={swatchValue}
                             name={valueName}
@@ -118,58 +119,39 @@ export default function ProductInfo({ product }: ProductInfoProps): ReactElement
                         </Swatch>
                     );
                 });
-
                 return (
                     <SwatchGroup
                         key={id}
-                        value={selectedValue?.value}
+                        value={swatchMode === 'uncontrolled' ? selectedValue?.value : variationValues?.[id]}
                         displayName={selectedValue?.name || ''}
-                        label={name}>
+                        label={name}
+                        handleChange={
+                            swatchMode === 'controlled' ? (value) => onAttributeChange?.(id, value) : undefined
+                        }>
                         {swatches}
                     </SwatchGroup>
                 );
             })}
 
-            {/* Quantity and Add to Cart */}
-            <div className="space-y-4">
-                {/* Options Selection Message */}
-                {isMasterOrVariantProduct && !currentVariant && !isProductASet && !isProductABundle && (
-                    <div className="text-destructive font-medium">{uiStrings.product.selectAllOptions}</div>
-                )}
+            {/* Quantity Selector - Only for non-set/bundle products */}
+            {!isProductASet && !isProductABundle && (
+                <ProductQuantityPicker
+                    value={quantity.toString()}
+                    onChange={setQuantity}
+                    stockLevel={stockLevel}
+                    isOutOfStock={isOutOfStock}
+                    productName={product.name}
+                />
+            )}
 
-                {/* Quantity Selector - Only for non-set/bundle products */}
-                {!isProductASet && !isProductABundle && (
-                    <ProductQuantityPicker
-                        value={quantity.toString()}
-                        onChange={setQuantity}
-                        stockLevel={stockLevel}
-                        isOutOfStock={isOutOfStock}
-                        productName={product.name}
-                    />
-                )}
-
-                {/* Action Buttons */}
-                <div className="space-y-3">
-                    {!isProductASet && !isProductABundle && (
-                        <Button
-                            onClick={() => void handleAddToCart()}
-                            disabled={!canAddToCart || isAddingToCart}
-                            className="w-full"
-                            size="lg">
-                            {isAddingToCart ? uiStrings.product.addingToCart : uiStrings.product.addToCart}
-                        </Button>
-                    )}
-
-                    <Button
-                        onClick={() => void onAddToWishlist()}
-                        disabled={isAddingToWishlist}
-                        variant="outline"
-                        className="w-full"
-                        size="lg">
-                        {isAddingToWishlist ? uiStrings.product.addingToWishlist : uiStrings.product.addToWishlist}
-                    </Button>
-                </div>
-            </div>
+            {/* Product Features - Only shown if longDescription is different from shortDescription */}
+            {product.longDescription && product.longDescription !== product.shortDescription && (
+                <ProductFeatures
+                    product={product}
+                    delimiter={DEFAULT_PRODUCT_FEATURES_CONFIG.delimiter}
+                    htmlFragmentClassName={DEFAULT_PRODUCT_FEATURES_CONFIG.htmlFragmentClassName}
+                />
+            )}
 
             {/* Product Bundle/Set Notice */}
             {(isProductASet || isProductABundle) && (

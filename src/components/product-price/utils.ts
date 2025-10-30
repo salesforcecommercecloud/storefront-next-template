@@ -1,6 +1,9 @@
-import type { ShopperProductsTypes, ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsTypes, ShopperProductsTypes, ShopperSearchTypes } from 'commerce-sdk-isomorphic';
 
-type Product = ShopperProductsTypes.Product | ShopperSearchTypes.ProductSearchHit;
+type Product =
+    | ShopperProductsTypes.Product
+    | (ShopperBasketsTypes.ProductItem & Partial<ShopperProductsTypes.Product>)
+    | ShopperSearchTypes.ProductSearchHit;
 
 // Type for product promotions - based on the commerce SDK structure
 interface ProductPromotion {

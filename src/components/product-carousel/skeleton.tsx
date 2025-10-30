@@ -1,5 +1,6 @@
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { useConfig } from '@/config';
 
 /**
  * ProductCarouselSkeleton component provides a loading state placeholder for product carousels.
@@ -14,7 +15,7 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
  *
  * @param props - The component props
  * @param props.title - Optional title to display above the carousel skeleton
- * @param props.itemCount - Number of skeleton items to display (default: 4)
+ * @param props.itemCount - Number of skeleton items to display (default: from config)
  *
  * @returns JSX element representing the product carousel skeleton layout
  *
@@ -32,13 +33,15 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
  *
  * @since 1.0.0
  */
-export default function ProductCarouselSkeleton({ title, itemCount = 4 }: { title?: string; itemCount?: number }) {
+export default function ProductCarouselSkeleton({ title, itemCount }: { title?: string; itemCount?: number }) {
+    const config = useConfig();
+    const finalItemCount = itemCount ?? config.global.carousel.defaultItemCount;
     return (
-        <div className="animate-pulse">
+        <div className="w-full animate-pulse">
             {/* Title skeleton */}
             {title && (
-                <div className="mb-4">
-                    <Skeleton className="h-8 w-48" />
+                <div className="w-full text-center pb-4">
+                    <Skeleton className="h-8 w-48 mx-auto" />
                 </div>
             )}
 
@@ -46,10 +49,10 @@ export default function ProductCarouselSkeleton({ title, itemCount = 4 }: { titl
             <div className="relative w-full">
                 {/* Carousel content skeleton - matches CarouselContent with -ml-1 */}
                 <div className="-ml-1 flex gap-4 overflow-hidden w-full">
-                    {Array.from({ length: itemCount }, (_, i) => i).map((index) => (
+                    {Array.from({ length: finalItemCount }, (_, i) => i).map((index) => (
                         <div key={`carousel-item-${index}`} className="sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
                             <div className="flex-none w-60 md:w-72 snap-start">
-                                <ProductCardSkeleton />
+                                <ProductTileSkeleton />
                             </div>
                         </div>
                     ))}
@@ -68,20 +71,20 @@ export default function ProductCarouselSkeleton({ title, itemCount = 4 }: { titl
 }
 
 /**
- * Individual product card skeleton component for use within the carousel.
+ * Individual product tile skeleton component for use within the carousel.
  *
  * This component creates a skeleton placeholder that matches the structure
- * of the actual ProductCard component, including image, swatches, title, and price areas.
+ * of the actual ProductTile component, including image, swatches, title, and price areas.
  *
- * @returns JSX element representing a single product card skeleton
+ * @returns JSX element representing a single product tile skeleton
  */
-function ProductCardSkeleton() {
+function ProductTileSkeleton() {
     return (
         <Card className="ring-secondary/40 bg-muted/50">
             <CardContent className="text-secondary border-destructive/30">
                 <div className="group">
-                    {/* Product image skeleton - matches ProductImageContainer with mb-4 */}
-                    <Skeleton className="aspect-square w-full rounded-lg mb-4" />
+                    {/* Product image skeleton - matches ProductImageContainer */}
+                    <Skeleton className="aspect-square w-full rounded-lg" />
 
                     {/* Swatches skeleton - matches ProductSwatches spacing */}
                     <div className="flex space-x-1">

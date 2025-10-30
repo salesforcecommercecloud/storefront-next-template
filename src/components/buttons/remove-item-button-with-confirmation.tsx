@@ -12,6 +12,7 @@ import { type ReactElement, useCallback, useEffect, useState } from 'react';
 
 // Hooks
 import { useItemFetcher } from '@/hooks/use-item-fetcher';
+import { useConfig } from '@/config';
 
 // Components
 import { ConfirmationDialog } from '@/components/confirmation-dialog';
@@ -19,7 +20,6 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/toast';
 
 // Constants
-import { defaultButtonRemoveConfig } from '@/components/cart/constants';
 import uiStrings from '@/temp-ui-string';
 
 export interface RemoveItemConfig {
@@ -43,18 +43,16 @@ interface RemoveItemButtonWithConfirmationProps {
  * - Loading states and error handling
  *
  * Used by cart-content components for consistent remove item behavior.
- *
- * @param props - Component props
- * @returns JSX element with remove button and confirmation dialog
- *
- * @see {@link defaultButtonRemoveConfig} - Default configuration used when no config is provided
- * @see {@link CartContent} - Cart component that uses this for remove functionality
  */
 export function RemoveItemButtonWithConfirmation({
     itemId,
-    config = defaultButtonRemoveConfig,
+    config,
     className = '',
 }: RemoveItemButtonWithConfirmationProps): ReactElement {
+    const appConfig = useConfig();
+    const removeAction = config?.action || appConfig.pages.cart.removeAction;
+    const confirmDescription = config?.confirmDescription || appConfig.pages.cart.confirmDescription;
+
     // Create a unique fetcher for this component instance
     const fetcher = useItemFetcher({
         itemId,
@@ -85,9 +83,9 @@ export function RemoveItemButtonWithConfirmation({
         formData.append('itemId', itemId);
         void fetcher.submit(formData, {
             method: 'POST',
-            action: config.action,
+            action: removeAction,
         });
-    }, [itemId, config.action, fetcher]);
+    }, [itemId, removeAction, fetcher]);
 
     // Handle confirmation dialog actions
     const handleCancel = useCallback(() => {
@@ -119,7 +117,7 @@ export function RemoveItemButtonWithConfirmation({
                 open={showConfirmation}
                 onOpenChange={setShowConfirmation}
                 title={uiStrings.removeItem.confirmTitle}
-                description={config.confirmDescription}
+                description={confirmDescription}
                 cancelButtonText={uiStrings.removeItem.cancelButton}
                 confirmButtonText={uiStrings.removeItem.confirmAction}
                 onCancel={handleCancel}

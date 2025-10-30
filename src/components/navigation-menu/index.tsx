@@ -12,7 +12,7 @@ type CategoryNavigationMenuChildProps = {
 };
 
 type WithCategoryNavigationMenuProps = {
-    children: ReactNode | ((props: CategoryNavigationMenuChildProps) => ReactNode);
+    children?: ReactNode | ((props: CategoryNavigationMenuChildProps) => ReactNode);
     resolve?: Promise<ShopperProductsTypes.Category>;
     defer?: Promise<ShopperProductsTypes.Category[]>;
     fallback?: ReactNode;

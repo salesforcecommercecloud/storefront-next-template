@@ -15,7 +15,7 @@ vi.mock('react-router', async (importOriginal) => {
 
 vi.mock('@/lib/scapi', () => ({
     default: vi.fn(() => ({
-        ShopperBaskets: {
+        ShopperBasketsV2: {
             getBasket: vi.fn(),
         },
         ShopperCustomers: {

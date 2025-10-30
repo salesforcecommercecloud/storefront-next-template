@@ -264,7 +264,7 @@ const HeroSlideContent = React.memo(
 
             <div className="absolute inset-0 z-10 flex items-center">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="max-w-2xl">
+                    <div className="max-w-2xl" data-theme="light">
                         <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4 md:mb-6 leading-none tracking-tight">
                             {slide.title}
                         </h1>

@@ -1,6 +1,10 @@
 // Testing libraries
-import { describe, test, expect } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, test, expect, vi, beforeEach } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
+// React Router
+import { createMemoryRouter, RouterProvider } from 'react-router';
 
 // Components
 import { CartItemEditButton } from './cart-item-edit-button';
@@ -8,7 +12,34 @@ import { CartItemEditButton } from './cart-item-edit-button';
 // Utils
 import uiStrings from '@/temp-ui-string';
 
+// Mock useScapiFetcher to prevent actual API calls
+vi.mock('@/hooks/use-scapi-fetcher', () => ({
+    useScapiFetcher: () => ({
+        load: vi.fn().mockResolvedValue(undefined),
+        data: null,
+        state: 'idle',
+    }),
+}));
+
+const renderCartItemEditButton = (props: React.ComponentProps<typeof CartItemEditButton>) => {
+    const router = createMemoryRouter(
+        [
+            {
+                path: '/',
+                element: <CartItemEditButton {...props} />,
+            },
+        ],
+        {
+            initialEntries: ['/'],
+        }
+    );
+    return { ...render(<RouterProvider router={router} />), router };
+};
+
 describe('CartItemEditButton', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
     const mockProduct = {
         itemId: 'test-item-123',
         productId: 'test-product-456',
@@ -26,7 +57,7 @@ describe('CartItemEditButton', () => {
     };
 
     test('renders edit button with correct text and attributes', () => {
-        render(<CartItemEditButton {...defaultProps} />);
+        renderCartItemEditButton(defaultProps);
 
         const editButton = screen.getByTestId('edit-item-test-item-123');
         expect(editButton).toHaveTextContent(uiStrings.actionCard.edit);
@@ -35,14 +66,14 @@ describe('CartItemEditButton', () => {
 
     test('applies custom className to button', () => {
         const customClassName = 'custom-edit-button';
-        render(<CartItemEditButton {...defaultProps} className={customClassName} />);
+        renderCartItemEditButton({ ...defaultProps, className: customClassName });
 
         const editButton = screen.getByTestId('edit-item-test-item-123');
         expect(editButton).toHaveClass(customClassName);
     });
 
     test('uses default empty className when not provided', () => {
-        render(<CartItemEditButton {...defaultProps} />);
+        renderCartItemEditButton(defaultProps);
 
         // When className is not provided, it defaults to empty string
         // We can verify the button renders by getting it by testId
@@ -50,72 +81,76 @@ describe('CartItemEditButton', () => {
     });
 
     test('initially renders modal as closed', () => {
-        render(<CartItemEditButton {...defaultProps} />);
+        renderCartItemEditButton(defaultProps);
 
         // Modal should not be visible initially
         expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
         expect(screen.queryByText(uiStrings.editItem.title)).not.toBeInTheDocument();
     });
 
-    test('opens modal when edit button is clicked', () => {
-        render(<CartItemEditButton {...defaultProps} />);
+    test('opens modal when edit button is clicked', async () => {
+        const user = userEvent.setup();
+        renderCartItemEditButton(defaultProps);
 
         const editButton = screen.getByTestId('edit-item-test-item-123');
-        fireEvent.click(editButton);
+        await user.click(editButton);
 
         // Modal should be visible after clicking edit button
         expect(screen.getByRole('dialog')).toBeInTheDocument();
         expect(screen.getByText(uiStrings.editItem.title)).toBeInTheDocument();
     });
 
-    test('passes correct product data to ProductViewModal', () => {
-        render(<CartItemEditButton {...defaultProps} />);
+    test('passes correct product data to ProductViewModal', async () => {
+        const user = userEvent.setup();
+        renderCartItemEditButton(defaultProps);
 
         const editButton = screen.getByTestId('edit-item-test-item-123');
-        fireEvent.click(editButton);
+        await user.click(editButton);
 
         // Verify product name is displayed in the modal
         expect(screen.getByText(mockProduct.name)).toBeInTheDocument();
     });
 
-    test('closes modal when close button is clicked', () => {
-        render(<CartItemEditButton {...defaultProps} />);
+    test('closes modal when close button is clicked', async () => {
+        const user = userEvent.setup();
+        renderCartItemEditButton(defaultProps);
 
         // Open modal first
         const editButton = screen.getByTestId('edit-item-test-item-123');
-        fireEvent.click(editButton);
+        await user.click(editButton);
 
         // Verify modal is open
         expect(screen.getByRole('dialog')).toBeInTheDocument();
 
         // Close modal using the close button (X button)
         const closeButton = screen.getByRole('button', { name: /close/i });
-        fireEvent.click(closeButton);
+        await user.click(closeButton);
 
         // Modal should be closed
         expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
 
-    test('handles multiple open/close cycles correctly', () => {
-        render(<CartItemEditButton {...defaultProps} />);
+    test('handles multiple open/close cycles correctly', async () => {
+        const user = userEvent.setup();
+        renderCartItemEditButton(defaultProps);
 
         const editButton = screen.getByTestId('edit-item-test-item-123');
 
         // First cycle
-        fireEvent.click(editButton);
+        await user.click(editButton);
         expect(screen.getByRole('dialog')).toBeInTheDocument();
 
         let closeButton = screen.getByRole('button', { name: /close/i });
-        fireEvent.click(closeButton);
+        await user.click(closeButton);
         expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 
         // Second cycle
-        fireEvent.click(editButton);
+        await user.click(editButton);
         expect(screen.getByRole('dialog')).toBeInTheDocument();
 
         // Get fresh reference to close button
         closeButton = screen.getByRole('button', { name: /close/i });
-        fireEvent.click(closeButton);
+        await user.click(closeButton);
         expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
 });

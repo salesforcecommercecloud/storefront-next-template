@@ -15,6 +15,10 @@ import { Typography } from '@/components/typography';
 import { Card, CardContent } from '@/components/ui/card';
 import { Spinner } from '@/components/spinner';
 import CartQuantityPicker from '@/components/cart/cart-quantity-picker';
+import BundledProductItems from './bundled-product-items';
+// TODO: uncomment after integrate gift basket api
+// import { Checkbox } from '@/components/ui/checkbox';
+// import { Label } from '@/components/ui/label';
 
 // Hooks
 import { useItemFetcherLoading } from '@/hooks/use-item-fetcher';
@@ -29,9 +33,9 @@ import { cn } from '@/lib/utils';
 import uiStrings from '@/temp-ui-string';
 
 /**
- * Combined product type that merges basket item data with product details
+ * Basket item data enriched with product details
  */
-type Product = ShopperBasketsTypes.ProductItem & Partial<ShopperProductsTypes.Product>;
+type Item = ShopperBasketsTypes.ProductItem & Partial<ShopperProductsTypes.Product>;
 
 /**
  * ProductItemVariantImage component that renders product images with fallback
@@ -39,39 +43,37 @@ type Product = ShopperBasketsTypes.ProductItem & Partial<ShopperProductsTypes.Pr
  * @param props - Component props
  * @param props.product - Product data containing image information
  * @param props.className - Optional CSS class name
- * @param props.width - Optional width specification
  * @returns JSX element with product image or placeholder
  */
 function ProductItemVariantImage({
-    product,
+    productItem,
     className = '',
-    width,
 }: {
-    product: Product;
+    productItem: Item;
     className?: string;
     width?: string;
 }): ReactElement {
-    if (!product) {
+    if (!productItem) {
         return (
-            <div className={cn('bg-muted rounded flex-shrink-0', width ? `w-[${width}]` : 'w-16 sm:w-20', className)}>
+            <div className={cn('bg-muted rounded flex-shrink-0 w-16', className)}>
                 <div className="w-full h-full bg-muted rounded" />
             </div>
         );
     }
 
     // Find the 'small' images in the variant's image groups based on variationValues and pick the first one
-    const imageGroup = findImageGroupBy(product?.imageGroups, {
+    const imageGroup = findImageGroupBy(productItem?.imageGroups, {
         viewType: 'small',
-        selectedVariationAttributes: product?.variationValues,
+        selectedVariationAttributes: productItem?.variationValues,
     });
     const image = imageGroup?.images?.[0];
 
     return (
-        <div className={cn('bg-muted rounded flex-shrink-0', width ? `w-[${width}]` : 'w-16 sm:w-20', className)}>
+        <div className={cn('bg-muted rounded flex-shrink-0', className)}>
             {image ? (
                 <img
-                    src={`${image.disBaseLink || image.link}?sw=80&q=60`}
-                    alt={image.alt || product?.productName || product?.name || 'Product image'}
+                    src={`${image.disBaseLink || image.link}?sw=160&q=60`}
+                    alt={image.alt || productItem?.productName || productItem?.name || 'Product image'}
                     className="w-full h-full object-cover rounded"
                 />
             ) : (
@@ -88,16 +90,17 @@ function ProductItemVariantImage({
  * @param props.product - Product data containing name and ID information
  * @returns JSX element with product name link
  */
-function ProductItemVariantName({ product }: { product: Product }): ReactElement {
-    if (!product) {
+function ProductItemVariantName({ productItem }: { productItem: Item }): ReactElement {
+    if (!productItem) {
         return <div className="text-sm font-medium">{uiStrings.cart.product?.defaultName || 'Product Name'}</div>;
     }
 
-    const productId = product?.master?.masterId || product?.id;
-    const productName = product?.productName || product?.name || uiStrings.cart.product?.defaultName || 'Product Name';
+    const productId = productItem?.master?.masterId || productItem?.id;
+    const productName =
+        productItem?.productName || productItem?.name || uiStrings.cart.product?.defaultName || 'Product Name';
 
     return (
-        <Typography variant="h3" as="h3" className="text-sm font-medium">
+        <Typography as="h2" className="mb-4 text-xl">
             <Link to={createProductUrl(productId)} className="text-foreground hover:text-primary">
                 {productName}
             </Link>
@@ -111,46 +114,49 @@ function ProductItemVariantName({ product }: { product: Product }): ReactElement
  * @param props - Component props
  * @param props.product - Product data containing variation information
  * @param props.displayVariant - Display variant to control quantity display
- * @param props.promotionMap - Promotions data by ID
+ * @param props.promotions - Promotions data by ID
  * @returns JSX element with variation attributes or fallback
  */
 function ProductItemVariantAttributes({
-    product,
+    productItem,
     displayVariant = 'default',
-    promotionMap,
+    promotions,
 }: {
-    product: Product;
+    productItem: Item;
     displayVariant?: 'default' | 'summary';
-    promotionMap?: Record<string, ShopperPromotionsTypes.Promotion>;
+    promotions?: Record<string, ShopperPromotionsTypes.Promotion>;
 }): ReactElement {
     // Memoize expensive calculations
     const displayVariationValues = useMemo(
-        () => getDisplayVariationValues(product?.variationAttributes, product?.variationValues),
-        [product?.variationAttributes, product?.variationValues]
+        () => getDisplayVariationValues(productItem?.variationAttributes, productItem?.variationValues),
+        [productItem?.variationAttributes, productItem?.variationValues]
     );
 
     const productPromotions = useMemo(
         () =>
-            (product.priceAdjustments
-                ?.map((adjustment) => (adjustment.promotionId ? promotionMap?.[adjustment.promotionId] : undefined))
+            (productItem.priceAdjustments
+                ?.map((adjustment) => (adjustment.promotionId ? promotions?.[adjustment.promotionId] : undefined))
                 .filter(Boolean) as ShopperPromotionsTypes.Promotion[]) || [],
-        [product.priceAdjustments, promotionMap]
+        [productItem.priceAdjustments, promotions]
     );
 
     const hasPromotions = productPromotions.length > 0;
-    const hasItemDiscount = product.priceAfterItemDiscount && product.priceAfterItemDiscount !== product.price;
+    const hasItemDiscount =
+        productItem.priceAfterItemDiscount &&
+        productItem.priceAfterItemDiscount > 0 &&
+        productItem.priceAfterItemDiscount !== productItem.price;
     return (
-        <div className="space-y-1">
+        <div>
             {/* Quantity - only show in summary variant */}
             {displayVariant === 'summary' && (
                 <div className="text-sm text-muted-foreground">
-                    {uiStrings.cart.attributes.quantity} {product.quantity || 1}
+                    {uiStrings.cart.attributes.quantity} {productItem.quantity || 1}
                 </div>
             )}
 
             {/* Variation Attributes */}
             {Object.keys(displayVariationValues).length > 0 && (
-                <div className="text-sm text-muted-foreground space-y-1">
+                <div className="text-sm text-muted-foreground space-y-1 mb-1">
                     {Object.entries(displayVariationValues).map(([name, value]) => (
                         <div key={name}>
                             {name}: {value}
@@ -161,14 +167,14 @@ function ProductItemVariantAttributes({
 
             {/* Promotions Info */}
             {(hasPromotions || hasItemDiscount) && (
-                <div className="flex items-center gap-2">
-                    <span className="text-sm text-foreground">
+                <div className="flex items-center gap-2 mb-1 ">
+                    <span className="text-sm text-muted-foreground">
                         {uiStrings.cart.attributes.promotions}{' '}
                         <span className="text-success font-medium">
                             {/*TODO: adjust this after we have i18n set up*/}
                             {hasItemDiscount &&
                                 formatCurrency(
-                                    product?.priceAdjustments?.reduce((acc, adj) => acc + (adj.price ?? 0), 0) ?? 0
+                                    productItem?.priceAdjustments?.reduce((acc, adj) => acc + (adj.price ?? 0), 0) ?? 0
                                 )}
                         </span>
                     </span>
@@ -202,36 +208,34 @@ function ProductItemVariantAttributes({
  * @returns JSX element with formatted price information
  */
 function ProductItemVariantPrice({
-    product,
+    productItem,
     baseDirection = 'column',
 }: {
-    product: Product;
+    productItem: Item;
     baseDirection?: 'row' | 'column';
 }): ReactElement {
-    if (!product) {
-        return <div className="text-sm font-medium">{formatCurrency(0)}</div>;
+    if (!productItem) {
+        return <div className="text-xl font-medium">{formatCurrency(0)}</div>;
     }
 
-    const price = product?.priceAfterItemDiscount ?? 0;
-    const pricePerUnit = product?.pricePerUnit;
-    const quantity = product?.quantity || 1;
+    const price = productItem?.priceAfterItemDiscount ?? 0;
+    const pricePerUnit = productItem?.pricePerUnit;
 
     if (baseDirection === 'row') {
         return (
             <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
-                    {formatCurrency(pricePerUnit || price)} {quantity}
-                </span>
-                <span className="text-sm font-medium">{formatCurrency(price)}</span>
+                <div className="text-xl font-medium">{formatCurrency(price)}</div>
+                {pricePerUnit && pricePerUnit !== price && (
+                    <div className="text-md text-muted-foreground">{formatCurrency(pricePerUnit)} each</div>
+                )}
             </div>
         );
     }
-
     return (
         <div className="space-y-1">
-            <div className="text-sm font-medium">{formatCurrency(price)}</div>
+            <div className="text-xl font-medium">{formatCurrency(price)}</div>
             {pricePerUnit && pricePerUnit !== price && (
-                <div className="text-xs text-muted-foreground">{formatCurrency(pricePerUnit)} each</div>
+                <div className="text-md text-muted-foreground">{formatCurrency(pricePerUnit)} each</div>
             )}
         </div>
     );
@@ -243,16 +247,16 @@ function ProductItemVariantPrice({
  * @interface ProductItemProps
  * @property {Product | undefined} product - Combined basket item and product data
  * @property {'default' | 'summary'} [displayVariant] - Display variant: 'default' for full, 'summary' for compact
- * @property {Record<string, ShopperPromotionsTypes.Promotion>} [promotionMap] - Promotions data by ID
+ * @property {Record<string, ShopperPromotionsTypes.Promotion>} [promotions] - Promotions data by ID
  * @property {function} [primaryAction] - Render prop function to create primary actions
  * @property {function} [secondaryActions] - Render prop function to create secondary actions
  */
 interface ProductItemProps {
-    product: Product | undefined;
+    productItem: Item | undefined;
     displayVariant?: 'default' | 'summary';
-    promotionMap?: Record<string, ShopperPromotionsTypes.Promotion>;
-    primaryAction?: (product: Product) => ReactElement | undefined;
-    secondaryActions?: (product: Product) => ReactElement | undefined;
+    promotions?: Record<string, ShopperPromotionsTypes.Promotion>;
+    primaryAction?: (productItem: Item) => ReactElement | undefined;
+    secondaryActions?: (productItem: Item) => ReactElement | undefined;
 }
 
 /**
@@ -272,17 +276,17 @@ interface ProductItemProps {
  * @returns JSX element representing the product item
  */
 function ProductItem({
-    product,
+    productItem,
     displayVariant = 'default',
-    promotionMap,
+    promotions,
     primaryAction,
     secondaryActions,
 }: ProductItemProps): ReactElement {
     // Track loading state for all fetchers related to this item
-    const isItemFetcherLoading = useItemFetcherLoading(product?.itemId);
+    const isItemFetcherLoading = useItemFetcherLoading(productItem?.itemId);
 
     // Guard against undefined or null product
-    if (!product || typeof product !== 'object') {
+    if (!productItem || typeof productItem !== 'object') {
         return <div data-testid="product-item-error">Product data not available</div>;
     }
 
@@ -290,90 +294,110 @@ function ProductItem({
     if (displayVariant === 'summary') {
         return (
             <div
-                className="flex items-start"
-                data-testid={`sf-product-item-summary-${product?.productId || product?.id}`}>
-                <ProductItemVariantImage product={product} width="80px" className="mr-2" />
+                className="grid md:grid-cols-[160px_1fr] grid-cols-[80px_1fr] gap-5"
+                data-testid={`sf-product-item-summary-${productItem?.productId || productItem?.id}`}>
+                <div>
+                    <ProductItemVariantImage productItem={productItem} className="w-20" />
+                </div>
                 <div className="flex-1 space-y-1">
-                    <ProductItemVariantName product={product} />
+                    <ProductItemVariantName productItem={productItem} />
+                    {productItem.bundledProducts && productItem.bundledProducts.length > 0 && (
+                        <BundledProductItems bundledProducts={productItem.bundledProducts} />
+                    )}
                     <ProductItemVariantAttributes
-                        product={product}
+                        productItem={productItem}
                         displayVariant={displayVariant}
-                        promotionMap={promotionMap}
+                        promotions={promotions}
                     />
-                    <ProductItemVariantPrice product={product} baseDirection="row" />
+                    {/*TODO: Replace this with ProductPrice*/}
+                    <ProductItemVariantPrice productItem={productItem} baseDirection="row" />
                 </div>
             </div>
         );
     }
-
     // Default variant - full product item with card styling
     return (
-        <div className="relative" data-testid={`sf-product-item-${product?.productId || product?.id}`}>
-            <Card className="border border-border shadow-sm">
-                <CardContent className="p-4 relative">
-                    <div className="flex items-start">
-                        {/* Product Image */}
-                        <ProductItemVariantImage product={product} className="mr-4 sm:mr-6" />
+        <div className="relative" data-testid={`sf-product-item-${productItem?.productId || productItem?.id}`}>
+            <Card className="p-0 border border-none shadow-none">
+                <CardContent className="px-3 py-4 md:px-6 md:py-7 relative">
+                    <div className="grid md:grid-cols-[160px_1fr] grid-cols-[80px_1fr] gap-5">
+                        <div>
+                            {/* Product Image */}
+                            <ProductItemVariantImage productItem={productItem} className="md:w-40 w-20" />
+                        </div>
 
                         {/* Product Details */}
                         <div className="flex-1 space-y-3">
-                            <div className="space-y-1">
-                                <ProductItemVariantName product={product} />
-                                <ProductItemVariantAttributes
-                                    product={product}
-                                    displayVariant={displayVariant}
-                                    promotionMap={promotionMap}
-                                />
-                                {/* Mobile Price */}
-                                <div className="sm:hidden mt-2">
-                                    <ProductItemVariantPrice product={product} />
+                            <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-6">
+                                <div>
+                                    <ProductItemVariantName productItem={productItem} />
+                                    {productItem.bundledProducts && (
+                                        <BundledProductItems bundledProducts={productItem.bundledProducts} />
+                                    )}
+                                    <ProductItemVariantAttributes
+                                        productItem={productItem}
+                                        displayVariant={displayVariant}
+                                        promotions={promotions}
+                                    />
+
+                                    <Typography as="p" variant="product-description">
+                                        {productItem?.shortDescription}
+                                    </Typography>
+
+                                    <div>
+                                        {primaryAction && (
+                                            <div data-testid="mobile-primary-action">{primaryAction(productItem)}</div>
+                                        )}
+                                        {secondaryActions && secondaryActions(productItem)}
+                                    </div>
+                                </div>
+                                <div className="text-right md:hidden" data-testid="mobile-product-price">
+                                    {/*TODO: Replace this with ProductPrice*/}
+                                    <ProductItemVariantPrice productItem={productItem} />
                                 </div>
 
-                                <div className="space-y-2">
-                                    {/* Quantity Selector */}
-                                    <CartQuantityPicker
-                                        value={String(product.quantity)}
-                                        itemId={product.itemId || ''}
-                                        stockLevel={product.inventory?.ats}
-                                        className="w-fit"
-                                    />
-                                    {secondaryActions && secondaryActions(product)}
+                                <div className="grid gap-4 justify-items-end">
+                                    {/* Quantity Selector, only show if item is not a bonus item */}
+                                    {!productItem?.bonusProductLineItem && (
+                                        <CartQuantityPicker
+                                            value={String(productItem.quantity)}
+                                            itemId={productItem.itemId || ''}
+                                            stockLevel={productItem.inventory?.ats}
+                                        />
+                                    )}
+
+                                    <div className="self-end">
+                                        <div className="text-right hidden md:block" data-testid="desktop-product-price">
+                                            <ProductItemVariantPrice productItem={productItem} />
+                                        </div>
+                                        {/*Comment out since this is not integrated with api yet*/}
+                                        {/*<div className="text-sm flex items-center gap-3">*/}
+                                        {/*    <Checkbox id="isGift" />*/}
+                                        {/*    <Label htmlFor="isGift">This is a gift</Label>*/}
+                                        {/*    <a*/}
+                                        {/*        className="text-primary"*/}
+                                        {/*        href="https://https://developer.salesforce.com/docs/commerce/commerce-api/references">*/}
+                                        {/*        Learn more*/}
+                                        {/*    </a>*/}
+                                        {/*</div>*/}
+                                    </div>
                                 </div>
                             </div>
 
                             {/* Inventory Message */}
-                            {product?.showInventoryMessage && (
+                            {productItem?.showInventoryMessage && (
                                 <div className="text-destructive font-semibold text-sm">
-                                    {product?.inventoryMessage}
+                                    {productItem?.inventoryMessage}
                                 </div>
                             )}
                         </div>
-
-                        {/* Desktop Price and Actions */}
-                        <div className="hidden sm:block ml-4">
-                            <div className="space-y-2">
-                                <ProductItemVariantPrice product={product} />
-                                {primaryAction && (
-                                    <div data-testid="desktop-primary-action">{primaryAction(product)}</div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Mobile Actions */}
-                    <div className="sm:hidden flex items-center justify-between mt-4">
-                        {primaryAction && (
-                            <div className="w-full" data-testid="mobile-primary-action">
-                                {primaryAction(product)}
-                            </div>
-                        )}
                     </div>
 
                     {/* Loading Spinner Overlay */}
                     {isItemFetcherLoading && (
                         <div
                             className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 pointer-events-none flex items-center justify-center"
-                            data-testid={`sf-product-item-loading-${product.productId || product.id}`}>
+                            data-testid={`sf-product-item-loading-${productItem.productId || productItem.id}`}>
                             <Spinner size="lg" />
                         </div>
                     )}

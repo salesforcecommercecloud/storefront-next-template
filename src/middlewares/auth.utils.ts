@@ -8,6 +8,73 @@ import {
     unpackStorage,
     updateStorageObject,
 } from '@/lib/middleware';
+import { getConfig, type AppConfig } from '@/config';
+
+// Maximum allowed refresh token expiry times (in seconds) per Salesforce Commerce Cloud limits
+export const MAX_GUEST_REFRESH_TOKEN_EXPIRY = 30 * 24 * 60 * 60; // 30 days
+export const MAX_REGISTERED_REFRESH_TOKEN_EXPIRY = 90 * 24 * 60 * 60; // 90 days
+
+/**
+ * Get refresh token expiry configuration for a specific user type.
+ * Returns the final expiry time in seconds, either from environment variables or API response fallback.
+ * If userType is not provided, returns the API response value.
+ * Validates that overrides don't exceed Commerce Cloud maximum limits:
+ * - Guest tokens: 30 days maximum
+ * - Registered tokens: 90 days maximum
+ *
+ * @param apiResponseExpirySeconds - Refresh token expiry in seconds from the Commerce Cloud API response
+ * @param userType - Optional user type ('guest' or 'registered') to determine which environment override to use
+ * @param appConfig - Optional app config containing refresh token expiry overrides (server-side only)
+ * @returns Final refresh token expiry time in seconds
+ *
+ * @example
+ * // No userType provided - uses API response value
+ * const expiry = getRefreshTokenExpiry(7776000);
+ * // Result: 7776000 (90 days from API)
+ *
+ * @example
+ * // Guest user with no environment override - uses API response
+ * const expiry = getRefreshTokenExpiry(7776000, 'guest', appConfig);
+ * // Result: 7776000 (from API, no PUBLIC_COMMERCE_API_GUEST_REFRESH_TOKEN_EXPIRY_SECONDS set)
+ *
+ * @example
+ * // Registered user with environment override
+ * // PUBLIC_COMMERCE_API_REGISTERED_REFRESH_TOKEN_EXPIRY_SECONDS=2592000
+ * const expiry = getRefreshTokenExpiry(7776000, 'registered', appConfig);
+ * // Result: 2592000 (30 days from environment override, ignoring API's 90 days)
+ *
+ * @example
+ * // Override exceeding maximum is capped to maximum
+ * // PUBLIC_COMMERCE_API_GUEST_REFRESH_TOKEN_EXPIRY_SECONDS=5184000 (60 days)
+ * const expiry = getRefreshTokenExpiry(7776000, 'guest', appConfig);
+ * // Result: 2592000 (capped to 30 days maximum for guest tokens)
+ */
+export const getRefreshTokenExpiry = (
+    apiResponseExpirySeconds: number,
+    userType?: 'guest' | 'registered',
+    appConfig?: AppConfig
+): number => {
+    // If no userType provided, use API response
+    if (!userType) {
+        return apiResponseExpirySeconds;
+    }
+
+    const maxExpiry = userType === 'registered' ? MAX_REGISTERED_REFRESH_TOKEN_EXPIRY : MAX_GUEST_REFRESH_TOKEN_EXPIRY;
+
+    const refreshTokenExpiryOverride = appConfig
+        ? userType === 'registered'
+            ? appConfig.commerce.api.registeredRefreshTokenExpirySeconds
+            : appConfig.commerce.api.guestRefreshTokenExpirySeconds
+        : undefined;
+
+    // If config override is set, use it but cap at maximum allowed
+    if (refreshTokenExpiryOverride !== undefined) {
+        return Math.min(refreshTokenExpiryOverride, maxExpiry);
+    }
+
+    // Otherwise, use API response but cap at maximum allowed
+    return Math.min(apiResponseExpirySeconds, maxExpiry);
+};
 
 export type AuthStorageData = AuthData & StorageMetaData & StorageErrorData;
 export const authContext = createContext<{ ref: Promise<AuthData | undefined> }>();
@@ -17,13 +84,20 @@ export const authContext = createContext<{ ref: Promise<AuthData | undefined> }>
  */
 export const updateAuthStorageDataByTokenResponse = (
     storage: Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>,
-    tokenResponse: ShopperLoginTypes.TokenResponse
+    tokenResponse: ShopperLoginTypes.TokenResponse,
+    userType?: 'guest' | 'registered',
+    appConfig?: AppConfig
 ): void => {
     const now = Date.now();
+
     storage.set('access_token', tokenResponse?.access_token);
     storage.set('refresh_token', tokenResponse?.refresh_token);
     storage.set('access_token_expiry', now + Number(tokenResponse?.expires_in) * 1_000);
-    storage.set('refresh_token_expiry', now + Number(tokenResponse?.refresh_token_expires_in) * 1_000);
+
+    // Get final refresh token expiry (with environment override if configured)
+    const apiResponseExpirySeconds = Number(tokenResponse?.refresh_token_expires_in);
+    const refreshTokenExpirySeconds = getRefreshTokenExpiry(apiResponseExpirySeconds, userType, appConfig);
+    storage.set('refresh_token_expiry', now + refreshTokenExpirySeconds * 1_000);
 
     // Store customer info if available (for registered users)
     if (tokenResponse?.customer_id) {
@@ -50,7 +124,8 @@ export const updateAuthStorageDataByTokenResponse = (
  */
 export const updateAuthStorageData = (
     storage: Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>,
-    updater: ShopperLoginTypes.TokenResponse | ((data: AuthData & StorageErrorData) => AuthData & StorageErrorData)
+    updater: ShopperLoginTypes.TokenResponse | ((data: AuthData & StorageErrorData) => AuthData & StorageErrorData),
+    appConfig?: AppConfig
 ) => {
     // Extract/store current storage data
     const publicData = unpackStorage(storage);
@@ -68,7 +143,7 @@ export const updateAuthStorageData = (
         }
     } else {
         // Update storage data using a `TokenResponse`
-        updateAuthStorageDataByTokenResponse(storage, updater);
+        updateAuthStorageDataByTokenResponse(storage, updater, undefined, appConfig);
     }
 
     // Mark storage as updated
@@ -87,8 +162,9 @@ export const updateStorageAndCache = async (
     userType: 'guest' | 'registered'
 ): Promise<void> => {
     const promiseCache = context.get(authContext);
+    const appConfig = getConfig(context);
     promiseCache.ref = Promise.resolve(tokenResponse).then((response) => {
-        updateAuthStorageDataByTokenResponse(storage, response);
+        updateAuthStorageDataByTokenResponse(storage, response, userType, appConfig);
         cache.ref = unpackStorage<AuthData>(storage);
         storage.set('userType', userType);
         storage.set('isUpdated', true);

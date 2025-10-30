@@ -9,7 +9,7 @@ import type { LoaderFunctionArgs } from 'react-router';
 import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
 import { getShippingMethodsForShipment } from '@/lib/api/shipping-methods';
 import type { SessionData as AuthData } from '@/lib/api/types';
-import type { CustomerProfile } from '@/components/checkout-one-click/utils/checkout-context-types';
+import type { CustomerProfile } from '@/components/checkout/utils/checkout-context-types';
 import createClient from '@/lib/scapi';
 import { getBasket } from '@/middlewares/basket.client';
 

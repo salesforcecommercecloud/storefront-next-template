@@ -16,7 +16,7 @@ export type PromoCodeFetcherData = {
 
 // Props interface for PromoCodeForm component
 export interface PromoCodeFormProps {
-    basketId?: string;
+    basket?: ShopperBasketsTypes.Basket;
 }
 
 // Props interface for PromoCodeFields component

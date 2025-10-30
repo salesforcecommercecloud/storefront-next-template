@@ -1,4 +1,4 @@
-import type { CustomerProfile } from '@/components/checkout-one-click/utils/checkout-context-types';
+import type { CustomerProfile } from '@/components/checkout/utils/checkout-context-types';
 
 /**
  * Prefill contact info form with customer data

@@ -7,7 +7,7 @@
 
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
-import { createRoutesStub } from 'react-router';
+import { createMemoryRouter, RouterProvider } from 'react-router';
 import ProductInfo from './product-info';
 
 /**
@@ -48,13 +48,19 @@ The Product Info component is the main information panel on the Product Detail P
     },
     decorators: [
         (Story) => {
-            const Stub = createRoutesStub([
-                {
-                    path: '/product/:productId',
-                    Component: () => <Story />,
-                },
-            ]);
-            return <Stub initialEntries={['/product/test-product']} />;
+            // Using createMemoryRouter in framework mode is fine
+            // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
+            // Even though it's listed under "data routers," it fully supports testing non-route components that rely on router behavior.
+            const router = createMemoryRouter(
+                [
+                    {
+                        path: '/product/:productId',
+                        element: <Story />,
+                    },
+                ],
+                { initialEntries: ['/product/test-product'] }
+            );
+            return <RouterProvider router={router} />;
         },
     ],
     argTypes: {

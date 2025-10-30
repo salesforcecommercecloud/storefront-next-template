@@ -1,4 +1,4 @@
-import React, { Children, useCallback, useEffect, useRef, useState } from 'react';
+import React, { Children, useCallback, useRef } from 'react';
 import { cn } from '@/lib/utils';
 
 const DIRECTIONS = {
@@ -12,6 +12,8 @@ interface SwatchChild {
         handleSelect?: (value: string) => void;
         selected?: boolean;
         isFocusable?: boolean;
+        shape?: 'circle' | 'square';
+        disabled?: boolean;
     };
 }
 
@@ -69,7 +71,6 @@ export const SwatchGroup: React.FC<SwatchGroupProps> = ({
     handleChange = noop,
     className,
 }) => {
-    const [selectedIndex, setSelectedIndex] = useState(0);
     const wrapperRef = useRef<HTMLDivElement>(null);
 
     const onKeyDown = useCallback(
@@ -101,7 +102,13 @@ export const SwatchGroup: React.FC<SwatchGroupProps> = ({
 
                 const swatchEl = wrapperRef?.current?.children[index] as HTMLElement;
 
-                setSelectedIndex(index);
+                // Call handleChange when navigating with keyboard
+                const newChildElement = childrenArray[index] as React.ReactElement<SwatchChild['props']>;
+                const newValue = newChildElement?.props?.value;
+                if (newValue) {
+                    handleChange(newValue);
+                }
+
                 swatchEl?.focus();
             };
 
@@ -120,46 +127,29 @@ export const SwatchGroup: React.FC<SwatchGroupProps> = ({
                     break;
             }
         },
+        // do not need handleChange as dep
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [children]
     );
-
-    // Initialize the component state on mount, this includes the selected index value.
-    useEffect(() => {
-        if (!value) {
-            return;
-        }
-        const childrenArray = Children.toArray(children);
-        const index = childrenArray.findIndex((child) => {
-            const childElement = child as React.ReactElement<SwatchChild['props']>;
-            return childElement.props?.value === value;
-        });
-
-        setSelectedIndex(index);
-        // we only want to initlize on first mount, not when value/child change
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    // Whenever the selected index changes ensure that we call the change handler.
-    useEffect(() => {
-        const childrenArray = Children.toArray(children);
-        const childElement = childrenArray[selectedIndex] as React.ReactElement<SwatchChild['props']>;
-        const newValue = childElement?.props?.value;
-
-        if (newValue) {
-            handleChange(newValue);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedIndex]);
 
     const containerClasses = cn('space-y-3', className);
 
     const labelClasses = 'flex items-center gap-2 text-sm text-foreground';
 
-    const swatchesWrapperClasses = 'flex flex-wrap gap-2 focus:outline-none';
+    // Check if this is a square swatch group (size, material, etc.)
+    const isSquareSwatchGroup =
+        (React.Children.toArray(children)[0] as React.ReactElement<SwatchChild['props']>)?.props?.shape === 'square';
+
+    const swatchesWrapperClasses = isSquareSwatchGroup
+        ? 'inline-flex flex-wrap gap-2 focus:outline-none bg-gray-100 dark:bg-muted rounded-lg p-1'
+        : 'flex flex-wrap gap-2 focus:outline-none';
 
     return (
         <div className={containerClasses} onKeyDown={onKeyDown}>
-            <div className="flex flex-col gap-3" role="radiogroup" aria-label={ariaLabel || label}>
+            <div
+                className={isSquareSwatchGroup ? 'inline-flex flex-col gap-3' : 'flex flex-col gap-3'}
+                role="radiogroup"
+                aria-label={ariaLabel || label}>
                 {label && (
                     <div className={labelClasses}>
                         <span className="font-semibold">{label}:</span>

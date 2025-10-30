@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, act, cleanup } from '@testing-library/react';
 import { vi, describe, test, expect, beforeEach, afterEach } from 'vitest';
-import { createRoutesStub } from 'react-router';
+import { createMemoryRouter, RouterProvider } from 'react-router';
 import HeroCarousel, { type HeroSlide } from './index';
 import type { CarouselApi } from '@/components/ui/carousel';
 
@@ -70,13 +70,19 @@ vi.mock('@/components/ui/button', () => ({
 
 // Router testing helper
 const renderWithRouter = (component: React.ReactElement) => {
-    const Stub = createRoutesStub([
-        {
-            path: '/',
-            Component: () => component,
-        },
-    ]);
-    return render(<Stub initialEntries={['/']} />);
+    // Using createMemoryRouter in framework mode is fine
+    // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
+    // Even though it's listed under "data routers," it fully supports testing non-route components that rely on router behavior.
+    const router = createMemoryRouter(
+        [
+            {
+                path: '/',
+                element: component,
+            },
+        ],
+        { initialEntries: ['/'] }
+    );
+    return render(<RouterProvider router={router} />);
 };
 
 describe('HeroCarousel', () => {

@@ -1,4 +1,10 @@
-import { detectCardType } from './payment-utils';
+import {
+    detectCardType,
+    getCardTypeDisplay,
+    getFormattedMaskedCardNumber,
+    getLastFourDigits,
+    hasValidPaymentCard,
+} from './payment-utils';
 
 describe('detectCardType', () => {
     test('detects Visa cards', () => {
@@ -55,5 +61,79 @@ describe('detectCardType', () => {
         expect(detectCardType('41111111111111111111')).toBe('Credit Card'); // 20 digits - too long for Visa
         expect(detectCardType('51111111111111111')).toBe('Credit Card'); // 17 digits - wrong length for Mastercard
         expect(detectCardType('34343434343434')).toBe('Credit Card'); // 14 digits - too short for Amex
+    });
+});
+
+describe('getCardTypeDisplay', () => {
+    test('returns fallback when instrument is undefined or missing type', () => {
+        expect(getCardTypeDisplay(undefined, 'Card')).toBe('Card');
+        // no paymentCard and no paymentMethodId
+        expect(getCardTypeDisplay({} as any, 'Card')).toBe('Card');
+    });
+
+    test('normalizes common card types', () => {
+        expect(getCardTypeDisplay({ paymentCard: { cardType: 'discover' } } as any)).toBe('Discover');
+        expect(getCardTypeDisplay({ paymentCard: { cardType: 'diners' } } as any)).toBe('Diners Club');
+        expect(getCardTypeDisplay({ paymentCard: { cardType: 'jcb' } } as any)).toBe('JCB');
+    });
+
+    test('falls back to original when no normalization match', () => {
+        expect(getCardTypeDisplay({ paymentCard: { cardType: 'UnionPay' } } as any)).toBe('UnionPay');
+    });
+});
+
+describe('getFormattedMaskedCardNumber', () => {
+    test('handles undefined instrument and returns default mask', () => {
+        expect(getFormattedMaskedCardNumber(undefined)).toBe('**** **** **** ****');
+    });
+
+    test('returns existing masked value as-is', () => {
+        expect(getFormattedMaskedCardNumber({ maskedCreditCardNumber: '**** **** **** 4242' } as any)).toBe(
+            '**** **** **** 4242'
+        );
+    });
+
+    test('masks when only last digits available', () => {
+        expect(getFormattedMaskedCardNumber({ paymentCard: { maskedNumber: '1234567890123456' } } as any)).toBe(
+            '**** **** **** 3456'
+        );
+    });
+});
+
+describe('getLastFourDigits', () => {
+    test('returns placeholders for undefined and extracts digits from mixed strings', () => {
+        expect(getLastFourDigits(undefined)).toBe('****');
+        expect(getLastFourDigits('**** **** **** 1337')).toBe('1337');
+        // not enough digits present so fallback
+        expect(getLastFourDigits('****-****-****-9a8b')).toBe('****');
+        expect(getLastFourDigits('** 1 2 3 4')).toBe('1234');
+    });
+});
+
+describe('hasValidPaymentCard', () => {
+    test('handles saved payment methods', () => {
+        // valid saved card
+        expect(
+            hasValidPaymentCard({
+                paymentInstrumentId: 'id',
+                paymentMethodId: 'CREDIT_CARD',
+                paymentCard: { cardType: 'Visa' },
+            } as any)
+        ).toBe(true);
+        // missing card type
+        expect(
+            hasValidPaymentCard({ paymentInstrumentId: 'id', paymentMethodId: 'CREDIT_CARD', paymentCard: {} } as any)
+        ).toBe(false);
+        // not a credit card method
+        expect(hasValidPaymentCard({ paymentInstrumentId: 'id', paymentMethodId: 'PayPal' } as any)).toBe(false);
+    });
+
+    test('handles new payment methods based on masked numbers', () => {
+        expect(hasValidPaymentCard({ maskedCreditCardNumber: '**** **** **** 1111' } as any)).toBe(true);
+        expect(hasValidPaymentCard({ paymentCard: { maskedCreditCardNumber: '**** **** **** 2222' } } as any)).toBe(
+            true
+        );
+        expect(hasValidPaymentCard({ paymentCard: { maskedNumber: '1234567890123456' } } as any)).toBe(true);
+        expect(hasValidPaymentCard({} as any)).toBe(false);
     });
 });

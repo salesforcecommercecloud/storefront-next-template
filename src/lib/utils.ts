@@ -11,8 +11,6 @@ export const stringToBase64 =
         ? (unencoded: string): string => btoa(unencoded)
         : (unencoded: string): string => Buffer.from(unencoded).toString('base64');
 
-export const isSlasPrivate = import.meta.env.VITE_COMMERCE_API_SLAS_PRIVATE === 'true';
-
 export const validatePassword = (password: string) => ({
     minLength: password.length >= 8,
     hasUppercase: /[A-Z]/.test(password),
@@ -79,7 +77,7 @@ export const extractResponseError = async (
  *
  * This function is isomorphic, it can be used on the client and server.
  *
- * On the server, it will return the origin derived from the process.env.EXTERNAL_DOMAIN_NAME (available on MRT)
+ * On the server, it will return the origin derived from the EXTERNAL_DOMAIN_NAME (from process.env)
  * On the client, it will return the window.location.origin
  */
 export const getAppOrigin = () => {
@@ -87,7 +85,7 @@ export const getAppOrigin = () => {
         return window.location.origin;
     }
 
-    const { EXTERNAL_DOMAIN_NAME } = process.env;
+    const EXTERNAL_DOMAIN_NAME = process.env.EXTERNAL_DOMAIN_NAME || 'localhost:5173';
     if (!EXTERNAL_DOMAIN_NAME) {
         throw new Error('Environment variable: "EXTERNAL_DOMAIN_NAME" is not set.');
     }
@@ -96,3 +94,11 @@ export const getAppOrigin = () => {
     const protocol = isLocalhost ? 'http' : 'https';
     return `${protocol}://${EXTERNAL_DOMAIN_NAME}`;
 };
+
+/**
+ * Determines whether the specified URL is absolute.
+ *
+ * @param url The URL to test
+ * @returns True if the specified URL is absolute, otherwise false
+ */
+export const isAbsoluteURL = (url: string): boolean => /^([a-z][a-z\d+\-.]*:)?\/\//i.test(url);

@@ -11,18 +11,24 @@ import { vi, test, beforeEach } from 'vitest';
 // Commerce SDK
 import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
 // React Router
-import { createRoutesStub } from 'react-router';
+import { createMemoryRouter, RouterProvider } from 'react-router';
 // Components
 import ProductView from './index';
 
 const renderProductView = (props: React.ComponentProps<typeof ProductView>) => {
-    const Stub = createRoutesStub([
-        {
-            path: '/product/:productId',
-            Component: () => <ProductView {...props} />,
-        },
-    ]);
-    return render(<Stub initialEntries={['/product/test-product']} />);
+    // Using createMemoryRouter in framework mode is fine
+    // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
+    // Even though it's listed under "data routers," it fully supports testing non-route components that rely on router behavior.
+    const router = createMemoryRouter(
+        [
+            {
+                path: '/product/:productId',
+                element: <ProductView {...props} />,
+            },
+        ],
+        { initialEntries: ['/product/test-product'] }
+    );
+    return render(<RouterProvider router={router} />);
 };
 
 describe('ProductView', () => {

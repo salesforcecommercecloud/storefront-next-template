@@ -56,7 +56,7 @@ export async function clientAction({
             };
         }
 
-        const client = createClient(context).ShopperBaskets;
+        const client = createClient(context).ShopperBasketsV2;
         const updatedBasket = await client.removeCouponFromBasket({
             parameters: {
                 basketId,

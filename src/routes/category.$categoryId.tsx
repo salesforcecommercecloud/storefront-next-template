@@ -5,6 +5,7 @@ import type { Route } from './+types/category.$categoryId';
 import createClient from '@/lib/scapi';
 import { fetchSearchProducts } from '@/lib/api/search';
 import { getAllQueryParams, getQueryParam, PRODUCT_SEARCH_QUERY_PARAMS } from '@/lib/query-params';
+import { getConfig, useConfig } from '@/config';
 import CategorySkeleton, {
     CategoryBreadcrumbsSkeleton,
     CategoryHeaderSkeleton,
@@ -15,8 +16,6 @@ import CategoryPagination from '@/components/category-pagination';
 import CategoryRefinements from '@/components/category-refinements';
 import CategorySorting from '@/components/category-sorting';
 import ProductGrid from '@/components/product-grid';
-
-const limit = 24;
 
 type CategoryPageData = {
     category: Promise<ShopperProductsTypes.Category>;
@@ -29,16 +28,20 @@ type CategoryPageData = {
  * This function handles the actual data fetching logic shared between server and client loaders.
  * @returns Promise that resolves to an object containing search results and category data
  */
-function getPageData({ request, params, context }: LoaderFunctionArgs): CategoryPageData {
+function getPageData({ request, params, context }: LoaderFunctionArgs, limit: number): CategoryPageData {
     const { searchParams } = new URL(request.url);
     const { categoryId = '' } = params;
+
+    // Ensure we have a valid category ID, fallback to 'root' if undefined or empty
+    const safeCategoryId = categoryId && categoryId !== 'undefined' ? categoryId : 'root';
+
     const offset = parseInt(getQueryParam(searchParams, PRODUCT_SEARCH_QUERY_PARAMS.OFFSET) || '0', 10);
     const sort = getQueryParam(searchParams, PRODUCT_SEARCH_QUERY_PARAMS.SORT);
     const refine = getAllQueryParams(searchParams, PRODUCT_SEARCH_QUERY_PARAMS.REFINE);
 
     return {
         refinements: fetchSearchProducts(context, {
-            categoryId,
+            categoryId: safeCategoryId,
             limit: 1,
             offset: 0,
             sort,
@@ -46,7 +49,7 @@ function getPageData({ request, params, context }: LoaderFunctionArgs): Category
             expand: ['none'],
         }),
         searchResult: fetchSearchProducts(context, {
-            categoryId,
+            categoryId: safeCategoryId,
             limit,
             offset,
             sort,
@@ -54,7 +57,7 @@ function getPageData({ request, params, context }: LoaderFunctionArgs): Category
         }),
         category: createClient(context).ShopperProducts.getCategory({
             parameters: {
-                id: categoryId,
+                id: safeCategoryId,
                 levels: 0,
             },
         }),
@@ -68,7 +71,7 @@ function getPageData({ request, params, context }: LoaderFunctionArgs): Category
  */
 // eslint-disable-next-line react-refresh/only-export-components
 export function loader(args: LoaderFunctionArgs): CategoryPageData {
-    return getPageData(args);
+    return getPageData(args, getConfig(args.context).global.productListing.productsPerPage);
 }
 
 /**
@@ -79,7 +82,7 @@ export function loader(args: LoaderFunctionArgs): CategoryPageData {
  */
 // eslint-disable-next-line react-refresh/only-export-components
 export function clientLoader(args: ClientLoaderFunctionArgs): CategoryPageData {
-    return getPageData(args);
+    return getPageData(args, getConfig().global.productListing.productsPerPage);
 }
 
 /**
@@ -88,6 +91,9 @@ export function clientLoader(args: ClientLoaderFunctionArgs): CategoryPageData {
  * @returns JSX element representing the category page
  */
 export default function CategoryPage({ loaderData: { category, refinements, searchResult } }: Route.ComponentProps) {
+    const config = useConfig();
+    const limit = config.global.productListing.productsPerPage;
+
     return (
         <div className="pb-16">
             <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">

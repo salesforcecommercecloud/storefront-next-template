@@ -13,6 +13,9 @@ import type { ActionResponse } from '@/routes/types/action-responses';
 // Hooks
 import { useCartQuantityUpdate } from './use-cart-quantity-update';
 
+// Test utilities
+import { ConfigWrapper } from '@/test-utils/config';
+
 // UI Strings
 import uiStrings from '@/temp-ui-string';
 
@@ -80,7 +83,7 @@ describe('useCartQuantityUpdate', () => {
 
     describe('Initial State', () => {
         test('should initialize with correct default values', () => {
-            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps));
+            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
 
             expect(result.current.quantity).toBe(2);
             expect(result.current.stockValidationError).toBeNull();
@@ -93,11 +96,13 @@ describe('useCartQuantityUpdate', () => {
         });
 
         test('should handle missing stockLevel', () => {
-            const { result } = renderHook(() =>
-                useCartQuantityUpdate({
-                    ...defaultProps,
-                    stockLevel: undefined,
-                })
+            const { result } = renderHook(
+                () =>
+                    useCartQuantityUpdate({
+                        ...defaultProps,
+                        stockLevel: undefined,
+                    }),
+                { wrapper: ConfigWrapper }
             );
 
             expect(result.current.quantity).toBe(2);
@@ -106,7 +111,7 @@ describe('useCartQuantityUpdate', () => {
 
     describe('Quantity Change Handling', () => {
         test('should handle empty input', () => {
-            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps));
+            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
 
             act(() => {
                 result.current.handleQuantityChange('', 0);
@@ -117,7 +122,7 @@ describe('useCartQuantityUpdate', () => {
         });
 
         test('should handle zero input by showing remove confirmation', () => {
-            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps));
+            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
 
             act(() => {
                 result.current.handleQuantityChange('0', 0);
@@ -127,7 +132,7 @@ describe('useCartQuantityUpdate', () => {
         });
 
         test('should handle increment from empty state', () => {
-            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps));
+            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
 
             // First set quantity to empty
             act(() => {
@@ -144,7 +149,7 @@ describe('useCartQuantityUpdate', () => {
         });
 
         test('should update quantity for valid values', () => {
-            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps));
+            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
 
             act(() => {
                 result.current.handleQuantityChange('5', 5);
@@ -155,7 +160,7 @@ describe('useCartQuantityUpdate', () => {
         });
 
         test('should show stock validation error for quantities exceeding stock', () => {
-            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps));
+            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
 
             act(() => {
                 result.current.handleQuantityChange('15', 15);
@@ -168,11 +173,13 @@ describe('useCartQuantityUpdate', () => {
         });
 
         test('should not show stock validation error when stockLevel is undefined', () => {
-            const { result } = renderHook(() =>
-                useCartQuantityUpdate({
-                    ...defaultProps,
-                    stockLevel: undefined,
-                })
+            const { result } = renderHook(
+                () =>
+                    useCartQuantityUpdate({
+                        ...defaultProps,
+                        stockLevel: undefined,
+                    }),
+                { wrapper: ConfigWrapper }
             );
 
             act(() => {
@@ -184,11 +191,13 @@ describe('useCartQuantityUpdate', () => {
         });
 
         test('should not show stock validation error when stockLevel is 0', () => {
-            const { result } = renderHook(() =>
-                useCartQuantityUpdate({
-                    ...defaultProps,
-                    stockLevel: 0,
-                })
+            const { result } = renderHook(
+                () =>
+                    useCartQuantityUpdate({
+                        ...defaultProps,
+                        stockLevel: 0,
+                    }),
+                { wrapper: ConfigWrapper }
             );
 
             act(() => {
@@ -202,7 +211,7 @@ describe('useCartQuantityUpdate', () => {
 
     describe('Quantity Blur Handling', () => {
         test('should reset to initial value on blur with empty input', () => {
-            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps));
+            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
 
             // First set quantity to empty
             act(() => {
@@ -221,7 +230,7 @@ describe('useCartQuantityUpdate', () => {
         });
 
         test('should show remove confirmation on blur with zero input', () => {
-            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps));
+            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
 
             act(() => {
                 result.current.handleQuantityBlur({
@@ -233,7 +242,7 @@ describe('useCartQuantityUpdate', () => {
         });
 
         test('should not change quantity on blur with valid input', () => {
-            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps));
+            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
 
             // First set quantity to 5
             act(() => {
@@ -253,7 +262,7 @@ describe('useCartQuantityUpdate', () => {
 
     describe('Remove Confirmation Handling', () => {
         test('should handle keep item action', () => {
-            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps));
+            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
 
             // First show remove confirmation
             act(() => {
@@ -272,7 +281,7 @@ describe('useCartQuantityUpdate', () => {
         });
 
         test('should handle remove item action', () => {
-            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps));
+            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
 
             // First show remove confirmation
             act(() => {
@@ -289,7 +298,7 @@ describe('useCartQuantityUpdate', () => {
                 expect.any(FormData),
                 expect.objectContaining({
                     method: 'POST',
-                    action: '/action/remove-cart-item',
+                    action: '/action/cart-item-remove',
                 })
             );
         });
@@ -297,7 +306,7 @@ describe('useCartQuantityUpdate', () => {
 
     describe('API Response Handling', () => {
         test('should handle successful API response', async () => {
-            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps));
+            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
 
             // Simulate successful API response
             act(() => {
@@ -312,7 +321,7 @@ describe('useCartQuantityUpdate', () => {
         });
 
         test('should maintain quantity after successful API call with optimistic updates', async () => {
-            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps));
+            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
 
             // User changes quantity optimistically
             act(() => {
@@ -335,7 +344,7 @@ describe('useCartQuantityUpdate', () => {
         });
 
         test('should handle button clicks after successful input update', async () => {
-            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps));
+            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
 
             // Step 1: User types in input (quantity changes to 5)
             act(() => {
@@ -371,7 +380,7 @@ describe('useCartQuantityUpdate', () => {
         });
 
         test('should handle failed API response', async () => {
-            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps));
+            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
 
             // Simulate failed API response
             act(() => {
@@ -386,7 +395,7 @@ describe('useCartQuantityUpdate', () => {
         });
 
         test('should not handle response when fetcher is not idle', () => {
-            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps));
+            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
 
             // Simulate non-idle fetcher state
             act(() => {
@@ -399,7 +408,7 @@ describe('useCartQuantityUpdate', () => {
         });
 
         test('should not handle response when no data', () => {
-            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps));
+            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
 
             // Simulate idle state with no data
             act(() => {
@@ -416,7 +425,10 @@ describe('useCartQuantityUpdate', () => {
         test('should update quantity when initialValue changes', () => {
             const { result, rerender } = renderHook(
                 ({ initialValue }) => useCartQuantityUpdate({ ...defaultProps, initialValue }),
-                { initialProps: { initialValue: 2 } }
+                {
+                    initialProps: { initialValue: 2 },
+                    wrapper: ConfigWrapper,
+                }
             );
 
             expect(result.current.quantity).toBe(2);
@@ -429,7 +441,7 @@ describe('useCartQuantityUpdate', () => {
 
     describe('Edge Cases', () => {
         test('should handle negative quantities', () => {
-            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps));
+            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
 
             act(() => {
                 result.current.handleQuantityChange('-1', -1);
@@ -440,7 +452,7 @@ describe('useCartQuantityUpdate', () => {
         });
 
         test('should handle non-numeric input', () => {
-            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps));
+            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
 
             act(() => {
                 result.current.handleQuantityChange('abc', NaN);
@@ -453,7 +465,7 @@ describe('useCartQuantityUpdate', () => {
 
     describe('Debounce Integration', () => {
         test('should call debounced cart update for valid quantity changes', () => {
-            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps));
+            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
 
             // Make a quantity change
             act(() => {
@@ -474,14 +486,14 @@ describe('useCartQuantityUpdate', () => {
             expect(mockFetcher.submit).toHaveBeenCalledWith(
                 expect.any(FormData),
                 expect.objectContaining({
-                    method: 'POST',
-                    action: '/action/cart-item-quantity-update',
+                    method: 'PATCH',
+                    action: '/action/cart-item-update',
                 })
             );
         });
 
         test('should handle multiple quantity changes', () => {
-            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps));
+            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
 
             // Make multiple changes
             act(() => {
@@ -505,7 +517,7 @@ describe('useCartQuantityUpdate', () => {
         });
 
         test('should not call debounced cart update for quantities exceeding stock', () => {
-            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps));
+            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
 
             act(() => {
                 result.current.handleQuantityChange('15', 15);
@@ -520,7 +532,7 @@ describe('useCartQuantityUpdate', () => {
         });
 
         test('should call debounced cart update even for same quantity as initial', () => {
-            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps));
+            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
 
             act(() => {
                 result.current.handleQuantityChange('2', 2); // Same as initialValue
@@ -532,7 +544,7 @@ describe('useCartQuantityUpdate', () => {
         });
 
         test('should cancel previous debounced calls when increment/decrement buttons are clicked', () => {
-            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps));
+            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
 
             // Simulate increment button click (like from QuantityPicker)
             act(() => {
@@ -552,8 +564,8 @@ describe('useCartQuantityUpdate', () => {
             const lastCall = mockFetcher.submit.mock.calls[1];
             expect(lastCall[1]).toEqual(
                 expect.objectContaining({
-                    method: 'POST',
-                    action: '/action/cart-item-quantity-update',
+                    method: 'PATCH',
+                    action: '/action/cart-item-update',
                 })
             );
         });

@@ -1,4 +1,9 @@
-import { createContext, type MiddlewareFunction, type RouterContextProvider } from 'react-router';
+import {
+    createContext,
+    type DataStrategyResult,
+    type MiddlewareFunction,
+    type RouterContextProvider,
+} from 'react-router';
 import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
 import {
     clearStorage,
@@ -24,14 +29,14 @@ const retrieveBasket = (
     context: Readonly<RouterContextProvider>,
     storage: Map<keyof BasketStorageData, BasketStorageData[keyof BasketStorageData]>
 ): Promise<ShopperBasketsTypes.Basket> => {
-    const client = createClient(context).ShopperBaskets;
+    const client = createClient(context).ShopperBasketsV2;
     const basketId = storage.get('basketId');
 
     const createBasket = (): Promise<ShopperBasketsTypes.Basket> => {
         return client
             .createBasket({
                 body: {
-                    currency: import.meta.env.VITE_SITE_CURRENCY || 'USD',
+                    currency: import.meta.env.PUBLIC_SITE_CURRENCY || 'USD',
                 },
             })
             .catch(async (error) => {
@@ -113,7 +118,7 @@ const retrieveBasketStorageData = (
  *
  * TODO: This middleware should also handle aspects like basket TTL.
  */
-const basketMiddleware: MiddlewareFunction<void> = async ({ context }, next) => {
+const basketMiddleware: MiddlewareFunction<Record<string, DataStrategyResult>> = async ({ context }, next) => {
     // Before calling the handler: Load current basket data from `basketCache` or `localStorage`, if applicable
     const basketData = (basketCache.ref ??
         JSON.parse(globalThis.localStorage?.getItem?.(basketStorageKey) ?? '{}')) satisfies BasketStorageData;

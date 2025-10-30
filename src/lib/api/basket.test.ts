@@ -19,7 +19,7 @@ describe('getBasketCurrency', () => {
     });
 
     test('should return site currency when basket has no currency', () => {
-        vi.stubEnv('VITE_SITE_CURRENCY', 'EUR');
+        vi.stubEnv('PUBLIC_SITE_CURRENCY', 'EUR');
 
         const basket: Partial<ShopperBasketsTypes.Basket> = {
             basketId: 'test-basket',
@@ -32,7 +32,7 @@ describe('getBasketCurrency', () => {
     });
 
     test('should return USD fallback when basket and site have no currency', () => {
-        vi.stubEnv('VITE_SITE_CURRENCY', '');
+        vi.stubEnv('PUBLIC_SITE_CURRENCY', '');
 
         const basket: Partial<ShopperBasketsTypes.Basket> = {
             basketId: 'test-basket',

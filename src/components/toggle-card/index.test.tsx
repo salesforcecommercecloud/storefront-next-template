@@ -1,5 +1,5 @@
 import { describe, test, expect, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ToggleCard, ToggleCardEdit, type ToggleCardProps, ToggleCardSummary } from '@/components/toggle-card';
 
@@ -43,7 +43,7 @@ describe('ToggleCard', () => {
         expect(onEditActionClick).toHaveBeenCalledTimes(1);
     });
 
-    test('focuses the title when switching into editing', async () => {
+    test('does not focus the title when switching into editing (focus should go to form inputs)', () => {
         const { rerender } = render(
             <ToggleCard id="card3" title="Card Title" editing={false}>
                 <ToggleCardSummary>
@@ -67,7 +67,8 @@ describe('ToggleCard', () => {
         );
 
         const titleEl = screen.getByText('Card Title');
-        await waitFor(() => expect(titleEl).toHaveFocus());
+        // Title should not have focus - focus should go to form inputs instead
+        expect(titleEl).not.toHaveFocus();
     });
 
     test('shows loading overlay when isLoading=true and hides when false', () => {
@@ -88,9 +89,9 @@ describe('ToggleCard', () => {
         expect(card.querySelector('.animate-spin')).toBeNull();
     });
 
-    test('hides summary and edit action when disabled', () => {
+    test('shows summary when not editing (single page layout)', () => {
         renderCard({ id: 'card5', title: 'Card Title', editing: false, disabled: true, onEdit: vi.fn() });
-        expect(screen.queryByText('Summary Content')).toBeNull();
+        expect(screen.queryByText('Summary Content')).toBeInTheDocument();
         expect(screen.queryByRole('button', { name: /edit/i })).toBeNull();
     });
 

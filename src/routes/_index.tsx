@@ -1,45 +1,51 @@
 import { type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from 'react-router';
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearchTypes, ShopperProductsTypes } from 'commerce-sdk-isomorphic';
 import { fetchSearchProducts } from '@/lib/api/search';
+import { fetchCategories } from '@/lib/api/categories';
 import { createPage, type RouteComponentProps } from '@/components/create-page';
-import Features from '@/components/home/features';
 import HeroCarousel, { type HeroSlide } from '@/components/hero-carousel';
-import Help from '@/components/home/help';
 import HomeSkeleton from '@/components/home/skeleton';
+import { PopularCategories } from '@/components/home/popular-categories';
 import { ProductCarouselWithSuspense } from '@/components/product-carousel';
+import { ContentCard } from '@/components/content-card';
+import { Button } from '@/components/ui/button';
+import { getConfig } from '@/config';
+import uiStrings from '@/temp-ui-string';
 import heroImage from '/images/hero-cube.png';
+import heroNewArrivals from '/images/hero-new-arrivals.png';
 
 type HomePageData = {
     searchResult: Promise<ShopperSearchTypes.ProductSearchResult>;
+    categories: Promise<ShopperProductsTypes.Category[]>;
 };
 
 // Hero carousel slides data
 const heroSlides: HeroSlide[] = [
     {
         id: 'slide-1',
-        title: 'The React Starter Store for High Performers',
-        subtitle: 'Discover our latest collection of products',
+        title: uiStrings.home.hero.slide1.title,
+        subtitle: uiStrings.home.hero.slide1.subtitle,
         imageUrl: heroImage,
-        imageAlt: 'Minimalist white cube on clean background',
-        ctaText: 'Shop Now',
+        imageAlt: uiStrings.home.hero.slide1.imageAlt,
+        ctaText: uiStrings.home.hero.slide1.ctaText,
         ctaLink: '/category/root',
     },
     {
         id: 'slide-2',
-        title: 'Premium Quality Products',
-        subtitle: 'Handpicked items for the modern lifestyle',
+        title: uiStrings.home.hero.slide2.title,
+        subtitle: uiStrings.home.hero.slide2.subtitle,
         imageUrl: heroImage,
-        imageAlt: 'Minimalist white cube on clean background',
-        ctaText: 'Explore Collection',
+        imageAlt: uiStrings.home.hero.slide1.imageAlt,
+        ctaText: uiStrings.home.hero.slide2.ctaText,
         ctaLink: '/category/root',
     },
     {
         id: 'slide-3',
-        title: 'Fast & Reliable Delivery',
-        subtitle: 'Get your orders delivered quickly and safely',
+        title: uiStrings.home.hero.slide3.title,
+        subtitle: uiStrings.home.hero.slide3.subtitle,
         imageUrl: heroImage,
-        imageAlt: 'Minimalist white cube on clean background',
-        ctaText: 'Learn More',
+        imageAlt: uiStrings.home.hero.slide1.imageAlt,
+        ctaText: uiStrings.home.hero.slide3.ctaText,
         ctaLink: '/shipping',
     },
 ];
@@ -49,12 +55,13 @@ const heroSlides: HeroSlide[] = [
  * This function handles the actual data fetching logic shared between server and client loaders.
  * @returns Promise that resolves to an object containing search result promise
  */
-function getPageData({ context }: LoaderFunctionArgs): HomePageData {
+function getPageData({ context }: LoaderFunctionArgs, limit: number): HomePageData {
     return {
         searchResult: fetchSearchProducts(context, {
             categoryId: 'root',
-            limit: 12,
+            limit,
         }),
+        categories: fetchCategories(context, 'root', 1),
     };
 }
 
@@ -64,7 +71,7 @@ function getPageData({ context }: LoaderFunctionArgs): HomePageData {
  * @returns Promise that resolves to an object containing search result promise
  */
 export function loader(args: LoaderFunctionArgs) {
-    return getPageData(args);
+    return getPageData(args, getConfig(args.context).pages.home.featuredProductsCount);
 }
 
 /**
@@ -74,7 +81,7 @@ export function loader(args: LoaderFunctionArgs) {
  * @returns Promise that resolves to an object containing search result promise
  */
 export function clientLoader(args: ClientLoaderFunctionArgs) {
-    return getPageData(args);
+    return getPageData(args, getConfig().pages.home.featuredProductsCount);
 }
 
 /**
@@ -84,7 +91,9 @@ export function clientLoader(args: ClientLoaderFunctionArgs) {
  * @returns JSX element representing the home page layout
  */
 // eslint-disable-next-line react-refresh/only-export-components
-function HomeView({ loaderData: { searchResult: searchResultPromise } }: RouteComponentProps<HomePageData>) {
+function HomeView({
+    loaderData: { searchResult: searchResultPromise, categories: categoriesPromise },
+}: RouteComponentProps<HomePageData>) {
     return (
         <div className="pb-16 -mt-8">
             <HeroCarousel
@@ -96,18 +105,71 @@ function HomeView({ loaderData: { searchResult: searchResultPromise } }: RouteCo
             />
 
             {/* Featured Products */}
+            <div className="pt-16 max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+                <ProductCarouselWithSuspense
+                    resolve={searchResultPromise}
+                    title={uiStrings.home.featuredProducts.title}
+                />
+            </div>
+
+            {/* New Arrivals */}
             <div className="pt-16">
-                <ProductCarouselWithSuspense resolve={searchResultPromise} title="Featured Products" />
+                <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center rounded-2xl overflow-hidden">
+                        <div className="relative h-64 lg:h-96">
+                            <img
+                                src={heroNewArrivals}
+                                alt={uiStrings.home.newArrivals.title}
+                                className="w-full h-full object-contain"
+                                loading="lazy"
+                            />
+                        </div>
+                        <div className="p-8 lg:p-12">
+                            <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-foreground mb-4">
+                                {uiStrings.home.newArrivals.title}
+                            </h2>
+                            <p className="text-lg text-muted-foreground mb-6">
+                                {uiStrings.home.newArrivals.description}
+                            </p>
+                            <Button size="lg" asChild>
+                                <a href="/category/newarrivals">{uiStrings.home.newArrivals.ctaText}</a>
+                            </Button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            {/* Features Section */}
-            <div className="py-16">
-                <Features />
-            </div>
+            {/* Popular Categories */}
+            <PopularCategories categoriesPromise={categoriesPromise} />
 
-            {/* Help Section */}
-            <div className="py-16">
-                <Help />
+            {/* Featured Content Cards */}
+            <div className="pt-16">
+                <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <ContentCard
+                            title={uiStrings.home.featuredContent.women.title}
+                            description={uiStrings.home.featuredContent.women.description}
+                            imageUrl={heroNewArrivals}
+                            imageAlt={uiStrings.home.featuredContent.women.imageAlt}
+                            buttonText={uiStrings.home.featuredContent.women.ctaText}
+                            buttonLink="/category/womens"
+                            showBackground={false}
+                            showBorder={false}
+                            loading="lazy"
+                        />
+                        <ContentCard
+                            title={uiStrings.home.featuredContent.men.title}
+                            description={uiStrings.home.featuredContent.men.description}
+                            imageUrl={heroNewArrivals}
+                            imageAlt={uiStrings.home.featuredContent.men.imageAlt}
+                            buttonText={uiStrings.home.featuredContent.men.ctaText}
+                            buttonLink="/category/mens"
+                            showBackground={false}
+                            showBorder={false}
+                            loading="lazy"
+                        />
+                    </div>
+                </div>
             </div>
         </div>
     );

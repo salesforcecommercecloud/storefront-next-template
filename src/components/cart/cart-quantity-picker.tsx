@@ -12,15 +12,14 @@ import { type ReactElement } from 'react';
 
 // Hooks
 import { useItemFetcher } from '@/hooks/use-item-fetcher';
+import { useCartQuantityUpdate } from '@/hooks/use-cart-quantity-update';
+import { useConfig } from '@/config';
 
 // Components
 import { ConfirmationDialog } from '@/components/confirmation-dialog';
 import QuantityPicker from '@/components/quantity-picker/quantity-picker';
 import { Typography } from '@/components/typography';
 import { Label } from '@/components/ui/label';
-
-// Hooks
-import { useCartQuantityUpdate } from '@/hooks/use-cart-quantity-update';
 
 // Constants
 import uiStrings from '@/temp-ui-string';
@@ -52,9 +51,12 @@ export default function CartQuantityPicker({
     value,
     itemId,
     className,
-    debounceDelay = 750,
+    debounceDelay,
     stockLevel,
 }: CartQuantityPickerProps): ReactElement {
+    const config = useConfig();
+    const effectiveDebounceDelay = debounceDelay || config.pages.cart.quantityUpdateDebounce;
+
     // Create a unique fetcher for this component instance
     const fetcher = useItemFetcher({
         itemId,
@@ -74,7 +76,7 @@ export default function CartQuantityPicker({
         itemId,
         initialValue: parseInt(value, 10) || 0, // Convert string to number for the hook
         stockLevel,
-        debounceDelay,
+        debounceDelay: effectiveDebounceDelay,
         fetcher,
     });
 

@@ -27,6 +27,7 @@ interface ChildProductOrderability {
 
 interface UseProductSetsBundlesProps {
     product: ShopperProductsTypes.Product;
+    initialBundleQuantity?: number;
 }
 
 /**
@@ -47,6 +48,7 @@ interface UseProductSetsBundlesProps {
  *   totalChildProducts,
  * } = useProductSetsBundles({
  *   product: parentProduct,
+ *   initialBundleQuantity: 2, // Optional - defaults to 1
  * });
  * ```
  *
@@ -72,14 +74,15 @@ interface UseProductSetsBundlesProps {
  *
  * @param props - Configuration object
  * @param props.product - Parent product (set or bundle) from Commerce Cloud
+ * @param props.initialBundleQuantity - Initial quantity for bundle (defaults to 1)
  * @returns State management, validation, and utility functions
  */
-export function useProductSetsBundles({ product }: UseProductSetsBundlesProps) {
+export function useProductSetsBundles({ product, initialBundleQuantity = 1 }: UseProductSetsBundlesProps) {
     const isProductASet = isProductSet(product);
     const isProductABundle = isProductBundle(product);
     const [childProductSelection, setChildProductSelection] = useState<Record<string, ChildProductSelection>>({});
     const [childProductOrderability, setChildProductOrderability] = useState<ChildProductOrderability>({});
-    const [selectedBundleQuantity, setSelectedBundleQuantity] = useState(1);
+    const [selectedBundleQuantity, setSelectedBundleQuantity] = useState(initialBundleQuantity);
     const childProductRefs = useRef<Record<string, globalThis.HTMLElement>>({});
 
     // Get normalized product data for sets/bundles

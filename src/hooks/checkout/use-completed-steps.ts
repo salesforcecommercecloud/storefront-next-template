@@ -3,16 +3,16 @@
  */
 
 import { useContext } from 'react';
-import { CheckoutContext } from '@/components/checkout-one-click/utils/checkout-context-types';
+import { CheckoutContext } from '@/components/checkout/utils/checkout-context-types';
 import { useBasket } from '@/providers/basket';
-import { getCompletedSteps } from '@/components/checkout-one-click/utils/checkout-utils';
+import { getCompletedSteps } from '@/components/checkout/utils/checkout-utils';
 
 export function useCompletedSteps() {
     const context = useContext(CheckoutContext);
     const basket = useBasket();
 
     if (!context) {
-        throw new Error('useCompletedSteps must be used within a CheckoutOneClickProvider');
+        throw new Error('useCompletedSteps must be used within a CheckoutProvider');
     }
 
     return getCompletedSteps(basket, context.step);

@@ -33,7 +33,7 @@ async function addBundleToCart(
 
     try {
         // Add bundle to basket with bundled product items
-        const client = createClient(context).ShopperBaskets;
+        const client = createClient(context).ShopperBasketsV2;
         const updatedBasket = await client.addItemToBasket({
             parameters: { basketId },
             body: [
@@ -42,7 +42,7 @@ async function addBundleToCart(
                     quantity: bundleItem.quantity,
                     bundledProductItems: childSelections,
                 },
-            ] as Parameters<CommerceSdkClient['ShopperBaskets']['addItemToBasket']>[0]['body'],
+            ] as Parameters<CommerceSdkClient['ShopperBasketsV2']['addItemToBasket']>[0]['body'],
         });
 
         // Update the basket storage
@@ -62,7 +62,7 @@ async function addBundleToCart(
                         itemId: bundledItem.itemId,
                         productId: childSelections[index]?.productId || bundledItem.productId,
                         quantity: childSelections[index]?.quantity || bundledItem.quantity,
-                    })) as Parameters<CommerceSdkClient['ShopperBaskets']['updateItemsInBasket']>[0]['body'],
+                    })) as Parameters<CommerceSdkClient['ShopperBasketsV2']['updateItemsInBasket']>[0]['body'],
                 });
 
                 // Get the final updated basket

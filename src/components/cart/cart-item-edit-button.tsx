@@ -15,7 +15,7 @@ import type { ShopperBasketsTypes, ShopperProductsTypes } from 'commerce-sdk-iso
 
 // Components
 import { Button } from '@/components/ui/button';
-import { ProductViewModal } from '@/components/product-view-modal';
+import { CartItemEditModal } from '@/components/cart-item-edit-modal';
 
 // Constants
 import uiStrings from '@/temp-ui-string';
@@ -54,11 +54,15 @@ export function CartItemEditButton({ product, className = '' }: CartItemEditButt
                 {uiStrings.actionCard.edit}
             </Button>
 
-            <ProductViewModal
-                open={isOpen}
-                onOpenChange={setIsOpen}
-                product={product as ShopperProductsTypes.Product}
-            />
+            {product.itemId && (
+                <CartItemEditModal
+                    open={isOpen}
+                    onOpenChange={setIsOpen}
+                    product={product as ShopperProductsTypes.Product}
+                    initialQuantity={product.quantity || 1}
+                    itemId={product.itemId}
+                />
+            )}
         </>
     );
 }

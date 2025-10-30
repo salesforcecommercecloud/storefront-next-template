@@ -5,13 +5,17 @@ import CategoryNavigationMenu from './impl';
 import { testData } from './__tests__/data';
 
 // Mock NavLink to avoid router complexity
-vi.mock('react-router', () => ({
-    NavLink: ({ to, children, ...props }: any) => (
-        <a href={to} {...props}>
-            {children}
-        </a>
-    ),
-}));
+vi.mock('react-router', async (importOriginal) => {
+    const actual = await importOriginal();
+    return {
+        ...actual,
+        NavLink: ({ to, children, ...props }: any) => (
+            <a href={to} {...props}>
+                {children}
+            </a>
+        ),
+    };
+});
 
 describe('CategoryNavigationMenu Component', () => {
     const renderComponent = (props: ComponentPropsWithoutRef<typeof CategoryNavigationMenu>) => {

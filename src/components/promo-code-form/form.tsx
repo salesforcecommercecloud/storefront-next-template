@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Form } from '@/components/ui/form';
 import { PromoCodeFields } from './promo-code-field';
-
+import { X as CloseIcon } from 'lucide-react';
 //hooks
 import { useToast } from '@/components/toast';
 import { usePromoCodeActions } from '@/hooks/use-promo-code-actions';
@@ -17,6 +17,8 @@ import { type PromoCodeFormData, type PromoCodeFormProps } from './types';
 
 import uiStrings from '@/temp-ui-string';
 
+// value for promo code accordion that will be used for open/close state
+const PROMO_CODE_FORM_VAL = 'promo-code';
 /**
  * PromoCodeForm component that provides an accordion-based interface for applying promo codes to a shopping basket.
  *
@@ -39,9 +41,25 @@ import uiStrings from '@/temp-ui-string';
  * ```
  *
  */
-export const PromoCodeForm = ({ basketId }: PromoCodeFormProps) => {
+export const PromoCodeForm = ({ basket }: PromoCodeFormProps) => {
+    const basketId = basket?.basketId;
     const [isOpen, setIsOpen] = useState(false);
-    const { applyPromoCode, applyFetcher } = usePromoCodeActions(basketId);
+    const { applyPromoCode, removePromoCode, removeFetcher, applyFetcher } = usePromoCodeActions(basketId);
+    const { addToast } = useToast();
+
+    useEffect(() => {
+        if (removeFetcher.data) {
+            if (removeFetcher.data.success) {
+                addToast(uiStrings.cart.promoCode.removeSuccessMessage, 'success');
+            } else if (removeFetcher.data.error) {
+                addToast(removeFetcher.data.error, 'error');
+            }
+        }
+        // we do not need `updateBasket` and `addToast` in the dependency array
+        // because they are not likely to change once initialized
+        // linting is being cautious and warn about it, but we don't need to follow it
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [removeFetcher.data]);
 
     const form = useForm<PromoCodeFormData>({
         resolver: zodResolver(promoCodeFormSchema),
@@ -49,8 +67,6 @@ export const PromoCodeForm = ({ basketId }: PromoCodeFormProps) => {
             code: '',
         },
     });
-
-    const { addToast } = useToast();
 
     /**
      * Handles the response from the promo code application API call.
@@ -65,7 +81,6 @@ export const PromoCodeForm = ({ basketId }: PromoCodeFormProps) => {
         if (applyFetcher.data) {
             if (applyFetcher.data.success) {
                 form.reset({ code: '' });
-                setIsOpen(false);
                 addToast(uiStrings.cart.promoCode.successMessage, 'success');
             } else {
                 // Get the error message from the API response
@@ -113,16 +128,17 @@ export const PromoCodeForm = ({ basketId }: PromoCodeFormProps) => {
             <Accordion
                 type="single"
                 collapsible
-                value={isOpen ? 'promo-code' : ''}
-                onValueChange={(value) => setIsOpen(value === 'promo-code')}>
-                <AccordionItem value="promo-code">
-                    <AccordionTrigger onClick={() => form.reset()}>
-                        <span className="flex-1 text-left text-sm font-medium text-primary">
+                value={isOpen ? PROMO_CODE_FORM_VAL : ''}
+                onValueChange={(value) => setIsOpen(value === PROMO_CODE_FORM_VAL)}
+                className="mb-3">
+                <AccordionItem value={PROMO_CODE_FORM_VAL}>
+                    <AccordionTrigger onClick={() => form.reset()} className="py-2">
+                        <span className="flex-1 text-left text-sm font-medium">
                             {uiStrings.cart.promoCode.accordionTitle}
                         </span>
                     </AccordionTrigger>
                     <AccordionContent className="px-0 py-0">
-                        <div className="bg-background p-2">
+                        <div className="bg-background">
                             <Form {...form}>
                                 <form onSubmit={(e) => void handleSubmit(e)} data-testid="promo-code-form">
                                     <PromoCodeFields form={form} applyFetcher={applyFetcher} />
@@ -132,6 +148,25 @@ export const PromoCodeForm = ({ basketId }: PromoCodeFormProps) => {
                     </AccordionContent>
                 </AccordionItem>
             </Accordion>
+
+            {basket && basket.couponItems && basket.couponItems.length > 0 && (
+                <div className="space-y-2">
+                    {basket.couponItems?.map((item) => (
+                        <div key={item.couponItemId} className="flex justify-between">
+                            <span className="px-2 text-sm rounded-md bg-secondary">{item.code}</span>
+                            <CloseIcon
+                                className="cursor-pointer hover:bg-secondary"
+                                size={15}
+                                onClick={() => {
+                                    if (item.couponItemId) {
+                                        removePromoCode(item.couponItemId);
+                                    }
+                                }}
+                            />
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };

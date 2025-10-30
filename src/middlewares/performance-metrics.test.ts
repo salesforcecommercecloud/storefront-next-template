@@ -1,26 +1,44 @@
 import { vi } from 'vitest';
-import {
-    PerformanceTimer,
-    performanceMetricsMiddlewareServer,
-    performanceMetricsMiddlewareClient,
-    performanceTimerContext,
-} from './performance-metrics';
 import { createTestContext } from '@/lib/test-utils';
+import type { Config } from '@/config/schema';
+import type { DataStrategyResult, MiddlewareFunction, RouterContext } from 'react-router';
 
-// Mock odyssey config for middleware tests
-vi.mock('../../odyssey.config.json', () => ({
-    default: {
-        performance: {
-            metrics: {
-                serverPerformanceMetricsEnabled: false,
-                clientPerformanceMetricsEnabled: false,
-                serverTimingHeaderEnabled: false,
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+type PerformanceTimerType = typeof import('./performance-metrics').PerformanceTimer;
+
+// Mutable mock config that tests can modify - use vi.hoisted for access in vi.mock
+const mockConfig = vi.hoisted(() => {
+    return {
+        app: {
+            performance: {
+                metrics: {
+                    serverPerformanceMetricsEnabled: false,
+                    clientPerformanceMetricsEnabled: false,
+                    serverTimingHeaderEnabled: false,
+                },
             },
         },
-    },
-}));
+    };
+});
+
+// Mock config for middleware tests
+vi.mock('@/config', async (importOriginal) => {
+    const actual = await importOriginal();
+    return {
+        ...(actual as Config),
+        config: mockConfig,
+    };
+});
 
 describe('PerformanceTimer', () => {
+    let PerformanceTimer: PerformanceTimerType;
+
+    beforeEach(async () => {
+        vi.resetModules();
+        vi.restoreAllMocks();
+        ({ PerformanceTimer } = await vi.importActual('./performance-metrics'));
+    });
+
     test('is disabled by default', () => {
         const timer = new PerformanceTimer();
         timer.mark('test', 'start');
@@ -330,16 +348,25 @@ describe('PerformanceTimer', () => {
 });
 
 describe('Performance Metrics Middlewares', () => {
-    let mockOdysseyConfig: any;
+    let PerformanceTimer: PerformanceTimerType;
+    let performanceMetricsMiddlewareClient: MiddlewareFunction<Record<string, DataStrategyResult>>;
+    let performanceMetricsMiddlewareServer: MiddlewareFunction<Response>;
+    let performanceTimerContext: RouterContext<PerformanceTimerType | undefined>;
 
     beforeEach(async () => {
-        vi.clearAllMocks();
-        // Get reference to the mocked config
-        mockOdysseyConfig = (await vi.importMock('../../odyssey.config.json')).default;
-        // Reset to disabled state
-        mockOdysseyConfig.performance.metrics.serverPerformanceMetricsEnabled = false;
-        mockOdysseyConfig.performance.metrics.clientPerformanceMetricsEnabled = false;
-        mockOdysseyConfig.performance.metrics.serverTimingHeaderEnabled = false;
+        vi.resetModules();
+        vi.restoreAllMocks();
+
+        mockConfig.app.performance.metrics.serverPerformanceMetricsEnabled = false;
+        mockConfig.app.performance.metrics.clientPerformanceMetricsEnabled = false;
+        mockConfig.app.performance.metrics.serverTimingHeaderEnabled = false;
+
+        ({
+            performanceMetricsMiddlewareClient,
+            performanceMetricsMiddlewareServer,
+            PerformanceTimer,
+            performanceTimerContext,
+        } = await vi.importActual('./performance-metrics'));
     });
 
     describe('performanceMetricsMiddlewareServer', () => {
@@ -359,7 +386,7 @@ describe('Performance Metrics Middlewares', () => {
 
         test('creates performance timer when enabled', async () => {
             // Enable performance metrics
-            mockOdysseyConfig.performance.metrics.serverPerformanceMetricsEnabled = true;
+            mockConfig.app.performance.metrics.serverPerformanceMetricsEnabled = true;
 
             const mockNext = vi.fn().mockResolvedValue(new Response('test'));
             const mockRequest = { url: 'https://example.com/test' } as Request;
@@ -381,7 +408,7 @@ describe('Performance Metrics Middlewares', () => {
 
         test('logs performance data when enabled', async () => {
             // Enable performance metrics
-            mockOdysseyConfig.performance.metrics.serverPerformanceMetricsEnabled = true;
+            mockConfig.app.performance.metrics.serverPerformanceMetricsEnabled = true;
 
             const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
@@ -402,8 +429,6 @@ describe('Performance Metrics Middlewares', () => {
             expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('📍'));
             expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('═'.repeat(120)));
             expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('📊 Summary:'));
-
-            consoleLogSpy.mockRestore();
         });
     });
 
@@ -422,7 +447,7 @@ describe('Performance Metrics Middlewares', () => {
 
         test('creates performance timer when enabled', async () => {
             // Enable performance metrics
-            mockOdysseyConfig.performance.metrics.clientPerformanceMetricsEnabled = true;
+            mockConfig.app.performance.metrics.clientPerformanceMetricsEnabled = true;
 
             const mockNext = vi.fn().mockResolvedValue(undefined);
             const mockContext = createTestContext();
@@ -442,7 +467,7 @@ describe('Performance Metrics Middlewares', () => {
 
         test('logs performance data when enabled', async () => {
             // Enable performance metrics
-            mockOdysseyConfig.performance.metrics.clientPerformanceMetricsEnabled = true;
+            mockConfig.app.performance.metrics.clientPerformanceMetricsEnabled = true;
 
             const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
@@ -462,8 +487,83 @@ describe('Performance Metrics Middlewares', () => {
             expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('📍'));
             expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('═'.repeat(120)));
             expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('📊 Summary:'));
+        });
 
-            consoleLogSpy.mockRestore();
+        test('adjusts clientTotal mark using first-paint on initial navigation', async () => {
+            // Enable performance metrics
+            mockConfig.app.performance.metrics.clientPerformanceMetricsEnabled = true;
+
+            // Mock performance.entries to include a first-paint entry
+            const mockFirstPaintTime = 1000;
+            const performanceNowSpy = vi
+                .spyOn(performance, 'now')
+                .mockReturnValueOnce(1050)
+                .mockReturnValueOnce(1100)
+                .mockReturnValue(1200);
+            const performanceGetEntriesByNameSpy = vi
+                .spyOn(performance, 'getEntriesByName')
+                .mockImplementation((name) =>
+                    name === 'first-paint'
+                        ? [
+                              {
+                                  name: 'first-paint',
+                                  entryType: 'paint',
+                                  startTime: mockFirstPaintTime,
+                                  duration: 0,
+                                  toJSON: () => ({}),
+                              },
+                          ]
+                        : []
+                );
+
+            const firstNext = vi.fn().mockResolvedValue(undefined);
+            const firstContext = createTestContext();
+
+            await performanceMetricsMiddlewareClient(
+                { context: firstContext, params: {}, request: {} as Request },
+                firstNext
+            );
+
+            expect(performanceGetEntriesByNameSpy).toHaveBeenCalledTimes(1);
+            expect(performanceNowSpy).toHaveBeenCalledTimes(4);
+
+            // Get the performance timer from the context
+            const firstPerformanceTimer = firstContext.get(
+                performanceTimerContext
+            ) as unknown as InstanceType<PerformanceTimerType>;
+            const firstTotalMark = firstPerformanceTimer.marks.start.get('client.total');
+
+            // Verify the "client.total" mark was adjusted to use first-paint time
+            expect(firstTotalMark).toBeDefined();
+            expect(firstTotalMark?.timestamp).toBeLessThanOrEqual(performance.now());
+
+            // Give time for async completion callback to run
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            expect(performanceNowSpy).toHaveBeenCalledTimes(5);
+
+            expect(firstPerformanceTimer.metrics).toHaveLength(2);
+            const firstMiddlewareMetric = firstPerformanceTimer.metrics.find(
+                (metric) => metric.name === 'client.middleware'
+            ) as (typeof firstPerformanceTimer.metrics)[0];
+            expect(firstMiddlewareMetric).toBeDefined();
+            expect(firstMiddlewareMetric.duration).toBe(100);
+
+            const firstTotalMetric = firstPerformanceTimer.metrics.find(
+                (metric) => metric.name === 'client.total'
+            ) as (typeof firstPerformanceTimer.metrics)[0];
+            expect(firstTotalMetric).toBeDefined();
+            expect(firstTotalMetric.duration).toBe(200);
+
+            // Invoke the middleware a second time (without a full page reload)
+            const secondNext = vi.fn().mockResolvedValue(undefined);
+            const secondContext = createTestContext();
+            await performanceMetricsMiddlewareClient(
+                { context: secondContext, params: {}, request: {} as Request },
+                secondNext
+            );
+
+            expect(performanceGetEntriesByNameSpy).toHaveBeenCalledTimes(1); // <-- No second invocation
+            expect(performanceNowSpy).toHaveBeenCalledTimes(9);
         });
     });
 });

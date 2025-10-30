@@ -30,7 +30,7 @@ export const getPasswordResetToken = async (
         };
 
         // Only set authorization header if using private client
-        const clientSecret = import.meta.env.VITE_COMMERCE_API_SLAS_SECRET;
+        const clientSecret = process.env.COMMERCE_API_SLAS_SECRET;
         if (clientSecret) {
             options.headers.Authorization = `Basic ${stringToBase64(
                 `${slasClient.clientConfig.parameters.clientId}:${clientSecret}`

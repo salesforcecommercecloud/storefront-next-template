@@ -25,8 +25,8 @@ const SUMMARY_SPACING = 'space-y-5';
  *
  * @interface ProductItemsListProps
  * @property {ShopperBasketsTypes.ProductItem[] | undefined} productItems - Array of product items from the basket
- * @property {Record<string, ShopperProductsTypes.Product>} [productMap] - Optional item ID to product mapping for enhanced product data
- * @property {Record<string, ShopperPromotionsTypes.Promotion>} [promotionMap] - Optional promotions data by ID for displaying promotion information
+ * @property {Record<string, ShopperProductsTypes.Product>} [productsByItemId] - Item ID to product mapping for enhanced product data
+ * @property {Record<string, ShopperPromotionsTypes.Promotion>} [promotions] - Promotions by ID for displaying promotion information
  * @property {'default' | 'summary'} [variant='default'] - Display variant: 'default' for full product cards, 'summary' for compact list view
  * @property {function} [primaryAction] - Optional render prop function to generate primary action buttons for each product
  * @property {function} [secondaryActions] - Optional render prop function to generate secondary action buttons for each product
@@ -35,9 +35,9 @@ interface ProductItemsListProps {
     /** Array of product items from the basket */
     productItems: ShopperBasketsTypes.ProductItem[] | undefined;
     /** Required item ID to product mapping for enhanced product data */
-    productMap: Record<string, ShopperProductsTypes.Product>;
-    /** Optional promotions data by ID for displaying promotion information */
-    promotionMap?: Record<string, ShopperPromotionsTypes.Promotion>;
+    productsByItemId: Record<string, ShopperProductsTypes.Product>;
+    /** Optional promotions by ID for displaying promotion information */
+    promotions?: Record<string, ShopperPromotionsTypes.Promotion>;
     /** Display variant: 'default' for full product cards, 'summary' for compact list view */
     variant?: 'default' | 'summary';
     /**
@@ -77,7 +77,7 @@ interface ProductItemsListProps {
  * // Basic usage with default variant
  * <ProductItemsList
  *   productItems={basketItems}
- *   productMap={productMap}
+ *   productsByItemId={productsByItemId}
  * />
  * ```
  *
@@ -87,7 +87,7 @@ interface ProductItemsListProps {
  * <ProductItemsList
  *   productItems={basketItems}
  *   variant="summary"
- *   productMap={productMap}
+ *   productsByItemId={productsByItemId}
  * />
  * ```
  *
@@ -96,8 +96,8 @@ interface ProductItemsListProps {
  * // With primary and secondary actions
  * <ProductItemsList
  *   productItems={basketItems}
- *   productMap={productMap}
- *   promotionMap={promotions}
+ *   productsByItemId={productsByItemId}
+ *   promotions={promotions}
  *   primaryAction={(product) => (
  *     <button onClick={() => handleUpdate(product)}>
  *       Update Item
@@ -113,8 +113,8 @@ interface ProductItemsListProps {
  */
 export default function ProductItemsList({
     productItems,
-    productMap,
-    promotionMap,
+    productsByItemId,
+    promotions,
     variant = 'default',
     primaryAction,
     secondaryActions,
@@ -130,13 +130,13 @@ export default function ProductItemsList({
     const memoizedItems = useMemo(() => {
         return (productItems || []).map((productItem, index) => {
             // Combine basket item with product data following reference logic
-            const productData = productItem.itemId ? productMap[productItem.itemId] : undefined;
+            const productData = productItem?.itemId ? productsByItemId?.[productItem.itemId] : undefined;
 
             /**
-             * Combined product object that merges basket item data with product details
+             * Basket item data enriched with product details
              * @type {ShopperBasketsTypes.ProductItem & Partial<ShopperProductsTypes.Product> & { isProductUnavailable: boolean }}
              */
-            const combinedProduct = {
+            const enrichedProductItem = {
                 ...productItem,
                 ...(productData || {}),
                 isProductUnavailable: !productData,
@@ -147,18 +147,18 @@ export default function ProductItemsList({
             return (
                 <ProductItem
                     key={productItem.itemId || `item-${index}`}
-                    product={combinedProduct}
+                    productItem={enrichedProductItem}
                     primaryAction={primaryAction}
                     secondaryActions={secondaryActions}
                     displayVariant={variant}
-                    promotionMap={promotionMap}
+                    promotions={promotions}
                 />
             );
         });
         // Intentionally exclude primaryAction and secondaryActions from dependencies
         // to prevent re-computation when parent components re-render with new function references
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [productItems, productMap, promotionMap, variant]);
+    }, [productItems, productsByItemId, promotions, variant]);
 
     return <div className={variant === 'summary' ? SUMMARY_SPACING : DEFAULT_SPACING}>{memoizedItems}</div>;
 }

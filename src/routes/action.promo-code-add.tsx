@@ -60,7 +60,7 @@ export async function clientAction({
         }
 
         const { code: validatedPromoCode } = validationResult.data;
-        const client = createClient(context).ShopperBaskets;
+        const client = createClient(context).ShopperBasketsV2;
         const updatedBasket = await client.addCouponToBasket({
             parameters: { basketId },
             body: {

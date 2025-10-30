@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { createStore } from 'zustand/vanilla';
+import Cookies from 'js-cookie';
+import { getCookieConfig } from '@/lib/cookie-utils';
 
 export type StoreLocatorConfig = {
     supportedCountries: Array<{ countryCode: string; countryName: string }>;
@@ -63,7 +65,7 @@ const defaultConfig: StoreLocatorConfig = {
  * @returns Cookie name string
  */
 const selectedStoreIdCookieName = () => {
-    const siteId = import.meta.env.VITE_COMMERCE_API_SITE_ID || 'site-default';
+    const siteId = import.meta.env.PUBLIC_COMMERCE_API_SITE_ID || 'site-default';
     return `selectedStore_${siteId}`;
 };
 
@@ -76,10 +78,13 @@ const selectedStoreIdCookieName = () => {
 const writeSelectedStoreIdCookie = (id: string | null) => {
     try {
         const cookieName = selectedStoreIdCookieName();
+        const cookieConfig = getCookieConfig();
+
         if (id) {
-            document.cookie = `${cookieName}=${encodeURIComponent(id)}; path=/; SameSite=Lax`;
+            Cookies.set(cookieName, id, cookieConfig);
         } else {
-            document.cookie = `${cookieName}=; path=/; Max-Age=0; SameSite=Lax`;
+            // Use same config for removal to ensure path and domain match
+            Cookies.remove(cookieName, cookieConfig);
         }
     } catch (e) {
         // draw attention to failed attempts to write cookie on server

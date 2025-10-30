@@ -45,3 +45,10 @@ export const encodeBase64Url = (input: string): string => {
 export const decodeBase64Url = (input: string) => {
     return new TextDecoder('utf-8', { fatal: true }).decode(base64ToBytes(fromBase64Url(input)));
 };
+
+/**
+ * Builds a search URL with the given query
+ */
+export const searchUrlBuilder = (query: string): string => {
+    return `/search?q=${encodeURIComponent(query)}`;
+};

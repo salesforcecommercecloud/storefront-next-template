@@ -5,9 +5,6 @@ import userEvent from '@testing-library/user-event';
 // components
 import PromoPopover from './index';
 
-//i18n
-import uiStrings from '@/temp-ui-string';
-
 describe('PromoPopover', () => {
     test('renders properly', async () => {
         const user = userEvent.setup();
@@ -26,7 +23,7 @@ describe('PromoPopover', () => {
 
         // Wait for tooltip content to appear (there are 2 elements - visible and hidden for a11y)
         await waitFor(() => {
-            expect(screen.getAllByText(uiStrings.cart.promoCode.promotionsApplied)).toHaveLength(2);
+            expect(screen.getAllByText('Test content')).toHaveLength(2);
         });
 
         // Check for content (there are 2 elements - visible and hidden for a11y)
@@ -71,7 +68,7 @@ describe('PromoPopover', () => {
 
         // Wait for tooltip content to appear (there are 2 elements - visible and hidden for a11y)
         await waitFor(() => {
-            expect(screen.getAllByText(uiStrings.cart.promoCode.promotionsApplied)).toHaveLength(2);
+            expect(screen.getAllByText('Test content')).toHaveLength(2);
         });
 
         // Check for content (there are 2 elements - visible and hidden for a11y)

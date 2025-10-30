@@ -32,13 +32,13 @@ async function addMultipleItemsToCart(
 
     try {
         // Add all items to basket in a single API call
-        const client = createClient(context).ShopperBaskets;
+        const client = createClient(context).ShopperBasketsV2;
         const updatedBasket = await client.addItemToBasket({
             parameters: { basketId },
             body: productItems.map((item) => ({
                 productId: item.productId,
                 quantity: item.quantity,
-            })) as Parameters<CommerceSdkClient['ShopperBaskets']['addItemToBasket']>[0]['body'],
+            })) as Parameters<CommerceSdkClient['ShopperBasketsV2']['addItemToBasket']>[0]['body'],
         });
 
         // Update the basket storage

@@ -1,8 +1,9 @@
-import { afterEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { RouterContextProvider } from 'react-router';
 import type { SessionData as AuthData } from '@/lib/api/types';
 import type { AuthStorageData } from '@/middlewares/auth.utils';
-import { getAuth, updateAuth } from '@/middlewares/auth.client';
+import authMiddleware, { getAuth, updateAuth, destroyAuth, flashAuth } from '@/middlewares/auth.client';
+import { getCookie, getCookieConfig } from '@/lib/cookies.client';
 
 function expectStorage(data: AuthStorageData = {}): {
     provider: RouterContextProvider;
@@ -37,9 +38,43 @@ function getAuthData(): AuthData {
     };
 }
 
+// Mock cookies.client module
+vi.mock('@/lib/cookies.client', () => ({
+    getCookie: vi.fn(),
+    setCookie: vi.fn(),
+    removeCookie: vi.fn(),
+    getCookieConfig: vi.fn(),
+}));
+
 describe('auth middleware (client)', () => {
+    beforeEach(() => {
+        vi.mocked(getCookie).mockReturnValue({});
+        vi.mocked(getCookieConfig).mockReturnValue({
+            path: '/',
+            sameSite: 'lax',
+            secure: true,
+        });
+    });
+
     afterEach(() => {
+        vi.clearAllMocks();
         vi.resetModules();
+    });
+
+    describe('middleware cookie configuration', () => {
+        test('should use cookie utilities from cookies.client module', async () => {
+            // This test verifies the middleware uses the centralized cookie utilities
+            // which internally use getCookieConfig for proper configuration
+            vi.mocked(getCookie).mockReturnValue({});
+
+            const mockContext = new RouterContextProvider();
+            const mockNext = vi.fn().mockResolvedValue(undefined);
+
+            await authMiddleware({ context: mockContext } as any, mockNext);
+
+            // Verify the middleware reads cookies on initialization
+            expect(getCookie).toHaveBeenCalled();
+        });
     });
 
     describe('getAuth()', () => {
@@ -132,6 +167,37 @@ describe('auth middleware (client)', () => {
             expect(mockUpdater).toBeCalledWith(data);
             expect(storage.size).toBe(1);
             expect(storage.get('isUpdated')).toBe(true);
+        });
+    });
+
+    describe('destroyAuth()', () => {
+        test('should mark storage as destroyed', () => {
+            const data = getAuthData();
+            const { provider, storage } = expectStorage(data);
+
+            destroyAuth(provider);
+
+            expect(storage.get('isDestroyed')).toBe(true);
+        });
+    });
+
+    describe('flashAuth()', () => {
+        test('should set error message in storage', () => {
+            const data = getAuthData();
+            const { provider, storage } = expectStorage(data);
+
+            flashAuth(provider, 'Authentication failed');
+
+            expect(storage.get('error')).toBe('Authentication failed');
+        });
+
+        test('should use empty string when no message provided', () => {
+            const data = getAuthData();
+            const { provider, storage } = expectStorage(data);
+
+            flashAuth(provider);
+
+            expect(storage.get('error')).toBe('');
         });
     });
 });

@@ -12,19 +12,25 @@ import { test } from 'vitest';
 // Commerce SDK
 import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
 // React Router
-import { createRoutesStub } from 'react-router';
+import { createMemoryRouter, RouterProvider } from 'react-router';
 // Components
 import ProductAccordion from './product-accordion';
 import uiStrings from '@/temp-ui-string';
 
 const renderProductAccordion = (props: React.ComponentProps<typeof ProductAccordion>) => {
-    const Stub = createRoutesStub([
-        {
-            path: '/product/:productId',
-            Component: () => <ProductAccordion {...props} />,
-        },
-    ]);
-    return render(<Stub initialEntries={['/product/test-product']} />);
+    // Using createMemoryRouter in framework mode is fine
+    // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
+    // Even though it's listed under "data routers," it fully supports testing non-route components that rely on router behavior.
+    const router = createMemoryRouter(
+        [
+            {
+                path: '/product/:productId',
+                element: <ProductAccordion {...props} />,
+            },
+        ],
+        { initialEntries: ['/product/test-product'] }
+    );
+    return render(<RouterProvider router={router} />);
 };
 
 describe('ProductAccordion', () => {

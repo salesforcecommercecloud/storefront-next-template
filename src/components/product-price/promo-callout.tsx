@@ -6,14 +6,19 @@
  */
 import { useMemo } from 'react';
 import { findLowestPrice } from './utils';
-import type { ShopperProductsTypes, ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsTypes, ShopperProductsTypes, ShopperSearchTypes } from 'commerce-sdk-isomorphic';
 import { cn } from '@/lib/utils';
 
-type Product = ShopperProductsTypes.Product | ShopperSearchTypes.ProductSearchHit;
+// for different pages
+type Product =
+    | ShopperProductsTypes.Product
+    | (ShopperBasketsTypes.ProductItem & Partial<ShopperProductsTypes.Product>)
+    | ShopperSearchTypes.ProductSearchHit;
 
 /**
  * Component that calls out the promo message for a product
  * @param product - product object
+ * @param className - custom className
  * @returns {JSX.Element}
  */
 export default function PromoCallout({ product, className }: { product: Product; className?: string }) {

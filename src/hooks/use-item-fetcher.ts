@@ -13,17 +13,12 @@ import { useMemo } from 'react';
 // React Router
 import { useFetcher, useFetchers } from 'react-router';
 
-// Types
-import type { ActionResponse } from '@/routes/types/action-responses';
-
 interface UseItemFetcherOptions {
     /** The item ID to prefix the fetcher key with */
-    itemId: string;
+    itemId?: string;
     /** The component name to append to the fetcher key (e.g., 'cart-quantity-picker', 'remove-item-button') */
     componentName: string;
 }
-
-type UseItemFetcherReturn<T = unknown> = ReturnType<typeof useFetcher<ActionResponse<T>>>;
 
 /**
  * Custom hook that creates a useFetcher with a prefixed itemId key
@@ -50,12 +45,12 @@ type UseItemFetcherReturn<T = unknown> = ReturnType<typeof useFetcher<ActionResp
  * });
  * ```
  */
-export function useItemFetcher<T = unknown>({ itemId, componentName }: UseItemFetcherOptions): UseItemFetcherReturn<T> {
-    // Generate the fetcher key with itemId prefix
-    const fetcherKey = `${itemId}-${componentName}`;
+export function useItemFetcher({ itemId, componentName }: UseItemFetcherOptions) {
+    // Generate the fetcher key with itemId prefix (or just componentName if itemId is undefined)
+    const fetcherKey = itemId ? `${itemId}-${componentName}` : '';
 
     // Create the fetcher with the generated key
-    const fetcher = useFetcher<ActionResponse<T>>({
+    const fetcher = useFetcher({
         key: fetcherKey,
     });
 

@@ -1,5 +1,5 @@
 import { type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from 'react-router';
-import { use, useMemo } from 'react';
+import { use } from 'react';
 import { getAuth as getAuthServer } from '@/middlewares/auth.server';
 import {
     getServerCustomerProfileData,
@@ -8,8 +8,8 @@ import {
     type CheckoutPageData,
 } from '@/lib/checkout-loaders';
 import { createPage, type RouteComponentProps } from '@/components/create-page';
-import CheckoutFormPage from '@/components/checkout-one-click/checkout-form-page';
-import CheckoutOneClickProvider from '@/components/checkout-one-click/utils/checkout-context';
+import CheckoutFormPage from '@/components/checkout/checkout-form-page';
+import CheckoutProvider from '@/components/checkout/utils/checkout-context';
 import { CheckoutErrorBoundary } from '@/components/checkout-error-boundary';
 import { Skeleton } from '@/components/ui/skeleton';
 import Loading from '@/components/loading';
@@ -40,9 +40,11 @@ export function loader(args: LoaderFunctionArgs): CheckoutPageData {
         const shippingMethodsPromise = getServerShippingMethodsData(context, authSession);
 
         // Return promises for streaming
+        // Note: productMap is client-side only (requires basket from client middleware)
         return {
             customerProfile: customerProfilePromise,
             shippingMethods: shippingMethodsPromise,
+            productMap: Promise.resolve({}), // Empty on server, client loader will populate
             isRegisteredCustomer: isRegistered,
         };
     } catch {
@@ -50,6 +52,7 @@ export function loader(args: LoaderFunctionArgs): CheckoutPageData {
         return {
             customerProfile: Promise.resolve(null),
             shippingMethods: Promise.resolve(null),
+            productMap: Promise.resolve({}),
             isRegisteredCustomer: false,
         };
     }
@@ -123,22 +126,25 @@ export function HydrateFallback() {
 
 /**
  * Checkout view component that handles parallel data loading with clean error boundaries.
- * Uses Promise.all for parallel loading - errors bubble up to ErrorBoundary for proper handling.
+ *
+ * Streaming strategy:
+ * - customerProfile & shippingMethods: Resolved here (needed for form setup)
+ * - productMap: Passed as Promise to allow MyCart to stream independently
  */
-function CheckoutView({ loaderData: { customerProfile, shippingMethods } }: RouteComponentProps<CheckoutPageData>) {
-    // Stabilize promises to prevent "uncached promise" errors, with fallbacks for optional promises
-    const stablePromises = useMemo(
-        () => Promise.all([customerProfile ?? Promise.resolve(null), shippingMethods ?? Promise.resolve(null)]),
-        [customerProfile, shippingMethods]
-    );
+function CheckoutView({
+    loaderData: { customerProfile, shippingMethods, productMap },
+}: RouteComponentProps<CheckoutPageData>) {
+    // Handle each promise individually, only calling use() if the promise exists
+    // React automatically parallelizes multiple use() calls in the same component
+    const customerProfileData = customerProfile ? use(customerProfile) : null;
+    const shippingMethodsData = shippingMethods ? use(shippingMethods) : null;
 
-    // Clean parallel loading - let errors bubble up to ErrorBoundary
-    const [customerProfileData, shippingMethodsData] = use(stablePromises);
-
+    // Pass productMap Promise to CheckoutFormPage for streaming-friendly rendering
+    // MyCart component (wrapped in Suspense) will resolve it independently
     return (
-        <CheckoutOneClickProvider customerProfile={customerProfileData ?? undefined}>
-            <CheckoutFormPage shippingMethods={shippingMethodsData ?? undefined} />
-        </CheckoutOneClickProvider>
+        <CheckoutProvider customerProfile={customerProfileData ?? undefined}>
+            <CheckoutFormPage shippingMethods={shippingMethodsData ?? undefined} productMapPromise={productMap} />
+        </CheckoutProvider>
     );
 }
 

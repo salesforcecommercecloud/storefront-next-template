@@ -1,9 +1,13 @@
 import type { ActionFunctionArgs } from 'react-router';
-import { helpers } from 'commerce-sdk-isomorphic';
+import {
+    authorizeIDP as authorizeIDPHelper,
+    loginIDPUser as loginIDPUserHelper,
+} from 'commerce-sdk-isomorphic/helpers';
 import { flashAuth, getAuth, updateAuth } from '@/middlewares/auth.server';
-import { extractResponseError, isSlasPrivate } from '@/lib/utils';
+import { extractResponseError } from '@/lib/utils';
 import uiStrings from '@/temp-ui-string';
 import createClient from '@/lib/scapi';
+import { getConfig } from '@/config';
 
 export interface AuthorizeIDPParams {
     hint: string;
@@ -32,7 +36,7 @@ export const authorizeIDP = async (
         const redirectURI = parameters.redirectURI || slasClient.clientConfig.parameters.redirectURI;
         const usid = parameters.usid || session.usid;
 
-        const { url, codeVerifier } = await helpers.authorizeIDP({
+        const { url, codeVerifier } = await authorizeIDPHelper({
             slasClient,
             parameters: {
                 redirectURI,
@@ -76,17 +80,19 @@ export const loginIDPUser = async (
         const codeVerifier = session.codeVerifier;
         const code = parameters.code;
         const usid = parameters.usid || session.usid;
+        const config = getConfig(context);
+        const isSlasPrivate = config.commerce.api.privateKeyEnabled;
 
         if (!codeVerifier) {
             throw new Error(uiStrings.errors.codeVerifierMissing);
         }
 
-        const res = await helpers.loginIDPUser({
+        const res = await loginIDPUserHelper({
             slasClient,
             credentials: {
                 codeVerifier,
                 ...(isSlasPrivate && {
-                    clientSecret: import.meta.env.VITE_COMMERCE_API_SLAS_SECRET,
+                    clientSecret: process.env.COMMERCE_API_SLAS_SECRET,
                 }),
             },
             parameters: {

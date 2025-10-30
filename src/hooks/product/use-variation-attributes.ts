@@ -84,6 +84,7 @@ export interface VariationAttribute {
 interface UseVariationAttributesParams {
     product: ShopperProductsTypes.Product;
     isChildProduct?: boolean;
+    masterProduct?: ShopperProductsTypes.Product;
 }
 
 /**

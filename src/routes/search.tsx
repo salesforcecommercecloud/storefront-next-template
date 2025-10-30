@@ -3,6 +3,7 @@ import { Await, type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from 'r
 import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
 import type { Route } from './+types/search';
 import { fetchSearchProducts } from '@/lib/api/search';
+import { getConfig, useConfig } from '@/config';
 import CategorySkeleton, { CategoryHeaderSkeleton, CategoryRefinementsSkeleton } from '@/components/category-skeleton';
 import CategoryPagination from '@/components/category-pagination';
 import CategoryRefinements from '@/components/category-refinements';
@@ -10,15 +11,13 @@ import CategorySorting from '@/components/category-sorting';
 import ProductGrid from '@/components/product-grid';
 import uiStrings from '@/temp-ui-string';
 
-const limit = 24;
-
 type SearchPageData = {
     searchTerm: string;
     refinements: Promise<ShopperSearchTypes.ProductSearchResult>;
     searchResult: Promise<ShopperSearchTypes.ProductSearchResult>;
 };
 
-function getPageData({ request, context }: LoaderFunctionArgs): SearchPageData {
+function getPageData({ request, context }: LoaderFunctionArgs, limit: number): SearchPageData {
     const { searchParams } = new URL(request.url);
     const offset = parseInt(searchParams.get('offset') || '0', 10);
     const q = searchParams.get('q') ?? '';
@@ -46,15 +45,18 @@ function getPageData({ request, context }: LoaderFunctionArgs): SearchPageData {
 
 // eslint-disable-next-line react-refresh/only-export-components
 export function loader(args: LoaderFunctionArgs): SearchPageData {
-    return getPageData(args);
+    return getPageData(args, getConfig(args.context).global.productListing.productsPerPage);
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
 export function clientLoader(args: ClientLoaderFunctionArgs): SearchPageData {
-    return getPageData(args);
+    return getPageData(args, getConfig().global.productListing.productsPerPage);
 }
 
 export default function SearchPage({ loaderData: { searchTerm, refinements, searchResult } }: Route.ComponentProps) {
+    const config = useConfig();
+    const limit = config.global.productListing.productsPerPage;
+
     return (
         <div className="pb-16">
             <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">

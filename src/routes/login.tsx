@@ -11,20 +11,23 @@ import uiStrings from '@/temp-ui-string';
 import StandardLoginForm from '@/components/login/standard-login-form';
 import PasswordlessLoginForm from '@/components/login/passwordless-login-form';
 import { SocialLoginButtons } from '@/components/buttons/social-login-buttons';
-import { isSlasPrivate, getAppOrigin } from '@/lib/utils';
+import { getAppOrigin } from '@/lib/utils';
+import { getConfig } from '@/config';
 
 // services
-import { getAuth } from '@/middlewares/auth.server';
-import { updateAuth } from '@/middlewares/auth.client';
+import { getAuth, authorizePasswordless } from '@/middlewares/auth.server';
+import { updateAuth, getAuth as getClientAuth } from '@/middlewares/auth.client';
+import { updateBasket } from '@/middlewares/basket.client';
 import { loginRegisteredUser } from '@/lib/api/auth/standard-login';
-import { authorizePasswordless } from '@/lib/api/auth/passwordless-login';
 import { authorizeIDP } from '@/lib/api/auth/social-login';
+import { mergeBasket } from '@/lib/api/basket';
 
 type LoginLoaderData = {
     error?: string;
     passwordlessSent?: boolean;
     email?: string;
     mode: string;
+    isPasswordlessLoginEnabled: boolean;
 };
 
 // eslint-disable-next-line react-refresh/only-export-components,custom/no-universal-loaders
@@ -46,14 +49,19 @@ export function loader({ request, context }: LoaderFunctionArgs) {
     const url = new URL(request.url);
     const passwordlessSent = url.searchParams.get('passwordless') === 'sent';
     const email = url.searchParams.get('email');
-    // Default to passwordless mode if SLAS private is enabled, otherwise password mode
-    const mode = url.searchParams.get('mode') || (isSlasPrivate ? 'passwordless' : 'password');
+
+    // Get runtime config to determine if passwordless login is enabled
+    const config = getConfig(context);
+    const isSlasPrivate = config.commerce.api.privateKeyEnabled;
+    const isPasswordlessLoginEnabled = config.site.features.passwordlessLogin.enabled && isSlasPrivate;
+    const mode = url.searchParams.get('mode') || (isPasswordlessLoginEnabled ? 'passwordless' : 'password');
 
     return {
         error: session.error,
         passwordlessSent,
         email,
         mode,
+        isPasswordlessLoginEnabled,
     };
 }
 
@@ -69,6 +77,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
     const password = formData.get('password')?.toString();
     const loginMode = formData.get('loginMode')?.toString();
     const provider = formData.get('provider')?.toString();
+    const redirectPath = formData.get('redirectPath')?.toString();
     const resolve = (target: string): [string, ReturnType<typeof getAuth>] => [target, getAuth(context)];
 
     if (loginMode === 'social') {
@@ -89,7 +98,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         if (!email) {
             return resolve('/login?mode=passwordless');
         }
-        const result = await authorizePasswordless(context, { userid: email });
+        const result = await authorizePasswordless(context, { userid: email, redirectPath });
         if (result.success) {
             // Passwordless authorization sent - redirect to success page
             return resolve(`/login?passwordless=sent&email=${encodeURIComponent(email)}`);
@@ -116,18 +125,35 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 /**
  * This client action operates together with the server action to ensure a smooth login process. It ensures that the
  * session gets updated on both server and client side, and that the user is redirected to the correct route afterward.
+ * Also handles basket merge when transitioning from guest to registered user.
  */
 // eslint-disable-next-line react-refresh/only-export-components
 export async function clientAction({ context, serverAction }: ClientActionFunctionArgs) {
+    const prevAuth = getClientAuth(context);
+
     const [target, session] = await serverAction<[string, ReturnType<typeof getAuth>]>();
+
     updateAuth(context, () => session);
+
+    // Merge basket if transitioning from guest to registered user
+    if (prevAuth.userType === 'guest' && session.userType === 'registered') {
+        try {
+            const mergedBasket = await mergeBasket(context);
+            updateBasket(context, mergedBasket);
+        } catch (error) {
+            // Log but don't block redirect - user can still access their registered basket
+            // eslint-disable-next-line no-console
+            console.error('[Standard Login] Failed to merge basket:', error);
+        }
+    }
+
     return redirect(target);
 }
 
 clientAction.hydrate = true as const;
 
 export default function Login({ loaderData }: { loaderData: LoginLoaderData }): ReactElement {
-    const { error, passwordlessSent, email, mode } = loaderData;
+    const { error, passwordlessSent, email, mode, isPasswordlessLoginEnabled } = loaderData;
 
     // Show passwordless success state
     if (passwordlessSent && email) {
@@ -160,9 +186,9 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
     // Decide which form to render based on mode
     const renderForm = () => {
         if (mode === 'passwordless') {
-            return <PasswordlessLoginForm error={error} isPasswordlessEnabled={isSlasPrivate} />;
+            return <PasswordlessLoginForm error={error} isPasswordlessEnabled={isPasswordlessLoginEnabled} />;
         }
-        return <StandardLoginForm error={error} isPasswordlessEnabled={isSlasPrivate} />;
+        return <StandardLoginForm error={error} isPasswordlessEnabled={isPasswordlessLoginEnabled} />;
     };
 
     return (

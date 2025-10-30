@@ -63,3 +63,24 @@ export const fetchSearchProducts = (
         },
     });
 };
+
+export const fetchSearchSuggestions = (
+    context: LoaderFunctionArgs['context'],
+    parameters: {
+        q: string;
+        expand?: ('images' | 'prices')[];
+        limit?: number;
+        currency?: ShopperSearchTypes.CurrencyCode;
+    }
+): Promise<ShopperSearchTypes.SuggestionResult> => {
+    const { q, expand, limit, currency } = parameters;
+
+    return createClient(context).ShopperSearch.getSearchSuggestions({
+        parameters: {
+            q,
+            ...(expand && { expand }),
+            ...(limit && { limit }),
+            ...(currency && { currency }),
+        },
+    });
+};

@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
 import { FETCHER_STATES } from '@/lib/fetcher-states';
@@ -21,9 +21,6 @@ export function PromoCodeFields({ form, applyFetcher }: PromoCodeFieldsProps) {
                 name="code"
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel className="text-sm font-medium text-foreground">
-                            {uiStrings.cart.promoCode.label}
-                        </FormLabel>
                         <div className="flex gap-2">
                             <FormControl>
                                 <Input
@@ -35,7 +32,7 @@ export function PromoCodeFields({ form, applyFetcher }: PromoCodeFieldsProps) {
                             <Button
                                 type="submit"
                                 disabled={applyFetcher.state === FETCHER_STATES.SUBMITTING}
-                                className="rounded-md bg-primary hover:bg-primary/90 text-primary-foreground px-6">
+                                className="rounded-md bg-secondary cursor-pointer px-4 text-foreground hover:bg-secondary-foreground/40">
                                 {applyFetcher.state === FETCHER_STATES.SUBMITTING
                                     ? uiStrings.cart.promoCode.applying
                                     : uiStrings.cart.promoCode.apply}

@@ -88,7 +88,7 @@ export default function CategorySkeleton() {
             {/* Product grid skeleton */}
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-8">
                 {Array.from({ length: 12 }, (_, i) => i).map((index) => (
-                    <ProductCardSkeleton key={index} />
+                    <ProductTileSkeleton key={index} />
                 ))}
             </div>
 
@@ -106,7 +106,7 @@ export default function CategorySkeleton() {
     );
 }
 
-function ProductCardSkeleton() {
+function ProductTileSkeleton() {
     return (
         <Card className="ring-secondary/40 bg-muted/50">
             <CardContent className="text-secondary border-destructive/30">

@@ -2,10 +2,11 @@ import type { ReactElement } from 'react';
 import { Form } from 'react-router';
 import uiStrings from '@/temp-ui-string';
 import { Button } from '@/components/ui/button';
+import { useConfig } from '@/config';
 
 export function SocialLoginButtons(): ReactElement | null {
-    // Get social IDPs from environment, defaulting to Apple and Google
-    const socialIDPs: string[] = import.meta.env.VITE_SOCIAL_IDPS ? JSON.parse(import.meta.env.VITE_SOCIAL_IDPS) : [];
+    const { site } = useConfig();
+    const socialIDPs: string[] = site.features.socialLogin.providers;
 
     const getProviderIcon = (provider: string) => {
         switch (provider.toLowerCase()) {

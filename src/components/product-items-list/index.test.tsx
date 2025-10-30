@@ -3,13 +3,15 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
 // React Router
-import { createRoutesStub } from 'react-router';
+import { createMemoryRouter, RouterProvider } from 'react-router';
 
 // Commerce SDK
 import type { ShopperBasketsTypes, ShopperProductsTypes } from 'commerce-sdk-isomorphic';
 
 // Components
 import ProductItemsList from './index';
+import { ConfigProvider } from '@/config/context';
+import { mockConfig } from '@/test-utils/config';
 
 // Mock the toast hook
 const mockAddToast = vi.fn();
@@ -19,7 +21,7 @@ vi.mock('@/components/toast', () => ({
     }),
 }));
 
-// Mock react-router's useFetcher while preserving createRoutesStub
+// Mock react-router's useFetcher
 const mockFetcher = {
     submit: vi.fn(),
     state: 'idle',
@@ -38,14 +40,20 @@ vi.mock('react-router', async (importOriginal) => {
 });
 
 const renderWithRouter = (component: React.ReactElement) => {
-    const Stub = createRoutesStub([
-        {
-            path: '/cart',
-            Component: () => component,
-        },
-    ]);
+    // Using createMemoryRouter in framework mode is fine
+    // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
+    // Even though it's listed under "data routers," it fully supports testing non-route components that rely on router behavior.
+    const router = createMemoryRouter(
+        [
+            {
+                path: '/cart',
+                element: <ConfigProvider config={mockConfig}>{component}</ConfigProvider>,
+            },
+        ],
+        { initialEntries: ['/cart'] }
+    );
 
-    return render(<Stub initialEntries={['/cart']} />);
+    return render(<RouterProvider router={router} />);
 };
 
 // Test data
@@ -111,10 +119,10 @@ describe('ProductItemsList', () => {
     describe('Default variant', () => {
         test('renders product items with default variant', () => {
             const productItems = [mockProductItem];
-            const productMap = { 'item-1': mockProduct };
+            const productsByItemId = { 'item-1': mockProduct };
 
             renderWithRouter(
-                <ProductItemsList productItems={productItems} productMap={productMap} variant="default" />
+                <ProductItemsList productItems={productItems} productsByItemId={productsByItemId} variant="default" />
             );
 
             // Check that the product item is rendered with the correct test ID
@@ -126,12 +134,12 @@ describe('ProductItemsList', () => {
 
         test('renders multiple product items', () => {
             const productItems = [mockProductItem, { ...mockProductItem, itemId: 'item-2', productId: 'product-2' }];
-            const productMap = {
+            const productsByItemId = {
                 'item-1': mockProduct,
                 'item-2': { ...mockProduct, id: 'product-2' },
             };
 
-            renderWithRouter(<ProductItemsList productItems={productItems} productMap={productMap} />);
+            renderWithRouter(<ProductItemsList productItems={productItems} productsByItemId={productsByItemId} />);
 
             expect(screen.getByTestId('sf-product-item-product-1')).toBeInTheDocument();
             expect(screen.getByTestId('sf-product-item-product-2')).toBeInTheDocument();
@@ -141,7 +149,7 @@ describe('ProductItemsList', () => {
         });
 
         test('handles empty product items array', () => {
-            renderWithRouter(<ProductItemsList productItems={[]} productMap={{}} />);
+            renderWithRouter(<ProductItemsList productItems={[]} productsByItemId={{}} />);
 
             // Should render the container but no product items
             expect(screen.queryByTestId(/sf-product-item-/)).not.toBeInTheDocument();
@@ -149,7 +157,10 @@ describe('ProductItemsList', () => {
 
         test('handles null/undefined product items', () => {
             renderWithRouter(
-                <ProductItemsList productItems={null as unknown as ShopperBasketsTypes.ProductItem[]} productMap={{}} />
+                <ProductItemsList
+                    productItems={null as unknown as ShopperBasketsTypes.ProductItem[]}
+                    productsByItemId={{}}
+                />
             );
 
             expect(screen.queryByTestId(/sf-product-item-/)).not.toBeInTheDocument();
@@ -159,10 +170,10 @@ describe('ProductItemsList', () => {
     describe('Summary variant', () => {
         test('renders product items with summary variant', () => {
             const productItems = [mockProductItem];
-            const productMap = { 'item-1': mockProduct };
+            const productsByItemId = { 'item-1': mockProduct };
 
             renderWithRouter(
-                <ProductItemsList productItems={productItems} productMap={productMap} variant="summary" />
+                <ProductItemsList productItems={productItems} productsByItemId={productsByItemId} variant="summary" />
             );
 
             // Summary variant should use different test ID
@@ -176,9 +187,9 @@ describe('ProductItemsList', () => {
     describe('Product data integration', () => {
         test('combines basket item with product data when available', () => {
             const productItems = [mockProductItem];
-            const productMap = { 'item-1': mockProduct };
+            const productsByItemId = { 'item-1': mockProduct };
 
-            renderWithRouter(<ProductItemsList productItems={productItems} productMap={productMap} />);
+            renderWithRouter(<ProductItemsList productItems={productItems} productsByItemId={productsByItemId} />);
 
             // The ProductItem component should receive the combined data
             expect(screen.getByTestId('sf-product-item-product-1')).toBeInTheDocument();
@@ -189,7 +200,7 @@ describe('ProductItemsList', () => {
             const productItemWithoutId = { ...mockProductItem, itemId: undefined };
             const productItems = [productItemWithoutId];
 
-            renderWithRouter(<ProductItemsList productItems={productItems} productMap={{}} />);
+            renderWithRouter(<ProductItemsList productItems={productItems} productsByItemId={{}} />);
 
             // Should still render but without specific itemId
             expect(screen.getByTestId('sf-product-item-product-1')).toBeInTheDocument();
@@ -206,12 +217,12 @@ describe('ProductItemsList', () => {
             ));
 
             renderWithRouter(
-                <ProductItemsList productItems={productItems} productMap={{}} primaryAction={mockPrimaryAction} />
+                <ProductItemsList productItems={productItems} productsByItemId={{}} primaryAction={mockPrimaryAction} />
             );
 
-            // Should have primary action button (both desktop and mobile)
-            expect(screen.getAllByTestId('primary-action-item-1')).toHaveLength(2);
-            expect(screen.getAllByText('Primary Action for Test Product')).toHaveLength(2);
+            // Should have primary action button
+            expect(screen.getByTestId('primary-action-item-1')).toBeInTheDocument();
+            expect(screen.getByText('Primary Action for Test Product')).toBeInTheDocument();
 
             // Should call the function with the combined product
             expect(mockPrimaryAction).toHaveBeenCalledWith(
@@ -256,20 +267,20 @@ describe('ProductItemsList', () => {
         test('does not render primary action when primaryAction is not provided', () => {
             const productItems = [mockProductItem];
 
-            renderWithRouter(<ProductItemsList productItems={productItems} productMap={{}} />);
+            renderWithRouter(<ProductItemsList productItems={productItems} productsByItemId={{}} />);
 
             expect(screen.queryByTestId('primary-action-item-1')).not.toBeInTheDocument();
         });
 
         test('primary action function receives combined product data', () => {
             const productItems = [mockProductItem];
-            const productMap = { 'item-1': mockProduct };
+            const productsByItemId = { 'item-1': mockProduct };
             const mockPrimaryAction = vi.fn((_product) => <button>Test Action</button>);
 
             renderWithRouter(
                 <ProductItemsList
                     productItems={productItems}
-                    productMap={productMap}
+                    productsByItemId={productsByItemId}
                     primaryAction={mockPrimaryAction}
                 />
             );
@@ -332,7 +343,7 @@ describe('ProductItemsList', () => {
             const mockPrimaryAction = vi.fn((_product) => <button>Test Action</button>);
 
             renderWithRouter(
-                <ProductItemsList productItems={productItems} productMap={{}} primaryAction={mockPrimaryAction} />
+                <ProductItemsList productItems={productItems} productsByItemId={{}} primaryAction={mockPrimaryAction} />
             );
 
             // Should call the function with isProductUnavailable: true
@@ -382,17 +393,15 @@ describe('ProductItemsList', () => {
             ));
 
             renderWithRouter(
-                <ProductItemsList productItems={productItems} productMap={{}} primaryAction={mockPrimaryAction} />
+                <ProductItemsList productItems={productItems} productsByItemId={{}} primaryAction={mockPrimaryAction} />
             );
 
-            // Should have primary actions for both items (both desktop and mobile)
-            expect(screen.getAllByTestId('primary-action-item-1')).toHaveLength(2);
-            expect(screen.getAllByTestId('primary-action-item-2')).toHaveLength(2);
-            expect(screen.getAllByText('Action for product-1')).toHaveLength(2);
-            expect(screen.getAllByText('Action for product-2')).toHaveLength(2);
+            expect(screen.getByTestId('primary-action-item-1')).toBeInTheDocument();
+            expect(screen.getByTestId('primary-action-item-2')).toBeInTheDocument();
+            expect(screen.getByText('Action for product-1')).toBeInTheDocument();
+            expect(screen.getByText('Action for product-2')).toBeInTheDocument();
 
-            // Should call the function twice (once per item, but each item renders twice - desktop and mobile)
-            expect(mockPrimaryAction).toHaveBeenCalledTimes(4);
+            expect(mockPrimaryAction).toHaveBeenCalledTimes(2);
         });
     });
 
@@ -406,12 +415,17 @@ describe('ProductItemsList', () => {
             ));
 
             renderWithRouter(
-                <ProductItemsList productItems={productItems} productMap={{}} secondaryActions={mockSecondaryActions} />
+                <ProductItemsList
+                    productItems={productItems}
+                    productsByItemId={{}}
+                    secondaryActions={mockSecondaryActions}
+                />
             );
 
-            // Should have secondary action button
             expect(screen.getByTestId('secondary-action-item-1')).toBeInTheDocument();
             expect(screen.getByText('Secondary Action for Test Product')).toBeInTheDocument();
+
+            expect(mockSecondaryActions).toHaveBeenCalledTimes(1);
 
             // Should call the function with the combined product
             expect(mockSecondaryActions).toHaveBeenCalledWith(
@@ -456,20 +470,20 @@ describe('ProductItemsList', () => {
         test('does not render secondary actions when secondaryActions is not provided', () => {
             const productItems = [mockProductItem];
 
-            renderWithRouter(<ProductItemsList productItems={productItems} productMap={{}} />);
+            renderWithRouter(<ProductItemsList productItems={productItems} productsByItemId={{}} />);
 
             expect(screen.queryByTestId('secondary-action-item-1')).not.toBeInTheDocument();
         });
 
         test('secondary actions function receives combined product data', () => {
             const productItems = [mockProductItem];
-            const productMap = { 'item-1': mockProduct };
+            const productsByItemId = { 'item-1': mockProduct };
             const mockSecondaryActions = vi.fn((_product) => <button>Test Action</button>);
 
             renderWithRouter(
                 <ProductItemsList
                     productItems={productItems}
-                    productMap={productMap}
+                    productsByItemId={productsByItemId}
                     secondaryActions={mockSecondaryActions}
                 />
             );
@@ -532,7 +546,11 @@ describe('ProductItemsList', () => {
             const mockSecondaryActions = vi.fn((_product) => <button>Test Action</button>);
 
             renderWithRouter(
-                <ProductItemsList productItems={productItems} productMap={{}} secondaryActions={mockSecondaryActions} />
+                <ProductItemsList
+                    productItems={productItems}
+                    productsByItemId={{}}
+                    secondaryActions={mockSecondaryActions}
+                />
             );
 
             // Should call the function with isProductUnavailable: true
@@ -582,7 +600,11 @@ describe('ProductItemsList', () => {
             ));
 
             renderWithRouter(
-                <ProductItemsList productItems={productItems} productMap={{}} secondaryActions={mockSecondaryActions} />
+                <ProductItemsList
+                    productItems={productItems}
+                    productsByItemId={{}}
+                    secondaryActions={mockSecondaryActions}
+                />
             );
 
             // Should have secondary actions for both items
@@ -591,7 +613,7 @@ describe('ProductItemsList', () => {
             expect(screen.getByText('Action for product-1')).toBeInTheDocument();
             expect(screen.getByText('Action for product-2')).toBeInTheDocument();
 
-            // Should call the function twice
+            // Should call the function twice (once per item)
             expect(mockSecondaryActions).toHaveBeenCalledTimes(2);
         });
 
@@ -600,6 +622,7 @@ describe('ProductItemsList', () => {
             const { container } = renderWithRouter(
                 <ProductItemsList
                     productItems={[productItemWithoutId]}
+                    productsByItemId={{}}
                     secondaryActions={(product) => {
                         if (!product.itemId) return undefined;
                         return <button>Remove</button>;
@@ -613,9 +636,9 @@ describe('ProductItemsList', () => {
     describe('Data transformation', () => {
         test('creates combined product object with correct properties', () => {
             const productItems = [mockProductItem];
-            const productMap = { 'item-1': mockProduct };
+            const productsByItemId = { 'item-1': mockProduct };
 
-            renderWithRouter(<ProductItemsList productItems={productItems} productMap={productMap} />);
+            renderWithRouter(<ProductItemsList productItems={productItems} productsByItemId={productsByItemId} />);
 
             // Verify that the ProductItem component receives the expected data
             expect(screen.getByTestId('sf-product-item-product-1')).toBeInTheDocument();
@@ -628,7 +651,7 @@ describe('ProductItemsList', () => {
         test('handles missing product data gracefully', () => {
             const productItems = [mockProductItem];
 
-            renderWithRouter(<ProductItemsList productItems={productItems} productMap={{}} />);
+            renderWithRouter(<ProductItemsList productItems={productItems} productsByItemId={{}} />);
 
             // The component should still render but with missing product data
             expect(screen.getByTestId('sf-product-item-product-1')).toBeInTheDocument();
@@ -637,9 +660,9 @@ describe('ProductItemsList', () => {
 
         test('preserves basket item price and quantity', () => {
             const productItems = [mockProductItem];
-            const productMap = { 'item-1': mockProduct };
+            const productsByItemId = { 'item-1': mockProduct };
 
-            renderWithRouter(<ProductItemsList productItems={productItems} productMap={productMap} />);
+            renderWithRouter(<ProductItemsList productItems={productItems} productsByItemId={productsByItemId} />);
 
             // Check that price is displayed (should use basket priceAfterItemDiscount price)
             expect(screen.getAllByText('$29.99')).toHaveLength(2);
@@ -656,25 +679,25 @@ describe('ProductItemsList', () => {
                 productId: 'minimal-product',
             } as ShopperBasketsTypes.ProductItem;
 
-            renderWithRouter(<ProductItemsList productItems={[minimalProductItem]} productMap={{}} />);
+            renderWithRouter(<ProductItemsList productItems={[minimalProductItem]} productsByItemId={{}} />);
 
             expect(screen.getByTestId('sf-product-item-minimal-product')).toBeInTheDocument();
         });
 
-        test('handles productMap with missing keys', () => {
+        test('handles productsByItemId with missing keys', () => {
             const productItems = [mockProductItem];
-            const productMap = { 'different-item': mockProduct };
+            const productsByItemId = { 'different-item': mockProduct };
 
-            renderWithRouter(<ProductItemsList productItems={productItems} productMap={productMap} />);
+            renderWithRouter(<ProductItemsList productItems={productItems} productsByItemId={productsByItemId} />);
 
             expect(screen.getByTestId('sf-product-item-product-1')).toBeInTheDocument();
         });
 
         test('handles mixed product items with and without product data', () => {
             const productItems = [mockProductItem, { ...mockProductItem, itemId: 'item-2', productId: 'product-2' }];
-            const productMap = { 'item-1': mockProduct }; // Only first item has product data
+            const productsByItemId = { 'item-1': mockProduct }; // Only first item has product data
 
-            renderWithRouter(<ProductItemsList productItems={productItems} productMap={productMap} />);
+            renderWithRouter(<ProductItemsList productItems={productItems} productsByItemId={productsByItemId} />);
 
             expect(screen.getByTestId('sf-product-item-product-1')).toBeInTheDocument();
             expect(screen.getByTestId('sf-product-item-product-2')).toBeInTheDocument();

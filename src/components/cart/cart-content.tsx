@@ -13,21 +13,27 @@ import ProductItemsList from '@/components/product-items-list';
 import { RemoveItemButtonWithConfirmation } from '@/components/buttons/remove-item-button-with-confirmation';
 import { CartItemEditButton } from '@/components/cart/cart-item-edit-button';
 import CartEmpty from './cart-empty';
-import CartSummarySection from './cart-summary-section';
 import CartTitle from './cart-title';
+import OrderSummary from '@/components/order-summary';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+
+import tempUiString from '@/temp-ui-string';
+
+// utils
+import { isStandardProduct } from '@/lib/product-utils';
 
 /**
  * Props for the CartContent component
  *
  * @interface CartContentProps
  * @property {ShopperBasketsTypes.Basket | undefined} basket - The basket data from the loader
- * @property {Record<string, ShopperProductsTypes.Product>} [productMap] - Optional item ID to product mapping
- * @property {Record<string, ShopperPromotionsTypes.Promotion>} [promotionMap] - Optional promotion ID to promotion mapping
+ * @property {Record<string, ShopperProductsTypes.Product>} [productsByItemId] - Item ID to product mapping
+ * @property {Record<string, ShopperPromotionsTypes.Promotion>} [promotions] - Promotion ID to promotion mapping
  */
 interface CartContentProps {
     basket: ShopperBasketsTypes.Basket | undefined;
-    productMap: Record<string, ShopperProductsTypes.Product>;
-    promotionMap?: Record<string, ShopperPromotionsTypes.Promotion>;
+    productsByItemId: Record<string, ShopperProductsTypes.Product>;
+    promotions?: Record<string, ShopperPromotionsTypes.Promotion>;
 }
 
 /**
@@ -36,7 +42,7 @@ interface CartContentProps {
  * Features:
  * - Conditional rendering: Empty cart state when no items, full cart when items exist
  * - Responsive layout: Desktop grid (66% items, 33% summary) with mobile CTA section
- * - Component composition: Orchestrates CartTitle, ProductItemsList, and CartSummarySection
+ * - Component composition: Orchestrates CartTitle, ProductItemsList
  * - Data integration: Accepts basket, product mappings, and promotion mappings
  * - Mobile optimization: Separate mobile checkout section for better UX
  * - Accessibility: Proper semantic structure with test identifiers
@@ -44,7 +50,7 @@ interface CartContentProps {
  * @param props - Component props
  * @returns JSX element representing the cart content
  */
-export default function CartContent({ basket, productMap, promotionMap }: CartContentProps): ReactElement {
+export default function CartContent({ basket, productsByItemId, promotions }: CartContentProps): ReactElement {
     // Check if cart is empty using the basket prop from loader data
     if (!basket?.productItems?.length) {
         return <CartEmpty isRegistered={false} />;
@@ -57,39 +63,67 @@ export default function CartContent({ basket, productMap, promotionMap }: CartCo
         // Return undefined if no itemId - this will hide the buttons in the UI
         if (!product.itemId) return undefined;
 
+        // Decide if Edit should be shown based on product type. Do not show edit buttons for standard products.
+        const productDetails = product as ShopperProductsTypes.Product | undefined;
+        const isStandardProd = productDetails && isStandardProduct(productDetails);
+
         return (
             <div className="flex gap-2">
                 <RemoveItemButtonWithConfirmation itemId={product.itemId} className="pl-0" />
-                <CartItemEditButton product={product} className="pl-0" />
+                {!isStandardProd && <CartItemEditButton product={product} className="pl-0" />}
             </div>
         );
     };
 
     return (
-        <div className="bg-muted flex-1" data-testid="sf-cart-container">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:py-14">
-                <div className="space-y-24">
-                    <div className="space-y-4">
-                        <CartTitle basket={basket} />
-                        <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] gap-10 xl:gap-20">
-                            <div>
-                                <ProductItemsList
-                                    promotionMap={promotionMap}
-                                    productItems={productItems}
-                                    productMap={productMap}
-                                    secondaryActions={cartSecondaryActions}
+        <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-container">
+            <div className="max-w-7xl mx-auto px-6">
+                <CartTitle basket={basket} />
+
+                {/* Mobile Order Summary Accordion - visible only on mobile */}
+                <div className="md:hidden mb-3">
+                    <Accordion type="single" collapsible className="border rounded-md bg-card px-5 py=3">
+                        <AccordionItem value="order-summary">
+                            <AccordionTrigger className="text-xl">
+                                {tempUiString.cart.summary.showOrderSummary}
+                            </AccordionTrigger>
+                            <AccordionContent>
+                                <OrderSummary
+                                    basket={basket}
+                                    showCartItems={false}
+                                    isEstimate={true}
+                                    productsByItemId={productsByItemId}
+                                    showPromoCodeForm={true}
+                                    showCheckoutAction={true}
                                 />
-                            </div>
-                            <div>
-                                <CartSummarySection basket={basket} isDesktop={true} productMap={productMap} />
-                            </div>
+                            </AccordionContent>
+                        </AccordionItem>
+                    </Accordion>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
+                    <div className="md:order-2 lg:order-1">
+                        <div className="md:p-8 p-3 border border-border rounded-lg shadow-sm mb-3">
+                            <ProductItemsList
+                                promotions={promotions}
+                                productItems={productItems}
+                                productsByItemId={productsByItemId}
+                                secondaryActions={cartSecondaryActions}
+                            />
                         </div>
+                    </div>
+                    <div className="hidden md:block md:order-1 lg:order-2">
+                        <OrderSummary
+                            basket={basket}
+                            showCartItems={false}
+                            isEstimate={true}
+                            productsByItemId={productsByItemId}
+                            showPromoCodeForm={true}
+                            showCheckoutAction={true}
+                        />
                     </div>
                 </div>
             </div>
-
-            {/* Mobile CTA */}
-            <CartSummarySection basket={basket} isDesktop={false} productMap={productMap} />
         </div>
     );
 }

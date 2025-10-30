@@ -1,0 +1,72 @@
+{
+  "ci": {
+    "collect": {
+      "numberOfRuns": 3,
+      "startServerCommand": "pnpm start",
+      "startServerReadyPattern": "Server ready",
+      "startServerReadyTimeout": 30000,
+      "url": [
+        "http://localhost:5173/",
+        "http://localhost:5173/category/womens-clothing-tops",
+        "http://localhost:5173/product/25591227M?color=JJ9DFXX",
+        "http://localhost:5173/cart"
+      ]
+    },
+    "assert": {
+      "assertMatrix": [
+        {
+          "matchingUrlPattern": "http://localhost:5173/$",
+          "assertions": {
+            "categories:performance": ["error", {"minScore": 0.70, "aggregationMethod": "mean"}],
+            "categories:accessibility": ["error", {"minScore": 0.91, "aggregationMethod": "mean"}],
+            "categories:seo": ["error", {"minScore": 0.91, "aggregationMethod": "mean"}],
+            "categories:best-practices": ["error", {"minScore": 0.96, "aggregationMethod": "mean"}],
+            "resource-summary:script:size": ["error", {"maxNumericValue": 300000, "aggregationMethod": "mean"}],
+            "resource-summary:image:size": ["error", {"maxNumericValue": 1800000, "aggregationMethod": "mean"}],
+            "resource-summary:image:count": ["error", {"maxNumericValue": 20, "aggregationMethod": "mean"}],
+            "resource-summary:document:size": ["error", {"maxNumericValue": 40000, "aggregationMethod": "mean"}]
+          }
+        },
+        {
+          "matchingUrlPattern": ".*category.*",
+          "assertions": {
+            "categories:performance": ["error", {"minScore": 0.65, "aggregationMethod": "mean"}],
+            "categories:accessibility": ["error", {"minScore": 0.91, "aggregationMethod": "mean"}],
+            "categories:seo": ["error", {"minScore": 0.91, "aggregationMethod": "mean"}],
+            "categories:best-practices": ["error", {"minScore": 0.96, "aggregationMethod": "mean"}],
+            "resource-summary:script:size": ["error", {"maxNumericValue": 300000, "aggregationMethod": "mean"}],
+            "resource-summary:image:size": ["error", {"maxNumericValue": 450000, "aggregationMethod": "mean"}],
+            "resource-summary:document:size": ["error", {"maxNumericValue": 60000, "aggregationMethod": "mean"}]
+          }
+        },
+        {
+          "matchingUrlPattern": ".*product.*",
+          "assertions": {
+            "categories:performance": ["error", {"minScore": 0.70, "aggregationMethod": "mean"}],
+            "categories:accessibility": ["error", {"minScore": 0.91, "aggregationMethod": "mean"}],
+            "categories:seo": ["error", {"minScore": 0.91, "aggregationMethod": "mean"}],
+            "categories:best-practices": ["error", {"minScore": 0.96, "aggregationMethod": "mean"}],
+            "resource-summary:script:size": ["error", {"maxNumericValue": 300000, "aggregationMethod": "mean"}],
+            "resource-summary:image:size": ["error", {"maxNumericValue": 520000, "aggregationMethod": "mean"}],
+            "resource-summary:document:size": ["error", {"maxNumericValue": 50000, "aggregationMethod": "mean"}]
+          }
+        },
+        {
+          "matchingUrlPattern": ".*cart.*",
+          "assertions": {
+            "categories:performance": ["error", {"minScore": 0.65, "aggregationMethod": "mean"}],
+            "categories:accessibility": ["error", {"minScore": 0.91, "aggregationMethod": "mean"}],
+            "categories:seo": ["error", {"minScore": 0.91, "aggregationMethod": "mean"}],
+            "categories:best-practices": ["error", {"minScore": 0.96, "aggregationMethod": "mean"}],
+            "resource-summary:script:size": ["error", {"maxNumericValue": 340000, "aggregationMethod": "mean"}],
+            "resource-summary:image:size": ["error", {"maxNumericValue": 50000, "aggregationMethod": "mean"}],
+            "resource-summary:document:size": ["error", {"maxNumericValue": 30000, "aggregationMethod": "mean"}]
+          }
+        }
+      ]
+    },
+    "upload": {
+      "target": "temporary-public-storage"
+    }
+  }
+}

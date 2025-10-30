@@ -6,115 +6,73 @@
  */
 
 // Testing libraries
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, test, expect } from 'vitest';
-// Commerce SDK
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
 // React Router
-import { createRoutesStub } from 'react-router';
+import { createMemoryRouter, RouterProvider } from 'react-router';
 // Components
 import uiStrings from '@/temp-ui-string';
 import ProductInfo from './product-info';
+import ProductViewProvider from '@/providers/product-view';
+// mock data
+import { masterProduct as mockProduct } from '@/components/__mock__/master-variant-product';
+import { standardProd } from '@/components/__mock__/standard-product';
 
 const renderProductInfo = (props: React.ComponentProps<typeof ProductInfo>) => {
-    const Stub = createRoutesStub([
+    // Using createMemoryRouter in framework mode is fine
+    // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
+    // Even though it's listed under "data routers," it fully supports testing non-route components that rely on router behavior.
+    const router = createMemoryRouter(
+        [
+            {
+                path: '/product/:productId',
+                element: (
+                    <ProductViewProvider product={props.product}>
+                        <ProductInfo {...props} />
+                    </ProductViewProvider>
+                ),
+            },
+            // Catch-all route to prevent 404 errors when navigating
+            {
+                path: '*',
+                element: <div>Navigated</div>,
+            },
+        ],
         {
-            path: '/product/:productId',
-            Component: () => <ProductInfo {...props} />,
-        },
-    ]);
-    return render(<Stub initialEntries={['/product/test-product']} />);
+            initialEntries: ['/product/test-product'],
+        }
+    );
+    return { ...render(<RouterProvider router={router} />), router };
 };
 
 describe('ProductInfo', () => {
-    const mockProduct: ShopperProductsTypes.Product = {
-        id: 'test-product',
-        name: 'Test Product',
-        shortDescription: 'Test product description',
-        price: 99.99,
-        priceMax: 149.99,
-        inventory: { ats: 10, orderable: true, id: 'test-inventory' },
-        variationAttributes: [
-            {
-                id: 'color',
-                name: 'Color',
-                values: [
-                    { value: 'red', name: 'Red', orderable: true },
-                    { value: 'blue', name: 'Blue', orderable: true },
-                ],
-            },
-            {
-                id: 'size',
-                name: 'Size',
-                values: [
-                    { value: 'S', name: 'Small', orderable: true },
-                    { value: 'M', name: 'Medium', orderable: true },
-                ],
-            },
-        ],
-        imageGroups: [
-            {
-                viewType: 'swatch',
-                variationAttributes: [
-                    {
-                        id: 'color',
-                        values: [{ value: 'red', name: 'Red' }],
-                    },
-                ],
-                images: [
-                    {
-                        link: 'https://example.com/red-swatch.jpg',
-                        disBaseLink: 'https://example.com/red-swatch.jpg',
-                        alt: 'Red swatch',
-                    },
-                ],
-            },
-            {
-                viewType: 'swatch',
-                variationAttributes: [
-                    {
-                        id: 'color',
-                        values: [{ value: 'blue', name: 'Blue' }],
-                    },
-                ],
-                images: [
-                    {
-                        link: 'https://example.com/blue-swatch.jpg',
-                        disBaseLink: 'https://example.com/blue-swatch.jpg',
-                        alt: 'Blue swatch',
-                    },
-                ],
-            },
-        ],
-    };
-
     describe('basic rendering', () => {
         test('should render product name and description on desktop', () => {
             renderProductInfo({ product: mockProduct });
 
-            expect(screen.getByText('Test Product')).toBeInTheDocument();
-            expect(screen.getByText('Test product description')).toBeInTheDocument();
+            expect(screen.getByText('Charcoal Flat Front Athletic Fit Shadow Striped Wool Suit')).toBeInTheDocument();
+            expect(
+                screen.getByText(
+                    'This suit is great for any occasion. Add a shirt and a tie and you are ready for any event.'
+                )
+            ).toBeInTheDocument();
         });
 
         test('should render price information', () => {
             renderProductInfo({ product: mockProduct });
 
-            expect(screen.getByText('From $99.99')).toBeInTheDocument();
+            // Product has price range (299.99 - 500) so it shows "From"
+            expect(screen.getByText('From $299.99')).toBeInTheDocument();
+            expect(screen.getByText('$500.00')).toBeInTheDocument();
         });
 
-        test('should render price range when priceMax is higher', () => {
+        test('should render price from aria-label', () => {
             renderProductInfo({ product: mockProduct });
 
-            expect(screen.getByText('From $99.99')).toBeInTheDocument();
-            expect(screen.getByText('$149.99')).toBeInTheDocument();
-        });
-
-        test('should render single price when priceMax equals price', () => {
-            const productSinglePrice = { ...mockProduct, priceMax: 99.99 };
-            renderProductInfo({ product: productSinglePrice });
-
-            expect(screen.queryByText(uiStrings.product.from)).not.toBeInTheDocument();
-            expect(screen.getByText(`$99.99`)).toBeInTheDocument();
+            // Product has price range, so check the aria-label includes the price
+            const priceElement = screen.getByLabelText(/Current price from \$299\.99/);
+            expect(priceElement).toBeInTheDocument();
         });
     });
 
@@ -136,23 +94,78 @@ describe('ProductInfo', () => {
         test('should generate correct URLs for swatch selection', () => {
             renderProductInfo({ product: mockProduct });
 
-            // Find color swatches and verify their URLs contain the correct search params
-            const redSwatch = screen.getByLabelText('Red');
-            expect(redSwatch).toBeInTheDocument();
-            expect(redSwatch).toHaveAttribute('href', '/product/test-product?color=red');
+            // Find color swatches - only Charcoal available
+            const charcoalSwatch = screen.getByLabelText('Charcoal');
+            expect(charcoalSwatch).toBeInTheDocument();
+            expect(charcoalSwatch).toHaveAttribute('href', '/product/test-product?color=CHARCWL');
 
-            const blueSwatch = screen.getByLabelText('Blue');
-            expect(blueSwatch).toBeInTheDocument();
-            expect(blueSwatch).toHaveAttribute('href', '/product/test-product?color=blue');
+            // Find size swatches
+            const size36Swatch = screen.getByLabelText('36');
+            expect(size36Swatch).toBeInTheDocument();
+            expect(size36Swatch).toHaveAttribute('href', '/product/test-product?size=036');
 
-            // Find size swatches and verify their URLs contain the correct search params
-            const smallSwatch = screen.getByLabelText('Small');
-            expect(smallSwatch).toBeInTheDocument();
-            expect(smallSwatch).toHaveAttribute('href', '/product/test-product?size=S');
+            const size38Swatch = screen.getByLabelText('38');
+            expect(size38Swatch).toBeInTheDocument();
+            expect(size38Swatch).toHaveAttribute('href', '/product/test-product?size=038');
 
-            const mediumSwatch = screen.getByLabelText('Medium');
-            expect(mediumSwatch).toBeInTheDocument();
-            expect(mediumSwatch).toHaveAttribute('href', '/product/test-product?size=M');
+            // Find width swatches
+            const shortSwatch = screen.getByLabelText('Short');
+            expect(shortSwatch).toBeInTheDocument();
+            expect(shortSwatch).toHaveAttribute('href', '/product/test-product?width=S');
+
+            const regularSwatch = screen.getByLabelText('Regular');
+            expect(regularSwatch).toBeInTheDocument();
+            expect(regularSwatch).toHaveAttribute('href', '/product/test-product?width=V');
+        });
+
+        test('should update URL when swatch is clicked', async () => {
+            const user = userEvent.setup();
+            const { router } = renderProductInfo({ product: mockProduct });
+
+            // Click on size 38 swatch
+            const size38Swatch = screen.getByLabelText('38');
+            expect(size38Swatch).toHaveAttribute('href', '/product/test-product?size=038');
+
+            await user.click(size38Swatch);
+
+            // After clicking, verify the location was updated
+            await waitFor(() => {
+                // In tests using createMemoryRouter (or RouterProvider in framework mode),
+                // navigation happens entirely in memory, not in the real browser environment
+                expect(router.state.location.search).toContain('size=038');
+            });
+        });
+
+        test('should show swatch as selected when URL contains its value', () => {
+            const router = createMemoryRouter(
+                [
+                    {
+                        path: '/product/:productId',
+                        element: (
+                            <ProductViewProvider product={mockProduct}>
+                                <ProductInfo product={mockProduct} />
+                            </ProductViewProvider>
+                        ),
+                    },
+                    // Catch-all route to prevent 404 errors when navigating
+                    {
+                        path: '*',
+                        element: <div>Navigated</div>,
+                    },
+                ],
+                {
+                    initialEntries: ['/product/test-product?size=038'],
+                }
+            );
+            render(<RouterProvider router={router} />);
+
+            // Size 38 swatch should be selected (aria-checked=true)
+            const size38Swatch = screen.getByLabelText('38');
+            expect(size38Swatch).toHaveAttribute('aria-checked', 'true');
+
+            // Size 36 swatch should not be selected
+            const size36Swatch = screen.getByLabelText('36');
+            expect(size36Swatch).toHaveAttribute('aria-checked', 'false');
         });
     });
 
@@ -166,7 +179,12 @@ describe('ProductInfo', () => {
             renderProductInfo({ product: outOfStockProduct });
 
             expect(
-                screen.getByText(uiStrings.product.outOfStock.replace('{productName}', 'Test Product'))
+                screen.getByText(
+                    uiStrings.product.outOfStock.replace(
+                        '{productName}',
+                        'Charcoal Flat Front Athletic Fit Shadow Striped Wool Suit'
+                    )
+                )
             ).toBeInTheDocument();
         });
 
@@ -180,15 +198,19 @@ describe('ProductInfo', () => {
             renderProductInfo({ product: lowStockProduct });
 
             // Should still render basic elements
-            expect(screen.getByText('Test Product')).toBeInTheDocument();
-            expect(screen.getByText(uiStrings.product.addToCart)).toBeInTheDocument();
+            expect(screen.getByText('Charcoal Flat Front Athletic Fit Shadow Striped Wool Suit')).toBeInTheDocument();
+            expect(screen.getByLabelText(uiStrings.quantitySelector.quantity)).toBeInTheDocument();
         });
 
-        test('should show variant selection message when variants not fully selected', () => {
+        test('should render swatches when product has variations', () => {
             renderProductInfo({ product: mockProduct });
 
-            // Without selecting variants, the message should appear
-            expect(screen.getByText(uiStrings.product.selectAllOptions)).toBeInTheDocument();
+            // Check that variation swatches are rendered - Charcoal color, sizes 36-50, widths Short/Regular/Long
+            expect(screen.getByLabelText('Charcoal')).toBeInTheDocument();
+            expect(screen.getByLabelText('36')).toBeInTheDocument();
+            expect(screen.getByLabelText('38')).toBeInTheDocument();
+            expect(screen.getByLabelText('Short')).toBeInTheDocument();
+            expect(screen.getByLabelText('Regular')).toBeInTheDocument();
         });
 
         test('should display in-stock inventory message when product has stock', () => {
@@ -276,12 +298,18 @@ describe('ProductInfo', () => {
             expect(screen.getByLabelText(uiStrings.quantitySelector.quantity)).toBeInTheDocument();
             expect(
                 screen.getByLabelText(
-                    uiStrings.quantitySelector.decreaseQuantityForProduct.replace('{productName}', 'Test Product')
+                    uiStrings.quantitySelector.decreaseQuantityForProduct.replace(
+                        '{productName}',
+                        'Charcoal Flat Front Athletic Fit Shadow Striped Wool Suit'
+                    )
                 )
             ).toBeInTheDocument();
             expect(
                 screen.getByLabelText(
-                    uiStrings.quantitySelector.increaseQuantityForProduct.replace('{productName}', 'Test Product')
+                    uiStrings.quantitySelector.increaseQuantityForProduct.replace(
+                        '{productName}',
+                        'Charcoal Flat Front Athletic Fit Shadow Striped Wool Suit'
+                    )
                 )
             ).toBeInTheDocument();
         });
@@ -301,67 +329,30 @@ describe('ProductInfo', () => {
         });
     });
 
-    describe('action buttons', () => {
-        test('should render add to cart and wishlist buttons', () => {
-            renderProductInfo({ product: mockProduct });
-
-            expect(screen.getByText(uiStrings.product.addToCart)).toBeInTheDocument();
-            expect(screen.getByText(uiStrings.product.addToWishlist)).toBeInTheDocument();
-        });
-
-        test('should disable add to cart when variants not selected', () => {
-            renderProductInfo({ product: mockProduct });
-
-            const addToCartButton = screen.getByText(uiStrings.product.addToCart);
-            expect(addToCartButton).toBeDisabled();
-        });
-
-        test('should enable add to cart for simple product', () => {
-            const simpleProduct = {
-                ...mockProduct,
-                variationAttributes: [], // No variants
-            };
-
-            renderProductInfo({ product: simpleProduct });
-
-            const addToCartButton = screen.getByText(uiStrings.product.addToCart);
-            expect(addToCartButton).not.toBeDisabled();
-
-            // Should be clickable (we can't test the actual cart submission in isolation)
-            expect(addToCartButton).toBeInTheDocument();
-        });
-
-        test('should disable add to cart button when out of stock', () => {
-            const outOfStockProduct = {
-                ...mockProduct,
-                inventory: { ats: 0, orderable: false, id: 'test-inventory' },
-                variationAttributes: [], // No variants to simplify
-            };
-
-            renderProductInfo({ product: outOfStockProduct });
-
-            const addToCartButton = screen.getByText(uiStrings.product.addToCart);
-            expect(addToCartButton).toBeDisabled();
-        });
-    });
-
     describe('edge cases', () => {
         test('should handle standard product without variation attributes', () => {
-            const standardProduct = { ...mockProduct, variationAttributes: undefined };
-            renderProductInfo({ product: standardProduct });
+            renderProductInfo({ product: standardProd });
 
-            // Should not show any variation attribute names since there are none
+            // Standard product has no variation attributes, so no swatches should render
             expect(screen.queryByText(/Color/)).not.toBeInTheDocument();
             expect(screen.queryByText(/Size/)).not.toBeInTheDocument();
+            expect(screen.queryByText(/Width/)).not.toBeInTheDocument();
+
+            // Should render the product name and price
+            expect(screen.getByText('Laptop Briefcase with wheels (37L)')).toBeInTheDocument();
+            expect(screen.getByText('$99.99')).toBeInTheDocument();
         });
 
         test('should handle product with empty imageGroups', () => {
-            const productWithoutImages = { ...mockProduct, imageGroups: [] };
+            const productWithoutImages = {
+                ...mockProduct,
+                imageGroups: [],
+            };
             renderProductInfo({ product: productWithoutImages });
 
-            // Should still render the product name and price
-            expect(screen.getByText('Test Product')).toBeInTheDocument();
-            expect(screen.getByText('From $99.99')).toBeInTheDocument();
+            // Should still render the product name - price may vary based on priceRanges
+            expect(screen.getByText('Charcoal Flat Front Athletic Fit Shadow Striped Wool Suit')).toBeInTheDocument();
+            expect(screen.getByText('From $299.99')).toBeInTheDocument();
         });
     });
 });

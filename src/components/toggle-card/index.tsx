@@ -1,15 +1,6 @@
 'use client';
 
-import {
-    type ComponentProps,
-    createContext,
-    type ReactNode,
-    type Ref,
-    useContext,
-    useEffect,
-    useMemo,
-    useRef,
-} from 'react';
+import { type ComponentProps, createContext, type ReactNode, type Ref, useContext, useMemo, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Spinner } from '@/components/spinner';
@@ -53,12 +44,6 @@ export function ToggleCard({
     ...props
 }: ToggleCardProps) {
     const titleRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        if (editing && titleRef.current) {
-            titleRef.current.focus();
-        }
-    }, [editing]);
 
     const contextValue = useMemo<ToggleCardContextValue>(() => ({ editing, disabled }), [editing, disabled]);
 
@@ -132,5 +117,6 @@ export function ToggleCardEdit({ children }: { children?: ReactNode }) {
 export function ToggleCardSummary({ children }: { children?: ReactNode }) {
     const ctx = useContext(ToggleCardContext);
     if (!ctx) return null;
-    return !ctx.editing && !ctx.disabled ? <>{children}</> : null;
+    // Show summary when not editing (regardless of disabled state for single page layout)
+    return !ctx.editing ? <>{children}</> : null;
 }

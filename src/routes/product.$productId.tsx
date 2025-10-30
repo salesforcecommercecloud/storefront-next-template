@@ -1,18 +1,27 @@
 import { use } from 'react';
 import { type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from 'react-router';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProductsTypes, ShopperSearchTypes } from 'commerce-sdk-isomorphic';
 import createClient from '@/lib/scapi';
 import ProductSkeleton from '@/components/product-skeleton';
 import { createPage, type RouteComponentProps } from '@/components/create-page';
 import ProductView from '@/components/product-view';
-import ProductAccordion from '@/components/product-view/product-accordion';
 import { Typography } from '@/components/typography';
 import ChildProducts from '@/components/product-view/child-products';
 import { isProductSet, isProductBundle } from '@/lib/product-utils';
+import { generateRecommendationPromises } from '@/lib/recommendations';
+import { ProductRecommendationsSkeleton } from '@/components/product/skeletons';
+import withSuspense from '@/components/with-suspense';
+import { ProductCarouselWithSuspense } from '@/components/product-carousel';
 
 type ProductPageData = {
     product: Promise<ShopperProductsTypes.Product>;
     category: Promise<ShopperProductsTypes.Category | undefined>;
+    recommendations: Promise<
+        Array<{
+            config: { id: string; title: string };
+            promise: Promise<ShopperSearchTypes.ProductSearchResult>;
+        }>
+    >;
     pageKey: string;
 };
 
@@ -56,12 +65,67 @@ function getPageData({ request, params, context }: LoaderFunctionArgs): ProductP
                 },
             }).catch(() => undefined);
         }
+
+        // For variant products, try to get the master product's category
+        if (!product.primaryCategoryId && product.master?.masterId) {
+            return client.ShopperProducts.getProduct({
+                parameters: { id: product.master.masterId },
+            })
+                .then((masterProduct) => {
+                    if (masterProduct.primaryCategoryId) {
+                        return client.ShopperProducts.getCategory({
+                            parameters: {
+                                id: masterProduct.primaryCategoryId,
+                                levels: 1, // Get subcategories
+                            },
+                        });
+                    }
+                    return undefined;
+                })
+                .catch(() => undefined);
+        }
+
         return undefined;
+    });
+
+    // Generate recommendations promise that depends on product and category data
+    const recommendationsPromise = Promise.all([productPromise, categoryPromise]).then(async ([product, category]) => {
+        // Always use the master product ID for recommendations to ensure consistency
+        const baseProduct = {
+            ...product,
+            // Force the ID to be the master product ID for recommendations
+            id: product.master?.masterId || product.id,
+        };
+
+        // Extract subcategories from the parent category for recommendations
+        let subcategories: Array<{ id: string; name: string; parentCategoryId: string }> = [];
+        if (category?.parentCategoryId) {
+            const parentCategoryPromise = client.ShopperProducts.getCategory({
+                parameters: {
+                    id: category.parentCategoryId,
+                    levels: 1, // Get subcategories
+                },
+            });
+            const parentCategory = await parentCategoryPromise;
+            subcategories =
+                parentCategory.categories?.map((sub: ShopperProductsTypes.Category) => ({
+                    id: sub.id,
+                    name: sub.name || '',
+                    parentCategoryId: sub.parentCategoryId || category.parentCategoryId || '',
+                })) || [];
+        }
+
+        return generateRecommendationPromises(context, {
+            product: baseProduct,
+            category,
+            subcategories,
+        });
     });
 
     return {
         product: productPromise,
         category: categoryPromise,
+        recommendations: recommendationsPromise,
         pageKey: productId,
     };
 }
@@ -112,13 +176,47 @@ export function shouldRevalidate({ currentUrl, nextUrl }: { currentUrl: string; 
 }
 
 /**
+ * Component that handles async loading of recommendations with Suspense
+ */
+// eslint-disable-next-line react-refresh/only-export-components
+const RecommendationsContent = ({
+    data,
+}: {
+    data: Array<{ config: { id: string; title: string }; promise: Promise<ShopperSearchTypes.ProductSearchResult> }>;
+}) => {
+    if (!data || data.length === 0) {
+        return null;
+    }
+
+    // Render all carousels - individual carousels will return null if they have no products
+    // React will automatically filter out null values from the rendered output
+    return (
+        <>
+            {data.map(({ config, promise }) => (
+                <ProductCarouselWithSuspense key={config.id} resolve={promise} title={config.title} />
+            ))}
+        </>
+    );
+};
+
+const Recommendations = withSuspense(RecommendationsContent, {
+    fallback: <ProductRecommendationsSkeleton />,
+}) as React.ComponentType<{
+    resolve: Promise<
+        Array<{ config: { id: string; title: string }; promise: Promise<ShopperSearchTypes.ProductSearchResult> }>
+    >;
+}>;
+
+/**
  * Product view component that displays the product content.
  * This component receives loader data and renders the main product view including
  * breadcrumbs and product details.
  * @returns JSX element representing the product page layout
  */
 // eslint-disable-next-line react-refresh/only-export-components
-function ProductDetailView({ loaderData: { product, category } }: RouteComponentProps<ProductPageData>) {
+function ProductDetailView({
+    loaderData: { product, category, recommendations: recommendationsPromise, pageKey: _pageKey },
+}: RouteComponentProps<ProductPageData>) {
     const productData = use(product);
     const categoryData = use(category);
 
@@ -146,16 +244,13 @@ function ProductDetailView({ loaderData: { product, category } }: RouteComponent
                             <ChildProducts parentProduct={productData} />
                         </>
                     ) : (
-                        <>
-                            <ProductView product={productData} category={categoryData} />
-                            <ProductAccordion product={productData} />
-                        </>
+                        <ProductView product={productData} category={categoryData} />
                     )}
                 </div>
 
                 {/* Recommended Products Section */}
                 <div className="mt-16">
-                    {/*<ProductCarousel title={uiStrings.product.recommendedProductsTitle} />*/}
+                    <Recommendations resolve={recommendationsPromise} />
                 </div>
             </div>
         </div>

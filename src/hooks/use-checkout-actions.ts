@@ -2,7 +2,7 @@ import { useFetcher } from 'react-router';
 import { useEffect, useRef, useState } from 'react';
 import { useCheckoutContext } from '@/hooks/use-checkout';
 import type { ContactInfoData, PaymentData } from '@/lib/checkout-schemas';
-import type { CheckoutActionData } from '@/components/checkout-one-click/types';
+import type { CheckoutActionData } from '@/components/checkout/types';
 
 // Action route constants
 const contactInfoActionRoute = '/action/submit-contact-info';

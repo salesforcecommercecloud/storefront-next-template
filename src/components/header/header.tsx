@@ -6,7 +6,7 @@ import UserActions from './user-actions';
 import uiStrings from '@/temp-ui-string';
 // @sfdc-extension-line SFDC_EXT_STORE_LOCATOR
 import StoreLocatorBadge from '@/extensions/store-locator/components/header/store-locator-badge';
-import logo from '/images/logo.svg';
+import logo from '/images/market-logo.svg';
 
 export default function Header({ children }: PropsWithChildren): ReactElement {
     return (
@@ -16,7 +16,9 @@ export default function Header({ children }: PropsWithChildren): ReactElement {
                     {/* Logo */}
                     <Link to="/" className="flex items-center space-x-4">
                         <img className="w-10 h-10 text-primary" src={logo} alt={uiStrings.header.logoAlt} />
-                        <div className="text-xl font-bold text-primary-600">{uiStrings.header.brand}</div>
+                        <div className="text-xl font-bold text-primary-600 whitespace-pre-line">
+                            {uiStrings.header.brand}
+                        </div>
                     </Link>
 
                     {/* Mega Menu */}

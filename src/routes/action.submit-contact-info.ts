@@ -26,7 +26,10 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
     }
 
     // Use validated data
-    const { email } = result.data;
+    const { email, countryCode, phone } = result.data;
+
+    // Combine country code and phone number
+    const fullPhone = countryCode && phone ? `${countryCode}${phone}` : phone;
 
     // Perform customer lookup first to determine if user is registered or guest
     let customerLookupResult = null;
@@ -55,12 +58,15 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
         );
     }
 
-    // Always update basket with customer email (required for order placement)
+    // Always update basket with customer email and phone (required for order placement)
     try {
-        const client = createClient(context).ShopperBaskets;
+        const client = createClient(context).ShopperBasketsV2;
         const updatedBasket = await client.updateCustomerForBasket({
             parameters: { basketId: basket.basketId },
-            body: { email },
+            body: {
+                email,
+                ...(fullPhone && { phone: fullPhone }),
+            },
         });
 
         // Update local basket state with API response

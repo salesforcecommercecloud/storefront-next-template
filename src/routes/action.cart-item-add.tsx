@@ -32,7 +32,7 @@ async function addToCart(
 
     try {
         // Add item to basket
-        const client = createClient(context).ShopperBaskets;
+        const client = createClient(context).ShopperBasketsV2;
         const updatedBasket = await client.addItemToBasket({
             parameters: { basketId },
             body: [
@@ -40,7 +40,7 @@ async function addToCart(
                     productId: productItem.productId,
                     quantity: productItem.quantity,
                 },
-            ] as Parameters<CommerceSdkClient['ShopperBaskets']['addItemToBasket']>[0]['body'],
+            ] as Parameters<CommerceSdkClient['ShopperBasketsV2']['addItemToBasket']>[0]['body'],
         });
 
         // Update the basket storage

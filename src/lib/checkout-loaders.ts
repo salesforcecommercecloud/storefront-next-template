@@ -7,13 +7,14 @@
  */
 
 import type { LoaderFunctionArgs, ClientLoaderFunctionArgs } from 'react-router';
-import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
-import type { CustomerProfile } from '@/components/checkout-one-click/utils/checkout-context-types';
+import type { ShopperBasketsTypes, ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { CustomerProfile } from '@/components/checkout/utils/checkout-context-types';
 import type { SessionData } from '@/lib/api/types';
 import { getAuth as getAuthClient } from '@/middlewares/auth.client';
 import { getBasket } from '@/middlewares/basket.client';
 import { getCustomerProfileForCheckout, isRegisteredCustomer } from '@/lib/api/customer';
 import { getShippingMethodsForShipment } from '@/lib/api/shipping-methods';
+import createClient from '@/lib/scapi';
 
 /**
  * Checkout page data type
@@ -21,6 +22,7 @@ import { getShippingMethodsForShipment } from '@/lib/api/shipping-methods';
 export type CheckoutPageData = {
     shippingMethods?: Promise<ShopperBasketsTypes.ShippingMethodResult | null>;
     customerProfile?: Promise<CustomerProfile | null>;
+    productMap: Promise<Record<string, ShopperProductsTypes.Product>>;
     isRegisteredCustomer?: boolean;
 };
 
@@ -62,6 +64,55 @@ export function getServerShippingMethodsData(
 }
 
 /**
+ * Fetches detailed product information for all items in a shopping basket.
+ *
+ * This function retrieves product details including images, pricing, and attributes
+ * for each product in the basket. It creates a mapping from basket item IDs to
+ * their corresponding product data for efficient lookup in the UI.
+ * @returns Promise that resolves to a mapping of item IDs to product data.
+ */
+async function fetchProductsInBasket(
+    context: ClientLoaderFunctionArgs['context'],
+    productItems: ShopperBasketsTypes.ProductItem[]
+): Promise<Record<string, ShopperProductsTypes.Product>> {
+    // Main product IDs from basket items
+    const ids = productItems.map((item) => item.productId ?? '').filter(Boolean);
+    if (!ids.length) {
+        return {};
+    }
+
+    const client = createClient(context);
+    const productsResponse = await client.ShopperProducts.getProducts({
+        parameters: {
+            ids,
+            allImages: true,
+            perPricebook: true,
+        },
+    });
+
+    if (!productsResponse.data) {
+        return {};
+    }
+
+    const products = productsResponse.data.reduce(
+        (acc, product) => {
+            acc[product.id] = product;
+            return acc;
+        },
+        {} as Record<string, ShopperProductsTypes.Product>
+    );
+
+    // Create productsByItemId mapping
+    const productsByItemId: Record<string, ShopperProductsTypes.Product> = {};
+    productItems.forEach((productItem) => {
+        if (productItem?.productId && productItem.itemId && products[productItem.productId]) {
+            productsByItemId[productItem.itemId] = products[productItem.productId];
+        }
+    });
+    return productsByItemId;
+}
+
+/**
  * Handles basket prefill for returning customers
  */
 async function handleBasketPrefill(
@@ -70,7 +121,7 @@ async function handleBasketPrefill(
 ): Promise<CustomerProfile> {
     try {
         const { shouldPrefillBasket, initializeBasketForReturningCustomer } = await import(
-            '@/components/checkout-one-click/utils/checkout-utils'
+            '@/components/checkout/utils/checkout-utils'
         );
         const currentBasket = getBasket(context);
 
@@ -107,14 +158,19 @@ export function clientLoader(args: ClientLoaderFunctionArgs): CheckoutPageData {
                 .catch(() => null);
         }
 
+        // Fetch product details for cart items display
+        const productMapPromise = fetchProductsInBasket(context, basket?.productItems ?? []);
+
         return {
             shippingMethods: shippingMethodsPromise,
             customerProfile: customerProfilePromise,
+            productMap: productMapPromise,
             isRegisteredCustomer: userIsRegistered,
         };
     } catch {
         // Fallback to empty data on any error
         return {
+            productMap: Promise.resolve({}),
             isRegisteredCustomer: false,
         };
     }

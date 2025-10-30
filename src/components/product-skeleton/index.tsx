@@ -17,12 +17,12 @@ import { Skeleton } from '@/components/ui/skeleton';
  */
 export default function ProductSkeleton() {
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-background" data-testid="product-skeleton">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="space-y-8">
                     {/* Breadcrumbs skeleton */}
                     <div className="hidden md:block">
-                        <nav aria-label="Breadcrumb" className="mb-6">
+                        <nav aria-label="Breadcrumb" className="mb-6" data-testid="breadcrumbs-skeleton">
                             <div className="flex flex-wrap items-center text-sm">
                                 <Skeleton className="h-4 w-20" />
                                 <Skeleton className="mx-1 h-3 w-3" />
@@ -34,7 +34,7 @@ export default function ProductSkeleton() {
                     </div>
 
                     {/* Mobile Product Title skeleton - shown on mobile only */}
-                    <div className="block md:hidden">
+                    <div className="block md:hidden" data-testid="mobile-title-skeleton">
                         <Skeleton className="h-8 w-3/4 mb-2" />
                         <Skeleton className="h-4 w-full mb-1" />
                         <Skeleton className="h-4 w-2/3" />
@@ -79,12 +79,12 @@ export default function ProductSkeleton() {
  */
 function ImageGallerySkeleton() {
     return (
-        <div className="space-y-4">
+        <div className="space-y-4" data-testid="image-gallery-skeleton">
             {/* Main product image */}
-            <Skeleton className="aspect-square w-full rounded-lg" />
+            <Skeleton className="aspect-square w-full rounded-lg" data-testid="main-image-skeleton" />
 
             {/* Thumbnail images */}
-            <div className="flex space-x-2 overflow-x-auto">
+            <div className="flex space-x-2 overflow-x-auto" data-testid="thumbnails-skeleton">
                 <Skeleton className="h-16 w-16 flex-shrink-0 rounded-md" />
                 <Skeleton className="h-16 w-16 flex-shrink-0 rounded-md" />
                 <Skeleton className="h-16 w-16 flex-shrink-0 rounded-md" />
@@ -110,22 +110,22 @@ function ImageGallerySkeleton() {
  */
 function ProductInfoSkeleton() {
     return (
-        <div className="space-y-6">
+        <div className="space-y-6" data-testid="product-info-skeleton">
             {/* Desktop Product Title */}
-            <div className="hidden md:block">
+            <div className="hidden md:block" data-testid="desktop-title-skeleton">
                 <Skeleton className="h-8 w-3/4 mb-2" />
                 <Skeleton className="h-4 w-full mb-1" />
                 <Skeleton className="h-4 w-2/3" />
             </div>
 
             {/* Price */}
-            <div className="space-y-2">
+            <div className="space-y-2" data-testid="price-skeleton">
                 <Skeleton className="h-8 w-24" />
                 <Skeleton className="h-4 w-16" />
             </div>
 
             {/* Product options/variants */}
-            <div className="space-y-4">
+            <div className="space-y-4" data-testid="variants-skeleton">
                 <div>
                     <Skeleton className="h-5 w-20 mb-2" />
                     <div className="flex space-x-2">
@@ -146,19 +146,19 @@ function ProductInfoSkeleton() {
             </div>
 
             {/* Quantity selector */}
-            <div>
+            <div data-testid="quantity-skeleton">
                 <Skeleton className="h-5 w-20 mb-2" />
                 <Skeleton className="h-10 w-24 rounded-md" />
             </div>
 
             {/* Add to cart button */}
-            <Skeleton className="h-12 w-full rounded-md" />
+            <Skeleton className="h-12 w-full rounded-md" data-testid="add-to-cart-skeleton" />
 
             {/* Wishlist button */}
-            <Skeleton className="h-10 w-32 rounded-md" />
+            <Skeleton className="h-10 w-32 rounded-md" data-testid="wishlist-skeleton" />
 
             {/* Product features */}
-            <div className="space-y-2">
+            <div className="space-y-2" data-testid="features-skeleton">
                 <Skeleton className="h-4 w-full" />
                 <Skeleton className="h-4 w-5/6" />
                 <Skeleton className="h-4 w-4/5" />
@@ -179,10 +179,10 @@ function ProductInfoSkeleton() {
  */
 function ProductAccordionSkeleton() {
     return (
-        <div className="space-y-4">
+        <div className="space-y-4" data-testid="accordion-skeleton">
             {/* Accordion items */}
             {Array.from({ length: 4 }, (_, i) => i).map((index) => (
-                <div key={index} className="border rounded-lg">
+                <div key={index} className="border rounded-lg" data-testid="accordion-item-skeleton">
                     <div className="p-4 border-b">
                         <Skeleton className="h-6 w-32" />
                     </div>
@@ -211,14 +211,16 @@ function ProductAccordionSkeleton() {
  */
 function RecommendedProductsSkeleton() {
     return (
-        <div className="space-y-6">
+        <div className="space-y-6" data-testid="recommended-products-skeleton">
             {/* Section title */}
-            <Skeleton className="h-8 w-48" />
+            <Skeleton className="h-8 w-48" data-testid="recommended-title-skeleton" />
 
             {/* Product carousel */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            <div
+                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"
+                data-testid="recommended-products-grid">
                 {Array.from({ length: 4 }, (_, i) => i).map((index) => (
-                    <div key={index} className="space-y-3">
+                    <div key={index} className="space-y-3" data-testid="recommended-product-item">
                         <Skeleton className="aspect-square w-full rounded-md" />
                         <div className="space-y-2">
                             <Skeleton className="h-4 w-full" />

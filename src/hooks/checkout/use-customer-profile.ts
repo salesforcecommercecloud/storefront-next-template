@@ -3,12 +3,12 @@
  */
 
 import { useContext } from 'react';
-import { CheckoutContext } from '@/components/checkout-one-click/utils/checkout-context-types';
+import { CheckoutContext } from '@/components/checkout/utils/checkout-context-types';
 
 export function useCustomerProfile() {
     const context = useContext(CheckoutContext);
     if (!context) {
-        throw new Error('useCustomerProfile must be used within a CheckoutOneClickProvider');
+        throw new Error('useCustomerProfile must be used within a CheckoutProvider');
     }
     return context.customerProfile;
 }

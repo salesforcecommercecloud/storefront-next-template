@@ -1,10 +1,12 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { createRoutesStub, type FetcherWithComponents } from 'react-router';
+import { createMemoryRouter, RouterProvider, type FetcherWithComponents } from 'react-router';
 import CartQuantityPicker from './cart-quantity-picker';
 import { useCartQuantityUpdate } from '@/hooks/use-cart-quantity-update';
 import uiStrings from '@/temp-ui-string';
+import { ConfigProvider } from '@/config/context';
+import { mockConfig } from '@/test-utils/config';
 
 // Mock the useCartQuantityUpdate hook
 const mockHandleQuantityChange = vi.fn();
@@ -26,15 +28,25 @@ describe('CartQuantityPicker', () => {
         fetcher: createMockFetcher('idle'),
     };
 
-    // Helper function to render component with router context
+    // Helper function to render component with router context and ConfigProvider
     const renderComponent = (props: typeof defaultProps & { className?: string }) => {
-        const Stub = createRoutesStub([
-            {
-                path: '/cart',
-                Component: () => <CartQuantityPicker {...props} />,
-            },
-        ]);
-        return render(<Stub initialEntries={['/cart']} />);
+        // Using createMemoryRouter in framework mode is fine
+        // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
+        // Even though it's listed under "data routers," it fully supports testing non-route components that rely on router behavior.
+        const router = createMemoryRouter(
+            [
+                {
+                    path: '/cart',
+                    element: (
+                        <ConfigProvider config={mockConfig}>
+                            <CartQuantityPicker {...props} />
+                        </ConfigProvider>
+                    ),
+                },
+            ],
+            { initialEntries: ['/cart'] }
+        );
+        return render(<RouterProvider router={router} />);
     };
 
     beforeEach(() => {

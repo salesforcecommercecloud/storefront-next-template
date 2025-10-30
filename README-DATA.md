@@ -66,7 +66,7 @@ async function getPageData({ params: { customerId }, context }: LoaderFunctionAr
                 customerId,
             },
         }),
-        basket: await client.ShopperBaskets.getBasket({
+        basket: await client.ShopperBasketsV2.getBasket({
             parameters: {
                 basketId: '...', // <-- `basketId` is required
             },
@@ -133,7 +133,7 @@ function getPageData({ params: { customerId }, context }: LoaderFunctionArgs): Y
                 customerId,
             },
         }),
-        basket: client.ShopperBaskets.getBasket({
+        basket: client.ShopperBasketsV2.getBasket({
             parameters: {
                 basketId: '...', // <-- `basketId` is required
             },
@@ -308,7 +308,7 @@ The application includes a built-in performance monitoring system that tracks an
 
 ### Configuration
 
-Performance metrics are controlled through feature flags in `odyssey.config.json`:
+Performance metrics are controlled through feature flags in `config.server.ts`:
 
 ```json
 {

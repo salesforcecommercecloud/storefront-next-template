@@ -1,7 +1,12 @@
-import { createContext, type MiddlewareFunction, type RouterContextProvider } from 'react-router';
+import {
+    createContext,
+    type DataStrategyResult,
+    type MiddlewareFunction,
+    type RouterContextProvider,
+} from 'react-router';
 import type { ShopperLoginTypes } from 'commerce-sdk-isomorphic';
 import type { SessionData as AuthData } from '@/lib/api/types';
-import { getCookie, removeCookie, setCookie } from '@/lib/cookies';
+import { getCookie, removeCookie, setCookie } from '@/lib/cookies.client';
 import { clearStorage, type StorageErrorData, unpackStorage } from '@/lib/middleware';
 import {
     authContext,
@@ -11,7 +16,8 @@ import {
     updateStorageAndCache,
 } from '@/middlewares/auth.utils';
 import uiStrings from '@/temp-ui-string';
-import { performanceTimerContext, PERFORMANCE_MARKS } from '@/middlewares/performance-metrics';
+import { PERFORMANCE_MARKS, performanceTimerContext } from '@/middlewares/performance-metrics';
+import { getConfig } from '@/config';
 
 /**
  * Client-side helper for refresh token operations
@@ -147,7 +153,7 @@ const authCacheContext = createContext<{ ref: AuthData | undefined }>();
  * The router context is available in other middlewares, loader and action functions. Use it as root middleware,
  * to ensure the Commerce API context portion becomes available throughout the whole application.
  */
-const authMiddleware: MiddlewareFunction<void> = async ({ context }, next) => {
+const authMiddleware: MiddlewareFunction<Record<string, DataStrategyResult>> = async ({ context }, next) => {
     // Before calling the handler: Load current Commerce API data from `authStore` or incoming cookies, if applicable
     const authData = authCache.ref ?? getCookie<AuthStorageData>(authCookieName);
     const authStorage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>(
@@ -195,9 +201,6 @@ const authMiddleware: MiddlewareFunction<void> = async ({ context }, next) => {
         authCache.ref = entry;
         authPromiseCache.ref = createAuthPromise(context, entry);
         setCookie(authCookieName, entry, {
-            path: '/',
-            sameSite: 'lax',
-            secure: true,
             // TODO: Decide on the correct expiration date/strategy. The expiration also needs to depend
             //  on the login/auth/flow type.
             expires: new Date(authStorage.get('access_token_expiry') as number),
@@ -221,12 +224,13 @@ export const updateAuth = (
     const storage = context.get(authStorageContext);
     const cache = context.get(authCacheContext);
     const promiseCache = context.get(authContext);
+    const appConfig = getConfig(context);
     if (!storage || !cache || !promiseCache) {
         throw new Error('updateAuth must be used within the Commerce API middleware');
     }
 
     // Update storage data
-    updateAuthStorageData(storage, updater);
+    updateAuthStorageData(storage, updater, appConfig);
     cache.ref = storage.has('error') ? undefined : unpackStorage<AuthData>(storage);
     promiseCache.ref = storage.has('error')
         ? createAuthPromise(context, undefined)

@@ -10,6 +10,7 @@ import ActiveFilters from './active-filters';
 import RefineDefault from './refine-default';
 import RefineColor from './refine-color';
 import RefineSize from './refine-size';
+import RefinePrice from './refine-price';
 
 export default function CategoryRefinements({
     result,
@@ -84,6 +85,8 @@ export default function CategoryRefinements({
                 return <RefineColor {...refinementProps} />;
             case 'c_size':
                 return <RefineSize {...refinementProps} />;
+            case 'price':
+                return <RefinePrice {...refinementProps} result={result} />;
             default:
                 return <RefineDefault {...refinementProps} />;
         }

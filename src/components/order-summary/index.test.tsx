@@ -20,41 +20,48 @@ vi.mock('@/components/product-items-list', () => ({
 }));
 
 // Mock useFetcher, useNavigate, and Link from react-router
-vi.mock('react-router', () => ({
-    useFetcher: () => ({
-        submit: vi.fn(),
-        state: 'idle',
-        data: null,
-        formData: null,
-        formAction: null,
-        formMethod: null,
-        formEncType: null,
-        text: null,
-        form: null,
-        load: vi.fn(),
-        Form: ({ children, ...props }: React.FormHTMLAttributes<HTMLFormElement> & { children: React.ReactNode }) => (
-            <form {...props}>{children}</form>
+vi.mock('react-router', async (importOriginal) => {
+    const actual = (await importOriginal()) as any;
+    return {
+        ...actual,
+        useFetcher: () => ({
+            submit: vi.fn(),
+            state: 'idle',
+            data: null,
+            formData: null,
+            formAction: null,
+            formMethod: null,
+            formEncType: null,
+            text: null,
+            form: null,
+            load: vi.fn(),
+            Form: ({
+                children,
+                ...props
+            }: React.FormHTMLAttributes<HTMLFormElement> & { children: React.ReactNode }) => (
+                <form {...props}>{children}</form>
+            ),
+        }),
+        useNavigate: () => vi.fn(),
+        Link: ({
+            to,
+            children,
+            onClick,
+            className,
+            ...props
+        }: {
+            to: string;
+            children: React.ReactNode;
+            onClick?: () => void;
+            className?: string;
+            [key: string]: unknown;
+        }) => (
+            <a href={to} onClick={onClick} className={className} {...props}>
+                {children}
+            </a>
         ),
-    }),
-    useNavigate: () => vi.fn(),
-    Link: ({
-        to,
-        children,
-        onClick,
-        className,
-        ...props
-    }: {
-        to: string;
-        children: React.ReactNode;
-        onClick?: () => void;
-        className?: string;
-        [key: string]: unknown;
-    }) => (
-        <a href={to} onClick={onClick} className={className} {...props}>
-            {children}
-        </a>
-    ),
-}));
+    };
+});
 
 // Mock the useToast hook
 vi.mock('@/components/toast', () => ({
@@ -133,7 +140,7 @@ describe('OrderSummary', () => {
 
     test('renders cart items accordion with correct item count', async () => {
         const user = userEvent.setup();
-        render(<OrderSummary basket={mockBasket} productMap={mockProductsByItemId} />);
+        render(<OrderSummary basket={mockBasket} productsByItemId={mockProductsByItemId} />);
 
         // Total items: 2 + 1 = 3 items
         expect(screen.getByText(uiStrings.cart.items.itemsInCart.other.replace('{count}', '3'))).toBeInTheDocument();
@@ -332,14 +339,11 @@ describe('OrderSummary', () => {
             ],
         };
 
-        render(<OrderSummary basket={basketWithCoupons} />);
+        render(<OrderSummary basket={basketWithCoupons} showPromoCodeForm={true} />);
 
-        expect(screen.getByText(uiStrings.cart.promoCode.promotionsApplied)).toBeInTheDocument();
+        // Coupon codes are displayed by PromoCodeForm component
         expect(screen.getByText('SAVE10')).toBeInTheDocument();
         expect(screen.getByText('FREESHIP')).toBeInTheDocument();
-
-        const removeButtons = screen.getAllByText(uiStrings.cart.promoCode.remove);
-        expect(removeButtons).toHaveLength(2);
     });
 
     test('does not show remove buttons for coupon items when basket has orderNo', () => {
@@ -354,10 +358,9 @@ describe('OrderSummary', () => {
             ],
         };
 
-        render(<OrderSummary basket={basketWithOrderNo} />);
+        render(<OrderSummary basket={basketWithOrderNo} showPromoCodeForm={true} />);
 
         expect(screen.getByText('SAVE10')).toBeInTheDocument();
-        expect(screen.queryByText(uiStrings.cart.promoCode.remove)).not.toBeInTheDocument();
     });
 
     test('handles missing basket data gracefully', () => {

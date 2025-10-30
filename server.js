@@ -18,6 +18,8 @@ import getPort from 'get-port';
 import 'dotenv/config';
 
 process.env.NODE_ENV = process.env.NODE_ENV ?? 'production';
+process.env.EXTERNAL_DOMAIN_NAME = process.env.EXTERNAL_DOMAIN_NAME ?? 'localhost:5173';
+process.env.BUNDLE_ID = process.env.BUNDLE_ID ?? 'local';
 
 const retrieveSourceMap = function (source) {
     const match = source.startsWith('file://');
@@ -37,8 +39,6 @@ sourceMapSupport.install({
     retrieveSourceMap,
 });
 
-run();
-
 function parseNumber(raw) {
     if (raw === undefined) return undefined;
     const maybe = Number(raw);
@@ -49,7 +49,7 @@ function parseNumber(raw) {
 async function run() {
     const port = parseNumber(process.env.PORT) ?? (await getPort({ port: 3000 }));
     const buildPathArg = process.argv[2];
-    const target = `https://${process.env.VITE_COMMERCE_API_SHORT_CODE}.api.commercecloud.salesforce.com`;
+    const target = `https://${process.env.PUBLIC_COMMERCE_API_SHORT_CODE}.api.commercecloud.salesforce.com`;
 
     if (!buildPathArg) {
         console.error(`Usage: react-router-serve <server-build-path> - e.g. react-router-serve build/server/index.js`);
@@ -58,7 +58,7 @@ async function run() {
 
     const buildPath = path.resolve(buildPathArg);
 
-    const build = await import(url.pathToFileURL(buildPath).href);
+    const build = patchReactRouterBuild(await import(url.pathToFileURL(buildPath).href));
 
     const onListen = () => {
         const address =
@@ -72,12 +72,13 @@ async function run() {
         } else {
             console.log(`[react-router-serve] http://localhost:${port} (http://${address}:${port}) --> ${target}`);
         }
+        console.log('Server ready');
     };
 
     const app = express();
     app.disable('x-powered-by');
     app.use(compression());
-    app.use(build.publicPath, express.static(build.assetsBuildDirectory));
+    app.use(`/mobify/bundle/${process.env.BUNDLE_ID}/client/`, express.static(build.assetsBuildDirectory));
     app.use(express.static('public', { maxAge: '1h' }));
     app.use(morgan('tiny'));
 
@@ -106,3 +107,18 @@ async function run() {
         process.once(signal, () => server?.close(console.error));
     });
 }
+
+/**
+ * This is copied from the Vite plugin. We will move this out from user land.
+ */
+const patchReactRouterBuild = (serverBuild) => {
+    const BUNDLE_ID = process.env.BUNDLE_ID;
+    const BUNDLE_PATH = `/mobify/bundle/${BUNDLE_ID}/client/`;
+    const newAssets = JSON.parse(JSON.stringify(serverBuild.assets).replace(/"\/assets\//g, `"${BUNDLE_PATH}assets/`));
+    return Object.assign({}, serverBuild, {
+        publicPath: BUNDLE_PATH,
+        assets: newAssets,
+    });
+};
+
+run();

@@ -6,8 +6,6 @@ import { Tooltip, TooltipContent, TooltipTrigger, TooltipArrow } from '@/compone
 import { Button } from '@/components/ui/button';
 import { Typography } from '@/components/typography';
 import { cn } from '@/lib/utils';
-// i18n
-import uiStrings from '@/temp-ui-string';
 
 interface PromoPopoverProps {
     header?: ReactNode;
@@ -39,10 +37,10 @@ const PromoPopover = ({ header, children, className, ...props }: PromoPopoverPro
                     sideOffset={8}
                     showArrow={false}>
                     <div className="p-4">
-                        {header || (
+                        {header && (
                             <div className="mb-2 pb-2 border-b border-border">
                                 <Typography variant="h3" as="h3" className="font-bold text-sm text-foreground">
-                                    {uiStrings.cart.promoCode.promotionsApplied}
+                                    {header}
                                 </Typography>
                             </div>
                         )}

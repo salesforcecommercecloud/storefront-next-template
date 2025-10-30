@@ -10,6 +10,11 @@ import { authContext } from '@/middlewares/auth.utils';
 import { performanceTimerContext, PERFORMANCE_MARKS } from '@/middlewares/performance-metrics';
 import { encodeBase64Url } from '@/lib/url';
 import { getAppOrigin } from '@/lib/utils';
+import { getConfig } from '@/config';
+import {
+    sdkImporters,
+    type CommerceSdkKeyMap as CommerceSdkKeyMapIsomorphic,
+} from 'commerce-sdk-isomorphic/importUtil';
 
 type CommerceSdkClientConfig = Readonly<{
     clientId: string;
@@ -112,16 +117,21 @@ if (__TEST__) {
 /**
  * Salesforce Commerce API client configuration.
  * This sets up the connection to the Salesforce B2C Commerce API.
+ *
+ * Reads runtime config from the router context populated by root loader.
+ * The config comes from environment variables at runtime.
  */
-const getCommerceSdkClientConfig = (): Readonly<CommerceSdkClientConfig> => {
+const getCommerceSdkClientConfig = (context: Readonly<RouterContextProvider>): Readonly<CommerceSdkClientConfig> => {
+    const config = getConfig(context);
+
     return Object.freeze({
-        clientId: import.meta.env.VITE_COMMERCE_API_CLIENT_ID || '',
-        organizationId: import.meta.env.VITE_COMMERCE_API_ORG_ID || '',
-        shortCode: import.meta.env.VITE_COMMERCE_API_SHORT_CODE || '',
-        siteId: import.meta.env.VITE_COMMERCE_API_SITE_ID || '',
-        locale: import.meta.env.VITE_SITE_LOCALE || 'en-US',
-        currency: import.meta.env.VITE_SITE_CURRENCY || 'USD',
-        redirectURI: `${getAppOrigin()}${import.meta.env.VITE_COMMERCE_API_CALLBACK || ''}`,
+        clientId: config.commerce.api.clientId,
+        organizationId: config.commerce.api.organizationId,
+        shortCode: config.commerce.api.shortCode,
+        siteId: config.commerce.api.siteId,
+        locale: config.site.locale,
+        currency: config.site.currency,
+        redirectURI: `${getAppOrigin()}${config.commerce.api.callback}`,
     });
 };
 
@@ -129,21 +139,24 @@ const getCommerceSdkClientConfig = (): Readonly<CommerceSdkClientConfig> => {
  * Creates a Commerce SDK client instance with authentication
  */
 function createCommerceSdkClient<T>(
+    context: Readonly<RouterContextProvider>,
     ClientClass: new (...args: any[]) => T,
     parameters: Partial<CommerceSdkClientConfig> & { shortCode: string },
     session?: SessionData
 ): T {
+    const config = getConfig(context);
+
     return new ClientClass({
         parameters,
         ...(session ? { headers: { authorization: `Bearer ${session.access_token}` } } : {}),
         throwOnBadResponse: true,
-        proxy: `${getAppOrigin()}${import.meta.env.VITE_COMMERCE_API_PROXY || ''}`,
+        proxy: `${getAppOrigin()}${config.commerce.api.proxy}`,
     });
 }
 
 /**
  * Creates a Salesforce Commerce API (SCAPI) service/proxy that's part of our Commerce SDK fetch API trinity. The
- * trinity consists of this service, a `useFetch` hook, and finally a route (and its loaders) for processing requests
+ * trinity consists of this service, a `useScapiFetcher` hook, and finally a route (and its loaders) for processing requests
  * from the first two. The purpose of these three entities is to simplify and centralize the way to interact with the
  * Commerce SDK methods inside the fetch service.
  *
@@ -160,7 +173,7 @@ function createCommerceSdkClient<T>(
  *
  * TODO: This service should encapsulate the authentication handling, as that would allows us to start streaming of API
  *  responses on the server without having to wait for the authentication to complete.
- * @see {@link import('@/hooks/use-fetch.ts').useFetch}
+ * @see {@link import('@/hooks/use-scapi-fetcher.ts').useScapiFetcher}
  * @see {@link import('@/routes/resource.api.client.$resource.ts').loader}
  * @see {@link import('@/routes/resource.api.client.$resource.ts').clientLoader}
  * @example Default mode
@@ -170,7 +183,7 @@ function createCommerceSdkClient<T>(
  * export function loader({ params, context }: LoaderFunctionArgs) {
  *   const client = createClient(context);
  *   return {
- *     basket: client.ShopperBaskets.getBasket({ parameters: { basketId: 'test' } }),
+ *     basket: client.ShopperBasketsV2.getBasket({ parameters: { basketId: 'test' } }),
  *     products: client.ShopperProducts.getProduct({ parameters: { id: params.productId } }),
  *   };
  * }
@@ -181,7 +194,7 @@ function createCommerceSdkClient<T>(
  * export function loader({ params, context }: LoaderFunctionArgs) {
  *   const client = createClient(context);
  *   return {
- *     basket: client.ShopperBaskets.getBasket(
+ *     basket: client.ShopperBasketsV2.getBasket(
  *       {
  *         parameters: { basketId: 'test' }
  *       },
@@ -207,7 +220,8 @@ const factory = (context: Readonly<RouterContextProvider>): CommerceSdkClient =>
                             // Deduplicate parallel class loading
                             let sdkClientClassLoadPromise = clientClassLoadCache.get(className);
                             if (!sdkClientClassLoadPromise) {
-                                sdkClientClassLoadPromise = import('commerce-sdk-isomorphic')
+                                const importer = sdkImporters[className as CommerceSdkKeyMapIsomorphic];
+                                sdkClientClassLoadPromise = (importer ? importer() : import('commerce-sdk-isomorphic'))
                                     .then((sdk) => {
                                         const clientClass = sdk?.[className] as Ctor;
                                         if (!clientClass || typeof clientClass !== 'function') {
@@ -239,8 +253,8 @@ const factory = (context: Readonly<RouterContextProvider>): CommerceSdkClient =>
                                 // This client - of course - doesn't require authentication itself, so we can create it
                                 // without upfront session retrieval
                                 const { clientId, organizationId, shortCode, siteId, currency, locale, redirectURI } =
-                                    getCommerceSdkClientConfig();
-                                sdkClientInstance = createCommerceSdkClient<Ctor>(sdkClientClass, {
+                                    getCommerceSdkClientConfig(context);
+                                sdkClientInstance = createCommerceSdkClient<Ctor>(context, sdkClientClass, {
                                     clientId,
                                     organizationId,
                                     shortCode,
@@ -262,8 +276,9 @@ const factory = (context: Readonly<RouterContextProvider>): CommerceSdkClient =>
 
                                             // Create and cache the targeted client instance resolver
                                             const { clientId, organizationId, shortCode, siteId, currency, locale } =
-                                                getCommerceSdkClientConfig();
+                                                getCommerceSdkClientConfig(context);
                                             return createCommerceSdkClient<Ctor>(
+                                                context,
                                                 sdkClientClass,
                                                 { clientId, organizationId, shortCode, siteId, currency, locale },
                                                 session

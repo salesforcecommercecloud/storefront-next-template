@@ -20,7 +20,7 @@ const swatchVariants = cva(
                 false: '',
             },
             disabled: {
-                true: 'cursor-not-allowed before:content-[""] before:absolute before:top-1/2 before:left-1/2 before:h-[32px] before:w-[1px] before:-translate-x-1/2 before:-translate-y-1/2 before:rotate-45 before:bg-black before:z-[1]',
+                true: 'cursor-not-allowed before:content-[""] before:absolute before:top-1/2 before:left-1/2 before:h-[32px] before:w-[1px] before:-translate-x-1/2 before:-translate-y-1/2 before:rotate-45 before:bg-black dark:before:bg-white before:z-[1]',
                 false: 'cursor-pointer',
             },
         },
@@ -53,33 +53,33 @@ const swatchVariants = cva(
                 disabled: true,
                 class: 'border-black',
             },
-            // Square default (not selected, not disabled)
+            // Square default (not selected, not disabled) - matches gray container background
             {
                 shape: 'square',
                 selected: false,
                 disabled: false,
-                class: 'bg-white',
+                class: 'bg-gray-100 dark:bg-muted border-0 shadow-none',
             },
-            // Square selected (not disabled)
+            // Square selected (not disabled) - white background with shadow and faint border
             {
                 shape: 'square',
                 selected: true,
                 disabled: false,
-                class: 'border-transparent bg-primary text-primary-foreground',
+                class: 'bg-white dark:bg-muted border border-gray-300 dark:border-2 dark:border-input shadow-sm dark:shadow-none',
             },
-            // Square disabled (not selected)
+            // Square disabled (not selected) - matches gray container background
             {
                 shape: 'square',
                 selected: false,
                 disabled: true,
-                class: 'bg-white',
+                class: 'bg-gray-100 dark:bg-muted border-0 shadow-none',
             },
-            // Square selected and disabled
+            // Square selected and disabled - white background with shadow and faint border
             {
                 shape: 'square',
                 selected: true,
                 disabled: true,
-                class: 'before:bg-white bg-primary text-primary-foreground',
+                class: 'bg-white dark:bg-muted border border-gray-300 dark:border-2 dark:border-input shadow-sm dark:shadow-none',
             },
         ],
         defaultVariants: {

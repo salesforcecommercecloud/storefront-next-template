@@ -7,6 +7,18 @@ export const contactInfoSchema = z.object({
         .string()
         .min(1, uiStrings.checkout.contactInfo.emailRequired)
         .email(uiStrings.checkout.contactInfo.emailInvalid),
+    countryCode: z
+        .string()
+        .optional()
+        .refine((val) => !val || val.startsWith('+'), {
+            message: 'Country code must start with +',
+        }),
+    phone: z
+        .string()
+        .optional()
+        .refine((val) => !val || val.length >= 10, {
+            message: 'Phone number must be at least 10 digits',
+        }),
 });
 
 // Shipping Address Schema
@@ -240,6 +252,8 @@ export const getPaymentDefaultValues = (params: {
 export const parseContactInfoFromFormData = (formData: FormData): ContactInfoData => {
     return {
         email: formData.get('email')?.toString() || '',
+        countryCode: formData.get('countryCode')?.toString() || '',
+        phone: formData.get('phone')?.toString() || '',
     };
 };
 
@@ -283,32 +297,8 @@ export const parsePaymentFromFormData = (formData: FormData): PaymentData => {
     };
 };
 
-export const parseCartItemQuantityUpdateFromFormData = (formData: FormData) => {
-    return {
-        itemId: formData.get('itemId')?.toString() || '',
-        quantity: formData.get('quantity')?.toString() || '',
-    };
-};
-
-// Schema for cart item quantity update form data
-export const cartItemQuantityUpdateSchema = z.object({
-    itemId: z.string().min(1, 'Item ID is required').trim(),
-    quantity: z
-        .string()
-        .min(1, 'Quantity is required')
-        .transform((val) => {
-            const parsed = Number(val);
-            if (isNaN(parsed)) {
-                throw new Error('Quantity must be a valid number');
-            }
-            return parsed;
-        })
-        .pipe(z.number().min(1, 'Quantity must be at least 1')),
-});
-
 // Type exports - These are TypeScript data models, not browser FormData objects
 export type ContactInfoData = z.infer<typeof contactInfoSchema>;
 export type ShippingAddressData = z.infer<typeof shippingAddressSchema>;
 export type ShippingOptionsData = z.infer<typeof shippingOptionsSchema>;
 export type PaymentData = z.infer<typeof paymentSchema>;
-export type CartItemQuantityUpdateData = z.infer<typeof cartItemQuantityUpdateSchema>;

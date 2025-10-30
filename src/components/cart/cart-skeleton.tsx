@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 function OrderSummarySkeleton(): ReactElement {
     return (
-        <Card>
+        <Card data-testid="cart-order-summary">
             <CardContent className="p-6">
                 <div className="space-y-5">
                     {/* Order Summary Title Skeleton */}
@@ -91,12 +91,12 @@ export default function CartSkeleton(): ReactElement {
                 <div className="space-y-24">
                     <div className="space-y-4">
                         {/* Cart Title Skeleton */}
-                        <Skeleton className="h-7 lg:h-8 w-48" />
+                        <Skeleton className="h-7 lg:h-8 w-48" data-testid="cart-title-skeleton" />
 
                         <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] gap-10 xl:gap-20">
                             {/* Product Items List Skeleton */}
                             <div className="space-y-4">
-                                <Card className="border border-border shadow-sm">
+                                <Card className="border border-border shadow-sm" data-testid="cart-product-item">
                                     <CardContent className="p-4">
                                         <ProductItemSkeleton />
                                     </CardContent>
@@ -106,7 +106,7 @@ export default function CartSkeleton(): ReactElement {
                             {/* Cart Summary Section Skeleton */}
                             <div className="space-y-4">
                                 <OrderSummarySkeleton />
-                                <div className="hidden lg:block">
+                                <div className="hidden lg:block" data-testid="cart-cta-desktop">
                                     <CartCtaSkeleton />
                                 </div>
                             </div>
@@ -116,7 +116,9 @@ export default function CartSkeleton(): ReactElement {
             </div>
 
             {/* Mobile CTA Skeleton */}
-            <div className="h-32 sticky bottom-0 bg-background flex items-center flex-col lg:hidden">
+            <div
+                className="h-32 sticky bottom-0 bg-background flex items-center flex-col lg:hidden"
+                data-testid="cart-cta-mobile">
                 <CartCtaSkeleton />
             </div>
         </div>

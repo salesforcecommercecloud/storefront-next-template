@@ -20,6 +20,7 @@ import debounce from 'lodash.debounce';
 import { useToast } from '@/components/toast';
 
 // Hooks
+import { useConfig } from '@/config';
 
 // Constants
 import uiStrings from '@/temp-ui-string';
@@ -95,10 +96,14 @@ export function useCartQuantityUpdate({
     itemId,
     initialValue,
     stockLevel,
-    debounceDelay = 750,
+    debounceDelay,
     fetcher,
 }: UseCartQuantityUpdateProps): UseCartQuantityUpdateReturn {
+    const config = useConfig();
     const { addToast } = useToast();
+
+    const effectiveDebounceDelay = debounceDelay || config.pages.cart.quantityUpdateDebounce;
+    const removeAction = config.pages.cart.removeAction;
 
     // Remove item function
     const removeItem = useCallback(() => {
@@ -108,9 +113,9 @@ export function useCartQuantityUpdate({
         formData.append('itemId', itemId);
         void fetcher.submit(formData, {
             method: 'POST',
-            action: '/action/remove-cart-item',
+            action: removeAction,
         });
-    }, [itemId, fetcher]);
+    }, [itemId, removeAction, fetcher]);
 
     const [stockValidationError, setStockValidationError] = useState<string | null>(null);
     const [quantity, setQuantity] = useState<number | string>(initialValue);
@@ -152,11 +157,11 @@ export function useCartQuantityUpdate({
             formData.append('quantity', newQuantity.toString());
 
             void fetcher.submit(formData, {
-                method: 'POST',
-                action: '/action/cart-item-quantity-update',
+                method: 'PATCH',
+                action: '/action/cart-item-update',
             });
-        }, debounceDelay);
-        // debounceDelay: stable value, no need to recreate effect
+        }, effectiveDebounceDelay);
+        // effectiveDebounceDelay: stable value, no need to recreate effect
         // fetcher: stable fetcher, no need to recreate effect
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [itemId, stockLevel]);

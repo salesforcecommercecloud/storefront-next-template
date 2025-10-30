@@ -9,13 +9,17 @@ import CartEmpty from './cart-empty';
 import uiStrings from '@/temp-ui-string';
 
 // Mock the Link component from react-router
-vi.mock('react-router', () => ({
-    Link: ({ children, to, ...props }: { children: React.ReactNode; to: string; [key: string]: unknown }) => (
-        <a href={to} {...props}>
-            {children}
-        </a>
-    ),
-}));
+vi.mock('react-router', async (importOriginal) => {
+    const actual = await importOriginal();
+    return {
+        ...actual,
+        Link: ({ children, to, ...props }: { children: React.ReactNode; to: string; [key: string]: unknown }) => (
+            <a href={to} {...props}>
+                {children}
+            </a>
+        ),
+    };
+});
 
 describe('CartEmpty', () => {
     describe('Basic Rendering', () => {

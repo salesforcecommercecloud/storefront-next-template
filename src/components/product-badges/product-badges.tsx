@@ -1,7 +1,7 @@
 import type { ComponentProps } from 'react';
 import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
 import { cn } from '@/lib/utils';
-import { getBadgeVariant, type BadgeDetail } from '@/config/product-badges';
+import { type BadgeDetail, useConfig } from '@/config';
 import {
     productBadgesVariants,
     productBadgeSemanticVariants,
@@ -76,16 +76,37 @@ const ProductBadges = ({
     'aria-label': ariaLabel,
     ...props
 }: ProductBadgesProps) => {
-    // Use static function instead of hook for better performance
+    const config = useConfig();
+    // Use runtime config if badgeDetails not provided
+    const finalBadgeDetails = badgeDetails ?? config.global.badges;
+
     const { badges, hasBadges } = getProductBadges({
         product,
-        badgeDetails,
+        badgeDetails: finalBadgeDetails,
         maxBadges,
     });
 
     if (!hasBadges) {
         return null;
     }
+
+    // Simple color to variant mapping
+    const getBadgeVariant = (color: string) => {
+        switch (color) {
+            case 'green':
+                return 'success';
+            case 'blue':
+                return 'info';
+            case 'yellow':
+            case 'orange':
+            case 'red':
+            case 'purple':
+            case 'pink':
+                return 'warning';
+            default:
+                return 'info';
+        }
+    };
 
     const defaultAriaLabel = `Product badges: ${badges.map((b) => b.label).join(', ')}`;
 

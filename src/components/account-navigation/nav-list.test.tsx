@@ -1,7 +1,7 @@
 // Testing libraries
 import { describe, test, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { createRoutesStub } from 'react-router';
+import { createMemoryRouter, RouterProvider } from 'react-router';
 import { Heart, MapPin, Receipt, User } from 'lucide-react';
 import { AccountNavList } from './nav-list';
 
@@ -20,13 +20,19 @@ const mockDisabledNavigationItems = [
 ];
 
 const createTestWrapper = (component: React.ReactElement, initialPath = '/account') => {
-    const Stub = createRoutesStub([
-        {
-            path: '/account',
-            Component: () => component,
-        },
-    ]);
-    return <Stub initialEntries={[initialPath]} />;
+    // Using createMemoryRouter in framework mode is fine
+    // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
+    // Even though it's listed under "data routers," it fully supports testing non-route components that rely on router behavior.
+    const router = createMemoryRouter(
+        [
+            {
+                path: '/account',
+                element: component,
+            },
+        ],
+        { initialEntries: [initialPath] }
+    );
+    return <RouterProvider router={router} />;
 };
 
 describe('<AccountNavList />', () => {

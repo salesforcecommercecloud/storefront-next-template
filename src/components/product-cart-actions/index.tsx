@@ -1,0 +1,129 @@
+/*
+ * Copyright (c) 2025, Salesforce, Inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: BSD-3-Clause
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+ */
+
+import { type ReactElement } from 'react';
+import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import { Button } from '@/components/ui/button';
+import { useProductView } from '@/providers/product-view';
+import { useCurrentVariant } from '@/hooks/product/use-current-variant';
+import uiStrings from '@/temp-ui-string';
+import { isProductSet, isProductBundle } from '@/lib/product-utils';
+
+interface ProductCartActionsProps {
+    product: ShopperProductsTypes.Product;
+    /** Called immediately before cart action starts (add or update) - useful for optimistic UI like closing modal */
+    onBeforeCartAction?: () => void;
+    /** Called after successful cart operation completes (add or update) */
+    onCartSuccess?: () => void;
+    /** Called if cart operation fails (add or update) */
+    onCartError?: (error: unknown) => void;
+    /** Called immediately before add to wishlist action starts */
+    onBeforeAddToWishlist?: () => void;
+    /** Called after successful add to wishlist action completes */
+    onAddToWishlistSuccess?: () => void;
+    /** Called if add to wishlist operation fails */
+    onAddToWishlistError?: (error: unknown) => void;
+}
+
+export default function ProductCartActions({
+    product,
+    onBeforeCartAction,
+    onCartSuccess,
+    onCartError,
+    onBeforeAddToWishlist,
+    onAddToWishlistSuccess,
+    onAddToWishlistError,
+}: ProductCartActionsProps): ReactElement {
+    const isProductASet = isProductSet(product);
+    const isProductABundle = isProductBundle(product);
+
+    const currentVariant = useCurrentVariant({ product });
+
+    // Get shared state from context
+    const {
+        mode,
+        isAddingToOrUpdatingCart,
+        isAddingToWishlist,
+        canAddToCart,
+        isMasterOrVariantProduct,
+        handleAddToCart,
+        handleUpdateCart,
+        handleAddToWishlist,
+    } = useProductView();
+
+    const isEditMode = mode === 'edit';
+
+    const onAddOrUpdateToCart = async () => {
+        // Call before callback (e.g., for optimistic UI like closing modal in edit mode)
+        onBeforeCartAction?.();
+
+        try {
+            // Use handleUpdateCart in edit mode, handleAddToCart in add mode
+            if (isEditMode) {
+                await handleUpdateCart();
+            } else {
+                await handleAddToCart();
+            }
+            // Call success callback after API completes
+            onCartSuccess?.();
+        } catch (error) {
+            onCartError?.(error);
+        }
+    };
+
+    const onAddToWishlist = async () => {
+        const productToAdd = isMasterOrVariantProduct ? currentVariant : product;
+
+        // Call before callback
+        onBeforeAddToWishlist?.();
+
+        try {
+            await handleAddToWishlist(productToAdd as ShopperProductsTypes.Variant);
+            // Call success callback after API completes
+            onAddToWishlistSuccess?.();
+        } catch (error) {
+            onAddToWishlistError?.(error);
+        }
+    };
+
+    return (
+        <div className="mt-6">
+            {/* Options Selection Message */}
+            {isMasterOrVariantProduct && !currentVariant && !isProductASet && !isProductABundle && (
+                <div className="text-destructive font-medium">{uiStrings.product.selectAllOptions}</div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="flex flex-col gap-3">
+                {!isProductASet && !isProductABundle && (
+                    <Button
+                        onClick={() => void onAddOrUpdateToCart()}
+                        disabled={!canAddToCart || isAddingToOrUpdatingCart}
+                        className="w-full"
+                        size="lg">
+                        {isEditMode
+                            ? uiStrings.product.updateCart
+                            : isAddingToOrUpdatingCart
+                              ? uiStrings.product.addingToCart
+                              : uiStrings.product.addToCart}
+                    </Button>
+                )}
+
+                {!isEditMode && (
+                    <Button
+                        onClick={() => void onAddToWishlist()}
+                        disabled={isAddingToWishlist}
+                        variant="outline"
+                        className="w-full"
+                        size="lg">
+                        {isAddingToWishlist ? uiStrings.product.addingToWishlist : uiStrings.product.addToWishlist}
+                    </Button>
+                )}
+            </div>
+        </div>
+    );
+}

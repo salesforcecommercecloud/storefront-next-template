@@ -1,8 +1,8 @@
 // React
-import { useEffect, type ReactElement } from 'react';
+import { type ReactElement } from 'react';
 
 // Third-party
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, Lock } from 'lucide-react';
 import { Link } from 'react-router';
 
 // Commerce SDK
@@ -16,14 +16,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import ProductItemsList from '@/components/product-items-list';
 import PromoCodeForm from '@/components/promo-code-form';
-import { useToast } from '@/components/toast';
-
-// Hooks
-import { usePromoCodeActions } from '@/hooks/use-promo-code-actions';
+import { VisaIcon, MastercardIcon, AmexIcon, DiscoverIcon } from '@/components/icons';
 
 // Utils
 import { formatCurrency } from '@/lib/currency';
-import { FETCHER_STATES } from '@/lib/fetcher-states';
 import uiStrings from '@/temp-ui-string';
 import PromoPopover from '@/components/promo-popover';
 
@@ -37,11 +33,12 @@ import PromoPopover from '@/components/promo-popover';
  * @property {boolean} [showHeading] - Whether to display the "Order Summary" heading
  * @property {boolean} [itemsExpanded] - Whether the cart items accordion should be expanded by default
  * @property {boolean} [isEstimate] - Whether to show "Est." prefix for totals
- * @property {Record<string, ShopperProductsTypes.Product>} [productMap] - Optional product ID to product
+ * @property {Record<string, ShopperProductsTypes.Product>} [productsByItemId] - Optional item ID to product
  *   details mapping
  * @property {() => void} [onEditCart] - Optional callback function called when the "Edit Cart" button is clicked.
  *   If not provided, the component will navigate to '/cart' using the default navigation behavior.
  *   This is useful for custom actions like closing a cart sheet before navigation.
+ * @property {boolean} [showCheckoutAction] - Whether to display the checkout button and payment icons
  */
 interface OrderSummaryProps {
     basket: ShopperBasketsTypes.Basket;
@@ -50,8 +47,9 @@ interface OrderSummaryProps {
     showHeading?: boolean;
     itemsExpanded?: boolean;
     isEstimate?: boolean;
-    productMap?: Record<string, ShopperProductsTypes.Product>;
+    productsByItemId?: Record<string, ShopperProductsTypes.Product>;
     onEditCart?: () => void;
+    showCheckoutAction?: boolean;
 }
 
 /**
@@ -64,19 +62,19 @@ interface OrderSummaryProps {
  *
  * @param props - Component props
  * @param {ShopperBasketsTypes.Basket} props.basket - The shopping basket containing product items
- * @param {Record<string, ShopperProductsTypes.Product>} [props.productMap] - Optional product details mapping
+ * @param {Record<string, ShopperProductsTypes.Product>} [props.productsByItemId] - Optional item ID to product mapping
  * @param {boolean} [props.itemsExpanded] - Whether the accordion should be expanded by default
  * @param {() => void} [props.onEditCart] - Optional callback for "Edit Cart" button click. If not provided, navigates to '/cart'
  * @returns JSX element representing the cart items summary accordion
  */
 function CartItemsSummary({
     basket,
-    productMap = {},
+    productsByItemId = {},
     itemsExpanded = false,
     onEditCart,
 }: {
     basket: ShopperBasketsTypes.Basket;
-    productMap?: Record<string, ShopperProductsTypes.Product>;
+    productsByItemId?: Record<string, ShopperProductsTypes.Product>;
     itemsExpanded?: boolean;
     onEditCart?: () => void;
 }): ReactElement {
@@ -102,7 +100,7 @@ function CartItemsSummary({
                     <div className="space-y-5">
                         <ProductItemsList
                             productItems={basket.productItems}
-                            productMap={productMap}
+                            productsByItemId={productsByItemId}
                             variant="summary"
                         />
                         {/* Edit Cart link: navigates to cart page with optional callback */}
@@ -136,8 +134,6 @@ function CartItemsSummary({
  * - Responsive layout and conditional rendering
  * - Integration with cart store and product data
  *
- * Used by CartSummarySection component (see cart-summary-section.tsx for usage example)
- *
  * @param props - Component props
  * @returns JSX element representing the complete order summary
  */
@@ -148,25 +144,10 @@ export default function OrderSummary({
     showHeading = true,
     itemsExpanded = false,
     isEstimate = false,
-    productMap = {},
+    productsByItemId = {},
     onEditCart,
+    showCheckoutAction,
 }: OrderSummaryProps): ReactElement {
-    const { removePromoCode, removeFetcher } = usePromoCodeActions(basket?.basketId);
-    const { addToast } = useToast();
-    useEffect(() => {
-        if (removeFetcher.data) {
-            if (removeFetcher.data.success) {
-                addToast(uiStrings.cart.promoCode.removeSuccessMessage, 'success');
-            } else if (removeFetcher.data.error) {
-                addToast(removeFetcher.data.error, 'error');
-            }
-        }
-        // we do not need `updateBasket` and `addToast` in the dependency array
-        // because they are not likely to change once initialized
-        // linting is being cautious and warn about it, but we don't need to follow it
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [removeFetcher.data]);
-
     if (!basket?.basketId && !basket?.orderNo) {
         return <div>{uiStrings.cart.summary.noBasketData}</div>;
     }
@@ -189,7 +170,7 @@ export default function OrderSummary({
             <CardContent className="p-6">
                 <div className="space-y-5" data-testid="sf-order-summary">
                     {showHeading && (
-                        <Typography variant="h2" as="h2" className={`font-bold pt-1`} id="order-summary-heading">
+                        <Typography variant="h4" as="h3" id="order-summary-heading">
                             {uiStrings.cart.summary.orderSummary}
                         </Typography>
                     )}
@@ -199,18 +180,18 @@ export default function OrderSummary({
                         {showCartItems && (
                             <CartItemsSummary
                                 basket={basket}
-                                productMap={productMap}
+                                productsByItemId={productsByItemId}
                                 itemsExpanded={itemsExpanded}
                                 onEditCart={onEditCart}
                             />
                         )}
 
                         {/* Order Summary Details */}
-                        <div className="space-y-4">
+                        <div className="space-y-4 text-sm">
                             {/* Subtotal */}
                             <div className="flex justify-between items-center">
-                                <span className="font-bold">{uiStrings.cart.summary.subtotal}</span>
-                                <span className="font-bold">{formatCurrency(basket?.productSubTotal ?? 0)}</span>
+                                <span>{uiStrings.cart.summary.subtotal}</span>
+                                <span>{formatCurrency(basket?.productSubTotal ?? 0)}</span>
                             </div>
 
                             {/* Order Price Adjustments */}
@@ -256,15 +237,8 @@ export default function OrderSummary({
                             </div>
                         </div>
 
-                        {/* Promo Code Form */}
-                        {showPromoCodeForm ? (
-                            <PromoCodeForm basketId={basket?.basketId} />
-                        ) : (
-                            <Separator className="w-full" />
-                        )}
-
                         {/* Total */}
-                        <div className="space-y-4 w-full">
+                        <div className="space-y-4 w-full text-sm">
                             <div className="flex w-full justify-between items-center">
                                 <span className="font-bold">
                                     {isEstimate
@@ -275,37 +249,29 @@ export default function OrderSummary({
                                     {formatCurrency(basket?.orderTotal || basket?.productTotal || 0)}
                                 </span>
                             </div>
-
-                            {/* Applied Promotions */}
-                            {(basket.couponItems?.length ?? 0) > 0 && (
-                                <div className="p-4 border border-border rounded bg-background">
-                                    <p className="font-medium mb-2">{uiStrings.cart.promoCode.promotionsApplied}</p>
-                                    <div className="space-y-2">
-                                        {basket.couponItems?.map((item) => (
-                                            <div key={item.couponItemId} className="flex items-center">
-                                                <span className="flex-1 text-sm text-foreground">{item.code}</span>
-                                                {!basket.orderNo && (
-                                                    <Button
-                                                        variant="link"
-                                                        size="sm"
-                                                        disabled={removeFetcher.state === FETCHER_STATES.SUBMITTING}
-                                                        className="cursor-pointer text-destructive hover:text-destructive/80 p-0 h-auto disabled:opacity-50 disabled:cursor-not-allowed"
-                                                        onClick={() => {
-                                                            if (item.couponItemId) {
-                                                                removePromoCode(item.couponItemId);
-                                                            }
-                                                        }}>
-                                                        {removeFetcher.state === FETCHER_STATES.SUBMITTING
-                                                            ? uiStrings.cart.promoCode.removing
-                                                            : uiStrings.cart.promoCode.remove}
-                                                    </Button>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
                         </div>
+
+                        {/* Promo Code Form */}
+                        {showPromoCodeForm ? <PromoCodeForm basket={basket} /> : <Separator className="w-full" />}
+
+                        {/* Checkout Action */}
+                        {showCheckoutAction && (
+                            <>
+                                <Button asChild className="w-full mt-6 mb-4">
+                                    <Link to="/checkout">
+                                        {uiStrings.cart.checkout.proceedToCheckout}
+                                        <Lock className="ml-2 w-4 h-4" aria-label={uiStrings.cart.checkout.secure} />
+                                    </Link>
+                                </Button>
+
+                                <div className="flex justify-center">
+                                    <VisaIcon width={40} height={32} className="mr-2" />
+                                    <MastercardIcon width={40} height={32} className="mr-2" />
+                                    <AmexIcon width={40} height={32} className="mr-2" />
+                                    <DiscoverIcon width={40} height={32} className="mr-2" />
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
             </CardContent>

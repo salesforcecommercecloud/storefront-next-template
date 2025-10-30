@@ -1,11 +1,11 @@
 import type { ComponentPropsWithoutRef } from 'react';
 import { NavLink } from 'react-router';
 import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import { type AppConfig, useConfig } from '@/config';
 import { NavigationMenuLink } from '@/components/ui/navigation-menu';
 import CategoryNavigationMenu, { WithCategoryNavigationMenu } from '@/components/navigation-menu';
 
 const disHostName = 'edge.disstg.commercecloud.salesforce.com';
-const disHost = `https://${disHostName}/dw/image/v2/ZZRF_001`;
 const imageCache = new WeakMap<ShopperProductsTypes.Category, string | undefined>();
 
 function hasBanner(category?: ShopperProductsTypes.Category): category is ShopperProductsTypes.Category {
@@ -16,9 +16,12 @@ function isVertical(category?: ShopperProductsTypes.Category): category is Shopp
     return category?.c_headerMenuOrientation?.toLowerCase() === 'vertical';
 }
 
-function getImageHref(category: ShopperProductsTypes.Category): string | undefined {
+function getImageHref(category: ShopperProductsTypes.Category, config: AppConfig): string | undefined {
     // Luckily when this gets called, we're always in the browser and can use the `DOMParser`, if available
     if (!imageCache.has(category) && 'DOMParser' in globalThis) {
+        const organizationId = config.commerce.api.organizationId;
+        const realmId = organizationId.split('_').slice(-2).join('_');
+        const disHost = `https://${disHostName}/dw/image/v2/${realmId}`;
         const asset = category.c_headerMenuBanner?.trim?.() || '';
         const parser = new DOMParser();
         const doc = parser.parseFromString(asset, 'text/html');
@@ -48,7 +51,9 @@ function CategoryBanner({
     category,
     ...props
 }: ComponentPropsWithoutRef<'a'> & { category: ShopperProductsTypes.Category }) {
-    const imageSrc = getImageHref(category);
+    const appConfig = useConfig();
+    const imageSrc = getImageHref(category, appConfig);
+
     return (
         <NavigationMenuLink asChild>
             <NavLink {...props} to={`/category/${category.id}`}>
