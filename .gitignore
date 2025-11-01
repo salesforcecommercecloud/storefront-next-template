@@ -1,3 +1,8 @@
+# ============================================================================
+# IMPORTANT: This .gitignore is synced to the mirror repository.
+# DO NOT consolidate it to the monorepo root!
+# ============================================================================
+
 # Dependencies
 node_modules/
 .pnpm-store/
