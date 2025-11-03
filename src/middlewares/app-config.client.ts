@@ -21,7 +21,10 @@ declare global {
  * 2. Use useConfig() hook (React Context)
  * 3. Set router context earlier in root.tsx
  */
-export const appConfigMiddlewareClient: MiddlewareFunction<void> = ({ context }) => {
+export const appConfigMiddlewareClient: MiddlewareFunction<Record<string, DataStrategyResult>> = async (
+    { context },
+    next
+) => {
     const appConfig = typeof window !== 'undefined' ? window.__APP_CONFIG__ : undefined;
 
     if (!appConfig) {
@@ -32,4 +35,6 @@ export const appConfigMiddlewareClient: MiddlewareFunction<void> = ({ context })
     }
 
     context.set(appConfigContext, appConfig);
+
+    return next();
 };

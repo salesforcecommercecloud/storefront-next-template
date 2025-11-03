@@ -73,6 +73,10 @@ export type Config = {
                 guestCheckout: boolean;
             };
         };
+        i18n: {
+            fallbackLng: string;
+            supportedLngs: string[];
+        };
         global: {
             branding: {
                 name: string;

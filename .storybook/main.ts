@@ -22,7 +22,7 @@ const config: StorybookConfig = {
             const pluginName = (plugin as Plugin)?.name || '';
             return ![
                 'react-router',
-                'vite-plugin-odyssey',
+                'storefront-next-dev',
                 'transform-require-node-fetch',
                 'vite-plugin-devtools-json',
             ].some((name) => pluginName.includes(name));

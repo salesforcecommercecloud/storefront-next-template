@@ -8,6 +8,41 @@ import type { SessionData } from '@/lib/api/types';
 import { clientLoader, default as App, ErrorBoundary, Layout, loader } from './root';
 import { mockConfig } from '@/test-utils/config';
 
+vi.mock('@/lib/i18next.client', async () => {
+    const i18next = await import('i18next');
+    const { initReactI18next } = await import('react-i18next');
+
+    // Create a test i18n instance that mimics the client-side setup
+    // (no resources pre-loaded, uses backend to fetch translations)
+    const testInstance = i18next.default.createInstance();
+
+    // Mock the backend to return empty translations for testing
+    const mockBackend = {
+        type: 'backend' as const,
+        init: vi.fn(),
+        read: vi.fn((language: string, namespace: string, callback: (error: any, data: any) => void) => {
+            // Return empty translations to simulate the backend
+            callback(null, {});
+        }),
+    };
+
+    void testInstance
+        .use(initReactI18next)
+        .use(mockBackend)
+        .init({
+            lng: 'en',
+            fallbackLng: 'en',
+            ns: [], // Start with no namespaces loaded
+            interpolation: {
+                escapeValue: false,
+            },
+        });
+
+    return {
+        initI18next: vi.fn(() => testInstance),
+    };
+});
+
 vi.mock('@/lib/api/categories', () => ({
     fetchCategory: vi.fn(),
 }));
@@ -80,6 +115,30 @@ vi.mock('@/middlewares/basket.client', async () => ({
         productItems: [],
     })),
 }));
+
+vi.mock('@/middlewares/i18next', async () => {
+    const i18next = await import('i18next');
+    const { initReactI18next } = await import('react-i18next');
+    const resources = await import('@/locales/.server');
+
+    // Create a test i18n instance for server-side
+    const testInstance = i18next.default.createInstance();
+    void testInstance.use(initReactI18next).init({
+        lng: 'en',
+        fallbackLng: 'en',
+        resources: resources.default,
+        interpolation: {
+            escapeValue: false,
+        },
+    });
+
+    return {
+        ...(await vi.importActual('@/middlewares/i18next')),
+        getLocale: vi.fn(() => 'en'),
+        getInstance: vi.fn(() => testInstance),
+        i18nextMiddleware: vi.fn(),
+    };
+});
 
 function ContentComponent() {
     return <div data-testid="content">Content</div>;

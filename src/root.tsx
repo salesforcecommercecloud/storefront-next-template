@@ -1,12 +1,10 @@
 import { type PropsWithChildren, Suspense, useRef } from 'react';
 import favicon from '/favicon.ico';
 import {
-    type ClientLoaderFunction,
     type ClientLoaderFunctionArgs,
     type DataStrategyResult,
     isRouteErrorResponse,
     Links,
-    type LoaderFunction,
     type LoaderFunctionArgs,
     Meta,
     type MiddlewareFunction,
@@ -19,6 +17,8 @@ import {
     useRouteLoaderData,
 } from 'react-router';
 import type { ShopperBasketsTypes, ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import { type i18n } from 'i18next';
+import { I18nextProvider } from 'react-i18next';
 // @sfdc-extension-line SFDC_EXT_STORE_LOCATOR
 import StoreLocatorProvider from '@/extensions/store-locator/providers/store-locator';
 import authMiddlewareServer, { getAuth as getAuthServer } from '@/middlewares/auth.server';
@@ -30,6 +30,7 @@ import {
 } from '@/middlewares/performance-metrics';
 import { appConfigMiddlewareServer } from '@/middlewares/app-config.server';
 import { appConfigMiddlewareClient } from '@/middlewares/app-config.client';
+import { getInstance, getLocale, i18nextMiddleware } from '@/middlewares/i18next';
 import AuthProvider from '@/providers/auth';
 import BasketProvider from '@/providers/basket';
 import type { SessionData } from '@/lib/api/types';
@@ -41,10 +42,16 @@ import { Toaster } from '@/components/toast';
 import { ConfigProvider, getConfig, type AppConfig } from '@/config';
 import './app.css';
 import { getCookie } from '@/lib/cookies.client';
+import { initI18next } from '@/lib/i18next.client';
+
+// On the client side, initialize i18next.
+// (On the server side, it's initialized elsewhere in middlewares/i18next.ts file)
+const i18nextOnClient = typeof window !== 'undefined' ? initI18next() : undefined;
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const middleware: MiddlewareFunction<Response>[] = [
     appConfigMiddlewareServer,
+    i18nextMiddleware,
     performanceMetricsMiddlewareServer,
     authMiddlewareServer,
 ];
@@ -58,17 +65,22 @@ export const clientMiddleware: MiddlewareFunction<Record<string, DataStrategyRes
 ];
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const loader: LoaderFunction = ({
+export const loader = ({
     context,
 }: LoaderFunctionArgs): {
     root: Promise<ShopperProductsTypes.Category>;
     subs: Promise<ShopperProductsTypes.Category[]>;
     auth: () => SessionData; // Use a function to prevent state serialization
     appConfig: AppConfig;
+    locale: string;
+    i18nextOnServer: i18n;
 } => {
     const session = getAuthServer(context);
 
     const appConfig = getConfig(context);
+
+    const locale = getLocale(context);
+    const i18nextOnServer = getInstance(context);
 
     // Load the root category and its sub categories information
     const rootCategoryPromise = fetchCategory(context, 'root', 1);
@@ -93,25 +105,46 @@ export const loader: LoaderFunction = ({
         )
     );
 
+    // TODO: for later, save the locale into cookie.
+    // But doing so would need to await a promise. We wanted our loader to NOT return a promise, right?
+    /*
+    export async function loader({ context }: Route.LoaderArgs) {
+        const locale = getLocale(context);
+        return data({ locale }, { headers: { 'Set-Cookie': await localeCookie.serialize(locale) } });
+    }
+    */
     return {
         root: rootCategoryPromise,
         subs: subCategoriesPromise,
         auth: () => session,
         appConfig,
+        locale,
+        i18nextOnServer,
     };
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const clientLoader: ClientLoaderFunction = ({
+export const clientLoader = ({
     context,
 }: ClientLoaderFunctionArgs): {
     auth: () => SessionData;
     basket: ShopperBasketsTypes.Basket;
-} => ({
-    auth: () => getAuthClient(context),
-    basket: getBasket(context),
-});
+} => {
+    return {
+        auth: () => getAuthClient(context),
+        basket: getBasket(context),
+    };
+};
 clientLoader.hydrate = true as const;
+
+// This creates a union type where properties unique to either loader are optional
+// Properties present in both loaders remain required
+type ServerLoaderData = ReturnType<typeof loader>;
+type ClientLoaderData = Awaited<ReturnType<typeof clientLoader>>;
+type LoaderData = Partial<ServerLoaderData> &
+    Partial<ClientLoaderData> &
+    // Properties present in both should remain required
+    Pick<ServerLoaderData & ClientLoaderData, keyof ServerLoaderData & keyof ClientLoaderData>;
 
 export function Layout({ children }: PropsWithChildren) {
     const matches = useMatches();
@@ -119,8 +152,11 @@ export function Layout({ children }: PropsWithChildren) {
     const appConfig = (rootMatch?.data as { appConfig?: AppConfig })?.appConfig;
     const appConfigScript = appConfig ? `window.__APP_CONFIG__ = ${JSON.stringify(appConfig)};` : '';
 
+    const data = useRouteLoaderData<LoaderData>('root');
+    const i18next = (typeof window === 'undefined' ? data?.i18nextOnServer : i18nextOnClient) as i18n;
+
     return (
-        <html lang="en">
+        <html lang={i18next.language} dir={i18next.dir(i18next.language)}>
             <head>
                 <meta charSet="utf-8" />
                 <script
@@ -174,16 +210,9 @@ export function ErrorBoundary({ error }: { error: unknown }) {
     );
 }
 
-export default function App({
-    loaderData: { root, subs, auth, basket },
-}: {
-    loaderData: {
-        root?: Promise<ShopperProductsTypes.Category>;
-        subs?: Promise<ShopperProductsTypes.Category[]>;
-        auth: () => SessionData;
-        basket?: ShopperBasketsTypes.Basket;
-    };
-}) {
+export default function App({ loaderData: { root, subs, auth, basket, i18nextOnServer } }: { loaderData: LoaderData }) {
+    const i18next = (typeof window === 'undefined' ? i18nextOnServer : i18nextOnClient) as i18n;
+
     // We're only loading the root and sub categories from the server on the very first navigation. These refs ensure
     // that the initial data/promises don't get overwritten/removed on subsequent client-side navigations.
     const refRoot = useRef<Promise<ShopperProductsTypes.Category> | undefined>(undefined);
@@ -229,26 +258,28 @@ export default function App({
     }
 
     return (
-        <ConfigProvider config={appConfig}>
-            <AuthProvider value={sessionData}>
-                <BasketProvider value={basket}>
-                    {/* @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */}
-                    <StoreLocatorProvider>
-                        <Header>
-                            <CategoryNavigationMenuMega resolve={refRoot.current} defer={refSubs.current} />
-                        </Header>
-                        <main className="flex-grow pt-8">
-                            {/* Outlet-level `<Suspense/>` boundary to contain pending promises. */}
-                            {/* This at least prevents suspended components without a suggested local `<Suspense/>` boundary from further affecting global layout sections. */}
-                            <Suspense key={pageKey} fallback={null}>
-                                <Outlet />
-                            </Suspense>
-                        </main>
-                        <Footer />
+        <I18nextProvider i18n={i18next}>
+            <ConfigProvider config={appConfig}>
+                <AuthProvider value={sessionData}>
+                    <BasketProvider value={basket}>
                         {/* @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */}
-                    </StoreLocatorProvider>
-                </BasketProvider>
-            </AuthProvider>
-        </ConfigProvider>
+                        <StoreLocatorProvider>
+                            <Header>
+                                <CategoryNavigationMenuMega resolve={refRoot.current} defer={refSubs.current} />
+                            </Header>
+                            <main className="flex-grow pt-8">
+                                {/* Outlet-level `<Suspense/>` boundary to contain pending promises. */}
+                                {/* This at least prevents suspended components without a suggested local `<Suspense/>` boundary from further affecting global layout sections. */}
+                                <Suspense key={pageKey} fallback={null}>
+                                    <Outlet />
+                                </Suspense>
+                            </main>
+                            <Footer />
+                            {/* @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */}
+                        </StoreLocatorProvider>
+                    </BasketProvider>
+                </AuthProvider>
+            </ConfigProvider>
+        </I18nextProvider>
     );
 }

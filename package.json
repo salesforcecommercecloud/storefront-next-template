@@ -10,7 +10,7 @@
         "dev:debug": "NODE_OPTIONS='--inspect' react-router dev",
         "start": "cross-env NODE_ENV=development PORT=5173 node ./server ./build/server/index.js",
         "preview": "react-router build --mode=preview && pnpm start",
-        "push": "odyssey-dev push --project-directory .",
+        "push": "storefront-next-dev push --project-directory .",
         "typecheck": "react-router typegen && tsc --noEmit",
         "test": "vitest run --coverage",
         "test:ui": "vitest --ui",
@@ -41,12 +41,14 @@
         "@radix-ui/react-slot": "1.2.3",
         "@radix-ui/react-tooltip": "1.2.8",
         "@react-router/node": "7.9.2",
-        "@salesforce/odyssey-dev": "workspace:*",
-        "@salesforce/vite-plugin-odyssey": "workspace:*",
+        "@salesforce/storefront-next-dev": "workspace:*",
         "class-variance-authority": "0.7.1",
         "clsx": "2.1.1",
         "commerce-sdk-isomorphic": "4.0.0-nightly-20251027080801",
         "embla-carousel-react": "8.6.0",
+        "i18next": "25.5.3",
+        "i18next-browser-languagedetector": "8.2.0",
+        "i18next-fetch-backend": "6.0.0",
         "input-otp": "1.4.2",
         "isbot": "5.1.31",
         "jose": "6.1.0",
@@ -57,7 +59,9 @@
         "react": "19.1.1",
         "react-dom": "19.1.1",
         "react-hook-form": "7.63.0",
+        "react-i18next": "16.0.0",
         "react-router": "7.9.2",
+        "remix-i18next": "7.4.2",
         "sonner": "2.0.7",
         "tailwind-merge": "3.3.1",
         "tailwindcss": "4.1.13",
@@ -149,7 +153,11 @@
                 "limit": "55 kB"
             },
             {
-                "name": "assets/{-root.*,\\(package\\)-\\(@radix-ui-react-visually-hidden\\)-\\(dist\\)-index.*}.js",
+                "name": "assets/-root.*.js",
+                "limit": "110 kB"
+            },
+            {
+                "name": "assets/\\(package\\)-\\(@radix-ui-react-visually-hidden\\)-\\(dist\\)-index.*.js",
                 "limit": "55 kB"
             },
             {

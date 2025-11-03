@@ -83,6 +83,10 @@ export default defineConfig({
                 guestCheckout: true,
             },
         },
+        i18n: {
+            fallbackLng: 'en',
+            supportedLngs: ['es', 'en'], // Your supported languages, the fallback should be last
+        },
         global: {
             // TODO: Allow page specific customization while keeping global defaults, e.g.:
             //   config.pages.search.components?.productListing ?? config.global.productListing
