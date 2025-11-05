@@ -144,7 +144,7 @@ describe('create-storefront', () => {
             })
         );
         try {
-            await createStorefront();
+            await createStorefront({ verbose: false });
         } catch (e: any) {
             expect(e).toBeDefined();
         }
@@ -158,7 +158,8 @@ describe('create-storefront', () => {
                         description: 'Store Locator allows a shopper to find the closest store to them.',
                     },
                 },
-            }
+            },
+            false
         );
     });
 

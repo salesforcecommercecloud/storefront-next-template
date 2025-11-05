@@ -38,7 +38,7 @@ interface ExtensionContext {
 export function getContext(
     projectRoot: string,
     markerValue: string,
-    pwaRepo = 'https://github.com/SalesforceCommerceCloud/SFCC-Odyssey.git',
+    pwaRepo = 'https://github.com/SalesforceCommerceCloud/storefront-next.git',
     branch = 'main',
     filesToCopy: string[] = [],
     extensionConfigPath: string = ''

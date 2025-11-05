@@ -10,7 +10,7 @@ These are the steps to upgrade an existing store front application (currently op
  # Step 2. Preparations: Clone the pwa-kit repo for the specific branch into the tmp folder
  <Preparations>
  - Create a folder `pwa-kit-tmp` under the system's temp folder, e.g., `/tmp/pwa-kit-tmp` or 'C:/temp/pwa-kit-tmp'
- - Clone the pwa-kit repo for the specific branch into the tmp folder: Run `git clone -b main https://github.com/SalesforceCommerceCloud/SFCC-Odyssey.git /tmp/pwa-kit-tmp`
+ - Clone the pwa-kit repo for the specific branch into the tmp folder: Run `git clone -b main https://github.com/SalesforceCommerceCloud/storefront-next.git /tmp/pwa-kit-tmp`
  </Preparations>
 
  # Step 3. Copy:

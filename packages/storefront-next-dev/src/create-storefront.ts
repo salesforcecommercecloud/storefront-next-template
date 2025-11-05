@@ -9,7 +9,7 @@ import trimExtensions from './extensibility/trim-extensions';
 const DEFAULT_STOREFRONT = 'sfcc-storefront';
 const STOREFRONT_NEXT_GITHUB_URL = 'https://github.com/SalesforceCommerceCloud/storefront-next-template';
 
-export const createStorefront = async () => {
+export const createStorefront = async (options: { verbose?: boolean }) => {
     // Check if git is available before proceeding
     try {
         execSync('git --version', { stdio: 'ignore' });
@@ -83,7 +83,12 @@ export const createStorefront = async () => {
                 instructions: false,
             });
             const enabledExtensions = Object.fromEntries(selectedExtensions.map((ext: string) => [ext, true]));
-            trimExtensions(storefront, enabledExtensions, { extensions: extensionConfig.extensions });
+            trimExtensions(
+                storefront,
+                enabledExtensions,
+                { extensions: extensionConfig.extensions },
+                options?.verbose || false
+            );
         }
     }
     // interview for config overrides
@@ -115,7 +120,12 @@ export const createStorefront = async () => {
     ║                       CONGRATULATIONS                            ║
     ╚══════════════════════════════════════════════════════════════════╝
 
-    🎉 Congratulations! Your storefront is ready to use! 🎉
+        🎉 Congratulations! Your storefront is ready to use! 🎉
+        What's next:
+        - Navigate to the storefront directory: cd ${storefront}
+        - Install dependencies: pnpm install
+        - Build the storefront: pnpm run build
+        - Run the development server: pnpm run dev
     `;
     // eslint-disable-next-line no-console
     console.log(BANNER);

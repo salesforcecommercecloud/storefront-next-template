@@ -29,9 +29,10 @@ program.name('sfnext').description('Dev and build tools for SFCC Storefront Next
 program
     .command('create-storefront')
     .description('Create a new storefront project')
-    .action(async () => {
+    .option('-v --verbose', 'Verbose mode')
+    .action(async (options) => {
         try {
-            await createStorefront();
+            await createStorefront({ verbose: options.verbose });
         } catch (err) {
             handleCommandError('create-storefront', err);
         }

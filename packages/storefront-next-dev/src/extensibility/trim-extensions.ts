@@ -93,7 +93,11 @@ function processFile(projectRoot: string, filePath: string, extensions: Extensio
         const markerLine = source.split('\n').find((line) => line.includes(FILE_MARKER)) || '';
         const extMatch = Object.keys(extensions).find((ext) => markerLine.includes(ext));
         if (!extMatch) {
-            throw new Error(`File ${filePath} is marked with ${markerLine} but it does not match any known extensions`);
+            if (verbose) {
+                console.warn(
+                    `File ${filePath} is marked with ${markerLine} but it does not match any known extensions`
+                );
+            }
         } else if (extensions[extMatch] === false) {
             try {
                 fs.unlinkSync(filePath);
@@ -371,6 +375,30 @@ function removeUnusedComponents(directory: string, projectRoot: string): string[
                 }
             }
         });
+        // check if a directory is empty or only contains empty directories
+        const isEmptyDirectory = (dir: string): boolean => {
+            if (!fs.statSync(dir).isDirectory()) {
+                return false;
+            }
+            const files = fs.readdirSync(dir);
+            if (files.length === 0) {
+                return true;
+            }
+            return files.every((file) => isEmptyDirectory(path.join(dir, file)));
+        };
+        // traverse the extensions directory and remove any empty directories
+        const extensionsDir = path.join(projectRoot, 'src', 'extensions');
+        if (fs.existsSync(extensionsDir)) {
+            fs.readdirSync(extensionsDir).forEach((file) => {
+                const subDirPath = path.join(extensionsDir, file);
+                if (isEmptyDirectory(subDirPath)) {
+                    if (verbose) {
+                        console.log(`  ✓ Successfully deleted empty directory ${subDirPath}`);
+                    }
+                    fs.rmSync(subDirPath, { recursive: true, force: true });
+                }
+            });
+        }
     } else {
         if (verbose) {
             console.log('\nNo unused components found.');

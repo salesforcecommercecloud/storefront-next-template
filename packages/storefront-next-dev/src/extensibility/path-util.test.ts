@@ -90,16 +90,14 @@ describe('path-util', () => {
             expect(resolvePathFromAlias('notAnAlias/CompA', mockProjectRoot)).toBe('notAnAlias/CompA');
         });
 
-        it('throws if alias matches but no file exists', () => {
+        it('return the original path if alias matches but no file exists', () => {
             // Provide only tsconfig, but no files mapped
             loadModuleWithFs({
                 [tsconfigPath]: JSON.stringify({
                     compilerOptions: { paths: { '@noMatch/*': ['src/doesnotexist/*'] } },
                 }),
             });
-            expect(() => resolvePathFromAlias('@noMatch/DoesNotExist', mockProjectRoot)).toThrow(
-                /Could not resolve import/
-            );
+            expect(resolvePathFromAlias('@noMatch/DoesNotExist', mockProjectRoot)).toBe('@noMatch/DoesNotExist');
         });
 
         it('throws if tsconfig.json is invalid', () => {

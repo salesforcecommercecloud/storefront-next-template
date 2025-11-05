@@ -87,7 +87,6 @@ export function resolvePathFromAlias(importPath: string, projectRoot: string): s
 
         if (match) {
             const mappingArray = Array.isArray(mappings) ? mappings : [mappings];
-
             // Try each mapping until we find an existing file
             for (const mapping of mappingArray) {
                 // Replace wildcards in the mapping with captured groups
@@ -123,15 +122,10 @@ export function resolvePathFromAlias(importPath: string, projectRoot: string): s
                     return fullPath;
                 }
             }
-
-            // If no existing file was found for this alias, throw an error
-            throw new Error(
-                `Could not resolve import "${importPath}" - no matching file found for any of the configured paths: ${JSON.stringify(mappingArray)}`
-            );
         }
     }
 
-    // If no alias matched, return the original import path
+    // If no existing file was found for this alias simply return the original import path
     return importPath;
 }
 

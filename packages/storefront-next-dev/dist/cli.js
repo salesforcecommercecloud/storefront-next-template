@@ -483,7 +483,7 @@ const UNINSTALL_INSTRUCTIONS_TEMPLATE = "uninstall-instructions.mdc.hbs";
 /**
 * Build the context for the instructions template.
 */
-function getContext(projectRoot, markerValue, pwaRepo = "https://github.com/SalesforceCommerceCloud/SFCC-Odyssey.git", branch = "main", filesToCopy = [], extensionConfigPath = "") {
+function getContext(projectRoot, markerValue, pwaRepo = "https://github.com/SalesforceCommerceCloud/storefront-next.git", branch = "main", filesToCopy = [], extensionConfigPath = "") {
 	const extensionConfig = JSON.parse(fs$1.readFileSync(extensionConfigPath, "utf8"));
 	if (!extensionConfig.extensions[markerValue]) throw new Error(`Extension ${markerValue} not found in extension config`);
 	filesToCopy.forEach((file$1) => {
@@ -39347,7 +39347,6 @@ function resolvePathFromAlias(importPath, projectRoot) {
 					return fullPath;
 				}
 			}
-			throw new Error(`Could not resolve import "${importPath}" - no matching file found for any of the configured paths: ${JSON.stringify(mappingArray)}`);
 		}
 	}
 	return importPath;
@@ -39404,8 +39403,9 @@ function processFile(projectRoot, filePath, extensions) {
 	if (source.includes(FILE_MARKER)) {
 		const markerLine = source.split("\n").find((line) => line.includes(FILE_MARKER)) || "";
 		const extMatch = Object.keys(extensions).find((ext) => markerLine.includes(ext));
-		if (!extMatch) throw new Error(`File ${filePath} is marked with ${markerLine} but it does not match any known extensions`);
-		else if (extensions[extMatch] === false) {
+		if (!extMatch) {
+			if (verbose) console.warn(`File ${filePath} is marked with ${markerLine} but it does not match any known extensions`);
+		} else if (extensions[extMatch] === false) {
 			try {
 				fs$1.unlinkSync(filePath);
 				if (verbose) console.log(`Deleted file ${filePath}`);
@@ -39610,6 +39610,23 @@ function removeUnusedComponents(directory, projectRoot) {
 				else console.error(`  ✗ Error deleting: ${error$1.message}`);
 			}
 		});
+		const isEmptyDirectory = (dir) => {
+			if (!fs$1.statSync(dir).isDirectory()) return false;
+			const files = fs$1.readdirSync(dir);
+			if (files.length === 0) return true;
+			return files.every((file$1) => isEmptyDirectory(path.join(dir, file$1)));
+		};
+		const extensionsDir = path.join(projectRoot, "src", "extensions");
+		if (fs$1.existsSync(extensionsDir)) fs$1.readdirSync(extensionsDir).forEach((file$1) => {
+			const subDirPath = path.join(extensionsDir, file$1);
+			if (isEmptyDirectory(subDirPath)) {
+				if (verbose) console.log(`  ✓ Successfully deleted empty directory ${subDirPath}`);
+				fs$1.rmSync(subDirPath, {
+					recursive: true,
+					force: true
+				});
+			}
+		});
 	} else if (verbose) console.log("\nNo unused components found.");
 	return unusedFiles;
 }
@@ -39618,7 +39635,7 @@ function removeUnusedComponents(directory, projectRoot) {
 //#region src/create-storefront.ts
 const DEFAULT_STOREFRONT = "sfcc-storefront";
 const STOREFRONT_NEXT_GITHUB_URL = "https://github.com/SalesforceCommerceCloud/storefront-next-template";
-const createStorefront = async () => {
+const createStorefront = async (options) => {
 	try {
 		execSync("git --version", { stdio: "ignore" });
 	} catch (e) {
@@ -39683,7 +39700,7 @@ const createStorefront = async () => {
 				})),
 				instructions: false
 			});
-			trimExtensions(storefront, Object.fromEntries(selectedExtensions.map((ext) => [ext, true])), { extensions: extensionConfig.extensions });
+			trimExtensions(storefront, Object.fromEntries(selectedExtensions.map((ext) => [ext, true])), { extensions: extensionConfig.extensions }, options?.verbose || false);
 		}
 	}
 	const configMeta = JSON.parse(fs.readFileSync(path.join(storefront, "src", "config", "config-meta.json"), "utf8"));
@@ -39702,13 +39719,19 @@ const createStorefront = async () => {
 		configOverrides[config.key] = answer[config.key];
 	}
 	generateEnvFile(storefront, configOverrides);
-	console.log(`
+	const BANNER = `
     ╔══════════════════════════════════════════════════════════════════╗
     ║                       CONGRATULATIONS                            ║
     ╚══════════════════════════════════════════════════════════════════╝
 
-    🎉 Congratulations! Your storefront is ready to use! 🎉
-    `);
+        🎉 Congratulations! Your storefront is ready to use! 🎉
+        What's next:
+        - Navigate to the storefront directory: cd ${storefront}
+        - Install dependencies: pnpm install
+        - Build the storefront: pnpm run build
+        - Run the development server: pnpm run dev
+    `;
+	console.log(BANNER);
 };
 
 //#endregion
@@ -39726,9 +39749,9 @@ const handleCommandError = (label, err) => {
 	process.exit(1);
 };
 program.name("sfnext").description("Dev and build tools for SFCC Storefront Next").version(version);
-program.command("create-storefront").description("Create a new storefront project").action(async () => {
+program.command("create-storefront").description("Create a new storefront project").option("-v --verbose", "Verbose mode").action(async (options) => {
 	try {
-		await createStorefront();
+		await createStorefront({ verbose: options.verbose });
 	} catch (err) {
 		handleCommandError("create-storefront", err);
 	}
