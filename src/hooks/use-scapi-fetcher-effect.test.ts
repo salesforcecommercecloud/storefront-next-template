@@ -152,7 +152,7 @@ describe('useScapiFetcherEffect', () => {
             expect(mockOnError).not.toHaveBeenCalled();
         });
 
-        it('should not call onSuccess when data is undefined', () => {
+        it('should call onSuccess when data is undefined if success is true', () => {
             const fetcher = createMockFetcher('idle', undefined, true);
 
             const config: ScapiFetcherEffectConfig<TestData> = {
@@ -161,7 +161,8 @@ describe('useScapiFetcherEffect', () => {
 
             renderHook(() => useScapiFetcherEffect(fetcher, config));
 
-            expect(mockOnSuccess).not.toHaveBeenCalled();
+            expect(mockOnSuccess).toHaveBeenCalledTimes(1);
+            expect(mockOnSuccess).toHaveBeenCalledWith(undefined);
             expect(mockOnError).not.toHaveBeenCalled();
         });
     });

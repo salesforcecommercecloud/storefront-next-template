@@ -271,4 +271,38 @@ export const flashAuth = (context: Readonly<RouterContextProvider>, message?: st
     storage.set('error', message ?? '');
 };
 
+/**
+ * Utility function to refresh the auth middleware's state from the cookie.
+ * This is useful in edge cases where the cookie has been updated outside the normal middleware flow
+ * (e.g., after a password change that triggers a re-login via server action).
+ *
+ * @param context - Router context
+ * @returns true if auth was refreshed, false otherwise
+ */
+// TODO: This method was only added to force the auth middlewares reference to the current token to be valid
+// after a password change that triggers a re-login via server action. This should not be needed in the future.
+export const refreshAuthFromCookie = (context: Readonly<RouterContextProvider>): boolean => {
+    const storage = context.get(authStorageContext);
+    const cache = context.get(authCacheContext);
+    if (!storage || !cache) {
+        throw new Error('refreshAuthFromCookie must be used within the Commerce API middleware');
+    }
+
+    // Get the current session from the cookie
+    const cookieSession = getCookie<AuthStorageData>(authCookieName);
+    const cookieAccessToken = cookieSession.access_token;
+    const currentAccessToken = storage.get('access_token') || cache.ref?.access_token;
+
+    // If the cookie has a different access token AND we have a current token, update the auth middleware
+    // We only refresh if we have a current token to compare against. If there's no current token,
+    // the normal middleware flow will handle the initial token loading.
+    if (cookieAccessToken && currentAccessToken && cookieAccessToken !== currentAccessToken) {
+        // Use updateAuth to handle all storage, cache, and promise cache updates
+        updateAuth(context, () => cookieSession as AuthData & StorageErrorData);
+        return true;
+    }
+
+    return false;
+};
+
 export default authMiddleware;

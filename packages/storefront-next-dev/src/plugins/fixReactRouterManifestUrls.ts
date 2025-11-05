@@ -17,6 +17,7 @@ function patchAssetsPaths(dir: string) {
                     fullPath,
                     content.replace(/["']\/assets\//g, '(window._BUNDLE_PATH || "/") + "assets/')
                 );
+                // eslint-disable-next-line no-console
                 console.log(`patched /assets/ references in ${fullPath}`);
             }
         }

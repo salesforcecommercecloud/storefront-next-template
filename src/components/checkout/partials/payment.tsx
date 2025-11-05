@@ -132,12 +132,9 @@ export default function Payment({
         form.setValue('useSavedPaymentMethod', isUsingSavedPayment);
         form.setValue('selectedSavedPaymentMethod', isUsingSavedPayment ? selectedPaymentMethod : undefined);
 
-        // Only trigger validation if using saved payment method
-        // For new payment methods, let validation happen on submit
+        // Trigger validation for saved payment methods
         if (isUsingSavedPayment) {
-            setTimeout(() => {
-                void form.trigger();
-            }, 0);
+            void form.trigger();
         }
     }, [selectedPaymentMethod, form]);
 

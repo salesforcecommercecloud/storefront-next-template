@@ -121,9 +121,6 @@ export function useProductActions({
 
     // Can add to cart validation - defaults to false, only true when explicitly allowed
     const canAddToCart = useMemo(() => {
-        // Master products cannot be added to cart - user must select a variant
-        if (product?.type?.master === true) return false;
-
         // Quantity must be valid
         const hasValidQuantity = quantity > 0 && quantity <= actualStockLevel;
         if (!hasValidQuantity) return false;
@@ -132,16 +129,18 @@ export function useProductActions({
         // remove if your merchandise does not have inventory
         if (!isInStock) return false;
 
-        // For variant products (e.g., t-shirt with color/size)
+        // For master/variant products (e.g., t-shirt with color/size)
         // Must have a variant selected and it must be orderable
-        if (product?.type?.variant === true && currentVariant && currentVariant.orderable === true) {
-            return true;
+        if (isMasterOrVariantProduct) {
+            // Master products cannot be added to cart without a variant selection
+            if (!currentVariant) return false;
+            // Variant must be orderable
+            return currentVariant.orderable === true;
         }
 
         // For standard products (non-variant, non-set, non-bundle)
         // Must be orderable/back-order and in stock
         if (
-            !isMasterOrVariantProduct &&
             !isProductASet &&
             !isProductABundle &&
             (product?.inventory?.orderable || product?.inventory?.backorderable)
@@ -305,9 +304,9 @@ export function useProductActions({
 
             try {
                 const productItems = productSelections.map((selection) => ({
-                    productId: selection.variant.productId || selection.product.id,
+                    productId: selection.variant?.productId || selection.product.id,
                     quantity: selection.quantity,
-                    price: selection.variant.price || selection.product.price,
+                    price: selection.variant?.price || selection.product.price,
                 }));
 
                 // Use server action to add multiple items to cart
@@ -347,7 +346,7 @@ export function useProductActions({
                 };
 
                 const childSelections = childProductSelections.map((child) => ({
-                    productId: child.variant.productId || child.product.id,
+                    productId: child.variant?.productId || child.product.id,
                     quantity: child.quantity,
                 }));
 

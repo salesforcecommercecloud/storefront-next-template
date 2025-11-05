@@ -87,20 +87,20 @@ describe('ShippingOptions Integration Tests', () => {
         test('renders all available shipping methods', () => {
             render(<ShippingOptions {...createDefaultProps()} />);
 
-            expect(screen.getByText('Standard Shipping')).toBeInTheDocument();
-            expect(screen.getByText('Express Shipping')).toBeInTheDocument();
-            expect(screen.getByText('Overnight Shipping')).toBeInTheDocument();
+            expect(screen.getByText('$5.99 | Standard Shipping')).toBeInTheDocument();
+            expect(screen.getByText('$12.99 | Express Shipping')).toBeInTheDocument();
+            expect(screen.getByText('$24.99 | Overnight Shipping')).toBeInTheDocument();
         });
 
         test('displays pricing for each method', () => {
             render(<ShippingOptions {...createDefaultProps()} />);
 
-            expect(screen.getByText('$5.99')).toBeInTheDocument();
-            expect(screen.getByText('$12.99')).toBeInTheDocument();
-            expect(screen.getByText('$24.99')).toBeInTheDocument();
+            expect(screen.getByText('$5.99 | Standard Shipping')).toBeInTheDocument();
+            expect(screen.getByText('$12.99 | Express Shipping')).toBeInTheDocument();
+            expect(screen.getByText('$24.99 | Overnight Shipping')).toBeInTheDocument();
         });
 
-        test('displays free for zero-price methods', () => {
+        test('displays "Free" for zero-price shipping methods', () => {
             const methodsWithFree: ShopperBasketsTypes.ShippingMethodResult = {
                 applicableShippingMethods: [
                     {
@@ -114,7 +114,212 @@ describe('ShippingOptions Integration Tests', () => {
 
             render(<ShippingOptions {...createDefaultProps({ shippingMethods: methodsWithFree })} />);
 
-            expect(screen.getByText('Free')).toBeInTheDocument();
+            expect(screen.getByText('Free | Free Standard Shipping')).toBeInTheDocument();
+        });
+
+        test('displays estimated arrival time when provided', () => {
+            const methodsWithArrival: ShopperBasketsTypes.ShippingMethodResult = {
+                applicableShippingMethods: [
+                    {
+                        id: 'standard',
+                        name: 'Standard Shipping',
+                        description: '5-7 business days',
+                        price: 5.99,
+                        estimatedArrivalTime: '5-7 days',
+                    },
+                    {
+                        id: 'express',
+                        name: 'Express Shipping',
+                        price: 12.99,
+                        estimatedArrivalTime: '2-3 days',
+                    },
+                ],
+            };
+
+            render(<ShippingOptions {...createDefaultProps({ shippingMethods: methodsWithArrival })} />);
+
+            expect(screen.getByText('Arrives: 5-7 days')).toBeInTheDocument();
+            expect(screen.getByText('Arrives: 2-3 days')).toBeInTheDocument();
+            expect(screen.getByText('5-7 business days')).toBeInTheDocument();
+        });
+
+        test('displays estimated arrival time in summary when method is selected', () => {
+            const basketWithEstimatedArrival = createMockBasket({
+                shipments: [
+                    {
+                        shipmentId: 'shipment-1',
+                        shippingAddress: {
+                            firstName: 'John',
+                            lastName: 'Doe',
+                            address1: '123 Main St',
+                            city: 'New York',
+                            stateCode: 'NY',
+                            postalCode: '10001',
+                        },
+                        shippingMethod: {
+                            id: 'express',
+                            name: 'Express Shipping',
+                            price: 12.99,
+                            estimatedArrivalTime: '2-3 days',
+                        },
+                    },
+                ],
+            });
+
+            useBasket.mockReturnValue(basketWithEstimatedArrival);
+
+            render(<ShippingOptions {...createDefaultProps({ isEditing: false, isCompleted: true })} />);
+
+            expect(screen.getByText('Arrives: 2-3 days')).toBeInTheDocument();
+        });
+
+        test('handles missing estimated arrival time gracefully', () => {
+            const methodsWithoutArrival: ShopperBasketsTypes.ShippingMethodResult = {
+                applicableShippingMethods: [
+                    {
+                        id: 'standard',
+                        name: 'Standard Shipping',
+                        description: '5-7 business days',
+                        price: 5.99,
+                        // No estimatedArrivalTime
+                    },
+                ],
+            };
+
+            render(<ShippingOptions {...createDefaultProps({ shippingMethods: methodsWithoutArrival })} />);
+
+            expect(screen.getByText('$5.99 | Standard Shipping')).toBeInTheDocument();
+            expect(screen.getByText('5-7 business days')).toBeInTheDocument();
+            expect(screen.queryByText(/Arrives:/i)).not.toBeInTheDocument();
+        });
+    });
+
+    describe('Free Shipping Rendering', () => {
+        test('renders "Free" instead of "$0.00" for free shipping in selection list', () => {
+            const methodsWithFree: ShopperBasketsTypes.ShippingMethodResult = {
+                applicableShippingMethods: [
+                    {
+                        id: 'free-standard',
+                        name: 'Free Standard Shipping',
+                        description: 'Free shipping on orders over $50',
+                        price: 0, // Explicitly 0 for free shipping
+                    },
+                    {
+                        id: 'express',
+                        name: 'Express Shipping',
+                        description: '2-3 business days',
+                        price: 12.99,
+                    },
+                ],
+            };
+
+            render(<ShippingOptions {...createDefaultProps({ shippingMethods: methodsWithFree })} />);
+
+            expect(screen.getByText('Free | Free Standard Shipping')).toBeInTheDocument();
+            expect(screen.queryByText('$0.00')).not.toBeInTheDocument();
+            expect(screen.getByText('$12.99 | Express Shipping')).toBeInTheDocument();
+        });
+
+        test('renders "Free" in summary when free shipping is selected', () => {
+            const basketWithFreeShipping = createMockBasket({
+                shipments: [
+                    {
+                        shipmentId: 'shipment-1',
+                        shippingAddress: {
+                            firstName: 'John',
+                            lastName: 'Doe',
+                            address1: '123 Main St',
+                            city: 'New York',
+                            stateCode: 'NY',
+                            postalCode: '10001',
+                        },
+                        shippingMethod: {
+                            id: 'free-standard',
+                            name: 'Free Standard Shipping',
+                            price: 0, // Free shipping
+                        },
+                    },
+                ],
+            });
+
+            useBasket.mockReturnValue(basketWithFreeShipping);
+
+            const methodsWithFree: ShopperBasketsTypes.ShippingMethodResult = {
+                applicableShippingMethods: [
+                    {
+                        id: 'free-standard',
+                        name: 'Free Standard Shipping',
+                        price: 0,
+                    },
+                ],
+            };
+
+            render(
+                <ShippingOptions
+                    {...createDefaultProps({ shippingMethods: methodsWithFree, isEditing: false, isCompleted: true })}
+                />
+            );
+
+            expect(screen.getByText('Free | Free Standard Shipping')).toBeInTheDocument();
+            expect(screen.queryByText('$0.00')).not.toBeInTheDocument();
+        });
+
+        test('handles mixed free and paid shipping methods correctly', () => {
+            const mixedMethods: ShopperBasketsTypes.ShippingMethodResult = {
+                applicableShippingMethods: [
+                    {
+                        id: 'free-standard',
+                        name: 'Free Standard Shipping',
+                        description: '5-7 business days',
+                        price: 0,
+                    },
+                    {
+                        id: 'standard',
+                        name: 'Standard Shipping',
+                        description: '3-5 business days',
+                        price: 5.99,
+                    },
+                    {
+                        id: 'express',
+                        name: 'Express Shipping',
+                        description: '2-3 business days',
+                        price: 12.99,
+                    },
+                ],
+            };
+
+            render(<ShippingOptions {...createDefaultProps({ shippingMethods: mixedMethods })} />);
+
+            expect(screen.getByText('Free | Free Standard Shipping')).toBeInTheDocument();
+            expect(screen.getByText('$5.99 | Standard Shipping')).toBeInTheDocument();
+            expect(screen.getByText('$12.99 | Express Shipping')).toBeInTheDocument();
+
+            // Should not show $0.00 anywhere
+            expect(screen.queryByText('$0.00')).not.toBeInTheDocument();
+        });
+
+        test('free shipping from promotion (base price reduced to 0)', () => {
+            const promotionalFreeMethods: ShopperBasketsTypes.ShippingMethodResult = {
+                applicableShippingMethods: [
+                    {
+                        id: 'standard',
+                        name: 'Standard Shipping',
+                        description: '5-7 business days',
+                        price: 0, // Reduced to 0 by promotion
+                        shippingPromotions: [
+                            {
+                                promotionId: 'free-shipping-50',
+                                calloutMsg: 'Free shipping on orders over $50',
+                            },
+                        ],
+                    },
+                ],
+            };
+
+            render(<ShippingOptions {...createDefaultProps({ shippingMethods: promotionalFreeMethods })} />);
+
+            expect(screen.getByText('Free | Standard Shipping')).toBeInTheDocument();
+            expect(screen.queryByText('$0.00')).not.toBeInTheDocument();
         });
     });
 
@@ -271,6 +476,132 @@ describe('ShippingOptions Integration Tests', () => {
 
             expect(handleSubmit).not.toHaveBeenCalled();
         });
+
+        test('Select first method when defaultShippingMethodId is invalid (fallback)', async () => {
+            const handleSubmit = vi.fn((formData: FormData) => {
+                // Should submit the first available method, not the invalid default
+                expect(formData.get('shippingMethodId')).toBe('standard');
+            });
+
+            const customerProfile = {
+                customer: { email: 'returning@example.com', customerId: 'customer-123' },
+                addresses: [],
+                paymentInstruments: [],
+            };
+
+            const basketNoMethod = createMockBasket({
+                shipments: [
+                    {
+                        shipmentId: 'shipment-1',
+                        shippingAddress: {
+                            firstName: 'John',
+                            lastName: 'Doe',
+                        },
+                        shippingMethod: null,
+                    },
+                ],
+            });
+
+            useBasket.mockReturnValue(basketNoMethod);
+            useCustomerProfile.mockReturnValue(customerProfile);
+
+            // Default method ID that doesn't exist in applicable methods
+            const methodsWithInvalidDefault: ShopperBasketsTypes.ShippingMethodResult = {
+                applicableShippingMethods: [
+                    {
+                        id: 'standard',
+                        name: 'Standard Shipping',
+                        price: 5.99,
+                    },
+                    {
+                        id: 'express',
+                        name: 'Express Shipping',
+                        price: 12.99,
+                    },
+                ],
+                defaultShippingMethodId: 'nonexistent-method', // Invalid default
+            };
+
+            render(
+                <ShippingOptions
+                    {...createDefaultProps({
+                        shippingMethods: methodsWithInvalidDefault,
+                        onSubmit: handleSubmit,
+                        isEditing: true,
+                    })}
+                />
+            );
+
+            await waitFor(
+                () => {
+                    expect(handleSubmit).toHaveBeenCalled();
+                },
+                { timeout: 200 }
+            );
+        });
+
+        test('Select defaultShippingMethodId when it is valid (happy path)', async () => {
+            const handleSubmit = vi.fn((formData: FormData) => {
+                // Should submit the valid default method
+                expect(formData.get('shippingMethodId')).toBe('express');
+            });
+
+            const customerProfile = {
+                customer: { email: 'returning@example.com', customerId: 'customer-123' },
+                addresses: [],
+                paymentInstruments: [],
+            };
+
+            const basketNoMethod = createMockBasket({
+                shipments: [
+                    {
+                        shipmentId: 'shipment-1',
+                        shippingAddress: {
+                            firstName: 'John',
+                            lastName: 'Doe',
+                        },
+                        shippingMethod: null,
+                    },
+                ],
+            });
+
+            useBasket.mockReturnValue(basketNoMethod);
+            useCustomerProfile.mockReturnValue(customerProfile);
+
+            // Valid default method ID
+            const methodsWithValidDefault: ShopperBasketsTypes.ShippingMethodResult = {
+                applicableShippingMethods: [
+                    {
+                        id: 'standard',
+                        name: 'Standard Shipping',
+                        price: 5.99,
+                    },
+                    {
+                        id: 'express',
+                        name: 'Express Shipping',
+                        price: 12.99,
+                    },
+                ],
+                defaultShippingMethodId: 'express', // Valid default
+            };
+
+            render(
+                <ShippingOptions
+                    {...createDefaultProps({
+                        shippingMethods: methodsWithValidDefault,
+                        onSubmit: handleSubmit,
+                        isEditing: true,
+                    })}
+                />
+            );
+
+            await waitFor(
+                () => {
+                    expect(handleSubmit).toHaveBeenCalled();
+                },
+                { timeout: 200 }
+            );
+        });
     });
 
     describe('Empty State', () => {
@@ -321,8 +652,7 @@ describe('ShippingOptions Integration Tests', () => {
 
             render(<ShippingOptions {...createDefaultProps({ isEditing: false })} />);
 
-            expect(screen.getByText('Express Shipping')).toBeInTheDocument();
-            expect(screen.getByText('$12.99')).toBeInTheDocument();
+            expect(screen.getByText('$12.99 | Express Shipping')).toBeInTheDocument();
         });
 
         test('shows prompt when no method selected', () => {

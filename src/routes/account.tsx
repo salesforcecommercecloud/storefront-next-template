@@ -1,25 +1,53 @@
 import { useMemo, type ReactElement } from 'react';
-import { Outlet, useLoaderData, type ClientLoaderFunctionArgs, type LoaderFunctionArgs, redirect } from 'react-router';
+import {
+    Outlet,
+    type ClientLoaderFunctionArgs,
+    type LoaderFunctionArgs,
+    redirect,
+    type ShouldRevalidateFunctionArgs,
+} from 'react-router';
 import { User, Heart, Receipt, MapPin } from 'lucide-react';
-import { getAuth as getAuthClient } from '@/middlewares/auth.client';
+import { getAuth as getAuthClient, refreshAuthFromCookie } from '@/middlewares/auth.client';
 import { getAuth as getAuthServer } from '@/middlewares/auth.server';
 import { getCustomer } from '@/lib/api/customer';
 import { Card, CardContent } from '@/components/ui/card';
 import { AccountNavList, type AccountNavItemData } from '@/components/account-navigation';
+import { createPage, type RouteComponentProps } from '@/components/create-page';
+import { AccountSkeleton } from '@/components/account-skeleton';
 import uiStrings from '@/temp-ui-string';
 import type { ShopperCustomersTypes } from 'commerce-sdk-isomorphic';
+import type { SessionData } from '@/lib/api/types';
 
-type AccountLayoutLoaderData = {
+/**
+ * Type definition for the account page data including page key
+ */
+type AccountPageData = {
     customer: Promise<ShopperCustomersTypes.Customer>;
+    pageKey: string;
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
-export function loader(args: LoaderFunctionArgs) {
-    // SERVER LOADER: Only uses server-side auth
-    const session = getAuthServer(args.context);
+/**
+ * Type definition for the shared session data used in authentication checks
+ */
+type AuthSession = Pick<SessionData, 'access_token' | 'access_token_expiry' | 'userType' | 'customer_id'>;
+
+/**
+ * Shared function to get page data for both server and client loaders.
+ * This function contains the common logic for authentication validation and customer data retrieval.
+ *
+ * @param session - The authenticated session data containing access token, expiry, user type, and customer ID
+ * @param context - The router context for making API calls
+ * @param pageKey - The page key for navigation transitions
+ * @returns Promise containing the customer data and page key
+ * @throws Redirects to login page if authentication is invalid
+ */
+function getPageData(
+    session: AuthSession,
+    context: LoaderFunctionArgs['context'],
+    pageKey: string
+): { customer: Promise<ShopperCustomersTypes.Customer>; pageKey: string } {
     const { access_token, access_token_expiry, userType, customer_id } = session;
 
-    // TODO remove access_token check when middleware is updated
     if (
         !access_token ||
         typeof access_token_expiry !== 'number' ||
@@ -31,34 +59,63 @@ export function loader(args: LoaderFunctionArgs) {
         throw redirect('/login');
     }
 
-    const customer = getCustomer(args.context, customer_id);
-    return { customer };
+    const customer = getCustomer(context, customer_id);
+    return { customer, pageKey };
+}
+
+/**
+ * Server-side loader function for the account page.
+ * Handles authentication validation and customer data retrieval on the server.
+ *
+ * @param args - Loader function arguments containing request context
+ * @returns Promise containing customer data and page key or redirects to login
+ */
+// eslint-disable-next-line react-refresh/only-export-components
+export function loader(args: LoaderFunctionArgs) {
+    // SERVER LOADER: Only uses server-side auth
+    const session = getAuthServer(args.context);
+    const pageKey = `account-${args.params.customerId || 'default'}`;
+    return getPageData(session, args.context, pageKey);
+}
+
+/**
+ * Client-side loader function for the account page.
+ * Handles authentication validation and customer data retrieval on the client.
+ *
+ * @param args - Client loader function arguments containing request context
+ * @returns Promise containing customer data and page key or redirects to login
+ */
+// eslint-disable-next-line react-refresh/only-export-components
+export function clientLoader(args: ClientLoaderFunctionArgs) {
+    // Check if the session in the cookie is different from what's in the cache
+    // This handles the edge case where the user changed their password and was re-logged in via a server action
+    // The server action updates the cookie with a new access token, but the client auth middleware might not have picked it up yet
+    refreshAuthFromCookie(args.context);
+
+    // CLIENT LOADER: Only uses client-side auth
+    const session = getAuthClient(args.context);
+    const pageKey = `account-${args.params.customerId || 'default'}`;
+    return getPageData(session, args.context, pageKey);
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
-export function clientLoader(args: ClientLoaderFunctionArgs) {
-    // CLIENT LOADER: Only uses client-side auth
-    const session = getAuthClient(args.context);
-    const { access_token, access_token_expiry, userType, customer_id } = session;
-
-    // TODO remove access_token check when middleware is updated
-    if (
-        !access_token ||
-        typeof access_token_expiry !== 'number' ||
-        access_token_expiry < Date.now() ||
-        userType !== 'registered' ||
-        !customer_id
-    ) {
-        return redirect('/login');
+export function shouldRevalidate({ defaultShouldRevalidate, formData }: ShouldRevalidateFunctionArgs) {
+    // Defer revalidation if the password has just been updated allowing the re-login process to complete.
+    if (Object.fromEntries(formData || [])?.currentPassword) {
+        return false;
     }
 
-    const customer = getCustomer(args.context, customer_id);
-    return { customer };
+    return defaultShouldRevalidate;
 }
 
-export default function AccountLayout(): ReactElement {
-    const loaderData = useLoaderData<AccountLayoutLoaderData>();
-
+/**
+ * Account layout view component that renders the account navigation and child routes.
+ * This component receives the loader data as props and renders the account interface.
+ *
+ * @param props - Component props containing loader data
+ * @returns JSX element representing the account layout
+ */
+function AccountLayoutView({ loaderData }: RouteComponentProps<AccountPageData>): ReactElement {
     const navigationItems: AccountNavItemData[] = useMemo(
         () => [
             {
@@ -122,3 +179,15 @@ export default function AccountLayout(): ReactElement {
         </div>
     );
 }
+
+/**
+ * Account page component created using the createPage HOC.
+ * This provides Suspense handling and page key management for the account layout.
+ */
+const AccountPage = createPage<AccountPageData>({
+    component: AccountLayoutView,
+    getPageKey: (data) => data.pageKey,
+    fallback: <AccountSkeleton />,
+});
+
+export default AccountPage;

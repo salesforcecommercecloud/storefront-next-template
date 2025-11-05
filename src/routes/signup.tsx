@@ -15,7 +15,7 @@ import { registerCustomer } from '@/lib/api/auth/register';
 import { updateAuth } from '@/middlewares/auth.client';
 
 // components
-import { SignupForm } from '@/components/signup/password-requirements';
+import { SignupForm } from '@/components/signup-form';
 
 // utils
 import { isPasswordValid } from '@/lib/utils';

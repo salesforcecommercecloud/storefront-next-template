@@ -1,37 +1,217 @@
 import { describe, it, expect } from 'vitest';
 import { getDefaultShippingMethod } from './customer-profile-utils';
+import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
 
 describe('Checkout Features Integration Tests', () => {
-    describe('Shipping Method Default Selection', () => {
-        it('should select first method when none is selected', () => {
-            const methods = [
-                { id: 'standard', name: 'Standard Shipping', price: 5.99 },
-                { id: 'express', name: 'Express Shipping', price: 12.99 },
-            ];
+    // Helper to create Commerce Cloud shipping method result
+    const createMockShippingMethodResult = (
+        methods: Array<{ id: string; name: string; price: number }>,
+        defaultId?: string
+    ): ShopperBasketsTypes.ShippingMethodResult => ({
+        applicableShippingMethods: methods.map((m) => ({
+            id: m.id,
+            name: m.name,
+            price: m.price,
+            description: `${m.name} Description`,
+            estimatedArrivalTime: '2024-02-15',
+        })),
+        defaultShippingMethodId: defaultId,
+    });
 
-            const result = getDefaultShippingMethod(methods);
-            expect(result).toBe('standard');
+    describe('Shipping Method Default Selection - Integration Scenarios', () => {
+        describe('New Checkout with Commerce Cloud Default', () => {
+            it('should use defaultShippingMethodId from Commerce Cloud API', () => {
+                const apiResponse = createMockShippingMethodResult(
+                    [
+                        { id: 'standard', name: 'Standard Shipping', price: 5.99 },
+                        { id: 'express', name: 'Express Shipping', price: 12.99 },
+                        { id: 'overnight', name: 'Overnight Shipping', price: 24.99 },
+                    ],
+                    'express'
+                );
+
+                const result = getDefaultShippingMethod(
+                    apiResponse.applicableShippingMethods,
+                    undefined,
+                    apiResponse.defaultShippingMethodId
+                );
+
+                expect(result).toBe('express');
+            });
+
+            it('should fall back to first method when no default configured', () => {
+                const apiResponse = createMockShippingMethodResult(
+                    [
+                        { id: 'fedex', name: 'FedEx Ground', price: 7.99 },
+                        { id: 'ups', name: 'UPS Standard', price: 8.99 },
+                    ],
+                    undefined
+                );
+
+                const result = getDefaultShippingMethod(
+                    apiResponse.applicableShippingMethods,
+                    undefined,
+                    apiResponse.defaultShippingMethodId
+                );
+
+                expect(result).toBe('fedex');
+            });
         });
 
-        it('should preserve existing selection', () => {
-            const methods = [
-                { id: 'standard', name: 'Standard Shipping', price: 5.99 },
-                { id: 'express', name: 'Express Shipping', price: 12.99 },
-            ];
-            const currentSelection = { id: 'express' };
+        describe('Returning Customer - Preserve Selection', () => {
+            it('should preserve user existing selection from basket', () => {
+                const apiResponse = createMockShippingMethodResult(
+                    [
+                        { id: 'standard', name: 'Standard', price: 5.99 },
+                        { id: 'express', name: 'Express', price: 12.99 },
+                        { id: 'overnight', name: 'Overnight', price: 24.99 },
+                    ],
+                    'standard'
+                );
 
-            const result = getDefaultShippingMethod(methods, currentSelection);
-            expect(result).toBe('express');
+                const basketSelection = { id: 'overnight' };
+
+                const result = getDefaultShippingMethod(
+                    apiResponse.applicableShippingMethods,
+                    basketSelection,
+                    apiResponse.defaultShippingMethodId
+                );
+
+                expect(result).toBe('overnight');
+            });
+
+            it('should prioritize basket selection even when API default changes', () => {
+                const methods = [
+                    { id: 'method1', name: 'Method 1', price: 5.0 },
+                    { id: 'method2', name: 'Method 2', price: 10.0 },
+                    { id: 'method3', name: 'Method 3', price: 15.0 },
+                ];
+
+                const result = getDefaultShippingMethod(methods, { id: 'method1' }, 'method3');
+
+                expect(result).toBe('method1');
+            });
         });
 
-        it('should handle empty methods array', () => {
-            const result = getDefaultShippingMethod([]);
-            expect(result).toBeUndefined();
+        describe('Invalid API Default - Fallback Handling', () => {
+            it('should fall back when defaultShippingMethodId does not exist', () => {
+                const apiResponse = createMockShippingMethodResult(
+                    [
+                        { id: 'available1', name: 'Available 1', price: 5.99 },
+                        { id: 'available2', name: 'Available 2', price: 12.99 },
+                    ],
+                    'nonexistent-method'
+                );
+
+                const result = getDefaultShippingMethod(
+                    apiResponse.applicableShippingMethods,
+                    undefined,
+                    apiResponse.defaultShippingMethodId
+                );
+
+                expect(result).toBe('available1');
+            });
+
+            it('should handle empty string defaultShippingMethodId', () => {
+                const methods = [{ id: 'only-method', name: 'Only Method', price: 10.0 }];
+
+                const result = getDefaultShippingMethod(methods, undefined, '');
+
+                expect(result).toBe('only-method');
+            });
+
+            it('should handle null defaultShippingMethodId', () => {
+                const methods = [
+                    { id: 'method1', name: 'Method 1', price: 5.0 },
+                    { id: 'method2', name: 'Method 2', price: 10.0 },
+                ];
+
+                const result = getDefaultShippingMethod(methods, undefined, null);
+
+                expect(result).toBe('method1');
+            });
+
+            it('should handle whitespace-only defaultShippingMethodId', () => {
+                const methods = [{ id: 'method1', name: 'Method 1', price: 5.0 }];
+
+                const result = getDefaultShippingMethod(methods, undefined, '   ');
+
+                expect(result).toBe('method1');
+            });
         });
 
-        it('should handle undefined methods', () => {
-            const result = getDefaultShippingMethod(undefined);
-            expect(result).toBeUndefined();
+        describe('Validate with SCAPI Response Structures', () => {
+            it('should handle typical SFCC API response', () => {
+                const apiResponse: ShopperBasketsTypes.ShippingMethodResult = {
+                    applicableShippingMethods: [
+                        {
+                            id: '001',
+                            name: 'Ground',
+                            description: '5-7 Business Days',
+                            price: 7.99,
+                            estimatedArrivalTime: '2024-02-15',
+                            shippingPromotions: [],
+                        },
+                        {
+                            id: '002',
+                            name: '2-Day',
+                            description: '2 Business Days',
+                            price: 14.99,
+                            estimatedArrivalTime: '2024-02-10',
+                            shippingPromotions: [],
+                        },
+                    ],
+                    defaultShippingMethodId: '001',
+                };
+
+                const result = getDefaultShippingMethod(
+                    apiResponse.applicableShippingMethods,
+                    undefined,
+                    apiResponse.defaultShippingMethodId
+                );
+
+                expect(result).toBe('001');
+            });
+
+            it('should handle single shipping method response', () => {
+                const apiResponse = createMockShippingMethodResult(
+                    [{ id: 'only-option', name: 'Only Option', price: 5.99 }],
+                    'only-option'
+                );
+
+                const result = getDefaultShippingMethod(
+                    apiResponse.applicableShippingMethods,
+                    undefined,
+                    apiResponse.defaultShippingMethodId
+                );
+
+                expect(result).toBe('only-option');
+            });
+        });
+
+        describe('Edge Cases', () => {
+            it('should handle empty shipping methods array', () => {
+                const result = getDefaultShippingMethod([], undefined, 'any-default');
+
+                expect(result).toBeUndefined();
+            });
+
+            it('should handle undefined shipping methods', () => {
+                const result = getDefaultShippingMethod(undefined, undefined, 'any-default');
+
+                expect(result).toBeUndefined();
+            });
+
+            it('should handle case-sensitive ID matching', () => {
+                const methods = [
+                    { id: 'express', name: 'Express', price: 12.99 },
+                    { id: 'standard', name: 'Standard', price: 5.99 },
+                ];
+
+                const result = getDefaultShippingMethod(methods, undefined, 'EXPRESS');
+
+                expect(result).toBe('express');
+            });
         });
     });
 

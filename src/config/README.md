@@ -110,6 +110,30 @@ export function loader({ context }: LoaderFunctionArgs) {
 }
 ```
 
+### 4. Add a new config value during app creation
+**In srce/config/config-meta,json:**
+- Add the name and key value to the config array
+- This will cause the create-storefront script to ask for user input, using the value in `.env.default` as default value
+```json
+{
+    "configs": [
+        {
+            "name": "API Client ID",
+            "key": "PUBLIC_COMMERCE_API_CLIENT_ID"
+        }, 
+        {
+            "name": "API Organization ID",
+            "key": "PUBLIC_COMMERCE_API_ORG_ID"
+        }, 
+        {
+            "name": "API Short Code",
+            "key": "PUBLIC_COMMERCE_API_SHORT_CODE"
+        }
+    ]
+}
+```
+
+
 ## Security: PUBLIC_ Prefix
 
 **✅ Use `PUBLIC_` prefix for public configuration:**

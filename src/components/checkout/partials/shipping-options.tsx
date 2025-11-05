@@ -1,4 +1,4 @@
-import { type FormEvent, useEffect, useRef } from 'react';
+import { type FormEvent, useEffect, useMemo, useRef } from 'react';
 import { ToggleCard, ToggleCardEdit, ToggleCardSummary } from '@/components/toggle-card';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -11,20 +11,12 @@ import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import type { CheckoutActionData } from '../types';
 import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
 
-// Extended Commerce Cloud shipping method type to include potential default indicators
-interface ExtendedShippingMethod extends ShopperBasketsTypes.ShippingMethod {
-    default?: boolean;
-    preferred?: boolean;
-}
-
 interface ShippingMethod {
     id: string;
     name: string;
-    description: string;
+    description?: string;
     price: number;
-    estimatedArrival: string;
-    default?: boolean; // Commerce Cloud default indicator
-    preferred?: boolean; // Alternative property name
+    estimatedArrivalTime?: string;
 }
 
 interface ShippingOptionsProps {
@@ -50,25 +42,29 @@ export default function ShippingOptions({
     const cart = useBasket();
     const customerProfile = useCustomerProfile();
 
-    const availableShippingMethods: ShippingMethod[] =
-        shippingMethods?.applicableShippingMethods?.map((method) => {
-            const extendedMethod = method as ExtendedShippingMethod;
-            return {
-                id: extendedMethod.id || 'unknown',
-                name: extendedMethod.name || 'Unknown Method',
-                description: extendedMethod.description || '',
-                price: extendedMethod.price || 0,
-                estimatedArrival: extendedMethod.estimatedArrivalTime || '',
-                // Include default/preferred properties if available from Commerce Cloud
-                default: extendedMethod.default,
-                preferred: extendedMethod.preferred,
-            };
-        }) || [];
+    const availableShippingMethods: ShippingMethod[] = useMemo(
+        () =>
+            shippingMethods?.applicableShippingMethods
+                ?.filter(
+                    (method) => method.id && method.name && typeof method.price === 'number' && !isNaN(method.price)
+                )
+                .map((method) => ({
+                    id: method.id,
+                    name: method.name,
+                    description: method.description,
+                    price: method.price,
+                    estimatedArrivalTime: method.estimatedArrivalTime,
+                })) || [],
+        [shippingMethods?.applicableShippingMethods]
+    );
 
     const selectedMethod = cart?.shipments?.[0]?.shippingMethod;
 
-    // Determine the default shipping method to auto-select
-    const defaultShippingMethodId = getDefaultShippingMethod(availableShippingMethods, selectedMethod);
+    const defaultShippingMethodId = getDefaultShippingMethod(
+        availableShippingMethods,
+        selectedMethod,
+        shippingMethods?.defaultShippingMethodId
+    );
 
     // Track if we've already auto-submitted to prevent infinite loops
     const hasAutoSubmitted = useRef(false);
@@ -77,28 +73,24 @@ export default function ShippingOptions({
     // Guest users should always see and choose shipping options manually
     useEffect(() => {
         if (
-            isEditing && // Only when user is on this step
-            !selectedMethod?.id && // No method currently selected
-            customerProfile && // Only for returning customers with profiles
-            shippingMethods?.applicableShippingMethods && // We have real Commerce Cloud data
-            shippingMethods.applicableShippingMethods.length > 0 && // We have shipping methods available
-            !hasAutoSubmitted.current && // Haven't auto-submitted yet
-            !isLoading // Not currently processing
+            isEditing &&
+            !selectedMethod?.id &&
+            customerProfile &&
+            availableShippingMethods.length > 0 &&
+            !hasAutoSubmitted.current &&
+            !isLoading
         ) {
             hasAutoSubmitted.current = true;
 
-            // Auto-submit the first available method from Commerce Cloud for returning customers
-            const firstMethodId = shippingMethods.applicableShippingMethods[0].id;
-            if (firstMethodId) {
+            const isDefaultValid =
+                defaultShippingMethodId &&
+                availableShippingMethods.some((method) => method.id === defaultShippingMethodId);
+            const methodIdToSubmit = isDefaultValid ? defaultShippingMethodId : availableShippingMethods[0]?.id;
+
+            if (methodIdToSubmit) {
                 const formData = new FormData();
-                formData.append('shippingMethodId', firstMethodId);
-
-                // Small delay to ensure component is fully rendered
-                const timeoutId = setTimeout(() => {
-                    onSubmit(formData);
-                }, 100);
-
-                return () => clearTimeout(timeoutId);
+                formData.append('shippingMethodId', methodIdToSubmit);
+                onSubmit(formData);
             }
         }
 
@@ -110,9 +102,11 @@ export default function ShippingOptions({
         isEditing,
         selectedMethod?.id,
         shippingMethods?.applicableShippingMethods,
+        defaultShippingMethodId,
         onSubmit,
         isLoading,
         customerProfile,
+        availableShippingMethods,
     ]);
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -165,22 +159,30 @@ export default function ShippingOptions({
                                             autoFocus={isEditing && availableShippingMethods.indexOf(method) === 0}
                                         />
                                         <Label htmlFor={method.id} className="flex-1 cursor-pointer">
-                                            <div className="space-y-2">
-                                                <div className="flex justify-between items-center">
-                                                    <Typography variant="p" className="font-medium">
-                                                        {method.name}
+                                            <div className="space-y-1">
+                                                {method.estimatedArrivalTime && (
+                                                    <Typography variant="small" className="text-muted-foreground">
+                                                        {uiStrings.checkout.shippingOptions.arrives.replace(
+                                                            '{estimatedArrivalTime}',
+                                                            method.estimatedArrivalTime
+                                                        )}
                                                     </Typography>
-                                                </div>
-                                                <div className="flex justify-between items-center gap-4">
+                                                )}
+                                                <Typography variant="small" className="text-muted-foreground">
+                                                    {uiStrings.checkout.shippingOptions.priceAndMethod
+                                                        .replace(
+                                                            '{price}',
+                                                            method.price === 0
+                                                                ? uiStrings.checkout.shippingOptions.free
+                                                                : `$${method.price.toFixed(2)}`
+                                                        )
+                                                        .replace('{methodName}', method.name)}
+                                                </Typography>
+                                                {method.description && (
                                                     <Typography variant="small" className="text-muted-foreground">
                                                         {method.description}
                                                     </Typography>
-                                                    <Typography
-                                                        variant="small"
-                                                        className="text-muted-foreground font-medium">
-                                                        {method.price === 0 ? 'Free' : `$${method.price.toFixed(2)}`}
-                                                    </Typography>
-                                                </div>
+                                                )}
                                             </div>
                                         </Label>
                                     </div>
@@ -222,12 +224,24 @@ export default function ShippingOptions({
                         Shipping Method
                     </Typography>
                     {selectedMethod ? (
-                        <div>
-                            <Typography variant="p" className="font-medium">
-                                {selectedMethod.name}
-                            </Typography>
+                        <div className="space-y-1">
+                            {selectedMethod.estimatedArrivalTime && (
+                                <Typography variant="small" className="text-muted-foreground">
+                                    {uiStrings.checkout.shippingOptions.arrives.replace(
+                                        '{estimatedArrivalTime}',
+                                        selectedMethod.estimatedArrivalTime
+                                    )}
+                                </Typography>
+                            )}
                             <Typography variant="small" className="text-muted-foreground">
-                                {selectedMethod.price === 0 ? 'Free' : `$${(selectedMethod.price ?? 0).toFixed(2)}`}
+                                {uiStrings.checkout.shippingOptions.priceAndMethod
+                                    .replace(
+                                        '{price}',
+                                        selectedMethod.price === 0
+                                            ? uiStrings.checkout.shippingOptions.free
+                                            : `$${(selectedMethod.price ?? 0).toFixed(2)}`
+                                    )
+                                    .replace('{methodName}', selectedMethod.name || '')}
                             </Typography>
                         </div>
                     ) : (

@@ -5,7 +5,9 @@ import trimExtensions from './extensibility/trim-extensions.js';
 import { DEFAULT_CLOUD_ORIGIN, error } from './utils.js';
 import pkg from '../package.json' with { type: 'json' };
 import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import path, { dirname } from 'path';
+import fs from 'fs-extra';
+import { createStorefront } from './create-storefront.js';
 
 const program = new Command();
 const __filename = fileURLToPath(import.meta.url);
@@ -23,6 +25,17 @@ const handleCommandError = (label: string, err: unknown): never => {
 };
 
 program.name('sfnext').description('Dev and build tools for SFCC Storefront Next').version(pkg.version);
+
+program
+    .command('create-storefront')
+    .description('Create a new storefront project')
+    .action(async () => {
+        try {
+            await createStorefront();
+        } catch (err) {
+            handleCommandError('create-storefront', err);
+        }
+    });
 
 program
     .command('push')
@@ -75,10 +88,8 @@ program
     .option('-b, --branch <branch>', 'PWA repo branch (default: main)')
     .option('-f, --files <files...>', 'Specific files to include (relative to project directory)')
     .option('-o, --output-dir <dir>', 'Output directory (default: ./instructions)')
-    .action(async (options) => {
+    .action((options) => {
         try {
-            // Lazy import to avoid unnecessary load
-            const path = await import('path');
             const baseDir = process.cwd();
             const projectDirectory = path.resolve(baseDir, options.projectDirectory);
             const extensionConfig = path.resolve(baseDir, options.extensionConfig);
@@ -109,15 +120,12 @@ program
         '-e, --extensions <extensions>',
         'Comma-separated list of enabled extension marker values (e.g. SFDC_EXT_featureA)'
     )
-    .action(async (options) => {
+    .action((options) => {
         try {
-            // Lazy import to avoid unnecessary load
-            const path = await import('path');
             const cwd = process.cwd();
             const directory = path.resolve(cwd, options.projectDirectory);
             const extensionConfig = path.resolve(cwd, options.extensionConfig);
             // Read JSON config file
-            const fs = await import('fs');
             const jsonText = fs.readFileSync(extensionConfig, 'utf8');
             const configuredExtensions = JSON.parse(jsonText);
             let enabledExtensions: Record<string, boolean> | undefined = undefined;

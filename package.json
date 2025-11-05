@@ -13,7 +13,7 @@
         "push": "storefront-next-dev push --project-directory .",
         "typecheck": "react-router typegen && tsc --noEmit",
         "test": "vitest run --coverage",
-        "test:ui": "vitest --ui",
+        "test:ui": "vitest --ui --coverage",
         "test:watch": "vitest",
         "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
         "lint:fix": "eslint . --fix",

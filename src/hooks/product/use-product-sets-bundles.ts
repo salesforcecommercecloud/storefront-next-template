@@ -10,11 +10,11 @@
 import { useState, useCallback, useRef, useMemo } from 'react';
 import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
 import uiStrings from '@/temp-ui-string';
-import { isProductSet, isProductBundle } from '@/lib/product-utils';
+import { isProductSet, isProductBundle, isStandardProduct } from '@/lib/product-utils';
 
 interface ChildProductSelection {
     product: ShopperProductsTypes.Product;
-    variant: ShopperProductsTypes.Variant;
+    variant?: ShopperProductsTypes.Variant;
     quantity: number;
 }
 
@@ -120,6 +120,12 @@ export function useProductSetsBundles({ product, initialBundleQuantity = 1 }: Us
             const productId = childProduct.id;
             const selection = childProductSelection[productId];
             const orderability = childProductOrderability[productId];
+            const isStandard = isStandardProduct(childProduct);
+
+            // Skip validation for standard products because there are no variants to be selected
+            if (isStandard) {
+                continue;
+            }
 
             // Check if product is selected
             if (!selection) {
@@ -179,7 +185,13 @@ export function useProductSetsBundles({ product, initialBundleQuantity = 1 }: Us
     // Check if all child products are selected
     const areAllChildProductsSelected = useMemo(() => {
         const childProducts = comboProduct.childProducts || [];
-        return childProducts.every((childProduct) => childProductSelection[childProduct.id]);
+        return childProducts.every((childProduct) => {
+            // Simple products are auto-selected, so consider them as selected
+            if (isStandardProduct(childProduct)) {
+                return true;
+            }
+            return childProductSelection[childProduct.id];
+        });
     }, [comboProduct.childProducts, childProductSelection]);
 
     // Check if any child product is out of stock or not orderable

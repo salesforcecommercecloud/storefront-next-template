@@ -113,12 +113,21 @@ async function fetchProductsInBasket(
 }
 
 /**
- * Handles basket prefill for returning customers
+ * Handles basket prefill for returning customers and returns updated basket
+ *
+ * IMPORTANT: Returns the updated basket (not the profile) because:
+ * - The clientLoader needs the updated basket to check for shipping address
+ * - After prefill, basket.shipments[0].shippingAddress is populated
+ * - This allows clientLoader to correctly determine if shipping methods should be fetched
+ *
+ * @param context - Client loader context
+ * @param profile - Customer profile with saved addresses/payment methods
+ * @returns Updated basket with prefilled data, or current basket if no prefill needed
  */
 async function handleBasketPrefill(
     context: ClientLoaderFunctionArgs['context'],
     profile: CustomerProfile
-): Promise<CustomerProfile> {
+): Promise<ShopperBasketsTypes.Basket | null> {
     try {
         const { shouldPrefillBasket, initializeBasketForReturningCustomer } = await import(
             '@/components/checkout/utils/checkout-utils'
@@ -126,46 +135,84 @@ async function handleBasketPrefill(
         const currentBasket = getBasket(context);
 
         if (shouldPrefillBasket(currentBasket, profile)) {
-            await initializeBasketForReturningCustomer(context, profile);
+            // Prefill basket with customer's saved data (email, shipping address, billing address)
+            const updatedBasket = await initializeBasketForReturningCustomer(context, profile);
+            return updatedBasket;
         }
+
+        // No prefill needed - basket already has required data
+        return currentBasket;
     } catch {
-        // Basket prefill failed, continue without it
+        // Basket prefill failed, return current basket and continue
+        // Better to show checkout without prefill than to fail completely
+        return getBasket(context);
     }
-    return profile;
 }
 
 /**
  * Client loader function for React Router
+ *
+ * IMPORTANT: This loader is async for a critical reason:
+ *
+ * For returning customers, we MUST prefill the basket before checking for shipping methods. The sequence is:
+ * 1. Fetch customer profile (await - needed to get saved addresses)
+ * 2. Prefill basket with saved address (await - updates basket.shipments[0].shippingAddress)
+ * 3. Check if basket has shipping address. This is necessary to fetch applicable shipping methods for this address
+ * 4. Fetch shipping methods for the prefilled address
+ *
+ * Performance trade-off:
+ * Although it blocks for some time in the returning/registered shoppers case (profile fetch + basket prefill), this is
+ * necessary to compute shippingMethods. Shipping methods and products still stream after loader returns.
+ * Alternative options (such as promise chaining) have additional complexity and they don't improve performance either
+ *
+ * @returns CheckoutPageData with promises for streaming (shippingMethods, customerProfile, productMap)
  */
-export function clientLoader(args: ClientLoaderFunctionArgs): CheckoutPageData {
+export async function clientLoader(args: ClientLoaderFunctionArgs): Promise<CheckoutPageData> {
     try {
         const { context } = args;
         const basket = getBasket(context);
         const userIsRegistered = isRegisteredCustomer(context);
         const session = getAuthClient(context);
 
-        // Create shipping methods promise if we have required basket data
-        let shippingMethodsPromise: Promise<ShopperBasketsTypes.ShippingMethodResult> | undefined;
-        if (basket?.basketId && basket.shipments?.[0]?.shippingAddress) {
-            shippingMethodsPromise = getShippingMethodsForShipment(context, basket.basketId);
-        }
-
-        // Create customer profile promise with basket prefill for registered users
-        let customerProfilePromise: Promise<CustomerProfile | null> | undefined;
-        if (userIsRegistered && session.customer_id) {
-            customerProfilePromise = getCustomerProfileForCheckout(context, session.customer_id)
-                .then((profile) => (profile ? handleBasketPrefill(context, profile) : null))
-                .catch(() => null);
-        }
-
         // Fetch product details for cart items display
         const productMapPromise = fetchProductsInBasket(context, basket?.productItems ?? []);
 
+        // IMPORTANT: For returning shopper must prefill basket before fetching shipping methods
+        if (userIsRegistered && session.customer_id) {
+            // Step 1: Fetch customer profile (await for saved addresses)
+            const customerProfile = await getCustomerProfileForCheckout(context, session.customer_id).catch(() => null);
+
+            if (customerProfile) {
+                // Step 2: Prefill basket with saved address (await for basket update)
+                // If we don't wait, basket.shipments[0].shippingAddress is still undefined
+                const updatedBasket = await handleBasketPrefill(context, customerProfile);
+
+                // Step 3: check for shipping address
+                const shippingMethodsPromise =
+                    updatedBasket?.basketId && updatedBasket.shipments?.[0]?.shippingAddress
+                        ? getShippingMethodsForShipment(context, updatedBasket.basketId)
+                        : undefined;
+
+                // Return with promises for streaming
+                return {
+                    ...(shippingMethodsPromise && { shippingMethods: shippingMethodsPromise }),
+                    customerProfile: Promise.resolve(customerProfile),
+                    productMap: productMapPromise,
+                    isRegisteredCustomer: true,
+                };
+            }
+        }
+
+        // For guest users, basket might already have shipping address from previous steps
+        const shippingMethodsPromise =
+            basket?.basketId && basket.shipments?.[0]?.shippingAddress
+                ? getShippingMethodsForShipment(context, basket.basketId)
+                : undefined;
+
         return {
-            shippingMethods: shippingMethodsPromise,
-            customerProfile: customerProfilePromise,
+            ...(shippingMethodsPromise && { shippingMethods: shippingMethodsPromise }),
             productMap: productMapPromise,
-            isRegisteredCustomer: userIsRegistered,
+            isRegisteredCustomer: false,
         };
     } catch {
         // Fallback to empty data on any error

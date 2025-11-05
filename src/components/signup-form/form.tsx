@@ -1,78 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { CheckCircle, Circle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { PasswordRequirement } from '@/components/password-requirements';
 import uiStrings from '@/temp-ui-string';
 
-// Password validation functions
-import { validatePassword, isPasswordValid } from '@/lib/utils';
-
-interface PasswordRequirementsProps {
-    password: string;
-}
-
-export function PasswordRequirements({ password }: PasswordRequirementsProps) {
-    const validation = validatePassword(password);
-
-    const requirements = [
-        { key: 'minLength', text: uiStrings.signup.passwordRequirements.minLength, valid: validation.minLength },
-        {
-            key: 'hasUppercase',
-            text: uiStrings.signup.passwordRequirements.hasUppercase,
-            valid: validation.hasUppercase,
-        },
-        {
-            key: 'hasLowercase',
-            text: uiStrings.signup.passwordRequirements.hasLowercase,
-            valid: validation.hasLowercase,
-        },
-        { key: 'hasNumber', text: uiStrings.signup.passwordRequirements.hasNumber, valid: validation.hasNumber },
-        {
-            key: 'hasSpecialChar',
-            text: uiStrings.signup.passwordRequirements.hasSpecialChar,
-            valid: validation.hasSpecialChar,
-        },
-    ];
-
-    if (!password) {
-        return (
-            <div className="space-y-2 mt-2">
-                <p className="text-sm font-medium text-foreground">{uiStrings.signup.passwordRequirements.title}</p>
-                {requirements.map((req) => (
-                    <div key={req.key} className="flex items-center space-x-2">
-                        <Circle className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">{req.text}</span>
-                    </div>
-                ))}
-            </div>
-        );
-    }
-
-    return (
-        <div className="space-y-2 mt-2">
-            <p className="text-sm font-medium text-foreground">{uiStrings.signup.passwordRequirements.title}</p>
-            {requirements.map((req) => (
-                <div key={req.key} className="flex items-center space-x-2">
-                    {req.valid ? (
-                        <CheckCircle className="h-4 w-4 text-primary" />
-                    ) : (
-                        <Circle className="h-4 w-4 text-muted-foreground" />
-                    )}
-                    <span
-                        className={`text-sm transition-colors ${req.valid ? 'text-primary' : 'text-muted-foreground'}`}>
-                        {req.text}
-                    </span>
-                </div>
-            ))}
-        </div>
-    );
-}
-
-interface SignupFormProps {
-    error?: string;
-}
+// Password validation function
+import { isPasswordValid } from '@/lib/utils';
+import { type SignupFormProps } from './types';
 
 export function SignupForm({ error }: SignupFormProps) {
     const [password, setPassword] = useState('');
@@ -169,7 +105,7 @@ export function SignupForm({ error }: SignupFormProps) {
                         className="mt-1"
                         placeholder={uiStrings.signup.form.passwordPlaceholder}
                     />
-                    <PasswordRequirements password={password} />
+                    <PasswordRequirement password={password} />
                 </div>
 
                 <div>

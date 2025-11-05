@@ -56,13 +56,25 @@ async function addBundleToCart(
 
             if (addedItem?.bundledProductItems) {
                 // Update the bundled product items with correct variant selections
+                // Match by product ID instead of array index to handle correct ordering
+                const itemsToUpdate = addedItem.bundledProductItems.map((bundledItem) => {
+                    // Find the corresponding selection by matching product ID
+                    const matchingSelection = childSelections.find(
+                        (selection) => selection.productId === bundledItem.productId
+                    );
+
+                    return {
+                        itemId: bundledItem.itemId,
+                        productId: matchingSelection?.productId || bundledItem.productId,
+                        quantity: matchingSelection?.quantity || bundledItem.quantity,
+                    };
+                });
+
                 await client.updateItemsInBasket({
                     parameters: { basketId },
-                    body: addedItem.bundledProductItems.map((bundledItem, index) => ({
-                        itemId: bundledItem.itemId,
-                        productId: childSelections[index]?.productId || bundledItem.productId,
-                        quantity: childSelections[index]?.quantity || bundledItem.quantity,
-                    })) as Parameters<CommerceSdkClient['ShopperBasketsV2']['updateItemsInBasket']>[0]['body'],
+                    body: itemsToUpdate as Parameters<
+                        CommerceSdkClient['ShopperBasketsV2']['updateItemsInBasket']
+                    >[0]['body'],
                 });
 
                 // Get the final updated basket

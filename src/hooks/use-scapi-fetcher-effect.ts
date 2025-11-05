@@ -7,7 +7,7 @@ import type { ScapiFetcher } from './use-scapi-fetcher';
  */
 export interface ScapiFetcherEffectConfig<TData = unknown> {
     /** Callback function called when the fetcher operation succeeds */
-    onSuccess?: (data: TData) => void;
+    onSuccess?: (data: TData | undefined) => void;
     /** Callback function called when the fetcher operation fails */
     onError?: (errors: string[]) => void;
 }
@@ -103,7 +103,7 @@ export function useScapiFetcherEffect<TData = unknown>(
         const stateChanged = previousStateRef.current !== currentState;
 
         if (stateChanged && currentState === 'idle') {
-            if (currentSuccess && currentData !== undefined && onSuccess) {
+            if (currentSuccess && onSuccess) {
                 try {
                     onSuccess(currentData);
                 } catch (error) {

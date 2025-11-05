@@ -21,11 +21,11 @@ import uiStrings from '@/temp-ui-string';
 import ProductPrice from '@/components/product-price';
 import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
 import { type ReactElement, useEffect, useMemo, useRef } from 'react';
-import { isProductSet } from '@/lib/product-utils';
+import { isProductSet, isStandardProduct } from '@/lib/product-utils';
 
 interface ProductSelectionValues {
     product: ShopperProductsTypes.Product;
-    variant: ShopperProductsTypes.Variant;
+    variant?: ShopperProductsTypes.Variant;
     quantity: number;
 }
 
@@ -119,6 +119,21 @@ export default function ChildProductCard({
     const variationAttributes = useVariationAttributes({ product, isChildProduct: true });
 
     const prevSelectionRef = useRef<{ variantId?: string; quantity: number } | null>(null);
+    const isStandard = isStandardProduct(product);
+
+    // Auto-select standard products
+    useEffect(() => {
+        if (isStandard && !prevSelectionRef.current) {
+            onSelectionChange(product.id, {
+                product,
+                quantity,
+            });
+
+            prevSelectionRef.current = {
+                quantity,
+            };
+        }
+    }, [isStandard, product, quantity, onSelectionChange]);
 
     // Update parent when selection changes
     useEffect(() => {
@@ -219,7 +234,7 @@ export default function ChildProductCard({
 
                 {/* Selection Status */}
                 <div className="text-center text-sm">
-                    {currentVariant ? (
+                    {currentVariant || isStandard ? (
                         <span className="text-primary font-medium">{uiStrings.product.selected}</span>
                     ) : (
                         <span className="text-muted-foreground">{uiStrings.product.selectOptionsAbove}</span>

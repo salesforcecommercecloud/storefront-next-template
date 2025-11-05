@@ -222,3 +222,38 @@ export const getDefaultMessage = (projectDir: string): string => {
         return 'PWA Kit Bundle';
     }
 };
+
+/**
+ * Given a project directory and a record of config overrides, generate a new .env file with the overrides based on the .env.default file.
+ * @param projectDir
+ * @param configOverrides
+ */
+export const generateEnvFile = (projectDir: string, configOverrides: Record<string, string>) => {
+    const envDefaultPath = path.join(projectDir, '.env.default');
+    const envPath = path.join(projectDir, '.env');
+    if (!fs.existsSync(envDefaultPath)) {
+        // eslint-disable-next-line no-console
+        console.warn(`${envDefaultPath} not found`);
+        return;
+    }
+    const envDefaultContent = fs.readFileSync(envDefaultPath, 'utf8');
+    const envDefaultLines = envDefaultContent.split('\n');
+
+    // Create new .env content by taking .env.default as the base and
+    // overriding values when a matching key is supplied in configOverrides.
+    const envOutputLines = envDefaultLines.map((line) => {
+        // Preserve comments and blank lines as-is
+        if (!line || line.trim().startsWith('#')) return line;
+
+        const eqIndex = line.indexOf('=');
+        if (eqIndex === -1) return line;
+
+        const key = line.slice(0, eqIndex);
+        const originalValue = line.slice(eqIndex + 1);
+        const override = Object.prototype.hasOwnProperty.call(configOverrides, key) ? configOverrides[key] : undefined;
+        return `${key}=${override ?? originalValue}`;
+    });
+
+    // Write the generated content to .env (do not modify .env.default)
+    fs.writeFileSync(envPath, envOutputLines.join('\n'));
+};

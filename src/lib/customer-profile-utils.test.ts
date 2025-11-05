@@ -318,64 +318,200 @@ describe('Checkout Prefill Utilities', () => {
             { id: 'overnight', name: 'Overnight Shipping', price: 24.99 },
         ];
 
-        it('should keep current selection if already selected', () => {
-            const result = getDefaultShippingMethod(mockShippingMethods, { id: 'express' });
+        describe('Priority 1: Current Selection', () => {
+            it('should keep current selection if already selected', () => {
+                const result = getDefaultShippingMethod(mockShippingMethods, { id: 'express' });
 
-            expect(result).toBe('express');
+                expect(result).toBe('express');
+            });
+
+            it('should prioritize current selection over defaultShippingMethodId', () => {
+                const result = getDefaultShippingMethod(mockShippingMethods, { id: 'overnight' }, 'express');
+
+                expect(result).toBe('overnight'); // Current selection takes priority
+            });
+
+            it('should handle empty string in current selection', () => {
+                const result = getDefaultShippingMethod(mockShippingMethods, { id: '' });
+
+                expect(result).toBe('standard'); // Falls back since empty string is falsy
+            });
+
+            it('should handle null current selection', () => {
+                const result = getDefaultShippingMethod(mockShippingMethods, null, 'express');
+
+                expect(result).toBe('express'); // Uses defaultShippingMethodId
+            });
+
+            it('should handle undefined id in current selection', () => {
+                const result = getDefaultShippingMethod(mockShippingMethods, { id: undefined }, 'express');
+
+                expect(result).toBe('express'); // Uses defaultShippingMethodId
+            });
         });
 
-        it('should select first method as default when none selected', () => {
-            const result = getDefaultShippingMethod(mockShippingMethods);
+        describe('Priority 2: Empty Methods Array', () => {
+            it('should return undefined when methods array is empty', () => {
+                const result = getDefaultShippingMethod([]);
 
-            expect(result).toBe('standard');
+                expect(result).toBeUndefined();
+            });
+
+            it('should return undefined when methods array is undefined', () => {
+                const result = getDefaultShippingMethod(undefined);
+
+                expect(result).toBeUndefined();
+            });
+
+            it('should return undefined for empty array even with defaultShippingMethodId', () => {
+                const result = getDefaultShippingMethod([], undefined, 'express');
+
+                expect(result).toBeUndefined();
+            });
         });
 
-        it('should return undefined when no methods available', () => {
-            const result = getDefaultShippingMethod([]);
+        describe('Priority 3: defaultShippingMethodId from API', () => {
+            it('should use defaultShippingMethodId from Commerce Cloud API', () => {
+                const result = getDefaultShippingMethod(mockShippingMethods, undefined, 'express');
 
-            expect(result).toBeUndefined();
+                expect(result).toBe('express'); // API's default
+            });
+
+            it('should validate defaultShippingMethodId exists in available methods', () => {
+                const result = getDefaultShippingMethod(mockShippingMethods, undefined, 'nonexistent');
+
+                expect(result).toBe('standard'); // Falls back to first method when invalid
+            });
+
+            it('should handle empty string defaultShippingMethodId', () => {
+                const result = getDefaultShippingMethod(mockShippingMethods, undefined, '');
+
+                expect(result).toBe('standard'); // Falls back to first method
+            });
+
+            it('should handle whitespace-only defaultShippingMethodId', () => {
+                const result = getDefaultShippingMethod(mockShippingMethods, undefined, '   ');
+
+                expect(result).toBe('standard'); // Falls back to first method
+            });
+
+            it('should handle null defaultShippingMethodId', () => {
+                const result = getDefaultShippingMethod(mockShippingMethods, undefined, null);
+
+                expect(result).toBe('standard'); // Falls back to first method
+            });
+
+            it('should be case-sensitive when matching defaultShippingMethodId', () => {
+                const result = getDefaultShippingMethod(mockShippingMethods, undefined, 'EXPRESS');
+
+                expect(result).toBe('standard'); // Falls back since 'EXPRESS' !== 'express'
+            });
+
+            it('should use defaultShippingMethodId for last method in array', () => {
+                const result = getDefaultShippingMethod(mockShippingMethods, undefined, 'overnight');
+
+                expect(result).toBe('overnight'); // Works for any valid ID
+            });
         });
 
-        it('should return undefined when methods array is undefined', () => {
-            const result = getDefaultShippingMethod(undefined);
+        describe('Priority 4: First Method Fallback', () => {
+            it('should fall back to first method when no defaultShippingMethodId provided', () => {
+                const result = getDefaultShippingMethod(mockShippingMethods, undefined, undefined);
 
-            expect(result).toBeUndefined();
+                expect(result).toBe('standard');
+            });
+
+            it('should use first method when defaultShippingMethodId is invalid', () => {
+                const result = getDefaultShippingMethod(mockShippingMethods, undefined, 'invalid-id');
+
+                expect(result).toBe('standard');
+            });
+
+            it('should handle array with single method', () => {
+                const singleMethod = [{ id: 'only-one', name: 'Only Method', price: 9.99 }];
+                const result = getDefaultShippingMethod(singleMethod);
+
+                expect(result).toBe('only-one');
+            });
+
+            it('should return undefined for empty array even with fallback logic', () => {
+                const result = getDefaultShippingMethod([]);
+
+                expect(result).toBeUndefined();
+            });
         });
 
-        it('should handle empty current selection', () => {
-            const result = getDefaultShippingMethod(mockShippingMethods, { id: '' });
+        describe('Real-World Scenarios', () => {
+            it('should handle new customer checkout (no selection, with API default)', () => {
+                const result = getDefaultShippingMethod(mockShippingMethods, undefined, 'express');
 
-            expect(result).toBe('standard');
+                expect(result).toBe('express'); // Uses merchant's configured default
+            });
+
+            it('should handle returning customer with previous selection', () => {
+                const result = getDefaultShippingMethod(mockShippingMethods, { id: 'overnight' }, 'standard');
+
+                expect(result).toBe('overnight'); // Keeps customer's previous choice
+            });
+
+            it('should handle guest checkout (no selection, no API default)', () => {
+                const result = getDefaultShippingMethod(mockShippingMethods, undefined, undefined);
+
+                expect(result).toBe('standard'); // Uses first method
+            });
+
+            it('should handle navigation back to shipping options', () => {
+                const result = getDefaultShippingMethod(mockShippingMethods, { id: 'express' }, 'standard');
+
+                expect(result).toBe('express'); // Preserves selection during navigation
+            });
+
+            it('should handle merchant changing default while user is in checkout', () => {
+                // User selected express, merchant changes default to overnight
+                const result = getDefaultShippingMethod(mockShippingMethods, { id: 'express' }, 'overnight');
+
+                expect(result).toBe('express'); // User's choice takes precedence
+            });
+
+            it('should handle Commerce Cloud API returning no default', () => {
+                const result = getDefaultShippingMethod(mockShippingMethods, undefined, null);
+
+                expect(result).toBe('standard'); // Falls back to first method
+            });
         });
 
-        it('should prioritize Commerce Cloud default method over first method', () => {
-            const methodsWithDefault = [
-                { id: 'standard', name: 'Standard Shipping', price: 5.99 },
-                { id: 'express', name: 'Express Shipping', price: 12.99, default: true },
-                { id: 'overnight', name: 'Overnight Shipping', price: 24.99 },
-            ];
+        describe('Edge Cases', () => {
+            it('should handle methods with minimal data', () => {
+                const minimalMethods = [
+                    { id: 'method1', name: 'Method 1' },
+                    { id: 'method2', name: 'Method 2' },
+                ];
+                const result = getDefaultShippingMethod(minimalMethods, undefined, 'method2');
 
-            const result = getDefaultShippingMethod(methodsWithDefault);
+                expect(result).toBe('method2');
+            });
 
-            expect(result).toBe('express'); // Should pick the one marked as default, not first
-        });
+            it('should handle methods with special characters in ID', () => {
+                const specialMethods = [
+                    { id: 'ups-ground_2024', name: 'UPS Ground', price: 5.99 },
+                    { id: 'fedex.overnight', name: 'FedEx Overnight', price: 25.99 },
+                ];
+                const result = getDefaultShippingMethod(specialMethods, undefined, 'fedex.overnight');
 
-        it('should prioritize preferred method when no default is marked', () => {
-            const methodsWithPreferred = [
-                { id: 'standard', name: 'Standard Shipping', price: 5.99 },
-                { id: 'express', name: 'Express Shipping', price: 12.99 },
-                { id: 'overnight', name: 'Overnight Shipping', price: 24.99, preferred: true },
-            ];
+                expect(result).toBe('fedex.overnight');
+            });
 
-            const result = getDefaultShippingMethod(methodsWithPreferred);
+            it('should handle undefined for all parameters', () => {
+                const result = getDefaultShippingMethod(undefined, undefined, undefined);
 
-            expect(result).toBe('overnight'); // Should pick the preferred one
-        });
+                expect(result).toBeUndefined();
+            });
 
-        it('should fall back to first method when no default or preferred is marked', () => {
-            const result = getDefaultShippingMethod(mockShippingMethods);
+            it('should handle null for all parameters', () => {
+                const result = getDefaultShippingMethod(undefined, null, null);
 
-            expect(result).toBe('standard'); // Falls back to first method
+                expect(result).toBeUndefined();
+            });
         });
     });
 });

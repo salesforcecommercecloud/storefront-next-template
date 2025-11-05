@@ -21,7 +21,6 @@ export const loginRegisteredUser = async (
                 customParameters,
             }
         );
-
         // Update session with user tokens and info
         updateAuth(context, tokenResponse);
         updateAuth(context, (session) => ({

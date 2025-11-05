@@ -12,6 +12,7 @@ import dotenv from "dotenv";
 import { URL as URL$1, fileURLToPath } from "url";
 import fs$1 from "fs";
 import Handlebars from "handlebars";
+import prompts from "prompts";
 
 //#region rolldown:runtime
 var __create = Object.create;
@@ -180,6 +181,28 @@ const getDefaultMessage = (projectDir) => {
 		debug$1("Using default bundle message as no message was provided and not in a Git repo.");
 		return "PWA Kit Bundle";
 	}
+};
+/**
+* Given a project directory and a record of config overrides, generate a new .env file with the overrides based on the .env.default file.
+* @param projectDir
+* @param configOverrides
+*/
+const generateEnvFile = (projectDir, configOverrides) => {
+	const envDefaultPath = path.join(projectDir, ".env.default");
+	const envPath = path.join(projectDir, ".env");
+	if (!fs.existsSync(envDefaultPath)) {
+		console.warn(`${envDefaultPath} not found`);
+		return;
+	}
+	const envOutputLines = fs.readFileSync(envDefaultPath, "utf8").split("\n").map((line) => {
+		if (!line || line.trim().startsWith("#")) return line;
+		const eqIndex = line.indexOf("=");
+		if (eqIndex === -1) return line;
+		const key = line.slice(0, eqIndex);
+		const originalValue = line.slice(eqIndex + 1);
+		return `${key}=${(Object.prototype.hasOwnProperty.call(configOverrides, key) ? configOverrides[key] : void 0) ?? originalValue}`;
+	});
+	fs.writeFileSync(envPath, envOutputLines.join("\n"));
 };
 
 //#endregion
@@ -39343,16 +39366,18 @@ const SINGLE_LINE_MARKER = "@sfdc-extension-line";
 const BLOCK_MARKER_START = "@sfdc-extension-block-start";
 const BLOCK_MARKER_END = "@sfdc-extension-block-end";
 const FILE_MARKER = "@sfdc-extension-file";
-function trimExtensions(directory, selectedExtensions, extensionConfig) {
+let verbose = false;
+function trimExtensions(directory, selectedExtensions, extensionConfig, verboseOverride = false) {
 	const startTime = Date.now();
 	removeComponentCandidates.clear();
+	verbose = verboseOverride ?? false;
 	const configuredExtensions = extensionConfig?.extensions || {};
 	const extensions = {};
 	Object.keys(configuredExtensions).forEach((pluginKey) => {
 		extensions[pluginKey] = Boolean(selectedExtensions?.[pluginKey]) || false;
 	});
 	if (Object.keys(extensions).length === 0) {
-		console.log("No plugins found, skipping trim");
+		if (verbose) console.log("No plugins found, skipping trim");
 		return;
 	}
 	const processDirectory = (dir) => {
@@ -39368,7 +39393,7 @@ function trimExtensions(directory, selectedExtensions, extensionConfig) {
 	processDirectory(directory);
 	removeUnusedComponents(directory, directory);
 	const endTime = Date.now();
-	console.log(`Trim extensions took ${endTime - startTime}ms`);
+	if (verbose) console.log(`Trim extensions took ${endTime - startTime}ms`);
 }
 function processFile(projectRoot, filePath, extensions) {
 	let modified = false;
@@ -39383,7 +39408,7 @@ function processFile(projectRoot, filePath, extensions) {
 		else if (extensions[extMatch] === false) {
 			try {
 				fs$1.unlinkSync(filePath);
-				console.log(`Deleted file ${filePath}`);
+				if (verbose) console.log(`Deleted file ${filePath}`);
 			} catch (e) {
 				const error$1 = e;
 				console.error(`Error deleting file ${filePath}: ${error$1.message}`);
@@ -39417,19 +39442,21 @@ function processFile(projectRoot, filePath, extensions) {
 						line: i
 					});
 					skippingBlock = extensions[matchingExtension] === false;
-				} else throw new Error(`Unknown marker found in ${filePath} at line ${i}: \n${line}`);
+				} else if (verbose) console.warn(`Warning: Unknown marker found in ${filePath} at line ${i}: \n${line}`);
 			} else if (line.includes(BLOCK_MARKER_END)) {
-				const extension = Object.keys(extensions).find((p$1) => line.includes(p$1));
-				if (blockMarkers.length === 0) throw new Error(`Block marker mismatch in ${filePath}, encountered end marker ${extension} without a matching start marker at line ${i}:\n${lines[i]}`);
-				const startMarker = blockMarkers.pop();
-				if (!extension || startMarker.extension !== extension) throw new Error(`Block marker mismatch in ${filePath}, expected end marker for ${startMarker.extension} but got ${extension} at line ${i}:\n${lines[i]}`);
-				if (extensions[extension] === false) {
-					const removedBlock = lines.slice(startMarker.line, i + 1).join("\n");
-					removedBlocks.push(removedBlock);
-					modified = true;
-					skippingBlock = false;
-					i++;
-					continue;
+				if (Object.keys(extensions).find((extension) => line.includes(extension))) {
+					const extension = Object.keys(extensions).find((p$1) => line.includes(p$1));
+					if (blockMarkers.length === 0) throw new Error(`Block marker mismatch in ${filePath}, encountered end marker ${extension} without a matching start marker at line ${i}:\n${lines[i]}`);
+					const startMarker = blockMarkers.pop();
+					if (!extension || startMarker.extension !== extension) throw new Error(`Block marker mismatch in ${filePath}, expected end marker for ${startMarker.extension} but got ${extension} at line ${i}:\n${lines[i]}`);
+					if (extensions[extension] === false) {
+						const removedBlock = lines.slice(startMarker.line, i + 1).join("\n");
+						removedBlocks.push(removedBlock);
+						modified = true;
+						skippingBlock = false;
+						i++;
+						continue;
+					}
 				}
 			}
 			if (!skippingBlock) newLines.push(line);
@@ -39440,7 +39467,7 @@ function processFile(projectRoot, filePath, extensions) {
 			const newSource = newLines.join("\n");
 			try {
 				fs$1.writeFileSync(filePath, newSource);
-				console.log(`Updated file ${filePath}`);
+				if (verbose) console.log(`Updated file ${filePath}`);
 			} catch (e) {
 				const error$1 = e;
 				console.error(`Error updating file ${filePath}: ${error$1.message}`);
@@ -39459,7 +39486,7 @@ function processFile(projectRoot, filePath, extensions) {
 						sourceType: "module",
 						plugins: ["jsx", "typescript"]
 					});
-					console.log(`traversing block ${block}`);
+					if (verbose) console.log(`traversing block ${block}`);
 					traverse(ast, {
 						noScope: true,
 						ImportDeclaration(nodePath) {
@@ -39545,43 +39572,144 @@ function removeUnusedComponents(directory, projectRoot) {
 		}
 		return filePath;
 	});
-	console.log("\nUnused components:");
-	unusedFiles.forEach((file$1) => {
-		console.log(`- ${file$1}`);
-	});
-	console.log("Remove component candidates:");
-	Array.from(removeComponentCandidates).forEach((file$1) => {
-		console.log(`- ${file$1}`);
-	});
+	if (verbose) {
+		console.log("\nUnused components:");
+		unusedFiles.forEach((file$1) => {
+			console.log(`- ${file$1}`);
+		});
+		console.log("Remove component candidates:");
+		Array.from(removeComponentCandidates).forEach((file$1) => {
+			console.log(`- ${file$1}`);
+		});
+	}
 	const filesToRemove = unusedFiles.filter((filePath) => removeComponentCandidates.has(filePath));
-	console.log("Files to remove:");
-	filesToRemove.forEach((file$1) => {
-		console.log(`- ${file$1}`);
-	});
-	if (filesToRemove.length > 0) {
-		console.log("\nDeleting unused components:");
+	if (verbose) {
+		console.log("Files to remove:");
 		filesToRemove.forEach((file$1) => {
 			console.log(`- ${file$1}`);
+		});
+	}
+	if (filesToRemove.length > 0) {
+		if (verbose) console.log("\nDeleting unused components:");
+		filesToRemove.forEach((file$1) => {
+			if (verbose) console.log(`- ${file$1}`);
 			try {
 				if (fs$1.statSync(file$1).isDirectory()) {
 					fs$1.rmSync(file$1, {
 						recursive: true,
 						force: true
 					});
-					console.log(`  ✓ Successfully deleted directory`);
+					if (verbose) console.log(`  ✓ Successfully deleted directory`);
 				} else {
 					fs$1.unlinkSync(file$1);
-					console.log(`  ✓ Successfully deleted file`);
+					if (verbose) console.log(`  ✓ Successfully deleted file`);
 				}
 			} catch (err) {
 				const error$1 = err;
-				if (error$1.code === "EPERM") console.log(`  ✗ Permission denied - cannot delete. You may need to run with sudo or check permissions.`);
-				else console.log(`  ✗ Error deleting: ${error$1.message}`);
+				if (error$1.code === "EPERM") console.error(`  ✗ Permission denied - cannot delete. You may need to run with sudo or check permissions.`);
+				else console.error(`  ✗ Error deleting: ${error$1.message}`);
 			}
 		});
-	} else console.log("\nNo unused components found.");
+	} else if (verbose) console.log("\nNo unused components found.");
 	return unusedFiles;
 }
+
+//#endregion
+//#region src/create-storefront.ts
+const DEFAULT_STOREFRONT = "sfcc-storefront";
+const STOREFRONT_NEXT_GITHUB_URL = "https://github.com/SalesforceCommerceCloud/storefront-next-template";
+const createStorefront = async () => {
+	try {
+		execSync("git --version", { stdio: "ignore" });
+	} catch (e) {
+		error(`❌ git is not installed or not found in your PATH. Please install git before running this command: ${String(e)}`);
+		process.exit(1);
+	}
+	const { storefront } = await prompts({
+		type: "text",
+		name: "storefront",
+		message: "🏪 What would you like to name your storefront?\n",
+		initial: DEFAULT_STOREFRONT
+	});
+	if (!storefront) {
+		error("Storefront name is required");
+		process.exit(1);
+	}
+	console.log("\n");
+	let { template } = await prompts({
+		type: "select",
+		name: "template",
+		message: "📄 Which template would you like to use for your storefront?\n",
+		choices: [{
+			title: "Salesforce Commerce Cloud Retail Storefront",
+			value: STOREFRONT_NEXT_GITHUB_URL
+		}, {
+			title: "A different template (I will provide the Github URL)",
+			value: "custom"
+		}]
+	});
+	console.log("\n");
+	if (template === "custom") {
+		const { githubUrl } = await prompts({
+			type: "text",
+			name: "githubUrl",
+			message: "🌐 What is the Github URL for your template?\n"
+		});
+		if (!githubUrl) {
+			error("Github URL is required");
+			process.exit(1);
+		}
+		template = githubUrl;
+	}
+	execSync(`git clone ${template} ${storefront}`);
+	const gitDir = path.join(storefront, ".git");
+	if (fs.existsSync(gitDir)) fs.rmSync(gitDir, {
+		recursive: true,
+		force: true
+	});
+	console.log("\n");
+	if (fs.existsSync(path.join(storefront, "src", "extensions", "config.json"))) {
+		const extensionConfigText = fs.readFileSync(path.join(storefront, "src", "extensions", "config.json"), "utf8");
+		const extensionConfig = JSON.parse(extensionConfigText);
+		if (extensionConfig.extensions) {
+			const { selectedExtensions } = await prompts({
+				type: "multiselect",
+				name: "selectedExtensions",
+				message: "🔌 Which extension would you like to enable? (use arrow keys to select, space to toggle, enter to confirm)\n",
+				choices: Object.keys(extensionConfig.extensions).map((extension) => ({
+					title: `${extensionConfig.extensions[extension].name} - ${extensionConfig.extensions[extension].description}`,
+					value: extension,
+					selected: true
+				})),
+				instructions: false
+			});
+			trimExtensions(storefront, Object.fromEntries(selectedExtensions.map((ext) => [ext, true])), { extensions: extensionConfig.extensions });
+		}
+	}
+	const configMeta = JSON.parse(fs.readFileSync(path.join(storefront, "src", "config", "config-meta.json"), "utf8"));
+	const envDefaultPath = path.join(storefront, ".env.default");
+	let envDefaultValues = {};
+	if (fs.existsSync(envDefaultPath)) envDefaultValues = dotenv.parse(fs.readFileSync(envDefaultPath, "utf8"));
+	console.log("\n⚙️ We will now configure your storefront before it is ready to run.\n");
+	const configOverrides = {};
+	for (const config of configMeta.configs) {
+		const answer = await prompts({
+			type: "text",
+			name: config.key,
+			message: `What is the value for ${config.name}? (default: ${envDefaultValues[config.key]})\n`,
+			initial: envDefaultValues[config.key] ?? ""
+		});
+		configOverrides[config.key] = answer[config.key];
+	}
+	generateEnvFile(storefront, configOverrides);
+	console.log(`
+    ╔══════════════════════════════════════════════════════════════════╗
+    ║                       CONGRATULATIONS                            ║
+    ╚══════════════════════════════════════════════════════════════════╝
+
+    🎉 Congratulations! Your storefront is ready to use! 🎉
+    `);
+};
 
 //#endregion
 //#region src/cli.ts
@@ -39598,6 +39726,13 @@ const handleCommandError = (label, err) => {
 	process.exit(1);
 };
 program.name("sfnext").description("Dev and build tools for SFCC Storefront Next").version(version);
+program.command("create-storefront").description("Create a new storefront project").action(async () => {
+	try {
+		await createStorefront();
+	} catch (err) {
+		handleCommandError("create-storefront", err);
+	}
+});
 program.command("push").description("Create and push bundle to Managed Runtime").requiredOption("-d, --project-directory <dir>", "Project directory").option("-b, --build-directory <dir>", "Build directory to push (default: auto-detected)").option("-m, --message <message>", "Bundle message (default: git branch:commit)").option("-s, --project-slug <slug>", "Project slug - the unique identifier for your project on Managed Runtime (default: from .env MRT_PROJECT or package.json name)").option("-t, --target <target>", "Deploy target environment (default: from .env MRT_TARGET)").option("-w, --wait", "Wait for deployment to complete", false).option("--cloud-origin <origin>", "API origin", DEFAULT_CLOUD_ORIGIN).option("-c, --credentials-file <file>", "Credentials file location").option("-u, --user <email>", "User email for Managed Runtime").option("-k, --key <api-key>", "API key for Managed Runtime").action(async (options) => {
 	try {
 		await push({
@@ -39617,12 +39752,11 @@ program.command("push").description("Create and push bundle to Managed Runtime")
 		handleCommandError("Push", err);
 	}
 });
-program.command("create-instructions").description("Generate LLM instructions using prompt templating for installing and uninstalling Storefront Next feature extensions").requiredOption("-d, --project-directory <dir>", "Project directory").requiredOption("-c, --extension-config <config>", "Extension config JSON file location").requiredOption("-e, --extension <extension>", "Extension marker value (e.g. SFDC_EXT_featureA)").option("-p, --pwa-repo <repo>", "PWA repo URL (default: https://github.com/SalesforceCommerceCloud/SFCC-Odyssey.git)").option("-b, --branch <branch>", "PWA repo branch (default: main)").option("-f, --files <files...>", "Specific files to include (relative to project directory)").option("-o, --output-dir <dir>", "Output directory (default: ./instructions)").action(async (options) => {
+program.command("create-instructions").description("Generate LLM instructions using prompt templating for installing and uninstalling Storefront Next feature extensions").requiredOption("-d, --project-directory <dir>", "Project directory").requiredOption("-c, --extension-config <config>", "Extension config JSON file location").requiredOption("-e, --extension <extension>", "Extension marker value (e.g. SFDC_EXT_featureA)").option("-p, --pwa-repo <repo>", "PWA repo URL (default: https://github.com/SalesforceCommerceCloud/SFCC-Odyssey.git)").option("-b, --branch <branch>", "PWA repo branch (default: main)").option("-f, --files <files...>", "Specific files to include (relative to project directory)").option("-o, --output-dir <dir>", "Output directory (default: ./instructions)").action((options) => {
 	try {
-		const path$1 = await import("path");
 		const baseDir = process.cwd();
-		const projectDirectory = path$1.resolve(baseDir, options.projectDirectory);
-		const extensionConfig = path$1.resolve(baseDir, options.extensionConfig);
+		const projectDirectory = path.resolve(baseDir, options.projectDirectory);
+		const extensionConfig = path.resolve(baseDir, options.extensionConfig);
 		const files = options.files ?? void 0;
 		generateInstructions(projectDirectory, options.extension, options.outputDir, options.pwaRepo, options.branch, files, extensionConfig, `${__dirname}/extensibility/templates`);
 		process.exit(0);
@@ -39630,13 +39764,12 @@ program.command("create-instructions").description("Generate LLM instructions us
 		handleCommandError("create-instructions", err);
 	}
 });
-program.command("manage-extensions").description("Manage features extensions for a template project").requiredOption("-d, --project-directory <dir>", "Project directory to trim").requiredOption("-c, --extension-config <config>", "Extension config JSON file location").option("-e, --extensions <extensions>", "Comma-separated list of enabled extension marker values (e.g. SFDC_EXT_featureA)").action(async (options) => {
+program.command("manage-extensions").description("Manage features extensions for a template project").requiredOption("-d, --project-directory <dir>", "Project directory to trim").requiredOption("-c, --extension-config <config>", "Extension config JSON file location").option("-e, --extensions <extensions>", "Comma-separated list of enabled extension marker values (e.g. SFDC_EXT_featureA)").action((options) => {
 	try {
-		const path$1 = await import("path");
 		const cwd = process.cwd();
-		const directory = path$1.resolve(cwd, options.projectDirectory);
-		const extensionConfig = path$1.resolve(cwd, options.extensionConfig);
-		const jsonText = (await import("fs")).readFileSync(extensionConfig, "utf8");
+		const directory = path.resolve(cwd, options.projectDirectory);
+		const extensionConfig = path.resolve(cwd, options.extensionConfig);
+		const jsonText = fs.readFileSync(extensionConfig, "utf8");
 		const configuredExtensions = JSON.parse(jsonText);
 		let enabledExtensions = void 0;
 		if (options.extensions) {

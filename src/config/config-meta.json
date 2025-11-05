@@ -1,0 +1,20 @@
+{
+    "configs": [
+        {
+            "name": "API Client ID",
+            "key": "PUBLIC_COMMERCE_API_CLIENT_ID"
+        }, 
+        {
+            "name": "API Organization ID",
+            "key": "PUBLIC_COMMERCE_API_ORG_ID"
+        }, 
+        {
+            "name": "API Short Code",
+            "key": "PUBLIC_COMMERCE_API_SHORT_CODE"
+        }, 
+        {
+            "name": "API Site ID",
+            "key": "PUBLIC_COMMERCE_API_SITE_ID"
+        }
+    ]
+}

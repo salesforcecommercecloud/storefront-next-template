@@ -1,6 +1,6 @@
 import type { ActionFunctionArgs, RouterContextProvider } from 'react-router';
 import { extractResponseError } from '@/lib/utils';
-import { refreshAccessToken, loginGuestUser, loginRegisteredUser } from '@/middlewares/auth.server';
+import { refreshAccessToken, loginGuestUser, loginRegisteredUser, updateAuth } from '@/middlewares/auth.server';
 
 interface RefreshTokenRequest {
     refreshToken: string;
@@ -34,7 +34,6 @@ const authHandlers: Record<string, AuthHandler> = {
 // eslint-disable-next-line custom/no-server-actions -- Resource routes are designed for server-side operations like authentication
 export async function action({ request, params, context }: ActionFunctionArgs) {
     const operation = params.operation as string;
-
     try {
         const handler = authHandlers[operation];
 
@@ -61,7 +60,13 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
  */
 async function handleRefreshToken(request: Request, context: Readonly<RouterContextProvider>) {
     const body: RefreshTokenRequest = await request.json();
-    return await refreshAccessToken(context, body.refreshToken);
+
+    const tokenResponse = await refreshAccessToken(context, body.refreshToken);
+
+    // Update the auth context with the new token response
+    updateAuth(context, tokenResponse);
+
+    return tokenResponse;
 }
 
 /**
@@ -70,9 +75,18 @@ async function handleRefreshToken(request: Request, context: Readonly<RouterCont
 async function handleLoginGuest(request: Request, context: Readonly<RouterContextProvider>) {
     const body: LoginGuestRequest = await request.json();
 
-    return await loginGuestUser(context, {
+    const tokenResponse = await loginGuestUser(context, {
         usid: body.usid,
     });
+
+    // Update the auth context with the new token response
+    updateAuth(context, tokenResponse);
+    updateAuth(context, (session) => ({
+        ...session,
+        userType: 'guest',
+    }));
+
+    return tokenResponse;
 }
 
 /**
@@ -81,7 +95,16 @@ async function handleLoginGuest(request: Request, context: Readonly<RouterContex
 async function handleLoginRegistered(request: Request, context: Readonly<RouterContextProvider>) {
     const body: LoginRegisteredRequest = await request.json();
 
-    return await loginRegisteredUser(context, body.email, body.password, {
+    const tokenResponse = await loginRegisteredUser(context, body.email, body.password, {
         customParameters: body.customParameters,
     });
+
+    // Update the auth context with the new token response
+    updateAuth(context, tokenResponse);
+    updateAuth(context, (session) => ({
+        ...session,
+        userType: 'registered',
+    }));
+
+    return tokenResponse;
 }

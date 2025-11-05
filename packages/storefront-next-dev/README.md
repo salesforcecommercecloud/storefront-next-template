@@ -65,6 +65,12 @@ export default {
 
 ### CLI Commands
 
+#### Create storefront
+```bash
+# Create storefront
+sfnext create-storefront
+```
+
 #### Push bundle
 
 ```bash

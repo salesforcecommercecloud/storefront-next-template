@@ -131,7 +131,17 @@ export function getPaymentMethodsFromCustomer(customerProfile?: CustomerProfile)
 
 /**
  * Get default shipping method from available methods
- * Prioritizes Commerce Cloud's configured default, then falls back to first method
+ *
+ * Determines which shipping method should be selected based on a priority system:
+ * 1. Current selection (if user has already chosen a method)
+ * 2. Commerce Cloud's defaultShippingMethodId
+ * 3. First available method
+ *
+ * @param availableShippingMethods - Array of available shipping methods from Commerce Cloud API
+ * @param currentlySelected - Currently selected shipping method from basket (if any)
+ * @param defaultShippingMethodId - Default shipping method ID from Commerce Cloud API
+ *                                   (ShippingMethodResult.defaultShippingMethodId)
+ * @returns The shipping method ID to select, or undefined if no methods available
  */
 export function getDefaultShippingMethod(
     availableShippingMethods?: Array<{
@@ -139,30 +149,32 @@ export function getDefaultShippingMethod(
         name: string;
         price?: number;
         description?: string;
-        default?: boolean; // Commerce Cloud default indicator
-        preferred?: boolean; // Alternative property name
     }>,
-    currentlySelected?: { id?: string }
+    currentlySelected?: { id?: string } | null,
+    defaultShippingMethodId?: string | null
 ): string | undefined {
-    // If already has a selection, keep it
+    // If shopper has already selected a method, continue with shopper's choice
     if (currentlySelected?.id) {
         return currentlySelected.id;
     }
 
-    // If no methods available, return undefined
+    // Early return if no shipping methods available for this address
+    // TODO: Decide UX on how to handle this.
     if (!availableShippingMethods || availableShippingMethods.length === 0) {
         return undefined;
     }
 
-    // First priority: Commerce Cloud's configured default shipping method
-    const defaultMethod = availableShippingMethods.find((method) => method.default || method.preferred);
-    if (defaultMethod) {
-        return defaultMethod.id;
+    // Use Commerce Cloud's configured defaultShippingMethodId from API
+    // Also validate that the ID exists in available methods to prevent invalid selections
+    if (defaultShippingMethodId) {
+        const isValidDefaultId = availableShippingMethods.some((method) => method.id === defaultShippingMethodId);
+        if (isValidDefaultId) {
+            return defaultShippingMethodId;
+        }
     }
 
     // Fallback: Select the first available method
-    // This maintains backward compatibility and follows common e-commerce UX patterns
-    return availableShippingMethods[0].id;
+    return availableShippingMethods[0]?.id;
 }
 
 /**

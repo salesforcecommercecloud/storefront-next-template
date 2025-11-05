@@ -29,14 +29,17 @@ const SINGLE_LINE_MARKER = '@sfdc-extension-line';
 const BLOCK_MARKER_START = '@sfdc-extension-block-start';
 const BLOCK_MARKER_END = '@sfdc-extension-block-end';
 const FILE_MARKER = '@sfdc-extension-file';
+let verbose = false;
 
 export default function trimExtensions(
     directory: string,
     selectedExtensions?: Partial<ExtensionsSelection>,
-    extensionConfig?: typeof ExtensionConfig
+    extensionConfig?: typeof ExtensionConfig,
+    verboseOverride: boolean = false
 ): void {
     const startTime = Date.now();
     removeComponentCandidates.clear();
+    verbose = verboseOverride ?? false;
 
     // read available extensions from config file
 
@@ -47,7 +50,9 @@ export default function trimExtensions(
     });
 
     if (Object.keys(extensions).length === 0) {
-        console.log('No plugins found, skipping trim');
+        if (verbose) {
+            console.log('No plugins found, skipping trim');
+        }
         return;
     }
 
@@ -70,7 +75,9 @@ export default function trimExtensions(
     processDirectory(directory);
     removeUnusedComponents(directory, directory);
     const endTime = Date.now();
-    console.log(`Trim extensions took ${endTime - startTime}ms`);
+    if (verbose) {
+        console.log(`Trim extensions took ${endTime - startTime}ms`);
+    }
 }
 
 function processFile(projectRoot: string, filePath: string, extensions: ExtensionsSelection): void {
@@ -90,7 +97,9 @@ function processFile(projectRoot: string, filePath: string, extensions: Extensio
         } else if (extensions[extMatch] === false) {
             try {
                 fs.unlinkSync(filePath);
-                console.log(`Deleted file ${filePath}`);
+                if (verbose) {
+                    console.log(`Deleted file ${filePath}`);
+                }
             } catch (e: unknown) {
                 const error = e as Error;
                 console.error(`Error deleting file ${filePath}: ${error.message}`);
@@ -125,28 +134,33 @@ function processFile(projectRoot: string, filePath: string, extensions: Extensio
                     blockMarkers.push({ extension: matchingExtension, line: i });
                     skippingBlock = extensions[matchingExtension] === false;
                 } else {
-                    throw new Error(`Unknown marker found in ${filePath} at line ${i}: \n${line}`);
+                    if (verbose) {
+                        console.warn(`Warning: Unknown marker found in ${filePath} at line ${i}: \n${line}`);
+                    }
                 }
             } else if (line.includes(BLOCK_MARKER_END)) {
-                const extension = Object.keys(extensions).find((p) => line.includes(p));
-                if (blockMarkers.length === 0) {
-                    throw new Error(
-                        `Block marker mismatch in ${filePath}, encountered end marker ${extension} without a matching start marker at line ${i}:\n${lines[i]}`
-                    );
-                }
-                const startMarker = blockMarkers.pop() as { extension: string; line: number };
-                if (!extension || startMarker.extension !== extension) {
-                    throw new Error(
-                        `Block marker mismatch in ${filePath}, expected end marker for ${startMarker.extension} but got ${extension} at line ${i}:\n${lines[i]}`
-                    );
-                }
-                if (extensions[extension] === false) {
-                    const removedBlock = lines.slice(startMarker.line, i + 1).join('\n');
-                    removedBlocks.push(removedBlock);
-                    modified = true;
-                    skippingBlock = false;
-                    i++;
-                    continue;
+                const matchingExtension = Object.keys(extensions).find((extension) => line.includes(extension));
+                if (matchingExtension) {
+                    const extension = Object.keys(extensions).find((p) => line.includes(p));
+                    if (blockMarkers.length === 0) {
+                        throw new Error(
+                            `Block marker mismatch in ${filePath}, encountered end marker ${extension} without a matching start marker at line ${i}:\n${lines[i]}`
+                        );
+                    }
+                    const startMarker = blockMarkers.pop() as { extension: string; line: number };
+                    if (!extension || startMarker.extension !== extension) {
+                        throw new Error(
+                            `Block marker mismatch in ${filePath}, expected end marker for ${startMarker.extension} but got ${extension} at line ${i}:\n${lines[i]}`
+                        );
+                    }
+                    if (extensions[extension] === false) {
+                        const removedBlock = lines.slice(startMarker.line, i + 1).join('\n');
+                        removedBlocks.push(removedBlock);
+                        modified = true;
+                        skippingBlock = false;
+                        i++;
+                        continue;
+                    }
                 }
             }
             if (!skippingBlock) {
@@ -163,7 +177,9 @@ function processFile(projectRoot: string, filePath: string, extensions: Extensio
             const newSource = newLines.join('\n');
             try {
                 fs.writeFileSync(filePath, newSource);
-                console.log(`Updated file ${filePath}`);
+                if (verbose) {
+                    console.log(`Updated file ${filePath}`);
+                }
             } catch (e: unknown) {
                 const error = e as Error;
                 console.error(`Error updating file ${filePath}: ${error.message}`);
@@ -187,7 +203,9 @@ function processFile(projectRoot: string, filePath: string, extensions: Extensio
                             sourceType: 'module',
                             plugins: ['jsx', 'typescript'],
                         });
-                        console.log(`traversing block ${block}`);
+                        if (verbose) {
+                            console.log(`traversing block ${block}`);
+                        }
                         traverse(ast, {
                             noScope: true,
                             ImportDeclaration(nodePath: { node: { source: { value: string } } }) {
@@ -304,45 +322,59 @@ function removeUnusedComponents(directory: string, projectRoot: string): string[
             return filePath;
         });
 
-    console.log('\nUnused components:');
-    unusedFiles.forEach((file) => {
-        console.log(`- ${file}`);
-    });
-    console.log('Remove component candidates:');
-    Array.from(removeComponentCandidates).forEach((file) => {
-        console.log(`- ${file}`);
-    });
+    if (verbose) {
+        console.log('\nUnused components:');
+        unusedFiles.forEach((file) => {
+            console.log(`- ${file}`);
+        });
+        console.log('Remove component candidates:');
+        Array.from(removeComponentCandidates).forEach((file) => {
+            console.log(`- ${file}`);
+        });
+    }
     const filesToRemove = unusedFiles.filter((filePath) => removeComponentCandidates.has(filePath));
-    console.log('Files to remove:');
-    filesToRemove.forEach((file) => {
-        console.log(`- ${file}`);
-    });
-    if (filesToRemove.length > 0) {
-        console.log('\nDeleting unused components:');
+    if (verbose) {
+        console.log('Files to remove:');
         filesToRemove.forEach((file) => {
             console.log(`- ${file}`);
+        });
+    }
+    if (filesToRemove.length > 0) {
+        if (verbose) {
+            console.log('\nDeleting unused components:');
+        }
+        filesToRemove.forEach((file) => {
+            if (verbose) {
+                console.log(`- ${file}`);
+            }
             try {
                 const stats = fs.statSync(file);
                 if (stats.isDirectory()) {
                     fs.rmSync(file, { recursive: true, force: true });
-                    console.log(`  ✓ Successfully deleted directory`);
+                    if (verbose) {
+                        console.log(`  ✓ Successfully deleted directory`);
+                    }
                 } else {
                     fs.unlinkSync(file);
-                    console.log(`  ✓ Successfully deleted file`);
+                    if (verbose) {
+                        console.log(`  ✓ Successfully deleted file`);
+                    }
                 }
             } catch (err: unknown) {
                 const error = err as Error & { code?: string };
                 if (error.code === 'EPERM') {
-                    console.log(
+                    console.error(
                         `  ✗ Permission denied - cannot delete. You may need to run with sudo or check permissions.`
                     );
                 } else {
-                    console.log(`  ✗ Error deleting: ${error.message}`);
+                    console.error(`  ✗ Error deleting: ${error.message}`);
                 }
             }
         });
     } else {
-        console.log('\nNo unused components found.');
+        if (verbose) {
+            console.log('\nNo unused components found.');
+        }
     }
 
     return unusedFiles;
