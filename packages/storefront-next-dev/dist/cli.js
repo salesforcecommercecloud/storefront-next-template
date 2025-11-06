@@ -272,7 +272,7 @@ const createBundle = async (options) => {
 
 //#endregion
 //#region package.json
-var version = "1.0.0";
+var version = "0.0.1";
 
 //#endregion
 //#region src/cloud-api.ts
@@ -472,6 +472,11 @@ async function push(options) {
 
 //#endregion
 //#region src/extensibility/create-instructions.ts
+/**
+* This script is used to create a LLM instruction file for a given extension.
+* @author kzheng
+* @since 260
+*/
 const REL_RETAIL_RSC_APP_DIR = "packages/template-retail-rsc-app/";
 const SKIP_DIRS = [
 	"node_modules",
@@ -39357,6 +39362,10 @@ function isSupportedFileExtension(fileName) {
 
 //#endregion
 //#region src/extensibility/trim-extensions.ts
+/**
+* Utility to trim the directory to remove unused components and unused extensions.
+* This is used to reduce the size of the project by removing the code that is not part of the selected extensions.
+*/
 const traverse = import_lib$1.default.default || import_lib$1.default;
 const removeComponentCandidates = /* @__PURE__ */ new Set();
 const SEPARATOR = path.sep;

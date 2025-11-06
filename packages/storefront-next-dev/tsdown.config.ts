@@ -16,6 +16,7 @@ export default defineConfig([
             index: 'src/index.ts',
         },
         platform: 'node',
+        target: 'node22',
         format: ['esm'],
         dts: true,
         outDir: 'dist',
@@ -38,6 +39,7 @@ export default defineConfig([
             ssr: 'src/mrt/ssr.ts',
         },
         platform: 'node',
+        target: 'node22',
         format: ['cjs'],
         outExtensions: () => {
             return {
@@ -65,6 +67,7 @@ export default defineConfig([
             'react-router.config': 'src/configs/react-router.config.ts',
         },
         platform: 'node',
+        target: 'node22',
         format: ['esm'],
         dts: true,
         outDir: 'dist/configs',
@@ -76,6 +79,7 @@ export default defineConfig([
             push: 'src/push.ts',
         },
         platform: 'node',
+        target: 'node22',
         format: ['esm'],
         dts: true,
         outDir: 'dist',
@@ -86,6 +90,8 @@ export default defineConfig([
         entry: {
             cli: 'src/cli.ts',
         },
+        platform: 'node',
+        target: 'node22',
         format: ['esm'],
         banner: {
             js: '#!/usr/bin/env node',

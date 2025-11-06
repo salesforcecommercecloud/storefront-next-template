@@ -217,7 +217,7 @@ const createBundle = async (options) => {
 
 //#endregion
 //#region package.json
-var version = "1.0.0";
+var version = "0.0.1";
 
 //#endregion
 //#region src/cloud-api.ts

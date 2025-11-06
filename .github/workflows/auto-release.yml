@@ -1,0 +1,169 @@
+name: Auto Release
+
+# This workflow automatically creates releases when stable versions are pushed
+# from release branches in the monorepo.
+#
+# Trigger Conditions (ALL must be true):
+# 1. Push to release-* branch (not main)
+# 2. Version in package.json is stable (X.Y.Z format, no -dev/-preview/-alpha/etc.)
+# 3. Version tag doesn't already exist
+#
+# Version Examples:
+# ✅ 1.0.0 → Creates v1.0.0 release
+# ✅ 1.5.3 → Creates v1.5.3 release
+# ❌ 1.0.0-dev → Skipped (dev version)
+# ❌ 1.0.0-preview.0 → Skipped (preview version)
+# ❌ 1.0.0-alpha.1 → Skipped (alpha version)
+#
+# This workflow runs IN THE MIRROR REPO (not the monorepo).
+# It is synced from the monorepo template as part of the sync process.
+
+on:
+  push:
+    branches:
+      - 'release-*'  # Only release branches can trigger releases
+
+env:
+  NODE_VERSION: '22'
+  PNPM_VERSION: '10.16.1'
+
+jobs:
+  auto-release:
+    runs-on: ubuntu-latest
+    # Allow up to 10 minutes for release creation
+    timeout-minutes: 10
+    permissions:
+      contents: write  # Required to create tags and releases
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Needed for git log and tag operations
+
+      - name: Read version from package.json
+        id: version
+        run: |
+          # Read version from package.json
+          VERSION=$(node -p "require('./package.json').version")
+
+          if [ -z "$VERSION" ]; then
+            echo "❌ Failed to read version from package.json"
+            exit 1
+          fi
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+          echo "📦 Package version: $VERSION"
+
+      - name: Check if version is stable (release candidate)
+        id: check_stable
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+
+          # Check if version matches stable semver format (X.Y.Z only, no suffix)
+          if [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "is_stable=true" >> $GITHUB_OUTPUT
+            echo "✅ Stable version detected: $VERSION"
+          else
+            echo "is_stable=false" >> $GITHUB_OUTPUT
+            echo "🚧 Prerelease version detected: $VERSION"
+            echo "   Skipping release creation (prerelease versions are not published)"
+          fi
+
+      - name: Check if tag already exists
+        id: check_tag
+        if: steps.check_stable.outputs.is_stable == 'true'
+        run: |
+          TAG="${{ steps.version.outputs.tag }}"
+
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "⚠️  Tag $TAG already exists"
+            echo "   Skipping release creation (version already released)"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "✅ Tag $TAG is available"
+          fi
+
+      - name: Get previous release tag
+        id: prev_release
+        if: steps.check_stable.outputs.is_stable == 'true' && steps.check_tag.outputs.exists == 'false'
+        run: |
+          # Find the most recent version tag (not sync tags) on this branch
+          PREV_TAG=$(git tag -l "v*.*.*" --merged HEAD | sort -V | tail -1)
+
+          if [ -z "$PREV_TAG" ]; then
+            echo "No previous release found on this branch"
+            echo "tag=" >> $GITHUB_OUTPUT
+          else
+            echo "tag=$PREV_TAG" >> $GITHUB_OUTPUT
+            echo "📋 Previous release: $PREV_TAG"
+          fi
+
+      - name: Create version tag
+        if: steps.check_stable.outputs.is_stable == 'true' && steps.check_tag.outputs.exists == 'false'
+        run: |
+          TAG="${{ steps.version.outputs.tag }}"
+          VERSION="${{ steps.version.outputs.version }}"
+          BRANCH="${{ github.ref_name }}"
+
+          # Configure git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Create annotated tag
+          git tag -a "$TAG" -m "Release $VERSION" \
+            -m "" \
+            -m "Released from branch: $BRANCH" \
+            -m "Commit: ${{ github.sha }}" \
+            -m "Release date: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
+          # Push tag
+          git push origin "$TAG"
+
+          echo "✅ Created and pushed tag $TAG"
+
+      - name: Create GitHub Release
+        if: steps.check_stable.outputs.is_stable == 'true' && steps.check_tag.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${{ steps.version.outputs.tag }}"
+          VERSION="${{ steps.version.outputs.version }}"
+          PREV_TAG="${{ steps.prev_release.outputs.tag }}"
+
+          # Build release notes from commit history
+          if [ -n "$PREV_TAG" ]; then
+            echo "📝 Generating release notes from $PREV_TAG to $TAG"
+          else
+            echo "📝 Generating release notes for initial release"
+          fi
+
+          # Create release with auto-generated notes
+          gh release create "$TAG" \
+            --title "$VERSION" \
+            --generate-notes \
+            --notes-start-tag "${PREV_TAG:-}"
+
+          echo "✅ GitHub Release $TAG created successfully"
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## 🎉 Auto-Release Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version**: ${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tag**: ${{ steps.version.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Is Stable**: ${{ steps.check_stable.outputs.is_stable || 'N/A' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tag Exists**: ${{ steps.check_tag.outputs.exists || 'N/A' }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ steps.check_stable.outputs.is_stable }}" = "true" ] && [ "${{ steps.check_tag.outputs.exists }}" = "false" ]; then
+            echo "✅ **Release Created**: [View Release](https://github.com/${{ github.repository }}/releases/tag/${{ steps.version.outputs.tag }})" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ steps.check_stable.outputs.is_stable }}" = "false" ]; then
+            echo "ℹ️ **Skipped**: Prerelease version (${{ steps.version.outputs.version }})" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ steps.check_tag.outputs.exists }}" = "true" ]; then
+            echo "ℹ️ **Skipped**: Tag already exists" >> $GITHUB_STEP_SUMMARY
+          fi

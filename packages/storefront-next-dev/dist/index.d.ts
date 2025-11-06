@@ -73,5 +73,19 @@ interface PushOptions {
  */
 declare function push(options: PushOptions): Promise<void>;
 //#endregion
-export { type PushOptions, type StorefrontNextPluginsConfig, storefrontNextPlugins as default, push };
+//#region src/extensibility/extension-config.d.ts
+type ExtensionMeta = {
+  name: string;
+  description: string;
+  dependencies: string[];
+};
+declare const ExtensionConfig: {
+  extensions: Record<string, ExtensionMeta>;
+};
+//#endregion
+//#region src/extensibility/trim-extensions.d.ts
+type ExtensionsSelection = Record<string, boolean>;
+declare function trimExtensions(directory: string, selectedExtensions?: Partial<ExtensionsSelection>, extensionConfig?: typeof ExtensionConfig, verboseOverride?: boolean): void;
+//#endregion
+export { type PushOptions, type StorefrontNextPluginsConfig, storefrontNextPlugins as default, push, trimExtensions };
 //# sourceMappingURL=index.d.ts.map

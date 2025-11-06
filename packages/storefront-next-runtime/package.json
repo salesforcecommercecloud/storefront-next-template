@@ -1,0 +1,66 @@
+{
+  "name": "@salesforce/storefront-next-runtime",
+  "version": "0.0.1",
+  "description": "Runtime agnostic libraries for SFCC Storefront Next",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./design": {
+      "import": {
+        "types": "./dist/design.d.ts",
+        "default": "./dist/design.js"
+      }
+    },
+    "./design/react": {
+      "import": {
+        "types": "./dist/design-react.d.ts",
+        "default": "./dist/design-react.js"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "pnpm typecheck && pnpm test:unit",
+    "test:unit": "vitest --run --coverage",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "salesforce",
+    "storefront-next",
+    "commerce-cloud",
+    "runtime"
+  ],
+  "author": "cc-pwa-kit@salesforce.com",
+  "license": "MIT",
+  "devDependencies": {
+    "@testing-library/react": "^16.1.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/semver": "^7.5.8",
+    "@vitejs/plugin-react": "5.0.3",
+    "@vitest/coverage-v8": "3.2.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tsdown": "^0.15.4",
+    "typescript": "^5.6.0",
+    "vitest": "3.2.4"
+  },
+  "peerDependencies": {
+    "react": ">=19.0.0",
+    "react-dom": ">=19.0.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

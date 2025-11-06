@@ -5,3 +5,7 @@ export { storefrontNextPlugins as default, type StorefrontNextPluginsConfig } fr
 // For better tree-shaking, import from './push' subpath export instead
 export { push } from './push.js';
 export type { PushOptions } from './types.js';
+
+// Named export: Trim extensions function
+import trimExtensions from './extensibility/trim-extensions.js';
+export { trimExtensions };
