@@ -1,27 +1,12 @@
 name: Auto Release
 
 # This workflow automatically creates releases when stable versions are pushed
-# from release branches in the monorepo.
-#
-# Trigger Conditions (ALL must be true):
-# 1. Push to release-* branch (not main)
-# 2. Version in package.json is stable (X.Y.Z format, no -dev/-preview/-alpha/etc.)
-# 3. Version tag doesn't already exist
-#
-# Version Examples:
-# ✅ 1.0.0 → Creates v1.0.0 release
-# ✅ 1.5.3 → Creates v1.5.3 release
-# ❌ 1.0.0-dev → Skipped (dev version)
-# ❌ 1.0.0-preview.0 → Skipped (preview version)
-# ❌ 1.0.0-alpha.1 → Skipped (alpha version)
-#
-# This workflow runs IN THE MIRROR REPO (not the monorepo).
-# It is synced from the monorepo template as part of the sync process.
+# from release-* branches in the monorepo.
 
 on:
   push:
     branches:
-      - 'release-*'  # Only release branches can trigger releases
+      - 'release-*'
 
 env:
   NODE_VERSION: '22'
@@ -29,45 +14,44 @@ env:
 
 jobs:
   auto-release:
+    if: github.repository == 'SalesforceCommerceCloud/storefront-next-template'
     runs-on: ubuntu-latest
-    # Allow up to 10 minutes for release creation
     timeout-minutes: 10
     permissions:
-      contents: write  # Required to create tags and releases
+      contents: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Needed for git log and tag operations
+          fetch-depth: 0
 
       - name: Read version from package.json
         id: version
         run: |
-          # Read version from package.json
-          VERSION=$(node -p "require('./package.json').version")
+          TEMPLATE_VERSION=$(node -p "require('./package.json').version")
 
-          if [ -z "$VERSION" ]; then
+          if [ -z "$TEMPLATE_VERSION" ]; then
             echo "❌ Failed to read version from package.json"
             exit 1
           fi
 
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "tag=v$VERSION" >> $GITHUB_OUTPUT
-          echo "📦 Package version: $VERSION"
+          echo "version=$TEMPLATE_VERSION" >> $GITHUB_OUTPUT
+          echo "tag=v$TEMPLATE_VERSION" >> $GITHUB_OUTPUT
+          echo "📦 Package version: $TEMPLATE_VERSION"
 
       - name: Check if version is stable (release candidate)
         id: check_stable
         run: |
-          VERSION="${{ steps.version.outputs.version }}"
+          TEMPLATE_VERSION="${{ steps.version.outputs.version }}"
 
           # Check if version matches stable semver format (X.Y.Z only, no suffix)
-          if [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          if [[ "$TEMPLATE_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "is_stable=true" >> $GITHUB_OUTPUT
-            echo "✅ Stable version detected: $VERSION"
+            echo "✅ Stable version detected: $TEMPLATE_VERSION"
           else
             echo "is_stable=false" >> $GITHUB_OUTPUT
-            echo "🚧 Prerelease version detected: $VERSION"
+            echo "🚧 Prerelease version detected: $TEMPLATE_VERSION"
             echo "   Skipping release creation (prerelease versions are not published)"
           fi
 
@@ -105,7 +89,7 @@ jobs:
         if: steps.check_stable.outputs.is_stable == 'true' && steps.check_tag.outputs.exists == 'false'
         run: |
           TAG="${{ steps.version.outputs.tag }}"
-          VERSION="${{ steps.version.outputs.version }}"
+          TEMPLATE_VERSION="${{ steps.version.outputs.version }}"
           BRANCH="${{ github.ref_name }}"
 
           # Configure git
@@ -113,7 +97,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
           # Create annotated tag
-          git tag -a "$TAG" -m "Release $VERSION" \
+          git tag -a "$TAG" -m "Release $TEMPLATE_VERSION" \
             -m "" \
             -m "Released from branch: $BRANCH" \
             -m "Commit: ${{ github.sha }}" \
@@ -130,7 +114,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           TAG="${{ steps.version.outputs.tag }}"
-          VERSION="${{ steps.version.outputs.version }}"
+          TEMPLATE_VERSION="${{ steps.version.outputs.version }}"
           PREV_TAG="${{ steps.prev_release.outputs.tag }}"
 
           # Build release notes from commit history
@@ -142,11 +126,98 @@ jobs:
 
           # Create release with auto-generated notes
           gh release create "$TAG" \
-            --title "$VERSION" \
+            --title "$TEMPLATE_VERSION" \
             --generate-notes \
             --notes-start-tag "${PREV_TAG:-}"
 
           echo "✅ GitHub Release $TAG created successfully"
+
+      - name: Update latest branch for stable releases
+        id: update_latest
+        if: steps.check_stable.outputs.is_stable == 'true' && steps.check_tag.outputs.exists == 'false'
+        run: |
+          BRANCH_NAME="${{ github.ref_name }}"
+          NEW_VERSION="${{ steps.version.outputs.version }}"
+
+          echo "📌 Stable version $NEW_VERSION released on $BRANCH_NAME"
+
+          # Get current version on latest branch (if it exists)
+          if git show-ref --verify --quiet refs/remotes/origin/latest; then
+            git fetch origin latest
+            # Use Node.js for robust JSON parsing
+            CURRENT_LATEST_VERSION=$(git show origin/latest:package.json | node -pe "JSON.parse(require('fs').readFileSync('/dev/stdin', 'utf8')).version")
+            echo "📋 Current latest branch version: $CURRENT_LATEST_VERSION"
+
+            # Validate current latest version format
+            if ! [[ "$CURRENT_LATEST_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo "⚠️  WARNING: Current latest has invalid format: $CURRENT_LATEST_VERSION"
+              echo "   Treating as 0.0.0 and proceeding..."
+              CURRENT_LATEST_VERSION="0.0.0"
+            fi
+          else
+            CURRENT_LATEST_VERSION="0.0.0"
+            echo "📋 No latest branch exists yet, will create it"
+          fi
+
+          # Compare versions using semantic versioning
+          # Split versions into major.minor.patch
+          IFS='.' read -r NEW_MAJOR NEW_MINOR NEW_PATCH <<< "$NEW_VERSION"
+          IFS='.' read -r CUR_MAJOR CUR_MINOR CUR_PATCH <<< "$CURRENT_LATEST_VERSION"
+
+          # Compare: major, then minor, then patch
+          SHOULD_UPDATE=false
+          if [ "$NEW_MAJOR" -gt "$CUR_MAJOR" ]; then
+            SHOULD_UPDATE=true
+            echo "🔼 Major version increased: $CUR_MAJOR -> $NEW_MAJOR"
+          elif [ "$NEW_MAJOR" -eq "$CUR_MAJOR" ]; then
+            if [ "$NEW_MINOR" -gt "$CUR_MINOR" ]; then
+              SHOULD_UPDATE=true
+              echo "🔼 Minor version increased: $CUR_MINOR -> $NEW_MINOR"
+            elif [ "$NEW_MINOR" -eq "$CUR_MINOR" ]; then
+              if [ "$NEW_PATCH" -gt "$CUR_PATCH" ]; then
+                SHOULD_UPDATE=true
+                echo "🔼 Patch version increased: $CUR_PATCH -> $NEW_PATCH"
+              fi
+            fi
+          fi
+
+          if [ "$SHOULD_UPDATE" = true ]; then
+            echo "✅ $NEW_VERSION > $CURRENT_LATEST_VERSION - Updating latest branch..."
+
+            # Configure git
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+
+            # Force push current branch state to 'latest' branch
+            # This makes 'latest' branch identical to the current release branch
+            # The 'latest' branch is set as default in mirror repo settings
+            # This aligns with npm's 'latest' tag convention
+            git push origin "HEAD:latest" --force
+
+            # Tag the latest branch for reference
+            LATEST_TAG="latest/$NEW_VERSION"
+            git tag -a "$LATEST_TAG" \
+              -m "Latest release $NEW_VERSION" \
+              -m "Source branch: $BRANCH_NAME" \
+              -m "Commit: ${{ github.sha }}"
+            git push origin "$LATEST_TAG" || true  # Don't fail if tag exists
+
+            echo "✅ 'latest' branch updated to $NEW_VERSION from $BRANCH_NAME"
+            echo "🎯 'Use this template' button will now give customers version $NEW_VERSION"
+
+            # Set output for summary
+            echo "updated=true" >> $GITHUB_OUTPUT
+            echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+            echo "previous_version=$CURRENT_LATEST_VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "⏭️  $NEW_VERSION <= $CURRENT_LATEST_VERSION - Skipping latest branch update"
+            echo "💡 This is a patch for an older major version, latest stays at $CURRENT_LATEST_VERSION"
+
+            # Set output for summary
+            echo "updated=false" >> $GITHUB_OUTPUT
+            echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+            echo "current_latest=$CURRENT_LATEST_VERSION" >> $GITHUB_OUTPUT
+          fi
 
       - name: Summary
         if: always()
@@ -162,6 +233,19 @@ jobs:
 
           if [ "${{ steps.check_stable.outputs.is_stable }}" = "true" ] && [ "${{ steps.check_tag.outputs.exists }}" = "false" ]; then
             echo "✅ **Release Created**: [View Release](https://github.com/${{ github.repository }}/releases/tag/${{ steps.version.outputs.tag }})" >> $GITHUB_STEP_SUMMARY
+
+            # Add latest branch status
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### 📌 Latest Branch Status" >> $GITHUB_STEP_SUMMARY
+            if [ "${{ steps.update_latest.outputs.updated }}" = "true" ]; then
+              echo "✅ **Updated** from ${{ steps.update_latest.outputs.previous_version }} → ${{ steps.update_latest.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "🎯 Customers using \`Use this template\` will now get version **${{ steps.update_latest.outputs.new_version }}**" >> $GITHUB_STEP_SUMMARY
+            elif [ "${{ steps.update_latest.outputs.updated }}" = "false" ]; then
+              echo "⏭️ **Skipped** - Version ${{ steps.update_latest.outputs.new_version }} ≤ current latest (${{ steps.update_latest.outputs.current_latest }})" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "💡 This is a patch for an older major version. Latest branch stays at **${{ steps.update_latest.outputs.current_latest }}**" >> $GITHUB_STEP_SUMMARY
+            fi
           elif [ "${{ steps.check_stable.outputs.is_stable }}" = "false" ]; then
             echo "ℹ️ **Skipped**: Prerelease version (${{ steps.version.outputs.version }})" >> $GITHUB_STEP_SUMMARY
           elif [ "${{ steps.check_tag.outputs.exists }}" = "true" ]; then
