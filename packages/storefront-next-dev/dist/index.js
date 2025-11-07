@@ -39527,7 +39527,7 @@ function processFile(projectRoot, filePath, extensions) {
 	let skippingBlock = false;
 	const source = fs$1.readFileSync(filePath, "utf-8");
 	if (source.includes(FILE_MARKER)) {
-		const markerLine = source.split("\n").find((line) => line.includes(FILE_MARKER)) || "";
+		const markerLine = source.split("\n").find((line) => line.includes(FILE_MARKER));
 		const extMatch = Object.keys(extensions).find((ext) => markerLine.includes(ext));
 		if (!extMatch) {
 			if (verbose) console.warn(`File ${filePath} is marked with ${markerLine} but it does not match any known extensions`);
@@ -39545,7 +39545,6 @@ function processFile(projectRoot, filePath, extensions) {
 		}
 	}
 	const extKeys = Object.keys(extensions);
-	if (extKeys.length === 0) return;
 	if (new RegExp(extKeys.join("|"), "g").test(source)) {
 		const lines = source.split("\n");
 		const newLines = [];

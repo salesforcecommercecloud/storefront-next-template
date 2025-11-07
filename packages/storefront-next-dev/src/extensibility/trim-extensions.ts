@@ -90,7 +90,8 @@ function processFile(projectRoot: string, filePath: string, extensions: Extensio
 
     // If the file is guarded by a file-level marker and the extension is disabled, remove the file entirely
     if (source.includes(FILE_MARKER)) {
-        const markerLine = source.split('\n').find((line) => line.includes(FILE_MARKER)) || '';
+        // find() always returns a line since the if condition ensures marker exists, and FILE_MARKER has no newlines
+        const markerLine = source.split('\n').find((line) => line.includes(FILE_MARKER)) as string;
         const extMatch = Object.keys(extensions).find((ext) => markerLine.includes(ext));
         if (!extMatch) {
             if (verbose) {
@@ -115,8 +116,8 @@ function processFile(projectRoot: string, filePath: string, extensions: Extensio
         }
     }
 
+    // extensions will always have keys since trimExtensions validates this before calling processFile
     const extKeys = Object.keys(extensions);
-    if (extKeys.length === 0) return;
     const extensionRegex = new RegExp(extKeys.join('|'), 'g');
     if (extensionRegex.test(source)) {
         const lines = source.split('\n');

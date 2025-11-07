@@ -9,6 +9,7 @@ export default defineConfig({
             exclude: [
                 'src/**/*.test.{ts,tsx}',
                 'src/**/*.spec.{ts,tsx}',
+                'src/**/*config.d.ts',
                 // Exclude CLI/deployment files that don't have Vitest tests
                 'src/bundle.ts',
                 'src/cloud-api.ts',

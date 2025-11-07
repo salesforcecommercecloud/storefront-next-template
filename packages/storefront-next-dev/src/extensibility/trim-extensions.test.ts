@@ -817,4 +817,93 @@ describe('trim-extensions', () => {
         expect(content).toContain('featureA');
         expect(content).toContain('Feature A');
     });
+
+    it('removes unused component files when extensions are disabled and provides confirmation', async () => {
+        // When a shopper disables an extension, unused component files should be removed
+        // and they should receive confirmation that the cleanup was successful
+        const consoleSpy = mockConsole('log');
+
+        // Create a component file that will be removed when the extension is disabled
+        vol.writeFileSync('/mock/dir/src/components.tsx', `export const Components = 'components';`);
+
+        // Create a file that imports the component with the extension marker
+        vol.mkdirSync('/mock/dir/src/components', { recursive: true });
+        vol.writeFileSync(
+            '/mock/dir/src/components/index.tsx',
+            `// @sfdc-extension-line SFDC_EXT_featureA
+            import { Components } from '../components.tsx';
+            export default Components;`
+        );
+
+        const mod = await reloadModule();
+        const trimExt = mod.default || mod;
+        trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true);
+
+        // The unused component file should be removed
+        expect(fileExists('/mock/dir/src/components.tsx')).toBe(false);
+
+        // Users should see a confirmation message when files are removed
+        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('✓ Successfully deleted file'));
+
+        consoleSpy.mockRestore();
+    });
+
+    it('preserves component files when extensions are enabled', async () => {
+        // When a shopper has extensions enabled, their component files should remain intact
+        vol.writeFileSync('/mock/dir/src/components.tsx', `export const Components = 'components';`);
+
+        vol.mkdirSync('/mock/dir/src/components', { recursive: true });
+        vol.writeFileSync('/mock/dir/src/components/index.tsx', `export default Components;`);
+
+        const mod = await reloadModule();
+        const trimExt = mod.default || mod;
+        trimExt('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig, false);
+
+        // Component files should still exist when extensions are enabled
+        expect(fileExists('/mock/dir/src/components.tsx')).toBe(true);
+    });
+
+    it('handles missing or incomplete extension configuration gracefully', async () => {
+        // When extension configuration is missing or incomplete, the system should handle it without errors
+        vol.writeFileSync('/mock/dir/src/components/test.tsx', `export const Test = 'test';`);
+
+        const mod = await reloadModule();
+        const trimExt = mod.default || mod;
+
+        // Test with undefined extensionConfig
+        trimExt('/mock/dir', {}, undefined, false);
+        expect(fileExists('/mock/dir/src/components/test.tsx')).toBe(true);
+
+        // Test with extensionConfig but undefined extensions property
+        trimExt('/mock/dir', {}, { extensions: undefined }, false);
+        expect(fileExists('/mock/dir/src/components/test.tsx')).toBe(true);
+    });
+
+    it('handles verbose mode configuration correctly', async () => {
+        // When verbose mode is configured (enabled, null, or undefined), the system should behave appropriately
+        const consoleSpy = mockConsole('log');
+
+        vol.writeFileSync('/mock/dir/src/components/test.tsx', `export const Test = 'test';`);
+
+        const mod = await reloadModule();
+        const trimExt = mod.default || mod;
+
+        // Test with verbose mode enabled
+        trimExt('/mock/dir', {}, mockedExtensionConfig, true);
+        expect(fileExists('/mock/dir/src/components/test.tsx')).toBe(true);
+        expect(console.log).toHaveBeenCalled();
+        consoleSpy.mockClear();
+
+        // Test with verbose parameter set to null (should default to non-verbose)
+        // @ts-expect-error - Testing defensive code path with null
+        trimExt('/mock/dir', {}, mockedExtensionConfig, null);
+        expect(fileExists('/mock/dir/src/components/test.tsx')).toBe(true);
+
+        // Test with verbose parameter set to undefined (should default to non-verbose)
+        // @ts-expect-error - Testing defensive code path with undefined
+        trimExt('/mock/dir', {}, mockedExtensionConfig, undefined);
+        expect(fileExists('/mock/dir/src/components/test.tsx')).toBe(true);
+
+        consoleSpy.mockRestore();
+    });
 });
