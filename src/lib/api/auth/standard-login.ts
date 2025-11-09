@@ -31,7 +31,15 @@ export const loginRegisteredUser = async (
         return {
             success: true,
         };
-    } catch {
+    } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('[Standard Login] Login error:', error);
+
+        // Capture more detailed error information for debugging
+        const errorDetails = error instanceof Error ? error.message : String(error);
+        // eslint-disable-next-line no-console
+        console.error('[Standard Login] Error details:', errorDetails);
+
         const errorMessage = uiStrings.errors.loginFailed;
 
         flashAuth(context, errorMessage);
@@ -39,6 +47,7 @@ export const loginRegisteredUser = async (
         return {
             success: false,
             error: errorMessage,
+            errorDetails, // Include detailed error for debugging
         };
     }
 };

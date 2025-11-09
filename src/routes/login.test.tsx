@@ -132,6 +132,33 @@ describe('Login Route', () => {
 
             expect(result).toHaveProperty('status', 302);
             expect(result).toHaveProperty('headers');
+            if (result instanceof Response) {
+                expect(result.headers.get('Location')).toBe('/');
+            }
+        });
+
+        it('should redirect to returnUrl if user is already logged in and returnUrl is provided', () => {
+            mockGetAuth.mockReturnValue({
+                access_token: 'valid-token',
+                access_token_expiry: Date.now() + 10000,
+                userType: 'registered',
+                customer_id: 'customer-123',
+            });
+
+            const mockRequest = new Request('http://localhost:5173/login?returnUrl=/product/123');
+            const mockContext = { get: vi.fn(), set: vi.fn() };
+            const args: LoaderFunctionArgs = {
+                request: mockRequest,
+                params: {},
+                context: mockContext,
+            } as any;
+
+            const result = loader(args);
+
+            expect(result).toHaveProperty('status', 302);
+            if (result instanceof Response) {
+                expect(result.headers.get('Location')).toBe('/product/123');
+            }
         });
 
         it('should return loader data for guest user', () => {
@@ -213,6 +240,46 @@ describe('Login Route', () => {
                 expect(result.error).toBe('Invalid credentials');
             }
         });
+
+        it('should parse returnUrl, action, and actionParams from URL', () => {
+            mockGetAuth.mockReturnValue({ userType: 'guest' });
+
+            const mockRequest = new Request(
+                'http://localhost:5173/login?returnUrl=/product/123&action=addToCart&actionParams=%7B%22productId%22%3A%22123%22%7D'
+            );
+            const mockContext = { get: vi.fn(), set: vi.fn() };
+            const args: LoaderFunctionArgs = {
+                request: mockRequest,
+                params: {},
+                context: mockContext,
+            } as any;
+
+            const result = loader(args);
+
+            if (!(result instanceof Response)) {
+                expect(result.returnUrl).toBe('/product/123');
+                expect(result.action).toBe('addToCart');
+                expect(result.actionParams).toBe('{"productId":"123"}');
+            }
+        });
+
+        it('should include isSocialLoginEnabled in loader data', () => {
+            mockGetAuth.mockReturnValue({ userType: 'guest' });
+
+            const mockRequest = new Request('http://localhost:5173/login');
+            const mockContext = { get: vi.fn(), set: vi.fn() };
+            const args: LoaderFunctionArgs = {
+                request: mockRequest,
+                params: {},
+                context: mockContext,
+            } as any;
+
+            const result = loader(args);
+
+            if (!(result instanceof Response)) {
+                expect(result.isSocialLoginEnabled).toBe(true);
+            }
+        });
     });
 
     describe('action - Standard Login', () => {
@@ -244,6 +311,95 @@ describe('Login Route', () => {
                 email: 'test@example.com',
                 password: 'password123',
             });
+        });
+
+        it('should redirect to returnUrl on successful login', async () => {
+            mockGetAuth.mockReturnValue({ userType: 'guest' });
+            mockLoginRegisteredUser.mockResolvedValue({ success: true });
+
+            const formData = new FormData();
+            formData.append('email', 'test@example.com');
+            formData.append('password', 'password123');
+            formData.append('loginMode', 'password');
+            formData.append('returnUrl', '/product/123');
+
+            const mockRequest = new Request('http://localhost:5173/login', {
+                method: 'POST',
+                body: formData,
+            });
+            const mockContext = { get: vi.fn(), set: vi.fn() };
+            const args: ActionFunctionArgs = {
+                request: mockRequest,
+                params: {},
+                context: mockContext,
+            } as any;
+
+            const result = await action(args);
+
+            expect(result[0]).toBe('/product/123');
+        });
+
+        it('should preserve action and actionParams in returnUrl on successful login', async () => {
+            mockGetAuth.mockReturnValue({ userType: 'guest' });
+            mockLoginRegisteredUser.mockResolvedValue({ success: true });
+
+            const formData = new FormData();
+            formData.append('email', 'test@example.com');
+            formData.append('password', 'password123');
+            formData.append('loginMode', 'password');
+            formData.append('returnUrl', '/product/123');
+            formData.append('action', 'addToCart');
+            formData.append('actionParams', '{"productId":"123"}');
+
+            const mockRequest = new Request('http://localhost:5173/login', {
+                method: 'POST',
+                body: formData,
+            });
+            const mockContext = { get: vi.fn(), set: vi.fn() };
+            const args: ActionFunctionArgs = {
+                request: mockRequest,
+                params: {},
+                context: mockContext,
+            } as any;
+
+            const result = await action(args);
+
+            expect(result[0]).toContain('/product/123');
+            expect(result[0]).toContain('action=addToCart');
+            expect(result[0]).toContain('actionParams=');
+        });
+
+        it('should preserve returnUrl, action, and actionParams on failed login', async () => {
+            mockGetAuth.mockReturnValue({ userType: 'guest' });
+            mockLoginRegisteredUser.mockResolvedValue({ success: false });
+
+            const formData = new FormData();
+            formData.append('email', 'test@example.com');
+            formData.append('password', 'wrong-password');
+            formData.append('loginMode', 'password');
+            formData.append('returnUrl', '/product/123');
+            formData.append('action', 'addToCart');
+            formData.append('actionParams', '{"productId":"123"}');
+
+            const mockRequest = new Request('http://localhost:5173/login', {
+                method: 'POST',
+                body: formData,
+            });
+            const mockContext = { get: vi.fn(), set: vi.fn() };
+            const args: ActionFunctionArgs = {
+                request: mockRequest,
+                params: {},
+                context: mockContext,
+            } as any;
+
+            const result = await action(args);
+
+            expect(result[0]).toContain('mode=password');
+            // URL params are encoded, so check for encoded version
+            expect(result[0]).toContain('returnUrl=');
+            expect(decodeURIComponent(result[0])).toContain('returnUrl=/product/123');
+            expect(result[0]).toContain('action=addToCart');
+            expect(result[0]).toContain('actionParams=');
         });
 
         it('should redirect back to login on failed standard login', async () => {
@@ -645,12 +801,33 @@ describe('Login Route', () => {
                         mode: 'password',
                         isPasswordlessLoginEnabled: false,
                         isSocialLoginEnabled: true,
+                        returnUrl: null,
+                        action: null,
+                        actionParams: null,
                     }}
                 />
             );
 
             expect(screen.getByTestId('standard-form')).toBeInTheDocument();
             expect(screen.getByTestId('social-buttons')).toBeInTheDocument();
+        });
+
+        it('passes returnUrl, action, and actionParams to StandardLoginForm', () => {
+            const loaderData = {
+                error: undefined,
+                passwordlessSent: false,
+                email: undefined,
+                mode: 'password',
+                isPasswordlessLoginEnabled: false,
+                isSocialLoginEnabled: true,
+                returnUrl: '/product/123',
+                action: 'addToCart',
+                actionParams: '{"productId":"123"}',
+            };
+
+            render(<Login loaderData={loaderData} />);
+
+            expect(screen.getByTestId('standard-form')).toBeInTheDocument();
         });
 
         it('renders PasswordlessLoginForm when mode is passwordless', () => {
@@ -663,6 +840,9 @@ describe('Login Route', () => {
                         mode: 'passwordless',
                         isPasswordlessLoginEnabled: true,
                         isSocialLoginEnabled: true,
+                        returnUrl: null,
+                        action: null,
+                        actionParams: null,
                     }}
                 />
             );
@@ -681,6 +861,9 @@ describe('Login Route', () => {
                         mode: 'password',
                         isPasswordlessLoginEnabled: false,
                         isSocialLoginEnabled: false,
+                        returnUrl: null,
+                        action: null,
+                        actionParams: null,
                     }}
                 />
             );

@@ -11,6 +11,16 @@ import { useProductActions } from './use-product-actions';
 import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
 import { useFetcher } from 'react-router';
 
+// Mock useLocation and useNavigate
+const mockNavigate = vi.fn();
+const mockLocation = {
+    pathname: '/product/123',
+    search: '',
+    hash: '',
+    state: null,
+    key: 'default',
+};
+
 vi.mock('react-router', async () => {
     const actual = await vi.importActual('react-router');
     return {
@@ -20,6 +30,8 @@ vi.mock('react-router', async () => {
             state: 'idle',
             submit: vi.fn(),
         })),
+        useLocation: () => mockLocation,
+        useNavigate: () => mockNavigate,
     };
 });
 
@@ -46,11 +58,19 @@ vi.mock('@/hooks/product/use-current-variant', () => ({
 }));
 
 describe('useProductActions', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+        // Reset location to default
+        mockLocation.pathname = '/product/123';
+        mockLocation.search = '';
+        mockLocation.hash = '';
+    });
     const createStandardProduct = (): ShopperProductsTypes.Product => ({
         id: 'standard-123',
         name: 'Standard Product',
         type: { item: true },
         inventory: {
+            id: 'inventory-standard-123',
             ats: 10,
             orderable: true,
         },
@@ -61,6 +81,7 @@ describe('useProductActions', () => {
         name: 'Variant Product',
         type: { variant: true },
         inventory: {
+            id: 'inventory-variant-123',
             ats: 10,
             orderable: true,
         },
@@ -71,6 +92,7 @@ describe('useProductActions', () => {
         name: 'Bundle Product',
         type: { bundle: true },
         inventory: {
+            id: 'inventory-bundle-123',
             ats: 10,
             orderable: true,
         },
@@ -81,6 +103,7 @@ describe('useProductActions', () => {
         name: 'Set Product',
         type: { set: true },
         inventory: {
+            id: 'inventory-set-123',
             ats: 10,
             orderable: true,
         },
@@ -105,6 +128,7 @@ describe('useProductActions', () => {
             const product = createStandardProduct();
             // Set inventory to 0 as well to test out of stock behavior
             product.inventory = {
+                id: 'inventory-standard-123',
                 ats: 0,
                 orderable: true,
             };
@@ -165,6 +189,7 @@ describe('useProductActions', () => {
                 name: 'Master Product',
                 type: { master: true },
                 inventory: {
+                    id: 'inventory-master-123',
                     ats: 10,
                     orderable: true,
                 },
@@ -202,6 +227,7 @@ describe('useProductActions', () => {
             const childSelections = [
                 {
                     product: createStandardProduct(),
+                    variant: {} as ShopperProductsTypes.Variant,
                     quantity: 1,
                 },
             ];
@@ -262,11 +288,12 @@ describe('useProductActions', () => {
             const childSelections = [
                 {
                     product: createStandardProduct(),
+                    variant: {} as ShopperProductsTypes.Variant,
                     quantity: 1,
                 },
                 {
                     product: createVariantProduct(),
-                    variant: { productId: 'variant-selected-123' } as any,
+                    variant: { productId: 'variant-selected-123' } as ShopperProductsTypes.Variant,
                     quantity: 2,
                 },
             ];

@@ -64,7 +64,7 @@ vi.mock('@/components/navigation-menu-mega', async () => ({
 
 vi.mock('@/components/toast', async () => ({
     ...(await vi.importActual('@/components/toast')),
-    Toaster: () => <div data-testid="toaster">Toaster</div>,
+    ToasterTheme: () => <div data-testid="toaster">Toaster</div>,
 }));
 
 vi.mock('@/extensions/store-locator/providers/store-locator', async () => ({

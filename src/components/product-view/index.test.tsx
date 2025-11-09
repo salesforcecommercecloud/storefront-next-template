@@ -14,6 +14,27 @@ import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 // Components
 import ProductView from './index';
+import { createConfigWrapper } from '@/test-utils/config';
+
+// Create a wrapper with default config
+const defaultConfigWrapper = createConfigWrapper({
+    app: {
+        site: {
+            locale: 'en-US',
+            currency: 'USD',
+            features: {
+                passwordlessLogin: {
+                    enabled: false,
+                    callbackUri: '/passwordless-login-callback',
+                    landingUri: '/passwordless-login-landing',
+                },
+                socialLogin: { enabled: true, providers: ['Apple', 'Google'] },
+                socialShare: { enabled: true, providers: ['Twitter', 'Facebook', 'LinkedIn', 'Email'] },
+                guestCheckout: true,
+            },
+        },
+    },
+} as any);
 
 const renderProductView = (props: React.ComponentProps<typeof ProductView>) => {
     // Using createMemoryRouter in framework mode is fine
@@ -28,7 +49,7 @@ const renderProductView = (props: React.ComponentProps<typeof ProductView>) => {
         ],
         { initialEntries: ['/product/test-product'] }
     );
-    return render(<RouterProvider router={router} />);
+    return render(<RouterProvider router={router} />, { wrapper: defaultConfigWrapper });
 };
 
 describe('ProductView', () => {

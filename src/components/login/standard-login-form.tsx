@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react';
+import { type ReactElement, useRef } from 'react';
 import { Form, Link } from 'react-router';
 import { Input } from '@/components/ui/input';
 import { FormSubmitButton } from '@/components/buttons/form-submit-button';
@@ -7,11 +7,22 @@ import uiStrings from '@/temp-ui-string';
 interface StandardLoginFormProps {
     error?: string;
     isPasswordlessEnabled: boolean;
+    returnUrl?: string | null;
+    action?: string | null;
+    actionParams?: string | null;
 }
 
-export default function StandardLoginForm({ error, isPasswordlessEnabled }: StandardLoginFormProps): ReactElement {
+export default function StandardLoginForm({
+    error,
+    isPasswordlessEnabled,
+    returnUrl,
+    action,
+    actionParams,
+}: StandardLoginFormProps): ReactElement {
+    const formRef = useRef<HTMLFormElement>(null);
+
     return (
-        <Form method="post" className="space-y-6">
+        <Form method="post" action="/login" className="space-y-6" ref={formRef}>
             {error && (
                 <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded">
                     {error}
@@ -50,6 +61,12 @@ export default function StandardLoginForm({ error, isPasswordlessEnabled }: Stan
 
             {/* Hidden input to track login mode */}
             <input type="hidden" name="loginMode" value="password" />
+
+            {/* Preserve returnUrl, action, and actionParams for redirect after login */}
+            {/* Always include these as hidden inputs if they exist in props - they come from URL query params */}
+            {returnUrl ? <input type="hidden" name="returnUrl" value={returnUrl} /> : null}
+            {action ? <input type="hidden" name="action" value={action} /> : null}
+            {actionParams ? <input type="hidden" name="actionParams" value={actionParams} /> : null}
 
             <FormSubmitButton defaultText={uiStrings.login.signIn} submittingText={uiStrings.login.signingIn} />
             {isPasswordlessEnabled && (

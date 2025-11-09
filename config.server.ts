@@ -85,6 +85,15 @@ export default defineConfig({
                     callbackUri: process.env.PUBLIC_SOCIAL_LOGIN_CALLBACK_URI || '/social-callback',
                     providers: parseEnvJson(process.env.PUBLIC_SOCIAL_IDPS, ['Apple', 'Google']),
                 },
+                socialShare: {
+                    enabled: true,
+                    providers: parseEnvJson(process.env.PUBLIC_SOCIAL_SHARE_PROVIDERS, [
+                        'Twitter',
+                        'Facebook',
+                        'LinkedIn',
+                        'Email',
+                    ]),
+                },
                 guestCheckout: true,
             },
         },

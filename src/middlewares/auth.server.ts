@@ -120,7 +120,20 @@ export async function loginRegisteredUser(
     const appConfig = getConfig(context);
     const isSlasPrivate = appConfig.commerce.api.privateKeyEnabled;
     const session = getAuth(context);
-    const usid = session.usid;
+
+    // Only include usid if we have a valid registered user session with access_token
+    // This prevents using stale usid after logout which can cause login failures
+    // After logout, session is destroyed, so we won't have userType or access_token
+    // Only use usid if we're already logged in as the same registered user
+    const hasValidRegisteredSession =
+        session.userType === 'registered' &&
+        session.access_token &&
+        session.access_token_expiry &&
+        typeof session.access_token_expiry === 'number' &&
+        session.access_token_expiry > Date.now();
+
+    const usid = hasValidRegisteredSession ? session.usid : undefined;
+
     performanceTimer?.mark(PERFORMANCE_MARKS.authLoginRegisteredUser, 'start');
 
     return loginRegisteredUserB2C({

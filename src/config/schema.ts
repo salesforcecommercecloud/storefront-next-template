@@ -75,6 +75,10 @@ export type Config = {
                     callbackUri: string;
                     providers: Array<'Apple' | 'Google' | 'Facebook' | 'Twitter'>;
                 };
+                socialShare: {
+                    enabled: boolean;
+                    providers: Array<'Twitter' | 'Facebook' | 'LinkedIn' | 'Email'>;
+                };
                 guestCheckout: boolean;
             };
         };

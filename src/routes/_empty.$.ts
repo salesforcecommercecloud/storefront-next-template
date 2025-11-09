@@ -4,8 +4,8 @@ import { handlePasswordlessCallback, handlePasswordlessLanding } from '@/lib/pas
 import { handleSocialLoginLanding } from '@/lib/api/auth/social-login';
 import { handleResetPasswordCallback, handleResetPasswordLanding } from '@/lib/api/auth/reset-password';
 
-type LoaderHandler = (args: LoaderFunctionArgs) => Response | Promise<Response>;
-type ActionHandler = (args: ActionFunctionArgs) => Record<string, unknown> | Promise<Record<string, unknown>>;
+type LoaderHandler = (args: LoaderFunctionArgs) => Promise<Response>;
+type ActionHandler = (args: ActionFunctionArgs) => Promise<Record<string, unknown>>;
 
 /**
  * Catch-all route that handles configurable authentication routes

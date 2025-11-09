@@ -73,6 +73,48 @@ export const extractResponseError = async (
 };
 
 /**
+ * Type for Commerce SDK error objects that may have status or response properties
+ */
+interface CommerceSdkError extends Error {
+    status?: number | string;
+    response?: {
+        status?: number | string;
+        [key: string]: unknown;
+    };
+}
+
+/**
+ * Type guard to check if an error has status information
+ */
+function hasStatus(error: unknown): error is CommerceSdkError {
+    return (
+        typeof error === 'object' &&
+        error !== null &&
+        ('status' in error || ('response' in error && typeof (error as CommerceSdkError).response === 'object'))
+    );
+}
+
+/**
+ * Extract status code from an error object, handling both direct status and nested response.status
+ * This is a fallback when extractResponseError fails to read the response body
+ */
+export function extractStatusCode(error: unknown): string | undefined {
+    if (!hasStatus(error)) {
+        return undefined;
+    }
+    if (typeof error.status === 'number' || typeof error.status === 'string') {
+        return String(error.status);
+    }
+    if (error.response && typeof error.response === 'object' && 'status' in error.response) {
+        const responseStatus = error.response.status;
+        if (typeof responseStatus === 'number' || typeof responseStatus === 'string') {
+            return String(responseStatus);
+        }
+    }
+    return undefined;
+}
+
+/**
  * Returns the application's origin.
  *
  * This function is isomorphic, it can be used on the client and server.

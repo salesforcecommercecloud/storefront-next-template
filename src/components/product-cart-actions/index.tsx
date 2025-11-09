@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+'use client';
+
 import { type ReactElement } from 'react';
 import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
 import { Button } from '@/components/ui/button';
@@ -12,6 +14,8 @@ import { useProductView } from '@/providers/product-view';
 import { useCurrentVariant } from '@/hooks/product/use-current-variant';
 import uiStrings from '@/temp-ui-string';
 import { isProductSet, isProductBundle } from '@/lib/product-utils';
+import { ShareButton } from '@/components/buttons/share-button';
+import { useCheckAndExecutePendingAction } from '@/hooks/check-and-execute-pending-action';
 
 interface ProductCartActionsProps {
     product: ShopperProductsTypes.Product;
@@ -56,6 +60,30 @@ export default function ProductCartActions({
     } = useProductView();
 
     const isEditMode = mode === 'edit';
+
+    // Get product ID for pending action matching
+    const productToCheck = isMasterOrVariantProduct ? currentVariant : product;
+    const currentProductId = productToCheck?.productId || productToCheck?.id || product.id;
+
+    // Check for pending actions and execute if they match this product
+    // This handles actions that were initiated before authentication (e.g., addToWishlist)
+    useCheckAndExecutePendingAction({
+        actionName: 'addToWishlist',
+        shouldExecute: (params) => params.productId === currentProductId,
+        onMatch: async () => {
+            const productToAdd = isMasterOrVariantProduct ? currentVariant : product;
+            // Call before callback
+            onBeforeAddToWishlist?.();
+            try {
+                await handleAddToWishlist(productToAdd as ShopperProductsTypes.Variant);
+                // Call success callback after API completes
+                onAddToWishlistSuccess?.();
+            } catch (error) {
+                onAddToWishlistError?.(error);
+                throw error;
+            }
+        },
+    });
 
     const onAddOrUpdateToCart = async () => {
         // Call before callback (e.g., for optimistic UI like closing modal in edit mode)
@@ -114,14 +142,17 @@ export default function ProductCartActions({
                 )}
 
                 {!isEditMode && (
-                    <Button
-                        onClick={() => void onAddToWishlist()}
-                        disabled={isAddingToWishlist}
-                        variant="outline"
-                        className="w-full"
-                        size="lg">
-                        {isAddingToWishlist ? uiStrings.product.addingToWishlist : uiStrings.product.addToWishlist}
-                    </Button>
+                    <div className="grid grid-cols-2 gap-3">
+                        <Button
+                            onClick={() => void onAddToWishlist()}
+                            disabled={isAddingToWishlist}
+                            variant="outline"
+                            className="w-full"
+                            size="lg">
+                            {isAddingToWishlist ? uiStrings.product.addingToWishlist : uiStrings.product.addToWishlist}
+                        </Button>
+                        <ShareButton product={product} className="w-full" />
+                    </div>
                 )}
             </div>
         </div>
