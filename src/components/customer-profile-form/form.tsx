@@ -14,15 +14,12 @@ import { Form } from '@/components/ui/form';
 import { CustomerProfileFields } from './customer-profile-fields';
 
 //hooks
-import { useToast } from '@/components/toast';
-import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
 import { useScapiFetcherEffect } from '@/hooks/use-scapi-fetcher-effect';
-import { useAuth } from '@/providers/auth';
 
 //types
 import { customerProfileFormSchema } from './index';
-import { type CustomerProfileFormData, type CustomerProfileFormProps, type CustomerProfileFetcherData } from './types';
-import type { FetcherWithComponents } from 'react-router';
+import { type CustomerProfileFormData, type CustomerProfileFormProps } from './types';
+import type { ShopperCustomersTypes } from 'commerce-sdk-isomorphic';
 
 import uiStrings from '@/temp-ui-string';
 
@@ -55,10 +52,13 @@ import uiStrings from '@/temp-ui-string';
  * <CustomerProfileForm />
  * ```
  */
-export const CustomerProfileForm = ({ initialData, onSuccess, onError, onCancel }: CustomerProfileFormProps) => {
-    const auth = useAuth();
-    const customerId = auth?.customer_id;
-
+export const CustomerProfileForm = ({
+    initialData,
+    updateFetcher,
+    onSuccess,
+    onError,
+    onCancel,
+}: CustomerProfileFormProps) => {
     const form = useForm<CustomerProfileFormData>({
         resolver: zodResolver(customerProfileFormSchema),
         defaultValues: {
@@ -69,66 +69,39 @@ export const CustomerProfileForm = ({ initialData, onSuccess, onError, onCancel 
         },
     });
 
-    const { addToast } = useToast();
+    // Use useScapiFetcherEffect to handle fetcher state changes
+    // This handles form-specific concerns (reset, error state) and calls parent callbacks
+    // Note: data is the unwrapped customer object from the API response
+    useScapiFetcherEffect(updateFetcher, {
+        onSuccess: (data) => {
+            if (data) {
+                // data is already the customer object (unwrapped by ScapiFetcher)
+                const customer = data as ShopperCustomersTypes.Customer;
 
-    /**
-     * Handles successful customer profile update.
-     * Resets the form, shows success toast, and calls the onSuccess callback with form data.
-     *
-     * @param data - The response data from the successful update containing the updated customer
-     */
-    const handleOnSuccess = (data: unknown) => {
-        // Update was successful
-        form.reset();
-        addToast(uiStrings.account.profile.successMessage, 'success');
+                const formData: CustomerProfileFormData = {
+                    firstName: (customer.firstName as string) || '',
+                    lastName: (customer.lastName as string) || '',
+                    email: (customer.email as string) || (customer.login as string) || '',
+                    phone: (customer.phoneHome as string) || (customer.phoneMobile as string) || '',
+                };
 
-        // Extract form data from API response
-        const response = data as { success: boolean; customer?: Record<string, unknown> };
-        const customer = response.customer;
-
-        if (customer) {
-            const formData: CustomerProfileFormData = {
-                firstName: (customer.firstName as string) || '',
-                lastName: (customer.lastName as string) || '',
-                email: (customer.email as string) || (customer.login as string) || '',
-                phone: (customer.phoneHome as string) || (customer.phoneMobile as string) || '',
-            };
-            onSuccess?.(formData);
-        } else {
-            // Fallback to empty form data if API response doesn't contain customer
-            onSuccess?.({} as CustomerProfileFormData);
-        }
-    };
-
-    /**
-     * Handles failed customer profile update.
-     * Sets form error state, shows error toast, and calls the onError callback.
-     *
-     * @param error - The error response from the failed update
-     */
-    const handleOnError = (error: string) => {
-        // Update failed
-        const errorMessage = error || uiStrings.account.profile.errorMessage;
-
-        form.setError('root', {
-            type: 'manual',
-            message: errorMessage,
-        });
-
-        addToast(errorMessage, 'error');
-        onError?.(error);
-    };
-
-    // Initialize useScapiFetcher for ShopperCustomers.updateCustomer
-    const updateCustomerFetcher = useScapiFetcher('ShopperCustomers', 'updateCustomer', {
-        parameters: { customerId: customerId || '' },
-        body: {}, // Will be populated when submitting
-    });
-
-    // Handle success/error callbacks using useScapiFetcherEffect
-    useScapiFetcherEffect(updateCustomerFetcher, {
-        onSuccess: handleOnSuccess,
-        onError: handleOnError,
+                // Reset form on success
+                form.reset();
+                // Call parent callback - parent will handle toasts and other UI feedback
+                onSuccess?.(formData);
+            }
+        },
+        onError: (errors) => {
+            const errorMessage =
+                errors && errors.length > 0 ? errors.join(', ') : uiStrings.account.profile.errorMessage;
+            // Set form error state
+            form.setError('root', {
+                type: 'manual',
+                message: errorMessage,
+            });
+            // Call parent callback - parent will handle toasts
+            onError?.(errorMessage);
+        },
     });
 
     /**
@@ -136,8 +109,8 @@ export const CustomerProfileForm = ({ initialData, onSuccess, onError, onCancel 
      *
      * This function is called when the form is submitted and performs the following:
      * 1. Validates the form data using the Zod schema
-     * 2. Calls the updateCustomerFetcher.submit with the validated data
-     * 3. The API response is handled by the handleOnSuccess/handleOnError callbacks in useFetch
+     * 2. Calls the updateFetcher.submit with the validated data
+     * 3. The API response is handled by the parent component's fetcher effect handlers
      *
      * @param data - The validated form data containing profile information
      * @param data.firstName - The customer's first name
@@ -146,16 +119,6 @@ export const CustomerProfileForm = ({ initialData, onSuccess, onError, onCancel 
      * @param data.phone - The customer's phone number
      */
     const handleSubmit = form.handleSubmit((data) => {
-        // Check if customer ID is available
-        if (!customerId) {
-            form.setError('root', {
-                type: 'manual',
-                message: 'Customer ID not found. Please log in again.',
-            });
-            addToast('Customer ID not found. Please log in again.', 'error');
-            return;
-        }
-
         // Prepare customer data in the format expected by Commerce SDK
         const customerUpdateData = {
             firstName: data.firstName,
@@ -164,8 +127,8 @@ export const CustomerProfileForm = ({ initialData, onSuccess, onError, onCancel 
             phoneHome: data.phone || undefined,
         };
 
-        // Submit the update request - response will be handled by useEffect
-        void updateCustomerFetcher.submit({
+        // Submit the update request - response will be handled by parent component's fetcher effect
+        void updateFetcher.submit({
             ...customerUpdateData,
             phoneHome: customerUpdateData.phoneHome || '',
         });
@@ -186,7 +149,7 @@ export const CustomerProfileForm = ({ initialData, onSuccess, onError, onCancel 
                 <form onSubmit={(e) => void handleSubmit(e)} data-testid="customer-profile-form">
                     <CustomerProfileFields
                         form={form}
-                        profileFetcher={updateCustomerFetcher as FetcherWithComponents<CustomerProfileFetcherData>}
+                        updateFetcher={updateFetcher}
                         onCancel={onCancel ? handleCancel : undefined}
                     />
                 </form>

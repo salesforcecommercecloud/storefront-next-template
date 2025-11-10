@@ -19,11 +19,11 @@ import { type CustomerProfileFieldsProps } from './types';
  * CustomerProfileFields component that renders the form fields for editing customer profile.
  *
  * @param form - React Hook Form instance for managing form state and validation
- * @param profileFetcher - React Router fetcher for handling profile update requests
+ * @param updateFetcher - React Router fetcher for handling profile update requests
  * @param onCancel - Optional callback function to handle cancel action
  */
-export function CustomerProfileFields({ form, profileFetcher, onCancel }: CustomerProfileFieldsProps) {
-    const isSubmitting = profileFetcher.state === FETCHER_STATES.SUBMITTING;
+export function CustomerProfileFields({ form, updateFetcher, onCancel }: CustomerProfileFieldsProps) {
+    const isSubmitting = updateFetcher.state === FETCHER_STATES.SUBMITTING;
 
     return (
         <div className="space-y-4">

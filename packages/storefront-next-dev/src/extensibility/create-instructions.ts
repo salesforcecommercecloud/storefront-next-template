@@ -7,8 +7,6 @@ import fs from 'fs';
 import path from 'path';
 import Handlebars from 'handlebars';
 
-// The relative path of the template-retail-rsc-app folder from the root of the monorepo
-const REL_RETAIL_RSC_APP_DIR = 'packages/template-retail-rsc-app/';
 // The directories to skip when searching for files to merge
 const SKIP_DIRS = ['node_modules', 'dist', 'build'];
 // The templates for the instructions
@@ -38,7 +36,7 @@ interface ExtensionContext {
 export function getContext(
     projectRoot: string,
     markerValue: string,
-    pwaRepo = 'https://github.com/SalesforceCommerceCloud/storefront-next.git',
+    pwaRepo = 'https://github.com/SalesforceCommerceCloud/storefront-next-template.git',
     branch = 'main',
     filesToCopy: string[] = [],
     extensionConfigPath: string = ''
@@ -80,14 +78,14 @@ export const getFilesToCopyContext = (projectRoot: string, filesToCopy: string[]
         }
     });
     return filesToCopy.map((file) => ({
-        src: path.join(REL_RETAIL_RSC_APP_DIR, file),
+        src: file,
         dest: file,
         isDirectory: fs.statSync(path.join(projectRoot, file)).isDirectory(),
     }));
 };
 
 /**
- * Find all the files that contain the marker value in the template-retail-rsc-app folder.
+ * Find all the files that contain the marker value in the project folder.
  * @param {string} markerValue
  * @returns {string[]} The files that are marked with the marker value
  */

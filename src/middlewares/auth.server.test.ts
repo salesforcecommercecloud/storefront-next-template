@@ -159,6 +159,23 @@ function getMockAuthData(): AuthData {
     };
 }
 
+function getMockRegisteredAuthData(): AuthData {
+    return {
+        access_token: 'access_token',
+        access_token_expiry: Date.now() + 1_000,
+        refresh_token: 'refresh_token',
+        refresh_token_expiry: Date.now() + 10_000,
+        userType: 'registered',
+        usid: 'usid',
+        customer_id: 'customer_id',
+        codeVerifier: 'codeVerifier',
+        dwsid: 'dwsid',
+        idp_access_token: 'idp_access_token',
+        idp_refresh_token: 'idp_refresh_token',
+        dnt: 'true',
+    };
+}
+
 describe('auth middleware (server)', () => {
     let mockCreateClient: any;
     let mockHelpers: any;
@@ -363,7 +380,7 @@ describe('auth middleware (server)', () => {
 
     describe('loginRegisteredUser', () => {
         it('should login registered user successfully', async () => {
-            const { provider } = mockContext(getMockAuthData());
+            const { provider } = mockContext(getMockRegisteredAuthData());
             const mockTokenResponse = getMockTokenResponse();
             const email = 'test@example.com';
             const password = 'password123';
@@ -387,7 +404,7 @@ describe('auth middleware (server)', () => {
         });
 
         it('should login registered user with custom parameters', async () => {
-            const { provider } = mockContext(getMockAuthData());
+            const { provider } = mockContext(getMockRegisteredAuthData());
             const mockTokenResponse = getMockTokenResponse();
             const email = 'test@example.com';
             const password = 'password123';
@@ -413,7 +430,7 @@ describe('auth middleware (server)', () => {
         });
 
         it('should include client secret when SLAS is private', async () => {
-            const { provider } = mockContext(getMockAuthData(), true);
+            const { provider } = mockContext(getMockRegisteredAuthData(), true);
             const mockTokenResponse = getMockTokenResponse();
             const email = 'test@example.com';
             const password = 'password123';

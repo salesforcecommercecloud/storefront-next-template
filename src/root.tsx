@@ -38,8 +38,9 @@ import { fetchCategory } from '@/lib/api/categories';
 import Header from '@/components/header';
 import CategoryNavigationMenuMega from '@/components/navigation-menu-mega';
 import Footer from '@/components/footer';
-import { Toaster } from '@/components/toast';
+import { ToasterTheme } from '@/components/toast';
 import { ConfigProvider, getConfig, type AppConfig } from '@/config';
+import { useExecutePendingAction } from '@/hooks/use-execute-pending-action';
 import './app.css';
 import { getCookie } from '@/lib/cookies.client';
 import { initI18next } from '@/lib/i18next.client';
@@ -58,10 +59,12 @@ export const middleware: MiddlewareFunction<Response>[] = [
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const clientMiddleware: MiddlewareFunction<Record<string, DataStrategyResult>>[] = [
-    appConfigMiddlewareClient, // Must run first to set config in context
-    performanceMetricsMiddlewareClient,
-    authMiddlewareClient,
-    basketMiddlewareClient,
+    // Client middleware functions have varying return types, but React Router expects Record<string, DataStrategyResult>
+    // We cast through unknown to avoid type errors while maintaining runtime correctness
+    appConfigMiddlewareClient as unknown as MiddlewareFunction<Record<string, DataStrategyResult>>, // Must run first to set config in context
+    performanceMetricsMiddlewareClient as unknown as MiddlewareFunction<Record<string, DataStrategyResult>>,
+    authMiddlewareClient as unknown as MiddlewareFunction<Record<string, DataStrategyResult>>,
+    basketMiddlewareClient as unknown as MiddlewareFunction<Record<string, DataStrategyResult>>,
 ];
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -176,7 +179,7 @@ export function Layout({ children }: PropsWithChildren) {
             </head>
             <body className="antialiased flex flex-col min-h-screen">
                 {children}
-                <Toaster richColors expand position="top-right" />
+                <ToasterTheme />
                 <ScrollRestoration />
                 <Scripts />
             </body>
@@ -264,6 +267,7 @@ export default function App({ loaderData: { root, subs, auth, basket, i18nextOnS
                     <BasketProvider value={basket}>
                         {/* @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */}
                         <StoreLocatorProvider>
+                            <AuthActionExecutor />
                             <Header>
                                 <CategoryNavigationMenuMega resolve={refRoot.current} defer={refSubs.current} />
                             </Header>
@@ -282,4 +286,13 @@ export default function App({ loaderData: { root, subs, auth, basket, i18nextOnS
             </ConfigProvider>
         </I18nextProvider>
     );
+}
+
+/**
+ * Component that executes pending actions after authentication
+ * This runs on every route to check if there are actions queued from auth interception
+ */
+function AuthActionExecutor() {
+    useExecutePendingAction();
+    return null;
 }

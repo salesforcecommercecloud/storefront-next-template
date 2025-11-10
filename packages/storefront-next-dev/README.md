@@ -101,7 +101,7 @@ sfnext manage-extensions --project-directory /path/to/your/project --extension-c
 
 ```bash
 # Generate extension instructions
-sfnext create-instructions --project-directory /path/to/your/project --extension-config /path/to/extension/config/file --extension SFDC_EXT_STORE_LOCATOR --pwa-repo https://github.com/SalesforceCommerceCloud/SFCC-Odyssey.git --branch main --files /path/to/your/new/extension/files --output-dir /path/to/instruction/files
+sfnext create-instructions --project-directory /path/to/your/project --extension-config /path/to/extension/config/file --extension SFDC_EXT_STORE_LOCATOR --template-repo https://github.com/SalesforceCommerceCloud/storefront-next-template.git --branch main --files /path/to/your/new/extension/files --output-dir /path/to/instruction/files
 ```
 
 ## CLI Options
@@ -135,7 +135,7 @@ Run `sfnext create-instructions --help` to see all available options:
 - `-d, --project-directory <dir>`: Project directory
 - `-c, --extension-config <config>`: Extension config JSON file location
 - `-e, --extension <extension>`: Extension marker value (e.g. SFDC_EXT_featureA)
-- `-p, --pwa-repo <repo>`: PWA repo URL (default: https://github.com/SalesforceCommerceCloud/SFCC-Odyssey.git)
+- `-p, --template-repo <repo>`: Storefront template repo URL (default: https://github.com/SalesforceCommerceCloud/storefront-next-template.git)
 - `-b, --branch <branch>`: PWA repo branch (default: main)
 - `-f, --files <files...>`: Specific files to include (relative to project directory)
 - `-o, --output-dir <dir>`: Output directory (default: ./instructions)

@@ -9,7 +9,7 @@ These are the steps to remove the "Store Locator" extension from an existing sto
 
 # Step 2. Delete files.
 <Delete>
- - Delete the `../template-retail-rsc-app/src/extensions/store-locator` folder and all its contents.
+ - Delete the `src/extensions/store-locator` folder and all its contents.
  - Delete the `src/routes/resource.stores.ts` file.
  - Delete the `src/routes/store-locator.tsx` file.
 </Delete>

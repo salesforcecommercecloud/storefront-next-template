@@ -3,6 +3,7 @@ import { z } from 'zod';
 import uiStrings from '@/temp-ui-string';
 
 // Password update form validation schema
+// Note: confirmPassword is a "virtual" field used only for validation, not included in submission
 // eslint-disable-next-line react-refresh/only-export-components
 export const passwordUpdateFormSchema = z
     .object({
@@ -15,7 +16,6 @@ export const passwordUpdateFormSchema = z
         confirmPassword: z.string().min(1, {
             message: uiStrings.account.password.validation.confirmPasswordRequired,
         }),
-        email: z.string().optional(),
     })
     .refine((data) => data.password === data.confirmPassword, {
         message: uiStrings.account.password.validation.passwordsDoNotMatch,
@@ -31,6 +31,7 @@ export { PasswordUpdateFields } from './password-update-fields';
 // Export types
 export {
     type PasswordUpdateFormData,
+    type PasswordUpdateSubmissionData,
     type PasswordUpdateFormProps,
     type PasswordUpdateFieldsProps,
     type PasswordUpdateFetcherData,

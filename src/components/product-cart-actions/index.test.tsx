@@ -7,7 +7,7 @@
 
 // Testing libraries
 import { type ComponentProps } from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 // React Router
@@ -19,6 +19,69 @@ import ProductViewProvider from '@/providers/product-view';
 import { masterProduct } from '@/components/__mock__/master-variant-product';
 import { standardProd } from '@/components/__mock__/standard-product';
 import { bundleProd } from '@/components/__mock__/bundle-product';
+import { createConfigWrapper } from '@/test-utils/config';
+
+// Create a wrapper with default config
+const defaultConfigWrapper = createConfigWrapper({
+    app: {
+        site: {
+            locale: 'en-US',
+            currency: 'USD',
+            features: {
+                passwordlessLogin: {
+                    enabled: false,
+                    callbackUri: '/passwordless-login-callback',
+                    landingUri: '/passwordless-login-landing',
+                },
+                socialLogin: { enabled: true, providers: ['Apple', 'Google'] },
+                socialShare: { enabled: true, providers: ['Twitter', 'Facebook', 'LinkedIn', 'Email'] },
+                guestCheckout: true,
+            },
+        },
+    },
+} as any);
+
+// Mock useToast
+const mockAddToast = vi.fn();
+vi.mock('@/components/toast', () => ({
+    useToast: () => ({
+        addToast: mockAddToast,
+    }),
+}));
+
+// Mock navigator.clipboard
+const mockWriteText = vi.fn();
+Object.assign(navigator, {
+    clipboard: {
+        writeText: mockWriteText,
+    },
+});
+
+// Mock navigator.share
+const mockShare = vi.fn();
+Object.defineProperty(navigator, 'share', {
+    writable: true,
+    value: mockShare,
+});
+
+// Mock window.open
+const mockWindowOpen = vi.fn();
+window.open = mockWindowOpen;
+
+// Mock window.location for ShareButton with getter
+let mockLocationHref = 'http://localhost:5173/product/test-product-id';
+Object.defineProperty(window, 'location', {
+    writable: true,
+    configurable: true,
+    value: {
+        get href() {
+            return mockLocationHref;
+        },
+        set href(value: string) {
+            mockLocationHref = value;
+        },
+    },
+});
 
 // see https://vitest.dev/api/vi.html#mock-modules
 // Mock the useProductActions hook - use vi.hoisted to ensure proper hoisting
@@ -70,12 +133,18 @@ const renderProductCartActions = (props: ComponentProps<typeof ProductCartAction
             initialEntries: [initialUrl],
         }
     );
-    return { ...render(<RouterProvider router={router} />), router };
+    return {
+        ...render(<RouterProvider router={router} />, { wrapper: defaultConfigWrapper }),
+        router,
+    };
 };
 
 describe('ProductCartActions', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        mockWriteText.mockResolvedValue(undefined);
+        mockShare.mockResolvedValue(undefined);
+        mockWindowOpen.mockClear();
     });
 
     describe('when shopping for a product', () => {
@@ -87,6 +156,9 @@ describe('ProductCartActions', () => {
 
             // User should see a button to add the product to wishlist
             expect(screen.getByRole('button', { name: /add to wishlist/i })).toBeInTheDocument();
+
+            // User should see a share button
+            expect(screen.getByRole('button', { name: /share/i })).toBeInTheDocument();
         });
 
         test('add to cart button is disabled on out of stock item', () => {
@@ -129,6 +201,13 @@ describe('ProductCartActions', () => {
             // Wishlist is not relevant when editing existing cart items
             expect(screen.queryByRole('button', { name: /wishlist/i })).not.toBeInTheDocument();
         });
+
+        test('share button is not shown when editing', () => {
+            renderProductCartActions({ product: standardProd }, 'edit');
+
+            // Share button is not shown when editing existing cart items
+            expect(screen.queryByRole('button', { name: /share/i })).not.toBeInTheDocument();
+        });
     });
 
     describe('user interactions', () => {
@@ -158,6 +237,235 @@ describe('ProductCartActions', () => {
 
             // handleAddToWishlist should be called
             expect(mockHandleAddToWishlist).toHaveBeenCalledOnce();
+        });
+    });
+
+    describe('Share Button Integration', () => {
+        test('share button is rendered alongside wishlist button', () => {
+            renderProductCartActions({ product: standardProd });
+
+            const wishlistButton = screen.getByRole('button', { name: /add to wishlist/i });
+            const shareButton = screen.getByRole('button', { name: /share/i });
+
+            expect(wishlistButton).toBeInTheDocument();
+            expect(shareButton).toBeInTheDocument();
+
+            // Both buttons should be in the same grid container
+            const buttonsContainer = wishlistButton.closest('div.grid');
+            expect(buttonsContainer).toContainElement(shareButton);
+        });
+
+        test('share button opens dropdown menu when clicked', async () => {
+            const user = userEvent.setup();
+            renderProductCartActions({ product: standardProd });
+
+            const shareButton = screen.getByRole('button', { name: /share/i });
+            await user.click(shareButton);
+
+            await waitFor(() => {
+                expect(screen.getByText('Copy link')).toBeInTheDocument();
+            });
+        });
+
+        test('share button shows configured social providers', async () => {
+            const user = userEvent.setup();
+            renderProductCartActions({ product: standardProd });
+
+            const shareButton = screen.getByRole('button', { name: /share/i });
+            await user.click(shareButton);
+
+            await waitFor(() => {
+                expect(screen.getByText('Copy link')).toBeInTheDocument();
+            });
+
+            // Check for configured social providers
+            expect(screen.getByText('Email')).toBeInTheDocument();
+            expect(screen.getByText('Twitter/X')).toBeInTheDocument();
+        });
+
+        test('share button respects disabled socialShare config', async () => {
+            const customWrapper = createConfigWrapper({
+                app: {
+                    site: {
+                        locale: 'en-US',
+                        currency: 'USD',
+                        features: {
+                            passwordlessLogin: {
+                                enabled: false,
+                                callbackUri: '/passwordless-login-callback',
+                                landingUri: '/passwordless-login-landing',
+                            },
+                            socialLogin: { enabled: true, providers: ['Apple', 'Google'] },
+                            socialShare: { enabled: false, providers: ['Twitter', 'Facebook', 'LinkedIn', 'Email'] },
+                            guestCheckout: true,
+                        },
+                    },
+                },
+            } as any);
+
+            const user = userEvent.setup();
+            const productId = standardProd.id;
+            const initialUrl = `/product/${productId}`;
+            const router = createMemoryRouter(
+                [
+                    {
+                        path: '/product/:productId',
+                        element: (
+                            <ProductViewProvider product={standardProd} mode="add">
+                                <ProductCartActions product={standardProd} />
+                            </ProductViewProvider>
+                        ),
+                    },
+                ],
+                {
+                    initialEntries: [initialUrl],
+                }
+            );
+            render(<RouterProvider router={router} />, { wrapper: customWrapper });
+
+            const shareButton = screen.getByRole('button', { name: /share/i });
+            await user.click(shareButton);
+
+            await waitFor(() => {
+                expect(screen.getByText('Copy link')).toBeInTheDocument();
+            });
+
+            // Social providers should not be shown when disabled
+            expect(screen.queryByText('Email')).not.toBeInTheDocument();
+            expect(screen.queryByText('Twitter/X')).not.toBeInTheDocument();
+        });
+
+        test('share button shows copy link option', async () => {
+            const user = userEvent.setup();
+            renderProductCartActions({ product: standardProd });
+
+            const shareButton = screen.getByRole('button', { name: /share/i });
+            await user.click(shareButton);
+
+            await waitFor(() => {
+                expect(screen.getByText('Copy link')).toBeInTheDocument();
+            });
+
+            // Verify copy link option is present and clickable
+            const copyLinkOption = screen.getByText('Copy link');
+            expect(copyLinkOption).toBeInTheDocument();
+            await user.click(copyLinkOption);
+
+            // Verify toast is shown (clipboard functionality is tested in ShareButton tests)
+            await waitFor(() => {
+                expect(mockAddToast).toHaveBeenCalled();
+            });
+        });
+    });
+
+    describe('pending action execution', () => {
+        test('executes pending wishlist action when URL has matching params', async () => {
+            const mockOnBeforeAddToWishlist = vi.fn();
+            const mockOnAddToWishlistSuccess = vi.fn();
+            const productId = standardProd.productId || standardProd.id;
+
+            const router = createMemoryRouter(
+                [
+                    {
+                        path: '/product/:productId',
+                        element: (
+                            <ProductViewProvider product={standardProd}>
+                                <ProductCartActions
+                                    product={standardProd}
+                                    onBeforeAddToWishlist={mockOnBeforeAddToWishlist}
+                                    onAddToWishlistSuccess={mockOnAddToWishlistSuccess}
+                                />
+                            </ProductViewProvider>
+                        ),
+                    },
+                ],
+                {
+                    initialEntries: [
+                        `/product/${productId}?action=addToWishlist&actionParams=${encodeURIComponent(JSON.stringify({ productId }))}`,
+                    ],
+                }
+            );
+
+            render(<RouterProvider router={router} />, { wrapper: defaultConfigWrapper });
+
+            await waitFor(
+                () => {
+                    expect(mockOnBeforeAddToWishlist).toHaveBeenCalled();
+                    expect(mockHandleAddToWishlist).toHaveBeenCalled();
+                },
+                { timeout: 3000 }
+            );
+        });
+
+        test('does not execute pending action when productId does not match', async () => {
+            const mockOnBeforeAddToWishlist = vi.fn();
+            const productId = standardProd.productId || standardProd.id;
+            const differentProductId = 'different-product-id';
+
+            const router = createMemoryRouter(
+                [
+                    {
+                        path: '/product/:productId',
+                        element: (
+                            <ProductViewProvider product={standardProd}>
+                                <ProductCartActions
+                                    product={standardProd}
+                                    onBeforeAddToWishlist={mockOnBeforeAddToWishlist}
+                                />
+                            </ProductViewProvider>
+                        ),
+                    },
+                ],
+                {
+                    initialEntries: [
+                        `/product/${productId}?action=addToWishlist&actionParams=${encodeURIComponent(JSON.stringify({ productId: differentProductId }))}`,
+                    ],
+                }
+            );
+
+            render(<RouterProvider router={router} />, { wrapper: defaultConfigWrapper });
+
+            // Wait a bit to ensure action doesn't execute
+            await new Promise((resolve) => setTimeout(resolve, 500));
+
+            expect(mockOnBeforeAddToWishlist).not.toHaveBeenCalled();
+            expect(mockHandleAddToWishlist).not.toHaveBeenCalled();
+        });
+
+        test('shows loading state when pending action is executing', async () => {
+            const productId = standardProd.productId || standardProd.id;
+
+            // Mock handleAddToWishlist to be async and take some time
+            mockHandleAddToWishlist.mockImplementation(() => new Promise((resolve) => setTimeout(resolve, 100)));
+
+            const router = createMemoryRouter(
+                [
+                    {
+                        path: '/product/:productId',
+                        element: (
+                            <ProductViewProvider product={standardProd}>
+                                <ProductCartActions product={standardProd} />
+                            </ProductViewProvider>
+                        ),
+                    },
+                ],
+                {
+                    initialEntries: [
+                        `/product/${productId}?action=addToWishlist&actionParams=${encodeURIComponent(JSON.stringify({ productId }))}`,
+                    ],
+                }
+            );
+
+            render(<RouterProvider router={router} />, { wrapper: defaultConfigWrapper });
+
+            // Check if loading state is shown (button should show "Adding To Wishlist..." text or be disabled)
+            await waitFor(
+                () => {
+                    const wishlistButton = screen.getByRole('button', { name: /adding to wishlist/i });
+                    expect(wishlistButton).toBeInTheDocument();
+                },
+                { timeout: 2000 }
+            );
         });
     });
 });

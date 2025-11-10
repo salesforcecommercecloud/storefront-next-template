@@ -7,13 +7,14 @@
 
 'use client';
 
-import { useState, useCallback, useEffect, useMemo } from 'react';
-import { useFetcher } from 'react-router';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
+import { useFetcher, useLocation, useNavigate } from 'react-router';
 import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
 import { useToast } from '@/components/toast';
 import { useCurrentVariant } from '@/hooks/product/use-current-variant';
 import { useBasket } from '@/providers/basket';
 import { useItemFetcher } from '@/hooks/use-item-fetcher';
+import { useRequireAuth } from '@/hooks/use-require-auth';
 import uiStrings from '@/temp-ui-string';
 import { isProductSet, isProductBundle } from '@/lib/product-utils';
 
@@ -74,11 +75,14 @@ export function useProductActions({
     initialQuantity,
     itemId,
 }: UseProductActionsProps) {
+    const location = useLocation();
+    const navigate = useNavigate();
     const isProductASet = isProductSet(product);
     const isProductABundle = isProductBundle(product);
 
     const [isAddingToOrUpdatingCart, setIsAddingToOrUpdatingCart] = useState(false);
     const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
+    const hasHandledWishlistResponseRef = useRef(false);
     const [quantity, setQuantity] = useState(initialQuantity ?? 1);
 
     // Get current variant based on URL parameters
@@ -93,6 +97,7 @@ export function useProductActions({
     const cartFetcher = useItemFetcher({ itemId, componentName: 'product-cart-actions' });
     const multipleItemsFetcher = useFetcher();
     const bundleFetcher = useItemFetcher({ itemId, componentName: 'product-bundle-actions' });
+    const wishlistFetcher = useFetcher();
 
     // Inventory and stock calculations
     const inventory = product.inventory;
@@ -228,6 +233,115 @@ export function useProductActions({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isAddingToOrUpdatingCart, bundleFetcher.data]);
 
+    // Generic pending action tracker (after auth redirect)
+    // This tracks when actions are automatically executed after login
+    // Uses URL params directly - if URL has action params for this product, action is executing
+    const productToCheck = isMasterOrVariantProduct ? currentVariant : product;
+    const currentProductId = productToCheck?.productId || productToCheck?.id;
+
+    useEffect(() => {
+        if (!currentProductId) {
+            return;
+        }
+
+        // Check URL params to see if wishlist action is executing for this product
+        const urlParams = new URLSearchParams(location.search);
+        const urlAction = urlParams.get('action');
+        const urlActionParamsStr = urlParams.get('actionParams');
+
+        let isPendingWishlistAction = false;
+        if (urlAction === 'addToWishlist' && urlActionParamsStr) {
+            try {
+                const urlActionParams = JSON.parse(urlActionParamsStr);
+                const urlProductId = urlActionParams.productId;
+                isPendingWishlistAction = urlProductId === currentProductId;
+            } catch {
+                // Invalid JSON - ignore
+            }
+        }
+
+        // Show loading state if URL indicates action is executing for this product
+        // Always sync state with URL params - don't check current state to avoid timing issues
+        setIsAddingToWishlist(isPendingWishlistAction);
+    }, [currentProductId, location.search]);
+
+    // Handle wishlist fetcher response (for both direct clicks and component-executed pending actions)
+    useEffect(() => {
+        // Check if this is a pending action (from URL params)
+        const urlParams = new URLSearchParams(location.search);
+        const urlAction = urlParams.get('action');
+        const isPendingAction = urlAction === 'addToWishlist';
+
+        // Only handle responses when fetcher is idle and we have data
+        if (wishlistFetcher.state !== 'idle' || !wishlistFetcher.data) {
+            // Reset flag when fetcher starts a new request
+            if (wishlistFetcher.state === 'submitting') {
+                hasHandledWishlistResponseRef.current = false;
+            }
+            return;
+        }
+
+        // Prevent handling the same response multiple times
+        if (hasHandledWishlistResponseRef.current) {
+            return;
+        }
+
+        const result = wishlistFetcher.data as
+            | {
+                  success: boolean;
+                  error?: string;
+                  alreadyInWishlist?: boolean;
+              }
+            | undefined;
+
+        if (result?.success) {
+            hasHandledWishlistResponseRef.current = true;
+            setIsAddingToWishlist(false);
+
+            // If this was a pending action, clear URL params after successful execution
+            if (isPendingAction) {
+                void navigate(location.pathname, { replace: true });
+            }
+
+            if (result.alreadyInWishlist) {
+                addToast(
+                    uiStrings.product.alreadyInWishlist?.replace(
+                        '{productName}',
+                        product.name || uiStrings.common.productGeneric
+                    ) || uiStrings.product.itemAlreadyInWishlist,
+                    'info'
+                );
+            } else {
+                addToast(
+                    uiStrings.product.addedToWishlist?.replace(
+                        '{productName}',
+                        product.name || uiStrings.common.productGeneric
+                    ) || uiStrings.product.addedToWishlistGeneric,
+                    'success'
+                );
+            }
+        } else if (result?.success === false || result?.error) {
+            hasHandledWishlistResponseRef.current = true;
+            setIsAddingToWishlist(false);
+
+            // If this was a pending action, clear URL params even on error
+            if (isPendingAction) {
+                void navigate(location.pathname, { replace: true });
+            }
+
+            addToast(result.error || uiStrings.product.failedToAddProductToWishlist, 'error');
+        }
+        //As addToast, setIsAddingToWishlist, navigate are unlikely to change, we don't need to include them in the dependency array
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [
+        isAddingToWishlist,
+        wishlistFetcher.data,
+        wishlistFetcher.state,
+        product.name,
+        location.pathname,
+        location.search,
+    ]);
+
     // Handle adding to cart
     const handleAddToCart = useCallback(async () => {
         if (isAddingToOrUpdatingCart || !canAddToCart) return;
@@ -275,19 +389,94 @@ export function useProductActions({
         addToast,
     ]);
 
-    // Handle adding to wishlist
-    //TODO: update this function when we work on wishlist
-    const handleAddToWishlist = useCallback((_selectedVariant?: ShopperProductsTypes.Variant) => {
-        setIsAddingToWishlist(true);
+    /**
+     * Generic helper to create product action handlers
+     * Abstracts common pattern: validate product, set loading state, submit to action route
+     */
+    const createProductActionHandler = useCallback(
+        <TParams extends Record<string, unknown> = Record<string, unknown>>(config: {
+            actionRoute: string;
+            isLoading: boolean;
+            setLoading: (loading: boolean) => void;
+            fetcher: ReturnType<typeof useFetcher>;
+            errorMessage: string;
+            buildFormData: (params: TParams) => FormData | Record<string, string>;
+            actionName?: string; // For debug logging
+        }) => {
+            return async (selectedVariant?: ShopperProductsTypes.Variant, additionalParams?: Partial<TParams>) => {
+                const { actionRoute, isLoading, setLoading, fetcher, errorMessage, buildFormData } = config;
 
-        // TODO: Implement actual add to wishlist API call
-        // This will be implemented when wishlist functionality is added
+                if (isLoading) {
+                    return;
+                }
 
-        setIsAddingToWishlist(false);
+                // Prefer variant if available, otherwise fall back to master product ID
+                // Let the API decide if master products are allowed
+                const productToAdd = isMasterOrVariantProduct ? selectedVariant || currentVariant : product;
+                const productId = productToAdd?.productId || productToAdd?.id || product.id;
 
-        // TODO: Promise.resolve used to mimic future async behavior
-        return Promise.resolve({ success: true });
-    }, []);
+                if (!productId) {
+                    addToast(errorMessage, 'error');
+                    return;
+                }
+
+                setLoading(true);
+
+                try {
+                    const params = { productId, ...additionalParams } as unknown as TParams;
+                    const formData = buildFormData(params);
+                    await fetcher.submit(formData, {
+                        method: 'POST',
+                        action: actionRoute,
+                    });
+                    // Note: fetcher.data may not be immediately available after submit()
+                    // Response handling should be done in a useEffect that watches fetcher.state
+                } catch {
+                    setLoading(false);
+                    addToast(errorMessage, 'error');
+                }
+            };
+        },
+        [product, isMasterOrVariantProduct, currentVariant, addToast]
+    );
+
+    // Handle adding to wishlist - using generic handler
+    const handleAddToWishlistBase = useMemo(
+        () =>
+            createProductActionHandler<{ productId: string }>({
+                actionRoute: '/action/wishlist-add',
+                isLoading: isAddingToWishlist,
+                setLoading: setIsAddingToWishlist,
+                fetcher: wishlistFetcher,
+                errorMessage: uiStrings.product.failedToAddProductToWishlist,
+                buildFormData: (params) => ({ productId: String(params.productId) }),
+                actionName: 'handleAddToWishlistBase',
+            }),
+        [createProductActionHandler, isAddingToWishlist, wishlistFetcher]
+    );
+
+    // Wrap the base handler with auth requirement - must be called at render time (not in async functions)
+    const handleAddToWishlist = useRequireAuth(
+        (async (...args: unknown[]) => {
+            const variant = args[0] as ShopperProductsTypes.Variant | undefined;
+            return handleAddToWishlistBase(variant);
+        }) as (...args: unknown[]) => Promise<unknown>,
+        {
+            actionName: 'addToWishlist',
+            getActionParams: (...args: unknown[]) => {
+                const variant = args[0] as ShopperProductsTypes.Variant | undefined;
+                const productToAdd = isMasterOrVariantProduct ? variant || currentVariant : product;
+                const productId = productToAdd?.productId || productToAdd?.id || product.id;
+                if (!productId) {
+                    throw new Error(uiStrings.product.productIdRequired);
+                }
+                return { productId };
+            },
+            getReturnUrl: () =>
+                typeof window !== 'undefined' ? window.location.pathname + window.location.search : '',
+            toastMessage: uiStrings.product.signInToAddToWishlist,
+        }
+    ) as (variant?: ShopperProductsTypes.Variant) => Promise<void>;
 
     // Handle product set add to cart (multiple products)
     const handleProductSetAddToCart = useCallback(
@@ -468,11 +657,11 @@ export function useProductActions({
             );
 
             const currentItem = basketProductItems.find((item) => item.itemId === itemId);
-            const currentProductId = currentItem?.productId;
+            const existingProductId = currentItem?.productId;
 
             // Case 1: User is only changing quantity (same variant)
             // Only send itemId and quantity (productId not needed for quantity-only updates)
-            if (selectedProductId === currentProductId) {
+            if (selectedProductId === existingProductId) {
                 const updateFormData = new FormData();
                 updateFormData.append('itemId', itemId);
                 updateFormData.append('quantity', quantity.toString());

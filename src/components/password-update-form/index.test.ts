@@ -8,18 +8,6 @@ describe('passwordUpdateFormSchema', () => {
                 currentPassword: 'OldPassword123',
                 password: 'NewPassword123',
                 confirmPassword: 'NewPassword123',
-                email: 'user@example.com',
-            };
-
-            const result = passwordUpdateFormSchema.safeParse(validData);
-            expect(result.success).toBe(true);
-        });
-
-        it('should validate without email field', () => {
-            const validData = {
-                currentPassword: 'OldPassword123',
-                password: 'NewPassword123',
-                confirmPassword: 'NewPassword123',
             };
 
             const result = passwordUpdateFormSchema.safeParse(validData);
@@ -256,30 +244,6 @@ describe('passwordUpdateFormSchema', () => {
 
             const result = passwordUpdateFormSchema.safeParse(validData);
             // Schema allows same password (no business rule against it)
-            expect(result.success).toBe(true);
-        });
-
-        it('should handle empty email field', () => {
-            const validData = {
-                currentPassword: 'OldPassword123',
-                password: 'NewPassword123',
-                confirmPassword: 'NewPassword123',
-                email: '',
-            };
-
-            const result = passwordUpdateFormSchema.safeParse(validData);
-            expect(result.success).toBe(true);
-        });
-
-        it('should handle valid email field', () => {
-            const validData = {
-                currentPassword: 'OldPassword123',
-                password: 'NewPassword123',
-                confirmPassword: 'NewPassword123',
-                email: 'user@example.com',
-            };
-
-            const result = passwordUpdateFormSchema.safeParse(validData);
             expect(result.success).toBe(true);
         });
 

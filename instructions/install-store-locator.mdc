@@ -1,4 +1,4 @@
-These are the steps to upgrade an existing store front application (currently opened project) with the "Store Locator" extension by installing the necessary code to the destination application. Follow these instructions carefully and precisely, do NOT deviate from them.
+These are the steps to update an existing store front application (currently opened project) with the "Store Locator" extension by installing the necessary code to the destination application. Follow these instructions carefully and precisely, do NOT deviate from them.
 
  # Step 1. Prerequisites: First make sure the current project has all the necessary files. If any requirement in the prerequisite is not met, abort the rest of this instruction.
  <Prerequisites>
@@ -10,19 +10,19 @@ These are the steps to upgrade an existing store front application (currently op
  # Step 2. Preparations: Clone the pwa-kit repo for the specific branch into the tmp folder
  <Preparations>
  - Create a folder `pwa-kit-tmp` under the system's temp folder, e.g., `/tmp/pwa-kit-tmp` or 'C:/temp/pwa-kit-tmp'
- - Clone the pwa-kit repo for the specific branch into the tmp folder: Run `git clone -b main https://github.com/SalesforceCommerceCloud/storefront-next.git /tmp/pwa-kit-tmp`
+ - Clone the pwa-kit repo for the specific branch into the tmp folder: Run `git clone -b main https://github.com/SalesforceCommerceCloud/storefront-next-template.git /tmp/pwa-kit-tmp`
  </Preparations>
 
  # Step 3. Copy:
  <Copy>
- - From the cloned pwa-kit folder, copy `packages/template-retail-rsc-app/src/extensions/store-locator` folder into the current directory's `../template-retail-rsc-app/src/extensions/store-locator` folder.
- - From the cloned pwa-kit folder, copy `packages/template-retail-rsc-app/src/routes/resource.stores.ts` file into the current directory's `src/routes/resource.stores.ts` file.
- - From the cloned pwa-kit folder, copy `packages/template-retail-rsc-app/src/routes/store-locator.tsx` file into the current directory's `src/routes/store-locator.tsx` file.
+ - From the cloned pwa-kit folder, copy `src/extensions/store-locator` folder into the current directory's `src/extensions/store-locator` folder.
+ - From the cloned pwa-kit folder, copy `src/routes/resource.stores.ts` file into the current directory's `src/routes/resource.stores.ts` file.
+ - From the cloned pwa-kit folder, copy `src/routes/store-locator.tsx` file into the current directory's `src/routes/store-locator.tsx` file.
   </Copy>
 
  # Step 4. Merge. Apply the following code changes to the files specified. Skip a step if the code change has already been applied.
  <Merge>
- - Go through the following source files in /tmp/pwa-kit-tmp/packages/template-retail-rsc-app one by one, then perform the following instructions with the marker value "SFDC_EXT_STORE_LOCATOR": 
+ - Go through the following source files in /tmp/pwa-kit-tmp one by one, then perform the following instructions with the marker value "SFDC_EXT_STORE_LOCATOR": 
     - `src/components/footer/index.tsx`
     - `src/components/header/header.tsx`
     - `src/root.tsx`

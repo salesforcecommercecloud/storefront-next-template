@@ -8,6 +8,10 @@ import { useToast } from '@/components/toast';
 import uiStrings from '@/temp-ui-string';
 import type { ShopperCustomersTypes } from 'commerce-sdk-isomorphic';
 import { useFetcherEffect } from '@/hooks/use-fetcher-effect';
+import { useScapiFetcher, type ScapiFetcher } from '@/hooks/use-scapi-fetcher';
+import { useAuth } from '@/providers/auth';
+import type { CustomerProfileFetcherData } from '@/components/customer-profile-form/types';
+import type { PasswordUpdateFetcherData } from '@/components/password-update-form/types';
 
 type AccountLayoutContext = {
     customer: Promise<ShopperCustomersTypes.Customer | null>;
@@ -24,6 +28,19 @@ function AccountDetailsContent({ customer }: { customer: ShopperCustomersTypes.C
     const { addToast } = useToast();
     const loginFetcher = useFetcher();
     const revalidator = useRevalidator();
+    const auth = useAuth();
+    const customerId = auth?.customer_id;
+
+    // Create fetchers for profile and password updates
+    const updateProfileFetcher = useScapiFetcher('ShopperCustomers', 'updateCustomer', {
+        parameters: { customerId: customerId || '' },
+        body: {},
+    });
+
+    const passwordFetcher = useScapiFetcher('ShopperCustomers', 'updateCustomerPassword', {
+        parameters: { customerId: customerId || '' },
+        body: { currentPassword: '', password: '' },
+    });
 
     // Extract user info from customer data
     const userInfo = useMemo(
@@ -35,24 +52,52 @@ function AccountDetailsContent({ customer }: { customer: ShopperCustomersTypes.C
         [customer]
     );
 
+    /**
+     * Handles successful login after password update.
+     * Called when the user is successfully authenticated with the new password.
+     * You can add additional logic here such as:
+     * - Refreshing customer data
+     * - Analytics tracking
+     * - Cache invalidation
+     */
     const handleLoginSuccess = () => {
+        // Revalidate to refresh customer data
         void revalidator.revalidate();
     };
 
+    /**
+     * Handles login error after password update.
+     * Called when automatic login fails after password update.
+     * You can add additional logic here such as:
+     * - Error logging
+     * - Analytics tracking
+     * - Custom error handling
+     */
     const handleLoginError = () => {
+        // Show error toast
         addToast('Password updated successfully, but automatic login failed. Please log in again.', 'error');
     };
 
-    // Handles profile toggle card edit action.
+    /**
+     * Handles profile toggle card edit action.
+     * Opens the profile form for editing.
+     */
     const handleProfileEdit = () => {
         setIsEditingProfile(true);
     };
 
-    // Handles password toggle card edit action.
+    /**
+     * Handles password toggle card edit action.
+     * Opens the password form for editing.
+     */
     const handlePasswordEdit = () => {
         setIsEditingPassword(true);
     };
 
+    // Watch loginFetcher for automatic login after password update
+    // This fetcher is triggered by handlePasswordSuccess when the user updates their password.
+    // We use useFetcherEffect to handle the login response and refresh customer data on success,
+    // or show an error message if automatic login fails.
     useFetcherEffect<unknown>(loginFetcher, {
         onSuccess: handleLoginSuccess,
         onError: handleLoginError,
@@ -75,6 +120,8 @@ function AccountDetailsContent({ customer }: { customer: ShopperCustomersTypes.C
         email: string;
         phone?: string;
     }) => {
+        // Show success toast
+        addToast(uiStrings.account.profile.successMessage, 'success');
         // Add your additional logic here
 
         // Close the editing mode
@@ -91,9 +138,11 @@ function AccountDetailsContent({ customer }: { customer: ShopperCustomersTypes.C
      *
      * @param error - The error that occurred during the update
      */
-    const handleCustomerProfileError = (_error: string) => {
+    const handleCustomerProfileError = (error: string) => {
+        // Show error toast
+        addToast(error, 'error');
         // Add your additional logic here
-        // console.error('Profile update failed:', _error);
+        // console.error('Profile update failed:', error);
     };
 
     /**
@@ -115,17 +164,19 @@ function AccountDetailsContent({ customer }: { customer: ShopperCustomersTypes.C
         currentPassword: string;
         password: string;
         confirmPassword: string;
-        email?: string;
     }) => {
+        // Show success toast
+        addToast(uiStrings.account.password.successMessage, 'success');
         // Close the editing mode
         setIsEditingPassword(false);
 
         // Authenticate the user with the new password
-        if (formData.email && formData.password) {
+        // Get email from customer data (userInfo) and password from formData
+        if (userInfo.email && formData.password) {
             // Submit login request with the new password
             void loginFetcher.submit(
                 {
-                    email: formData.email,
+                    email: userInfo.email,
                     password: formData.password,
                 },
                 {
@@ -150,9 +201,11 @@ function AccountDetailsContent({ customer }: { customer: ShopperCustomersTypes.C
      *
      * @param error - The error that occurred during the update
      */
-    const handlePasswordError = (_error: string) => {
+    const handlePasswordError = (error: string) => {
+        // Show error toast
+        addToast(error, 'error');
         // Add your additional logic here
-        // console.error('Password update failed:', _error);
+        // console.error('Password update failed:', error);
     };
 
     /**
@@ -223,6 +276,7 @@ function AccountDetailsContent({ customer }: { customer: ShopperCustomersTypes.C
                             email: customer?.email || customer?.login || '',
                             phone: customer?.phoneHome || customer?.phoneMobile || '',
                         }}
+                        updateFetcher={updateProfileFetcher as ScapiFetcher<CustomerProfileFetcherData>}
                         onSuccess={handleCustomerProfileSuccess}
                         onError={handleCustomerProfileError}
                         onCancel={handleCustomerProfileCancel}
@@ -253,7 +307,7 @@ function AccountDetailsContent({ customer }: { customer: ShopperCustomersTypes.C
 
                 <ToggleCardEdit>
                     <PasswordUpdateForm
-                        initialData={{ email: userInfo.email }}
+                        updateFetcher={passwordFetcher as ScapiFetcher<PasswordUpdateFetcherData>}
                         onSuccess={handlePasswordSuccess}
                         onError={handlePasswordError}
                         onCancel={handlePasswordCancel}

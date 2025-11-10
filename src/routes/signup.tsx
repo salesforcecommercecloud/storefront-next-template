@@ -23,16 +23,25 @@ import { flashAuth, getAuth } from '@/middlewares/auth.server';
 
 type SignupLoaderData = {
     error?: string;
+    returnUrl?: string | null;
+    action?: string | null;
 };
 
 // eslint-disable-next-line react-refresh/only-export-components,custom/no-universal-loaders
-export function loader({ context }: LoaderFunctionArgs) {
+export function loader({ request, context }: LoaderFunctionArgs): SignupLoaderData {
     const session = getAuth(context);
     if (session.userType === 'registered') {
         return redirect('/');
     }
+
+    const url = new URL(request.url);
+    const returnUrl = url.searchParams.get('returnUrl');
+    const loaderAction = url.searchParams.get('action');
+
     return {
         error: session.error,
+        returnUrl,
+        action: loaderAction,
     };
 }
 
@@ -79,12 +88,31 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
     });
 
     if (result.success) {
-        // Registration and auto-login successful - redirect to home
-        return resolve('/');
+        // Registration and auto-login successful - redirect to returnUrl if provided, otherwise home
+        const url = new URL(request.url);
+        const returnUrl = url.searchParams.get('returnUrl');
+        return resolve(returnUrl || '/');
     }
 
-    // Registration failed - redirect back to signup with error
-    return resolve('/signup');
+    // Registration failed - redirect back to signup with error, preserving returnUrl/action
+    const url = new URL(request.url);
+    const returnUrl = url.searchParams.get('returnUrl');
+    const signupAction = url.searchParams.get('action');
+    const actionParams = url.searchParams.get('actionParams');
+
+    const params = new URLSearchParams();
+    if (returnUrl) {
+        params.set('returnUrl', returnUrl);
+    }
+    if (signupAction) {
+        params.set('action', signupAction);
+    }
+    if (actionParams) {
+        params.set('actionParams', actionParams);
+    }
+
+    const queryString = params.toString();
+    return resolve(queryString ? `/signup?${queryString}` : '/signup');
 }
 
 /**

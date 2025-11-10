@@ -122,6 +122,9 @@ describe('Config Access APIs', () => {
             expect(config.performance).toBeDefined();
             expect(config.development).toBeDefined();
             expect(config.global.branding).toBeDefined();
+            expect(config.site.features.socialShare).toBeDefined();
+            expect(config.site.features.socialShare.enabled).toBeDefined();
+            expect(config.site.features.socialShare.providers).toBeDefined();
         });
 
         it('should not include runtime build settings in app config', () => {

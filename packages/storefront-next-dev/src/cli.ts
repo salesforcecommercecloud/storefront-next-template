@@ -83,10 +83,10 @@ program
     .requiredOption('-c, --extension-config <config>', 'Extension config JSON file location')
     .requiredOption('-e, --extension <extension>', 'Extension marker value (e.g. SFDC_EXT_featureA)')
     .option(
-        '-p, --pwa-repo <repo>',
-        'PWA repo URL (default: https://github.com/SalesforceCommerceCloud/SFCC-Odyssey.git)'
+        '-p, --template-repo <repo>',
+        'Storefront template repo URL (default: https://github.com/SalesforceCommerceCloud/storefront-next-template.git)'
     )
-    .option('-b, --branch <branch>', 'PWA repo branch (default: main)')
+    .option('-b, --branch <branch>', 'Storefront template repo branch (default: main)')
     .option('-f, --files <files...>', 'Specific files to include (relative to project directory)')
     .option('-o, --output-dir <dir>', 'Output directory (default: ./instructions)')
     .action((options) => {
@@ -100,7 +100,7 @@ program
                 projectDirectory,
                 options.extension,
                 options.outputDir,
-                options.pwaRepo,
+                options.templateRepo,
                 options.branch,
                 files,
                 extensionConfig,

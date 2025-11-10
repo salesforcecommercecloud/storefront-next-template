@@ -69,6 +69,7 @@ export const mockBuildConfig: Config = {
                     landingUri: '/reset-password-landing',
                 },
                 socialLogin: { enabled: true, providers: ['Apple', 'Google'] },
+                socialShare: { enabled: true, providers: ['Twitter', 'Facebook', 'LinkedIn', 'Email'] },
                 guestCheckout: true,
             },
         },

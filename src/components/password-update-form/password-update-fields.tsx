@@ -6,7 +6,6 @@
 // integration tests that can verify end-to-end user interactions.
 /* c8 ignore end */
 
-import { useWatch } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -26,17 +25,11 @@ import { type PasswordUpdateFieldsProps } from './types';
  */
 export function PasswordUpdateFields({ form, updateFetcher, onCancel }: PasswordUpdateFieldsProps) {
     const isSubmitting = updateFetcher.state === FETCHER_STATES.SUBMITTING;
-    const password = useWatch({
-        control: form.control,
-        name: 'password',
-        defaultValue: '',
-    });
+    // Use form.watch to read the password value directly from form state, including initial values
+    const password = form.watch('password') || '';
 
     return (
         <div className="space-y-4">
-            {/* Hidden Email Field */}
-            <FormField control={form.control} name="email" render={({ field }) => <input type="hidden" {...field} />} />
-
             {/* Current Password Field */}
             <FormField
                 control={form.control}

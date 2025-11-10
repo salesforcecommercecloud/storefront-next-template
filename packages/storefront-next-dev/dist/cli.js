@@ -477,7 +477,6 @@ async function push(options) {
 * @author kzheng
 * @since 260
 */
-const REL_RETAIL_RSC_APP_DIR = "packages/template-retail-rsc-app/";
 const SKIP_DIRS = [
 	"node_modules",
 	"dist",
@@ -488,7 +487,7 @@ const UNINSTALL_INSTRUCTIONS_TEMPLATE = "uninstall-instructions.mdc.hbs";
 /**
 * Build the context for the instructions template.
 */
-function getContext(projectRoot, markerValue, pwaRepo = "https://github.com/SalesforceCommerceCloud/storefront-next.git", branch = "main", filesToCopy = [], extensionConfigPath = "") {
+function getContext(projectRoot, markerValue, pwaRepo = "https://github.com/SalesforceCommerceCloud/storefront-next-template.git", branch = "main", filesToCopy = [], extensionConfigPath = "") {
 	const extensionConfig = JSON.parse(fs$1.readFileSync(extensionConfigPath, "utf8"));
 	if (!extensionConfig.extensions[markerValue]) throw new Error(`Extension ${markerValue} not found in extension config`);
 	filesToCopy.forEach((file$1) => {
@@ -516,13 +515,13 @@ const getFilesToCopyContext = (projectRoot, filesToCopy) => {
 		if (!fs$1.existsSync(fullPath)) throw new Error(`File or directory ${fullPath} not found`);
 	});
 	return filesToCopy.map((file$1) => ({
-		src: path.join(REL_RETAIL_RSC_APP_DIR, file$1),
+		src: file$1,
 		dest: file$1,
 		isDirectory: fs$1.statSync(path.join(projectRoot, file$1)).isDirectory()
 	}));
 };
 /**
-* Find all the files that contain the marker value in the template-retail-rsc-app folder.
+* Find all the files that contain the marker value in the project folder.
 * @param {string} markerValue
 * @returns {string[]} The files that are marked with the marker value
 */
@@ -39783,13 +39782,13 @@ program.command("push").description("Create and push bundle to Managed Runtime")
 		handleCommandError("Push", err);
 	}
 });
-program.command("create-instructions").description("Generate LLM instructions using prompt templating for installing and uninstalling Storefront Next feature extensions").requiredOption("-d, --project-directory <dir>", "Project directory").requiredOption("-c, --extension-config <config>", "Extension config JSON file location").requiredOption("-e, --extension <extension>", "Extension marker value (e.g. SFDC_EXT_featureA)").option("-p, --pwa-repo <repo>", "PWA repo URL (default: https://github.com/SalesforceCommerceCloud/SFCC-Odyssey.git)").option("-b, --branch <branch>", "PWA repo branch (default: main)").option("-f, --files <files...>", "Specific files to include (relative to project directory)").option("-o, --output-dir <dir>", "Output directory (default: ./instructions)").action((options) => {
+program.command("create-instructions").description("Generate LLM instructions using prompt templating for installing and uninstalling Storefront Next feature extensions").requiredOption("-d, --project-directory <dir>", "Project directory").requiredOption("-c, --extension-config <config>", "Extension config JSON file location").requiredOption("-e, --extension <extension>", "Extension marker value (e.g. SFDC_EXT_featureA)").option("-p, --template-repo <repo>", "Storefront template repo URL (default: https://github.com/SalesforceCommerceCloud/storefront-next-template.git)").option("-b, --branch <branch>", "Storefront template repo branch (default: main)").option("-f, --files <files...>", "Specific files to include (relative to project directory)").option("-o, --output-dir <dir>", "Output directory (default: ./instructions)").action((options) => {
 	try {
 		const baseDir = process.cwd();
 		const projectDirectory = path.resolve(baseDir, options.projectDirectory);
 		const extensionConfig = path.resolve(baseDir, options.extensionConfig);
 		const files = options.files ?? void 0;
-		generateInstructions(projectDirectory, options.extension, options.outputDir, options.pwaRepo, options.branch, files, extensionConfig, `${__dirname}/extensibility/templates`);
+		generateInstructions(projectDirectory, options.extension, options.outputDir, options.templateRepo, options.branch, files, extensionConfig, `${__dirname}/extensibility/templates`);
 		process.exit(0);
 	} catch (err) {
 		handleCommandError("create-instructions", err);

@@ -160,4 +160,17 @@ describe('SocialLoginButtons', () => {
         // React will only render 2 forms because keys are unique
         expect(forms.length).toBeGreaterThanOrEqual(2);
     });
+
+    test('includes redirectPath hidden input when provided', () => {
+        const redirectPath = '/checkout';
+        const { container } = renderWithRouter(<SocialLoginButtons redirectPath={redirectPath} />);
+
+        const forms = container.querySelectorAll('form');
+        expect(forms.length).toBeGreaterThan(0);
+
+        forms.forEach((form) => {
+            const redirectInput = form.querySelector('input[name="redirectPath"]');
+            expect((redirectInput as HTMLInputElement)?.value).toBe(redirectPath);
+        });
+    });
 });

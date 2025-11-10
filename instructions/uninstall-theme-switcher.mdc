@@ -7,7 +7,7 @@ These are the steps to remove the "Theme Switcher" extension from an existing st
 
 # Step 2. Delete files.
 <Delete>
- - Delete the `../template-retail-rsc-app/src/extensions/theme-switcher` folder and all its contents.
+ - Delete the `src/extensions/theme-switcher` folder and all its contents.
 </Delete>
 
 # Step 3. Merge. Apply the following code changes to the files specified.

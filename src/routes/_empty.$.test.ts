@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { loader, action } from './_empty.$';
 import { handlePasswordlessCallback, handlePasswordlessLanding } from '@/lib/passwordless-login';
+import { handleSocialLoginLanding } from '@/lib/api/auth/social-login';
 import { handleResetPasswordCallback, handleResetPasswordLanding } from '@/lib/api/auth/reset-password';
 import type { LoaderFunctionArgs, ActionFunctionArgs } from 'react-router';
 
@@ -8,6 +9,11 @@ import type { LoaderFunctionArgs, ActionFunctionArgs } from 'react-router';
 vi.mock('@/lib/passwordless-login', () => ({
     handlePasswordlessCallback: vi.fn(),
     handlePasswordlessLanding: vi.fn(),
+}));
+
+// Mock social-callback handler
+vi.mock('@/lib/api/auth/social-login', () => ({
+    handleSocialLoginLanding: vi.fn(),
 }));
 
 // Mock reset-password handlers
@@ -25,6 +31,10 @@ vi.mock('@/config', () => ({
                     landingUri: '/passwordless-login-landing',
                     callbackUri: '/passwordless-login-callback',
                 },
+                socialLogin: {
+                    enabled: true,
+                    callbackUri: '/social-callback',
+                },
                 resetPassword: {
                     landingUri: '/reset-password-landing',
                     callbackUri: '/reset-password-callback',
@@ -36,6 +46,7 @@ vi.mock('@/config', () => ({
 
 const mockPasswordlessCallback = vi.mocked(handlePasswordlessCallback);
 const mockPasswordlessLanding = vi.mocked(handlePasswordlessLanding);
+const mockSocialLoginCallback = vi.mocked(handleSocialLoginLanding);
 const mockResetPasswordCallback = vi.mocked(handleResetPasswordCallback);
 const mockResetPasswordLanding = vi.mocked(handleResetPasswordLanding);
 
@@ -82,6 +93,25 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
             const result = await loader(args);
 
             expect(mockResetPasswordLanding).toHaveBeenCalledWith(args);
+            expect(result).toBe(mockResponse);
+        });
+
+        it('should handle social login callback route', async () => {
+            const mockResponse = new Response(null, {
+                status: 302,
+                headers: { Location: '/' },
+            });
+            mockSocialLoginCallback.mockResolvedValue(mockResponse);
+
+            const args: LoaderFunctionArgs = {
+                request: new Request('http://localhost/social-callback?code=auth_code_123&usid=user_session_id'),
+                params: {},
+                context: mockContext,
+            };
+
+            const result = await loader(args);
+
+            expect(mockSocialLoginCallback).toHaveBeenCalledWith(args);
             expect(result).toBe(mockResponse);
         });
 

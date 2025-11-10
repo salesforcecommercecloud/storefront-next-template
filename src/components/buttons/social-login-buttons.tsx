@@ -4,7 +4,11 @@ import uiStrings from '@/temp-ui-string';
 import { Button } from '@/components/ui/button';
 import { useConfig } from '@/config';
 
-export function SocialLoginButtons(): ReactElement | null {
+interface SocialLoginButtonsProps {
+    redirectPath?: string;
+}
+
+export function SocialLoginButtons({ redirectPath }: SocialLoginButtonsProps = {}): ReactElement | null {
     const { site } = useConfig();
     const socialIDPs: string[] = site.features.socialLogin.providers;
 
@@ -44,6 +48,7 @@ export function SocialLoginButtons(): ReactElement | null {
                         <Form method="post" key={provider}>
                             <input type="hidden" name="loginMode" value="social" />
                             <input type="hidden" name="provider" value={provider} />
+                            {redirectPath && <input type="hidden" name="redirectPath" value={redirectPath} />}
                             <Button type="submit" variant="outline" className="w-full">
                                 <span className="mr-2 text-lg">{getProviderIcon(provider)}</span>
                                 {uiStrings.login.continueWithProvider.replace('{provider}', provider)}

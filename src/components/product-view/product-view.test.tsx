@@ -6,8 +6,9 @@
  */
 
 // Testing libraries
-import { render, screen } from '@testing-library/react';
-import { describe, test, expect } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, test, expect, vi, beforeEach } from 'vitest';
 // React Router
 import { createMemoryRouter, RouterProvider } from 'react-router';
 // Components
@@ -17,11 +18,59 @@ import { masterProduct as mockProduct } from '@/components/__mock__/master-varia
 import { standardProd } from '@/components/__mock__/standard-product';
 import { bundleProd } from '@/components/__mock__/bundle-product';
 import { setProduct } from '@/components/__mock__/set-product';
+import { createConfigWrapper } from '@/test-utils/config';
+
+// Create a wrapper with default config
+const defaultConfigWrapper = createConfigWrapper({
+    app: {
+        site: {
+            locale: 'en-US',
+            currency: 'USD',
+            features: {
+                passwordlessLogin: {
+                    enabled: false,
+                    callbackUri: '/passwordless-login-callback',
+                    landingUri: '/passwordless-login-landing',
+                },
+                socialLogin: { enabled: true, providers: ['Apple', 'Google'] },
+                socialShare: { enabled: true, providers: ['Twitter', 'Facebook', 'LinkedIn', 'Email'] },
+                guestCheckout: true,
+            },
+        },
+    },
+} as any);
+
+// Mock useToast
+const mockAddToast = vi.fn();
+vi.mock('@/components/toast', () => ({
+    useToast: () => ({
+        addToast: mockAddToast,
+    }),
+}));
+
+// Mock navigator.clipboard
+const mockWriteText = vi.fn();
+Object.assign(navigator, {
+    clipboard: {
+        writeText: mockWriteText,
+    },
+});
+
+// Mock navigator.share
+const mockShare = vi.fn();
+Object.defineProperty(navigator, 'share', {
+    writable: true,
+    value: mockShare,
+});
+
+// Mock window.open
+const mockWindowOpen = vi.fn();
+window.open = mockWindowOpen;
 
 const renderProductView = (props: React.ComponentProps<typeof ProductView>, initialUrl = '/product/test-product') => {
     // Using createMemoryRouter in framework mode is fine
     // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
-    // Even though it’s listed under “data routers,” it fully supports testing non-route components that rely on router behavior.
+    // Even though it's listed under "data routers," it fully supports testing non-route components that rely on router behavior.
     const router = createMemoryRouter(
         [
             {
@@ -33,10 +82,20 @@ const renderProductView = (props: React.ComponentProps<typeof ProductView>, init
             initialEntries: [initialUrl],
         }
     );
-    return { ...render(<RouterProvider router={router} />), router };
+    return {
+        ...render(<RouterProvider router={router} />, { wrapper: defaultConfigWrapper }),
+        router,
+    };
 };
 
 describe('ProductView', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+        mockWriteText.mockResolvedValue(undefined);
+        mockShare.mockResolvedValue(undefined);
+        mockWindowOpen.mockClear();
+    });
+
     describe('basic rendering', () => {
         test('should render product properly', () => {
             renderProductView({ product: mockProduct });
@@ -64,6 +123,8 @@ describe('ProductView', () => {
             // Cart action buttons should be visible
             expect(screen.getByRole('button', { name: /add to cart/i })).toBeInTheDocument();
             expect(screen.getByRole('button', { name: /add to wishlist/i })).toBeInTheDocument();
+            // Share button should be visible
+            expect(screen.getByRole('button', { name: /share/i })).toBeInTheDocument();
         });
     });
 
@@ -201,6 +262,7 @@ describe('ProductView', () => {
             // Check for proper button labels
             expect(screen.getByRole('button', { name: /add to cart/i })).toBeInTheDocument();
             expect(screen.getByRole('button', { name: /add to wishlist/i })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: /share/i })).toBeInTheDocument();
         });
 
         test('provides proper navigation structure', () => {
@@ -259,6 +321,7 @@ describe('ProductView', () => {
             expect(screen.getByText('From $299.99')).toBeInTheDocument();
             expect(screen.getByRole('button', { name: /add to cart/i })).toBeInTheDocument();
             expect(screen.getByRole('button', { name: /add to wishlist/i })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: /share/i })).toBeInTheDocument();
         });
 
         test('handles product with category breadcrumbs', () => {
@@ -317,6 +380,167 @@ describe('ProductView', () => {
 
             expect(screen.getByText('Laptop Briefcase with wheels (37L)')).toBeInTheDocument();
             expect(screen.queryByRole('radiogroup')).not.toBeInTheDocument();
+        });
+    });
+
+    describe('Share Button Integration', () => {
+        test('renders share button in action buttons section', () => {
+            renderProductView({ product: mockProduct });
+
+            const shareButton = screen.getByRole('button', { name: /share/i });
+            expect(shareButton).toBeInTheDocument();
+        });
+
+        test('share button opens dropdown menu when clicked', async () => {
+            const user = userEvent.setup();
+            renderProductView({ product: mockProduct });
+
+            const shareButton = screen.getByRole('button', { name: /share/i });
+            await user.click(shareButton);
+
+            // Wait for dropdown to appear
+            await waitFor(() => {
+                expect(screen.getByText('Copy link')).toBeInTheDocument();
+            });
+        });
+
+        test('share button shows enabled social providers from config', async () => {
+            const user = userEvent.setup();
+            renderProductView({ product: mockProduct });
+
+            const shareButton = screen.getByRole('button', { name: /share/i });
+            await user.click(shareButton);
+
+            await waitFor(() => {
+                expect(screen.getByText('Copy link')).toBeInTheDocument();
+            });
+
+            // Check for configured social providers
+            expect(screen.getByText('Email')).toBeInTheDocument();
+            expect(screen.getByText('Twitter/X')).toBeInTheDocument();
+        });
+
+        test('share button respects disabled socialShare config', async () => {
+            const customWrapper = createConfigWrapper({
+                app: {
+                    site: {
+                        locale: 'en-US',
+                        currency: 'USD',
+                        features: {
+                            passwordlessLogin: {
+                                enabled: false,
+                                callbackUri: '/passwordless-login-callback',
+                                landingUri: '/passwordless-login-landing',
+                            },
+                            socialLogin: { enabled: true, providers: ['Apple', 'Google'] },
+                            socialShare: { enabled: false, providers: ['Twitter', 'Facebook', 'LinkedIn', 'Email'] },
+                            guestCheckout: true,
+                        },
+                    },
+                },
+            } as any);
+
+            const user = userEvent.setup();
+            const router = createMemoryRouter(
+                [
+                    {
+                        path: '/product/:productId',
+                        element: <ProductView product={mockProduct} />,
+                    },
+                ],
+                {
+                    initialEntries: ['/product/test-product'],
+                }
+            );
+            render(<RouterProvider router={router} />, { wrapper: customWrapper });
+
+            const shareButton = screen.getByRole('button', { name: /share/i });
+            await user.click(shareButton);
+
+            await waitFor(() => {
+                expect(screen.getByText('Copy link')).toBeInTheDocument();
+            });
+
+            // Social providers should not be shown when disabled
+            expect(screen.queryByText('Email')).not.toBeInTheDocument();
+            expect(screen.queryByText('Twitter/X')).not.toBeInTheDocument();
+        });
+
+        test('share button shows only configured providers', async () => {
+            const customWrapper = createConfigWrapper({
+                app: {
+                    site: {
+                        locale: 'en-US',
+                        currency: 'USD',
+                        features: {
+                            passwordlessLogin: {
+                                enabled: false,
+                                callbackUri: '/passwordless-login-callback',
+                                landingUri: '/passwordless-login-landing',
+                            },
+                            socialLogin: { enabled: true, providers: ['Apple', 'Google'] },
+                            socialShare: { enabled: true, providers: ['Email'] },
+                            guestCheckout: true,
+                        },
+                    },
+                },
+            } as any);
+
+            const user = userEvent.setup();
+            const router = createMemoryRouter(
+                [
+                    {
+                        path: '/product/:productId',
+                        element: <ProductView product={mockProduct} />,
+                    },
+                ],
+                {
+                    initialEntries: ['/product/test-product'],
+                }
+            );
+            render(<RouterProvider router={router} />, { wrapper: customWrapper });
+
+            const shareButton = screen.getByRole('button', { name: /share/i });
+            await user.click(shareButton);
+
+            await waitFor(() => {
+                expect(screen.getByText('Copy link')).toBeInTheDocument();
+            });
+
+            // Only Email should be shown
+            expect(screen.getByText('Email')).toBeInTheDocument();
+            expect(screen.queryByText('Twitter/X')).not.toBeInTheDocument();
+            expect(screen.queryByText('Facebook')).not.toBeInTheDocument();
+        });
+
+        test('share button appears alongside wishlist button', () => {
+            renderProductView({ product: mockProduct });
+
+            const wishlistButton = screen.getByRole('button', { name: /add to wishlist/i });
+            const shareButton = screen.getByRole('button', { name: /share/i });
+
+            expect(wishlistButton).toBeInTheDocument();
+            expect(shareButton).toBeInTheDocument();
+
+            // Both buttons should be in the same container (grid layout)
+            const buttonsContainer = wishlistButton.closest('div.grid');
+            expect(buttonsContainer).toContainElement(shareButton);
+        });
+
+        test('share button works with different product types', () => {
+            const productTypes = [
+                { product: mockProduct, name: 'Master Product' },
+                { product: standardProd, name: 'Standard Product' },
+            ];
+
+            productTypes.forEach(({ product }) => {
+                const { unmount } = renderProductView({ product });
+
+                const shareButton = screen.getByRole('button', { name: /share/i });
+                expect(shareButton).toBeInTheDocument();
+
+                unmount();
+            });
         });
     });
 });

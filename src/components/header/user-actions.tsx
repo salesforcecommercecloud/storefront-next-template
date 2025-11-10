@@ -14,7 +14,11 @@ export default function UserActions(): ReactElement {
     if (isAuthenticated) {
         return (
             <div className="flex items-center space-x-2">
-                <span className="text-sm text-muted-foreground hidden sm:inline">{uiStrings.header.welcomeBack}</span>
+                <Link
+                    to="/account"
+                    className="text-sm text-muted-foreground hidden sm:inline hover:text-foreground transition-colors">
+                    {uiStrings.header.welcomeBack}
+                </Link>
                 <LogoutButton />
             </div>
         );

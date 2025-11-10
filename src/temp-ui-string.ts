@@ -15,6 +15,7 @@ const additionalStrings = {
         loading: 'Loading',
         product: 'the product',
         noImageAvailable: 'No image available',
+        productGeneric: 'Product',
     },
     search: {
         results: 'Search Results for',
@@ -141,11 +142,6 @@ const additionalStrings = {
         },
     },
     socialCallback: {
-        authenticatingTitle: 'Authenticating...',
-        authenticatingDescription: 'Please wait while we complete your social login.',
-        notRedirectedPromptPrefix: 'If you are not automatically redirected, ',
-        clickHere: 'click here',
-        notRedirectedPromptSuffix: ' to return to login.',
         socialError: 'Social login was cancelled or failed. Please try again.',
     },
     errors: {
@@ -179,6 +175,7 @@ const additionalStrings = {
             badRequest: 'Invalid request. Please check your information and try again.',
             forbidden: 'Access denied. You do not have permission to perform this action.',
             timeout: 'Request timeout. Please try again.',
+            unexpectedError: 'An unexpected error occurred',
         },
         // Form validation errors
         validation: {
@@ -216,6 +213,7 @@ const additionalStrings = {
             autoLoginFailed: 'Auto-login failed. Please log in manually.',
             autoLoginAfterRegistrationFailed:
                 'Account created successfully, but auto-login failed. Please log in manually.',
+            notAuthenticated: 'Customer ID not found',
         },
         // Passwordless login errors
         passwordless: {
@@ -274,6 +272,7 @@ const additionalStrings = {
         updateCart: 'Update',
         addingToWishlist: 'Adding to Wishlist...',
         addToWishlist: 'Add to Wishlist',
+        share: 'Share',
         productSetNotice: 'This is a product set. Select individual items below to add to cart.',
         productBundleNotice: 'This is a product bundle. All items will be added together.',
 
@@ -324,7 +323,16 @@ const additionalStrings = {
         failedToAddItemsToCart: 'Failed to add items to cart: {error}',
         failedToAddBundleToCart: 'Failed to add bundle to cart: {error}',
         addedToWishlist: 'Added {productName} to wishlist',
+        alreadyInWishlist: '{productName} is already in your wishlist',
         failedToAddToWishlist: 'Failed to add item to wishlist',
+        signInToAddToWishlist: 'Sign in to add items to your wishlist',
+        signInToContinue: 'Sign in to continue',
+        removedFromWishlist: 'Removed from wishlist',
+        failedToRemoveFromWishlist: 'Failed to remove item from wishlist',
+        removeFromWishlist: 'Remove from wishlist',
+        itemAlreadyInWishlist: 'Item is already in your wishlist',
+        addedToWishlistGeneric: 'Added to wishlist',
+        productIdRequired: 'Product ID is required',
 
         // Error messages
         methodNotAllowed: 'Method not allowed',
@@ -619,6 +627,14 @@ const additionalStrings = {
         },
         wishlist: {
             empty: 'Your wishlist is empty. Start adding items you love!',
+            wishlistName: 'Wishlist',
+            failedToCreate: 'Failed to create wishlist: listId not available after creation',
+            unableToRetrieveId: 'Unable to retrieve wishlist ID. Please try again.',
+            notFound: 'Wishlist not found',
+            idNotFound: 'Wishlist ID not found',
+            itemNotFound: 'Item not found in wishlist',
+            mustLoginToAdd: 'You must be logged in to add items to your wishlist',
+            mustLoginToRemove: 'You must be logged in to remove items from your wishlist',
         },
         orders: {
             empty: 'No orders found. Start shopping to see your order history!',

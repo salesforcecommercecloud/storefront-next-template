@@ -1,10 +1,11 @@
 import { type LoaderFunctionArgs, type ActionFunctionArgs, type RouterContextProvider } from 'react-router';
 import { getConfig } from '@/config';
 import { handlePasswordlessCallback, handlePasswordlessLanding } from '@/lib/passwordless-login';
+import { handleSocialLoginLanding } from '@/lib/api/auth/social-login';
 import { handleResetPasswordCallback, handleResetPasswordLanding } from '@/lib/api/auth/reset-password';
 
-type LoaderHandler = (args: LoaderFunctionArgs) => Response | Promise<Response>;
-type ActionHandler = (args: ActionFunctionArgs) => Record<string, unknown> | Promise<Record<string, unknown>>;
+type LoaderHandler = (args: LoaderFunctionArgs) => Promise<Response>;
+type ActionHandler = (args: ActionFunctionArgs) => Promise<Record<string, unknown>>;
 
 /**
  * Catch-all route that handles configurable authentication routes
@@ -22,6 +23,10 @@ function getLoaderHandler(pathname: string, context: Readonly<RouterContextProvi
 
     if (pathname === config.site.features.resetPassword.landingUri) {
         return handleResetPasswordLanding;
+    }
+
+    if (config.site.features.socialLogin.enabled && pathname === config.site.features.socialLogin.callbackUri) {
+        return handleSocialLoginLanding;
     }
 
     return null;

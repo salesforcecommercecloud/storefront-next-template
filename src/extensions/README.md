@@ -55,6 +55,21 @@ src/extensions/
     index.ts
 ```
 
+## Generating Installation/Uninstallation Instructions
+If you’re building an extension for customer distribution, you can generate installation and uninstallation instructions that both humans and LLMs can follow to complete the install/uninstall steps.
+```
+npx @salesforce/sfnext create-instructions -d /path/to/this/project -c /path/to/src/extensions/config.json -e SFDC_EXT_STORE_LOCATOR -p https://github.com/your/template.git -f /path/to/src/extensions/your-extension
+```
+ Complete options:
+
+ - `-d, --project-directory <dir>`: Project directory
+- `-c, --extension-config <config>`: Extension config JSON file location
+- `-e, --extension <extension>`: Extension marker value (e.g. SFDC_EXT_featureA)
+- `-p, --template-repo <repo>`: Your storefront template repo URL (default: https://github.com/SalesforceCommerceCloud/storefront-next-template.git)
+- `-b, --branch <branch>`: PWA repo branch (default: main)
+- `-f, --files <files...>`: Specific files/folder to include (relative to project directory, e.g., src/extensions/store-locator)
+- `-o, --output-dir <dir>`: Output directory (default: ./instructions)
+
 ## `config.json` Schema
 
 Each `config.json` must adhere to the following schema:
@@ -82,5 +97,6 @@ Each `config.json` must adhere to the following schema:
 1. Create a new subdirectory in `src/extensions/`.
 2. Add your extension code files.
 3. Add your extension integration code.
-3. Create a new entry in `config.json` per the schema above.
+4. Generate install/uninstall instructions.
+5. Create a new entry in `config.json` per the schema above.
 
