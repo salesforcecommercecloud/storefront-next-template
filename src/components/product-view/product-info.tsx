@@ -18,6 +18,8 @@ import ProductFeatures from './product-features';
 import { DEFAULT_PRODUCT_FEATURES_CONFIG } from '@/config/product-features';
 import InventoryMessage from '../inventory-message';
 import { useCurrentVariant } from '@/hooks/product/use-current-variant';
+// @sfdc-extension-line SFDC_EXT_BOPIS
+import DeliveryOptions from '@/extensions/bopis/components/delivery-options/delivery-options';
 
 type ProductInfoBaseProps = {
     product: ShopperProductsTypes.Product;
@@ -143,6 +145,11 @@ export default function ProductInfo({
                     productName={product.name}
                 />
             )}
+
+            {/* @sfdc-extension-block-start SFDC_EXT_BOPIS */}
+            {/* Delivery Options - For individual products and main set/bundle products */}
+            <DeliveryOptions product={product} quantity={quantity} className="mt-6" />
+            {/* @sfdc-extension-block-end SFDC_EXT_BOPIS */}
 
             {/* Product Features - Only shown if longDescription is different from shortDescription */}
             {product.longDescription && product.longDescription !== product.shortDescription && (

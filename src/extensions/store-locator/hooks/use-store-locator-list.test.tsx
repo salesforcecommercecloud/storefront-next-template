@@ -2,17 +2,33 @@ import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { renderHook, waitFor, act } from '@testing-library/react';
 
 import { useStoreLocatorList, type SearchStoresResult } from './use-store-locator-list';
+import { StoreLocatorWrapper } from '@/test-utils/context-provider';
 import type { ShopperStoresTypes } from 'commerce-sdk-isomorphic';
 
-// Mock react-router useFetcher
+// Mock react-router useFetcher and useSearchParams
 const mockFetcher = {
     state: 'idle' as 'idle' | 'loading',
     data: undefined as SearchStoresResult | undefined,
     load: vi.fn(),
 };
+
+const mockSearchParams = new URLSearchParams();
+const mockSetSearchParams = vi.fn();
+
 vi.mock('react-router', () => ({
     useFetcher: () => mockFetcher,
+    useSearchParams: () => [mockSearchParams, mockSetSearchParams],
+    createContext: vi.fn(),
 }));
+
+// Mock React to avoid createContext issues
+vi.mock('react', async () => {
+    const actual = await vi.importActual('react');
+    return {
+        ...actual,
+        createContext: actual.createContext,
+    };
+});
 
 // Mock store state used by the hook
 const mockStore = {
@@ -25,13 +41,14 @@ const mockStore = {
         limit: 50,
         supportedCountries: [{ countryCode: 'US', countryName: 'United States' }],
     },
-    selectedStoreId: null as string | null,
-    setSelectedStoreId: vi.fn(),
+    selectedStoreInfo: null as { id: string; name: string; inventoryId?: string } | null,
+    setSelectedStoreInfo: vi.fn(),
     geoError: false,
     shouldSearch: false,
     setShouldSearch: vi.fn(),
 };
 vi.mock('@/extensions/store-locator/providers/store-locator', () => ({
+    default: ({ children }: { children: React.ReactNode }) => children,
     useStoreLocator: (selector: any) => selector(mockStore),
 }));
 
@@ -50,7 +67,7 @@ describe('useStoreLocatorList', () => {
     test('triggers search when shouldSearch and input params present', () => {
         mockStore.shouldSearch = true;
         mockStore.searchParams = { countryCode: 'US', postalCode: '94105' };
-        renderHook(() => useStoreLocatorList());
+        renderHook(() => useStoreLocatorList(), { wrapper: StoreLocatorWrapper });
         expect(mockFetcher.load).toHaveBeenCalled();
         expect(mockStore.setShouldSearch).toHaveBeenCalledWith(false);
     });
@@ -59,14 +76,14 @@ describe('useStoreLocatorList', () => {
         mockStore.mode = 'device';
         mockStore.shouldSearch = true;
         mockStore.deviceCoordinates = { latitude: 1, longitude: 2 };
-        renderHook(() => useStoreLocatorList());
+        renderHook(() => useStoreLocatorList(), { wrapper: StoreLocatorWrapper });
         expect(mockFetcher.load).toHaveBeenCalled();
         expect(mockStore.setShouldSearch).toHaveBeenCalledWith(false);
     });
 
     test('exposes stores from fetcher data and supports pagination', async () => {
         // initial render — no data yet
-        const { result, rerender } = renderHook(() => useStoreLocatorList());
+        const { result, rerender } = renderHook(() => useStoreLocatorList(), { wrapper: StoreLocatorWrapper });
         expect(result.current.stores).toEqual([]);
 
         // provide data from fetcher

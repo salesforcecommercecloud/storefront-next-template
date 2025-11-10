@@ -15,6 +15,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 import uiStrings from '@/temp-ui-string';
 import ProductInfo from './product-info';
 import ProductViewProvider from '@/providers/product-view';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 // mock data
 import { masterProduct as mockProduct } from '@/components/__mock__/master-variant-product';
 import { standardProd } from '@/components/__mock__/standard-product';
@@ -28,9 +29,11 @@ const renderProductInfo = (props: React.ComponentProps<typeof ProductInfo>) => {
             {
                 path: '/product/:productId',
                 element: (
-                    <ProductViewProvider product={props.product}>
-                        <ProductInfo {...props} />
-                    </ProductViewProvider>
+                    <AllProvidersWrapper>
+                        <ProductViewProvider product={props.product}>
+                            <ProductInfo {...props} />
+                        </ProductViewProvider>
+                    </AllProvidersWrapper>
                 ),
             },
             // Catch-all route to prevent 404 errors when navigating
@@ -142,9 +145,11 @@ describe('ProductInfo', () => {
                     {
                         path: '/product/:productId',
                         element: (
-                            <ProductViewProvider product={mockProduct}>
-                                <ProductInfo product={mockProduct} />
-                            </ProductViewProvider>
+                            <AllProvidersWrapper>
+                                <ProductViewProvider product={mockProduct}>
+                                    <ProductInfo product={mockProduct} />
+                                </ProductViewProvider>
+                            </AllProvidersWrapper>
                         ),
                     },
                     // Catch-all route to prevent 404 errors when navigating

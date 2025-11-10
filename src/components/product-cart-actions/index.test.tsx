@@ -15,6 +15,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 // Components
 import ProductCartActions from './index';
 import ProductViewProvider from '@/providers/product-view';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 // mock data
 import { masterProduct } from '@/components/__mock__/master-variant-product';
 import { standardProd } from '@/components/__mock__/standard-product';
@@ -123,9 +124,11 @@ const renderProductCartActions = (props: ComponentProps<typeof ProductCartAction
             {
                 path: '/product/:productId',
                 element: (
-                    <ProductViewProvider product={props.product} mode={mode}>
-                        <ProductCartActions {...props} />
-                    </ProductViewProvider>
+                    <AllProvidersWrapper>
+                        <ProductViewProvider product={props.product} mode={mode}>
+                            <ProductCartActions {...props} />
+                        </ProductViewProvider>
+                    </AllProvidersWrapper>
                 ),
             },
         ],

@@ -10,10 +10,16 @@ import { getBasket, updateBasket } from '@/middlewares/basket.client';
 import { extractResponseError } from '@/lib/utils';
 import createClient, { type CommerceSdkClient } from '@/lib/scapi';
 import uiStrings from '@/temp-ui-string';
+// @sfdc-extension-line SFDC_EXT_BOPIS
+import { updateShipmentForPickup } from '@/extensions/bopis/lib/api/shipment';
 
 async function addMultipleItemsToCart(
     context: ActionFunctionArgs['context'],
-    productItems: Array<Pick<ShopperBasketsTypes.ProductItem, 'productId' | 'quantity'>>
+    productItems: Array<
+        Pick<ShopperBasketsTypes.ProductItem, 'productId' | 'quantity' | 'inventoryId'> & {
+            storeId?: string | null;
+        }
+    >
 ): Promise<{
     success: boolean;
     basket?: ShopperBasketsTypes.Basket;
@@ -33,13 +39,23 @@ async function addMultipleItemsToCart(
     try {
         // Add all items to basket in a single API call
         const client = createClient(context).ShopperBasketsV2;
-        const updatedBasket = await client.addItemToBasket({
+        let updatedBasket = await client.addItemToBasket({
             parameters: { basketId },
             body: productItems.map((item) => ({
                 productId: item.productId,
                 quantity: item.quantity,
+                inventoryId: item.inventoryId,
             })) as Parameters<CommerceSdkClient['ShopperBasketsV2']['addItemToBasket']>[0]['body'],
         });
+
+        // @sfdc-extension-block-start SFDC_EXT_BOPIS
+        // Update shipment with store information when pickup items are added
+        // Find the first item with both storeId and inventoryId (pickup item)
+        const pickupItem = productItems.find((item) => item.storeId && item.inventoryId);
+        if (pickupItem?.storeId) {
+            updatedBasket = await updateShipmentForPickup(context, basketId, 'me', pickupItem.storeId);
+        }
+        // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
         // Update the basket storage
         updateBasket(context, updatedBasket);

@@ -67,13 +67,13 @@ describe('Commerce SDK fetch service', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        clientClassCacheContext.defaultValue?.clear();
+        clientClassCacheContext?.defaultValue?.clear();
         mockShopperExperienceGetPage.mockClear();
         mockContextProvider = createTestContext();
     });
 
     afterEach(() => {
-        clientClassCacheContext.defaultValue?.clear();
+        clientClassCacheContext?.defaultValue?.clear();
         vi.clearAllMocks();
         vi.unstubAllEnvs();
     });

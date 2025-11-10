@@ -29,8 +29,8 @@ export default function StoreLocatorList(): ReactElement | null {
         mode,
         searchParams,
         config,
-        selectedStoreId,
-        setSelectedStoreId,
+        selectedStoreInfo,
+        setSelectedStoreInfo,
         geoError,
         hasSearched,
         hasError,
@@ -98,8 +98,17 @@ export default function StoreLocatorList(): ReactElement | null {
             )}
             <RadioGroup
                 name={`selectedStore-${instanceId}`}
-                value={selectedStoreId ?? ''}
-                onValueChange={(value) => setSelectedStoreId(value)}>
+                value={selectedStoreInfo?.id ?? ''}
+                onValueChange={(value: string) => {
+                    const selectedStore = storesPaginated.find((store) => store.id === value);
+                    if (selectedStore) {
+                        setSelectedStoreInfo({
+                            id: selectedStore.id,
+                            name: selectedStore.name || selectedStore.id,
+                            inventoryId: selectedStore.inventoryId,
+                        });
+                    }
+                }}>
                 <ul>
                     {storesPaginated.map((s, idx) => {
                         const radioId = `selectedStore-${instanceId}-${s.id}`;

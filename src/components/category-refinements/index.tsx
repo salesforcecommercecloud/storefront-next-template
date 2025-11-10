@@ -11,6 +11,8 @@ import RefineDefault from './refine-default';
 import RefineColor from './refine-color';
 import RefineSize from './refine-size';
 import RefinePrice from './refine-price';
+// @sfdc-extension-line SFDC_EXT_BOPIS
+import RefineInventory from '@/extensions/bopis/components/refine-inventory';
 
 export default function CategoryRefinements({
     result,
@@ -41,7 +43,13 @@ export default function CategoryRefinements({
                 if (!refinesMap.has(attributeId)) {
                     refinesMap.set(attributeId, new Set<string>());
                 }
-                if (attributeId === 'price') {
+                // Exclusive refinements - only one value can be selected at a time
+                const exclusiveRefinements = [
+                    'price',
+                    // @sfdc-extension-line SFDC_EXT_BOPIS
+                    'ilids',
+                ];
+                if (exclusiveRefinements.includes(attributeId)) {
                     // Price refinements turn out to be exclusive, i.e. it doesn't seem to be
                     // considered legit by the SCAPI to refine for multiple price ranges. Needs
                     // verification whether this is just a usage/syntax issue here.
@@ -53,7 +61,7 @@ export default function CategoryRefinements({
             // Navigate
             const params = toSearchParams(location, refinesMap);
             params.set('offset', '0');
-            return navigate({
+            void navigate({
                 ...location,
                 search: `?${params.toString()}`,
             });
@@ -105,6 +113,9 @@ export default function CategoryRefinements({
         <>
             {/* The currently active filters section */}
             <ActiveFilters result={result} />
+
+            {/*  @sfdc-extension-line SFDC_EXT_BOPIS */}
+            <RefineInventory isFilterSelected={isFilterSelected} toggleFilter={toggleFilter} />
 
             {/* Accordion to display the available refinement categories */}
             <Accordion type="multiple" defaultValue={expandedSections}>

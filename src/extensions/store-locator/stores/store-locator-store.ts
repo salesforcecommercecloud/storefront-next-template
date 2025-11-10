@@ -26,6 +26,12 @@ export type FormSearchParams = {
     postalCode: string;
 };
 
+export type SelectedStoreInfo = {
+    id: string;
+    name: string;
+    inventoryId?: string;
+};
+
 type StoreLocatorState = {
     isOpen: boolean;
     mode: 'input' | 'device';
@@ -33,7 +39,7 @@ type StoreLocatorState = {
     searchParams: FormSearchParams | null;
     deviceCoordinates: GeoCoordinates;
     geoError: boolean;
-    selectedStoreId: string | null;
+    selectedStoreInfo: SelectedStoreInfo | null;
     config: StoreLocatorConfig;
 };
 
@@ -44,7 +50,7 @@ type StoreLocatorActions = {
     setShouldSearch: (should: boolean) => void;
     setDeviceCoordinates: (coords: GeoCoordinates) => void;
     setGeoError: (value: boolean) => void;
-    setSelectedStoreId: (id: string | null) => void;
+    setSelectedStoreInfo: (info: SelectedStoreInfo | null) => void;
 };
 
 export type StoreLocatorStore = StoreLocatorState & StoreLocatorActions;
@@ -60,28 +66,22 @@ const defaultConfig: StoreLocatorConfig = {
     geoTimeout: 10000,
 };
 
-/**
- * Compute cookie name for selected store id, scoped by site id.
- * @returns Cookie name string
- */
-const selectedStoreIdCookieName = () => {
-    const siteId = import.meta.env.PUBLIC_COMMERCE_API_SITE_ID || 'site-default';
-    return `selectedStore_${siteId}`;
-};
+import { getSelectedStoreInfoCookieName } from '@/extensions/store-locator/utils';
 
 /**
- * Persist the selected store id cookie (client-only). Clears cookie when id is null.
+ * Persist the selected store info cookie (client-only). Clears cookie when info is null.
+ * Saves full store object including id, name, and inventoryId.
  * Throws on server to highlight accidental invocation in SSR.
  *
- * @param id - Selected store id or null to clear
+ * @param info - Selected store info or null to clear
  */
-const writeSelectedStoreIdCookie = (id: string | null) => {
+const writeSelectedStoreInfoCookie = (info: SelectedStoreInfo | null) => {
     try {
-        const cookieName = selectedStoreIdCookieName();
+        const cookieName = getSelectedStoreInfoCookieName();
         const cookieConfig = getCookieConfig();
 
-        if (id) {
-            Cookies.set(cookieName, id, cookieConfig);
+        if (info) {
+            Cookies.set(cookieName, JSON.stringify(info), cookieConfig);
         } else {
             // Use same config for removal to ensure path and domain match
             Cookies.remove(cookieName, cookieConfig);
@@ -91,21 +91,6 @@ const writeSelectedStoreIdCookie = (id: string | null) => {
         if (typeof window === 'undefined') {
             throw e;
         }
-    }
-};
-
-/**
- * Read the selected store id cookie (client-only). Returns null on errors.
- * @returns Selected store id or null
- */
-export const readSelectedStoreIdCookie = (): string | null => {
-    try {
-        const cookieName = selectedStoreIdCookieName();
-        const match = document.cookie.match(new RegExp(`(?:^|; )${cookieName}=([^;]*)`));
-        return match ? decodeURIComponent(match[1]) : null;
-    } catch {
-        // ignore cookie parsing errors
-        return null;
     }
 };
 
@@ -124,7 +109,7 @@ export const createStoreLocatorStore = (init?: Partial<StoreLocatorState>) => {
         searchParams: null,
         deviceCoordinates: { latitude: null, longitude: null },
         geoError: false,
-        selectedStoreId: null,
+        selectedStoreInfo: null,
         config: defaultConfig,
         ...init,
     };
@@ -145,10 +130,12 @@ export const createStoreLocatorStore = (init?: Partial<StoreLocatorState>) => {
             })),
         setGeoError: (value) => set(() => ({ geoError: value })),
         setShouldSearch: (should) => set(() => ({ shouldSearch: should })),
-        setSelectedStoreId: (id) =>
+        setSelectedStoreInfo: (info) =>
             set(() => {
-                writeSelectedStoreIdCookie(id);
-                return { selectedStoreId: id };
+                writeSelectedStoreInfoCookie(info);
+                return {
+                    selectedStoreInfo: info,
+                };
             }),
     }));
 };

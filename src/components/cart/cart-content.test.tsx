@@ -7,8 +7,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 
 // Components
 import CartContent from './cart-content';
-import { ConfigProvider } from '@/config/context';
-import { mockConfig } from '@/test-utils/config';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
 // Utils
 import uiStrings from '@/temp-ui-string';
@@ -22,9 +21,9 @@ const renderCartContent = (props: React.ComponentProps<typeof CartContent>) => {
             {
                 path: '/cart',
                 element: (
-                    <ConfigProvider config={mockConfig}>
+                    <AllProvidersWrapper>
                         <CartContent {...props} />
-                    </ConfigProvider>
+                    </AllProvidersWrapper>
                 ),
             },
         ],

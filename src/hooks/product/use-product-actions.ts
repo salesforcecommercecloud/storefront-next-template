@@ -11,12 +11,14 @@ import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useFetcher, useLocation, useNavigate } from 'react-router';
 import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
 import { useToast } from '@/components/toast';
-import { useCurrentVariant } from '@/hooks/product/use-current-variant';
+// @sfdc-extension-line SFDC_EXT_BOPIS
+import { usePickup } from '@/extensions/bopis/context/pickup-context';
 import { useBasket } from '@/providers/basket';
 import { useItemFetcher } from '@/hooks/use-item-fetcher';
 import { useRequireAuth } from '@/hooks/use-require-auth';
 import uiStrings from '@/temp-ui-string';
 import { isProductSet, isProductBundle } from '@/lib/product-utils';
+import { getEffectiveStockLevel, getEffectiveInventory, isInStock as isProductInStock } from '@/lib/inventory-utils';
 
 interface ProductSelectionValues {
     product: ShopperProductsTypes.Product;
@@ -27,7 +29,8 @@ interface ProductSelectionValues {
 interface UseProductActionsProps {
     product: ShopperProductsTypes.Product;
     isChildProduct?: boolean;
-    stockLevel?: number;
+    /** Current variant (null/undefined if no variant selected) - optional, defaults to undefined */
+    currentVariant?: ShopperProductsTypes.Variant | null | undefined;
     initialQuantity?: number;
     itemId?: string; // Cart item ID for update operations
 }
@@ -46,7 +49,6 @@ interface UseProductActionsProps {
  *   setQuantity,
  * } = useProductActions({
  *   product,
- *   stockLevel: inventory?.ats || 0,
  * });
  *
  * // Simple call - no parameters needed!
@@ -65,13 +67,13 @@ interface UseProductActionsProps {
  * @param props - Configuration object
  * @param props.product - Product data from Commerce Cloud
  * @param props.isChildProduct - Whether this is a child product (for sets/bundles). Defaults to false.
- * @param props.stockLevel - Override stock level (falls back to product inventory). Defaults to 0.
+ * @param props.currentVariant - Current variant (null/undefined if no variant selected) - optional, defaults to undefined
  * @returns State, validation flags, and action handlers
  */
 export function useProductActions({
     product,
-    isChildProduct = false,
-    stockLevel = 0,
+    isChildProduct: _isChildProduct = false,
+    currentVariant,
     initialQuantity,
     itemId,
 }: UseProductActionsProps) {
@@ -85,8 +87,8 @@ export function useProductActions({
     const hasHandledWishlistResponseRef = useRef(false);
     const [quantity, setQuantity] = useState(initialQuantity ?? 1);
 
-    // Get current variant based on URL parameters
-    const currentVariant = useCurrentVariant({ product, isChildProduct });
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    const pickupContext = usePickup();
 
     // Get basket data for update operations
     const basket = useBasket();
@@ -99,30 +101,94 @@ export function useProductActions({
     const bundleFetcher = useItemFetcher({ itemId, componentName: 'product-bundle-actions' });
     const wishlistFetcher = useFetcher();
 
-    // Inventory and stock calculations
-    const inventory = product.inventory;
-    const actualStockLevel = stockLevel || inventory?.ats || 0;
+    // Get product ID for pickup store check
+    const productId = currentVariant?.productId || product.id;
+
+    // Check if pickup is selected for this product by checking if it exists in the pickup context
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    const isPickupSelected = useMemo(() => {
+        return pickupContext?.pickupBasketItems?.has(productId) ?? false;
+    }, [pickupContext?.pickupBasketItems, productId]);
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
+
+    // Calculate store inventory ID based on delivery option
+    // If PICKUP is selected, use the inventoryId from pickup context; otherwise use site inventory
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    const storeInventoryId = useMemo(() => {
+        if (!isPickupSelected) return undefined;
+        const pickupInfo = pickupContext?.pickupBasketItems?.get(productId);
+        return pickupInfo?.inventoryId;
+    }, [isPickupSelected, pickupContext?.pickupBasketItems, productId]);
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
+
+    // Inventory and stock calculations - considers delivery option, store/site inventory, and variant
+    const actualStockLevel = useMemo(() => {
+        return getEffectiveStockLevel(
+            product,
+            // @sfdc-extension-line SFDC_EXT_BOPIS
+            isPickupSelected,
+            // @sfdc-extension-line SFDC_EXT_BOPIS
+            storeInventoryId,
+            currentVariant
+        );
+    }, [
+        product,
+        currentVariant,
+        // @sfdc-extension-line SFDC_EXT_BOPIS
+        isPickupSelected,
+        // @sfdc-extension-line SFDC_EXT_BOPIS
+        storeInventoryId,
+    ]);
 
     const isInStock = useMemo(() => {
-        if (isProductASet && product.setProducts) {
-            return product.setProducts.every((childProduct) => {
-                const ats = childProduct.inventory?.ats ?? 0;
-                return ats > 0;
-            });
-        }
-        return actualStockLevel > 0;
-    }, [isProductASet, product.setProducts, actualStockLevel]);
+        return isProductInStock(
+            product,
+            // @sfdc-extension-line SFDC_EXT_BOPIS
+            isPickupSelected,
+            // @sfdc-extension-line SFDC_EXT_BOPIS
+            storeInventoryId,
+            quantity,
+            currentVariant
+        );
+    }, [
+        product,
+        // @sfdc-extension-line SFDC_EXT_BOPIS
+        isPickupSelected,
+        // @sfdc-extension-line SFDC_EXT_BOPIS
+        storeInventoryId,
+        quantity,
+        currentVariant,
+    ]);
 
     const isOutOfStock = !isInStock;
-    let unfulfillable = isInStock && actualStockLevel < quantity;
-
-    if (isProductASet) {
-        // There is no quantity for product set. Shoppers choose the quantity for each _child_ products instead
-        unfulfillable = !isInStock;
-    }
 
     // Check if product is a master or variant product (has variation attributes like size, color)
     const isMasterOrVariantProduct = product?.type?.master === true || product?.type?.variant === true;
+
+    const unfulfillable = isProductASet
+        ? // There is no quantity for product set. Shoppers choose the quantity for each _child_ products instead
+          !isInStock
+        : actualStockLevel > 0 && actualStockLevel < quantity;
+
+    // Get effective inventory (store or site) for orderable/backorderable checks
+    // This considers the selected delivery option (pickup vs delivery)
+    const effectiveInventory = useMemo(() => {
+        return getEffectiveInventory(
+            product,
+            // @sfdc-extension-line SFDC_EXT_BOPIS
+            isPickupSelected,
+            // @sfdc-extension-line SFDC_EXT_BOPIS
+            storeInventoryId,
+            currentVariant
+        );
+    }, [
+        product,
+        // @sfdc-extension-line SFDC_EXT_BOPIS
+        isPickupSelected,
+        // @sfdc-extension-line SFDC_EXT_BOPIS
+        storeInventoryId,
+        currentVariant,
+    ]);
 
     // Can add to cart validation - defaults to false, only true when explicitly allowed
     const canAddToCart = useMemo(() => {
@@ -135,40 +201,41 @@ export function useProductActions({
         if (!isInStock) return false;
 
         // For master/variant products (e.g., t-shirt with color/size)
-        // Must have a variant selected and it must be orderable
+        // Must have a variant selected and it must be orderable from effective inventory (store or site)
+        // effectiveInventory considers the selected delivery option (pickup vs delivery)
         if (isMasterOrVariantProduct) {
             // Master products cannot be added to cart without a variant selection
             if (!currentVariant) return false;
-            // Variant must be orderable
-            return currentVariant.orderable === true;
+            // Variant must be orderable from effective inventory (store or site)
+            return effectiveInventory?.orderable === true;
         }
 
         // For standard products (non-variant, non-set, non-bundle)
-        // Must be orderable/back-order and in stock
+        // Must be orderable/back-order from effective inventory (store or site) and in stock
         if (
             !isProductASet &&
             !isProductABundle &&
-            (product?.inventory?.orderable || product?.inventory?.backorderable)
+            (effectiveInventory?.orderable || effectiveInventory?.backorderable)
         ) {
             return true;
         }
 
-        // For sets/bundles - must be orderable
+        // For sets/bundles - must be orderable from effective inventory
         // isInStock takes child product inventory data into account
         if (
             (isProductASet || isProductABundle) &&
-            (product?.inventory?.orderable || product?.inventory?.backorderable)
+            (effectiveInventory?.orderable || effectiveInventory?.backorderable)
         ) {
             return true;
         }
         // Default: not allowed
         return false;
     }, [
-        product,
         quantity,
         actualStockLevel,
         currentVariant,
         isInStock,
+        effectiveInventory,
         isMasterOrVariantProduct,
         isProductASet,
         isProductABundle,
@@ -348,11 +415,11 @@ export function useProductActions({
 
         // Remember: not all products have variation attributes, so `product` in this case could be a standard product
         const productToAdd = isMasterOrVariantProduct ? currentVariant : product;
-        const productId = productToAdd?.productId || productToAdd?.id;
+        const itemProductId = productToAdd?.productId || productToAdd?.id;
         const price = productToAdd?.price;
 
         // Validate inputs
-        if (!productId || quantity <= 0) {
+        if (!itemProductId || quantity <= 0) {
             addToast(uiStrings.product.failedToAddProductToCart, 'error');
             return;
         }
@@ -360,10 +427,20 @@ export function useProductActions({
         setIsAddingToOrUpdatingCart(true);
 
         try {
+            // @sfdc-extension-block-start SFDC_EXT_BOPIS
+            const pickupInfo = pickupContext?.pickupBasketItems?.get(itemProductId);
+            const inventoryId = pickupInfo?.inventoryId ?? null;
+            const storeId = pickupInfo?.storeId ?? null;
+            // @sfdc-extension-block-end SFDC_EXT_BOPIS
+
             const productItem = {
-                productId,
+                productId: itemProductId,
                 quantity,
                 price,
+                // @sfdc-extension-line SFDC_EXT_BOPIS
+                inventoryId,
+                // @sfdc-extension-line SFDC_EXT_BOPIS
+                storeId,
             };
 
             // Use server action to add item to cart
@@ -387,6 +464,8 @@ export function useProductActions({
         canAddToCart,
         cartFetcher,
         addToast,
+        // @sfdc-extension-line SFDC_EXT_BOPIS
+        pickupContext,
     ]);
 
     /**
@@ -413,9 +492,9 @@ export function useProductActions({
                 // Prefer variant if available, otherwise fall back to master product ID
                 // Let the API decide if master products are allowed
                 const productToAdd = isMasterOrVariantProduct ? selectedVariant || currentVariant : product;
-                const productId = productToAdd?.productId || productToAdd?.id || product.id;
+                const itemProductId = productToAdd?.productId || productToAdd?.id || product.id;
 
-                if (!productId) {
+                if (!itemProductId) {
                     addToast(errorMessage, 'error');
                     return;
                 }
@@ -423,7 +502,7 @@ export function useProductActions({
                 setLoading(true);
 
                 try {
-                    const params = { productId, ...additionalParams } as unknown as TParams;
+                    const params = { productId: itemProductId, ...additionalParams } as unknown as TParams;
                     const formData = buildFormData(params);
                     await fetcher.submit(formData, {
                         method: 'POST',
@@ -466,11 +545,11 @@ export function useProductActions({
             getActionParams: (...args: unknown[]) => {
                 const variant = args[0] as ShopperProductsTypes.Variant | undefined;
                 const productToAdd = isMasterOrVariantProduct ? variant || currentVariant : product;
-                const productId = productToAdd?.productId || productToAdd?.id || product.id;
-                if (!productId) {
+                const itemProductId = productToAdd?.productId || productToAdd?.id || product.id;
+                if (!itemProductId) {
                     throw new Error(uiStrings.product.productIdRequired);
                 }
-                return { productId };
+                return { productId: itemProductId };
             },
             getReturnUrl: () =>
                 typeof window !== 'undefined' ? window.location.pathname + window.location.search : '',
@@ -492,11 +571,24 @@ export function useProductActions({
             setIsAddingToOrUpdatingCart(true);
 
             try {
-                const productItems = productSelections.map((selection) => ({
-                    productId: selection.variant?.productId || selection.product.id,
-                    quantity: selection.quantity,
-                    price: selection.variant?.price || selection.product.price,
-                }));
+                const productItems = productSelections.map((selection) => {
+                    const selectionProductId = selection.variant?.productId || selection.product.id;
+                    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+                    const pickupInfo = pickupContext?.pickupBasketItems?.get(selectionProductId);
+                    const inventoryId = pickupInfo?.inventoryId ?? null;
+                    const storeId = pickupInfo?.storeId ?? null;
+                    // @sfdc-extension-block-end SFDC_EXT_BOPIS
+
+                    return {
+                        productId: selectionProductId,
+                        quantity: selection.quantity,
+                        price: selection.variant?.price || selection.product.price,
+                        // @sfdc-extension-line SFDC_EXT_BOPIS
+                        inventoryId,
+                        // @sfdc-extension-line SFDC_EXT_BOPIS
+                        storeId,
+                    };
+                });
 
                 // Use server action to add multiple items to cart
                 await multipleItemsFetcher.submit(
@@ -511,7 +603,13 @@ export function useProductActions({
                 addToast(uiStrings.product.failedToAddItemsToCartError, 'error');
             }
         },
-        [isAddingToOrUpdatingCart, multipleItemsFetcher, addToast]
+        [
+            isAddingToOrUpdatingCart,
+            multipleItemsFetcher,
+            addToast,
+            // @sfdc-extension-line SFDC_EXT_BOPIS
+            pickupContext,
+        ]
     );
 
     // Handle product bundle add to cart
@@ -528,10 +626,20 @@ export function useProductActions({
             setIsAddingToOrUpdatingCart(true);
 
             try {
+                // @sfdc-extension-block-start SFDC_EXT_BOPIS
+                const pickupInfo = pickupContext?.pickupBasketItems?.get(product.id);
+                const bundleInventoryId = pickupInfo?.inventoryId ?? null;
+                const bundleStoreId = pickupInfo?.storeId ?? null;
+                // @sfdc-extension-block-end SFDC_EXT_BOPIS
+
                 const bundleItem = {
                     productId: product.id,
                     quantity: qty,
                     price: product.price,
+                    // @sfdc-extension-line SFDC_EXT_BOPIS
+                    inventoryId: bundleInventoryId,
+                    // @sfdc-extension-line SFDC_EXT_BOPIS
+                    storeId: bundleStoreId,
                 };
 
                 const childSelections = childProductSelections.map((child) => ({
@@ -555,7 +663,14 @@ export function useProductActions({
                 addToast(uiStrings.product.failedToAddBundleToCartError, 'error');
             }
         },
-        [product, isAddingToOrUpdatingCart, bundleFetcher, addToast]
+        [
+            product,
+            isAddingToOrUpdatingCart,
+            bundleFetcher,
+            addToast,
+            // @sfdc-extension-line SFDC_EXT_BOPIS
+            pickupContext,
+        ]
     );
 
     // Handle product bundle update (quantity and/or child variants)
@@ -787,5 +902,17 @@ export function useProductActions({
         handleUpdateBundle,
         /** Updates the selected quantity for the product */
         setQuantity,
+
+        // @sfdc-extension-block-start SFDC_EXT_BOPIS
+        // BOPIS: Pickup actions
+        /** Map of productId to {inventoryId, storeId} for items marked for store pickup */
+        pickupBasketItems: pickupContext?.pickupBasketItems,
+        /** Marks a product for store pickup by adding it to the pickup map */
+        addItem: pickupContext?.addItem,
+        /** Removes a product from store pickup by removing it from the pickup map */
+        removeItem: pickupContext?.removeItem,
+        /** Clears all pickup items from the pickup map */
+        clearItems: pickupContext?.clearItems,
+        // @sfdc-extension-block-end SFDC_EXT_BOPIS
     };
 }

@@ -13,12 +13,14 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 // Components
 import ProductView from './product-view';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 // mock data
 import { masterProduct as mockProduct } from '@/components/__mock__/master-variant-product';
 import { standardProd } from '@/components/__mock__/standard-product';
 import { bundleProd } from '@/components/__mock__/bundle-product';
 import { setProduct } from '@/components/__mock__/set-product';
-import { createConfigWrapper } from '@/test-utils/config';
+import { createConfigWrapper, mockBuildConfig } from '@/test-utils/config';
+import { createAppConfig } from '@/config/context';
 
 // Create a wrapper with default config
 const defaultConfigWrapper = createConfigWrapper({
@@ -75,7 +77,11 @@ const renderProductView = (props: React.ComponentProps<typeof ProductView>, init
         [
             {
                 path: '/product/:productId',
-                element: <ProductView {...props} />,
+                element: (
+                    <AllProvidersWrapper>
+                        <ProductView {...props} />
+                    </AllProvidersWrapper>
+                ),
             },
         ],
         {
@@ -166,7 +172,12 @@ describe('ProductView', () => {
             expect(screen.getAllByLabelText(/quantity/i)[0]).toBeInTheDocument();
 
             // Should NOT have variation swatches (no radiogroups for color/size selection)
-            expect(screen.queryByRole('radiogroup')).not.toBeInTheDocument();
+            // Note: DeliveryOptions component may render a radiogroup for delivery options
+            const radiogroups = screen.queryAllByRole('radiogroup');
+            const variationRadiogroups = radiogroups.filter(
+                (radio) => !radio.getAttribute('data-testid')?.includes('delivery-option')
+            );
+            expect(variationRadiogroups).toHaveLength(0);
         });
 
         test('should render correctly for bundle product', () => {
@@ -232,7 +243,11 @@ describe('ProductView', () => {
             expect(screen.getByText('Laptop Briefcase with wheels (37L)')).toBeInTheDocument();
 
             // Should not have variation swatches
-            expect(screen.queryByRole('radiogroup')).not.toBeInTheDocument();
+            const radiogroups = screen.queryAllByRole('radiogroup');
+            const variationRadiogroups = radiogroups.filter(
+                (radio) => !radio.getAttribute('data-testid')?.includes('delivery-option')
+            );
+            expect(variationRadiogroups).toHaveLength(0);
         });
 
         test('handles product with minimal data', () => {
@@ -379,7 +394,12 @@ describe('ProductView', () => {
             renderProductView({ product: productWithoutVariations });
 
             expect(screen.getByText('Laptop Briefcase with wheels (37L)')).toBeInTheDocument();
-            expect(screen.queryByRole('radiogroup')).not.toBeInTheDocument();
+            // Should not have variation swatches
+            const radiogroups = screen.queryAllByRole('radiogroup');
+            const variationRadiogroups = radiogroups.filter(
+                (radio) => !radio.getAttribute('data-testid')?.includes('delivery-option')
+            );
+            expect(variationRadiogroups).toHaveLength(0);
         });
     });
 
@@ -421,6 +441,28 @@ describe('ProductView', () => {
         });
 
         test('share button respects disabled socialShare config', async () => {
+            const customConfig = createAppConfig({
+                ...mockBuildConfig,
+                app: {
+                    ...mockBuildConfig.app,
+                    site: {
+                        ...mockBuildConfig.app.site,
+                        locale: 'en-US',
+                        currency: 'USD',
+                        features: {
+                            ...mockBuildConfig.app.site.features,
+                            passwordlessLogin: {
+                                enabled: false,
+                                callbackUri: '/passwordless-login-callback',
+                                landingUri: '/passwordless-login-landing',
+                            },
+                            socialLogin: { enabled: true, providers: ['Apple', 'Google'] },
+                            socialShare: { enabled: false, providers: ['Twitter', 'Facebook', 'LinkedIn', 'Email'] },
+                            guestCheckout: true,
+                        },
+                    },
+                },
+            } as any);
             const customWrapper = createConfigWrapper({
                 app: {
                     site: {
@@ -445,7 +487,11 @@ describe('ProductView', () => {
                 [
                     {
                         path: '/product/:productId',
-                        element: <ProductView product={mockProduct} />,
+                        element: (
+                            <AllProvidersWrapper config={customConfig}>
+                                <ProductView product={mockProduct} />
+                            </AllProvidersWrapper>
+                        ),
                     },
                 ],
                 {
@@ -467,6 +513,28 @@ describe('ProductView', () => {
         });
 
         test('share button shows only configured providers', async () => {
+            const customConfig = createAppConfig({
+                ...mockBuildConfig,
+                app: {
+                    ...mockBuildConfig.app,
+                    site: {
+                        ...mockBuildConfig.app.site,
+                        locale: 'en-US',
+                        currency: 'USD',
+                        features: {
+                            ...mockBuildConfig.app.site.features,
+                            passwordlessLogin: {
+                                enabled: false,
+                                callbackUri: '/passwordless-login-callback',
+                                landingUri: '/passwordless-login-landing',
+                            },
+                            socialLogin: { enabled: true, providers: ['Apple', 'Google'] },
+                            socialShare: { enabled: true, providers: ['Email'] },
+                            guestCheckout: true,
+                        },
+                    },
+                },
+            } as any);
             const customWrapper = createConfigWrapper({
                 app: {
                     site: {
@@ -491,7 +559,11 @@ describe('ProductView', () => {
                 [
                     {
                         path: '/product/:productId',
-                        element: <ProductView product={mockProduct} />,
+                        element: (
+                            <AllProvidersWrapper config={customConfig}>
+                                <ProductView product={mockProduct} />
+                            </AllProvidersWrapper>
+                        ),
                     },
                 ],
                 {

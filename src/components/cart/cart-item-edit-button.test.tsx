@@ -8,6 +8,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 
 // Components
 import { CartItemEditButton } from './cart-item-edit-button';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
 // Utils
 import uiStrings from '@/temp-ui-string';
@@ -26,7 +27,11 @@ const renderCartItemEditButton = (props: React.ComponentProps<typeof CartItemEdi
         [
             {
                 path: '/',
-                element: <CartItemEditButton {...props} />,
+                element: (
+                    <AllProvidersWrapper>
+                        <CartItemEditButton {...props} />
+                    </AllProvidersWrapper>
+                ),
             },
         ],
         {

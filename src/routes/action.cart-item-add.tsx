@@ -10,10 +10,14 @@ import { getBasket, updateBasket } from '@/middlewares/basket.client';
 import { extractResponseError } from '@/lib/utils';
 import createClient, { type CommerceSdkClient } from '@/lib/scapi';
 import uiStrings from '@/temp-ui-string';
+// @sfdc-extension-line SFDC_EXT_BOPIS
+import { updateShipmentForPickup } from '@/extensions/bopis/lib/api/shipment';
 
 async function addToCart(
     context: ActionFunctionArgs['context'],
-    productItem: Pick<ShopperBasketsTypes.ProductItem, 'productId' | 'quantity'>
+    productItem: Pick<ShopperBasketsTypes.ProductItem, 'productId' | 'quantity' | 'inventoryId'> & {
+        storeId?: string | null;
+    }
 ): Promise<{
     success: boolean;
     basket?: ShopperBasketsTypes.Basket;
@@ -33,15 +37,23 @@ async function addToCart(
     try {
         // Add item to basket
         const client = createClient(context).ShopperBasketsV2;
-        const updatedBasket = await client.addItemToBasket({
+        let updatedBasket = await client.addItemToBasket({
             parameters: { basketId },
             body: [
                 {
                     productId: productItem.productId,
                     quantity: productItem.quantity,
+                    inventoryId: productItem.inventoryId,
                 },
             ] as Parameters<CommerceSdkClient['ShopperBasketsV2']['addItemToBasket']>[0]['body'],
         });
+
+        // @sfdc-extension-block-start SFDC_EXT_BOPIS
+        // Update shipment with store information when pickup item is added
+        if (productItem.storeId && productItem.inventoryId) {
+            updatedBasket = await updateShipmentForPickup(context, basketId, 'me', productItem.storeId);
+        }
+        // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
         // Update the basket storage
         updateBasket(context, updatedBasket);

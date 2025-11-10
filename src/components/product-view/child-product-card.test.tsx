@@ -6,11 +6,12 @@
  */
 
 import { type ComponentProps } from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import ChildProductCard from './child-product-card';
 import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import { StoreLocatorWrapper } from '@/test-utils/context-provider';
 
 vi.mock('@/hooks/product/use-current-variant', () => ({
     useCurrentVariant: () => null,
@@ -42,11 +43,33 @@ vi.mock('@/hooks/product/use-variation-attributes', () => ({
     useVariationAttributes: () => [],
 }));
 
+// Mock store locator store creation to prevent cookie/document access in tests
+vi.mock('@/extensions/store-locator/stores/store-locator-store', () => ({
+    createStoreLocatorStore: vi.fn(),
+}));
+
+vi.mock('@/extensions/store-locator/utils', () => ({
+    getCookieFromDocumentAs: vi.fn(),
+    getSelectedStoreInfoCookieName: vi.fn(),
+}));
+
+// Mock delivery options hook used by DeliveryOptions component
+vi.mock('@/extensions/bopis/hooks/use-delivery-options', () => ({
+    useDeliveryOptions: () => ({
+        selectedDeliveryOption: 'delivery',
+        isStoreOutOfStock: false,
+        isSiteOutOfStock: false,
+        setSelectedDeliveryOption: vi.fn(),
+        handleDeliveryOptionChange: vi.fn(),
+    }),
+}));
+
 const createStandardProduct = (): ShopperProductsTypes.Product => ({
     id: 'standard-123',
     name: 'Standard Product',
     type: { item: true },
     inventory: {
+        id: 'inventory-123',
         ats: 10,
         orderable: true,
     },
@@ -57,6 +80,7 @@ const createVariantProduct = (): ShopperProductsTypes.Product => ({
     name: 'Variant Product',
     type: { variant: true },
     inventory: {
+        id: 'inventory-123',
         ats: 10,
         orderable: true,
     },
@@ -73,7 +97,11 @@ const renderChildProductCard = (props: ComponentProps<typeof ChildProductCard>) 
         [
             {
                 path: '/product/:productId',
-                element: <ChildProductCard {...props} />,
+                element: (
+                    <StoreLocatorWrapper>
+                        <ChildProductCard {...props} />
+                    </StoreLocatorWrapper>
+                ),
             },
         ],
         {
@@ -85,13 +113,40 @@ const renderChildProductCard = (props: ComponentProps<typeof ChildProductCard>) 
 
 describe('ChildProductCard', () => {
     const mockOnSelectionChange = vi.fn();
+    const mockCreateStoreLocatorStore = vi.fn();
+    const mockGetSelectedStoreInfoFromDocument = vi.fn();
+    const mockStore = {
+        getState: vi.fn(),
+        setState: vi.fn(),
+        subscribe: vi.fn(() => vi.fn()), // subscribe returns unsubscribe function
+        destroy: vi.fn(),
+    };
 
-    beforeEach(() => {
+    beforeEach(async () => {
         vi.clearAllMocks();
+
+        // Setup mocks for store locator
+        const { createStoreLocatorStore } = await import('@/extensions/store-locator/stores/store-locator-store');
+        const { getCookieFromDocumentAs, getSelectedStoreInfoCookieName } = await import(
+            '@/extensions/store-locator/utils'
+        );
+
+        (createStoreLocatorStore as any).mockImplementation(mockCreateStoreLocatorStore);
+        (getCookieFromDocumentAs as any).mockImplementation(mockGetSelectedStoreInfoFromDocument);
+        (getSelectedStoreInfoCookieName as any).mockReturnValue('selectedStoreInfo_test');
+
+        mockCreateStoreLocatorStore.mockReturnValue(mockStore);
+        mockGetSelectedStoreInfoFromDocument.mockReturnValue(null);
+
+        // Set up stable mock state
+        mockStore.getState.mockReturnValue({
+            selectedStoreInfo: null,
+            open: vi.fn(),
+        });
     });
 
     describe('standard products', () => {
-        test('auto-selects standard products on mount', () => {
+        test('auto-selects standard products on mount', async () => {
             const standardProduct = createStandardProduct();
             const parentProduct = createSetProduct();
 
@@ -101,11 +156,16 @@ describe('ChildProductCard', () => {
                 onSelectionChange: mockOnSelectionChange,
             });
 
-            // Standard product should be auto-selected
-            expect(mockOnSelectionChange).toHaveBeenCalledWith('standard-123', {
-                product: standardProduct,
-                quantity: 1,
-            });
+            // Standard product should be auto-selected - wait for useEffect to run
+            await waitFor(
+                () => {
+                    expect(mockOnSelectionChange).toHaveBeenCalledWith('standard-123', {
+                        product: standardProduct,
+                        quantity: 1,
+                    });
+                },
+                { timeout: 1000 }
+            );
         });
 
         test('displays selected status for standard products', () => {
@@ -258,10 +318,13 @@ describe('ChildProductCard', () => {
     describe('variant products', () => {
         test('notifies parent when a variant is selected', async () => {
             const variantModule = await import('@/hooks/product/use-current-variant');
-            vi.spyOn(variantModule, 'useCurrentVariant').mockReturnValue({
+            const variantMock = {
                 productId: 'variant-456',
                 inventory: { ats: 5 },
-            } as never);
+            };
+
+            // Set up the mock before rendering
+            vi.spyOn(variantModule, 'useCurrentVariant').mockReturnValue(variantMock as never);
 
             const variantProduct = createVariantProduct();
             const parentProduct = createSetProduct();
@@ -272,14 +335,17 @@ describe('ChildProductCard', () => {
                 onSelectionChange: mockOnSelectionChange,
             });
 
-            expect(mockOnSelectionChange).toHaveBeenCalledWith(
-                'variant-123',
-                expect.objectContaining({
-                    product: variantProduct,
-                    variant: expect.objectContaining({ productId: 'variant-456' }),
-                    quantity: 1,
-                })
-            );
+            // Wait for the effect to run and notify parent
+            await waitFor(() => {
+                expect(mockOnSelectionChange).toHaveBeenCalledWith(
+                    'variant-123',
+                    expect.objectContaining({
+                        product: variantProduct,
+                        variant: expect.objectContaining({ productId: 'variant-456' }),
+                        quantity: 1,
+                    })
+                );
+            });
         });
     });
 

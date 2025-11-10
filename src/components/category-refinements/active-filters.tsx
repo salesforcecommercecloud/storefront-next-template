@@ -6,13 +6,28 @@ import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
 import { Button } from '@/components/ui/button';
 import { X as Close } from 'lucide-react';
 import { toRefinesMap, toSearchParams } from './utils';
+// @sfdc-extension-block-start SFDC_EXT_BOPIS
+import { useStoreLocator } from '@/extensions/store-locator/providers/store-locator';
+import uiStringsBopis from '@/extensions/bopis/temp-ui-string-bopis';
+// @sfdc-extension-block-end SFDC_EXT_BOPIS
 
 // Get human-readable label for a specific value
 const getValueLabel = (
     attributeId: string,
     value: string,
-    refinements: ShopperSearchTypes.ProductSearchRefinement[]
+    refinements: ShopperSearchTypes.ProductSearchRefinement[],
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    selectedStoreInfo: { inventoryId?: string; name?: string } | null
 ): string => {
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    if (attributeId === 'ilids') {
+        // If the filter value matches the selected store's inventory ID and we have a store name
+        if (selectedStoreInfo?.name) {
+            return uiStringsBopis.storeInventoryFilter.label.replace('{storeName}', selectedStoreInfo.name);
+        }
+        return uiStringsBopis.storeInventoryFilter.inStock;
+    }
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
     const refinement = refinements.find((r) => r.attributeId === attributeId);
     const valueObj = refinement?.values?.find((v) => v.value === value);
     return valueObj?.label || value;
@@ -26,6 +41,8 @@ export default function CategoryFilters({
     const navigate = useNavigate();
     const location = useLocation();
     const refinements = useMemo(() => result?.refinements || [], [result]);
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    const selectedStoreInfo = useStoreLocator((s) => s.selectedStoreInfo);
 
     const activeFilters = useMemo(() => {
         const refinesMap = toRefinesMap(location);
@@ -37,7 +54,13 @@ export default function CategoryFilters({
 
         for (const [attributeId, values] of refinesMap) {
             for (const value of values) {
-                const valueLabel = getValueLabel(attributeId, value, refinements);
+                const valueLabel = getValueLabel(
+                    attributeId,
+                    value,
+                    refinements,
+                    // @sfdc-extension-line SFDC_EXT_BOPIS
+                    selectedStoreInfo
+                );
                 filters.push({
                     attributeId,
                     value,
@@ -46,7 +69,12 @@ export default function CategoryFilters({
             }
         }
         return filters;
-    }, [location, refinements]);
+    }, [
+        location,
+        refinements,
+        // @sfdc-extension-line SFDC_EXT_BOPIS
+        selectedStoreInfo,
+    ]);
 
     // Remove a specific filter
     const removeFilter = useCallback(

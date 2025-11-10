@@ -20,8 +20,10 @@ import { useProductActions } from '@/hooks/product/use-product-actions';
 import uiStrings from '@/temp-ui-string';
 import ProductPrice from '@/components/product-price';
 import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
-import { type ReactElement, useEffect, useMemo, useRef } from 'react';
+import { type ReactElement, useEffect, useRef } from 'react';
 import { isProductSet, isStandardProduct } from '@/lib/product-utils';
+// @sfdc-extension-line SFDC_EXT_BOPIS
+import DeliveryOptions from '@/extensions/bopis/components/delivery-options/delivery-options';
 
 interface ProductSelectionValues {
     product: ShopperProductsTypes.Product;
@@ -79,15 +81,12 @@ interface ChildProductCardProps {
  * @returns Card component with product details, variant selection, and cart controls
  */
 export default function ChildProductCard({
-    childProduct,
+    childProduct: product,
     parentProduct,
     onSelectionChange,
     swatchMode,
 }: ChildProductCardProps): ReactElement {
     const isParentProductASet = isProductSet(parentProduct);
-    // To avoid infinite loop, do not rely on `childProduct` because it'll always be new object reference
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const product = useMemo(() => childProduct, [childProduct.id]);
 
     // Get current variant for UI display and parent communication
     const currentVariant = useCurrentVariant({
@@ -113,7 +112,7 @@ export default function ChildProductCard({
     } = useProductActions({
         product,
         isChildProduct: true,
-        stockLevel: currentVariant?.inventory?.ats || product?.inventory?.ats || 0,
+        currentVariant,
     });
 
     const variationAttributes = useVariationAttributes({ product, isChildProduct: true });
@@ -144,6 +143,7 @@ export default function ChildProductCard({
             };
 
             // Only notify parent if selection actually changed
+            // This is to avoid infinite loop because the childProduct is a new object reference every time it is rendered
             if (
                 !prevSelectionRef.current ||
                 prevSelectionRef.current.variantId !== newSelection.variantId ||
@@ -240,6 +240,11 @@ export default function ChildProductCard({
                         <span className="text-muted-foreground">{uiStrings.product.selectOptionsAbove}</span>
                     )}
                 </div>
+
+                {/* @sfdc-extension-block-start SFDC_EXT_BOPIS */}
+                {/* Delivery Options - Only for Product Sets (not Bundles) */}
+                {isParentProductASet && <DeliveryOptions product={product} quantity={quantity} className="mt-6" />}
+                {/* @sfdc-extension-block-end SFDC_EXT_BOPIS */}
 
                 {/* Individual Add to Cart Button */}
                 {isParentProductASet && (

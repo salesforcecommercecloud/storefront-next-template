@@ -14,6 +14,7 @@ import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 // Components
 import ProductView from './index';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import { createConfigWrapper } from '@/test-utils/config';
 
 // Create a wrapper with default config
@@ -44,7 +45,11 @@ const renderProductView = (props: React.ComponentProps<typeof ProductView>) => {
         [
             {
                 path: '/product/:productId',
-                element: <ProductView {...props} />,
+                element: (
+                    <AllProvidersWrapper>
+                        <ProductView {...props} />
+                    </AllProvidersWrapper>
+                ),
             },
         ],
         { initialEntries: ['/product/test-product'] }

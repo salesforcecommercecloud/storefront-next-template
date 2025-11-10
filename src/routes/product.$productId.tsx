@@ -12,6 +12,15 @@ import { generateRecommendationPromises } from '@/lib/recommendations';
 import { ProductRecommendationsSkeleton } from '@/components/product/skeletons';
 import withSuspense from '@/components/with-suspense';
 import { ProductCarouselWithSuspense } from '@/components/product-carousel';
+// @sfdc-extension-block-start SFDC_EXT_BOPIS
+import {
+    getCookieFromRequestAs,
+    getCookieFromDocumentAs,
+    getSelectedStoreInfoCookieName,
+} from '@/extensions/store-locator/utils';
+import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
+import PickupProvider from '@/extensions/bopis/context/pickup-context';
+// @sfdc-extension-block-end SFDC_EXT_BOPIS
 
 type ProductPageData = {
     product: Promise<ShopperProductsTypes.Product>;
@@ -28,9 +37,14 @@ type ProductPageData = {
 /**
  * Internal helper function that fetches product data and category information.
  * This function handles the actual data fetching logic shared between server and client loaders.
+ * @param selectedStoreInfo - Optional store information for inventory-specific data
  * @returns Promise that resolves to an object containing product and category data promises
  */
-function getPageData({ request, params, context }: LoaderFunctionArgs): ProductPageData {
+function getPageData(
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    selectedStoreInfo: SelectedStoreInfo | null,
+    { request, params, context }: LoaderFunctionArgs
+): ProductPageData {
     const { productId = '' } = params;
     const { searchParams } = new URL(request.url);
 
@@ -52,6 +66,10 @@ function getPageData({ request, params, context }: LoaderFunctionArgs): ProductP
             ],
             allImages: true,
             perPricebook: true,
+            // @sfdc-extension-block-start SFDC_EXT_BOPIS
+            // Include inventoryIds parameter when store is selected
+            ...(selectedStoreInfo?.inventoryId ? { inventoryIds: [selectedStoreInfo.inventoryId] } : {}),
+            // @sfdc-extension-block-end SFDC_EXT_BOPIS
         },
     });
 
@@ -131,23 +149,39 @@ function getPageData({ request, params, context }: LoaderFunctionArgs): ProductP
 }
 /**
  * Server-side loader function that fetches product data and category information.
- * This function runs on the server during SSR and prepares data for the product page.
+ * This function runs on the server during SSR and can access cookies for store information.
  * @returns Promise that resolves to an object containing product and category promises
  */
-export function loader(args: LoaderFunctionArgs) {
-    return getPageData(args);
+export function loader({ request, params, context }: LoaderFunctionArgs) {
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    const cookieName = getSelectedStoreInfoCookieName();
+    const selectedStoreInfo = getCookieFromRequestAs<SelectedStoreInfo>(request, cookieName);
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
+
+    return getPageData(
+        // @sfdc-extension-line SFDC_EXT_BOPIS
+        selectedStoreInfo,
+        { request, params, context }
+    );
 }
 
 /**
  * Client-side loader function that handles data loading for client-side navigation.
- * This function ensures React Router doesn't block navigation by returning promises
- * directly instead of wrapped in a data object.
+ * This function can access client-side cookies to get store selection information
+ * and fetch product data with inventory-specific information.
  * @returns Promise that resolves to an object containing product and category promises
  */
-export function clientLoader(args: ClientLoaderFunctionArgs) {
-    // For variant navigation, return current data immediately to prevent skeleton
-    // Background fetching will be handled by the component
-    return getPageData(args);
+export function clientLoader({ request, params, context }: ClientLoaderFunctionArgs): ProductPageData {
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    const cookieName = getSelectedStoreInfoCookieName();
+    const selectedStoreInfo = getCookieFromDocumentAs<SelectedStoreInfo>(cookieName);
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
+
+    return getPageData(
+        // @sfdc-extension-line SFDC_EXT_BOPIS
+        selectedStoreInfo,
+        { request, params, context }
+    );
 }
 
 /**
@@ -170,6 +204,15 @@ export function shouldRevalidate({ currentUrl, nextUrl }: { currentUrl: string; 
     if (currentPid !== nextPid) {
         return true;
     }
+
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    // Revalidate if inventoryId parameter changes (different store selection)
+    const currentInventoryId = currentUrlObj.searchParams.get('inventoryId');
+    const nextInventoryId = nextUrlObj.searchParams.get('inventoryId');
+    if (currentInventoryId !== nextInventoryId) {
+        return true;
+    }
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     // Don't revalidate for other search parameter changes (color, size, etc.)
     return false;
@@ -223,7 +266,7 @@ function ProductDetailView({
     const isProductASet = isProductSet(productData);
     const isProductABundle = isProductBundle(productData);
 
-    return (
+    const content = (
         <div className="min-h-screen bg-background">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="space-y-8">
@@ -255,6 +298,12 @@ function ProductDetailView({
             </div>
         </div>
     );
+
+    let finalContent = content;
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    finalContent = <PickupProvider>{content}</PickupProvider>;
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
+    return finalContent;
 }
 
 /**

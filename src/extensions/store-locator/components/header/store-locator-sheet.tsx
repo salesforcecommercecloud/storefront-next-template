@@ -6,7 +6,7 @@
  */
 'use client';
 
-import { type PropsWithChildren, type ReactElement, useState } from 'react';
+import { type PropsWithChildren, type ReactElement } from 'react';
 import {
     Sheet,
     SheetClose,
@@ -20,25 +20,32 @@ import StoreLocator from '@/extensions/store-locator/components/store-locator';
 import { StoreLocatorLayoutProvider } from '@/extensions/store-locator/context/layout';
 import uiStringsSL from '@/extensions/store-locator/temp-ui-string-store-locator';
 
+interface StoreLocatorSheetProps extends PropsWithChildren {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+}
+
 /**
  * StoreLocatorSheet
  *
- * Sheet container that hosts the store locator experience. It accepts a trigger via
- * `children` and controls open state locally for simplicity.
+ * Controlled sheet container that hosts the store locator experience.
+ * Parent component must manage the open state.
  *
  * @param children - Trigger element rendered with `SheetTrigger asChild`
+ * @param open - Controlled open state (required)
+ * @param onOpenChange - Callback when open state changes (required)
  * @returns ReactElement
  *
  * @example
- * <StoreLocatorSheet>
- *   <Button variant="ghost" aria-label="Open Store Locator" />
+ * const [isOpen, setIsOpen] = useState(false);
+ *
+ * <StoreLocatorSheet open={isOpen} onOpenChange={setIsOpen}>
+ *   <Button variant="ghost">Open Store Locator</Button>
  * </StoreLocatorSheet>
  */
-export default function StoreLocatorSheet({ children }: PropsWithChildren): ReactElement {
-    const [open, setOpen] = useState<boolean>(true);
-
+export default function StoreLocatorSheet({ children, open, onOpenChange }: StoreLocatorSheetProps): ReactElement {
     return (
-        <Sheet open={open} onOpenChange={setOpen}>
+        <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetTrigger asChild>{children}</SheetTrigger>
             <SheetContent className="md:w-1/3 md:max-w-1/3 p-0">
                 <SheetHeader>

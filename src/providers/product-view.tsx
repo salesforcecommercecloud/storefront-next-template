@@ -8,6 +8,7 @@
 import { createContext, useContext, type PropsWithChildren } from 'react';
 import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
 import { useProductActions } from '@/hooks/product/use-product-actions';
+import { useCurrentVariant } from '@/hooks/product/use-current-variant';
 
 interface ProductViewContextValue extends ReturnType<typeof useProductActions> {
     product: ShopperProductsTypes.Product;
@@ -50,11 +51,11 @@ const ProductViewProvider = ({
     initialQuantity,
     itemId,
 }: PropsWithChildren<ProductViewProviderProps>) => {
-    const inventory = product.inventory;
+    const currentVariant = useCurrentVariant({ product });
 
     const productActionsData = useProductActions({
         product,
-        stockLevel: inventory?.ats || 0,
+        currentVariant,
         initialQuantity,
         itemId,
     });

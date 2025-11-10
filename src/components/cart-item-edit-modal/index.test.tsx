@@ -14,6 +14,7 @@ import { variantProduct } from '@/components/__mock__/master-variant-product';
 
 // Utils
 import uiStrings from '@/temp-ui-string';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
 // Mock useScapiFetcher to prevent actual API calls
 vi.mock('@/hooks/use-scapi-fetcher', () => ({
@@ -27,12 +28,16 @@ vi.mock('@/hooks/use-scapi-fetcher', () => ({
 const renderCartItemEditModal = (props: React.ComponentProps<typeof CartItemEditModal>) => {
     // Using createMemoryRouter in framework mode is fine
     // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
-    // Even though it’s listed under “data routers,” it fully supports testing non-route components that rely on router behavior.
+    // Even though it's listed under "data routers," it fully supports testing non-route components that rely on router behavior.
     const router = createMemoryRouter(
         [
             {
                 path: '/',
-                element: <CartItemEditModal {...props} />,
+                element: (
+                    <AllProvidersWrapper>
+                        <CartItemEditModal {...props} />
+                    </AllProvidersWrapper>
+                ),
             },
         ],
         {

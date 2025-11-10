@@ -10,10 +10,14 @@ import { getBasket, updateBasket } from '@/middlewares/basket.client';
 import { extractResponseError } from '@/lib/utils';
 import createClient, { type CommerceSdkClient } from '@/lib/scapi';
 import uiStrings from '@/temp-ui-string';
+// @sfdc-extension-line SFDC_EXT_BOPIS
+import { updateShipmentForPickup } from '@/extensions/bopis/lib/api/shipment';
 
 async function addBundleToCart(
     context: ActionFunctionArgs['context'],
-    bundleItem: Pick<ShopperBasketsTypes.ProductItem, 'productId' | 'quantity'>,
+    bundleItem: Pick<ShopperBasketsTypes.ProductItem, 'productId' | 'quantity' | 'inventoryId'> & {
+        storeId?: string | null;
+    },
     childSelections: Array<{ productId: string; quantity: number }>
 ): Promise<{
     success: boolean;
@@ -34,19 +38,17 @@ async function addBundleToCart(
     try {
         // Add bundle to basket with bundled product items
         const client = createClient(context).ShopperBasketsV2;
-        const updatedBasket = await client.addItemToBasket({
+        let updatedBasket = await client.addItemToBasket({
             parameters: { basketId },
             body: [
                 {
                     productId: bundleItem.productId,
                     quantity: bundleItem.quantity,
+                    inventoryId: bundleItem.inventoryId,
                     bundledProductItems: childSelections,
                 },
             ] as Parameters<CommerceSdkClient['ShopperBasketsV2']['addItemToBasket']>[0]['body'],
         });
-
-        // Update the basket storage
-        updateBasket(context, updatedBasket);
 
         // If there are child selections, we may need to update them
         // This is a follow-up call similar to the original implementation
@@ -77,17 +79,22 @@ async function addBundleToCart(
                     >[0]['body'],
                 });
 
-                // Get the final updated basket
-                const finalBasket = await client.getBasket({
+                // Get the updated basket after child items update
+                updatedBasket = await client.getBasket({
                     parameters: { basketId },
                 });
-
-                return {
-                    success: true,
-                    basket: finalBasket,
-                };
             }
         }
+
+        // @sfdc-extension-block-start SFDC_EXT_BOPIS
+        // Update shipment with store information when pickup bundle is added
+        if (bundleItem.storeId && bundleItem.inventoryId) {
+            updatedBasket = await updateShipmentForPickup(context, basketId, 'me', bundleItem.storeId);
+        }
+        // @sfdc-extension-block-end SFDC_EXT_BOPIS
+
+        // Update the basket storage
+        updateBasket(context, updatedBasket);
 
         return {
             success: true,

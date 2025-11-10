@@ -6,10 +6,11 @@
  */
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { useFetcher } from 'react-router';
+import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useFetcher, useSearchParams } from 'react-router';
 import type { ShopperStoresTypes } from 'commerce-sdk-isomorphic';
 import { useStoreLocator } from '@/extensions/store-locator/providers/store-locator';
+import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
 
 /**
  * Result of searchStores API
@@ -38,12 +39,13 @@ export function useStoreLocatorList() {
     const searchParams = useStoreLocator((s) => s.searchParams);
     const deviceCoordinates = useStoreLocator((s) => s.deviceCoordinates);
     const config = useStoreLocator((s) => s.config);
-    const selectedStoreId = useStoreLocator((s) => s.selectedStoreId);
-    const setSelectedStoreId = useStoreLocator((s) => s.setSelectedStoreId);
+    const selectedStoreInfo = useStoreLocator((s) => s.selectedStoreInfo);
+    const setSelectedStoreInfoRaw = useStoreLocator((s) => s.setSelectedStoreInfo);
     const geoError = useStoreLocator((s) => s.geoError);
     const shouldSearch = useStoreLocator((s) => s.shouldSearch);
     const setShouldSearch = useStoreLocator((s) => s.setShouldSearch);
 
+    const [urlSearchParams, setUrlSearchParams] = useSearchParams();
     const fetcher = useFetcher<SearchStoresResult>();
     const [page, setPage] = useState<number>(1);
     const [hasSearched, setHasSearched] = useState<boolean>(false);
@@ -99,13 +101,29 @@ export function useStoreLocatorList() {
 
     const isLoading = fetcher.state === 'loading';
 
+    // Wrapper function that updates both store and URL
+    const setSelectedStoreInfo = useCallback(
+        (info: SelectedStoreInfo | null) => {
+            setSelectedStoreInfoRaw(info);
+
+            // Update URL with inventoryId parameter so that it triggers a new fetch
+            const currentInventoryId = urlSearchParams.get('inventoryId');
+            if (info?.inventoryId && currentInventoryId !== info.inventoryId) {
+                const newSearchParams = new URLSearchParams(urlSearchParams);
+                newSearchParams.set('inventoryId', info.inventoryId);
+                setUrlSearchParams(newSearchParams, { replace: true });
+            }
+        },
+        [setSelectedStoreInfoRaw, urlSearchParams, setUrlSearchParams]
+    );
+
     return {
         // store state
         mode,
         searchParams,
         config,
-        selectedStoreId,
-        setSelectedStoreId,
+        selectedStoreInfo,
+        setSelectedStoreInfo,
         geoError,
         // fetch state
         hasSearched,

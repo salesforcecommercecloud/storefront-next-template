@@ -6,9 +6,10 @@
  */
 'use client';
 
-import { lazy, Suspense, useState, type ReactElement } from 'react';
+import { lazy, Suspense, useState, useEffect, type ReactElement } from 'react';
 import { Button } from '@/components/ui/button';
 import { Store } from 'lucide-react';
+import { useStoreLocator } from '../../providers/store-locator';
 import uiStringsSL from '@/extensions/store-locator/temp-ui-string-store-locator';
 
 const StoreLocatorSheet = lazy(() => import('@/extensions/store-locator/components/header/store-locator-sheet'));
@@ -19,7 +20,8 @@ const StoreLocatorSheet = lazy(() => import('@/extensions/store-locator/componen
  * Defers loading of the store locator UI until the shopper first interacts with the
  * badge button. This keeps initial bundles small and improves first-load performance.
  *
- * The sheet is lazy-loaded on demand via React.lazy and wrapped with Suspense.
+ * The sheet is lazy-loaded on demand via React.lazy (cached after first load) and wrapped with Suspense.
+ * Uses isOpen state to control both lazy loading trigger and sheet visibility.
  *
  * @returns ReactElement
  *
@@ -37,6 +39,23 @@ const StoreLocatorSheet = lazy(() => import('@/extensions/store-locator/componen
  */
 export default function StoreLocatorBadge(): ReactElement {
     const [clicked, setClicked] = useState<boolean>(false);
+    const globalIsOpen = useStoreLocator((state) => state.isOpen);
+    const closeStoreLocator = useStoreLocator((state) => state.close);
+
+    // Sync with global state - if global state says open, trigger local state
+    useEffect(() => {
+        if (globalIsOpen && !clicked) {
+            setClicked(true);
+        }
+    }, [globalIsOpen, clicked]);
+
+    // Handle closing - update both local and global state
+    const handleOpenChange = (open: boolean) => {
+        if (!open) {
+            setClicked(false);
+            closeStoreLocator();
+        }
+    };
 
     if (clicked) {
         return (
@@ -49,7 +68,7 @@ export default function StoreLocatorBadge(): ReactElement {
                         <Store className="size-6" />
                     </Button>
                 }>
-                <StoreLocatorSheet>
+                <StoreLocatorSheet open={true} onOpenChange={handleOpenChange}>
                     <Button variant="ghost" aria-label={uiStringsSL.storeLocator.trigger.openAriaLabel}>
                         <Store className="size-6" />
                     </Button>
