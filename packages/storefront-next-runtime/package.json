@@ -16,6 +16,12 @@
         "types": "./dist/design-react.d.ts",
         "default": "./dist/design-react.js"
       }
+    },
+    "./scapi": {
+      "import": {
+        "types": "./dist/scapi.d.ts",
+        "default": "./dist/scapi.js"
+      }
     }
   },
   "files": [
@@ -29,7 +35,10 @@
     "test:unit": "vitest --run --coverage",
     "lint": "eslint src --ext .ts,.tsx",
     "lint:fix": "eslint src --ext .ts,.tsx --fix",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "scapi:generate-types": "openapi-typescript -c ./openapi-specs/redocly.yaml",
+    "scapi:generate-operations": "pnpm dlx tsx scripts/generate-operation-maps.ts",
+    "scapi:generate": "pnpm scapi:generate-types && pnpm scapi:generate-operations"
   },
   "keywords": [
     "salesforce",
@@ -47,6 +56,7 @@
     "@types/semver": "^7.5.8",
     "@vitejs/plugin-react": "5.0.3",
     "@vitest/coverage-v8": "3.2.4",
+    "openapi-typescript": "7.10.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tsdown": "^0.15.4",
@@ -62,5 +72,8 @@
   },
   "publishConfig": {
     "access": "restricted"
+  },
+  "dependencies": {
+    "openapi-fetch": "0.15.0"
   }
 }

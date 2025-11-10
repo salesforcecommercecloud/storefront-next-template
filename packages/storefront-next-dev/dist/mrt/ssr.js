@@ -18501,8 +18501,8 @@ var init_chunk_I3JMK7SU = __esm({ "../../node_modules/.pnpm/react-router@7.9.2_r
 	init_chunk_TMI4QPZX();
 	import_react = /* @__PURE__ */ __toESM$1(require_react(), 1);
 	import_react$1 = /* @__PURE__ */ __toESM$1(require_react(), 1);
-	import_dist$1 = /* @__PURE__ */ __toESM$1(require_dist$2(), 1);
-	import_set_cookie = /* @__PURE__ */ __toESM$1(require_set_cookie(), 1);
+	import_dist$1 = require_dist$2();
+	import_set_cookie = require_set_cookie();
 	import_react$2 = /* @__PURE__ */ __toESM$1(require_react(), 1);
 	import_react_dom = /* @__PURE__ */ __toESM$1(require_react_dom(), 1);
 	import_react$3 = /* @__PURE__ */ __toESM$1(require_react(), 1);
@@ -41482,7 +41482,7 @@ var require_express = /* @__PURE__ */ __commonJS({ "../../node_modules/.pnpm/exp
 //#endregion
 //#region src/server.ts
 var import_aws_serverless_express = /* @__PURE__ */ __toESM$1(require_aws_serverless_express(), 1);
-var import_dist = /* @__PURE__ */ __toESM$1(require_dist(), 1);
+var import_dist = require_dist();
 var import_express = /* @__PURE__ */ __toESM$1(require_express(), 1);
 process.env.NODE_ENV = process.env.NODE_ENV ?? "production";
 const createServer = (build$1) => {

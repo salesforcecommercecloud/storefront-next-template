@@ -6,6 +6,12 @@ export default defineConfig({
     test: {
         environment: 'happy-dom',
         coverage: {
+            thresholds: {
+                statements: 87,
+                branches: 83,
+                functions: 83,
+                lines: 87,
+             },
             include: ['src/**/*.{ts,tsx}'],
             exclude: [
                 'src/**/*.test.{ts,tsx}',
@@ -13,6 +19,9 @@ export default defineConfig({
                 // Exclude CLI/deployment files that don't have Vitest tests
                 'dist/**',
                 'node_modules/**',
+                'src/scapi-client/generated/**',
+                // Exclude type-safety tests (they don't execute runtime code)
+                'src/**/*-safety.test.{ts,tsx}',
             ],
             reporters: ['text', 'lcov', 'json-summary'],
         },

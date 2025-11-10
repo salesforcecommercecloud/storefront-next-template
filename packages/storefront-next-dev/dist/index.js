@@ -10,6 +10,9 @@ import { execSync } from "child_process";
 import chalk from "chalk";
 import dotenv from "dotenv";
 import fs$1 from "fs";
+import process$1 from "node:process";
+import os$1 from "node:os";
+import tty from "node:tty";
 
 //#region rolldown:runtime
 var __create = Object.create;
@@ -18,8 +21,19 @@ var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __esm = (fn, res) => function() {
+	return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+};
 var __commonJS = (cb, mod) => function() {
 	return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+};
+var __export = (all) => {
+	let target = {};
+	for (var name in all) __defProp(target, name, {
+		get: all[name],
+		enumerable: true
+	});
+	return target;
 };
 var __copyProps = (to, from, except, desc) => {
 	if (from && typeof from === "object" || typeof from === "function") for (var keys = __getOwnPropNames(from), i = 0, n$1 = keys.length, key; i < n$1; i++) {
@@ -35,6 +49,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 	value: mod,
 	enumerable: true
 }) : target, mod));
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var __require = /* @__PURE__ */ createRequire(import.meta.url);
 
 //#endregion
@@ -13333,8 +13348,8 @@ var require_ms = /* @__PURE__ */ __commonJS({ "../../node_modules/.pnpm/ms@2.1.3
 }) });
 
 //#endregion
-//#region ../../node_modules/.pnpm/debug@4.4.3/node_modules/debug/src/common.js
-var require_common = /* @__PURE__ */ __commonJS({ "../../node_modules/.pnpm/debug@4.4.3/node_modules/debug/src/common.js": ((exports, module) => {
+//#region ../../node_modules/.pnpm/debug@4.4.3_supports-color@10.2.2/node_modules/debug/src/common.js
+var require_common = /* @__PURE__ */ __commonJS({ "../../node_modules/.pnpm/debug@4.4.3_supports-color@10.2.2/node_modules/debug/src/common.js": ((exports, module) => {
 	/**
 	* This is the common logic for both the Node.js and web browser
 	* implementations of `debug()`.
@@ -13536,8 +13551,8 @@ var require_common = /* @__PURE__ */ __commonJS({ "../../node_modules/.pnpm/debu
 }) });
 
 //#endregion
-//#region ../../node_modules/.pnpm/debug@4.4.3/node_modules/debug/src/browser.js
-var require_browser = /* @__PURE__ */ __commonJS({ "../../node_modules/.pnpm/debug@4.4.3/node_modules/debug/src/browser.js": ((exports, module) => {
+//#region ../../node_modules/.pnpm/debug@4.4.3_supports-color@10.2.2/node_modules/debug/src/browser.js
+var require_browser = /* @__PURE__ */ __commonJS({ "../../node_modules/.pnpm/debug@4.4.3_supports-color@10.2.2/node_modules/debug/src/browser.js": ((exports, module) => {
 	/**
 	* This is the web browser implementation of `debug()`.
 	*/
@@ -13733,92 +13748,116 @@ var require_browser = /* @__PURE__ */ __commonJS({ "../../node_modules/.pnpm/deb
 }) });
 
 //#endregion
-//#region ../../node_modules/.pnpm/has-flag@4.0.0/node_modules/has-flag/index.js
-var require_has_flag = /* @__PURE__ */ __commonJS({ "../../node_modules/.pnpm/has-flag@4.0.0/node_modules/has-flag/index.js": ((exports, module) => {
-	module.exports = (flag, argv$1 = process.argv) => {
-		const prefix$1 = flag.startsWith("-") ? "" : flag.length === 1 ? "-" : "--";
-		const position = argv$1.indexOf(prefix$1 + flag);
-		const terminatorPosition = argv$1.indexOf("--");
-		return position !== -1 && (terminatorPosition === -1 || position < terminatorPosition);
+//#region ../../node_modules/.pnpm/supports-color@10.2.2/node_modules/supports-color/index.js
+var supports_color_exports = /* @__PURE__ */ __export({
+	createSupportsColor: () => createSupportsColor,
+	default: () => supports_color_default
+});
+function hasFlag(flag, argv$1 = globalThis.Deno ? globalThis.Deno.args : process$1.argv) {
+	const prefix$1 = flag.startsWith("-") ? "" : flag.length === 1 ? "-" : "--";
+	const position = argv$1.indexOf(prefix$1 + flag);
+	const terminatorPosition = argv$1.indexOf("--");
+	return position !== -1 && (terminatorPosition === -1 || position < terminatorPosition);
+}
+function envForceColor() {
+	if (!("FORCE_COLOR" in env$1)) return;
+	if (env$1.FORCE_COLOR === "true") return 1;
+	if (env$1.FORCE_COLOR === "false") return 0;
+	if (env$1.FORCE_COLOR.length === 0) return 1;
+	const level = Math.min(Number.parseInt(env$1.FORCE_COLOR, 10), 3);
+	if (![
+		0,
+		1,
+		2,
+		3
+	].includes(level)) return;
+	return level;
+}
+function translateLevel(level) {
+	if (level === 0) return false;
+	return {
+		level,
+		hasBasic: true,
+		has256: level >= 2,
+		has16m: level >= 3
 	};
-}) });
-
-//#endregion
-//#region ../../node_modules/.pnpm/supports-color@7.2.0/node_modules/supports-color/index.js
-var require_supports_color = /* @__PURE__ */ __commonJS({ "../../node_modules/.pnpm/supports-color@7.2.0/node_modules/supports-color/index.js": ((exports, module) => {
-	const os$1 = __require("os");
-	const tty$1 = __require("tty");
-	const hasFlag = require_has_flag();
-	const { env: env$1 } = process;
-	let forceColor;
-	if (hasFlag("no-color") || hasFlag("no-colors") || hasFlag("color=false") || hasFlag("color=never")) forceColor = 0;
-	else if (hasFlag("color") || hasFlag("colors") || hasFlag("color=true") || hasFlag("color=always")) forceColor = 1;
-	if ("FORCE_COLOR" in env$1) if (env$1.FORCE_COLOR === "true") forceColor = 1;
-	else if (env$1.FORCE_COLOR === "false") forceColor = 0;
-	else forceColor = env$1.FORCE_COLOR.length === 0 ? 1 : Math.min(parseInt(env$1.FORCE_COLOR, 10), 3);
-	function translateLevel(level) {
-		if (level === 0) return false;
-		return {
-			level,
-			hasBasic: true,
-			has256: level >= 2,
-			has16m: level >= 3
-		};
-	}
-	function supportsColor(haveStream, streamIsTTY) {
-		if (forceColor === 0) return 0;
+}
+function _supportsColor(haveStream, { streamIsTTY, sniffFlags = true } = {}) {
+	const noFlagForceColor = envForceColor();
+	if (noFlagForceColor !== void 0) flagForceColor = noFlagForceColor;
+	const forceColor = sniffFlags ? flagForceColor : noFlagForceColor;
+	if (forceColor === 0) return 0;
+	if (sniffFlags) {
 		if (hasFlag("color=16m") || hasFlag("color=full") || hasFlag("color=truecolor")) return 3;
 		if (hasFlag("color=256")) return 2;
-		if (haveStream && !streamIsTTY && forceColor === void 0) return 0;
-		const min = forceColor || 0;
-		if (env$1.TERM === "dumb") return min;
-		if (process.platform === "win32") {
-			const osRelease = os$1.release().split(".");
-			if (Number(osRelease[0]) >= 10 && Number(osRelease[2]) >= 10586) return Number(osRelease[2]) >= 14931 ? 3 : 2;
-			return 1;
-		}
-		if ("CI" in env$1) {
-			if ([
-				"TRAVIS",
-				"CIRCLECI",
-				"APPVEYOR",
-				"GITLAB_CI",
-				"GITHUB_ACTIONS",
-				"BUILDKITE"
-			].some((sign) => sign in env$1) || env$1.CI_NAME === "codeship") return 1;
-			return min;
-		}
-		if ("TEAMCITY_VERSION" in env$1) return /^(9\.(0*[1-9]\d*)\.|\d{2,}\.)/.test(env$1.TEAMCITY_VERSION) ? 1 : 0;
-		if (env$1.COLORTERM === "truecolor") return 3;
-		if ("TERM_PROGRAM" in env$1) {
-			const version$1 = parseInt((env$1.TERM_PROGRAM_VERSION || "").split(".")[0], 10);
-			switch (env$1.TERM_PROGRAM) {
-				case "iTerm.app": return version$1 >= 3 ? 3 : 2;
-				case "Apple_Terminal": return 2;
-			}
-		}
-		if (/-256(color)?$/i.test(env$1.TERM)) return 2;
-		if (/^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/i.test(env$1.TERM)) return 1;
-		if ("COLORTERM" in env$1) return 1;
+	}
+	if ("TF_BUILD" in env$1 && "AGENT_NAME" in env$1) return 1;
+	if (haveStream && !streamIsTTY && forceColor === void 0) return 0;
+	const min = forceColor || 0;
+	if (env$1.TERM === "dumb") return min;
+	if (process$1.platform === "win32") {
+		const osRelease = os$1.release().split(".");
+		if (Number(osRelease[0]) >= 10 && Number(osRelease[2]) >= 10586) return Number(osRelease[2]) >= 14931 ? 3 : 2;
+		return 1;
+	}
+	if ("CI" in env$1) {
+		if ([
+			"GITHUB_ACTIONS",
+			"GITEA_ACTIONS",
+			"CIRCLECI"
+		].some((key) => key in env$1)) return 3;
+		if ([
+			"TRAVIS",
+			"APPVEYOR",
+			"GITLAB_CI",
+			"BUILDKITE",
+			"DRONE"
+		].some((sign) => sign in env$1) || env$1.CI_NAME === "codeship") return 1;
 		return min;
 	}
-	function getSupportLevel(stream) {
-		return translateLevel(supportsColor(stream, stream && stream.isTTY));
+	if ("TEAMCITY_VERSION" in env$1) return /^(9\.(0*[1-9]\d*)\.|\d{2,}\.)/.test(env$1.TEAMCITY_VERSION) ? 1 : 0;
+	if (env$1.COLORTERM === "truecolor") return 3;
+	if (env$1.TERM === "xterm-kitty") return 3;
+	if (env$1.TERM === "xterm-ghostty") return 3;
+	if (env$1.TERM === "wezterm") return 3;
+	if ("TERM_PROGRAM" in env$1) {
+		const version$1 = Number.parseInt((env$1.TERM_PROGRAM_VERSION || "").split(".")[0], 10);
+		switch (env$1.TERM_PROGRAM) {
+			case "iTerm.app": return version$1 >= 3 ? 3 : 2;
+			case "Apple_Terminal": return 2;
+		}
 	}
-	module.exports = {
-		supportsColor: getSupportLevel,
-		stdout: translateLevel(supportsColor(true, tty$1.isatty(1))),
-		stderr: translateLevel(supportsColor(true, tty$1.isatty(2)))
+	if (/-256(color)?$/i.test(env$1.TERM)) return 2;
+	if (/^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/i.test(env$1.TERM)) return 1;
+	if ("COLORTERM" in env$1) return 1;
+	return min;
+}
+function createSupportsColor(stream, options = {}) {
+	return translateLevel(_supportsColor(stream, {
+		streamIsTTY: stream && stream.isTTY,
+		...options
+	}));
+}
+var env$1, flagForceColor, supportsColor, supports_color_default;
+var init_supports_color = __esm({ "../../node_modules/.pnpm/supports-color@10.2.2/node_modules/supports-color/index.js": (() => {
+	({env: env$1} = process$1);
+	;
+	if (hasFlag("no-color") || hasFlag("no-colors") || hasFlag("color=false") || hasFlag("color=never")) flagForceColor = 0;
+	else if (hasFlag("color") || hasFlag("colors") || hasFlag("color=true") || hasFlag("color=always")) flagForceColor = 1;
+	supportsColor = {
+		stdout: createSupportsColor({ isTTY: tty.isatty(1) }),
+		stderr: createSupportsColor({ isTTY: tty.isatty(2) })
 	};
+	supports_color_default = supportsColor;
 }) });
 
 //#endregion
-//#region ../../node_modules/.pnpm/debug@4.4.3/node_modules/debug/src/node.js
-var require_node$1 = /* @__PURE__ */ __commonJS({ "../../node_modules/.pnpm/debug@4.4.3/node_modules/debug/src/node.js": ((exports, module) => {
+//#region ../../node_modules/.pnpm/debug@4.4.3_supports-color@10.2.2/node_modules/debug/src/node.js
+var require_node$1 = /* @__PURE__ */ __commonJS({ "../../node_modules/.pnpm/debug@4.4.3_supports-color@10.2.2/node_modules/debug/src/node.js": ((exports, module) => {
 	/**
 	* Module dependencies.
 	*/
-	const tty = __require("tty");
+	const tty$1 = __require("tty");
 	const util = __require("util");
 	/**
 	* This is the Node.js implementation of `debug()`.
@@ -13842,7 +13881,7 @@ var require_node$1 = /* @__PURE__ */ __commonJS({ "../../node_modules/.pnpm/debu
 		1
 	];
 	try {
-		const supportsColor$1 = require_supports_color();
+		const supportsColor$1 = (init_supports_color(), __toCommonJS(supports_color_exports));
 		if (supportsColor$1 && (supportsColor$1.stderr || supportsColor$1).level >= 2) exports.colors = [
 			20,
 			21,
@@ -13945,7 +13984,7 @@ var require_node$1 = /* @__PURE__ */ __commonJS({ "../../node_modules/.pnpm/debu
 	* Is stdout a TTY? Colored output is enabled when `true`.
 	*/
 	function useColors() {
-		return "colors" in exports.inspectOpts ? Boolean(exports.inspectOpts.colors) : tty.isatty(process.stderr.fd);
+		return "colors" in exports.inspectOpts ? Boolean(exports.inspectOpts.colors) : tty$1.isatty(process.stderr.fd);
 	}
 	/**
 	* Adds ANSI color escape codes if enabled.
@@ -14021,8 +14060,8 @@ var require_node$1 = /* @__PURE__ */ __commonJS({ "../../node_modules/.pnpm/debu
 }) });
 
 //#endregion
-//#region ../../node_modules/.pnpm/debug@4.4.3/node_modules/debug/src/index.js
-var require_src = /* @__PURE__ */ __commonJS({ "../../node_modules/.pnpm/debug@4.4.3/node_modules/debug/src/index.js": ((exports, module) => {
+//#region ../../node_modules/.pnpm/debug@4.4.3_supports-color@10.2.2/node_modules/debug/src/index.js
+var require_src = /* @__PURE__ */ __commonJS({ "../../node_modules/.pnpm/debug@4.4.3_supports-color@10.2.2/node_modules/debug/src/index.js": ((exports, module) => {
 	/**
 	* Detect Electron renderer / nwjs process, which is node, but we should
 	* treat as a browser.
@@ -29452,7 +29491,7 @@ var require_sourcemap_codec_umd = /* @__PURE__ */ __commonJS({ "../../node_modul
 		var __getOwnPropDesc$1 = Object.getOwnPropertyDescriptor;
 		var __getOwnPropNames$1 = Object.getOwnPropertyNames;
 		var __hasOwnProp$1 = Object.prototype.hasOwnProperty;
-		var __export = (target, all) => {
+		var __export$1 = (target, all) => {
 			for (var name in all) __defProp$1(target, name, {
 				get: all[name],
 				enumerable: true
@@ -29467,9 +29506,9 @@ var require_sourcemap_codec_umd = /* @__PURE__ */ __commonJS({ "../../node_modul
 			}
 			return to;
 		};
-		var __toCommonJS = (mod) => __copyProps$1(__defProp$1({}, "__esModule", { value: true }), mod);
+		var __toCommonJS$1 = (mod) => __copyProps$1(__defProp$1({}, "__esModule", { value: true }), mod);
 		var sourcemap_codec_exports = {};
-		__export(sourcemap_codec_exports, {
+		__export$1(sourcemap_codec_exports, {
 			decode: () => decode,
 			decodeGeneratedRanges: () => decodeGeneratedRanges,
 			decodeOriginalScopes: () => decodeOriginalScopes,
@@ -29477,7 +29516,7 @@ var require_sourcemap_codec_umd = /* @__PURE__ */ __commonJS({ "../../node_modul
 			encodeGeneratedRanges: () => encodeGeneratedRanges,
 			encodeOriginalScopes: () => encodeOriginalScopes
 		});
-		module$1.exports = __toCommonJS(sourcemap_codec_exports);
+		module$1.exports = __toCommonJS$1(sourcemap_codec_exports);
 		var comma = ",".charCodeAt(0);
 		var semicolon = ";".charCodeAt(0);
 		var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -30088,7 +30127,7 @@ var require_trace_mapping_umd = /* @__PURE__ */ __commonJS({ "../../node_modules
 		var __commonJS$1 = (cb, mod) => function __require$1() {
 			return mod || (0, cb[__getOwnPropNames$1(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 		};
-		var __export = (target, all) => {
+		var __export$1 = (target, all) => {
 			for (var name in all) __defProp$1(target, name, {
 				get: all[name],
 				enumerable: true
@@ -30107,7 +30146,7 @@ var require_trace_mapping_umd = /* @__PURE__ */ __commonJS({ "../../node_modules
 			value: mod,
 			enumerable: true
 		}) : target, mod));
-		var __toCommonJS = (mod) => __copyProps$1(__defProp$1({}, "__esModule", { value: true }), mod);
+		var __toCommonJS$1 = (mod) => __copyProps$1(__defProp$1({}, "__esModule", { value: true }), mod);
 		var require_sourcemap_codec = __commonJS$1({ "umd:@jridgewell/sourcemap-codec"(exports$1, module2) {
 			module2.exports = require_sourcemapCodec;
 		} });
@@ -30115,7 +30154,7 @@ var require_trace_mapping_umd = /* @__PURE__ */ __commonJS({ "../../node_modules
 			module2.exports = require_resolveURI;
 		} });
 		var trace_mapping_exports = {};
-		__export(trace_mapping_exports, {
+		__export$1(trace_mapping_exports, {
 			AnyMap: () => FlattenMap,
 			FlattenMap: () => FlattenMap,
 			GREATEST_LOWER_BOUND: () => GREATEST_LOWER_BOUND,
@@ -30134,7 +30173,7 @@ var require_trace_mapping_umd = /* @__PURE__ */ __commonJS({ "../../node_modules
 			sourceContentFor: () => sourceContentFor,
 			traceSegment: () => traceSegment
 		});
-		module$1.exports = __toCommonJS(trace_mapping_exports);
+		module$1.exports = __toCommonJS$1(trace_mapping_exports);
 		var import_sourcemap_codec = __toESM$1(require_sourcemap_codec());
 		var import_resolve_uri = __toESM$1(require_resolve_uri());
 		function stripFilename(path$2) {
@@ -30577,7 +30616,7 @@ var require_gen_mapping_umd = /* @__PURE__ */ __commonJS({ "../../node_modules/.
 		var __commonJS$1 = (cb, mod) => function __require$1() {
 			return mod || (0, cb[__getOwnPropNames$1(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 		};
-		var __export = (target, all) => {
+		var __export$1 = (target, all) => {
 			for (var name in all) __defProp$1(target, name, {
 				get: all[name],
 				enumerable: true
@@ -30596,7 +30635,7 @@ var require_gen_mapping_umd = /* @__PURE__ */ __commonJS({ "../../node_modules/.
 			value: mod,
 			enumerable: true
 		}) : target, mod));
-		var __toCommonJS = (mod) => __copyProps$1(__defProp$1({}, "__esModule", { value: true }), mod);
+		var __toCommonJS$1 = (mod) => __copyProps$1(__defProp$1({}, "__esModule", { value: true }), mod);
 		var require_sourcemap_codec = __commonJS$1({ "umd:@jridgewell/sourcemap-codec"(exports$1, module2) {
 			module2.exports = require_sourcemapCodec;
 		} });
@@ -30604,7 +30643,7 @@ var require_gen_mapping_umd = /* @__PURE__ */ __commonJS({ "../../node_modules/.
 			module2.exports = require_traceMapping;
 		} });
 		var gen_mapping_exports = {};
-		__export(gen_mapping_exports, {
+		__export$1(gen_mapping_exports, {
 			GenMapping: () => GenMapping,
 			addMapping: () => addMapping,
 			addSegment: () => addSegment,
@@ -30617,7 +30656,7 @@ var require_gen_mapping_umd = /* @__PURE__ */ __commonJS({ "../../node_modules/.
 			toDecodedMap: () => toDecodedMap,
 			toEncodedMap: () => toEncodedMap
 		});
-		module$1.exports = __toCommonJS(gen_mapping_exports);
+		module$1.exports = __toCommonJS$1(gen_mapping_exports);
 		var SetArray = class {
 			constructor() {
 				this._indexes = { __proto__: null };
@@ -39391,7 +39430,7 @@ var require_lib = /* @__PURE__ */ __commonJS({ "../../node_modules/.pnpm/@babel+
 //#endregion
 //#region src/extensibility/path-util.ts
 var import_lib$1 = /* @__PURE__ */ __toESM(require_lib(), 1);
-var import_lib = /* @__PURE__ */ __toESM(require_lib$7(), 1);
+var import_lib = require_lib$7();
 let cachedTsconfigPaths = null;
 let cachedTsconfigRoot = null;
 const FILE_EXTENSIONS = [

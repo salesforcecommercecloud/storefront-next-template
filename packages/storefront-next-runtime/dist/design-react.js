@@ -1,6 +1,6 @@
-import "./modeDetection-BZMGik06.js";
-import "./client-DdJSpo_h.js";
-import { a as isComponentTypeAllowedInRegion, c as usePageDesignerMode, i as useDesignState, o as useComponentDiscovery, r as useDesignContext, s as PageDesignerProvider } from "./DesignContext-BydCFFcv.js";
+import "./modeDetection-Dl3LxZN8.js";
+import "./client-yD3sT5Kq.js";
+import { a as isComponentTypeAllowedInRegion, c as usePageDesignerMode, i as useDesignState, o as useComponentDiscovery, r as useDesignContext, s as PageDesignerProvider } from "./DesignContext-Cy44HuSN.js";
 import React, { useCallback, useMemo, useRef } from "react";
 
 //#region src/design/react/hooks/useComponentDecoratorClasses.ts
