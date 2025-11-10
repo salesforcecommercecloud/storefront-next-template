@@ -313,6 +313,10 @@ const additionalStrings = {
         selected: '✓ Selected',
         selectOptionsAbove: 'Select options above',
 
+        // Bonus product
+        bonusProduct: 'Bonus Product',
+        bonusProductAriaLabel: 'This item is a free bonus product',
+
         // Toast messages
         addedToCart: 'Added {productName} to cart',
         updatedCart: 'Updated {productName} in cart',

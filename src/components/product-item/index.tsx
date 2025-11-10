@@ -11,9 +11,10 @@ import type { ShopperBasketsTypes, ShopperProductsTypes, ShopperPromotionsTypes 
 
 // Components
 import PromoPopover from '@/components/promo-popover';
-import { Typography } from '@/components/typography';
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Spinner } from '@/components/spinner';
+import { Typography } from '@/components/typography';
 import CartQuantityPicker from '@/components/cart/cart-quantity-picker';
 import BundledProductItems from './bundled-product-items';
 // TODO: uncomment after integrate gift basket api
@@ -99,12 +100,23 @@ function ProductItemVariantName({ productItem }: { productItem: Item }): ReactEl
     const productName =
         productItem?.productName || productItem?.name || uiStrings.cart.product?.defaultName || 'Product Name';
 
+    const isBonusProduct = Boolean(productItem?.bonusProductLineItem);
     return (
-        <Typography as="h2" className="mb-4 text-xl">
-            <Link to={createProductUrl(productId)} className="text-foreground hover:text-primary">
-                {productName}
-            </Link>
-        </Typography>
+        <div className="mb-4 flex items-center gap-2 min-w-0">
+            {isBonusProduct && (
+                <Badge variant="default" role="status" aria-label={uiStrings.product.bonusProductAriaLabel}>
+                    {uiStrings.product.bonusProduct}
+                </Badge>
+            )}
+            <Typography variant="h2" className="text-xl min-w-0 flex-1">
+                <Link
+                    to={createProductUrl(productId)}
+                    className="text-foreground hover:text-primary block truncate"
+                    title={productName}>
+                    {productName}
+                </Link>
+            </Typography>
+        </div>
     );
 }
 
@@ -145,6 +157,7 @@ function ProductItemVariantAttributes({
         productItem.priceAfterItemDiscount &&
         productItem.priceAfterItemDiscount > 0 &&
         productItem.priceAfterItemDiscount !== productItem.price;
+    const isBonusProduct = Boolean(productItem?.bonusProductLineItem);
     return (
         <div>
             {/* Quantity - only show in summary variant */}
@@ -166,7 +179,7 @@ function ProductItemVariantAttributes({
             )}
 
             {/* Promotions Info */}
-            {(hasPromotions || hasItemDiscount) && (
+            {(hasPromotions || hasItemDiscount) && !isBonusProduct && (
                 <div className="flex items-center gap-2 mb-1 ">
                     <span className="text-sm text-muted-foreground">
                         {uiStrings.cart.attributes.promotions}{' '}
@@ -205,6 +218,7 @@ function ProductItemVariantAttributes({
  * @param props - Component props
  * @param props.product - Product data containing price information
  * @param props.baseDirection - Layout direction for price display
+ * @param props.isBonusProduct - Whether this is a bonus product (shows $0.00 with strikethrough original)
  * @returns JSX element with formatted price information
  */
 function ProductItemVariantPrice({
@@ -219,8 +233,36 @@ function ProductItemVariantPrice({
     }
 
     const price = productItem?.priceAfterItemDiscount ?? 0;
-    const pricePerUnit = productItem?.pricePerUnit;
+    const pricePerUnit = Number(productItem?.pricePerUnit);
+    const isBonusProduct = Boolean(productItem?.bonusProductLineItem);
 
+    // For bonus products, show strikethrough original price and $0.00
+    if (isBonusProduct) {
+        if (baseDirection === 'row') {
+            return (
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        {pricePerUnit > 0 && (
+                            <div className="text-md text-muted-foreground line-through">
+                                {formatCurrency(pricePerUnit)}
+                            </div>
+                        )}
+                        <div className="text-xl font-medium">{formatCurrency(0)}</div>
+                    </div>
+                </div>
+            );
+        }
+        return (
+            <div className="space-y-1">
+                {pricePerUnit > 0 && (
+                    <div className="text-md text-muted-foreground line-through">{formatCurrency(pricePerUnit)}</div>
+                )}
+                <div className="text-xl font-medium">{formatCurrency(0)}</div>
+            </div>
+        );
+    }
+
+    // Regular product pricing
     if (baseDirection === 'row') {
         return (
             <div className="flex items-center justify-between">
@@ -290,6 +332,10 @@ function ProductItem({
         return <div data-testid="product-item-error">Product data not available</div>;
     }
 
+    // Check if this is a bonus product
+    const isBonusProduct = Boolean(productItem?.bonusProductLineItem);
+    const baseDirection = isBonusProduct ? 'row' : 'column';
+
     // Summary variant - compact display for product summary
     if (displayVariant === 'summary') {
         return (
@@ -319,17 +365,17 @@ function ProductItem({
     return (
         <div className="relative" data-testid={`sf-product-item-${productItem?.productId || productItem?.id}`}>
             <Card className="p-0 border border-none shadow-none">
-                <CardContent className="px-3 py-4 md:px-6 md:py-7 relative">
-                    <div className="grid md:grid-cols-[160px_1fr] grid-cols-[80px_1fr] gap-5">
-                        <div>
+                <CardContent className="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden">
+                    <div className="grid md:grid-cols-[160px_1fr] grid-cols-[80px_1fr] gap-5 min-w-0">
+                        <div className="flex-shrink-0">
                             {/* Product Image */}
                             <ProductItemVariantImage productItem={productItem} className="md:w-40 w-20" />
                         </div>
 
                         {/* Product Details */}
-                        <div className="flex-1 space-y-3">
-                            <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-6">
-                                <div>
+                        <div className="flex-1 space-y-3 min-w-0">
+                            <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-6 min-w-0">
+                                <div className="min-w-0">
                                     <ProductItemVariantName productItem={productItem} />
                                     {productItem.bundledProducts && (
                                         <BundledProductItems bundledProducts={productItem.bundledProducts} />
@@ -340,35 +386,40 @@ function ProductItem({
                                         promotions={promotions}
                                     />
 
-                                    <Typography as="p" variant="product-description">
+                                    <Typography variant="product-description" className="break-words">
                                         {productItem?.shortDescription}
                                     </Typography>
 
-                                    <div>
-                                        {primaryAction && (
-                                            <div data-testid="mobile-primary-action">{primaryAction(productItem)}</div>
-                                        )}
-                                        {secondaryActions && secondaryActions(productItem)}
-                                    </div>
+                                    {!isBonusProduct && (
+                                        <div className="min-w-0">
+                                            {primaryAction && (
+                                                <div data-testid="mobile-primary-action">
+                                                    {primaryAction(productItem)}
+                                                </div>
+                                            )}
+                                            {secondaryActions && secondaryActions(productItem)}
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="text-right md:hidden" data-testid="mobile-product-price">
                                     {/*TODO: Replace this with ProductPrice*/}
                                     <ProductItemVariantPrice productItem={productItem} />
                                 </div>
 
-                                <div className="grid gap-4 justify-items-end">
-                                    {/* Quantity Selector, only show if item is not a bonus item */}
-                                    {!productItem?.bonusProductLineItem && (
-                                        <CartQuantityPicker
-                                            value={String(productItem.quantity)}
-                                            itemId={productItem.itemId || ''}
-                                            stockLevel={productItem.inventory?.ats}
-                                        />
-                                    )}
-
+                                <div className="grid gap-4 justify-items-end flex-shrink-0">
+                                    {/* Quantity Display/Selector */}
+                                    <CartQuantityPicker
+                                        value={String(productItem.quantity)}
+                                        itemId={productItem.itemId || ''}
+                                        stockLevel={productItem.inventory?.ats}
+                                        disabled={isBonusProduct}
+                                    />
                                     <div className="self-end">
                                         <div className="text-right hidden md:block" data-testid="desktop-product-price">
-                                            <ProductItemVariantPrice productItem={productItem} />
+                                            <ProductItemVariantPrice
+                                                productItem={productItem}
+                                                baseDirection={baseDirection}
+                                            />
                                         </div>
                                         {/*Comment out since this is not integrated with api yet*/}
                                         {/*<div className="text-sm flex items-center gap-3">*/}
@@ -386,7 +437,7 @@ function ProductItem({
 
                             {/* Inventory Message */}
                             {productItem?.showInventoryMessage && (
-                                <div className="text-destructive font-semibold text-sm">
+                                <div className="text-destructive font-semibold text-sm break-words">
                                     {productItem?.inventoryMessage}
                                 </div>
                             )}

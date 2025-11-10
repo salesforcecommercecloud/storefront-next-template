@@ -276,4 +276,27 @@ describe('CartQuantityPicker', () => {
 
         expect(mockHandleQuantityBlur).toHaveBeenCalled();
     });
+
+    describe('Disabled state', () => {
+        test('renders disabled quantity picker when disabled prop is true', () => {
+            const props = { ...defaultProps, disabled: true };
+            renderComponent(props as any);
+
+            const quantityInput = screen.getByDisplayValue('2');
+            expect(quantityInput).toBeDisabled();
+        });
+
+        test('disabled prop defaults to false', () => {
+            // Don't pass disabled prop
+            const propsWithoutDisabled = {
+                value: '2',
+                itemId: 'item-123',
+                fetcher: createMockFetcher('idle'),
+            };
+            renderComponent(propsWithoutDisabled as any);
+
+            const quantityInput = screen.getByDisplayValue('2');
+            expect(quantityInput).not.toBeDisabled();
+        });
+    });
 });

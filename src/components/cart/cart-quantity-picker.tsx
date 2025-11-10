@@ -35,6 +35,8 @@ interface CartQuantityPickerProps {
     debounceDelay?: number;
     /** Stock level for validation */
     stockLevel?: number;
+    /** Disable quantity picker (e.g., for bonus products) */
+    disabled?: boolean;
 }
 
 /**
@@ -53,6 +55,7 @@ export default function CartQuantityPicker({
     className,
     debounceDelay,
     stockLevel,
+    disabled = false,
 }: CartQuantityPickerProps): ReactElement {
     const config = useConfig();
     const effectiveDebounceDelay = debounceDelay || config.pages.cart.quantityUpdateDebounce;
@@ -89,10 +92,10 @@ export default function CartQuantityPicker({
                 value={quantity.toString()}
                 onBlur={handleQuantityBlur}
                 onChange={handleQuantityChange}
-                disabled={isLoading}
+                disabled={isLoading || disabled}
             />
             {/* Stock validation error message */}
-            {stockValidationError && (
+            {!disabled && stockValidationError && (
                 <Typography variant="small" className="text-destructive mt-1" role="alert" aria-live="polite">
                     {stockValidationError}
                 </Typography>

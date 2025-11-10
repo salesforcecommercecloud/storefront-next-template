@@ -644,6 +644,142 @@ describe('ProductItem', () => {
             const priceElements = screen.getAllByText('$0.00');
             expect(priceElements).toHaveLength(2); // Mobile and desktop price elements
         });
+
+        test('render properly for bonus product', () => {
+            const productWithEmptyAdjustments = {
+                ...mockProduct,
+                bonusProductLineItem: true,
+                priceAdjustments: [{ promotionId: 'promo-1', itemText: 'bonus product' }],
+                price: 29.99,
+                priceAfterItemDiscount: 29.99,
+            };
+
+            renderWithRouter(<ProductItem productItem={productWithEmptyAdjustments} />);
+
+            // PromoPopover should not be rendered
+            expect(screen.queryByRole('button', { name: 'Info' })).not.toBeInTheDocument();
+        });
+    });
+
+    describe('Bonus Products', () => {
+        test('identifies bonus product correctly when bonusProductLineItem is true', () => {
+            const bonusProduct = {
+                ...mockProduct,
+                bonusProductLineItem: true,
+                bonusDiscountLineItemId: 'bonus-discount-1',
+            };
+
+            renderWithRouter(<ProductItem productItem={bonusProduct} />);
+
+            // Check for bonus product badge
+            expect(screen.getByText('Bonus Product')).toBeInTheDocument();
+        });
+
+        test('does not show bonus badge for regular product', () => {
+            const regularProduct = {
+                ...mockProduct,
+                bonusProductLineItem: false,
+            };
+
+            renderWithRouter(<ProductItem productItem={regularProduct} />);
+
+            // Should not show bonus product badge
+            expect(screen.queryByText('Bonus Product')).not.toBeInTheDocument();
+        });
+
+        test('shows strikethrough original price for bonus product', () => {
+            const bonusProduct = {
+                ...mockProduct,
+                bonusProductLineItem: true,
+                price: 39.99,
+                pricePerUnit: 39.99,
+            };
+
+            renderWithRouter(<ProductItem productItem={bonusProduct} />);
+
+            // Should show original price with strikethrough
+            const originalPriceElements = screen.getAllByText('$39.99');
+            expect(originalPriceElements.length).toBeGreaterThanOrEqual(1);
+
+            // Check that at least one has line-through class
+            const hasLineThrough = originalPriceElements.some((el) => el.className.includes('line-through'));
+            expect(hasLineThrough).toBe(true);
+        });
+
+        test('disables quantity picker for bonus product', () => {
+            const bonusProduct = {
+                ...mockProduct,
+                bonusProductLineItem: true,
+                quantity: 1,
+            };
+
+            renderWithRouter(<ProductItem productItem={bonusProduct} />);
+
+            // Quantity picker input should be disabled
+            const quantityInput = screen.getByRole('spinbutton');
+            expect(quantityInput).toBeDisabled();
+        });
+
+        test('shows correct quantity for bonus product', () => {
+            const bonusProduct = {
+                ...mockProduct,
+                bonusProductLineItem: true,
+                quantity: 2,
+            };
+
+            renderWithRouter(<ProductItem productItem={bonusProduct} />);
+
+            // Quantity picker should show the actual quantity value
+            const quantityInput = screen.getByRole('spinbutton');
+            expect(quantityInput).toHaveValue(2);
+            expect(quantityInput).toBeDisabled();
+        });
+
+        test('handles bonus product with all required fields', () => {
+            const completeBonusProduct = {
+                ...mockProduct,
+                bonusProductLineItem: true,
+                bonusDiscountLineItemId: 'bonus-discount-123',
+                price: 49.99,
+                pricePerUnit: 49.99,
+                quantity: 1,
+                productName: 'Free Bonus Tie',
+            };
+
+            renderWithRouter(<ProductItem productItem={completeBonusProduct} />);
+
+            // Verify all bonus product elements that ARE implemented
+            expect(screen.getByText('Bonus Product')).toBeInTheDocument();
+            expect(screen.getByText('Free Bonus Tie')).toBeInTheDocument();
+
+            // Check for $0.00 price (appears in both mobile and desktop views)
+            const zeroPriceElements = screen.getAllByText('$0.00');
+            expect(zeroPriceElements.length).toBeGreaterThanOrEqual(1);
+
+            // Check for original price (appears in both mobile and desktop views)
+            const originalPriceElements = screen.getAllByText('$49.99');
+            expect(originalPriceElements.length).toBeGreaterThanOrEqual(1);
+        });
+
+        test('hides both primary and secondary actions for bonus product', () => {
+            const bonusProduct = {
+                ...mockProduct,
+                bonusProductLineItem: true,
+            };
+
+            renderWithRouter(
+                <ProductItem
+                    productItem={bonusProduct}
+                    primaryAction={mockPrimaryAction}
+                    secondaryActions={mockSecondaryActions}
+                />
+            );
+
+            // Both primary and secondary actions should be hidden
+            expect(screen.queryByTestId('mobile-primary-action')).not.toBeInTheDocument();
+            expect(screen.queryByTestId('primary-action')).not.toBeInTheDocument();
+            expect(screen.queryByTestId(`remove-item-${mockProduct.itemId}`)).not.toBeInTheDocument();
+        });
     });
 
     describe('Bundled Products', () => {
