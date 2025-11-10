@@ -2,12 +2,45 @@ import { Command } from 'commander';
 import { push } from './push.js';
 import { generateInstructions } from './extensibility/create-instructions.js';
 import trimExtensions from './extensibility/trim-extensions.js';
-import { DEFAULT_CLOUD_ORIGIN, error } from './utils.js';
+import { generateMetadata } from './cartridge-services/generate-cartridge.js';
+import { deployCode } from './cartridge-services/deploy-cartridge.js';
+import { CARTRIDGES_BASE_DIR, SFNEXT_BASE_CARTRIDGE_OUTPUT_DIR } from './config.js';
+import { DEFAULT_CLOUD_ORIGIN, error, success, info } from './utils.js';
 import pkg from '../package.json' with { type: 'json' };
 import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
 import fs from 'fs-extra';
 import { createStorefront } from './create-storefront.js';
+
+// Shared path resolution and validation
+interface PathOptions {
+    projectDirectory?: string;
+}
+
+function validateAndBuildPaths(options: PathOptions): {
+    projectDirectory: string;
+    cartridgeBaseDir: string;
+    metadataDir: string;
+} {
+    if (!options.projectDirectory) {
+        error('--project-directory is required');
+        process.exit(1);
+    }
+
+    // Check if project directory exists
+    if (!fs.existsSync(options.projectDirectory)) {
+        error(`Project directory does not exist: ${options.projectDirectory}`);
+        process.exit(1);
+    }
+
+    // Base directory for deployment (everything under this gets zipped)
+    const cartridgeBaseDir = path.join(options.projectDirectory, CARTRIDGES_BASE_DIR);
+
+    // Full path where metadata files are generated
+    const metadataDir = path.join(options.projectDirectory, CARTRIDGES_BASE_DIR, SFNEXT_BASE_CARTRIDGE_OUTPUT_DIR);
+
+    return { projectDirectory: options.projectDirectory, cartridgeBaseDir, metadataDir };
+}
 
 const program = new Command();
 const __filename = fileURLToPath(import.meta.url);
@@ -144,6 +177,87 @@ program
             process.exit(0);
         } catch (err) {
             handleCommandError('trim-extensions', err);
+        }
+    });
+
+program
+    .command('generate-cartridge')
+    .description('Generate component cartridge metadata from decorated components')
+    .requiredOption('-d, --project-directory <dir>', 'Project directory containing the source code')
+    .action(async (options) => {
+        try {
+            const { projectDirectory, metadataDir } = validateAndBuildPaths(options);
+
+            // Ensure the full metadata directory path exists
+            if (!fs.existsSync(metadataDir)) {
+                info(`Creating metadata directory: ${metadataDir}`);
+                fs.mkdirSync(metadataDir, { recursive: true });
+            }
+
+            await generateMetadata(projectDirectory, metadataDir);
+            process.exit(0);
+        } catch (err) {
+            error(`Generate metadata failed: ${(err as Error).message}`);
+            process.exit(1);
+        }
+    });
+
+program
+    .command('deploy-cartridge')
+    .description('Deploy a cartridge to Commerce Cloud (zips and uploads the metadata directory)')
+    .requiredOption('-d, --project-directory <dir>', 'Project directory containing the source code')
+    .action(async (options) => {
+        try {
+            // Read credentials from dw.json
+            const dwJsonPath = path.join(process.cwd(), 'dw.json');
+
+            if (!fs.existsSync(dwJsonPath)) {
+                error('dw.json file not found. Please ensure dw.json exists in the current directory.');
+                process.exit(1);
+            }
+
+            const dwConfig = JSON.parse(fs.readFileSync(dwJsonPath, 'utf8'));
+
+            const { metadataDir } = validateAndBuildPaths(options);
+
+            // Verify metadata directory exists within cartridge base
+            if (!fs.existsSync(metadataDir)) {
+                info(`Warning: Metadata directory does not exist: ${metadataDir}`);
+                info(`Run 'generate-cartridge' first to create metadata files.`);
+                process.exit(1);
+            }
+
+            if (!dwConfig.username || !dwConfig.password) {
+                error('Username and password are required in dw.json file.');
+                process.exit(1);
+            }
+
+            const instance = dwConfig.hostname;
+
+            if (!instance) {
+                error('Instance is required. Add "hostname" to dw.json file.');
+                process.exit(1);
+            }
+
+            const codeVersion = dwConfig['code-version'];
+
+            if (!codeVersion) {
+                error('Code version is required. Add "code-version" to dw.json file.');
+                process.exit(1);
+            }
+
+            const credentials = `${dwConfig.username}:${dwConfig.password}`;
+            const encoded = Buffer.from(credentials).toString('base64');
+
+            // Deploy the metadata directory
+            const result = await deployCode(instance, codeVersion, metadataDir, encoded);
+
+            success(`Code deployed to version "${result.version}" successfully!`);
+
+            process.exit(0);
+        } catch (err) {
+            error(`Deploy failed: ${(err as Error).message}`);
+            process.exit(1);
         }
     });
 

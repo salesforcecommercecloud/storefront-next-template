@@ -18,6 +18,8 @@ Vite plugin and deployment tools for Salesforce Odyssey integration with React R
 - **Extension LLM Instructions**: Generate LLM instructions for installing a feature
 - **Bundle Creation**: Creates TAR archives from React Router build directories
 - **Deployment**: Pushes bundles to Managed Runtime
+- **Cartridge Generation**: Generate cartridge from decorated components, page types, aspects
+- **Cartridge Deployment**: Deploy cartridges to Commerce Cloud
 - **Workspace Integration**: Seamlessly works within pnpm workspaces
 - **Automatic Configuration**: Intelligent file detection from build directory structure
 - **TypeScript**: Written in modern TypeScript with full type safety
@@ -104,6 +106,23 @@ sfnext manage-extensions --project-directory /path/to/your/project --extension-c
 sfnext create-instructions --project-directory /path/to/your/project --extension-config /path/to/extension/config/file --extension SFDC_EXT_STORE_LOCATOR --template-repo https://github.com/SalesforceCommerceCloud/storefront-next-template.git --branch main --files /path/to/your/new/extension/files --output-dir /path/to/instruction/files
 ```
 
+#### Cartridge generation and deployment instructions
+
+```bash
+# Generate cartridge metadata for your site
+sfnext generate-cartridge --project-directory /path/to/your/project
+
+# Deploy generated metadata to Commerce Cloud (uses dw.json for all settings)
+sfnext deploy-cartridge --project-directory /path/to/your/project
+
+# Deploy cartridge to Commerce Cloud (uses dw.json for all settings)
+sfnext deploy-cartridge my-cartridge.zip
+
+# Deploy with both custom instance and version
+sfnext deploy-cartridge my-cartridge.zip -i yourCommerceInstance -v custom-version
+```
+
+
 ## CLI Options
 
 #### Push bundle
@@ -187,6 +206,39 @@ The tool automatically generates the following configuration:
 - **`ssrOnly`**: Files only available on server (not CDN)
 - **`ssrShared`**: Files available on both server and CDN
 - **Patterns**: Use glob patterns with `!` for exclusions
+
+## Authentication
+
+### Deploy Cartridge Command Authentication
+
+For cartridge deployment to Commerce Cloud, you need to configure credentials in `dw.json`:
+
+1. **dw.json file** (required): Create a `dw.json` file in your project root with:
+   ```json
+   {
+     "username": "your-username@salesforce.com",
+     "password": "your-web-access-key",
+     "hostname": "your-instance.dx.commercecloud.salesforce.com",
+     "code-version": "code-version-from-instance-BM"
+   }
+   ```
+
+2. **Authentication**: The tool will automatically read username, password, hostname, and code-version from `dw.json` and use Basic Authentication
+
+### Cartridge Commands
+
+The cartridge commands are independent tools for working with Commerce Cloud metadata:
+
+**Generate Cartridge**: `generate-cartridge` scans your project for decorated components and creates metadata files
+- Scans `src/` directory for `@Component`, `@PageType`, and `@Aspect` decorators
+- Generates JSON metadata files in `cartridge/cartridge/experience/` directory
+- Creates separate files for components, page types, and aspects
+
+**Deploy Metadata**: `deploy-cartridge` uploads metadata directories to Commerce Cloud
+- ZIP Creation: Automatically creates a ZIP archive from the metadata directory
+- Upload: Uploads the ZIP file to Commerce Cloud using WebDAV PUT
+- Unzip: Extracts the ZIP contents on the server using WebDAV POST
+- Cleanup: Deletes the temporary ZIP file from the server using WebDAV DELETE
 
 ## Credentials
 

@@ -1,5 +1,10 @@
 import type { MrtSsrConfig } from './types.js';
 
+export const CARTRIDGES_BASE_DIR = 'cartridges';
+export const SFNEXT_BASE_CARTRIDGE_NAME = 'app_storefrontnext_base';
+export const SFNEXT_BASE_CARTRIDGE_OUTPUT_DIR = `${SFNEXT_BASE_CARTRIDGE_NAME}/cartridge/experience`;
+export const SFNEXT_BASE_CARTRIDGE_VERSION = '0.0.1';
+
 /**
  * Build MRT SSR configuration for bundle deployment
  *

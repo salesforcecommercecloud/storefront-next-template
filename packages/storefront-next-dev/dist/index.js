@@ -609,6 +609,8 @@ var CloudAPIClient = class {
 
 //#endregion
 //#region src/config.ts
+const SFNEXT_BASE_CARTRIDGE_NAME = "app_storefrontnext_base";
+const SFNEXT_BASE_CARTRIDGE_OUTPUT_DIR = `${SFNEXT_BASE_CARTRIDGE_NAME}/cartridge/experience`;
 /**
 * Build MRT SSR configuration for bundle deployment
 *
