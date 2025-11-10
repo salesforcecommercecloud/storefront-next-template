@@ -2,8 +2,34 @@ import { type ReactElement } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { PRODUCTS, TITLE_TEXT, TITLE_SUFFIX, BADGE_TEXT } from '@/components/cart/bonus-product-selection.mocks';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+
+// TODO(W-20166684): Dev-only mocks for visual testing.
+// Remove these mocks and integrate with bonus product actions API/state.
+const PRODUCT_IMAGE_URLS = [
+    'http://localhost:3845/assets/ff73df6ffe4cc65e4373219db8bb0af757c82a36.png',
+    'http://localhost:3845/assets/bdd5e2af41dcbd7ee2a553ee5fcf30513d31c6e5.png',
+    'http://localhost:3845/assets/6dde6ec92446667f65a7122719a1ddb254681923.png',
+    'http://localhost:3845/assets/e64fe6af96af188623a65ac4fb5783b40d0bcc2d.png',
+];
+
+type BonusSelectionProduct = {
+    id: string;
+    imageUrl: string;
+};
+
+const PRODUCTS: BonusSelectionProduct[] = [
+    { id: 'bp-1', imageUrl: PRODUCT_IMAGE_URLS[0] },
+    { id: 'bp-2', imageUrl: PRODUCT_IMAGE_URLS[1] },
+    { id: 'bp-3', imageUrl: PRODUCT_IMAGE_URLS[2] },
+    { id: 'bp-4', imageUrl: PRODUCT_IMAGE_URLS[3] },
+    { id: 'bp-5', imageUrl: PRODUCT_IMAGE_URLS[3] },
+    { id: 'bp-6', imageUrl: PRODUCT_IMAGE_URLS[3] },
+];
+
+const TITLE_TEXT = 'Buy one Classic Fit Shirt and get one free tie';
+const TITLE_SUFFIX = ' (1 of 1 added to cart)';
+const BADGE_TEXT = 'Free';
 
 export default function BonusProductSelection(): ReactElement {
     return (
