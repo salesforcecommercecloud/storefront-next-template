@@ -16,7 +16,7 @@ import ProductView from './product-view';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 // mock data
 import { masterProduct as mockProduct } from '@/components/__mocks__/master-variant-product';
-import { standardProd } from '@/components/__mocks__/standard-product';
+import { standardProd } from '@/components/__mocks__/standard-product-2';
 import { bundleProd } from '@/components/__mocks__/bundle-product';
 import { setProduct } from '@/components/__mocks__/set-product';
 import { createConfigWrapper, mockBuildConfig } from '@/test-utils/config';

@@ -12,7 +12,7 @@ import type { ShopperProductsTypes, ShopperBasketsTypes } from 'commerce-sdk-iso
 import { useProductActions } from './use-product-actions';
 import BasketProvider from '@/providers/basket';
 import PickupProvider from '@/extensions/bopis/context/pickup-context';
-import { standardProd } from '@/components/__mocks__/standard-product';
+import { standardProd } from '@/components/__mocks__/standard-product-2';
 
 vi.mock('react-router', async () => {
     const actual = await vi.importActual('react-router');
