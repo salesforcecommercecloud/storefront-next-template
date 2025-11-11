@@ -1,0 +1,713 @@
+{
+    "actionCard": {
+        "edit": "Edit",
+        "remove": "Remove"
+    },
+    "common": {
+        "loading": "Loading",
+        "product": "the product",
+        "noImageAvailable": "No image available"
+    },
+    "search": {
+        "results": "Search Results for"
+    },
+    "customer": {
+        "defaults": {
+            "guestFirstName": "Guest",
+            "guestLastName": "User",
+            "defaultAddressName": "Home",
+            "defaultBillingAddressName": "Billing"
+        },
+        "messages": {
+            "currentUserRecommendation": "Using your account information",
+            "guestRecommendation": "Continuing as guest. You can login later if you have an account."
+        }
+    },
+    "removeItem": {
+        "success": "Item removed successfully",
+        "failed": "Failed to remove item",
+        "title": "Remove item",
+        "button": "Remove",
+        "removing": "Removing...",
+        "confirmTitle": "Confirm Remove Item",
+        "cancelButton": "No, keep item",
+        "keepItemButton": "Keep Item",
+        "confirmAction": "Yes, remove item",
+        "keepItemAriaLabel": "Keep Item - Keep this item in your cart",
+        "removeItemAriaLabel": "Yes, remove item - Remove this item from your cart"
+    },
+    "editItem": {
+        "title": "Edit Cart Item"
+    },
+    "header": {
+        "brand": "Market\nStreet",
+        "logoAlt": "Home",
+        "searchPlaceholder": "Search",
+        "welcomeBack": "Welcome back!",
+        "signIn": "Sign In",
+        "signOut": "Sign Out",
+        "signingOut": "Signing out...",
+        "cartTitle": "Your Shopping Cart",
+        "checkout": "Checkout",
+        "continueShopping": "Continue Shopping"
+    },
+    "login": {
+        "title": "Sign in to your account",
+        "subtitle": "Enter your credentials to access your account",
+        "continueWithProvider": "Continue with {provider}",
+        "checkEmailTitle": "Check Your Email",
+        "checkEmailDescription": "We've sent a login link to {email}. Click the link to sign in.",
+        "backToLogin": "Back to Login",
+        "emailLabel": "Email address",
+        "emailPlaceholder": "Enter your email",
+        "passwordLabel": "Password",
+        "passwordPlaceholder": "Enter your password",
+        "loginWithoutPassword": "Login without password",
+        "loginWithPassword": "Login with password",
+        "forgotPassword": "Forgot your password?",
+        "noAccountQuestion": "Don't have an account? ",
+        "signUp": "Sign up",
+        "signingIn": "Signing in...",
+        "sendLoginLink": "Send Login Link",
+        "sendingLoginLink": "Sending login link...",
+        "signIn": "Sign In",
+        "socialOrContinueWith": "Or continue with"
+    },
+    "resetPassword": {
+        "title": "Reset Password",
+        "subtitle": "Enter your email to receive instructions on how to reset your password",
+        "checkEmailTitle": "Check Your Email",
+        "checkEmailDescription": "You will receive an email at {email} with a link to reset your password shortly.",
+        "backToSignIn": "Back To Sign In",
+        "emailLabel": "Email address",
+        "emailPlaceholder": "Enter your email",
+        "or": "or ",
+        "goBackToLogin": "go back to login page",
+        "emailRequired": "Email is required",
+        "newPasswordRequired": "New password is required",
+        "confirmPasswordRequired": "Confirm password is required",
+        "sendingEmail": "Sending email...",
+        "resetButton": "Reset Password",
+        "landingTitle": "Set New Password",
+        "landingSubtitle": "Enter your new password below",
+        "newPasswordLabel": "New Password",
+        "newPasswordPlaceholder": "Create a secure password",
+        "confirmPasswordLabel": "Confirm Password",
+        "confirmPasswordPlaceholder": "Confirm your password",
+        "passwordsMustMatch": "Passwords must match",
+        "resetPasswordButton": "Reset Password",
+        "resettingPassword": "Resetting password...",
+        "invalidToken": "Invalid or expired reset link. Please request a new one.",
+        "resetSuccess": "Password reset successful! Logging you in...",
+        "resetSuccessToast": "Password reset successful! Please sign in with your new password."
+    },
+    "signup": {
+        "title": "Create your account",
+        "subtitle": "Join us and start shopping today",
+        "haveAccountQuestion": "Have an account? ",
+        "signIn": "Sign in",
+        "allFieldsRequired": "All fields are required.",
+        "passwordsDoNotMatch": "Passwords do not match.",
+        "passwordNotSecure": "Password does not meet security requirements.",
+        "form": {
+            "firstNameLabel": "First Name",
+            "firstNamePlaceholder": "Enter your first name",
+            "lastNameLabel": "Last Name",
+            "lastNamePlaceholder": "Enter your last name",
+            "emailLabel": "Email Address",
+            "emailPlaceholder": "Enter your email address",
+            "passwordLabel": "Password",
+            "passwordPlaceholder": "Create a secure password",
+            "confirmPasswordLabel": "Confirm Password",
+            "confirmPasswordPlaceholder": "Confirm your password",
+            "createAccountButton": "Create Account"
+        },
+        "passwordRequirements": {
+            "title": "Password Requirements:",
+            "minLength": "At least 8 characters",
+            "hasUppercase": "One uppercase letter",
+            "hasLowercase": "One lowercase letter",
+            "hasNumber": "One number",
+            "hasSpecialChar": "One special character (, ! % # @ $ & * etc.)"
+        }
+    },
+    "socialCallback": {
+        "socialError": "Social login was cancelled or failed. Please try again."
+    },
+    "errors": {
+        "genericTryAgain": "Something is wrong. Please try again.",
+        "somethingWentWrong": "Something went wrong. Try again!",
+        "loginFailed": "Login failed. Please check your credentials.",
+        "accessTokenRefreshFailed": "Retrieving refreshed access token failed",
+        "guestAccessTokenFailed": "Retrieving new access token failed",
+        "codeVerifierMissing": "Code verifier not found in session",
+        "missingRegistrationField": "Customer registration is missing required field.",
+        "autoLoginAfterRegistrationFailed": "Auto-login after registration failed",
+        "methodNotAllowed": "Method not allowed",
+        "promoCodeRequired": "Promo code is required",
+        "couponItemIdRequired": "Coupon item ID is required",
+        "noBasketFound": "No basket found",
+        "noCustomerFound": "No customer found in session",
+        "api": {
+            "orderNotFound": "Order not found. Please check the order number and try again.",
+            "basketNotFound": "Shopping basket not found. Please refresh the page and try again.",
+            "basketQuotaExceeded": "Maximum number of baskets exceeded. Please use your existing basket.",
+            "paymentFailed": "Payment failed. Please check your payment information and try again.",
+            "paymentInformationRequired": "Payment information is required to complete your order.",
+            "inventoryUnavailable": "Some items in your cart are no longer available. Please review your cart.",
+            "invalidOrderData": "Invalid order data. Please check your checkout information and try again.",
+            "shippingAddressRequired": "Shipping address is required to continue.",
+            "billingAddressRequired": "Billing address is required to complete your order.",
+            "networkError": "Network error. Please check your connection and try again.",
+            "serverError": "Server error. Please try again later.",
+            "unauthorized": "Your session has expired. Please log in again.",
+            "badRequest": "Invalid request. Please check your information and try again.",
+            "forbidden": "Access denied. You do not have permission to perform this action.",
+            "timeout": "Request timeout. Please try again."
+        },
+        "validation": {
+            "required": "This field is required.",
+            "invalidEmail": "Please enter a valid email address.",
+            "invalidCreditCard": "Please enter a valid credit card number.",
+            "invalidExpiryDate": "Please enter a valid expiry date.",
+            "invalidCvv": "Please enter a valid CVV code.",
+            "minLength": "This field must be at least {min} characters long.",
+            "maxLength": "This field cannot exceed {max} characters.",
+            "invalidPhoneNumber": "Please enter a valid phone number.",
+            "invalidPostalCode": "Please enter a valid postal code."
+        },
+        "checkout": {
+            "noActiveBasket": "No active basket found. Please refresh and try again.",
+            "basketCalculationFailed": "Failed to calculate order total. Please try again.",
+            "orderCreationFailed": "Failed to create order. Please try again.",
+            "paymentProcessingFailed": "Payment processing failed. Please try again.",
+            "shippingMethodNotAvailable": "Selected shipping method is not available. Please choose another option.",
+            "addressValidationFailed": "Address validation failed. Please check your address and try again.",
+            "promoCodeInvalid": "Invalid promo code. Please check and try again.",
+            "stockNotAvailable": "Insufficient stock for one or more items in your cart."
+        },
+        "customer": {
+            "countryCodeRequired": "Country code is required for customer address",
+            "addressLine1Required": "Address line 1 is required for customer address",
+            "cityRequired": "City is required for customer address",
+            "firstNameRequired": "First name is required for customer address",
+            "lastNameRequired": "Last name is required for customer address",
+            "postalCodeRequired": "Postal code is required for customer address",
+            "invalidEmailFormat": "Invalid email format",
+            "customerLookupUnavailable": "Customer lookup service unavailable",
+            "registrationFailed": "Registration failed. Please try again.",
+            "autoLoginFailed": "Auto-login failed. Please log in manually.",
+            "autoLoginAfterRegistrationFailed": "Account created successfully, but auto-login failed. Please log in manually."
+        },
+        "passwordless": {
+            "missingToken": "Missing token",
+            "missingCallbackToken": "Missing x-slas-callback-token header",
+            "missingRequiredFields": "Missing required fields: email_id and token"
+        },
+        "jwks": {
+            "missingEnvironmentVariables": "Missing required configuration: shortCode and organizationId",
+            "invalidResponse": "Invalid JWKS response: missing or invalid keys array",
+            "unknownError": "Unknown error occurred"
+        },
+        "marketing": {
+            "clientIdMissing": "MARKETING_CLOUD_CLIENT_ID is not set in the environment variables.",
+            "clientSecretMissing": "MARKETING_CLOUD_CLIENT_SECRET is not set in the environment variables.",
+            "subdomainMissing": "MARKETING_CLOUD_SUBDOMAIN is not set in the environment variables.",
+            "templateIdMissing": "MARKETING_CLOUD_PASSWORDLESS_LOGIN_TEMPLATE is not set in the environment variables."
+        }
+    },
+    "quantitySelector": {
+        "quantity": "Quantity:",
+        "decreaseQuantity": "Decrease quantity",
+        "increaseQuantity": "Increase quantity",
+        "decreaseQuantityForProduct": "Decrement Quantity for {productName}",
+        "increaseQuantityForProduct": "Increment Quantity for {productName}",
+        "quantityInput": "Quantity",
+        "quantityUpdated": "Quantity updated",
+        "quantityUpdateFailed": "Failed to update quantity",
+        "onlyLeft": "Only {stockLevel} left!",
+        "onlyLeftForProduct": "Only {stockLevel} left for {productName}!"
+    },
+    "product": {
+        "recommendations": {
+            "youMightAlsoLike": "You might also like",
+            "completeTheLook": "Complete the look",
+            "recentlyViewed": "Recently viewed"
+        },
+        "from": "from",
+        "outOfStock": "Out of stock for {productName}",
+        "onlyLeft": "Only {stockLevel} left for {productName}!",
+        "inStock": "In stock",
+        "preOrder": "Available for pre-order",
+        "backOrder": "Available for back order",
+        "outOfStockLabel": "Out of stock",
+        "selectAllOptions": "Please select all your options above",
+        "features": "Features",
+        "addingToCart": "Adding to Cart...",
+        "addToCart": "Add to Cart",
+        "moreOptions": "More Options",
+        "updatingCart": "Updating...",
+        "updateCart": "Update",
+        "addingToWishlist": "Adding to Wishlist...",
+        "addToWishlist": "Add to Wishlist",
+        "productSetNotice": "This is a product set. Select individual items below to add to cart.",
+        "productBundleNotice": "This is a product bundle. All items will be added together.",
+        "productDetails": "Product Details",
+        "noDetailedDescription": "No detailed description available.",
+        "brand": "Brand:",
+        "manufacturer": "Manufacturer:",
+        "sku": "SKU:",
+        "sizeAndFit": "Size & Fit",
+        "sizeAndFitComingSoon": "Size and fit information coming soon.",
+        "shippingAndReturns": "Shipping & Returns",
+        "freeShipping": "Free shipping on orders over $50",
+        "standardShipping": "Standard shipping: 3-5 business days",
+        "expressShipping": "Express shipping: 1-2 business days",
+        "priceMin": "Min",
+        "priceMax": "Max",
+        "priceTo": "to",
+        "returns": "Returns: 30-day return policy",
+        "reviews": "Reviews",
+        "reviewsComingSoon": "Customer reviews coming soon.",
+        "careInstructions": "Care Instructions",
+        "careInstructionsComingSoon": "Care instructions coming soon.",
+        "productSet": "Product Set",
+        "productBundle": "Product Bundle",
+        "setDescription": "Choose from the items below to create your perfect set",
+        "bundleDescription": "All items in this bundle will be added to your cart together",
+        "selectedOf": "{selected} of {total} selected",
+        "addSetToCart": "Add Set to Cart",
+        "addBundleToCart": "Add Bundle to Cart",
+        "adding": "Adding...",
+        "selectAllOptionsAbove": "Please select all your options above",
+        "outOfStockStatus": "Out of stock",
+        "selected": "✓ Selected",
+        "selectOptionsAbove": "Select options above",
+        "addedToCart": "Added {productName} to cart",
+        "updatedCart": "Updated {productName} in cart",
+        "addedSetToCart": "Added product set to cart",
+        "addedBundleToCart": "Added product bundle to cart",
+        "failedToAddToCart": "Failed to add to cart: {error}",
+        "failedToUpdateCart": "Failed to update cart: {error}",
+        "failedToAddItemsToCart": "Failed to add items to cart: {error}",
+        "failedToAddBundleToCart": "Failed to add bundle to cart: {error}",
+        "addedToWishlist": "Added {productName} to wishlist",
+        "failedToAddToWishlist": "Failed to add item to wishlist",
+        "methodNotAllowed": "Method not allowed",
+        "productItemRequired": "Product item data is required",
+        "productItemsRequired": "Product items data is required",
+        "bundleDataRequired": "Bundle item and child selections data are required",
+        "failedToAddItemToCart": "Failed to add item to cart",
+        "failedToUpdateItemToCart": "Failed to update item to cart",
+        "failedToRemoveItem": "Failed to remove item",
+        "failedToUpdateItemQuantity": "Failed to update item quantity",
+        "failedToAddItemsToCartError": "Failed to add items to cart",
+        "failedToAddBundleToCartError": "Failed to add bundle to cart",
+        "failedToUpdateBundleToCartError": "Failed to update bundle to cart",
+        "pleaseSelectOptionsFor": "Please select options for {productName}",
+        "productNotOrderable": "{productName} is not orderable",
+        "cannotAddToCartValidationFailed": "Cannot add to cart: validation failed",
+        "failedToAddProductToCart": "Failed to add product to cart",
+        "failedToAddProductToWishlist": "Failed to add product to wishlist",
+        "noProductIdForCart": "No product ID available for cart addition",
+        "invalidQuantityForCart": "Invalid quantity for cart addition: {quantity}",
+        "noProductSelectionsForSet": "No product selections provided for set cart addition",
+        "noProductIdForBundle": "No product ID available for bundle cart addition",
+        "invalidQuantityForBundle": "Invalid quantity for bundle cart addition: {quantity}",
+        "noChildSelectionsForBundle": "No child product selections provided for bundle cart addition",
+        "cartOperationFailed": "Cart operation failed:",
+        "multipleItemsCartOperationFailed": "Multiple items cart operation failed:",
+        "bundleCartOperationFailed": "Bundle cart operation failed:",
+        "errorInHandleAddToCart": "Error in handleAddToCart:",
+        "errorInHandleProductSetAddToCart": "Error in handleProductSetAddToCart:",
+        "errorInHandleProductBundleAddToCart": "Error in handleProductBundleAddToCart:",
+        "failedToAddToWishlistError": "Failed to add to wishlist:",
+        "addingToWishlistLog": "Adding to wishlist:",
+        "failedToAddProductToCartError": "Failed to add product to cart:",
+        "failedToAddProductToWishlistError": "Failed to add product to wishlist:"
+    },
+    "cart": {
+        "title": "Cart",
+        "itemCount": {
+            "zero": "Cart (0 items)",
+            "one": "Cart (1 item)",
+            "other": "Cart ({count} items)"
+        },
+        "empty": {
+            "title": "Your cart is empty.",
+            "registeredMessage": "Continue shopping to add items to your cart.",
+            "guestMessage": "Sign in to retrieve your saved items or continue shopping.",
+            "continueShopping": "Continue Shopping",
+            "signIn": "Sign In"
+        },
+        "summary": {
+            "orderSummary": "Summary",
+            "showOrderSummary": "Show order summary",
+            "subtotal": "Subtotal",
+            "shipping": "Shipping",
+            "shippingPromotionApplied": "(Promotion applied)",
+            "shippingFree": "FREE",
+            "shippingTbd": "TBD",
+            "tax": "Tax",
+            "taxTbd": "TBD",
+            "estimatedTotal": "Estimated Total",
+            "orderTotal": "Order Total",
+            "noBasketData": "No basket data available"
+        },
+        "promoCode": {
+            "placeholder": "Promo code...",
+            "apply": "Apply",
+            "applying": "Applying...",
+            "remove": "Remove",
+            "removing": "Removing...",
+            "accordionTitle": "Enter a Promotion Code",
+            "successMessage": "Promotion applied successfully!",
+            "errorMessage": "Check the code and try again, it may already be applied or the promo has expired.",
+            "removeSuccessMessage": "Promotion removed successfully!",
+            "removeErrorMessage": "Failed to remove promotion",
+            "noBasketMessage": "No basket available",
+            "requiredMessage": "Promo code is required",
+            "validation": {
+                "minLength": "Promo must be at least 2 characters."
+            },
+            "errors": {
+                "invalidCode": "Invalid coupon code",
+                "expiredCode": "This promo code has expired",
+                "alreadyApplied": "This promo code is already applied",
+                "notApplicable": "This promo code is not applicable to your cart",
+                "generic": "Unable to apply promo code. Please check the code and try again."
+            }
+        },
+        "items": {
+            "itemsInCart": {
+                "zero": "0 items in cart",
+                "one": "1 item in cart",
+                "other": "{count} items in cart"
+            },
+            "editCart": "Edit cart"
+        },
+        "checkout": {
+            "proceedToCheckout": "Proceed to Checkout",
+            "secure": "Secure"
+        },
+        "attributes": {
+            "quantity": "Qty:",
+            "promotions": "Promotions:"
+        },
+        "product": {
+            "defaultName": "Product Name"
+        },
+        "removeItemConfirmDescription": "Are you sure you want to remove this item from your cart?",
+        "itemIdRequired": "Item ID is required",
+        "noBasketIdFound": "No basket ID found",
+        "discount": {
+            "type": {
+                "free": "free"
+            }
+        },
+        "badge": {
+            "ariaLabel": "My cart, number of items: {count}"
+        },
+        "bundle": {
+            "selectedOptions": "Selected Options"
+        }
+    },
+    "checkout": {
+        "contactInfo": {
+            "title": "Contact Information",
+            "emailPlaceholder": "Enter your email address",
+            "emailRequired": "Please enter your email address",
+            "emailInvalid": "Please enter a valid email address",
+            "countryCodeLabel": "Country Code",
+            "phoneLabel": "Phone Number",
+            "phonePlaceholder": "Phone number",
+            "notProvided": "Not provided yet",
+            "loginSuggestion": "💡 Have an account? You can continue as guest or ",
+            "loginSuggestionLink": "sign in for faster checkout",
+            "usingRegisteredAccount": "✓ Using your registered account",
+            "continue": "Continue to Shipping",
+            "saving": "Saving..."
+        },
+        "shippingAddress": {
+            "title": "Shipping Address",
+            "firstNameLabel": "First Name",
+            "firstNamePlaceholder": "First name",
+            "firstNameRequired": "First name is required",
+            "lastNameLabel": "Last Name",
+            "lastNamePlaceholder": "Last name",
+            "lastNameRequired": "Last name is required",
+            "addressLabel": "Address",
+            "addressPlaceholder": "Street address",
+            "addressRequired": "Address is required",
+            "address2Label": "Address Line 2",
+            "address2Placeholder": "Apartment, suite, etc. (optional)",
+            "cityLabel": "City",
+            "cityPlaceholder": "City",
+            "cityRequired": "City is required",
+            "stateLabel": "State/Province",
+            "statePlaceholder": "State or province (optional)",
+            "zipLabel": "Postal Code",
+            "zipPlaceholder": "Postal code (optional)",
+            "phoneLabel": "Phone Number",
+            "phonePlaceholder": "(555) 123-4567",
+            "continue": "Continue to Shipping Options",
+            "saving": "Saving...",
+            "saved": "Shipping address saved",
+            "failed": "Failed to save shipping address",
+            "confirmed": "Shipping address confirmed",
+            "notProvided": "Shipping address not provided yet"
+        },
+        "shippingOptions": {
+            "title": "Shipping Options",
+            "selectRequired": "Please select a shipping method",
+            "saving": "Saving...",
+            "continue": "Continue to Payment",
+            "enterAddressFirst": "Enter your shipping address to view available shipping methods.",
+            "arrives": "Arrives: {estimatedArrivalTime}",
+            "priceAndMethod": "{price} | {methodName}",
+            "free": "Free"
+        },
+        "payment": {
+            "title": "Payment Information",
+            "cardholderLabel": "Cardholder Name",
+            "cardholderPlaceholder": "Name on card",
+            "cardholderRequired": "Cardholder name is required",
+            "cardNumberLabel": "Card Number",
+            "cardNumberPlaceholder": "1234 5678 9012 3456",
+            "cardNumberRequired": "Card number is required",
+            "cardNumberInvalid": "Please enter a valid card number",
+            "cardNumberInvalidLength": "Please enter a valid card number (13-19 digits)",
+            "expiryLabel": "Expiry Date",
+            "expiryPlaceholder": "MM/YY",
+            "expiryRequired": "Expiry date is required",
+            "expiryInvalid": "Please enter a valid expiry date (MM/YY)",
+            "cvvLabel": "CVV",
+            "cvvPlaceholder": "123",
+            "cvvRequired": "CVV is required",
+            "cvvInvalid": "Please enter a valid CVV",
+            "cvvInvalidFormat": "Please enter a valid CVV (3-4 digits)",
+            "billingAddressRequired": "Billing address is required when different from shipping",
+            "billingSameAsShipping": "Same as shipping address",
+            "billingSameAsShippingDescription": "Use the same address for billing and shipping",
+            "continue": "Continue to Review",
+            "saving": "Saving...",
+            "saved": "Payment information saved",
+            "failed": "Failed to save payment information",
+            "createAccountForFasterCheckout": "Create an account for a faster checkout next time",
+            "saveForFutureUse": "Save for Future Use"
+        },
+        "common": {
+            "edit": "Edit",
+            "submitting": "Submitting",
+            "notProvided": "Not provided",
+            "backToCart": "Back to Cart",
+            "emptyCart": "No items in cart. Please add items before checkout.",
+            "stepCompleted": "✓",
+            "stepNumbers": {
+                "contactInfo": "1",
+                "shippingAddress": "2",
+                "shippingOptions": "3",
+                "payment": "4"
+            }
+        },
+        "orderSummary": {
+            "title": "Order Summary"
+        },
+        "myCart": {
+            "title": "My Cart"
+        },
+        "placeOrder": {
+            "button": "Place Order",
+            "processing": "Placing Order...",
+            "success": "Order placed successfully!",
+            "failed": "An unexpected error occurred during checkout."
+        },
+        "confirmation": {
+            "title": "Thank you for your order!",
+            "orderNumber": "Order Number:",
+            "confirmationEmailSent": "We've sent a confirmation email to {email}",
+            "orderNotFound": "Order Not Found",
+            "orderNotFoundDescription": "We could not find the order you are looking for.",
+            "orderNumberRequired": "Order number is required",
+            "sections": {
+                "orderSummary": "Order Summary",
+                "shippingDetails": "Shipping Details",
+                "paymentDetails": "Payment Details"
+            },
+            "fields": {
+                "orderNumber": "Order Number:",
+                "status": "Status:",
+                "total": "Total:",
+                "shippingAddress": "Shipping Address",
+                "shippingMethod": "Shipping Method",
+                "billingAddress": "Billing Address",
+                "paymentMethod": "Payment Method",
+                "defaultShippingMethod": "Standard Shipping",
+                "defaultPaymentMethod": "Credit Card"
+            },
+            "actions": {
+                "continueShopping": "Continue Shopping",
+                "viewAccount": "View Account"
+            }
+        },
+        "errorBoundary": {
+            "title": "Checkout Temporarily Unavailable",
+            "description": "We're experiencing some technical difficulties with the checkout process. Your cart items are safe and saved.",
+            "tryAgain": "Try Again",
+            "returnToCart": "Return to Cart",
+            "componentError": {
+                "title": "Component temporarily unavailable",
+                "description": "This section couldn't load properly. You can continue with checkout or try refreshing.",
+                "tryAgain": "Try again"
+            }
+        }
+    },
+    "account": {
+        "title": "Account Details",
+        "myAccount": "My Account",
+        "navigation": {
+            "accountDetails": "Account Details",
+            "wishlist": "Wishlist",
+            "orderHistory": "Order History",
+            "addresses": "Addresses",
+            "logOut": "Log Out"
+        },
+        "wishlist": {
+            "empty": "Your wishlist is empty. Start adding items you love!"
+        },
+        "orders": {
+            "empty": "No orders found. Start shopping to see your order history!"
+        },
+        "addresses": {
+            "empty": "No addresses saved. Add an address to make checkout faster!"
+        },
+        "profile": {
+            "title": "My Profile",
+            "edit": "Edit",
+            "fullName": "Full Name",
+            "email": "Email",
+            "phoneNumber": "Phone Number",
+            "notProvided": "Not provided",
+            "firstName": "First Name",
+            "lastName": "Last Name",
+            "firstNamePlaceholder": "Enter your first name",
+            "lastNamePlaceholder": "Enter your last name",
+            "emailPlaceholder": "you@email.com",
+            "phonePlaceholder": "Enter your phone number",
+            "saveButton": "Save",
+            "savingButton": "Saving...",
+            "cancelButton": "Cancel",
+            "successMessage": "Profile updated successfully",
+            "errorMessage": "Failed to update profile. Please try again.",
+            "validation": {
+                "firstNameRequired": "First name is required",
+                "lastNameRequired": "Last name is required",
+                "emailRequired": "Email is required",
+                "emailInvalid": "Please enter a valid email address",
+                "phoneInvalid": "Please enter a valid phone number"
+            }
+        },
+        "password": {
+            "title": "Password",
+            "edit": "Edit",
+            "password": "Password",
+            "hiddenPassword": "••••••••",
+            "changePassword": "Change Password",
+            "currentPassword": "Current Password",
+            "currentPasswordPlaceholder": "Enter your current password",
+            "newPassword": "New Password",
+            "newPasswordPlaceholder": "Enter your new password",
+            "confirmPassword": "Confirm New Password",
+            "confirmPasswordPlaceholder": "Confirm your new password",
+            "saveButton": "Save",
+            "cancelButton": "Cancel",
+            "successMessage": "Password updated successfully",
+            "errorMessage": "Failed to update password. Please try again.",
+            "validation": {
+                "currentPasswordRequired": "Current password is required",
+                "newPasswordRequired": "New password is required",
+                "confirmPasswordRequired": "Please confirm your new password",
+                "passwordsDoNotMatch": "New passwords do not match",
+                "passwordTooShort": "Password must be at least 8 characters long"
+            },
+            "requirements": {
+                "title": "Password Requirements",
+                "minLength": "At least 8 characters",
+                "hasUppercase": "At least one uppercase letter",
+                "hasLowercase": "At least one lowercase letter",
+                "hasNumber": "At least one number",
+                "hasSpecial": "At least one special character"
+            }
+        }
+    },
+    "home": {
+        "hero": {
+            "slide1": {
+                "title": "The React Starter Store for High Performers",
+                "subtitle": "Discover our latest collection of products",
+                "ctaText": "Shop Now",
+                "imageAlt": "Minimalist white cube on clean background"
+            },
+            "slide2": {
+                "title": "Premium Quality Products",
+                "subtitle": "Handpicked items for the modern lifestyle",
+                "ctaText": "Explore Collection",
+                "imageAlt": "Minimalist white cube on clean background"
+            },
+            "slide3": {
+                "title": "Fast & Reliable Delivery",
+                "subtitle": "Get your orders delivered quickly and safely",
+                "ctaText": "Learn More",
+                "imageAlt": "Minimalist white cube on clean background"
+            }
+        },
+        "featuredProducts": {
+            "title": "Featured Products"
+        },
+        "newArrivals": {
+            "title": "New Arrivals",
+            "description": "Discover the latest additions to our collection. From statement pieces to everyday essentials.",
+            "ctaText": "SHOP NEW ARRIVALS"
+        },
+        "categoryGrid": {
+            "title": "Step into Elegance",
+            "shopNowButton": "Shop Now"
+        },
+        "featuredContent": {
+            "women": {
+                "title": "Women",
+                "description": "Discover our curated collection of sophisticated footwear designed for the modern woman.",
+                "ctaText": "EXPLORE COLLECTION",
+                "imageAlt": "Women's Collection"
+            },
+            "men": {
+                "title": "Men",
+                "description": "Timeless craftsmanship meets contemporary style in our men's footwear collection.",
+                "ctaText": "EXPLORE COLLECTION",
+                "imageAlt": "Men's Collection"
+            }
+        }
+    },
+    "footer": {
+        "sections": {
+            "customerSupport": "Customer Support",
+            "account": "Account",
+            "ourCompany": "Our Company",
+            "switchThemes": "Switch Themes"
+        },
+        "links": {
+            "contactUs": "Contact Us",
+            "shipping": "Shipping",
+            "orderStatus": "Order Status",
+            "signInOrCreateAccount": "Sign in or create account",
+            "aboutUs": "About Us"
+        },
+        "socialMedia": {
+            "youtubeLabel": "Youtube",
+            "instagramLabel": "Instagram",
+            "xLabel": "X",
+            "facebookLabel": "Facebook"
+        },
+        "copyright": "Salesforce or its affiliates. All rights reserved. This is a demo store only. Orders made WILL NOT be processed."
+    }
+}

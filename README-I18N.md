@@ -7,15 +7,19 @@ This project uses `i18next` with `remix-i18next` for internationalization. The i
 We maintain 2 separate instances of i18next:
 
 1. **Server-side instance**: Has access to _all_ translations for the entire site
-2. **Client-side instance**: Fetches translations on-demand for better performance
+2. **Client-side instance**: Dynamically imports translations as static JavaScript chunks
 
 ### Server-side and Client-side Flow
 
 1. Server-side middleware detects the user locale and initializes i18next
-2. Server has access to all translations and renders SSR content with translations
+2. Server has access to all translations from all locales and renders SSR content with translations
 3. Client-side initializes its own i18next instance
-4. Client fetches only the translations needed for the current page via a resource route
-5. As you navigate to other pages, additional translations are fetched dynamically
+4. When a translation is first requested, the client dynamically imports ALL translations for the current language
+   - This triggers an HTTP request for a JavaScript chunk (e.g., `/assets/locales-en-[hash].js`)
+   - The chunk is served as a **static asset** (pre-built, minified, and cached with long-term headers)
+   - Much more efficient than an API endpoint: no server processing, CDN-friendly, immutable caching
+5. All namespaces for that language are loaded and cached in memory
+6. Subsequent translation requests use the cached data (no additional requests)
 
 ## Configuration
 
@@ -41,16 +45,13 @@ The middleware automatically detects the user's locale from:
 
 ```
 src/locales/
-└── .server/           # Server-only translations
-    ├── index.ts       # Exports all language resources
-    ├── en/
-    │   ├── index.ts   # Exports all namespaces for English
-    │   ├── home.ts    # Home page translations
-    │   └── product.ts # Product page translations
-    └── es/
-        ├── index.ts   # Exports all namespaces for Spanish
-        ├── home.ts
-        └── product.ts
+├── index.ts                # Exports all language resources
+├── en/
+│   ├── index.ts            # Exports English translations
+│   └── translations.json
+└── es/
+    ├── index.ts            # Exports Spanish translations
+    └── translations.json
 ```
 
 ## Usage Examples
@@ -105,7 +106,7 @@ export function loader(args: LoaderFunctionArgs) {
 
 For each new namespace, create files in each language directory:
 
-**src/locales/.server/en/my-page.ts:**
+**src/locales/en/my-page.ts:**
 ```typescript
 export default {
     welcome: 'Welcome',
@@ -115,7 +116,7 @@ export default {
 };
 ```
 
-**src/locales/.server/es/my-page.ts:**
+**src/locales/es/my-page.ts:**
 ```typescript
 export default {
     welcome: 'Bienvenido',
@@ -127,7 +128,7 @@ export default {
 
 ### 2. Export in Language Index
 
-Add to `src/locales/.server/en/index.ts` and `src/locales/.server/es/index.ts`:
+Add to `src/locales/en/index.ts` and `src/locales/es/index.ts`:
 
 ```typescript
 import myPage from './my-page';

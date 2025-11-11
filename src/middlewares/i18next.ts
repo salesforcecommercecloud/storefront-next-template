@@ -2,7 +2,7 @@ import { initReactI18next } from 'react-i18next';
 import { createCookie } from 'react-router';
 import { createI18nextMiddleware } from 'remix-i18next/middleware';
 // TODO: how to grab translations from the extensions?
-import resources from '@/locales/.server'; // Import translations from all of your locales
+import resources from '@/locales'; // Import translations from all of your locales
 import config from '../../config.server'; // Import config directly for module-level initialization
 import 'i18next';
 
@@ -26,6 +26,7 @@ export const [i18nextMiddleware, getLocale, getInstance] = createI18nextMiddlewa
     plugins: [initReactI18next], // Plugins you may need, like react-i18next
 });
 
+// TODO: extract into i18next.d.ts file?
 // This adds type-safety to the `t` function
 declare module 'i18next' {
     interface CustomTypeOptions {

@@ -33,6 +33,22 @@ export default defineConfig(({ mode }) => {
     return {
         build: {
             sourcemap: 'hidden',
+            rollupOptions: {
+                output: {
+                    // TODO: consider extracting this as a plugin instead
+                    manualChunks(id) {
+                        // Automatically name translation chunks based on language directory
+                        // Matches: /src/locales/{lang}/ and extracts the language code
+                        // This dynamically works for any language (en, es, fr, de-DE, zh-CN, etc.)
+                        // without needing to manually add each language to this config
+                        const localeMatch = id.match(/\/src\/locales\/([^/]+)\//);
+                        if (localeMatch) {
+                            const languageCode = localeMatch[1];
+                            return `locales-${languageCode}`;
+                        }
+                    },
+                },
+            },
         },
         envPrefix: ['VITE_', 'PUBLIC_'],
         define: {

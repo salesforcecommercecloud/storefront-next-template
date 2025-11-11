@@ -30,7 +30,7 @@ import {
 } from '@/middlewares/performance-metrics';
 import { appConfigMiddlewareServer } from '@/middlewares/app-config.server';
 import { appConfigMiddlewareClient } from '@/middlewares/app-config.client';
-import { getInstance, getLocale, i18nextMiddleware } from '@/middlewares/i18next';
+import { getLocale, i18nextMiddleware, getInstance } from '@/middlewares/i18next';
 import AuthProvider from '@/providers/auth';
 import BasketProvider from '@/providers/basket';
 import type { SessionData } from '@/lib/api/types';
@@ -47,6 +47,7 @@ import { initI18next } from '@/lib/i18next.client';
 
 // On the client side, initialize i18next.
 // (On the server side, it's initialized elsewhere in middlewares/i18next.ts file)
+// TODO: create util function
 const i18nextOnClient = typeof window !== 'undefined' ? initI18next() : undefined;
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -76,14 +77,17 @@ export const loader = ({
     auth: () => SessionData; // Use a function to prevent state serialization
     appConfig: AppConfig;
     locale: string;
-    i18nextOnServer: i18n;
+    // Return as function to prevent i18next instance serialization
+    getI18next: () => i18n;
 } => {
     const session = getAuthServer(context);
 
     const appConfig = getConfig(context);
 
     const locale = getLocale(context);
-    const i18nextOnServer = getInstance(context);
+    // On the server side, our middleware stores the translations in this i18next object
+    // so we'll need to be careful not to accidentally serialize this object (to avoid bloating the html).
+    const i18next = getInstance(context);
 
     // Load the root category and its sub categories information
     const rootCategoryPromise = fetchCategory(context, 'root', 1);
@@ -119,10 +123,11 @@ export const loader = ({
     return {
         root: rootCategoryPromise,
         subs: subCategoriesPromise,
-        auth: () => session,
         appConfig,
         locale,
-        i18nextOnServer,
+        // Wrap these returned objects with a function, to avoid React Router serialization
+        auth: () => session,
+        getI18next: () => i18next,
     };
 };
 
@@ -156,7 +161,7 @@ export function Layout({ children }: PropsWithChildren) {
     const appConfigScript = appConfig ? `window.__APP_CONFIG__ = ${JSON.stringify(appConfig)};` : '';
 
     const data = useRouteLoaderData<LoaderData>('root');
-    const i18next = (typeof window === 'undefined' ? data?.i18nextOnServer : i18nextOnClient) as i18n;
+    const i18next = (typeof window === 'undefined' ? data?.getI18next?.() : i18nextOnClient) as i18n;
 
     return (
         <html lang={i18next.language} dir={i18next.dir(i18next.language)}>
@@ -213,8 +218,8 @@ export function ErrorBoundary({ error }: { error: unknown }) {
     );
 }
 
-export default function App({ loaderData: { root, subs, auth, basket, i18nextOnServer } }: { loaderData: LoaderData }) {
-    const i18next = (typeof window === 'undefined' ? i18nextOnServer : i18nextOnClient) as i18n;
+export default function App({ loaderData: { root, subs, auth, basket, getI18next } }: { loaderData: LoaderData }) {
+    const i18next = (typeof window === 'undefined' ? getI18next?.() : i18nextOnClient) as i18n;
 
     // We're only loading the root and sub categories from the server on the very first navigation. These refs ensure
     // that the initial data/promises don't get overwritten/removed on subsequent client-side navigations.

@@ -119,7 +119,7 @@ vi.mock('@/middlewares/basket.client', async () => ({
 vi.mock('@/middlewares/i18next', async () => {
     const i18next = await import('i18next');
     const { initReactI18next } = await import('react-i18next');
-    const resources = await import('@/locales/.server');
+    const resources = await import('@/locales');
 
     // Create a test i18n instance for server-side
     const testInstance = i18next.default.createInstance();
