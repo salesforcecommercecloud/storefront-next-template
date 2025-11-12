@@ -11,7 +11,7 @@ import type {
     HostEventNameMapping,
     WithMeta,
 } from './api-types';
-import type { ClientAcknowledgedEvent } from './domain-types';
+import type { HostToClientConfiguration } from './domain-types';
 import { Messenger } from './messenger';
 
 /**
@@ -33,7 +33,7 @@ export function createClientApi({ emitter, id, forwardedKeys = [], logger }: Cli
     let isReady = false;
     let isConnected = false;
     let connectionTimeoutId: number | null = null;
-    let hostConfig: ClientAcknowledgedEvent | null = null;
+    let hostConfig: HostToClientConfiguration | null = null;
 
     const clearConnectionTimeout = () => {
         if (connectionTimeoutId) {
@@ -64,11 +64,12 @@ export function createClientApi({ emitter, id, forwardedKeys = [], logger }: Cli
             interval?: number;
             timeout?: number;
             prepareClient?: () => Promise<void>;
-            onHostConnected?: (event: ClientAcknowledgedEvent) => void;
+            onHostConnected?: (configuration: HostToClientConfiguration) => void;
             onError?: (error: Error) => void;
         } = {}) => {
             if (isConnected) {
-                onHostConnected?.(hostConfig as ClientAcknowledgedEvent);
+                /* eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion */
+                onHostConnected?.(hostConfig as HostToClientConfiguration);
 
                 return;
             }
@@ -97,6 +98,10 @@ export function createClientApi({ emitter, id, forwardedKeys = [], logger }: Cli
                     } catch (error) {
                         onError?.(error as Error);
                     }
+                }),
+                messenger.on('ClientConfigurationChanged', (event) => {
+                    hostConfig = event;
+                    onHostConnected?.(hostConfig);
                 })
             );
 

@@ -1,6 +1,6 @@
 import "./modeDetection-BZMGik06.js";
-import "./client-DdJSpo_h.js";
-import { a as isComponentTypeAllowedInRegion, c as usePageDesignerMode, i as useDesignState, o as useComponentDiscovery, r as useDesignContext, s as PageDesignerProvider } from "./DesignContext-BydCFFcv.js";
+import "./client-IwF8G5Dm.js";
+import { a as isComponentTypeAllowedInRegion, c as usePageDesignerMode, i as useDesignState, o as useComponentDiscovery, r as useDesignContext, s as PageDesignerProvider } from "./DesignContext-CtmhEgsl.js";
 import React, { useCallback, useMemo, useRef } from "react";
 
 //#region src/design/react/hooks/useComponentDecoratorClasses.ts
@@ -170,7 +170,7 @@ function DesignComponent(props) {
 	const { designMetadata, children } = props;
 	const { id, name, isFragment } = designMetadata;
 	const componentId = id;
-	const componentName = name || "Component";
+	const componentName = useComponentType(componentId)?.label || name || "Component";
 	const dragRef = useRef(null);
 	const { regionId, regionDirection } = useRegionContext() ?? {};
 	const { componentId: parentComponentId } = useComponentContext() ?? {};
@@ -211,7 +211,7 @@ function DesignComponent(props) {
 	const handleDragOver = React.useCallback((event) => {
 		if (draggingSourceComponentId !== componentId) event.preventDefault();
 	}, [draggingSourceComponentId, componentId]);
-	return <div ref={dragRef} className={classes} draggable={isDraggingComponent} onClick={handleClick} onDragOver={handleDragOver} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-component-id={componentId} data-component-name={componentName}>
+	return <div ref={dragRef} className={classes} draggable={isDraggingComponent} onClick={handleClick} onDragOver={handleDragOver} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
             <div className="pd-design__component__drop-target" />
             <DesignFrame showFrame={showFrame} componentId={componentId} name={componentName} parentId={parentComponentId} regionId={regionId}>
                 <ComponentContext.Provider value={context}>{children}</ComponentContext.Provider>

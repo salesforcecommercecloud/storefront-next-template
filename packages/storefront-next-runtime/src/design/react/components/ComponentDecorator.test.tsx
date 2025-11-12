@@ -15,6 +15,7 @@ import {
     type RenderResult,
 } from '@testing-library/react';
 import type { HostApi } from '../../messaging-api/api-types';
+import type { HostToClientConfiguration } from '../../messaging-api/domain-types';
 import { createHostApi } from '../../messaging-api/host';
 import { createReactComponentDesignDecorator } from './ComponentDecorator';
 import type { ComponentDecoratorProps, RegionDecoratorProps, RegionDesignMetadata } from './component.types';
@@ -45,11 +46,13 @@ describe('design/react/ComponentDecorator', () => {
                 regionMetadata = {},
                 mode = 'EDIT',
                 waitForHost = true,
+                configFactory,
             }: {
                 props?: Partial<ComponentDecoratorProps<object>>;
                 regionMetadata?: Partial<RegionDecoratorProps<unknown>['designMetadata']>;
                 mode?: 'EDIT' | 'PREVIEW' | null;
                 waitForHost?: boolean;
+                configFactory?: () => Promise<HostToClientConfiguration>;
             } = {}
         ) => {
             const DecoratedComponent = createReactComponentDesignDecorator(component);
@@ -78,9 +81,11 @@ describe('design/react/ComponentDecorator', () => {
 
             Object.assign(props, { designMetadata });
 
+            const defaultConfigFactory = () => Promise.resolve({ components: {}, componentTypes: {}, labels: {} });
+
             const connectionPromise = new Promise<void>((resolve, reject) => {
                 host.connect({
-                    configFactory: () => Promise.resolve({ components: {}, componentTypes: {}, labels: {} }),
+                    configFactory: configFactory || defaultConfigFactory,
                     onClientConnected: () => resolve(),
                     onError: () => reject(new Error('Host connection failed')),
                 });
@@ -356,6 +361,79 @@ describe('design/react/ComponentDecorator', () => {
                 await waitFor(() => {
                     expect(scrollSpy).toHaveBeenCalled();
                 });
+            });
+        });
+
+        describe('when the component name is displayed', () => {
+            it('should use the component typelabel when available', async () => {
+                const { element } = await testBed.render(TestComponent, {
+                    props: {
+                        designMetadata: {
+                            id: 'test-1',
+                            name: 'FallbackName',
+                            isFragment: false,
+                        },
+                    },
+                    configFactory: () =>
+                        Promise.resolve({
+                            components: {
+                                'test-1': {
+                                    id: 'test-1',
+                                    type: 'test-type',
+                                },
+                            },
+                            componentTypes: {
+                                'test-type': {
+                                    id: 'test-type',
+                                    name: 'TestType',
+                                    image: 'test-image.png',
+                                    label: 'Custom Label',
+                                },
+                            },
+                            labels: {},
+                        }),
+                });
+
+                // Select component to show the frame
+                element.click();
+
+                const frameLabel = await testBed.findBySelector(element, '.pd-design__frame__name');
+                expect(frameLabel.textContent).toBe('Custom Label');
+            });
+
+            it('should fall back to name when the component typelabel is not available', async () => {
+                const { element } = await testBed.render(TestComponent, {
+                    props: {
+                        designMetadata: {
+                            id: 'test-1',
+                            name: 'FallbackName',
+                            isFragment: false,
+                        },
+                    },
+                });
+
+                // Select component to show the frame
+                element.click();
+
+                const frameLabel = await testBed.findBySelector(element, '.pd-design__frame__name');
+                expect(frameLabel.textContent).toBe('FallbackName');
+            });
+
+            it('should fall back to "Component" when neither label nor name is available', async () => {
+                const { element } = await testBed.render(TestComponent, {
+                    props: {
+                        designMetadata: {
+                            id: 'test-1',
+                            isFragment: false,
+                        },
+                    },
+                });
+
+                // Select component to show the frame
+                element.click();
+
+                const frameLabel = await testBed.findBySelector(element, '.pd-design__frame__name');
+                expect(frameLabel.textContent).toBe('Component');
             });
         });
     });

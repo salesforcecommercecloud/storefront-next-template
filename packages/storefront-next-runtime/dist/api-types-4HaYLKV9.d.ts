@@ -34,6 +34,24 @@ interface WithClientVector {
    */
   y: number;
 }
+interface HostToClientConfiguration {
+  /**
+   * The components by id that are in the component tree.
+   */
+  components: Record<string, ComponentInfo>;
+  /**
+   * A map of component types by id.
+   */
+  componentTypes: Record<string, ComponentType>;
+  /**
+   * A map of labels by translation key. These labels will be in the locale of the user.
+   */
+  labels: Record<string, string>;
+  /**
+   * The locale to use on the client.
+   */
+  locale?: string;
+}
 /**
  * The default keys that are forwarded from the host to the client.
  * @hidden
@@ -68,6 +86,10 @@ interface ComponentType {
    * The image of the component type.
    */
   image: string;
+  /**
+   * The label for the component type.
+   */
+  label: string;
 }
 /**
  * Emitted by the client to establish a connection with the host.
@@ -146,24 +168,16 @@ interface ClientDisconnectedEvent extends WithBaseEvent {
  * @target client
  * @group Events
  */
-interface ClientAcknowledgedEvent extends WithBaseEvent {
+interface ClientAcknowledgedEvent extends WithBaseEvent, HostToClientConfiguration {
   eventType: 'ClientAcknowledged';
-  /**
-   * The components by id that are in the component tree.
-   */
-  components: Record<string, ComponentInfo>;
-  /**
-   * A map of component types by id.
-   */
-  componentTypes: Record<string, ComponentType>;
-  /**
-   * A map of labels by translation key. These labels will be in the locale of the user.
-   */
-  labels: Record<string, string>;
-  /**
-   * The locale to use on the client.
-   */
-  locale?: string;
+}
+/**
+ * Emits when the client configuration changes from the host since the last ClientAcknowledgedEvent.
+ * @target client
+ * @group Events
+ */
+interface ClientConfigurationChangedEvent extends WithBaseEvent, HostToClientConfiguration {
+  eventType: 'ClientConfigurationChanged';
 }
 /**
  * Emits when dragging from the host enters the client window.
@@ -489,6 +503,7 @@ interface ClientEventNameMapping extends IsomorphicEventNameMapping {
   PageSettingsChanged: PageSettingsChangedEvent;
   HostKeyPressed: HostKeyPressedEvent;
   ClientAcknowledged: ClientAcknowledgedEvent;
+  ClientConfigurationChanged: ClientConfigurationChangedEvent;
   ClientWindowDragEntered: ClientWindowDragEnteredEvent;
   ClientWindowDragMoved: ClientWindowDragMovedEvent;
   ClientWindowDragExited: ClientWindowDragExitedEvent;
@@ -806,7 +821,7 @@ interface ClientApi extends IsomorphicApi {
     interval?: number;
     prepareClient?: () => Promise<void>;
     timeout?: number;
-    onHostConnected?: (event: ClientAcknowledgedEvent) => void;
+    onHostConnected?: (event: HostToClientConfiguration) => void;
     onError?: (error: Error) => void;
   }): void;
   /**
@@ -1054,7 +1069,19 @@ interface HostApi extends IsomorphicApi {
    * @stability development
    */
   focusComponent(event: EventPayload<ComponentFocusedEvent>): void;
+  /**
+   * Notifies the host that the client configuration has changed.
+   *
+   * @param event - The client configuration change event containing the new configuration
+   * @stability development
+   *
+   * @example
+   * ```typescript
+   * api.setClientConfiguration({ ... });
+   * ```
+   */
+  setClientConfiguration(event: EventPayload<ClientConfigurationChangedEvent>): void;
 }
 //#endregion
-export { ComponentDeselectedEvent as A, DefaultForwardedKeys as B, ClientReady as C, ClientWindowDragMovedEvent as D, ClientWindowDragExitedEvent as E, ComponentInfo as F, WindowScrollChangedEvent as G, HostKeyPressedEvent as H, ComponentMovedToRegionEvent as I, ComponentPropertiesChangedEvent as L, ComponentFocusedEvent as M, ComponentHoveredInEvent as N, ComponentAddedToRegionEvent as O, ComponentHoveredOutEvent as P, ComponentSelectedEvent as R, ClientInitializedEvent as S, ClientWindowDragEnteredEvent as T, MediaChangedEvent as U, ErrorEvent as V, PageSettingsChangedEvent as W, Source as _, ConfigFactory as a, ClientAcknowledgedEvent as b, EventTypeName as c, HostEventNameMapping as d, HostMessage as f, MessageEmitter as g, IsomorphicEventNameMapping as h, ClientMessage as i, ComponentDragStartedEvent as j, ComponentDeletedEvent as k, HostApi as l, IsomorphicConfiguration as m, ClientConfiguration as n, EventHandler as o, IsomorphicApi as p, ClientEventNameMapping as r, EventPayload as s, ClientApi as t, HostConfiguration as u, WithEventType as v, ClientWindowDragDroppedEvent as w, ClientDisconnectedEvent as x, WithMeta as y, ComponentType as z };
-//# sourceMappingURL=api-types-OhS5xUej.d.ts.map
+export { ComponentDeletedEvent as A, ComponentType as B, ClientInitializedEvent as C, ClientWindowDragExitedEvent as D, ClientWindowDragEnteredEvent as E, ComponentHoveredOutEvent as F, MediaChangedEvent as G, ErrorEvent as H, ComponentInfo as I, PageSettingsChangedEvent as K, ComponentMovedToRegionEvent as L, ComponentDragStartedEvent as M, ComponentFocusedEvent as N, ClientWindowDragMovedEvent as O, ComponentHoveredInEvent as P, ComponentPropertiesChangedEvent as R, ClientDisconnectedEvent as S, ClientWindowDragDroppedEvent as T, HostKeyPressedEvent as U, DefaultForwardedKeys as V, HostToClientConfiguration as W, Source as _, ConfigFactory as a, ClientAcknowledgedEvent as b, EventTypeName as c, HostEventNameMapping as d, HostMessage as f, MessageEmitter as g, IsomorphicEventNameMapping as h, ClientMessage as i, ComponentDeselectedEvent as j, ComponentAddedToRegionEvent as k, HostApi as l, IsomorphicConfiguration as m, ClientConfiguration as n, EventHandler as o, IsomorphicApi as p, WindowScrollChangedEvent as q, ClientEventNameMapping as r, EventPayload as s, ClientApi as t, HostConfiguration as u, WithEventType as v, ClientReady as w, ClientConfigurationChangedEvent as x, WithMeta as y, ComponentSelectedEvent as z };
+//# sourceMappingURL=api-types-4HaYLKV9.d.ts.map

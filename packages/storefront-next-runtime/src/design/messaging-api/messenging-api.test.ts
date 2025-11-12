@@ -7,6 +7,7 @@
 /* eslint-disable @typescript-eslint/await-thenable */
 /* eslint-disable @typescript-eslint/unbound-method */
 import type { ClientApi, ClientEventNameMapping, HostApi, HostEventNameMapping, MessageEmitter } from './api-types';
+import type { HostToClientConfiguration } from './domain-types';
 import { createClientApi } from './client';
 import { createHostApi } from './host';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
@@ -22,14 +23,6 @@ function makeHostConnectionPromise(host: HostApi): Promise<void> {
     );
 }
 
-function makeClientConnectionPromise(client: ClientApi): Promise<void> {
-    return new Promise<void>((resolve) =>
-        client.connect({
-            onHostConnected: () => resolve(),
-        })
-    );
-}
-
 describe('Messaging API', () => {
     let hostWindow: Element;
     let clientWindow: Element;
@@ -37,10 +30,23 @@ describe('Messaging API', () => {
     let hostEmitter: MessageEmitter<HostEventNameMapping, ClientEventNameMapping>;
     let host: HostApi;
     let client: ClientApi;
+    let clientConfigs: HostToClientConfiguration[];
+
+    function makeClientConnectionPromise(): Promise<void> {
+        return new Promise<void>((resolve) =>
+            client.connect({
+                onHostConnected: (config) => {
+                    clientConfigs.push(config);
+                    resolve();
+                },
+            })
+        );
+    }
 
     beforeEach(() => {
         hostWindow = document.createElement('div');
         clientWindow = document.createElement('div');
+        clientConfigs = [];
         clientEmitter = {
             postMessage: (event) => clientWindow.dispatchEvent(new CustomEvent('message', { detail: event })),
             addEventListener: (handler) => {
@@ -82,7 +88,7 @@ describe('Messaging API', () => {
     describe('initialization', () => {
         describe('when the client is initialized before the host', () => {
             it('should create a connection between the host and the client', async () => {
-                const clientConnectionPromise = makeClientConnectionPromise(client);
+                const clientConnectionPromise = makeClientConnectionPromise();
 
                 vi.advanceTimersByTime(1500);
 
@@ -116,7 +122,7 @@ describe('Messaging API', () => {
             it('should create a connection between the host and the client', async () => {
                 vi.useRealTimers();
 
-                await Promise.all([makeClientConnectionPromise(client), makeHostConnectionPromise(host)]);
+                await Promise.all([makeClientConnectionPromise(), makeHostConnectionPromise(host)]);
                 expect(client.getRemoteId()).toBe('test-host');
                 expect(host.getRemoteId()).toBe('test-client');
             });
@@ -143,9 +149,9 @@ describe('Messaging API', () => {
             it('should only maintain a single connection', async () => {
                 vi.useRealTimers();
 
-                await Promise.all([makeClientConnectionPromise(client), makeHostConnectionPromise(host)]);
-                await Promise.all([makeClientConnectionPromise(client), makeHostConnectionPromise(host)]);
-                await Promise.all([makeClientConnectionPromise(client), makeHostConnectionPromise(host)]);
+                await Promise.all([makeClientConnectionPromise(), makeHostConnectionPromise(host)]);
+                await Promise.all([makeClientConnectionPromise(), makeHostConnectionPromise(host)]);
+                await Promise.all([makeClientConnectionPromise(), makeHostConnectionPromise(host)]);
 
                 const spy = vi.fn();
 
@@ -158,7 +164,7 @@ describe('Messaging API', () => {
 
     describe('when connected', () => {
         beforeEach(async () => {
-            await Promise.all([makeHostConnectionPromise(host), makeClientConnectionPromise(client)]);
+            await Promise.all([makeHostConnectionPromise(host), makeClientConnectionPromise()]);
         });
 
         describe('when events are received from a different source', () => {
@@ -258,6 +264,22 @@ describe('Messaging API', () => {
             });
         });
 
+        describe('when the client configuration changes', () => {
+            it('should invoke the onHostConnected callback with the new configuration', () => {
+                const config = {
+                    components: { 'test-component': { id: 'test-component', type: 'test-type' } },
+                    componentTypes: {},
+                    labels: {},
+                    locale: 'en-US',
+                };
+                expect(clientConfigs).toHaveLength(1);
+                host.setClientConfiguration(config);
+
+                expect(clientConfigs).toHaveLength(2);
+                expect(clientConfigs[1]).toEqual(expect.objectContaining(config));
+            });
+        });
+
         describe('when there are multiple subscriptions to the same event', () => {
             it('should invoke all handlers', () => {
                 const spy1 = vi.fn();
@@ -334,7 +356,7 @@ describe('Messaging API', () => {
                 eventName: keyof ClientEventNameMapping & keyof HostEventNameMapping;
                 payload: Record<string, unknown>;
             }) => {
-                it('should emit the event on the host', () => {
+                it('should emit the event ($eventName) on the host', () => {
                     return new Promise<void>((resolve) => {
                         host.on(eventName, (event) => {
                             expect(event).toEqual({
@@ -375,6 +397,7 @@ describe('Messaging API', () => {
             ${'notifyPageSettingsChanged'}     | ${'PageSettingsChanged'}        | ${{ settings: { theme: 'dark' } }}
             ${'notifyMediaChanged'}            | ${'MediaChangedEvent'}          | ${{}}
             ${'notifyError'}                   | ${'Error'}                      | ${{ message: 'Test error message', code: 'TEST_ERROR' }}
+            ${'setClientConfiguration'}        | ${'ClientConfigurationChanged'} | ${{ components: {}, componentTypes: {}, labels: {}, locale: 'en-US' }}
         `(
             'when $method is called on the host',
             ({
@@ -386,7 +409,7 @@ describe('Messaging API', () => {
                 eventName: keyof HostEventNameMapping & keyof ClientEventNameMapping;
                 payload: Record<string, unknown>;
             }) => {
-                it('should emit the event on the client', () => {
+                it('should emit the event ($eventName) on the client', () => {
                     return new Promise<void>((resolve) => {
                         client.on(eventName, (event) => {
                             expect(event).toEqual({

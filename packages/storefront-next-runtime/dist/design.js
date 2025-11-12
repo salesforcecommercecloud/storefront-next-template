@@ -1,5 +1,5 @@
 import { n as isPreviewModeActive, t as isDesignModeActive } from "./modeDetection-BZMGik06.js";
-import { n as Messenger, t as createClientApi } from "./client-DdJSpo_h.js";
+import { n as Messenger, t as createClientApi } from "./client-IwF8G5Dm.js";
 
 //#region src/design/componentRegistry.ts
 /**
@@ -103,6 +103,7 @@ function createHostApi({ emitter, id, logger }) {
 		notifyMediaChanged: () => messenger.emit("MediaChangedEvent", {}),
 		notifyError: messenger.toEmitter("Error"),
 		focusComponent: messenger.toEmitter("ComponentFocused"),
+		setClientConfiguration: messenger.toEmitter("ClientConfigurationChanged"),
 		connect: ({ configFactory = defaultConfigFactory, onClientConnected, onClientDisconnected, onError }) => {
 			if (isConnected) {
 				onClientConnected?.(messenger.getRemoteId() ?? "");

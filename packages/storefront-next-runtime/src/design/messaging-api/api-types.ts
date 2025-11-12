@@ -78,6 +78,7 @@ export interface ClientEventNameMapping extends IsomorphicEventNameMapping {
     PageSettingsChanged: Domain.PageSettingsChangedEvent;
     HostKeyPressed: Domain.HostKeyPressedEvent;
     ClientAcknowledged: Domain.ClientAcknowledgedEvent;
+    ClientConfigurationChanged: Domain.ClientConfigurationChangedEvent;
     ClientWindowDragEntered: Domain.ClientWindowDragEnteredEvent;
     ClientWindowDragMoved: Domain.ClientWindowDragMovedEvent;
     ClientWindowDragExited: Domain.ClientWindowDragExitedEvent;
@@ -419,7 +420,7 @@ export interface ClientApi extends IsomorphicApi {
         interval?: number;
         prepareClient?: () => Promise<void>;
         timeout?: number;
-        onHostConnected?: (event: Domain.ClientAcknowledgedEvent) => void;
+        onHostConnected?: (event: Domain.HostToClientConfiguration) => void;
         onError?: (error: Error) => void;
     }): void;
 
@@ -688,4 +689,16 @@ export interface HostApi extends IsomorphicApi {
      * @stability development
      */
     focusComponent(event: EventPayload<Domain.ComponentFocusedEvent>): void;
+    /**
+     * Notifies the host that the client configuration has changed.
+     *
+     * @param event - The client configuration change event containing the new configuration
+     * @stability development
+     *
+     * @example
+     * ```typescript
+     * api.setClientConfiguration({ ... });
+     * ```
+     */
+    setClientConfiguration(event: EventPayload<Domain.ClientConfigurationChangedEvent>): void;
 }

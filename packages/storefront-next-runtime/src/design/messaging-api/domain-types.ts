@@ -44,6 +44,25 @@ interface WithClientVector {
     y: number;
 }
 
+export interface HostToClientConfiguration {
+    /**
+     * The components by id that are in the component tree.
+     */
+    components: Record<string, ComponentInfo>;
+    /**
+     * A map of component types by id.
+     */
+    componentTypes: Record<string, ComponentType>;
+    /**
+     * A map of labels by translation key. These labels will be in the locale of the user.
+     */
+    labels: Record<string, string>;
+    /**
+     * The locale to use on the client.
+     */
+    locale?: string;
+}
+
 /**
  * The default keys that are forwarded from the host to the client.
  * @hidden
@@ -80,6 +99,10 @@ export interface ComponentType {
      * The image of the component type.
      */
     image: string;
+    /**
+     * The label for the component type.
+     */
+    label: string;
 }
 
 /// ////////////////////////////////////////////////////////////////
@@ -171,25 +194,17 @@ export interface ClientDisconnectedEvent extends WithBaseEvent {
  * @target client
  * @group Events
  */
-export interface ClientAcknowledgedEvent extends WithBaseEvent {
+export interface ClientAcknowledgedEvent extends WithBaseEvent, HostToClientConfiguration {
     eventType: 'ClientAcknowledged';
-    // Any specifics we want the client to know upon initialization should live here.
-    /**
-     * The components by id that are in the component tree.
-     */
-    components: Record<string, ComponentInfo>;
-    /**
-     * A map of component types by id.
-     */
-    componentTypes: Record<string, ComponentType>;
-    /**
-     * A map of labels by translation key. These labels will be in the locale of the user.
-     */
-    labels: Record<string, string>;
-    /**
-     * The locale to use on the client.
-     */
-    locale?: string;
+}
+
+/**
+ * Emits when the client configuration changes from the host since the last ClientAcknowledgedEvent.
+ * @target client
+ * @group Events
+ */
+export interface ClientConfigurationChangedEvent extends WithBaseEvent, HostToClientConfiguration {
+    eventType: 'ClientConfigurationChanged';
 }
 
 /**

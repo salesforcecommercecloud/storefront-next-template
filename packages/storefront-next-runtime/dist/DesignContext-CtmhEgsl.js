@@ -1,9 +1,9 @@
 import { n as isPreviewModeActive, t as isDesignModeActive } from "./modeDetection-BZMGik06.js";
-import { t as createClientApi } from "./client-DdJSpo_h.js";
+import { t as createClientApi } from "./client-IwF8G5Dm.js";
 import React, { Suspense, createContext, lazy, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 //#region src/design/react/context/PageDesignerProvider.tsx
-const LazyDesignProvider = lazy(() => import("./DesignContext-_8ZapPNE.js").then((module) => ({ default: module.DesignProvider })));
+const LazyDesignProvider = lazy(() => import("./DesignContext-BiTtKMMR.js").then((module) => ({ default: module.DesignProvider })));
 const LazyPreviewProvider = lazy(() => import("./PreviewContext-BDox5UnQ.js").then((module) => ({ default: module.PreviewProvider })));
 const LoadingFallback = () => null;
 const PageDesignerContext = createContext({
@@ -661,4 +661,4 @@ const useDesignContext = () => React.useContext(DesignContext);
 
 //#endregion
 export { isComponentTypeAllowedInRegion as a, usePageDesignerMode as c, useDesignState as i, DesignProvider as n, useComponentDiscovery as o, useDesignContext as r, PageDesignerProvider as s, DesignContext as t };
-//# sourceMappingURL=DesignContext-BydCFFcv.js.map
+//# sourceMappingURL=DesignContext-CtmhEgsl.js.map

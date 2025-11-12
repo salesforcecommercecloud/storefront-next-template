@@ -12,6 +12,7 @@ import {
     type IsomorphicConfiguration,
     type ClientAcknowledgedEvent,
     type EventPayload,
+    type HostToClientConfiguration,
 } from '../../messaging-api';
 import { DesignStateProvider } from './DesignStateContext';
 import { DesignApp } from '../components/DesignApp';
@@ -67,7 +68,7 @@ export const DesignProvider = ({
 }>): React.JSX.Element => {
     const { isDesignMode } = usePageDesignerMode();
     const [isConnected, setIsConnected] = React.useState(false);
-    const [pageDesignerConfig, setPageDesignerConfig] = React.useState<ClientAcknowledgedEvent | null>(null);
+    const [pageDesignerConfig, setPageDesignerConfig] = React.useState<HostToClientConfiguration | null>(null);
 
     const clientApi = React.useMemo(
         () =>

@@ -183,6 +183,9 @@ function createClientApi({ emitter, id, forwardedKeys = [], logger }) {
 				} catch (error) {
 					onError?.(error);
 				}
+			}), messenger.on("ClientConfigurationChanged", (event) => {
+				hostConfig = event;
+				onHostConnected?.(hostConfig);
 			}));
 			const checkInitialization = () => {
 				if (Date.now() > expirationTime) throw new Error(`Timed out after waiting ${timeout}ms for host connection`);
@@ -211,4 +214,4 @@ function createClientApi({ emitter, id, forwardedKeys = [], logger }) {
 
 //#endregion
 export { Messenger as n, createClientApi as t };
-//# sourceMappingURL=client-DdJSpo_h.js.map
+//# sourceMappingURL=client-IwF8G5Dm.js.map

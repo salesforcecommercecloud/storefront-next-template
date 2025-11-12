@@ -14,12 +14,14 @@ import { DesignFrame } from './DesignFrame';
 import { useRegionContext } from '../context/RegionContext';
 import { ComponentContext, useComponentContext, type ComponentContextType } from '../context/ComponentContext';
 import { useComponentDiscovery } from '../hooks/useComponentDiscovery';
+import { useComponentType } from '../hooks/useComponentType';
 
 export function DesignComponent(props: ComponentDecoratorProps<unknown>): React.JSX.Element {
     const { designMetadata, children } = props;
     const { id, name, isFragment } = designMetadata;
     const componentId = id;
-    const componentName = name || 'Component';
+    const componentType = useComponentType(componentId);
+    const componentName = componentType?.label || name || 'Component';
     const dragRef = useRef<HTMLDivElement>(null);
     const { regionId, regionDirection } = useRegionContext() ?? {};
     const { componentId: parentComponentId } = useComponentContext() ?? {};
@@ -105,9 +107,7 @@ export function DesignComponent(props: ComponentDecoratorProps<unknown>): React.
             onClick={handleClick}
             onDragOver={handleDragOver}
             onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-            data-component-id={componentId}
-            data-component-name={componentName}>
+            onMouseLeave={handleMouseLeave}>
             <div className="pd-design__component__drop-target" />
             <DesignFrame
                 showFrame={showFrame}

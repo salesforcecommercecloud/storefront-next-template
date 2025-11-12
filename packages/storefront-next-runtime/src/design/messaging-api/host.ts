@@ -52,6 +52,7 @@ export function createHostApi({ emitter, id, logger }: HostConfiguration): HostA
         notifyMediaChanged: () => messenger.emit('MediaChangedEvent', {}),
         notifyError: messenger.toEmitter('Error'),
         focusComponent: messenger.toEmitter('ComponentFocused'),
+        setClientConfiguration: messenger.toEmitter('ClientConfigurationChanged'),
         connect: ({
             configFactory = defaultConfigFactory,
             onClientConnected,
