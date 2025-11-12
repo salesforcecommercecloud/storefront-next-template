@@ -97,12 +97,11 @@ export const StorybookProductViewProvider = ({ children }: PropsWithChildren) =>
  * 2. Add it to this array in the correct position
  * 3. Update the documentation in README.md
  */
-// @sfdc-extension-line SFDC_EXT_STORE_LOCATOR
 export const storybookProviders = [
     StorybookConfigProvider,
     StorybookAuthProvider,
     StorybookBasketProvider,
     StorybookCheckoutProvider,
+    // @sfdc-extension-line SFDC_EXT_STORE_LOCATOR
     StoreLocatorProvider,
 ] as const;
-
