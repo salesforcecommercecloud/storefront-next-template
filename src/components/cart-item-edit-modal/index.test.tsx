@@ -16,13 +16,18 @@ import { variantProduct } from '@/components/__mocks__/master-variant-product';
 import uiStrings from '@/temp-ui-string';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
+// @sfdc-extension-block-start SFDC_EXT_BOPIS
+import PickupProvider from '@/extensions/bopis/context/pickup-context';
+// @sfdc-extension-block-end SFDC_EXT_BOPIS
+
 // Mock useScapiFetcher to prevent actual API calls
+const mockLoad = vi.fn().mockResolvedValue(undefined);
 vi.mock('@/hooks/use-scapi-fetcher', () => ({
-    useScapiFetcher: () => ({
-        load: vi.fn().mockResolvedValue(undefined),
+    useScapiFetcher: vi.fn(() => ({
+        load: mockLoad,
         data: variantProduct,
         state: 'idle',
-    }),
+    })),
 }));
 
 const renderCartItemEditModal = (props: React.ComponentProps<typeof CartItemEditModal>) => {
@@ -108,4 +113,141 @@ describe('CartItemEditModal', () => {
         const title = screen.getByText(uiStrings.editItem.title);
         expect(title).toBeInTheDocument();
     });
+
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    describe('pickup inventory fetching', () => {
+        beforeEach(async () => {
+            mockLoad.mockClear();
+            // Reset the mock implementation
+            const { useScapiFetcher } = await import('@/hooks/use-scapi-fetcher');
+            vi.mocked(useScapiFetcher).mockReturnValue({
+                load: mockLoad,
+                data: variantProduct,
+                state: 'idle',
+            });
+        });
+
+        test('includes inventoryIds when editing pickup item', async () => {
+            const { useScapiFetcher } = await import('@/hooks/use-scapi-fetcher');
+            let capturedParameters: any = null;
+
+            // Mock useScapiFetcher to capture parameters
+            vi.mocked(useScapiFetcher).mockImplementation((_service, _method, options) => {
+                capturedParameters = (options as any)?.parameters;
+                return {
+                    load: mockLoad,
+                    data: variantProduct,
+                    state: 'idle',
+                };
+            });
+
+            // Setup pickup context with the item marked for pickup
+            const initialPickupItems = new Map([
+                ['variant-product-id', { inventoryId: 'inventory-store-123', storeId: 'store-123' }],
+            ]);
+
+            const router = createMemoryRouter(
+                [
+                    {
+                        path: '/',
+                        element: (
+                            <PickupProvider initialItems={initialPickupItems}>
+                                <AllProvidersWrapper>
+                                    <CartItemEditModal
+                                        {...defaultProps}
+                                        product={{ ...variantProduct, id: 'variant-product-id' }}
+                                    />
+                                </AllProvidersWrapper>
+                            </PickupProvider>
+                        ),
+                    },
+                ],
+                {
+                    initialEntries: ['/'],
+                }
+            );
+            render(<RouterProvider router={router} />);
+
+            // Check that inventoryIds parameter was included
+            expect(capturedParameters).toBeDefined();
+            expect(capturedParameters.inventoryIds).toEqual(['inventory-store-123']);
+        });
+
+        test('does not include inventoryIds when editing non-pickup item', async () => {
+            const { useScapiFetcher } = await import('@/hooks/use-scapi-fetcher');
+            let capturedParameters: any = null;
+
+            // Mock useScapiFetcher to capture parameters
+            vi.mocked(useScapiFetcher).mockImplementation((_service, _method, options) => {
+                capturedParameters = (options as any)?.parameters;
+                return {
+                    load: mockLoad,
+                    data: variantProduct,
+                    state: 'idle',
+                };
+            });
+
+            // Setup pickup context without the item (not a pickup item)
+            const router = createMemoryRouter(
+                [
+                    {
+                        path: '/',
+                        element: (
+                            <PickupProvider initialItems={new Map()}>
+                                <AllProvidersWrapper>
+                                    <CartItemEditModal {...defaultProps} />
+                                </AllProvidersWrapper>
+                            </PickupProvider>
+                        ),
+                    },
+                ],
+                {
+                    initialEntries: ['/'],
+                }
+            );
+            render(<RouterProvider router={router} />);
+
+            // Check that inventoryIds parameter was not included
+            expect(capturedParameters).toBeDefined();
+            expect(capturedParameters.inventoryIds).toBeUndefined();
+        });
+
+        test('works without pickup context', async () => {
+            const { useScapiFetcher } = await import('@/hooks/use-scapi-fetcher');
+            let capturedParameters: any = null;
+
+            // Mock useScapiFetcher to capture parameters
+            vi.mocked(useScapiFetcher).mockImplementation((_service, _method, options) => {
+                capturedParameters = (options as any)?.parameters;
+                return {
+                    load: mockLoad,
+                    data: variantProduct,
+                    state: 'idle',
+                };
+            });
+
+            // Render without PickupProvider (pickup context is null)
+            const router = createMemoryRouter(
+                [
+                    {
+                        path: '/',
+                        element: (
+                            <AllProvidersWrapper>
+                                <CartItemEditModal {...defaultProps} />
+                            </AllProvidersWrapper>
+                        ),
+                    },
+                ],
+                {
+                    initialEntries: ['/'],
+                }
+            );
+            render(<RouterProvider router={router} />);
+
+            // Should not crash and should not include inventoryIds
+            expect(capturedParameters).toBeDefined();
+            expect(capturedParameters.inventoryIds).toBeUndefined();
+        });
+    });
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
 });

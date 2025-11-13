@@ -11,17 +11,13 @@ import { useDeliveryOptions } from './use-delivery-options';
 import { DELIVERY_OPTIONS } from '../constants';
 import { masterProductWithInventories } from '@/components/__mocks__/master-product-with-inventories';
 
-// Mock the store locator provider
-vi.mock('@/extensions/store-locator/providers/store-locator', () => ({
-    useStoreLocator: vi.fn(),
-}));
-
 // Mock the pickup context
 vi.mock('@/extensions/bopis/context/pickup-context', () => ({
     usePickup: vi.fn(() => ({
         addItem: vi.fn(),
         removeItem: vi.fn(),
         pickupBasketItems: new Map(),
+        pickupStores: new Map(),
         clearItems: vi.fn(),
     })),
 }));
@@ -52,19 +48,14 @@ describe('useDeliveryOptions', () => {
     });
 
     it('returns default delivery option initially', async () => {
-        const { useStoreLocator } = await import('@/extensions/store-locator/providers/store-locator');
         const { isStoreOutOfStock, isSiteOutOfStock } = await import('@/lib/inventory-utils');
-
-        // Mock useStoreLocator as a Zustand store hook
-        vi.mocked(useStoreLocator).mockImplementation((selector) => {
-            const mockStore = { selectedStoreInfo: null } as any;
-            return selector(mockStore);
-        });
 
         vi.mocked(isStoreOutOfStock).mockReturnValue(false);
         vi.mocked(isSiteOutOfStock).mockReturnValue(false);
 
-        const { result } = renderHook(() => useDeliveryOptions({ product: mockProduct, quantity: 1 }));
+        const { result } = renderHook(() =>
+            useDeliveryOptions({ product: mockProduct, quantity: 1, isInBasket: false, pickupStore: null })
+        );
 
         expect(result.current.selectedDeliveryOption).toBe(DELIVERY_OPTIONS.DELIVERY);
         // Pickup is disabled when no store is selected or store is out of stock
@@ -72,19 +63,14 @@ describe('useDeliveryOptions', () => {
     });
 
     it('returns pickup as available when store has inventory', async () => {
-        const { useStoreLocator } = await import('@/extensions/store-locator/providers/store-locator');
         const { isStoreOutOfStock, isSiteOutOfStock } = await import('@/lib/inventory-utils');
-
-        // Mock useStoreLocator as a Zustand store hook
-        vi.mocked(useStoreLocator).mockImplementation((selector) => {
-            const mockStore = { selectedStoreInfo: mockStoreInfo } as any;
-            return selector(mockStore);
-        });
 
         vi.mocked(isStoreOutOfStock).mockReturnValue(false);
         vi.mocked(isSiteOutOfStock).mockReturnValue(false);
 
-        const { result } = renderHook(() => useDeliveryOptions({ product: mockProduct, quantity: 1 }));
+        const { result } = renderHook(() =>
+            useDeliveryOptions({ product: mockProduct, quantity: 1, isInBasket: false, pickupStore: mockStoreInfo })
+        );
 
         // Both options are available, so it should stay with delivery (default)
         expect(result.current.selectedDeliveryOption).toBe(DELIVERY_OPTIONS.DELIVERY);
@@ -92,19 +78,14 @@ describe('useDeliveryOptions', () => {
     });
 
     it('disables pickup when store is out of stock', async () => {
-        const { useStoreLocator } = await import('@/extensions/store-locator/providers/store-locator');
         const { isStoreOutOfStock, isSiteOutOfStock } = await import('@/lib/inventory-utils');
-
-        // Mock useStoreLocator as a Zustand store hook
-        vi.mocked(useStoreLocator).mockImplementation((selector) => {
-            const mockStore = { selectedStoreInfo: mockStoreInfo } as any;
-            return selector(mockStore);
-        });
 
         vi.mocked(isStoreOutOfStock).mockReturnValue(true);
         vi.mocked(isSiteOutOfStock).mockReturnValue(false);
 
-        const { result } = renderHook(() => useDeliveryOptions({ product: mockProduct, quantity: 1 }));
+        const { result } = renderHook(() =>
+            useDeliveryOptions({ product: mockProduct, quantity: 1, isInBasket: false, pickupStore: mockStoreInfo })
+        );
 
         // Pickup is out of stock, delivery is available, so it should stay with delivery
         expect(result.current.selectedDeliveryOption).toBe(DELIVERY_OPTIONS.DELIVERY);
@@ -112,57 +93,47 @@ describe('useDeliveryOptions', () => {
     });
 
     it('disables pickup when no store is selected', async () => {
-        const { useStoreLocator } = await import('@/extensions/store-locator/providers/store-locator');
         const { isStoreOutOfStock, isSiteOutOfStock } = await import('@/lib/inventory-utils');
-
-        // Mock useStoreLocator as a Zustand store hook
-        vi.mocked(useStoreLocator).mockImplementation((selector) => {
-            const mockStore = { selectedStoreInfo: null } as any;
-            return selector(mockStore);
-        });
 
         vi.mocked(isStoreOutOfStock).mockReturnValue(false);
         vi.mocked(isSiteOutOfStock).mockReturnValue(false);
 
-        const { result } = renderHook(() => useDeliveryOptions({ product: mockProduct, quantity: 1 }));
+        const { result } = renderHook(() =>
+            useDeliveryOptions({ product: mockProduct, quantity: 1, isInBasket: false, pickupStore: null })
+        );
 
         // Pickup is disabled when no store is selected (no inventoryId)
         expect(result.current.isStoreOutOfStock).toBe(false);
     });
 
     it('disables pickup when store has no inventory ID', async () => {
-        const { useStoreLocator } = await import('@/extensions/store-locator/providers/store-locator');
         const { isStoreOutOfStock, isSiteOutOfStock } = await import('@/lib/inventory-utils');
-
-        // Mock useStoreLocator as a Zustand store hook
-        vi.mocked(useStoreLocator).mockImplementation((selector) => {
-            const mockStore = { selectedStoreInfo: { ...mockStoreInfo, inventoryId: undefined } } as any;
-            return selector(mockStore);
-        });
 
         vi.mocked(isStoreOutOfStock).mockReturnValue(false);
         vi.mocked(isSiteOutOfStock).mockReturnValue(false);
 
-        const { result } = renderHook(() => useDeliveryOptions({ product: mockProduct, quantity: 1 }));
+        const { result } = renderHook(() =>
+            useDeliveryOptions({
+                product: mockProduct,
+                quantity: 1,
+                isInBasket: false,
+                pickupStore: { ...mockStoreInfo, inventoryId: undefined },
+            })
+        );
 
         // Pickup is disabled when store has no inventoryId
         expect(result.current.isStoreOutOfStock).toBe(false);
     });
 
     it('allows changing delivery option', async () => {
-        const { useStoreLocator } = await import('@/extensions/store-locator/providers/store-locator');
         const { isStoreOutOfStock, isSiteOutOfStock } = await import('@/lib/inventory-utils');
-
-        // Mock useStoreLocator as a Zustand store hook
-        vi.mocked(useStoreLocator).mockImplementation((selector) => {
-            const mockStore = { selectedStoreInfo: mockStoreInfo } as any;
-            return selector(mockStore);
-        });
 
         vi.mocked(isStoreOutOfStock).mockReturnValue(false);
         vi.mocked(isSiteOutOfStock).mockReturnValue(false);
 
-        const { result } = renderHook(() => useDeliveryOptions({ product: mockProduct, quantity: 1 }));
+        const { result } = renderHook(() =>
+            useDeliveryOptions({ product: mockProduct, quantity: 1, isInBasket: false, pickupStore: mockStoreInfo })
+        );
 
         act(() => {
             result.current.setSelectedDeliveryOption(DELIVERY_OPTIONS.PICKUP);
@@ -172,19 +143,14 @@ describe('useDeliveryOptions', () => {
     });
 
     it('allows manual switching between delivery options', async () => {
-        const { useStoreLocator } = await import('@/extensions/store-locator/providers/store-locator');
         const { isStoreOutOfStock, isSiteOutOfStock } = await import('@/lib/inventory-utils');
-
-        // Mock useStoreLocator as a Zustand store hook
-        vi.mocked(useStoreLocator).mockImplementation((selector) => {
-            const mockStore = { selectedStoreInfo: mockStoreInfo } as any;
-            return selector(mockStore);
-        });
 
         vi.mocked(isStoreOutOfStock).mockReturnValue(false);
         vi.mocked(isSiteOutOfStock).mockReturnValue(false);
 
-        const { result } = renderHook(() => useDeliveryOptions({ product: mockProduct, quantity: 1 }));
+        const { result } = renderHook(() =>
+            useDeliveryOptions({ product: mockProduct, quantity: 1, isInBasket: false, pickupStore: mockStoreInfo })
+        );
 
         // Initially should be delivery (default)
         expect(result.current.selectedDeliveryOption).toBe(DELIVERY_OPTIONS.DELIVERY);
@@ -203,33 +169,21 @@ describe('useDeliveryOptions', () => {
     });
 
     it('handles undefined product gracefully', async () => {
-        const { useStoreLocator } = await import('@/extensions/store-locator/providers/store-locator');
         const { isStoreOutOfStock, isSiteOutOfStock } = await import('@/lib/inventory-utils');
-
-        // Mock useStoreLocator as a Zustand store hook
-        vi.mocked(useStoreLocator).mockImplementation((selector) => {
-            const mockStore = { selectedStoreInfo: mockStoreInfo } as any;
-            return selector(mockStore);
-        });
 
         vi.mocked(isStoreOutOfStock).mockReturnValue(false);
         vi.mocked(isSiteOutOfStock).mockReturnValue(false);
 
-        const { result } = renderHook(() => useDeliveryOptions({ product: undefined, quantity: 1 }));
+        const { result } = renderHook(() =>
+            useDeliveryOptions({ product: undefined, quantity: 1, isInBasket: false, pickupStore: mockStoreInfo })
+        );
 
         expect(result.current.selectedDeliveryOption).toBe(DELIVERY_OPTIONS.DELIVERY);
         expect(result.current.isStoreOutOfStock).toBe(false);
     });
 
     it('handles quantity parameter', async () => {
-        const { useStoreLocator } = await import('@/extensions/store-locator/providers/store-locator');
         const { isStoreOutOfStock, isSiteOutOfStock } = await import('@/lib/inventory-utils');
-
-        // Mock useStoreLocator as a Zustand store hook
-        vi.mocked(useStoreLocator).mockImplementation((selector) => {
-            const mockStore = { selectedStoreInfo: mockStoreInfo } as any;
-            return selector(mockStore);
-        });
 
         vi.mocked(isStoreOutOfStock).mockReturnValue(false);
         vi.mocked(isSiteOutOfStock).mockReturnValue(false);
@@ -238,6 +192,8 @@ describe('useDeliveryOptions', () => {
             useDeliveryOptions({
                 product: mockProduct,
                 quantity: 2,
+                isInBasket: false,
+                pickupStore: mockStoreInfo,
             })
         );
 
@@ -246,19 +202,14 @@ describe('useDeliveryOptions', () => {
     });
 
     it('calls isStoreOutOfStock and isSiteOutOfStock with correct parameters', async () => {
-        const { useStoreLocator } = await import('@/extensions/store-locator/providers/store-locator');
         const { isStoreOutOfStock, isSiteOutOfStock } = await import('@/lib/inventory-utils');
-
-        // Mock useStoreLocator as a Zustand store hook
-        vi.mocked(useStoreLocator).mockImplementation((selector) => {
-            const mockStore = { selectedStoreInfo: mockStoreInfo } as any;
-            return selector(mockStore);
-        });
 
         vi.mocked(isStoreOutOfStock).mockReturnValue(false);
         vi.mocked(isSiteOutOfStock).mockReturnValue(false);
 
-        renderHook(() => useDeliveryOptions({ product: mockProduct, quantity: 1 }));
+        renderHook(() =>
+            useDeliveryOptions({ product: mockProduct, quantity: 1, isInBasket: false, pickupStore: mockStoreInfo })
+        );
 
         // Should call isStoreOutOfStock with product, inventoryId, and quantity
         expect(isStoreOutOfStock).toHaveBeenCalledWith(mockProduct, 'inventory_m', 1);
@@ -268,7 +219,6 @@ describe('useDeliveryOptions', () => {
 
     describe('handleDeliveryOptionChange', () => {
         it('calls addItem when switching to PICKUP with product and store', async () => {
-            const { useStoreLocator } = await import('@/extensions/store-locator/providers/store-locator');
             const { usePickup } = await import('@/extensions/bopis/context/pickup-context');
             const { isStoreOutOfStock, isSiteOutOfStock } = await import('@/lib/inventory-utils');
 
@@ -279,18 +229,16 @@ describe('useDeliveryOptions', () => {
                 addItem: mockAddPickupItem,
                 removeItem: mockRemovePickupItem,
                 pickupBasketItems: new Map(),
+                pickupStores: new Map(),
                 clearItems: vi.fn(),
-            });
-
-            vi.mocked(useStoreLocator).mockImplementation((selector) => {
-                const mockStore = { selectedStoreInfo: mockStoreInfo } as any;
-                return selector(mockStore);
             });
 
             vi.mocked(isStoreOutOfStock).mockReturnValue(false);
             vi.mocked(isSiteOutOfStock).mockReturnValue(false);
 
-            const { result } = renderHook(() => useDeliveryOptions({ product: mockProduct, quantity: 1 }));
+            const { result } = renderHook(() =>
+                useDeliveryOptions({ product: mockProduct, quantity: 1, isInBasket: false, pickupStore: mockStoreInfo })
+            );
 
             // Clear mocks after initial render to only test user-triggered calls
             mockAddPickupItem.mockClear();
@@ -305,7 +253,6 @@ describe('useDeliveryOptions', () => {
         });
 
         it('calls removeItem when switching to DELIVERY', async () => {
-            const { useStoreLocator } = await import('@/extensions/store-locator/providers/store-locator');
             const { usePickup } = await import('@/extensions/bopis/context/pickup-context');
             const { isStoreOutOfStock, isSiteOutOfStock } = await import('@/lib/inventory-utils');
 
@@ -316,18 +263,16 @@ describe('useDeliveryOptions', () => {
                 addItem: mockAddPickupItem,
                 removeItem: mockRemovePickupItem,
                 pickupBasketItems: new Map(),
+                pickupStores: new Map(),
                 clearItems: vi.fn(),
-            });
-
-            vi.mocked(useStoreLocator).mockImplementation((selector) => {
-                const mockStore = { selectedStoreInfo: mockStoreInfo } as any;
-                return selector(mockStore);
             });
 
             vi.mocked(isStoreOutOfStock).mockReturnValue(false);
             vi.mocked(isSiteOutOfStock).mockReturnValue(false);
 
-            const { result } = renderHook(() => useDeliveryOptions({ product: mockProduct, quantity: 1 }));
+            const { result } = renderHook(() =>
+                useDeliveryOptions({ product: mockProduct, quantity: 1, isInBasket: false, pickupStore: mockStoreInfo })
+            );
 
             // First switch to pickup
             act(() => {
@@ -343,7 +288,6 @@ describe('useDeliveryOptions', () => {
         });
 
         it('does not call addItem when switching to PICKUP without inventoryId', async () => {
-            const { useStoreLocator } = await import('@/extensions/store-locator/providers/store-locator');
             const { usePickup } = await import('@/extensions/bopis/context/pickup-context');
             const { isStoreOutOfStock, isSiteOutOfStock } = await import('@/lib/inventory-utils');
 
@@ -354,18 +298,21 @@ describe('useDeliveryOptions', () => {
                 addItem: mockAddPickupItem,
                 removeItem: mockRemovePickupItem,
                 pickupBasketItems: new Map(),
+                pickupStores: new Map(),
                 clearItems: vi.fn(),
-            });
-
-            vi.mocked(useStoreLocator).mockImplementation((selector) => {
-                const mockStore = { selectedStoreInfo: { ...mockStoreInfo, inventoryId: undefined } } as any;
-                return selector(mockStore);
             });
 
             vi.mocked(isStoreOutOfStock).mockReturnValue(false);
             vi.mocked(isSiteOutOfStock).mockReturnValue(false);
 
-            const { result } = renderHook(() => useDeliveryOptions({ product: mockProduct, quantity: 1 }));
+            const { result } = renderHook(() =>
+                useDeliveryOptions({
+                    product: mockProduct,
+                    quantity: 1,
+                    isInBasket: false,
+                    pickupStore: { ...mockStoreInfo, inventoryId: undefined },
+                })
+            );
 
             act(() => {
                 result.current.handleDeliveryOptionChange(DELIVERY_OPTIONS.PICKUP);
@@ -376,7 +323,6 @@ describe('useDeliveryOptions', () => {
         });
 
         it('does not call addItem or removeItem when product is undefined', async () => {
-            const { useStoreLocator } = await import('@/extensions/store-locator/providers/store-locator');
             const { usePickup } = await import('@/extensions/bopis/context/pickup-context');
             const { isStoreOutOfStock, isSiteOutOfStock } = await import('@/lib/inventory-utils');
 
@@ -387,18 +333,16 @@ describe('useDeliveryOptions', () => {
                 addItem: mockAddPickupItem,
                 removeItem: mockRemovePickupItem,
                 pickupBasketItems: new Map(),
+                pickupStores: new Map(),
                 clearItems: vi.fn(),
-            });
-
-            vi.mocked(useStoreLocator).mockImplementation((selector) => {
-                const mockStore = { selectedStoreInfo: mockStoreInfo } as any;
-                return selector(mockStore);
             });
 
             vi.mocked(isStoreOutOfStock).mockReturnValue(false);
             vi.mocked(isSiteOutOfStock).mockReturnValue(false);
 
-            const { result } = renderHook(() => useDeliveryOptions({ product: undefined, quantity: 1 }));
+            const { result } = renderHook(() =>
+                useDeliveryOptions({ product: undefined, quantity: 1, isInBasket: false, pickupStore: mockStoreInfo })
+            );
 
             act(() => {
                 result.current.handleDeliveryOptionChange(DELIVERY_OPTIONS.PICKUP);
@@ -411,7 +355,6 @@ describe('useDeliveryOptions', () => {
 
     describe('auto-switching behavior', () => {
         it('auto-switches from PICKUP to DELIVERY when pickup becomes unavailable', async () => {
-            const { useStoreLocator } = await import('@/extensions/store-locator/providers/store-locator');
             const { usePickup } = await import('@/extensions/bopis/context/pickup-context');
             const { isStoreOutOfStock, isSiteOutOfStock } = await import('@/lib/inventory-utils');
 
@@ -422,19 +365,16 @@ describe('useDeliveryOptions', () => {
                 addItem: vi.fn(),
                 removeItem: vi.fn(),
                 pickupBasketItems: new Map(),
+                pickupStores: new Map(),
                 clearItems: vi.fn(),
-            });
-
-            vi.mocked(useStoreLocator).mockImplementation((selector) => {
-                const mockStore = { selectedStoreInfo: mockStoreInfo } as any;
-                return selector(mockStore);
             });
 
             vi.mocked(isStoreOutOfStock).mockImplementation(() => isStoreOOS);
             vi.mocked(isSiteOutOfStock).mockImplementation(() => isSiteOOS);
 
             const { result, rerender } = renderHook(
-                ({ product, quantity }) => useDeliveryOptions({ product, quantity }),
+                ({ product, quantity }) =>
+                    useDeliveryOptions({ product, quantity, isInBasket: false, pickupStore: mockStoreInfo }),
                 {
                     initialProps: { product: mockProduct, quantity: 1 },
                 }
@@ -463,7 +403,6 @@ describe('useDeliveryOptions', () => {
         });
 
         it('auto-switches from DELIVERY to PICKUP when delivery becomes unavailable', async () => {
-            const { useStoreLocator } = await import('@/extensions/store-locator/providers/store-locator');
             const { usePickup } = await import('@/extensions/bopis/context/pickup-context');
             const { isStoreOutOfStock, isSiteOutOfStock } = await import('@/lib/inventory-utils');
 
@@ -474,19 +413,16 @@ describe('useDeliveryOptions', () => {
                 addItem: vi.fn(),
                 removeItem: vi.fn(),
                 pickupBasketItems: new Map(),
+                pickupStores: new Map(),
                 clearItems: vi.fn(),
-            });
-
-            vi.mocked(useStoreLocator).mockImplementation((selector) => {
-                const mockStore = { selectedStoreInfo: mockStoreInfo } as any;
-                return selector(mockStore);
             });
 
             vi.mocked(isStoreOutOfStock).mockImplementation(() => isStoreOOS);
             vi.mocked(isSiteOutOfStock).mockImplementation(() => isSiteOOS);
 
             const { result, rerender } = renderHook(
-                ({ product, quantity }) => useDeliveryOptions({ product, quantity }),
+                ({ product, quantity }) =>
+                    useDeliveryOptions({ product, quantity, isInBasket: false, pickupStore: mockStoreInfo }),
                 {
                     initialProps: { product: mockProduct, quantity: 1 },
                 }
@@ -510,7 +446,6 @@ describe('useDeliveryOptions', () => {
         });
 
         it('does not switch when both options are unavailable', async () => {
-            const { useStoreLocator } = await import('@/extensions/store-locator/providers/store-locator');
             const { usePickup } = await import('@/extensions/bopis/context/pickup-context');
             const { isStoreOutOfStock, isSiteOutOfStock } = await import('@/lib/inventory-utils');
 
@@ -521,18 +456,16 @@ describe('useDeliveryOptions', () => {
                 addItem: vi.fn(),
                 removeItem: vi.fn(),
                 pickupBasketItems: new Map(),
+                pickupStores: new Map(),
                 clearItems: vi.fn(),
-            });
-
-            vi.mocked(useStoreLocator).mockImplementation((selector) => {
-                const mockStore = { selectedStoreInfo: mockStoreInfo } as any;
-                return selector(mockStore);
             });
 
             vi.mocked(isStoreOutOfStock).mockImplementation(() => isStoreOOS);
             vi.mocked(isSiteOutOfStock).mockImplementation(() => isSiteOOS);
 
-            const { result } = renderHook(() => useDeliveryOptions({ product: mockProduct, quantity: 1 }));
+            const { result } = renderHook(() =>
+                useDeliveryOptions({ product: mockProduct, quantity: 1, isInBasket: false, pickupStore: mockStoreInfo })
+            );
 
             expect(result.current.selectedDeliveryOption).toBe(DELIVERY_OPTIONS.DELIVERY);
 
@@ -548,7 +481,6 @@ describe('useDeliveryOptions', () => {
         });
 
         it('does not switch when current option is still available', async () => {
-            const { useStoreLocator } = await import('@/extensions/store-locator/providers/store-locator');
             const { usePickup } = await import('@/extensions/bopis/context/pickup-context');
             const { isStoreOutOfStock, isSiteOutOfStock } = await import('@/lib/inventory-utils');
 
@@ -556,18 +488,16 @@ describe('useDeliveryOptions', () => {
                 addItem: vi.fn(),
                 removeItem: vi.fn(),
                 pickupBasketItems: new Map(),
+                pickupStores: new Map(),
                 clearItems: vi.fn(),
-            });
-
-            vi.mocked(useStoreLocator).mockImplementation((selector) => {
-                const mockStore = { selectedStoreInfo: mockStoreInfo } as any;
-                return selector(mockStore);
             });
 
             vi.mocked(isStoreOutOfStock).mockReturnValue(false);
             vi.mocked(isSiteOutOfStock).mockReturnValue(false);
 
-            const { result } = renderHook(() => useDeliveryOptions({ product: mockProduct, quantity: 1 }));
+            const { result } = renderHook(() =>
+                useDeliveryOptions({ product: mockProduct, quantity: 1, isInBasket: false, pickupStore: mockStoreInfo })
+            );
 
             act(() => {
                 result.current.setSelectedDeliveryOption(DELIVERY_OPTIONS.PICKUP);
@@ -585,7 +515,6 @@ describe('useDeliveryOptions', () => {
 
     describe('initial sync behavior', () => {
         it('syncs pickup item when hook mounts with PICKUP selected', async () => {
-            const { useStoreLocator } = await import('@/extensions/store-locator/providers/store-locator');
             const { usePickup } = await import('@/extensions/bopis/context/pickup-context');
             const { isStoreOutOfStock, isSiteOutOfStock } = await import('@/lib/inventory-utils');
 
@@ -596,12 +525,8 @@ describe('useDeliveryOptions', () => {
                 addItem: mockAddItem,
                 removeItem: mockRemoveItem,
                 pickupBasketItems: new Map(),
+                pickupStores: new Map(),
                 clearItems: vi.fn(),
-            });
-
-            vi.mocked(useStoreLocator).mockImplementation((selector) => {
-                const mockStore = { selectedStoreInfo: mockStoreInfo } as any;
-                return selector(mockStore);
             });
 
             vi.mocked(isStoreOutOfStock).mockReturnValue(false);
@@ -611,7 +536,9 @@ describe('useDeliveryOptions', () => {
             mockAddItem.mockClear();
             mockRemoveItem.mockClear();
 
-            const { result } = renderHook(() => useDeliveryOptions({ product: mockProduct, quantity: 1 }));
+            const { result } = renderHook(() =>
+                useDeliveryOptions({ product: mockProduct, quantity: 1, isInBasket: false, pickupStore: mockStoreInfo })
+            );
 
             // Initially on DELIVERY, should call removeItem
             expect(mockRemoveItem).toHaveBeenCalledWith(mockProduct.id);
@@ -630,7 +557,6 @@ describe('useDeliveryOptions', () => {
         });
 
         it('does not sync when store has no inventoryId', async () => {
-            const { useStoreLocator } = await import('@/extensions/store-locator/providers/store-locator');
             const { usePickup } = await import('@/extensions/bopis/context/pickup-context');
             const { isStoreOutOfStock, isSiteOutOfStock } = await import('@/lib/inventory-utils');
 
@@ -641,14 +567,8 @@ describe('useDeliveryOptions', () => {
                 addItem: mockAddItem,
                 removeItem: mockRemoveItem,
                 pickupBasketItems: new Map(),
+                pickupStores: new Map(),
                 clearItems: vi.fn(),
-            });
-
-            vi.mocked(useStoreLocator).mockImplementation((selector) => {
-                const mockStore = {
-                    selectedStoreInfo: { ...mockStoreInfo, inventoryId: undefined },
-                } as any;
-                return selector(mockStore);
             });
 
             vi.mocked(isStoreOutOfStock).mockReturnValue(false);
@@ -657,7 +577,14 @@ describe('useDeliveryOptions', () => {
             mockAddItem.mockClear();
             mockRemoveItem.mockClear();
 
-            renderHook(() => useDeliveryOptions({ product: mockProduct, quantity: 1 }));
+            renderHook(() =>
+                useDeliveryOptions({
+                    product: mockProduct,
+                    quantity: 1,
+                    isInBasket: false,
+                    pickupStore: { ...mockStoreInfo, inventoryId: undefined },
+                })
+            );
 
             // Should not call either function when inventoryId is missing
             expect(mockAddItem).not.toHaveBeenCalled();
@@ -665,7 +592,6 @@ describe('useDeliveryOptions', () => {
         });
 
         it('does not sync when product has no id', async () => {
-            const { useStoreLocator } = await import('@/extensions/store-locator/providers/store-locator');
             const { usePickup } = await import('@/extensions/bopis/context/pickup-context');
             const { isStoreOutOfStock, isSiteOutOfStock } = await import('@/lib/inventory-utils');
 
@@ -676,12 +602,8 @@ describe('useDeliveryOptions', () => {
                 addItem: mockAddItem,
                 removeItem: mockRemoveItem,
                 pickupBasketItems: new Map(),
+                pickupStores: new Map(),
                 clearItems: vi.fn(),
-            });
-
-            vi.mocked(useStoreLocator).mockImplementation((selector) => {
-                const mockStore = { selectedStoreInfo: mockStoreInfo } as any;
-                return selector(mockStore);
             });
 
             vi.mocked(isStoreOutOfStock).mockReturnValue(false);
@@ -690,7 +612,9 @@ describe('useDeliveryOptions', () => {
             mockAddItem.mockClear();
             mockRemoveItem.mockClear();
 
-            renderHook(() => useDeliveryOptions({ product: undefined, quantity: 1 }));
+            renderHook(() =>
+                useDeliveryOptions({ product: undefined, quantity: 1, isInBasket: false, pickupStore: mockStoreInfo })
+            );
 
             // Should not call either function when product is undefined
             expect(mockAddItem).not.toHaveBeenCalled();
@@ -698,21 +622,17 @@ describe('useDeliveryOptions', () => {
         });
 
         it('does not sync when pickupContext is null', async () => {
-            const { useStoreLocator } = await import('@/extensions/store-locator/providers/store-locator');
             const { usePickup } = await import('@/extensions/bopis/context/pickup-context');
             const { isStoreOutOfStock, isSiteOutOfStock } = await import('@/lib/inventory-utils');
 
             vi.mocked(usePickup).mockReturnValue(null);
 
-            vi.mocked(useStoreLocator).mockImplementation((selector) => {
-                const mockStore = { selectedStoreInfo: mockStoreInfo } as any;
-                return selector(mockStore);
-            });
-
             vi.mocked(isStoreOutOfStock).mockReturnValue(false);
             vi.mocked(isSiteOutOfStock).mockReturnValue(false);
 
-            renderHook(() => useDeliveryOptions({ product: mockProduct, quantity: 1 }));
+            renderHook(() =>
+                useDeliveryOptions({ product: mockProduct, quantity: 1, isInBasket: false, pickupStore: mockStoreInfo })
+            );
 
             // Should not throw and should handle null pickup context gracefully
             expect(true).toBe(true);

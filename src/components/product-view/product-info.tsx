@@ -66,7 +66,15 @@ export default function ProductInfo({
     // Get current variant for UI display
     const currentVariant = useCurrentVariant({ product });
     // Get shared state from context
-    const { quantity, isOutOfStock, stockLevel, setQuantity } = useProductView();
+    const {
+        quantity,
+        isOutOfStock,
+        stockLevel,
+        setQuantity,
+        mode,
+        // @sfdc-extension-line SFDC_EXT_BOPIS
+        basketPickupStore,
+    } = useProductView();
 
     return (
         <div className="grid gap-4">
@@ -135,8 +143,8 @@ export default function ProductInfo({
                 );
             })}
 
-            {/* Quantity Selector - Only for non-set/bundle products */}
-            {!isProductASet && !isProductABundle && (
+            {/* Quantity Selector - Only for non-set/bundle products and not when opened from cart page */}
+            {!isProductASet && !isProductABundle && mode !== 'edit' && (
                 <ProductQuantityPicker
                     value={quantity.toString()}
                     onChange={setQuantity}
@@ -148,7 +156,15 @@ export default function ProductInfo({
 
             {/* @sfdc-extension-block-start SFDC_EXT_BOPIS */}
             {/* Delivery Options - For individual products and main set/bundle products */}
-            <DeliveryOptions product={product} quantity={quantity} className="mt-6" />
+            {/* Hide for non-pickup items when opened from cart page */}
+            {(mode !== 'edit' || basketPickupStore) && (
+                <DeliveryOptions
+                    product={product}
+                    quantity={quantity}
+                    basketPickupStore={basketPickupStore}
+                    className="mt-6"
+                />
+            )}
             {/* @sfdc-extension-block-end SFDC_EXT_BOPIS */}
 
             {/* Product Features - Only shown if longDescription is different from shortDescription */}

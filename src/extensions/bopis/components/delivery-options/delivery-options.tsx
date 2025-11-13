@@ -11,6 +11,8 @@ import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
 import PickupOrDelivery from './pickup-or-delivery';
 import { useDeliveryOptions } from '@/extensions/bopis/hooks/use-delivery-options';
 import { useStoreLocator } from '@/extensions/store-locator/providers/store-locator';
+import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
+import { getStoreName } from '@/extensions/bopis/lib/store-utils';
 import { Typography } from '@/components/typography';
 import uiStringsBopis from '@/extensions/bopis/temp-ui-string-bopis';
 
@@ -19,13 +21,15 @@ interface DeliveryOptionsProps {
     product?: ShopperProductsTypes.Product;
     /** The selected quantity to check inventory against */
     quantity: number;
+    /** The pickup store for basket items. When provided, indicates item is in basket with this pickup store. When falsy, item is not in basket. */
+    basketPickupStore?: SelectedStoreInfo;
     /** Additional CSS classes */
     className?: string;
 }
 
 /**
  * DeliveryOptions component that provides the complete delivery options experience.
- * This includes the pickup/delivery selection and any relevant messaging.
+ * This includes the pickup/delivery selection based on the store locator selection and any relevant messaging.
  *
  * @param props - The component props
  * @returns A React element representing the delivery options section
@@ -38,49 +42,67 @@ interface DeliveryOptionsProps {
  * />
  * ```
  */
-export default function DeliveryOptions({ product, quantity, className }: DeliveryOptionsProps): ReactElement | null {
-    const { selectedDeliveryOption, isStoreOutOfStock, isSiteOutOfStock, handleDeliveryOptionChange } =
-        useDeliveryOptions({ product, quantity });
-
+export default function DeliveryOptions({
+    product,
+    quantity,
+    basketPickupStore,
+    className,
+}: DeliveryOptionsProps): ReactElement | null {
     // Get store locator state and actions
     const selectedStore = useStoreLocator((state) => state.selectedStoreInfo);
     const openStoreLocator = useStoreLocator((state) => state.open);
 
+    // Derive isInBasket from basketPickupStore: when truthy, item is in basket
+    const isInBasket = !!basketPickupStore;
+
+    // Use basketPickupStore if item is in basket, otherwise use currently selected store from store locator
+    const pickupStore = basketPickupStore || selectedStore;
+
+    const { selectedDeliveryOption, isStoreOutOfStock, isSiteOutOfStock, handleDeliveryOptionChange } =
+        useDeliveryOptions({ product, quantity, isInBasket, pickupStore });
+
     // Calculate display content based on store state (memoized for performance)
     const storeMessage = useMemo(() => {
-        if (!selectedStore) {
+        if (!pickupStore) {
             return {
                 text: uiStringsBopis.deliveryOptions.storeSelection.pickUpIn,
                 buttonText: uiStringsBopis.deliveryOptions.storeSelection.selectStore,
             };
         }
 
+        const storeName = getStoreName(pickupStore);
+
         if (isStoreOutOfStock) {
             return {
                 text: uiStringsBopis.deliveryOptions.storeSelection.outOfStockAt,
-                buttonText: selectedStore.name,
+                buttonText: storeName,
             };
         }
 
         return {
             text: uiStringsBopis.deliveryOptions.storeSelection.inStockAt,
-            buttonText: selectedStore.name,
+            buttonText: storeName,
         };
-    }, [selectedStore, isStoreOutOfStock]);
+    }, [pickupStore, isStoreOutOfStock]);
 
     return (
         <div className={className}>
             <div className="space-y-4">
-                <Typography variant="h3" className="text-lg font-semibold">
-                    {uiStringsBopis.deliveryOptions.title}
-                </Typography>
+                {/* Hide title and radio options when editing from cart */}
+                {!isInBasket && (
+                    <>
+                        <Typography variant="h3" className="text-lg font-semibold">
+                            {uiStringsBopis.deliveryOptions.title}
+                        </Typography>
 
-                <PickupOrDelivery
-                    value={selectedDeliveryOption}
-                    onChange={handleDeliveryOptionChange}
-                    isPickupDisabled={isStoreOutOfStock}
-                    isDeliveryDisabled={isSiteOutOfStock}
-                />
+                        <PickupOrDelivery
+                            value={selectedDeliveryOption}
+                            onChange={handleDeliveryOptionChange}
+                            isPickupDisabled={isStoreOutOfStock}
+                            isDeliveryDisabled={isSiteOutOfStock}
+                        />
+                    </>
+                )}
 
                 {/* Store message - single div with conditional content */}
                 <div className="text-sm text-muted-foreground">

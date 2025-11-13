@@ -5,7 +5,13 @@ import { type ReactElement, use } from 'react';
 import type { ClientLoaderFunction, ClientLoaderFunctionArgs } from 'react-router';
 
 // Commerce SDK
-import type { ShopperBasketsTypes, ShopperProductsTypes, ShopperPromotionsTypes } from 'commerce-sdk-isomorphic';
+import type {
+    ShopperBasketsTypes,
+    ShopperProductsTypes,
+    ShopperPromotionsTypes,
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    ShopperStoresTypes,
+} from 'commerce-sdk-isomorphic';
 
 // Middlewares
 import { getBasket } from '@/middlewares/basket.client';
@@ -17,6 +23,14 @@ import createClient from '@/lib/scapi';
 import CartContent from '@/components/cart/cart-content';
 import CartSkeleton from '@/components/cart/cart-skeleton';
 import createPage from '@/components/create-page';
+// @sfdc-extension-block-start SFDC_EXT_BOPIS
+import PickupProvider from '@/extensions/bopis/context/pickup-context';
+import {
+    getPickupItemsFromBasket,
+    getInventoryIdsFromPickupShipments,
+    getStoreIdsFromBasket,
+} from '@/extensions/bopis/lib/basket-utils';
+// @sfdc-extension-block-end SFDC_EXT_BOPIS
 
 /**
  * Data structure returned by cart loader functions.
@@ -25,6 +39,9 @@ type CartPageData = {
     basket: ShopperBasketsTypes.Basket;
     productsByItemId: Promise<Record<string, ShopperProductsTypes.Product>>;
     promotions?: Promise<Record<string, ShopperPromotionsTypes.Promotion>>;
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    storesByStoreId: Promise<Map<string, ShopperStoresTypes.Store>>;
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
 };
 
 /**
@@ -91,12 +108,18 @@ async function fetchPromotionsForBasket(
  * their corresponding product data for efficient lookup in the UI.
  * For bundle products, it also fetches child product data and reconstructs the
  * bundledProducts structure with product and quantity properties.
+ *
+ * For BOPIS (Buy Online, Pick-up In Store) functionality, this function also
+ * includes store inventory IDs when fetching products to ensure accurate
+ * store-level inventory data is available for pickup items.
  * @returns Promise that resolves to a mapping of item IDs to product data.
  */
 async function fetchProductsInBasket(
     context: ClientLoaderFunctionArgs['context'],
-    productItems: ShopperBasketsTypes.ProductItem[]
+    basket: ShopperBasketsTypes.Basket | null
 ): Promise<Record<string, ShopperProductsTypes.Product>> {
+    const productItems = basket?.productItems ?? [];
+
     // Collect all product IDs (both parent products and bundled child products)
     const ids: string[] = [];
 
@@ -119,6 +142,11 @@ async function fetchProductsInBasket(
         return {};
     }
 
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    // Collect unique inventory IDs from pickup shipments to fetch store-level inventory
+    const inventoryIds = getInventoryIdsFromPickupShipments(basket);
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
+
     const client = createClient(context);
     const productsResponse = await client.ShopperProducts.getProducts({
         parameters: {
@@ -126,6 +154,10 @@ async function fetchProductsInBasket(
             allImages: true,
             perPricebook: true,
             // NOTE: if we do use `expand` parameter here, we can't pass in `bundled_products` for this API endpoint
+            // @sfdc-extension-block-start SFDC_EXT_BOPIS
+            // Include store inventory IDs for pickup items
+            ...(inventoryIds.length > 0 ? { inventoryIds } : {}),
+            // @sfdc-extension-block-end SFDC_EXT_BOPIS
         },
     });
 
@@ -176,6 +208,50 @@ async function fetchProductsInBasket(
     return productsByItemId;
 }
 
+// @sfdc-extension-block-start SFDC_EXT_BOPIS
+/**
+ * Fetches store details for all pickup stores in the basket.
+ *
+ * This function extracts unique store IDs from basket shipments that have
+ * c_fromStoreId set (indicating store pickup) and fetches the corresponding
+ * store data from the Commerce API.
+ * @returns Promise that resolves to a Map of store IDs to store data
+ */
+async function fetchStoresForBasket(
+    context: ClientLoaderFunctionArgs['context'],
+    basket: ShopperBasketsTypes.Basket | null
+): Promise<Map<string, ShopperStoresTypes.Store>> {
+    const storeIds = getStoreIdsFromBasket(basket);
+
+    // Early return if no stores found
+    if (storeIds.length === 0) {
+        return new Map();
+    }
+
+    // Fetch store details for all unique store IDs
+    const client = createClient(context);
+    const storesResponse = await client.ShopperStores.getStores({
+        parameters: {
+            ids: storeIds.join(','),
+        },
+    });
+
+    if (!storesResponse.data) {
+        return new Map();
+    }
+
+    // Transform API response into a Map: storeId → store details
+    const storesMap = new Map<string, ShopperStoresTypes.Store>();
+    storesResponse.data.forEach((store) => {
+        if (store.id) {
+            storesMap.set(store.id, store);
+        }
+    });
+
+    return storesMap;
+}
+// @sfdc-extension-block-end SFDC_EXT_BOPIS
+
 /**
  * Hydrate fallback component displayed during client-side hydration
  *
@@ -206,8 +282,11 @@ export const clientLoader: ClientLoaderFunction = ({ context }: ClientLoaderFunc
 
     return {
         basket,
-        productsByItemId: fetchProductsInBasket(context, productItems),
+        productsByItemId: fetchProductsInBasket(context, basket),
         promotions: fetchPromotionsForBasket(context, productItems),
+        // @sfdc-extension-block-start SFDC_EXT_BOPIS
+        storesByStoreId: fetchStoresForBasket(context, basket),
+        // @sfdc-extension-block-end SFDC_EXT_BOPIS
     };
 };
 
@@ -225,14 +304,34 @@ export const clientLoader: ClientLoaderFunction = ({ context }: ClientLoaderFunc
  * @returns JSX element representing the cart page
  */
 function Cart({
-    loaderData: { basket, productsByItemId: productsByItemIdPromise, promotions: promotionsPromise },
+    loaderData: {
+        basket,
+        productsByItemId: productsByItemIdPromise,
+        promotions: promotionsPromise,
+        // @sfdc-extension-line SFDC_EXT_BOPIS
+        storesByStoreId: storesByStoreIdPromise,
+    },
 }: {
     loaderData: CartPageData;
 }): ReactElement {
     const productsByItemId = use(productsByItemIdPromise);
     const promotions = use(promotionsPromise ?? Promise.resolve({}));
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    const storesByStoreId = use(storesByStoreIdPromise);
 
-    return <CartContent basket={basket} productsByItemId={productsByItemId} promotions={promotions} />;
+    const content = <CartContent basket={basket} productsByItemId={productsByItemId} promotions={promotions} />;
+
+    let finalContent = content;
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    // Initialize PickupProvider with existing pickup items from basket
+    const initialPickupItems = getPickupItemsFromBasket(basket);
+    finalContent = (
+        <PickupProvider initialItems={initialPickupItems} initialPickupStores={storesByStoreId}>
+            {content}
+        </PickupProvider>
+    );
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
+    return finalContent;
 }
 
 /**

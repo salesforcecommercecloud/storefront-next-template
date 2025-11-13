@@ -7,6 +7,7 @@
 'use client';
 
 import { createContext, useContext, useState, useCallback, type PropsWithChildren } from 'react';
+import type { ShopperStoresTypes } from 'commerce-sdk-isomorphic';
 
 /**
  * Store and inventory information for pickup items
@@ -29,6 +30,8 @@ export interface PickupItemInfo {
 interface PickupContextType {
     /** Map of productId to pickup info (inventoryId, storeId) for items marked for store pickup */
     pickupBasketItems: Map<string, PickupItemInfo>;
+    /** Map of storeId to store details for pickup stores in the basket */
+    pickupStores: Map<string, ShopperStoresTypes.Store>;
     /** Add a product to the pickup items map */
     addItem: (productId: string, inventoryId: string, storeId: string) => void;
     /** Remove a product from the pickup items map */
@@ -42,6 +45,8 @@ const PickupContext = createContext<PickupContextType | null>(null);
 interface PickupProviderProps {
     /** Optional initial pickup items (e.g., from server state or cart) */
     initialItems?: Map<string, PickupItemInfo>;
+    /** Store details for pickup stores in the basket */
+    initialPickupStores?: Map<string, ShopperStoresTypes.Store>;
 }
 
 /**
@@ -69,8 +74,9 @@ interface PickupProviderProps {
  * </PickupProvider>
  * ```
  */
-const PickupProvider = ({ children, initialItems }: PropsWithChildren<PickupProviderProps>) => {
+const PickupProvider = ({ children, initialItems, initialPickupStores }: PropsWithChildren<PickupProviderProps>) => {
     const [pickupBasketItems, setPickupBasketItems] = useState<Map<string, PickupItemInfo>>(initialItems ?? new Map());
+    const [pickupStores] = useState<Map<string, ShopperStoresTypes.Store>>(initialPickupStores ?? new Map());
 
     const addItem = useCallback((productId: string, inventoryId: string, storeId: string) => {
         setPickupBasketItems((prev) => {
@@ -93,7 +99,7 @@ const PickupProvider = ({ children, initialItems }: PropsWithChildren<PickupProv
     }, []);
 
     return (
-        <PickupContext.Provider value={{ pickupBasketItems, addItem, removeItem, clearItems }}>
+        <PickupContext.Provider value={{ pickupBasketItems, pickupStores, addItem, removeItem, clearItems }}>
             {children}
         </PickupContext.Provider>
     );
@@ -112,7 +118,7 @@ const PickupProvider = ({ children, initialItems }: PropsWithChildren<PickupProv
  * function DeliveryOptions() {
  *     const pickup = usePickup();
  *     if (pickup) {
- *         const { pickupBasketItems, addItem } = pickup;
+ *         const { pickupBasketItems, pickupStores, addItem } = pickup;
  *         // ... use the context
  *     }
  * }

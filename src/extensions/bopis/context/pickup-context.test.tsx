@@ -27,6 +27,8 @@ describe('PickupProvider', () => {
             if (result.current) {
                 expect(result.current.pickupBasketItems).toBeInstanceOf(Map);
                 expect(result.current.pickupBasketItems.size).toBe(0);
+                expect(result.current.pickupStores).toBeInstanceOf(Map);
+                expect(result.current.pickupStores.size).toBe(0);
             }
         });
 
@@ -248,6 +250,72 @@ describe('PickupProvider', () => {
 
             if (result.current) {
                 expect(result.current.pickupBasketItems.size).toBe(0);
+            }
+        });
+    });
+
+    describe('stores prop', () => {
+        it('accepts initial stores', () => {
+            const initialStores = new Map([
+                ['store-1', { id: 'store-1', name: 'Store One', inventoryId: 'inventory-A' }],
+                ['store-2', { id: 'store-2', name: 'Store Two', inventoryId: 'inventory-B' }],
+            ]);
+
+            const customWrapper = ({ children }: PropsWithChildren) => (
+                <PickupProvider initialPickupStores={initialStores}>{children}</PickupProvider>
+            );
+
+            const { result } = renderHook(() => usePickup(), { wrapper: customWrapper });
+
+            if (result.current) {
+                expect(result.current.pickupStores.size).toBe(2);
+                expect(result.current.pickupStores.get('store-1')).toEqual({
+                    id: 'store-1',
+                    name: 'Store One',
+                    inventoryId: 'inventory-A',
+                });
+                expect(result.current.pickupStores.get('store-2')).toEqual({
+                    id: 'store-2',
+                    name: 'Store Two',
+                    inventoryId: 'inventory-B',
+                });
+            }
+        });
+
+        it('uses empty map when stores is undefined', () => {
+            const { result } = renderHook(() => usePickup(), { wrapper });
+
+            if (result.current) {
+                expect(result.current.pickupStores.size).toBe(0);
+            }
+        });
+
+        it('accepts both initialItems and stores', () => {
+            const initialItems = new Map([['product-1', { inventoryId: 'inventory-A', storeId: 'store-1' }]]);
+            const initialStores = new Map([
+                ['store-1', { id: 'store-1', name: 'Store One', inventoryId: 'inventory-A' }],
+            ]);
+
+            const customWrapper = ({ children }: PropsWithChildren) => (
+                <PickupProvider initialItems={initialItems} initialPickupStores={initialStores}>
+                    {children}
+                </PickupProvider>
+            );
+
+            const { result } = renderHook(() => usePickup(), { wrapper: customWrapper });
+
+            if (result.current) {
+                expect(result.current.pickupBasketItems.size).toBe(1);
+                expect(result.current.pickupStores.size).toBe(1);
+                expect(result.current.pickupBasketItems.get('product-1')).toEqual({
+                    inventoryId: 'inventory-A',
+                    storeId: 'store-1',
+                });
+                expect(result.current.pickupStores.get('store-1')).toEqual({
+                    id: 'store-1',
+                    name: 'Store One',
+                    inventoryId: 'inventory-A',
+                });
             }
         });
     });
