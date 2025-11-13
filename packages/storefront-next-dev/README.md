@@ -141,11 +141,16 @@ Run `sfnext push --help` to see all available options:
 
 #### Manage extensions
 
-Run `sfnext manage-extensions --help` to see all available options:
+Run `sfnext extensions install` to install a new extension
+- `-d, --project-directory`: Target project directory (default: current directory)
+- `-e, --extension`: Extension marker value (e.g. SFDC_EXT_STORE_LOCATOR)
+- `-s, --source-git-url`: Git URL of the source template project (default: "https://github.com/SalesforceCommerceCloud/storefront-next-template.git")
+- `-v, --verbose`: Verbose mode
 
-- `-d, --project-directory <dir>`: Project directory to trim
-- `-c, --extension-config <config>`: Extension config JSON file location
-- `-e, --extensions <extensions>`: Comma-separated list of enabled extension marker values (e.g. SFDC_EXT_featureA)
+Run `sfnex extensions remove` to remove existing extensions
+- `-d, --project-directory`: Target project directory (default: current directory)
+- `-e, --extensions`: Comma-separated list of extension marker values (e.g. SFDC_EXT_STORE_LOCATOR,SFDC_EXT_INTERNAL_THEME_SWITCHER)
+- `-v, --verbose`: Verbose mode
 
 #### Generate extension instructions
 

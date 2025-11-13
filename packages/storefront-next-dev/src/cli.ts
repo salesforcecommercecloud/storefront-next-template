@@ -1,7 +1,6 @@
 import { Command } from 'commander';
 import { push } from './push.js';
 import { generateInstructions } from './extensibility/create-instructions.js';
-import trimExtensions from './extensibility/trim-extensions.js';
 import { generateMetadata } from './cartridge-services/generate-cartridge.js';
 import { deployCode } from './cartridge-services/deploy-cartridge.js';
 import { CARTRIDGES_BASE_DIR, SFNEXT_BASE_CARTRIDGE_OUTPUT_DIR } from './config.js';
@@ -11,6 +10,7 @@ import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
 import fs from 'fs-extra';
 import { createStorefront } from './create-storefront.js';
+import { manageExtensions } from './extensibility/manage-extensions.js';
 
 // Shared path resolution and validation
 interface PathOptions {
@@ -45,6 +45,9 @@ function validateAndBuildPaths(options: PathOptions): {
 const program = new Command();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+// allow the default template git url to be overridden by an environment variable
+const DEFAULT_TEMPLATE_GIT_URL =
+    process.env.DEFAULT_TEMPLATE_GIT_URL || 'https://github.com/SalesforceCommerceCloud/storefront-next-template.git';
 
 const handleCommandError = (label: string, err: unknown): never => {
     if (err instanceof Error) {
@@ -145,38 +148,50 @@ program
         }
     });
 
-program
-    .command('manage-extensions')
-    .description('Manage features extensions for a template project')
-    .requiredOption('-d, --project-directory <dir>', 'Project directory to trim')
-    .requiredOption('-c, --extension-config <config>', 'Extension config JSON file location')
+const extensionsCommand = program
+    .command('extensions')
+    .description('Manage features extensions for a storefront project');
+
+extensionsCommand
+    .command('install')
+    .description('Install a new extension')
+    .option('-d, --project-directory <dir>', 'Target project directory', process.cwd())
+    .option('-e, --extension <extension>', 'Extension marker value (e.g. SFDC_EXT_STORE_LOCATOR)')
+    .option('-s, --source-git-url <url>', 'Git URL of the source template project', DEFAULT_TEMPLATE_GIT_URL)
+    .option('-v, --verbose', 'Verbose mode')
+    .action(async (options) => {
+        try {
+            await manageExtensions({
+                projectDirectory: options.projectDirectory,
+                install: true,
+                extensions: options.extension ? [options.extension] : undefined,
+                sourceGitUrl: options.sourceGitUrl,
+                verbose: options.verbose,
+            });
+        } catch (err) {
+            handleCommandError('extensions install', err);
+        }
+    });
+
+extensionsCommand
+    .command('remove')
+    .description('Remove one or more installed extensions')
+    .option('-d, --project-directory <dir>', 'Target project directory', process.cwd())
     .option(
         '-e, --extensions <extensions>',
-        'Comma-separated list of enabled extension marker values (e.g. SFDC_EXT_featureA)'
+        'Comma-separated list of extension marker values (e.g. SFDC_EXT_STORE_LOCATOR,SFDC_EXT_INTERNAL_THEME_SWITCHER)'
     )
-    .action((options) => {
+    .option('-v, --verbose', 'Verbose mode')
+    .action(async (options) => {
         try {
-            const cwd = process.cwd();
-            const directory = path.resolve(cwd, options.projectDirectory);
-            const extensionConfig = path.resolve(cwd, options.extensionConfig);
-            // Read JSON config file
-            const jsonText = fs.readFileSync(extensionConfig, 'utf8');
-            const configuredExtensions = JSON.parse(jsonText);
-            let enabledExtensions: Record<string, boolean> | undefined = undefined;
-            if (options.extensions) {
-                // eslint-disable-next-line no-console
-                console.log('options.extensions', options.extensions);
-                enabledExtensions = {};
-                for (const ext of options.extensions.split(',')) {
-                    enabledExtensions[ext] = true;
-                }
-            }
-            trimExtensions(directory, enabledExtensions, { extensions: configuredExtensions.extensions });
-            // eslint-disable-next-line no-console
-            console.log('Trim complete.');
-            process.exit(0);
+            await manageExtensions({
+                projectDirectory: options.projectDirectory,
+                uninstall: true,
+                extensions: options.extensions,
+                verbose: options.verbose,
+            });
         } catch (err) {
-            handleCommandError('trim-extensions', err);
+            handleCommandError('extensions remove', err);
         }
     });
 
