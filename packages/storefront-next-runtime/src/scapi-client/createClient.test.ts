@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createClient } from './createClient';
+import { ApiError } from './ApiError';
 import type { Client } from 'openapi-fetch';
 import type { OperationMap } from './proxy-types';
 
@@ -68,16 +69,27 @@ describe('createClient', () => {
     let mockOperations: OperationMap;
 
     beforeEach(() => {
+        // Create a mock response object
+        const mockResponse = {
+            status: 200,
+            statusText: 'OK',
+            headers: new Headers({ 'content-type': 'application/json' }),
+            url: 'https://api.example.com/test',
+            ok: true,
+            clone: () => mockResponse,
+            text: vi.fn().mockResolvedValue(''),
+        };
+
         // Create a mock client with HTTP methods that return resolved promises
         mockClient = {
-            GET: vi.fn().mockResolvedValue({ data: null, error: undefined, response: {} }),
-            POST: vi.fn().mockResolvedValue({ data: null, error: undefined, response: {} }),
-            PUT: vi.fn().mockResolvedValue({ data: null, error: undefined, response: {} }),
-            PATCH: vi.fn().mockResolvedValue({ data: null, error: undefined, response: {} }),
-            DELETE: vi.fn().mockResolvedValue({ data: null, error: undefined, response: {} }),
-            HEAD: vi.fn().mockResolvedValue({ data: null, error: undefined, response: {} }),
-            OPTIONS: vi.fn().mockResolvedValue({ data: null, error: undefined, response: {} }),
-            TRACE: vi.fn().mockResolvedValue({ data: null, error: undefined, response: {} }),
+            GET: vi.fn().mockResolvedValue({ data: { success: true }, error: undefined, response: mockResponse }),
+            POST: vi.fn().mockResolvedValue({ data: { success: true }, error: undefined, response: mockResponse }),
+            PUT: vi.fn().mockResolvedValue({ data: { success: true }, error: undefined, response: mockResponse }),
+            PATCH: vi.fn().mockResolvedValue({ data: { success: true }, error: undefined, response: mockResponse }),
+            DELETE: vi.fn().mockResolvedValue({ data: null, error: undefined, response: mockResponse }),
+            HEAD: vi.fn().mockResolvedValue({ data: null, error: undefined, response: mockResponse }),
+            OPTIONS: vi.fn().mockResolvedValue({ data: null, error: undefined, response: mockResponse }),
+            TRACE: vi.fn().mockResolvedValue({ data: null, error: undefined, response: mockResponse }),
             use: vi.fn(),
             eject: vi.fn(),
         } as any;
@@ -98,9 +110,12 @@ describe('createClient', () => {
                 params: { path: { id: '123' }, query: { filter: 'active' } },
             };
 
-            await proxyClient.getTest(options);
+            const result = await proxyClient.getTest(options);
 
             expect(mockClient.GET).toHaveBeenCalledWith('/api/v1/test/{id}', options);
+            expect(result).toHaveProperty('data');
+            expect(result).toHaveProperty('response');
+            expect(result).not.toHaveProperty('error');
         });
 
         it('should proxy POST operation to client.POST with correct path', async () => {
@@ -110,26 +125,41 @@ describe('createClient', () => {
                 body: { value: 42 },
             };
 
-            await proxyClient.createTest(options);
+            const result = await proxyClient.createTest(options);
 
             expect(mockClient.POST).toHaveBeenCalledWith('/api/v1/test/{id}', options);
+            expect(result).toHaveProperty('data');
+            expect(result).toHaveProperty('response');
         });
 
         it('should handle operations without parameters', async () => {
             const proxyClient = createClient(mockClient, mockOperations) as any;
 
-            await proxyClient.listUsers();
+            const result = await proxyClient.listUsers();
 
             expect(mockClient.GET).toHaveBeenCalledWith('/api/v1/users');
+            expect(result).toHaveProperty('data');
+            expect(result).toHaveProperty('response');
         });
 
         it('should pass through multiple arguments to the HTTP method', async () => {
             const proxyClient = createClient(mockClient, mockOperations) as any;
             const options = { params: { path: { id: '123' } } };
 
-            await proxyClient.getTest(options);
+            const result = await proxyClient.getTest(options);
 
             expect(mockClient.GET).toHaveBeenCalledWith('/api/v1/test/{id}', options);
+            expect(result).toHaveProperty('data');
+            expect(result).toHaveProperty('response');
+        });
+
+        it('should return both data and response on success', async () => {
+            const proxyClient = createClient(mockClient, mockOperations) as any;
+            const result = await proxyClient.getTest({ params: { path: { id: '123' } } });
+
+            expect(result.data).toEqual({ success: true });
+            expect(result.response).toBeDefined();
+            expect(result.response.status).toBe(200);
         });
     });
 
@@ -180,7 +210,224 @@ describe('createClient', () => {
     });
 
     describe('error handling', () => {
-        it('should throw error when HTTP method does not exist on client', () => {
+        it('should throw ApiError when response has error', async () => {
+            const errorBody = { message: 'Not Found', code: 'PRODUCT_NOT_FOUND' };
+            const errorResponse = {
+                status: 404,
+                statusText: 'Not Found',
+                headers: new Headers({ 'content-type': 'application/json' }),
+                url: 'https://api.example.com/test/123',
+                ok: false,
+                clone: () => ({
+                    text: vi.fn().mockResolvedValue(JSON.stringify(errorBody)),
+                }),
+            };
+
+            mockClient.GET = vi.fn().mockResolvedValue({
+                data: undefined,
+                error: errorBody,
+                response: errorResponse,
+            });
+
+            const proxyClient = createClient(mockClient, mockOperations) as any;
+
+            await expect(async () => {
+                await proxyClient.getTest({ params: { path: { id: '123' } } });
+            }).rejects.toThrow(ApiError);
+        });
+
+        it('should throw ApiError with correct status and statusText', async () => {
+            const errorBody = { message: 'Not Found' };
+            const errorResponse = {
+                status: 404,
+                statusText: 'Not Found',
+                headers: new Headers(),
+                url: 'https://api.example.com/test/123',
+                ok: false,
+                clone: () => ({
+                    text: vi.fn().mockResolvedValue(JSON.stringify(errorBody)),
+                }),
+            };
+
+            mockClient.GET = vi.fn().mockResolvedValue({
+                data: undefined,
+                error: errorBody,
+                response: errorResponse,
+            });
+
+            const proxyClient = createClient(mockClient, mockOperations) as any;
+
+            try {
+                await proxyClient.getTest({ params: { path: { id: '123' } } });
+                expect.fail('Should have thrown ApiError');
+            } catch (error) {
+                expect(error).toBeInstanceOf(ApiError);
+                expect((error as ApiError).status).toBe(404);
+                expect((error as ApiError).statusText).toBe('Not Found');
+            }
+        });
+
+        it('should throw ApiError with parsed JSON body', async () => {
+            const errorBody = { message: 'Validation Error', errors: ['field1', 'field2'] };
+            const errorResponse = {
+                status: 400,
+                statusText: 'Bad Request',
+                headers: new Headers({ 'content-type': 'application/json' }),
+                url: 'https://api.example.com/test',
+                ok: false,
+                clone: () => ({
+                    text: vi.fn().mockResolvedValue(JSON.stringify(errorBody)),
+                }),
+            };
+
+            mockClient.POST = vi.fn().mockResolvedValue({
+                data: undefined,
+                error: errorBody,
+                response: errorResponse,
+            });
+
+            const proxyClient = createClient(mockClient, mockOperations) as any;
+
+            try {
+                await proxyClient.createTest({ params: { path: { id: '123' } } });
+                expect.fail('Should have thrown ApiError');
+            } catch (error) {
+                expect(error).toBeInstanceOf(ApiError);
+                expect((error as ApiError).body).toEqual(errorBody);
+            }
+        });
+
+        it('should throw ApiError with raw body text when JSON parsing fails', async () => {
+            const rawErrorText = '<html>Internal Server Error</html>';
+            const errorResponse = {
+                status: 500,
+                statusText: 'Internal Server Error',
+                headers: new Headers({ 'content-type': 'text/html' }),
+                url: 'https://api.example.com/test',
+                ok: false,
+                clone: () => ({
+                    text: vi.fn().mockResolvedValue(rawErrorText),
+                }),
+            };
+
+            mockClient.GET = vi.fn().mockResolvedValue({
+                data: undefined,
+                error: rawErrorText,
+                response: errorResponse,
+            });
+
+            const proxyClient = createClient(mockClient, mockOperations) as any;
+
+            try {
+                await proxyClient.getTest({ params: { path: { id: '123' } } });
+                expect.fail('Should have thrown ApiError');
+            } catch (error) {
+                expect(error).toBeInstanceOf(ApiError);
+                expect((error as ApiError).body).toBeNull();
+                expect((error as ApiError).rawBody).toBe(rawErrorText);
+            }
+        });
+
+        it('should throw ApiError with both rawBody and parsed body', async () => {
+            const errorBody = { code: 'ERR_001', message: 'Error occurred' };
+            const rawBody = JSON.stringify(errorBody);
+            const errorResponse = {
+                status: 403,
+                statusText: 'Forbidden',
+                headers: new Headers({ 'content-type': 'application/json' }),
+                url: 'https://api.example.com/test',
+                ok: false,
+                clone: () => ({
+                    text: vi.fn().mockResolvedValue(rawBody),
+                }),
+            };
+
+            mockClient.GET = vi.fn().mockResolvedValue({
+                data: undefined,
+                error: errorBody,
+                response: errorResponse,
+            });
+
+            const proxyClient = createClient(mockClient, mockOperations) as any;
+
+            try {
+                await proxyClient.getTest({ params: { path: { id: '123' } } });
+                expect.fail('Should have thrown ApiError');
+            } catch (error) {
+                expect(error).toBeInstanceOf(ApiError);
+                expect((error as ApiError).body).toEqual(errorBody);
+                expect((error as ApiError).rawBody).toBe(rawBody);
+            }
+        });
+
+        it('should throw ApiError with response headers', async () => {
+            const errorBody = { message: 'Rate limit exceeded' };
+            const headers = new Headers({
+                'content-type': 'application/json',
+                'x-rate-limit-remaining': '0',
+                'x-rate-limit-reset': '1234567890',
+            });
+            const errorResponse = {
+                status: 429,
+                statusText: 'Too Many Requests',
+                headers,
+                url: 'https://api.example.com/test',
+                ok: false,
+                clone: () => ({
+                    text: vi.fn().mockResolvedValue(JSON.stringify(errorBody)),
+                }),
+            };
+
+            mockClient.GET = vi.fn().mockResolvedValue({
+                data: undefined,
+                error: errorBody,
+                response: errorResponse,
+            });
+
+            const proxyClient = createClient(mockClient, mockOperations) as any;
+
+            try {
+                await proxyClient.getTest({ params: { path: { id: '123' } } });
+                expect.fail('Should have thrown ApiError');
+            } catch (error) {
+                expect(error).toBeInstanceOf(ApiError);
+                expect((error as ApiError).headers).toBe(headers);
+                expect((error as ApiError).headers.get('x-rate-limit-remaining')).toBe('0');
+            }
+        });
+
+        it('should throw ApiError with url and method', async () => {
+            const errorBody = { message: 'Unauthorized' };
+            const errorResponse = {
+                status: 401,
+                statusText: 'Unauthorized',
+                headers: new Headers(),
+                url: 'https://api.example.com/test/123',
+                ok: false,
+                clone: () => ({
+                    text: vi.fn().mockResolvedValue(JSON.stringify(errorBody)),
+                }),
+            };
+
+            mockClient.GET = vi.fn().mockResolvedValue({
+                data: undefined,
+                error: errorBody,
+                response: errorResponse,
+            });
+
+            const proxyClient = createClient(mockClient, mockOperations) as any;
+
+            try {
+                await proxyClient.getTest({ params: { path: { id: '123' } } });
+                expect.fail('Should have thrown ApiError');
+            } catch (error) {
+                expect(error).toBeInstanceOf(ApiError);
+                expect((error as ApiError).url).toBe('https://api.example.com/test/123');
+                expect((error as ApiError).method).toBe('GET');
+            }
+        });
+
+        it('should throw error when HTTP method does not exist on client', async () => {
             // Create a mock operation with an unsupported HTTP method
             const BASE = '/api' as const;
             const badOperations = {
@@ -189,20 +436,30 @@ describe('createClient', () => {
 
             const proxyClient = createClient(mockClient, badOperations as unknown as OperationMap) as any;
 
-            expect(() => {
-                proxyClient.customMethod();
-            }).toThrow('Client method CUSTOM not found');
+            await expect(async () => {
+                await proxyClient.customMethod();
+            }).rejects.toThrow('Client method CUSTOM not found');
         });
     });
 
     describe('method context binding', () => {
         it('should call HTTP methods with correct context', async () => {
             let capturedThis: unknown;
+            const mockResponse = {
+                status: 200,
+                statusText: 'OK',
+                headers: new Headers(),
+                url: 'https://api.example.com/test',
+                clone: () => mockResponse,
+                text: vi.fn().mockResolvedValue(''),
+            };
+
             const clientWithContext = {
                 ...mockClient,
                 GET: vi.fn(function (this: unknown) {
                     // eslint-disable-next-line @typescript-eslint/no-this-alias
                     capturedThis = this;
+                    return Promise.resolve({ data: { success: true }, error: undefined, response: mockResponse });
                 }),
             } as unknown as Client<MockPaths>;
 

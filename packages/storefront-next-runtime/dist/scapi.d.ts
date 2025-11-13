@@ -24450,6 +24450,13 @@ type ExtractOperationPath<TOperation> = TOperation extends {
   s: infer S;
 } ? B extends string ? S extends string ? ReconstructPath<B, S> : never : never : never;
 /**
+ * Extract success data type from operation definition
+ * Gets the data type from 2xx responses
+ */
+type ExtractSuccessData<OpDef$1, Media extends `${string}/${string}`> = OpDef$1 extends Record<string | number, unknown> ? FetchResponse<OpDef$1, FetchOptions<OpDef$1>, Media> extends {
+  data?: infer D;
+} ? D : never : never;
+/**
  * Create a typed operation method by binding the path parameter
  *
  * This directly constructs the function signature using the operation's path and method.
@@ -24466,18 +24473,25 @@ type ExtractOperationPath<TOperation> = TOperation extends {
  * - fetch?: typeof fetch - Custom fetch implementation
  * - middleware?: Middleware[] - Request/response middleware
  *
- * And returns a Promise with { data?, error?, response } based on the OpenAPI spec.
+ * Returns a Promise with { data, response } on success.
+ * Throws ApiError on non-2xx responses with typed error body from OpenAPI spec.
  *
  * @typeParam TClient - The openapi-fetch client type (Client<Paths, Media>)
  * @typeParam TOperation - The operation info with abbreviated keys (m, b, s)
  *
  * @example
  * // Given operation { m: 'GET', b: BASE_PATH, s: '/users' }
- * // Original: client.GET('/users', options) => Promise<Response>
- * // Result:   client.getUsers(options) => Promise<Response>
- * // Where options and Response are fully typed based on the OpenAPI spec
+ * // Original: client.GET('/users', options) => Promise<{ data?, error?, response }>
+ * // Result:   client.getUsers(options) => Promise<{ data, response }>
+ * // Where options, data, and thrown errors are fully typed based on the OpenAPI spec
  */
-type OperationMethod<TClient extends Client<any, any>, TOperation extends OperationInfo> = ExtractOperationPath<TOperation> extends infer Path ? Path extends keyof ExtractPaths<TClient> ? LowercaseMethod<TOperation['m']> extends infer Method ? Method extends keyof ExtractPaths<TClient>[Path] ? ExtractPaths<TClient>[Path][Method] extends infer OpDef ? OpDef extends Record<string | number, any> ? RequiredKeysOf<FetchOptions<OpDef>> extends never ? (options?: ResolvedFetchOptions<OpDef>) => Promise<FetchResponse<OpDef, FetchOptions<OpDef>, ExtractMedia<TClient>>> : (options: ResolvedFetchOptions<OpDef>) => Promise<FetchResponse<OpDef, FetchOptions<OpDef>, ExtractMedia<TClient>>> : never : never : never : never : never : never;
+type OperationMethod<TClient extends Client<any, any>, TOperation extends OperationInfo> = ExtractOperationPath<TOperation> extends infer Path ? Path extends keyof ExtractPaths<TClient> ? LowercaseMethod<TOperation['m']> extends infer Method ? Method extends keyof ExtractPaths<TClient>[Path] ? ExtractPaths<TClient>[Path][Method] extends infer OpDef ? OpDef extends Record<string | number, any> ? RequiredKeysOf<FetchOptions<OpDef>> extends never ? (options?: ResolvedFetchOptions<OpDef>) => Promise<{
+  data: ExtractSuccessData<OpDef, ExtractMedia<TClient>>;
+  response: Response;
+}> : (options: ResolvedFetchOptions<OpDef>) => Promise<{
+  data: ExtractSuccessData<OpDef, ExtractMedia<TClient>>;
+  response: Response;
+}> : never : never : never : never : never : never;
 /**
  * Build the proxy client interface with ONLY operation methods
  *
@@ -25369,5 +25383,103 @@ declare function createCommerceApiClients(config: ClientOptions): Clients;
  */
 declare function createClient<TClient extends Client<any, any>, TOperations extends OperationMap>(client: TClient, operations: TOperations): ProxyClient<TClient, TOperations>;
 //#endregion
-export { Clients, ShopperBasketsV1, ShopperBasketsV2, ShopperConsents, ShopperContext, ShopperCustomers, ShopperExperience, ShopperGiftCertificates, ShopperLogin, ShopperOrders, ShopperProducts, ShopperPromotions, ShopperSearch, ShopperSeo, ShopperStores, createClient, createCommerceApiClients };
+//#region src/scapi-client/ApiError.d.ts
+/**
+ * Custom error class for API errors
+ *
+ * This error is thrown when an API request returns a non-2xx status code.
+ * It includes comprehensive information about the error including the parsed
+ * and raw response bodies, headers, status code, and request details.
+ *
+ * @typeParam TBody - The type of the error response body (inferred from OpenAPI spec)
+ *
+ * @example
+ * ```typescript
+ * try {
+ *   const { data } = await client.getProduct({ params: { path: { id: 'invalid' } } });
+ * } catch (error) {
+ *   if (error instanceof ApiError) {
+ *     console.log(error.status); // 404
+ *     console.log(error.statusText); // "Not Found"
+ *     console.log(error.body); // Typed error response
+ *     console.log(error.rawBody); // Raw response text
+ *     console.log(error.headers.get('content-type')); // Access headers
+ *     console.log(error.url); // Request URL
+ *     console.log(error.method); // HTTP method
+ *   }
+ * }
+ * ```
+ */
+declare class ApiError<TBody = unknown> extends Error {
+  /**
+   * HTTP status code (e.g., 404, 500)
+   */
+  readonly status: number;
+  /**
+   * HTTP status text (e.g., "Not Found", "Internal Server Error")
+   */
+  readonly statusText: string;
+  /**
+   * Response headers
+   */
+  readonly headers: Headers;
+  /**
+   * Parsed response body
+   * Automatically parsed from JSON if possible, otherwise contains the raw text
+   */
+  readonly body: TBody;
+  /**
+   * Raw response body as text
+   * Useful for debugging when the body couldn't be parsed as JSON
+   */
+  readonly rawBody: string;
+  /**
+   * Request URL that caused the error
+   */
+  readonly url: string;
+  /**
+   * HTTP method used for the request (e.g., "GET", "POST")
+   */
+  readonly method: string;
+  /**
+   * Creates an ApiError instance
+   *
+   * @param options - Error details
+   * @param options.status - HTTP status code
+   * @param options.statusText - HTTP status message
+   * @param options.headers - Response headers
+   * @param options.body - Parsed response body
+   * @param options.rawBody - Raw response body text
+   * @param options.url - Request URL
+   * @param options.method - HTTP method
+   */
+  constructor(options: {
+    status: number;
+    statusText: string;
+    headers: Headers;
+    body: TBody;
+    rawBody: string;
+    url: string;
+    method: string;
+  });
+  /**
+   * Returns a JSON representation of the error
+   * Useful for logging and debugging
+   */
+  toJSON(): {
+    name: string;
+    message: string;
+    status: number;
+    statusText: string;
+    body: TBody;
+    rawBody: string;
+    url: string;
+    method: string;
+    headers: {
+      [k: string]: string;
+    };
+  };
+}
+//#endregion
+export { ApiError, Clients, ShopperBasketsV1, ShopperBasketsV2, ShopperConsents, ShopperContext, ShopperCustomers, ShopperExperience, ShopperGiftCertificates, ShopperLogin, ShopperOrders, ShopperProducts, ShopperPromotions, ShopperSearch, ShopperSeo, ShopperStores, createClient, createCommerceApiClients };
 //# sourceMappingURL=scapi.d.ts.map

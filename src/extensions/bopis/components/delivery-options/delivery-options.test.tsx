@@ -78,7 +78,7 @@ describe('DeliveryOptions', () => {
         });
     });
 
-    it('renders with default props', () => {
+    it('renders with default props (no basketPickupStore)', () => {
         render(
             <BrowserRouter>
                 <DeliveryOptions quantity={1} />
@@ -332,5 +332,121 @@ describe('DeliveryOptions', () => {
 
         const pickupRadio = screen.getByLabelText('Pick up in Store');
         expect(pickupRadio).toBeDisabled();
+    });
+
+    describe('basket pickup store behavior', () => {
+        it('hides title and radio options when basketPickupStore is provided', () => {
+            mockUseDeliveryOptions.mockReturnValue({
+                selectedDeliveryOption: 'pickup',
+                isStoreOutOfStock: false,
+                isSiteOutOfStock: false,
+                setSelectedDeliveryOption: mockSetSelectedDeliveryOption,
+                handleDeliveryOptionChange: mockSetSelectedDeliveryOption,
+            });
+
+            mockUseStoreLocator.mockImplementation((selector) => {
+                const mockStoreState = { selectedStoreInfo: null, open: mockOpenStoreLocator };
+                return selector(mockStoreState);
+            });
+
+            render(
+                <BrowserRouter>
+                    <DeliveryOptions quantity={1} basketPickupStore={mockStore} />
+                </BrowserRouter>
+            );
+
+            // Title and radio options should be hidden when basketPickupStore is provided
+            expect(screen.queryByText('Delivery Options')).not.toBeInTheDocument();
+            expect(screen.queryByTestId('delivery-option-select')).not.toBeInTheDocument();
+
+            // Store message should still be visible
+            expect(screen.getByText('In stock at')).toBeInTheDocument();
+            expect(screen.getByText('Test Store')).toBeInTheDocument();
+        });
+
+        it('uses basketPickupStore instead of selected store when provided', () => {
+            const basketStore = {
+                id: 'basket-store-456',
+                name: 'Basket Store',
+                inventoryId: 'inventory-456',
+            };
+
+            mockUseDeliveryOptions.mockReturnValue({
+                selectedDeliveryOption: 'pickup',
+                isStoreOutOfStock: false,
+                isSiteOutOfStock: false,
+                setSelectedDeliveryOption: mockSetSelectedDeliveryOption,
+                handleDeliveryOptionChange: mockSetSelectedDeliveryOption,
+            });
+
+            // Selected store is different from basket store
+            mockUseStoreLocator.mockImplementation((selector) => {
+                const mockStoreState = { selectedStoreInfo: mockStore, open: mockOpenStoreLocator };
+                return selector(mockStoreState);
+            });
+
+            render(
+                <BrowserRouter>
+                    <DeliveryOptions quantity={1} basketPickupStore={basketStore} />
+                </BrowserRouter>
+            );
+
+            // Should display basket store name, not selected store name
+            expect(screen.getByText('Basket Store')).toBeInTheDocument();
+            expect(screen.queryByText('Test Store')).not.toBeInTheDocument();
+        });
+
+        it('shows out of stock message for basket pickup store', () => {
+            mockUseDeliveryOptions.mockReturnValue({
+                selectedDeliveryOption: 'pickup',
+                isStoreOutOfStock: true,
+                isSiteOutOfStock: false,
+                setSelectedDeliveryOption: mockSetSelectedDeliveryOption,
+                handleDeliveryOptionChange: mockSetSelectedDeliveryOption,
+            });
+
+            mockUseStoreLocator.mockImplementation((selector) => {
+                const mockStoreState = { selectedStoreInfo: null, open: mockOpenStoreLocator };
+                return selector(mockStoreState);
+            });
+
+            render(
+                <BrowserRouter>
+                    <DeliveryOptions quantity={1} basketPickupStore={mockStore} />
+                </BrowserRouter>
+            );
+
+            expect(screen.getByText('Out of stock at')).toBeInTheDocument();
+            expect(screen.getByText('Test Store')).toBeInTheDocument();
+        });
+
+        it('handles basketPickupStore without name by using ID', () => {
+            const storeWithoutName = {
+                id: 'store-no-name',
+                inventoryId: 'inventory-789',
+            };
+
+            mockUseDeliveryOptions.mockReturnValue({
+                selectedDeliveryOption: 'pickup',
+                isStoreOutOfStock: false,
+                isSiteOutOfStock: false,
+                setSelectedDeliveryOption: mockSetSelectedDeliveryOption,
+                handleDeliveryOptionChange: mockSetSelectedDeliveryOption,
+            });
+
+            mockUseStoreLocator.mockImplementation((selector) => {
+                const mockStoreState = { selectedStoreInfo: null, open: mockOpenStoreLocator };
+                return selector(mockStoreState);
+            });
+
+            render(
+                <BrowserRouter>
+                    <DeliveryOptions quantity={1} basketPickupStore={storeWithoutName} />
+                </BrowserRouter>
+            );
+
+            // Should display store ID when name is not available
+            expect(screen.getByText('store-no-name')).toBeInTheDocument();
+        });
     });
 });

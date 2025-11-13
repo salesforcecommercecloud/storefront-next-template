@@ -1,4 +1,4 @@
-import { type PropsWithChildren, Suspense, useRef } from 'react';
+import { type PropsWithChildren, Suspense, useMemo, useRef } from 'react';
 import favicon from '/favicon.ico';
 import {
     type ClientLoaderFunctionArgs,
@@ -44,6 +44,7 @@ import { useExecutePendingAction } from '@/hooks/use-execute-pending-action';
 import './app.css';
 import { getCookie } from '@/lib/cookies.client';
 import { initI18next } from '@/lib/i18next.client';
+import { ComposeProviders } from './providers/compose-providers';
 
 // On the client side, initialize i18next.
 // (On the server side, it's initialized elsewhere in middlewares/i18next.ts file)
@@ -265,31 +266,35 @@ export default function App({ loaderData: { root, subs, auth, basket, getI18next
         sessionData = getCookie('__sfdc_auth');
     }
 
+    // Memoize the providers array to prevent unnecessary remounting of providers on render
+    const providers = useMemo(
+        () =>
+            [
+                [I18nextProvider, { i18n: i18next }],
+                [ConfigProvider, { config: appConfig }],
+                [AuthProvider, { value: sessionData }],
+                [BasketProvider, { value: basket }],
+                /* @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */
+                [StoreLocatorProvider, undefined],
+            ] as const,
+        [i18next, appConfig, sessionData, basket]
+    );
+
     return (
-        <I18nextProvider i18n={i18next}>
-            <ConfigProvider config={appConfig}>
-                <AuthProvider value={sessionData}>
-                    <BasketProvider value={basket}>
-                        {/* @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */}
-                        <StoreLocatorProvider>
-                            <AuthActionExecutor />
-                            <Header>
-                                <CategoryNavigationMenuMega resolve={refRoot.current} defer={refSubs.current} />
-                            </Header>
-                            <main className="flex-grow pt-8">
-                                {/* Outlet-level `<Suspense/>` boundary to contain pending promises. */}
-                                {/* This at least prevents suspended components without a suggested local `<Suspense/>` boundary from further affecting global layout sections. */}
-                                <Suspense key={pageKey} fallback={null}>
-                                    <Outlet />
-                                </Suspense>
-                            </main>
-                            <Footer />
-                            {/* @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */}
-                        </StoreLocatorProvider>
-                    </BasketProvider>
-                </AuthProvider>
-            </ConfigProvider>
-        </I18nextProvider>
+        <ComposeProviders providers={providers}>
+            <AuthActionExecutor />
+            <Header>
+                <CategoryNavigationMenuMega resolve={refRoot.current} defer={refSubs.current} />
+            </Header>
+            <main className="flex-grow pt-8">
+                {/* Outlet-level `<Suspense/>` boundary to contain pending promises. */}
+                {/* This at least prevents suspended components without a suggested local `<Suspense/>` boundary from further affecting global layout sections. */}
+                <Suspense key={pageKey} fallback={null}>
+                    <Outlet />
+                </Suspense>
+            </main>
+            <Footer />
+        </ComposeProviders>
     );
 }
 

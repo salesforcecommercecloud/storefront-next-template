@@ -4,6 +4,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { ProductTile } from '@/components/product-tile';
 import withSuspense from '@/components/with-suspense';
 import ProductCarouselSkeleton from './skeleton';
+import { cn } from '@/lib/utils';
 
 /**
  * ProductCarousel component displays a horizontal carousel of product tiles.
@@ -15,6 +16,7 @@ import ProductCarouselSkeleton from './skeleton';
  * @param props - The component props
  * @param props.products - Array of product search hits to display in the carousel
  * @param props.title - Optional title to display above the carousel
+ * @param props.className - Optional className to apply to the carousel wrapper
  *
  * @returns JSX element representing the product carousel, or a "No products found" message
  *
@@ -28,6 +30,9 @@ import ProductCarouselSkeleton from './skeleton';
  *
  * // Usage without title
  * <ProductCarousel products={products} />
+ *
+ * // Usage with custom className
+ * <ProductCarousel products={products} className="mt-8" />
  * ```
  *
  * @since 1.0.0
@@ -35,9 +40,11 @@ import ProductCarouselSkeleton from './skeleton';
 export default function ProductCarousel({
     products,
     title,
+    className,
 }: {
     products: ShopperSearchTypes.ProductSearchHit[];
     title?: string;
+    className?: string;
 }): ReactNode {
     // Safety check for undefined or null products
     if (!products || products.length === 0) {
@@ -45,7 +52,7 @@ export default function ProductCarousel({
     }
 
     return (
-        <>
+        <div className={cn(className)}>
             {title && (
                 <div className="text-center mb-8">
                     <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">{title}</h2>
@@ -69,7 +76,7 @@ export default function ProductCarousel({
                 <CarouselPrevious />
                 <CarouselNext />
             </Carousel>
-        </>
+        </div>
     );
 }
 

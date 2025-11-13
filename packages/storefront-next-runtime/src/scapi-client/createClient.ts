@@ -14,6 +14,7 @@
 
 import type { Client } from 'openapi-fetch';
 import type { OperationMap, ProxyClient } from './proxy-types';
+import { ApiError } from './ApiError';
 
 /**
  * Create a proxied client with operation methods
@@ -90,9 +91,9 @@ export function createClient<TClient extends Client<any, any>, TOperations exten
                 // Reconstruct the full path from base + suffix
                 const path = base + suffix;
 
-                // Return a function that calls the HTTP method with the bound path
+                // Return an async function that calls the HTTP method and handles errors
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                return function (this: any, ...args: any[]) {
+                return async function (this: any, ...args: any[]) {
                     // Get the HTTP method function (GET, POST, etc.)
                     const httpMethod = method.toUpperCase();
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -106,7 +107,43 @@ export function createClient<TClient extends Client<any, any>, TOperations exten
 
                     // Call the HTTP method with the path and options
                     // The path is bound, options are passed from the operation call
-                    return clientMethod.call(target, path, ...args);
+                    // openapi-fetch returns { data, error, response }
+
+                    const result = await clientMethod.call(target, path, ...args);
+
+                    // If there's an error, parse the response body and throw ApiError
+                    if (result.error !== undefined) {
+                        const response = result.response;
+
+                        // Read the raw response body
+                        // Use clone() to allow the body to be read multiple times
+                        const rawBody = await response.clone().text();
+
+                        // Try to parse the body as JSON, fall back to raw text
+                        let parsedBody: Record<string, unknown> | null = null;
+                        try {
+                            parsedBody = JSON.parse(rawBody);
+                        } catch {
+                            // If JSON parsing fails, leave parsedBody as null
+                        }
+
+                        // Throw a typed ApiError with all response details
+                        throw new ApiError({
+                            status: response.status,
+                            statusText: response.statusText,
+                            headers: response.headers,
+                            body: parsedBody,
+                            rawBody,
+                            url: response.url,
+                            method: httpMethod,
+                        });
+                    }
+
+                    // On success, return { data, response } without the error property
+                    return {
+                        data: result.data,
+                        response: result.response,
+                    };
                 };
             }
 

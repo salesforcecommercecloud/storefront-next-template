@@ -135,6 +135,18 @@ type ExtractOperationPath<TOperation> = TOperation extends { b: infer B; s: infe
     : never;
 
 /**
+ * Extract success data type from operation definition
+ * Gets the data type from 2xx responses
+ */
+
+type ExtractSuccessData<OpDef, Media extends `${string}/${string}`> =
+    OpDef extends Record<string | number, unknown>
+        ? FetchResponse<OpDef, FetchOptions<OpDef>, Media> extends { data?: infer D }
+            ? D
+            : never
+        : never;
+
+/**
  * Create a typed operation method by binding the path parameter
  *
  * This directly constructs the function signature using the operation's path and method.
@@ -151,16 +163,17 @@ type ExtractOperationPath<TOperation> = TOperation extends { b: infer B; s: infe
  * - fetch?: typeof fetch - Custom fetch implementation
  * - middleware?: Middleware[] - Request/response middleware
  *
- * And returns a Promise with { data?, error?, response } based on the OpenAPI spec.
+ * Returns a Promise with { data, response } on success.
+ * Throws ApiError on non-2xx responses with typed error body from OpenAPI spec.
  *
  * @typeParam TClient - The openapi-fetch client type (Client<Paths, Media>)
  * @typeParam TOperation - The operation info with abbreviated keys (m, b, s)
  *
  * @example
  * // Given operation { m: 'GET', b: BASE_PATH, s: '/users' }
- * // Original: client.GET('/users', options) => Promise<Response>
- * // Result:   client.getUsers(options) => Promise<Response>
- * // Where options and Response are fully typed based on the OpenAPI spec
+ * // Original: client.GET('/users', options) => Promise<{ data?, error?, response }>
+ * // Result:   client.getUsers(options) => Promise<{ data, response }>
+ * // Where options, data, and thrown errors are fully typed based on the OpenAPI spec
  */
 type OperationMethod<
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -175,12 +188,14 @@ type OperationMethod<
                         ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
                           OpDef extends Record<string | number, any>
                             ? RequiredKeysOf<FetchOptions<OpDef>> extends never
-                                ? (
-                                      options?: ResolvedFetchOptions<OpDef>
-                                  ) => Promise<FetchResponse<OpDef, FetchOptions<OpDef>, ExtractMedia<TClient>>>
-                                : (
-                                      options: ResolvedFetchOptions<OpDef>
-                                  ) => Promise<FetchResponse<OpDef, FetchOptions<OpDef>, ExtractMedia<TClient>>>
+                                ? (options?: ResolvedFetchOptions<OpDef>) => Promise<{
+                                      data: ExtractSuccessData<OpDef, ExtractMedia<TClient>>;
+                                      response: Response;
+                                  }>
+                                : (options: ResolvedFetchOptions<OpDef>) => Promise<{
+                                      data: ExtractSuccessData<OpDef, ExtractMedia<TClient>>;
+                                      response: Response;
+                                  }>
                             : never
                         : never
                     : never

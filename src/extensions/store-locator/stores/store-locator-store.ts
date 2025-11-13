@@ -28,7 +28,7 @@ export type FormSearchParams = {
 
 export type SelectedStoreInfo = {
     id: string;
-    name: string;
+    name?: string;
     inventoryId?: string;
 };
 

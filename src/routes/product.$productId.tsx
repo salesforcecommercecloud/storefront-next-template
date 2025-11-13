@@ -235,8 +235,13 @@ const RecommendationsContent = ({
     // React will automatically filter out null values from the rendered output
     return (
         <>
-            {data.map(({ config, promise }) => (
-                <ProductCarouselWithSuspense key={config.id} resolve={promise} title={config.title} />
+            {data.map(({ config, promise }, idx) => (
+                <ProductCarouselWithSuspense
+                    className={idx > 0 ? 'mt-16' : ''}
+                    key={config.id}
+                    resolve={promise}
+                    title={config.title}
+                />
             ))}
         </>
     );

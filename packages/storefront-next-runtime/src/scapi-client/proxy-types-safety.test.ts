@@ -12,6 +12,7 @@
 
 import { expectTypeOf, describe, it, expect } from 'vitest';
 import { createCommerceApiClients, type Clients } from './createClients';
+import { ApiError } from './ApiError';
 
 describe('SCAPI Client Type Safety', () => {
     const clients = createCommerceApiClients({ baseUrl: 'https://test.com' });
@@ -98,7 +99,6 @@ describe('SCAPI Client Type Safety', () => {
                 });
 
             expectTypeOf(validCall).returns.resolves.toHaveProperty('data');
-            expectTypeOf(validCall).returns.resolves.toHaveProperty('error');
             expectTypeOf(validCall).returns.resolves.toHaveProperty('response');
         });
 
@@ -116,7 +116,7 @@ describe('SCAPI Client Type Safety', () => {
                 });
 
             expectTypeOf(validCall).returns.resolves.toHaveProperty('data');
-            expectTypeOf(validCall).returns.resolves.toHaveProperty('error');
+            expectTypeOf(validCall).returns.resolves.toHaveProperty('response');
         });
 
         it('should allow custom headers', () => {
@@ -171,10 +171,36 @@ describe('SCAPI Client Type Safety', () => {
             type GetResponse = typeof clients.shopperProducts.getCategories;
             type ResponseType = Awaited<ReturnType<GetResponse>>;
 
-            // Response should have data, error, and response properties
+            // Response should have data and response properties
             expectTypeOf<ResponseType>().toHaveProperty('data');
-            expectTypeOf<ResponseType>().toHaveProperty('error');
             expectTypeOf<ResponseType>().toHaveProperty('response');
+        });
+
+        it('should have Response type for response property', () => {
+            type GetResponse = typeof clients.shopperProducts.getCategories;
+            type ResponseType = Awaited<ReturnType<GetResponse>>;
+            type ResponseProp = ResponseType['response'];
+
+            // response property should be of type Response
+            expectTypeOf<ResponseProp>().toMatchTypeOf<Response>();
+        });
+
+        it('should have typed data property from OpenAPI spec', () => {
+            type GetCategoriesResponse = typeof clients.shopperProducts.getCategories;
+            type ResponseType = Awaited<ReturnType<GetCategoriesResponse>>;
+            type DataType = ResponseType['data'];
+
+            // data should be defined (not undefined)
+            expectTypeOf<DataType>().not.toBeUndefined();
+            expectTypeOf<DataType>().not.toBeNull();
+        });
+
+        it('should not have error property in success response', () => {
+            type GetResponse = typeof clients.shopperProducts.getCategories;
+            type ResponseType = Awaited<ReturnType<GetResponse>>;
+
+            // Response should NOT have an error property (errors are thrown)
+            expectTypeOf<ResponseType>().not.toHaveProperty('error');
         });
     });
 
@@ -208,6 +234,402 @@ describe('SCAPI Client Type Safety', () => {
             expectTypeOf<Middleware>().toHaveProperty('onRequest');
             expectTypeOf<Middleware>().toHaveProperty('onResponse');
             expectTypeOf<Middleware>().toHaveProperty('onError');
+        });
+    });
+
+    describe('error handling types', () => {
+        it('should have ApiError class available for import', () => {
+            // Verify ApiError is properly typed as a constructor
+            const error = new ApiError({
+                status: 404,
+                statusText: 'Not Found',
+                headers: new Headers(),
+                body: { message: 'error' },
+                rawBody: '{"message":"error"}',
+                url: 'https://api.example.com',
+                method: 'GET',
+            });
+
+            expectTypeOf(error).toMatchTypeOf<ApiError>();
+        });
+
+        it('should have typed status property on ApiError instance', () => {
+            const error = new ApiError({
+                status: 404,
+                statusText: 'Not Found',
+                headers: new Headers(),
+                body: {},
+                rawBody: '',
+                url: '',
+                method: 'GET',
+            });
+
+            expectTypeOf(error.status).toBeNumber();
+        });
+
+        it('should have typed statusText property on ApiError instance', () => {
+            const error = new ApiError({
+                status: 404,
+                statusText: 'Not Found',
+                headers: new Headers(),
+                body: {},
+                rawBody: '',
+                url: '',
+                method: 'GET',
+            });
+
+            expectTypeOf(error.statusText).toBeString();
+        });
+
+        it('should have typed headers property on ApiError instance', () => {
+            const error = new ApiError({
+                status: 404,
+                statusText: 'Not Found',
+                headers: new Headers(),
+                body: {},
+                rawBody: '',
+                url: '',
+                method: 'GET',
+            });
+
+            expectTypeOf(error.headers).toMatchTypeOf<Headers>();
+        });
+
+        it('should have typed body property on ApiError instance', () => {
+            const error = new ApiError({
+                status: 404,
+                statusText: 'Not Found',
+                headers: new Headers(),
+                body: { message: 'test' },
+                rawBody: '',
+                url: '',
+                method: 'GET',
+            });
+
+            // body property exists and is accessible
+            expect(error.body).toBeDefined();
+        });
+
+        it('should have typed rawBody property on ApiError instance', () => {
+            const error = new ApiError({
+                status: 404,
+                statusText: 'Not Found',
+                headers: new Headers(),
+                body: {},
+                rawBody: '',
+                url: '',
+                method: 'GET',
+            });
+
+            expectTypeOf(error.rawBody).toBeString();
+        });
+
+        it('should have typed url property on ApiError instance', () => {
+            const error = new ApiError({
+                status: 404,
+                statusText: 'Not Found',
+                headers: new Headers(),
+                body: {},
+                rawBody: '',
+                url: 'https://api.example.com',
+                method: 'GET',
+            });
+
+            expectTypeOf(error.url).toBeString();
+        });
+
+        it('should have typed method property on ApiError instance', () => {
+            const error = new ApiError({
+                status: 404,
+                statusText: 'Not Found',
+                headers: new Headers(),
+                body: {},
+                rawBody: '',
+                url: '',
+                method: 'GET',
+            });
+
+            expectTypeOf(error.method).toBeString();
+        });
+
+        it('should support generic type parameter for error body', () => {
+            type CustomErrorBody = { code: string; message: string };
+            const error = new ApiError<CustomErrorBody>({
+                status: 404,
+                statusText: 'Not Found',
+                headers: new Headers(),
+                body: { code: 'NOT_FOUND', message: 'Resource not found' },
+                rawBody: '',
+                url: '',
+                method: 'GET',
+            });
+
+            expectTypeOf(error.body).toMatchTypeOf<CustomErrorBody>();
+        });
+
+        it('should have toJSON method on ApiError instance', () => {
+            const error = new ApiError({
+                status: 404,
+                statusText: 'Not Found',
+                headers: new Headers(),
+                body: { message: 'error' },
+                rawBody: '{"message":"error"}',
+                url: 'https://api.example.com',
+                method: 'GET',
+            });
+
+            const toJsonMethod = () => error.toJSON();
+            expectTypeOf(toJsonMethod).toBeFunction();
+
+            const jsonResult = error.toJSON();
+            expectTypeOf(jsonResult).toHaveProperty('status');
+            expectTypeOf(jsonResult).toHaveProperty('body');
+            expectTypeOf(jsonResult).toHaveProperty('headers');
+        });
+
+        it('should extend Error class', () => {
+            const error = new ApiError({
+                status: 404,
+                statusText: 'Not Found',
+                headers: new Headers(),
+                body: {},
+                rawBody: '',
+                url: '',
+                method: 'GET',
+            });
+
+            expectTypeOf(error).toMatchTypeOf<Error>();
+            expectTypeOf(error.message).toBeString();
+            expectTypeOf(error.name).toBeString();
+        });
+
+        it('should be throwable and catchable with instanceof check', () => {
+            // This verifies the type signature allows throw/catch patterns
+            const throwError = (): never => {
+                throw new ApiError({
+                    status: 404,
+                    statusText: 'Not Found',
+                    headers: new Headers(),
+                    body: { message: 'error' },
+                    rawBody: '{"message":"error"}',
+                    url: 'https://api.example.com',
+                    method: 'GET',
+                });
+            };
+
+            expectTypeOf(throwError).returns.toBeNever();
+
+            // Verify catch pattern type narrowing works with instanceof
+            if (false as boolean) {
+                try {
+                    throwError();
+                } catch (error) {
+                    if (error instanceof ApiError) {
+                        expectTypeOf(error.status).toBeNumber();
+                    }
+                }
+            }
+        });
+    });
+
+    describe('realistic error handling usage', () => {
+        it('should type narrow error in catch block when calling API methods', async () => {
+            // This test verifies that calling actual API client methods and catching
+            // errors provides proper type narrowing
+            if (false as boolean) {
+                try {
+                    // Call an API method - this would throw ApiError on non-2xx response
+                    await clients.shopperProducts.getProduct({
+                        params: {
+                            path: { organizationId: 'org123', id: 'invalid-id' },
+                            query: { siteId: 'RefArch' },
+                        },
+                    });
+                } catch (error) {
+                    // Type narrowing with instanceof should work
+                    if (error instanceof ApiError) {
+                        // All ApiError properties should be accessible and typed
+                        expectTypeOf(error.status).toBeNumber();
+                        expectTypeOf(error.statusText).toBeString();
+                        expectTypeOf(error.headers).toMatchTypeOf<Headers>();
+                        expectTypeOf(error.rawBody).toBeString();
+                        expectTypeOf(error.url).toBeString();
+                        expectTypeOf(error.method).toBeString();
+                    }
+                }
+            }
+        });
+
+        it('should allow typed error body access in catch blocks', async () => {
+            // Verify that developers can type-assert error bodies
+            if (false as boolean) {
+                try {
+                    await clients.shopperProducts.getProduct({
+                        params: {
+                            path: { organizationId: 'org123', id: 'invalid' },
+                            query: { siteId: 'RefArch' },
+                        },
+                    });
+                } catch (error) {
+                    if (error instanceof ApiError) {
+                        // Developer can type-assert the error body based on API docs
+                        type SCAPIError = {
+                            type: string;
+                            title?: string;
+                            detail?: string;
+                            instance?: string;
+                        };
+
+                        const errorBody = error.body as SCAPIError;
+                        expectTypeOf(errorBody.type).toBeString();
+                        expectTypeOf(errorBody.detail).toEqualTypeOf<string | undefined>();
+                    }
+                }
+            }
+        });
+
+        it('should allow access to response headers in error catch blocks', async () => {
+            // Verify developers can access response headers from errors
+            if (false as boolean) {
+                try {
+                    await clients.shopperProducts.getProduct({
+                        params: {
+                            path: { organizationId: 'org123', id: 'invalid' },
+                            query: { siteId: 'RefArch' },
+                        },
+                    });
+                } catch (error) {
+                    if (error instanceof ApiError) {
+                        // Headers should be accessible for debugging/logging
+                        const getMethod = (key: string) => error.headers.get(key);
+                        expectTypeOf(getMethod).toBeFunction();
+                        expectTypeOf(getMethod).parameter(0).toBeString();
+                        expectTypeOf(getMethod).returns.toEqualTypeOf<string | null>();
+
+                        // Common headers should be accessible
+                        const contentType = error.headers.get('content-type');
+                        expectTypeOf(contentType).toEqualTypeOf<string | null>();
+                    }
+                }
+            }
+        });
+
+        it('should allow handling specific HTTP status codes', async () => {
+            // Verify pattern for handling specific error codes
+            if (false as boolean) {
+                try {
+                    await clients.shopperCustomers.getCustomer({
+                        params: {
+                            path: { organizationId: 'org123', customerId: 'invalid' },
+                            query: { siteId: 'RefArch' },
+                        },
+                    });
+                } catch (error) {
+                    if (error instanceof ApiError) {
+                        // TypeScript should know status is a number
+                        expectTypeOf(error.status).toBeNumber();
+
+                        // Common pattern: handle specific status codes
+                        if (error.status === 401) {
+                            // Handle unauthorized
+                            expectTypeOf(error.status).toEqualTypeOf<number>();
+                        } else if (error.status === 404) {
+                            // Handle not found
+                            expectTypeOf(error.status).toEqualTypeOf<number>();
+                        } else if (error.status === 429) {
+                            // Handle rate limiting
+                            const retryAfter = error.headers.get('retry-after');
+                            expectTypeOf(retryAfter).toEqualTypeOf<string | null>();
+                        }
+                    }
+                }
+            }
+        });
+
+        it('should support success path without error property', async () => {
+            // Verify that successful responses have the correct type
+            if (false as boolean) {
+                const result = await clients.shopperProducts.getProduct({
+                    params: {
+                        path: { organizationId: 'org123', id: 'valid-id' },
+                        query: { siteId: 'RefArch' },
+                    },
+                });
+
+                // Success response should have data and response
+                expectTypeOf(result).toHaveProperty('data');
+                expectTypeOf(result).toHaveProperty('response');
+
+                // Should NOT have error property (errors are thrown)
+                expectTypeOf(result).not.toHaveProperty('error');
+
+                // Response should be standard Response type
+                expectTypeOf(result.response).toMatchTypeOf<Response>();
+                expectTypeOf(result.response.headers).toMatchTypeOf<Headers>();
+            }
+        });
+
+        it('should support async error handling with multiple operations', async () => {
+            // Verify error handling works across multiple sequential operations
+            if (false as boolean) {
+                try {
+                    // First operation
+                    const basket = await clients.shopperBasketsV1.createBasket({
+                        params: {
+                            path: { organizationId: 'org123' },
+                            query: { siteId: 'RefArch' },
+                        },
+                        body: {},
+                    });
+
+                    // Second operation using result from first
+                    await clients.shopperBasketsV1.addItemToBasket({
+                        params: {
+                            path: {
+                                organizationId: 'org123',
+                                basketId: basket.data.basketId || 'fallback',
+                            },
+                            query: { siteId: 'RefArch' },
+                        },
+                        body: [{ productId: 'prod123', quantity: 1 }],
+                    });
+                } catch (error) {
+                    if (error instanceof ApiError) {
+                        // Error from any operation in the chain
+                        expectTypeOf(error.status).toBeNumber();
+                        expectTypeOf(error.method).toBeString();
+                        expectTypeOf(error.url).toBeString();
+                    }
+                }
+            }
+        });
+
+        it('should support error logging patterns', async () => {
+            // Verify common logging patterns work with proper types
+            if (false as boolean) {
+                try {
+                    await clients.shopperProducts.getProduct({
+                        params: {
+                            path: { organizationId: 'org123', id: 'invalid' },
+                            query: { siteId: 'RefArch' },
+                        },
+                    });
+                } catch (error) {
+                    if (error instanceof ApiError) {
+                        // toJSON method for structured logging
+                        const logData = error.toJSON();
+                        expectTypeOf(logData).toHaveProperty('status');
+                        expectTypeOf(logData).toHaveProperty('body');
+                        expectTypeOf(logData).toHaveProperty('headers');
+                        expectTypeOf(logData).toHaveProperty('url');
+                        expectTypeOf(logData).toHaveProperty('method');
+
+                        // Should be JSON-serializable
+                        const jsonString = JSON.stringify(error);
+                        expectTypeOf(jsonString).toBeString();
+                    }
+                }
+            }
         });
     });
 
@@ -420,6 +842,126 @@ describe('SCAPI Client Type Safety', () => {
                         basketId: 123,
                     },
                 });
+            }
+        });
+
+        // Error handling type detection - verify TypeScript catches incorrect error usage
+        it('should catch accessing ApiError properties without instanceof check', async () => {
+            if (false as boolean) {
+                try {
+                    await clients.shopperProducts.getProduct({
+                        params: {
+                            path: { organizationId: 'org123', id: 'invalid' },
+                            query: { siteId: 'RefArch' },
+                        },
+                    });
+                } catch (error) {
+                    // @ts-expect-error - cannot access status without instanceof check
+                    void error.status;
+                }
+            }
+        });
+
+        it('should catch accessing non-existent property on ApiError', async () => {
+            if (false as boolean) {
+                try {
+                    await clients.shopperProducts.getProduct({
+                        params: {
+                            path: { organizationId: 'org123', id: 'invalid' },
+                            query: { siteId: 'RefArch' },
+                        },
+                    });
+                } catch (error) {
+                    if (error instanceof ApiError) {
+                        // @ts-expect-error - nonExistentProp does not exist on ApiError
+                        void error.nonExistentProp;
+                    }
+                }
+            }
+        });
+
+        it('should catch assigning status to string variable', async () => {
+            if (false as boolean) {
+                try {
+                    await clients.shopperProducts.getProduct({
+                        params: {
+                            path: { organizationId: 'org123', id: 'invalid' },
+                            query: { siteId: 'RefArch' },
+                        },
+                    });
+                } catch (error) {
+                    if (error instanceof ApiError) {
+                        // @ts-expect-error - status is number, cannot assign to string
+                        const _statusString: string = error.status;
+                        void _statusString;
+                    }
+                }
+            }
+        });
+
+        it('should catch treating status as string when it is number', async () => {
+            if (false as boolean) {
+                try {
+                    await clients.shopperProducts.getProduct({
+                        params: {
+                            path: { organizationId: 'org123', id: 'invalid' },
+                            query: { siteId: 'RefArch' },
+                        },
+                    });
+                } catch (error) {
+                    if (error instanceof ApiError) {
+                        // @ts-expect-error - status is number, not string - cannot use string methods
+                        void error.status.toUpperCase();
+                    }
+                }
+            }
+        });
+
+        it('should catch treating headers as plain object', async () => {
+            if (false as boolean) {
+                try {
+                    await clients.shopperProducts.getProduct({
+                        params: {
+                            path: { organizationId: 'org123', id: 'invalid' },
+                            query: { siteId: 'RefArch' },
+                        },
+                    });
+                } catch (error) {
+                    if (error instanceof ApiError) {
+                        // @ts-expect-error - headers is Headers object, not plain object with string indexer
+                        void error.headers['content-type'];
+                    }
+                }
+            }
+        });
+
+        it('should catch accessing error property on success response', async () => {
+            if (false as boolean) {
+                const result = await clients.shopperProducts.getProduct({
+                    params: {
+                        path: { organizationId: 'org123', id: 'prod123' },
+                        query: { siteId: 'RefArch' },
+                    },
+                });
+
+                // @ts-expect-error - error property does not exist (errors are thrown)
+                void result.error;
+            }
+        });
+
+        it('should catch destructuring error from response', async () => {
+            if (false as boolean) {
+                // @ts-expect-error - error is not a property of the response
+                const { data, error, response } = await clients.shopperProducts.getProduct({
+                    params: {
+                        path: { organizationId: 'org123', id: 'prod123' },
+                        query: { siteId: 'RefArch' },
+                    },
+                });
+
+                expectTypeOf(data).not.toBeNever();
+                expectTypeOf(response).not.toBeNever();
+                void error; // Suppress unused warning
             }
         });
     });

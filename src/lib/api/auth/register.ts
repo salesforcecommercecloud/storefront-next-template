@@ -2,7 +2,6 @@ import type { ActionFunctionArgs } from 'react-router';
 import type { ShopperCustomersTypes } from 'commerce-sdk-isomorphic';
 import type { CustomQueryParameters } from '@/lib/api/types';
 import createClient from '@/lib/scapi';
-import { flashAuth } from '@/middlewares/auth.server';
 import { loginRegisteredUser } from './standard-login';
 import uiStrings from '@/temp-ui-string';
 
@@ -61,8 +60,6 @@ export const registerCustomer = async (
         }
     } catch {
         const errorMessage = uiStrings.errors.genericTryAgain;
-
-        flashAuth(context, errorMessage);
 
         return {
             success: false,

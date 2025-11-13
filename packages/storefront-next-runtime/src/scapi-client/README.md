@@ -366,7 +366,7 @@ pnpm scapi:generate
 ### Basic Usage
 
 ```typescript
-import { createCommerceApiClients } from '@salesforce/storefront-next-runtime';
+import { createCommerceApiClients, ApiError } from '@salesforce/storefront-next-runtime';
 
 // Create all SCAPI clients
 const clients = createCommerceApiClients({
@@ -374,23 +374,28 @@ const clients = createCommerceApiClients({
 });
 
 // Call operations with full type safety
-const { data, error } = await clients.shopperProducts.getProduct({
-  params: {
-    path: {
-      organizationId: 'f_ecom_zzxy_prd',
-      id: 'product-123'
-    },
-    query: {
-      siteId: 'RefArch',
-      allImages: true
+try {
+  const { data, response } = await clients.shopperProducts.getProduct({
+    params: {
+      path: {
+        organizationId: 'f_ecom_zzxy_prd',
+        id: 'product-123'
+      },
+      query: {
+        siteId: 'RefArch',
+        allImages: true
+      }
     }
-  }
-});
+  });
 
-if (error) {
-  console.error('API error:', error);
-} else {
-  console.log('Product:', data);
+  console.log('Product:', data); // Fully typed from OpenAPI spec
+  console.log('ETag:', response.headers.get('etag')); // Access response headers
+} catch (error) {
+  if (error instanceof ApiError) {
+    console.error('API error:', error.status, error.body);
+  } else {
+    console.error('Unexpected error:', error);
+  }
 }
 ```
 
@@ -595,27 +600,193 @@ clients.shopperProducts.use(loggingMiddleware);
 
 ### Response Format
 
-All operations return a Promise with this structure:
+All operations return a Promise with this structure on success:
 
 ```typescript
 {
-  data?: T,        // Response data (if successful)
-  error?: E,       // Error object (if failed)
-  response: Response  // Raw fetch Response object
+  data: T,           // Response data (fully typed from OpenAPI spec)
+  response: Response // Raw fetch Response object with headers, status, etc.
 }
 ```
 
-Check `error` for failures, `data` for success:
+On error (non-2xx status), the operation throws an `ApiError`:
 
 ```typescript
-const { data, error } = await clients.shopperProducts.getProduct(options);
+// Success case
+const { data, response } = await clients.shopperProducts.getProduct(options);
+console.log(data.name); // Fully typed
+console.log(response.headers.get('etag')); // Access response headers
 
-if (error) {
-  // Handle error
-  console.error(error);
-} else {
-  // Use data
+// Error case - use try/catch
+try {
+  const { data } = await clients.shopperProducts.getProduct(options);
   console.log(data);
+} catch (error) {
+  if (error instanceof ApiError) {
+    console.error('API Error:', error.status, error.body);
+  }
+}
+```
+
+### Error Handling
+
+The SCAPI client throws typed `ApiError` exceptions for all non-2xx HTTP responses, aligning with standard Fetch API behavior.
+
+#### ApiError Properties
+
+The `ApiError` class provides comprehensive error information:
+
+```typescript
+class ApiError<TBody = unknown> extends Error {
+  status: number;         // HTTP status code (404, 500, etc.)
+  statusText: string;     // HTTP status text ("Not Found", "Internal Server Error")
+  headers: Headers;       // Response headers object
+  body: TBody;           // Parsed response body (typed from OpenAPI spec)
+  rawBody: string;       // Raw response body as text
+  url: string;           // Request URL that caused the error
+  method: string;        // HTTP method (GET, POST, etc.)
+}
+```
+
+#### Error Handling Patterns
+
+**Basic Error Handling:**
+
+```typescript
+import { ApiError } from '@salesforce/storefront-next-runtime';
+
+try {
+  const { data } = await clients.shopperProducts.getProduct({
+    params: {
+      path: { organizationId: 'org123', id: 'invalid-id' },
+      query: { siteId: 'RefArch' }
+    }
+  });
+  console.log(data);
+} catch (error) {
+  if (error instanceof ApiError) {
+    console.error(`Error ${error.status}: ${error.statusText}`);
+    console.error('Error details:', error.body);
+  } else {
+    console.error('Unexpected error:', error);
+  }
+}
+```
+
+**Accessing Error Details:**
+
+```typescript
+try {
+  const { data } = await clients.shopperBaskets.createBasket(options);
+} catch (error) {
+  if (error instanceof ApiError) {
+    // Access all error properties
+    console.log('Status:', error.status);              // 404
+    console.log('Status Text:', error.statusText);     // "Not Found"
+    console.log('Error Body:', error.body);            // Typed error response
+    console.log('Raw Body:', error.rawBody);           // Raw response text
+    console.log('Headers:', error.headers);            // Headers object
+    console.log('URL:', error.url);                    // Request URL
+    console.log('Method:', error.method);              // "POST"
+    
+    // Access specific headers
+    const rateLimitRemaining = error.headers.get('x-rate-limit-remaining');
+    const contentType = error.headers.get('content-type');
+  }
+}
+```
+
+**Handling Specific Error Codes:**
+
+```typescript
+try {
+  const { data } = await clients.shopperCustomers.getCustomer(options);
+} catch (error) {
+  if (error instanceof ApiError) {
+    switch (error.status) {
+      case 401:
+        // Handle unauthorized
+        await refreshAccessToken();
+        break;
+      case 404:
+        // Handle not found
+        console.log('Customer not found');
+        break;
+      case 429:
+        // Handle rate limiting
+        const retryAfter = error.headers.get('retry-after');
+        console.log(`Rate limited. Retry after ${retryAfter}s`);
+        break;
+      default:
+        console.error('Unexpected error:', error);
+    }
+  }
+}
+```
+
+**Type-Safe Error Bodies:**
+
+The error body is typed based on the OpenAPI specification's error response schemas:
+
+```typescript
+try {
+  const { data } = await clients.shopperProducts.getProduct(options);
+} catch (error) {
+  if (error instanceof ApiError) {
+    // error.body is typed from OpenAPI spec
+    // For example, SCAPI errors typically have this shape:
+    const errorBody = error.body as {
+      type?: string;
+      title?: string;
+      detail?: string;
+      instance?: string;
+    };
+    
+    console.error(`${errorBody.type}: ${errorBody.detail}`);
+  }
+}
+```
+
+**Async/Await with Error Handling:**
+
+```typescript
+async function fetchProduct(productId: string) {
+  try {
+    const { data, response } = await clients.shopperProducts.getProduct({
+      params: {
+        path: { organizationId: 'org123', id: productId },
+        query: { siteId: 'RefArch' }
+      }
+    });
+    
+    // Access response headers
+    const etag = response.headers.get('etag');
+    
+    return { product: data, etag };
+  } catch (error) {
+    if (error instanceof ApiError) {
+      // Handle API errors
+      throw new Error(`Failed to fetch product: ${error.status} ${error.statusText}`);
+    }
+    // Network errors or other exceptions
+    throw error;
+  }
+}
+```
+
+**JSON Serialization for Logging:**
+
+```typescript
+try {
+  const { data } = await clients.shopperProducts.getProduct(options);
+} catch (error) {
+  if (error instanceof ApiError) {
+    // ApiError has a toJSON() method for easy logging
+    console.error('API Error:', JSON.stringify(error));
+    
+    // Or log to external service
+    logger.error('SCAPI Error', error.toJSON());
+  }
 }
 ```
 

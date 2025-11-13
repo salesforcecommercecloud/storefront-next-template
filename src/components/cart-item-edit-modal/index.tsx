@@ -25,6 +25,9 @@ import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
 import { isProductBundle, isProductSet } from '@/lib/product-utils';
 import { useSelectedVariations } from '@/hooks/product/use-selected-variations';
 import ChildProducts from '@/components/product-view/child-products';
+// @sfdc-extension-block-start SFDC_EXT_BOPIS
+import { usePickup } from '@/extensions/bopis/context/pickup-context';
+// @sfdc-extension-block-end SFDC_EXT_BOPIS
 
 export interface CartItemEditModalProps extends Omit<React.ComponentProps<typeof Dialog>, 'onOpenChange'> {
     /** The product being edited */
@@ -47,6 +50,8 @@ export interface CartItemEditModalProps extends Omit<React.ComponentProps<typeof
  * - Interactive variant selection (color, size, etc.)
  * - Quantity adjustment
  * - Update button to save changes to cart
+ * - Store inventory support: When editing pickup items, fetches variant products
+ *   with store inventory data to show accurate stock levels
  *
  * @param props - Component props
  * @param props.product - The product being edited (renamed to initialProduct internally)
@@ -79,6 +84,13 @@ export function CartItemEditModal({
     const isProductASet = isProductSet(currentProduct);
     const isProductABundle = isProductBundle(currentProduct);
 
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    // Get pickup context to check if this item is for store pickup
+    // Use initialProduct.id since pickupBasketItems is keyed by the basket item's productId
+    const pickupContext = usePickup();
+    const pickupInfo = pickupContext?.pickupBasketItems?.get(initialProduct.id);
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
+
     // Calculate matching variant based on current variation values
     const matchingVariant = useMemo(() => {
         return initialProduct.variants?.find((variant) => {
@@ -88,7 +100,14 @@ export function CartItemEditModal({
 
     // Create fetcher with the current matching variant's product ID
     const fetcher = useScapiFetcher('ShopperProducts', 'getProduct', {
-        parameters: { id: matchingVariant?.productId, allImages: true },
+        parameters: {
+            id: matchingVariant?.productId,
+            allImages: true,
+            // @sfdc-extension-block-start SFDC_EXT_BOPIS
+            // Include store inventory when fetching variants for pickup items
+            ...(pickupInfo?.inventoryId ? { inventoryIds: [pickupInfo.inventoryId] } : {}),
+            // @sfdc-extension-block-end SFDC_EXT_BOPIS
+        },
     });
     const selectedAttributes = useSelectedVariations({ product: currentProduct });
 
@@ -109,7 +128,9 @@ export function CartItemEditModal({
 
         // Trigger the fetcher load - React Router will handle the lifecycle
         void fetcher.load();
-    }, [matchingVariant?.productId, currentProduct.id, fetcher]);
+        // fetcher: stable fetcher, no need to recreate effect
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [matchingVariant?.productId, currentProduct.id]);
 
     // Update current product when fetcher data changes
     useEffect(() => {

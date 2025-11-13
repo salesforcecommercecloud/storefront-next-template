@@ -1745,5 +1745,253 @@ describe('useProductActions', () => {
                 expect(result.current.pickupBasketItems?.size).toBe(0);
             });
         });
+
+        // @sfdc-extension-block-start SFDC_EXT_BOPIS
+        describe('basketPickupStore', () => {
+            test('returns undefined when not editing basket item', () => {
+                const { result } = renderHook(
+                    () => useProductActions({ product: standardProd, currentVariant: null }),
+                    {
+                        wrapper: ({ children }) => wrapper({ children, basket: mockBasket }),
+                    }
+                );
+
+                expect(result.current.basketPickupStore).toBeUndefined();
+            });
+
+            test('returns undefined when editing basket item without pickup store', () => {
+                // Basket item without pickup (regular delivery)
+                const basketWithoutPickup: ShopperBasketsTypes.Basket = {
+                    basketId: 'test-basket-123',
+                    productItems: [
+                        {
+                            itemId: 'item-1',
+                            productId: 'product-1',
+                            productName: 'Product 1',
+                            quantity: 2,
+                            shipmentId: 'shipment-1',
+                        },
+                    ],
+                    shipments: [
+                        {
+                            shipmentId: 'shipment-1',
+                            // No c_fromStoreId - regular delivery
+                        },
+                    ],
+                };
+
+                const { result } = renderHook(
+                    () =>
+                        useProductActions({
+                            product: { ...standardProd, id: 'product-1' },
+                            currentVariant: null,
+                            itemId: 'item-1',
+                        }),
+                    {
+                        wrapper: ({ children }) => wrapper({ children, basket: basketWithoutPickup }),
+                    }
+                );
+
+                expect(result.current.basketPickupStore).toBeUndefined();
+            });
+
+            test('returns store info when editing basket item with pickup store', () => {
+                // Basket with pickup item
+                const basketWithPickup: ShopperBasketsTypes.Basket = {
+                    basketId: 'test-basket-123',
+                    productItems: [
+                        {
+                            itemId: 'item-1',
+                            productId: 'product-1',
+                            productName: 'Product 1',
+                            quantity: 2,
+                            shipmentId: 'shipment-1',
+                            inventoryId: 'inventory-store-123',
+                        },
+                    ],
+                    shipments: [
+                        {
+                            shipmentId: 'shipment-1',
+                            c_fromStoreId: 'store-123',
+                        },
+                    ],
+                };
+
+                // Setup stores in pickup context
+                const stores = new Map([
+                    ['store-123', { id: 'store-123', name: 'Test Store', inventoryId: 'inventory-store-123' }],
+                ]);
+
+                const customWrapper = ({ children }: { children: React.ReactNode }) => {
+                    const router = createMemoryRouter(
+                        [
+                            {
+                                path: '/',
+                                element: (
+                                    <PickupProvider initialPickupStores={stores}>
+                                        <BasketProvider value={basketWithPickup}>{children}</BasketProvider>
+                                    </PickupProvider>
+                                ),
+                            },
+                        ],
+                        {
+                            initialEntries: ['/'],
+                        }
+                    );
+                    return <RouterProvider router={router} />;
+                };
+
+                const { result } = renderHook(
+                    () =>
+                        useProductActions({
+                            product: { ...standardProd, id: 'product-1' },
+                            currentVariant: null,
+                            itemId: 'item-1',
+                        }),
+                    {
+                        wrapper: customWrapper,
+                    }
+                );
+
+                expect(result.current.basketPickupStore).toEqual({
+                    id: 'store-123',
+                    name: 'Test Store',
+                    inventoryId: 'inventory-store-123',
+                });
+            });
+
+            test('returns store with ID only when store details not in pickup stores map', () => {
+                // Basket with pickup item but store not in pickupStores map
+                const basketWithPickup: ShopperBasketsTypes.Basket = {
+                    basketId: 'test-basket-123',
+                    productItems: [
+                        {
+                            itemId: 'item-1',
+                            productId: 'product-1',
+                            productName: 'Product 1',
+                            quantity: 2,
+                            shipmentId: 'shipment-1',
+                            inventoryId: 'inventory-store-456',
+                        },
+                    ],
+                    shipments: [
+                        {
+                            shipmentId: 'shipment-1',
+                            c_fromStoreId: 'store-456',
+                        },
+                    ],
+                };
+
+                // Empty stores map - store not in map
+                const stores = new Map();
+
+                const customWrapper = ({ children }: { children: React.ReactNode }) => {
+                    const router = createMemoryRouter(
+                        [
+                            {
+                                path: '/',
+                                element: (
+                                    <PickupProvider initialPickupStores={stores}>
+                                        <BasketProvider value={basketWithPickup}>{children}</BasketProvider>
+                                    </PickupProvider>
+                                ),
+                            },
+                        ],
+                        {
+                            initialEntries: ['/'],
+                        }
+                    );
+                    return <RouterProvider router={router} />;
+                };
+
+                const { result } = renderHook(
+                    () =>
+                        useProductActions({
+                            product: { ...standardProd, id: 'product-1' },
+                            currentVariant: null,
+                            itemId: 'item-1',
+                        }),
+                    {
+                        wrapper: customWrapper,
+                    }
+                );
+
+                // Should return minimal store object with just ID when not in map
+                expect(result.current.basketPickupStore).toEqual({
+                    id: 'store-456',
+                });
+            });
+
+            test('basketPickupStore is available for basket items with pickup', () => {
+                // Basket with pickup item
+                const basketWithPickup: ShopperBasketsTypes.Basket = {
+                    basketId: 'test-basket-123',
+                    productItems: [
+                        {
+                            itemId: 'item-1',
+                            productId: 'product-1',
+                            productName: 'Product 1',
+                            quantity: 2,
+                            shipmentId: 'shipment-1',
+                            inventoryId: 'inventory-store-789',
+                        },
+                    ],
+                    shipments: [
+                        {
+                            shipmentId: 'shipment-1',
+                            c_fromStoreId: 'store-789',
+                        },
+                    ],
+                };
+
+                const stores = new Map([
+                    ['store-789', { id: 'store-789', name: 'Store 789', inventoryId: 'inventory-store-789' }],
+                ]);
+
+                const customWrapper = ({ children }: { children: React.ReactNode }) => {
+                    const router = createMemoryRouter(
+                        [
+                            {
+                                path: '/',
+                                element: (
+                                    <PickupProvider initialPickupStores={stores}>
+                                        <BasketProvider value={basketWithPickup}>{children}</BasketProvider>
+                                    </PickupProvider>
+                                ),
+                            },
+                        ],
+                        {
+                            initialEntries: ['/'],
+                        }
+                    );
+                    return <RouterProvider router={router} />;
+                };
+
+                const { result } = renderHook(
+                    () =>
+                        useProductActions({
+                            product: { ...standardProd, id: 'product-1' },
+                            currentVariant: null,
+                            itemId: 'item-1',
+                        }),
+                    {
+                        wrapper: customWrapper,
+                    }
+                );
+
+                // Verify basketPickupStore is set correctly and includes all expected fields
+                expect(result.current.basketPickupStore).toEqual({
+                    id: 'store-789',
+                    name: 'Store 789',
+                    inventoryId: 'inventory-store-789',
+                });
+
+                // The basketPickupStore is used internally to determine pickup selection status
+                // which affects stock calculations and canAddToCart validation
+                expect(result.current.basketPickupStore).toBeDefined();
+                expect(result.current.basketPickupStore?.inventoryId).toBe('inventory-store-789');
+            });
+        });
+        // @sfdc-extension-block-end SFDC_EXT_BOPIS
     });
 });

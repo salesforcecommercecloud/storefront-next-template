@@ -11,8 +11,11 @@ import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useFetcher, useLocation, useNavigate } from 'react-router';
 import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
 import { useToast } from '@/components/toast';
-// @sfdc-extension-line SFDC_EXT_BOPIS
+// @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { usePickup } from '@/extensions/bopis/context/pickup-context';
+import { getStoreIdForBasketItem } from '@/extensions/bopis/lib/basket-utils';
+import { getPickupStoreFromMap } from '@/extensions/bopis/lib/store-utils';
+// @sfdc-extension-block-end SFDC_EXT_BOPIS
 import { useBasket } from '@/providers/basket';
 import { useItemFetcher } from '@/hooks/use-item-fetcher';
 import { useRequireAuth } from '@/hooks/use-require-auth';
@@ -104,21 +107,32 @@ export function useProductActions({
     // Get product ID for pickup store check
     const productId = currentVariant?.productId || product.id;
 
-    // Check if pickup is selected for this product by checking if it exists in the pickup context
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    // Get pickup store for this basket item (if in edit mode with itemId)
+    const basketPickupStore = useMemo(() => {
+        const pickupStoreId = getStoreIdForBasketItem(basket, itemId);
+        return getPickupStoreFromMap(pickupStoreId, pickupContext?.pickupStores);
+    }, [basket, itemId, pickupContext?.pickupStores]);
+
+    // Check if pickup is selected for this product
+    // Priority: existing basket item pickup store (basketPickupStore) OR pending pickup selection in context
     const isPickupSelected = useMemo(() => {
+        // If basket item already has a pickup store, pickup is selected
+        if (basketPickupStore) return true;
+        // Otherwise check if there's a pending pickup selection in context
         return pickupContext?.pickupBasketItems?.has(productId) ?? false;
-    }, [pickupContext?.pickupBasketItems, productId]);
-    // @sfdc-extension-block-end SFDC_EXT_BOPIS
+    }, [basketPickupStore, pickupContext?.pickupBasketItems, productId]);
 
     // Calculate store inventory ID based on delivery option
-    // If PICKUP is selected, use the inventoryId from pickup context; otherwise use site inventory
-    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    // Priority: existing basket item pickup store (basketPickupStore) OR pending pickup selection in context
     const storeInventoryId = useMemo(() => {
         if (!isPickupSelected) return undefined;
+        // If basket item already has a pickup store, use its inventoryId
+        if (basketPickupStore?.inventoryId) return basketPickupStore.inventoryId;
+        // Otherwise use inventoryId from pending pickup selection in context
         const pickupInfo = pickupContext?.pickupBasketItems?.get(productId);
         return pickupInfo?.inventoryId;
-    }, [isPickupSelected, pickupContext?.pickupBasketItems, productId]);
+    }, [isPickupSelected, basketPickupStore, pickupContext?.pickupBasketItems, productId]);
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     // Inventory and stock calculations - considers delivery option, store/site inventory, and variant
@@ -905,6 +919,8 @@ export function useProductActions({
 
         // @sfdc-extension-block-start SFDC_EXT_BOPIS
         // BOPIS: Pickup actions
+        /** Pickup store for this basket item if it's set for pickup, undefined otherwise */
+        basketPickupStore,
         /** Map of productId to {inventoryId, storeId} for items marked for store pickup */
         pickupBasketItems: pickupContext?.pickupBasketItems,
         /** Marks a product for store pickup by adding it to the pickup map */

@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createCommerceApiClients, type Clients } from './createClients';
+import { ApiError } from './ApiError';
 import type { Middleware } from 'openapi-fetch';
 
 describe('createCommerceApiClients', () => {
@@ -502,13 +503,15 @@ describe('createCommerceApiClients', () => {
         });
 
         describe('response handling', () => {
-            it('should return data on successful response', async () => {
+            it('should return data and response on successful response', async () => {
                 const mockData = { total: 10, data: [{ id: 'product1' }] };
                 mockFetch.mockResolvedValue({
                     ok: true,
                     status: 200,
+                    statusText: 'OK',
                     headers: new Headers({ 'content-type': 'application/json' }),
                     json: () => Promise.resolve(mockData),
+                    url: 'https://test.commercecloud.salesforce.com/product/shopper-products/v1/organizations/org123/products',
                 } as Response);
 
                 const clients = createCommerceApiClients({
@@ -524,17 +527,24 @@ describe('createCommerceApiClients', () => {
                 });
 
                 expect(result.data).toEqual(mockData);
-                expect(result.error).toBeUndefined();
+                expect(result.response).toBeDefined();
+                expect(result.response.status).toBe(200);
+                expect(result).not.toHaveProperty('error');
             });
 
-            it('should return error on failed response', async () => {
-                const errorData = { message: 'Not found' };
+            it('should throw ApiError on failed response', async () => {
+                const errorData = { message: 'Not found', code: 'PRODUCT_NOT_FOUND' };
                 mockFetch.mockResolvedValue({
                     ok: false,
                     status: 404,
+                    statusText: 'Not Found',
                     headers: new Headers({ 'content-type': 'application/json' }),
                     json: () => Promise.resolve(errorData),
                     text: () => Promise.resolve(JSON.stringify(errorData)),
+                    url: 'https://test.commercecloud.salesforce.com/product/shopper-products/v1/organizations/org123/products/invalid',
+                    clone() {
+                        return this;
+                    },
                 } as Response);
 
                 const clients = createCommerceApiClients({
@@ -542,15 +552,94 @@ describe('createCommerceApiClients', () => {
                     fetch: mockFetch,
                 });
 
-                const result = await clients.shopperProducts.getProduct({
-                    params: {
-                        path: { organizationId: 'org123', id: 'invalid' },
-                        query: { siteId: 'RefArch' },
+                await expect(async () => {
+                    await clients.shopperProducts.getProduct({
+                        params: {
+                            path: { organizationId: 'org123', id: 'invalid' },
+                            query: { siteId: 'RefArch' },
+                        },
+                    });
+                }).rejects.toThrow(ApiError);
+            });
+
+            it('should throw ApiError with correct error details', async () => {
+                const errorData = { message: 'Unauthorized', type: 'UnauthorizedException' };
+                const errorHeaders = new Headers({
+                    'content-type': 'application/json',
+                    'www-authenticate': 'Bearer realm="example"',
+                });
+                mockFetch.mockResolvedValue({
+                    ok: false,
+                    status: 401,
+                    statusText: 'Unauthorized',
+                    headers: errorHeaders,
+                    json: () => Promise.resolve(errorData),
+                    text: () => Promise.resolve(JSON.stringify(errorData)),
+                    url: 'https://test.commercecloud.salesforce.com/shopper/baskets/v1/organizations/org123/baskets',
+                    clone() {
+                        return this;
                     },
+                } as Response);
+
+                const clients = createCommerceApiClients({
+                    baseUrl,
+                    fetch: mockFetch,
                 });
 
-                expect(result.data).toBeUndefined();
-                expect(result.error).toBeDefined();
+                try {
+                    await clients.shopperBasketsV1.createBasket({
+                        params: {
+                            path: { organizationId: 'org123' },
+                            query: { siteId: 'RefArch' },
+                        },
+                        body: {},
+                    });
+                    expect.fail('Should have thrown ApiError');
+                } catch (error) {
+                    expect(error).toBeInstanceOf(ApiError);
+                    const apiError = error as ApiError;
+                    expect(apiError.status).toBe(401);
+                    expect(apiError.statusText).toBe('Unauthorized');
+                    expect(apiError.body).toEqual(errorData);
+                    expect(apiError.rawBody).toBe(JSON.stringify(errorData));
+                    expect(apiError.headers).toBe(errorHeaders);
+                    expect(apiError.method).toBe('POST');
+                    expect(apiError.url).toContain('/baskets');
+                }
+            });
+
+            it('should provide access to response headers on success', async () => {
+                const mockData = { id: 'basket123' };
+                const responseHeaders = new Headers({
+                    'content-type': 'application/json',
+                    etag: '"abc123"',
+                    'x-custom-header': 'custom-value',
+                });
+                mockFetch.mockResolvedValue({
+                    ok: true,
+                    status: 201,
+                    statusText: 'Created',
+                    headers: responseHeaders,
+                    json: () => Promise.resolve(mockData),
+                    url: 'https://test.commercecloud.salesforce.com/shopper/baskets/v1/organizations/org123/baskets',
+                } as Response);
+
+                const clients = createCommerceApiClients({
+                    baseUrl,
+                    fetch: mockFetch,
+                });
+
+                const result = await clients.shopperBasketsV1.createBasket({
+                    params: {
+                        path: { organizationId: 'org123' },
+                        query: { siteId: 'RefArch' },
+                    },
+                    body: {},
+                });
+
+                expect(result.data).toEqual(mockData);
+                expect(result.response.headers.get('etag')).toBe('"abc123"');
+                expect(result.response.headers.get('x-custom-header')).toBe('custom-value');
             });
         });
     });

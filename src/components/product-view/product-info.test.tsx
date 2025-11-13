@@ -332,7 +332,86 @@ describe('ProductInfo', () => {
 
             expect(screen.queryByLabelText(uiStrings.quantitySelector.quantity)).not.toBeInTheDocument();
         });
+
+        test('should not render quantity selector in edit mode', () => {
+            const simpleProduct = {
+                ...mockProduct,
+                variationAttributes: [], // No variants to simplify
+            };
+
+            // Render with mode="edit" to simulate cart edit scenario
+            const router = createMemoryRouter(
+                [
+                    {
+                        path: '/product/:productId',
+                        element: (
+                            <AllProvidersWrapper>
+                                <ProductViewProvider product={simpleProduct} mode="edit">
+                                    <ProductInfo product={simpleProduct} />
+                                </ProductViewProvider>
+                            </AllProvidersWrapper>
+                        ),
+                    },
+                ],
+                {
+                    initialEntries: ['/product/test-product'],
+                }
+            );
+            render(<RouterProvider router={router} />);
+
+            // Quantity selector should not be rendered in edit mode
+            expect(screen.queryByLabelText(uiStrings.quantitySelector.quantity)).not.toBeInTheDocument();
+        });
     });
+
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    describe('delivery options', () => {
+        test('should render DeliveryOptions in normal (add) mode', () => {
+            const simpleProduct = {
+                ...mockProduct,
+                variationAttributes: [],
+            };
+
+            renderProductInfo({ product: simpleProduct });
+
+            // DeliveryOptions should be rendered in normal mode
+            // Check for text that exists in DeliveryOptions component
+            expect(screen.getByText(/Delivery:/i)).toBeInTheDocument();
+            expect(screen.getByText(/Ship to Address/i)).toBeInTheDocument();
+        });
+
+        test('should not render DeliveryOptions in edit mode without basketPickupStore', () => {
+            const simpleProduct = {
+                ...mockProduct,
+                variationAttributes: [],
+            };
+
+            // In edit mode without basket context/itemId, basketPickupStore is undefined
+            const router = createMemoryRouter(
+                [
+                    {
+                        path: '/product/:productId',
+                        element: (
+                            <AllProvidersWrapper>
+                                <ProductViewProvider product={simpleProduct} mode="edit">
+                                    <ProductInfo product={simpleProduct} />
+                                </ProductViewProvider>
+                            </AllProvidersWrapper>
+                        ),
+                    },
+                ],
+                {
+                    initialEntries: ['/product/test-product'],
+                }
+            );
+            render(<RouterProvider router={router} />);
+
+            // DeliveryOptions hidden in edit mode when no basket pickup store exists
+            expect(screen.queryByText(/Delivery:/i)).not.toBeInTheDocument();
+            expect(screen.queryByText(/Ship to Address/i)).not.toBeInTheDocument();
+        });
+    });
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     describe('edge cases', () => {
         test('should handle standard product without variation attributes', () => {

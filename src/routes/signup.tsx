@@ -3,6 +3,7 @@ import {
     redirect,
     Link,
     Form,
+    useActionData,
     type LoaderFunctionArgs,
     type ActionFunctionArgs,
     type ClientActionFunctionArgs,
@@ -19,30 +20,22 @@ import { SignupForm } from '@/components/signup-form';
 
 // utils
 import { isPasswordValid } from '@/lib/utils';
-import { flashAuth, getAuth } from '@/middlewares/auth.server';
+import { getAuth } from '@/middlewares/auth.server';
 
-type SignupLoaderData = {
+type SignupActionResponse = {
     error?: string;
-    returnUrl?: string | null;
-    action?: string | null;
+    redirectUrl?: string;
+    auth?: ReturnType<typeof getAuth>;
 };
 
 // eslint-disable-next-line react-refresh/only-export-components,custom/no-universal-loaders
-export function loader({ request, context }: LoaderFunctionArgs): SignupLoaderData {
+export function loader({ context }: LoaderFunctionArgs): null | Response {
     const session = getAuth(context);
     if (session.userType === 'registered') {
         return redirect('/');
     }
 
-    const url = new URL(request.url);
-    const returnUrl = url.searchParams.get('returnUrl');
-    const loaderAction = url.searchParams.get('action');
-
-    return {
-        error: session.error,
-        returnUrl,
-        action: loaderAction,
-    };
+    return null;
 }
 
 /**
@@ -51,29 +44,24 @@ export function loader({ request, context }: LoaderFunctionArgs): SignupLoaderDa
  * together with the client action to ensure a smooth signup process.
  */
 // eslint-disable-next-line react-refresh/only-export-components, custom/no-server-actions
-export async function action({ request, context }: ActionFunctionArgs): Promise<[string, ReturnType<typeof getAuth>]> {
+export async function action({ request, context }: ActionFunctionArgs): Promise<SignupActionResponse> {
     const formData = await request.formData();
     const firstName = formData.get('firstName')?.toString();
     const lastName = formData.get('lastName')?.toString();
     const email = formData.get('email')?.toString();
     const password = formData.get('password')?.toString();
     const confirmPassword = formData.get('confirmPassword')?.toString();
-    const resolve = (target: string): [string, ReturnType<typeof getAuth>] => [target, getAuth(context)];
 
-    // Validation
     if (!firstName || !lastName || !email || !password || !confirmPassword) {
-        flashAuth(context, uiStrings.signup.allFieldsRequired);
-        return resolve('/signup');
+        return { error: uiStrings.signup.allFieldsRequired };
     }
 
     if (password !== confirmPassword) {
-        flashAuth(context, uiStrings.signup.passwordsDoNotMatch);
-        return resolve('/signup');
+        return { error: uiStrings.signup.passwordsDoNotMatch };
     }
 
     if (!isPasswordValid(password)) {
-        flashAuth(context, uiStrings.signup.passwordNotSecure);
-        return resolve('/signup');
+        return { error: uiStrings.signup.passwordNotSecure };
     }
 
     // Register the customer
@@ -87,32 +75,18 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         password,
     });
 
-    if (result.success) {
-        // Registration and auto-login successful - redirect to returnUrl if provided, otherwise home
-        const url = new URL(request.url);
-        const returnUrl = url.searchParams.get('returnUrl');
-        return resolve(returnUrl || '/');
+    if (!result.success) {
+        return { error: result.error || uiStrings.errors.genericTryAgain };
     }
 
-    // Registration failed - redirect back to signup with error, preserving returnUrl/action
+    // Registration and auto-login successful - return redirect URL and auth
     const url = new URL(request.url);
-    const returnUrl = url.searchParams.get('returnUrl');
-    const signupAction = url.searchParams.get('action');
-    const actionParams = url.searchParams.get('actionParams');
+    const returnUrl = url.searchParams.get('returnUrl') || '/';
 
-    const params = new URLSearchParams();
-    if (returnUrl) {
-        params.set('returnUrl', returnUrl);
-    }
-    if (signupAction) {
-        params.set('action', signupAction);
-    }
-    if (actionParams) {
-        params.set('actionParams', actionParams);
-    }
-
-    const queryString = params.toString();
-    return resolve(queryString ? `/signup?${queryString}` : '/signup');
+    return {
+        redirectUrl: returnUrl,
+        auth: getAuth(context),
+    };
 }
 
 /**
@@ -121,15 +95,27 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
  */
 // eslint-disable-next-line react-refresh/only-export-components
 export async function clientAction({ context, serverAction }: ClientActionFunctionArgs) {
-    const [target, session] = await serverAction<[string, ReturnType<typeof getAuth>]>();
-    updateAuth(context, () => session);
-    return redirect(target);
+    const result = await serverAction<SignupActionResponse>();
+
+    if (result.error) {
+        return result;
+    }
+
+    // Success - sync auth from server and redirect
+    const { redirectUrl, auth } = result;
+    if (redirectUrl && auth) {
+        updateAuth(context, () => auth);
+        return redirect(redirectUrl);
+    }
+    // Fallback (shouldn't happen)
+    return redirect('/');
 }
 
 clientAction.hydrate = true as const;
 
-export default function Signup({ loaderData }: { loaderData: SignupLoaderData }): ReactElement {
-    const { error } = loaderData;
+export default function Signup(): ReactElement {
+    const actionData = useActionData<typeof action>();
+    const error = actionData?.error;
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
