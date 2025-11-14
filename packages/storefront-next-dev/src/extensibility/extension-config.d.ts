@@ -1,6 +1,8 @@
 export type ExtensionMeta = {
     name: string;
     description: string;
+    installationInstructions: string;
+    uninstallationInstructions: string;
     dependencies: string[];
 };
 

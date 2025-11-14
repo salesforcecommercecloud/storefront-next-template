@@ -74,10 +74,27 @@ export default function trimExtensions(
 
     processDirectory(directory);
     removeUnusedComponents(directory, directory);
+    updateExtensionConfig(directory, extensions);
     const endTime = Date.now();
     if (verbose) {
         console.log(`Trim extensions took ${endTime - startTime}ms`);
     }
+}
+
+/**
+ * Update the extension config file to only include the selected extensions.
+ * @param projectDirectory - The project directory
+ * @param extensionSelections - The selected extensions
+ */
+function updateExtensionConfig(projectDirectory: string, extensionSelections: ExtensionsSelection) {
+    const extensionConfigPath = path.join(projectDirectory, 'src', 'extensions', 'config.json');
+    const extensionConfig = JSON.parse(fs.readFileSync(extensionConfigPath, 'utf8'));
+    Object.keys(extensionConfig.extensions).forEach((extensionKey: string) => {
+        if (!extensionSelections[extensionKey]) {
+            delete extensionConfig.extensions[extensionKey];
+        }
+    });
+    fs.writeFileSync(extensionConfigPath, JSON.stringify({ extensions: extensionConfig.extensions }, null, 2), 'utf8');
 }
 
 function processFile(projectRoot: string, filePath: string, extensions: ExtensionsSelection): void {
@@ -240,26 +257,31 @@ function removeUnusedComponents(directory: string, projectRoot: string): string[
                 collectExportedFiles(filePath);
             } else if (isSupportedFileExtension(file) && !filePath.includes('.storybook')) {
                 const source = fs.readFileSync(filePath, 'utf-8');
-                const ast = parse(source, {
-                    sourceType: 'module',
-                    plugins: ['jsx', 'typescript'],
-                });
-                let hasExports = false;
-                traverse(ast, {
-                    noScope: true,
-                    ExportNamedDeclaration(astPath: { stop: () => void }) {
-                        hasExports = true;
-                        astPath.stop();
-                    },
-                    ExportDefaultDeclaration(astPath: { stop: () => void }) {
-                        hasExports = true;
-                        astPath.stop();
-                    },
-                });
-                if (hasExports) {
-                    const absolutePath = path.resolve(filePath);
-                    const pathWithoutExt = path.resolve(path.dirname(absolutePath));
-                    exportedFiles.add(pathWithoutExt);
+                try {
+                    const ast = parse(source, {
+                        sourceType: 'module',
+                        plugins: ['jsx', 'typescript'],
+                    });
+                    let hasExports = false;
+                    traverse(ast, {
+                        noScope: true,
+                        ExportNamedDeclaration(astPath: { stop: () => void }) {
+                            hasExports = true;
+                            astPath.stop();
+                        },
+                        ExportDefaultDeclaration(astPath: { stop: () => void }) {
+                            hasExports = true;
+                            astPath.stop();
+                        },
+                    });
+                    if (hasExports) {
+                        const absolutePath = path.resolve(filePath);
+                        const pathWithoutExt = path.resolve(path.dirname(absolutePath));
+                        exportedFiles.add(pathWithoutExt);
+                    }
+                } catch (e: unknown) {
+                    const error = e as Error;
+                    throw new Error(`Error parsing file ${filePath}: ${error.message}`);
                 }
             }
         });

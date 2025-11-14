@@ -52497,8 +52497,22 @@ function trimExtensions(directory, selectedExtensions, extensionConfig, verboseO
 	};
 	processDirectory(directory);
 	removeUnusedComponents(directory, directory);
+	updateExtensionConfig(directory, extensions);
 	const endTime = Date.now();
 	if (verbose) console.log(`Trim extensions took ${endTime - startTime}ms`);
+}
+/**
+* Update the extension config file to only include the selected extensions.
+* @param projectDirectory - The project directory
+* @param extensionSelections - The selected extensions
+*/
+function updateExtensionConfig(projectDirectory, extensionSelections) {
+	const extensionConfigPath = path$1.join(projectDirectory, "src", "extensions", "config.json");
+	const extensionConfig = JSON.parse(fs$1.readFileSync(extensionConfigPath, "utf8"));
+	Object.keys(extensionConfig.extensions).forEach((extensionKey) => {
+		if (!extensionSelections[extensionKey]) delete extensionConfig.extensions[extensionKey];
+	});
+	fs$1.writeFileSync(extensionConfigPath, JSON.stringify({ extensions: extensionConfig.extensions }, null, 2), "utf8");
 }
 function processFile(projectRoot, filePath, extensions) {
 	let modified = false;
@@ -52613,26 +52627,32 @@ function removeUnusedComponents(directory, projectRoot) {
 			const filePath = path$1.join(dir, file$2);
 			if (fs$1.statSync(filePath).isDirectory() && !filePath.includes("node_modules")) collectExportedFiles(filePath);
 			else if (isSupportedFileExtension(file$2) && !filePath.includes(".storybook")) {
-				const ast = (0, import_lib.parse)(fs$1.readFileSync(filePath, "utf-8"), {
-					sourceType: "module",
-					plugins: ["jsx", "typescript"]
-				});
-				let hasExports = false;
-				traverse(ast, {
-					noScope: true,
-					ExportNamedDeclaration(astPath) {
-						hasExports = true;
-						astPath.stop();
-					},
-					ExportDefaultDeclaration(astPath) {
-						hasExports = true;
-						astPath.stop();
+				const source = fs$1.readFileSync(filePath, "utf-8");
+				try {
+					const ast = (0, import_lib.parse)(source, {
+						sourceType: "module",
+						plugins: ["jsx", "typescript"]
+					});
+					let hasExports = false;
+					traverse(ast, {
+						noScope: true,
+						ExportNamedDeclaration(astPath) {
+							hasExports = true;
+							astPath.stop();
+						},
+						ExportDefaultDeclaration(astPath) {
+							hasExports = true;
+							astPath.stop();
+						}
+					});
+					if (hasExports) {
+						const absolutePath = path$1.resolve(filePath);
+						const pathWithoutExt = path$1.resolve(path$1.dirname(absolutePath));
+						exportedFiles.add(pathWithoutExt);
 					}
-				});
-				if (hasExports) {
-					const absolutePath = path$1.resolve(filePath);
-					const pathWithoutExt = path$1.resolve(path$1.dirname(absolutePath));
-					exportedFiles.add(pathWithoutExt);
+				} catch (e) {
+					const error$1 = e;
+					throw new Error(`Error parsing file ${filePath}: ${error$1.message}`);
 				}
 			}
 		});

@@ -68,6 +68,7 @@ const createTestFileSystem = (fileContents: any = {}) => {
     vol = new Volume();
 
     const defaultFiles: Record<string, string> = {
+        '/mock/dir/src/extensions/config.json': fileContents.extensionConfig || JSON.stringify(mockedExtensionConfig),
         '/mock/dir/src/components/featureComponent.tsx': fileContents.featureComponent || TEST_CODES.BASIC_COMPONENT,
         '/mock/dir/src/components/featureAComponent/index.tsx':
             fileContents.featureAComponent || TEST_CODES.COMPONENT_A,
@@ -905,5 +906,14 @@ describe('trim-extensions', () => {
         expect(fileExists('/mock/dir/src/components/test.tsx')).toBe(true);
 
         consoleSpy.mockRestore();
+    });
+
+    it('throws error if error occurs while parsing file with export', async () => {
+        vol.writeFileSync('/mock/dir/src/components/test.tsx', `[export const Test = 'test';`);
+        const mod = await reloadModule();
+        const trimExt = mod.default || mod;
+        expect(() => {
+            trimExt('/mock/dir', {}, mockedExtensionConfig, true);
+        }).toThrow('Error parsing file /mock/dir/src/components/test.tsx: Unexpected token');
     });
 });
