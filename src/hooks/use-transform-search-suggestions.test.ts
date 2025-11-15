@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { useTransformSearchSuggestions } from './use-transform-search-suggestions';
 import { searchUrlBuilder } from '@/lib/url';
 
@@ -23,7 +23,7 @@ describe('useTransformSearchSuggestions', () => {
     });
 
     it('should transform empty data correctly', () => {
-        const emptyData: ShopperSearchTypes.SuggestionResult = {};
+        const emptyData: ShopperSearch.schemas['SuggestionResult'] = {};
 
         const { result } = renderHook(() => useTransformSearchSuggestions(emptyData));
 
@@ -36,7 +36,7 @@ describe('useTransformSearchSuggestions', () => {
     });
 
     it('should transform category suggestions correctly', () => {
-        const data: ShopperSearchTypes.SuggestionResult = {
+        const data: ShopperSearch.schemas['SuggestionResult'] = {
             categorySuggestions: {
                 categories: [
                     {
@@ -78,7 +78,7 @@ describe('useTransformSearchSuggestions', () => {
     });
 
     it('should transform product suggestions correctly', () => {
-        const data: ShopperSearchTypes.SuggestionResult = {
+        const data: ShopperSearch.schemas['SuggestionResult'] = {
             productSuggestions: {
                 products: [
                     {
@@ -120,7 +120,7 @@ describe('useTransformSearchSuggestions', () => {
     });
 
     it('should transform phrase suggestions correctly', () => {
-        const data: ShopperSearchTypes.SuggestionResult = {
+        const data: ShopperSearch.schemas['SuggestionResult'] = {
             productSuggestions: {
                 suggestedPhrases: [
                     {
@@ -161,7 +161,7 @@ describe('useTransformSearchSuggestions', () => {
     });
 
     it('should include searchPhrase in result', () => {
-        const data: ShopperSearchTypes.SuggestionResult = {
+        const data: ShopperSearch.schemas['SuggestionResult'] = {
             searchPhrase: 'original search term',
         };
 
@@ -171,7 +171,7 @@ describe('useTransformSearchSuggestions', () => {
     });
 
     it('should handle complete data with all suggestion types', () => {
-        const completeData: ShopperSearchTypes.SuggestionResult = {
+        const completeData: ShopperSearch.schemas['SuggestionResult'] = {
             searchPhrase: 'phone',
             categorySuggestions: {
                 categories: [
@@ -239,7 +239,7 @@ describe('useTransformSearchSuggestions', () => {
     });
 
     it('should handle missing or empty names/phrases gracefully', () => {
-        const dataWithEmptyNames: ShopperSearchTypes.SuggestionResult = {
+        const dataWithEmptyNames: ShopperSearch.schemas['SuggestionResult'] = {
             categorySuggestions: {
                 categories: [
                     {
@@ -327,7 +327,7 @@ describe('useTransformSearchSuggestions', () => {
     });
 
     it('should memoize results and only recalculate when data changes', () => {
-        const data: ShopperSearchTypes.SuggestionResult = {
+        const data: ShopperSearch.schemas['SuggestionResult'] = {
             searchPhrase: 'test',
         };
 
@@ -355,7 +355,7 @@ describe('useTransformSearchSuggestions', () => {
     it('should call searchUrlBuilder for phrase suggestions', () => {
         const mockSearchUrlBuilder = vi.mocked(searchUrlBuilder);
 
-        const data: ShopperSearchTypes.SuggestionResult = {
+        const data: ShopperSearch.schemas['SuggestionResult'] = {
             productSuggestions: {
                 suggestedPhrases: [
                     {
@@ -372,7 +372,7 @@ describe('useTransformSearchSuggestions', () => {
     });
 
     it('should handle data with nested empty objects', () => {
-        const dataWithEmptyObjects: ShopperSearchTypes.SuggestionResult = {
+        const dataWithEmptyObjects: ShopperSearch.schemas['SuggestionResult'] = {
             categorySuggestions: {
                 categories: [],
             },

@@ -8,13 +8,13 @@
 'use client';
 
 import { useState, useCallback, useRef, useMemo } from 'react';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import uiStrings from '@/temp-ui-string';
 import { isProductSet, isProductBundle, isStandardProduct } from '@/lib/product-utils';
 
 interface ChildProductSelection {
-    product: ShopperProductsTypes.Product;
-    variant?: ShopperProductsTypes.Variant;
+    product: ShopperProducts.schemas['Product'];
+    variant?: ShopperProducts.schemas['Variant'];
     quantity: number;
 }
 
@@ -26,7 +26,7 @@ interface ChildProductOrderability {
 }
 
 interface UseProductSetsBundlesProps {
-    product: ShopperProductsTypes.Product;
+    product: ShopperProducts.schemas['Product'];
     initialBundleQuantity?: number;
 }
 
@@ -87,7 +87,7 @@ export function useProductSetsBundles({ product, initialBundleQuantity = 1 }: Us
 
     // Get normalized product data for sets/bundles
     interface NormalizedComboProduct {
-        childProducts?: ShopperProductsTypes.Product[];
+        childProducts?: ShopperProducts.schemas['Product'][];
     }
 
     const comboProduct: NormalizedComboProduct =
@@ -241,14 +241,14 @@ export function useProductSetsBundles({ product, initialBundleQuantity = 1 }: Us
 }
 
 // Helper function to normalize set/bundle product data
-function normalizeSetBundleProduct(product: ShopperProductsTypes.Product): {
-    childProducts: ShopperProductsTypes.Product[];
+function normalizeSetBundleProduct(product: ShopperProducts.schemas['Product']): {
+    childProducts: ShopperProducts.schemas['Product'][];
 } {
     if (!product.type?.set && !product.type?.bundle) {
         return { childProducts: [] };
     }
 
-    let childProducts: ShopperProductsTypes.Product[] = [];
+    let childProducts: ShopperProducts.schemas['Product'][] = [];
 
     if (product.type.set && product.setProducts) {
         childProducts = product.setProducts.map((setProduct) => ({

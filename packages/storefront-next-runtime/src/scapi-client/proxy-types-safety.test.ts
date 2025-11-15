@@ -244,8 +244,13 @@ describe('SCAPI Client Type Safety', () => {
                 status: 404,
                 statusText: 'Not Found',
                 headers: new Headers(),
-                body: { message: 'error' },
-                rawBody: '{"message":"error"}',
+                body: {
+                    type: 'https://api.example.com/errors/not-found',
+                    title: 'Not Found',
+                    detail: 'The requested resource was not found',
+                },
+                rawBody:
+                    '{"type":"https://api.example.com/errors/not-found","title":"Not Found","detail":"The requested resource was not found"}',
                 url: 'https://api.example.com',
                 method: 'GET',
             });
@@ -258,7 +263,11 @@ describe('SCAPI Client Type Safety', () => {
                 status: 404,
                 statusText: 'Not Found',
                 headers: new Headers(),
-                body: {},
+                body: {
+                    type: 'about:blank',
+                    title: 'Not Found',
+                    detail: 'Resource not found',
+                },
                 rawBody: '',
                 url: '',
                 method: 'GET',
@@ -272,7 +281,11 @@ describe('SCAPI Client Type Safety', () => {
                 status: 404,
                 statusText: 'Not Found',
                 headers: new Headers(),
-                body: {},
+                body: {
+                    type: 'about:blank',
+                    title: 'Not Found',
+                    detail: 'Resource not found',
+                },
                 rawBody: '',
                 url: '',
                 method: 'GET',
@@ -286,7 +299,11 @@ describe('SCAPI Client Type Safety', () => {
                 status: 404,
                 statusText: 'Not Found',
                 headers: new Headers(),
-                body: {},
+                body: {
+                    type: 'about:blank',
+                    title: 'Not Found',
+                    detail: 'Resource not found',
+                },
                 rawBody: '',
                 url: '',
                 method: 'GET',
@@ -300,7 +317,11 @@ describe('SCAPI Client Type Safety', () => {
                 status: 404,
                 statusText: 'Not Found',
                 headers: new Headers(),
-                body: { message: 'test' },
+                body: {
+                    type: 'https://api.example.com/errors/test',
+                    title: 'Test Error',
+                    detail: 'Test error detail',
+                },
                 rawBody: '',
                 url: '',
                 method: 'GET',
@@ -315,7 +336,11 @@ describe('SCAPI Client Type Safety', () => {
                 status: 404,
                 statusText: 'Not Found',
                 headers: new Headers(),
-                body: {},
+                body: {
+                    type: 'about:blank',
+                    title: 'Not Found',
+                    detail: 'Resource not found',
+                },
                 rawBody: '',
                 url: '',
                 method: 'GET',
@@ -329,7 +354,11 @@ describe('SCAPI Client Type Safety', () => {
                 status: 404,
                 statusText: 'Not Found',
                 headers: new Headers(),
-                body: {},
+                body: {
+                    type: 'about:blank',
+                    title: 'Not Found',
+                    detail: 'Resource not found',
+                },
                 rawBody: '',
                 url: 'https://api.example.com',
                 method: 'GET',
@@ -343,7 +372,11 @@ describe('SCAPI Client Type Safety', () => {
                 status: 404,
                 statusText: 'Not Found',
                 headers: new Headers(),
-                body: {},
+                body: {
+                    type: 'about:blank',
+                    title: 'Not Found',
+                    detail: 'Resource not found',
+                },
                 rawBody: '',
                 url: '',
                 method: 'GET',
@@ -352,19 +385,24 @@ describe('SCAPI Client Type Safety', () => {
             expectTypeOf(error.method).toBeString();
         });
 
-        it('should support generic type parameter for error body', () => {
-            type CustomErrorBody = { code: string; message: string };
-            const error = new ApiError<CustomErrorBody>({
+        it('should have body typed as ErrorDetail', () => {
+            const error = new ApiError({
                 status: 404,
                 statusText: 'Not Found',
                 headers: new Headers(),
-                body: { code: 'NOT_FOUND', message: 'Resource not found' },
+                body: {
+                    type: 'https://api.example.com/errors/not-found',
+                    title: 'Not Found',
+                    detail: 'Resource not found',
+                },
                 rawBody: '',
                 url: '',
                 method: 'GET',
             });
 
-            expectTypeOf(error.body).toMatchTypeOf<CustomErrorBody>();
+            expectTypeOf(error.body.type).toBeString();
+            expectTypeOf(error.body.title).toBeString();
+            expectTypeOf(error.body.detail).toBeString();
         });
 
         it('should have toJSON method on ApiError instance', () => {
@@ -372,8 +410,13 @@ describe('SCAPI Client Type Safety', () => {
                 status: 404,
                 statusText: 'Not Found',
                 headers: new Headers(),
-                body: { message: 'error' },
-                rawBody: '{"message":"error"}',
+                body: {
+                    type: 'https://api.example.com/errors/test',
+                    title: 'Test Error',
+                    detail: 'Test error detail',
+                },
+                rawBody:
+                    '{"type":"https://api.example.com/errors/test","title":"Test Error","detail":"Test error detail"}',
                 url: 'https://api.example.com',
                 method: 'GET',
             });
@@ -392,7 +435,11 @@ describe('SCAPI Client Type Safety', () => {
                 status: 404,
                 statusText: 'Not Found',
                 headers: new Headers(),
-                body: {},
+                body: {
+                    type: 'about:blank',
+                    title: 'Not Found',
+                    detail: 'Resource not found',
+                },
                 rawBody: '',
                 url: '',
                 method: 'GET',
@@ -410,8 +457,13 @@ describe('SCAPI Client Type Safety', () => {
                     status: 404,
                     statusText: 'Not Found',
                     headers: new Headers(),
-                    body: { message: 'error' },
-                    rawBody: '{"message":"error"}',
+                    body: {
+                        type: 'https://api.example.com/errors/test',
+                        title: 'Test Error',
+                        detail: 'Test error detail',
+                    },
+                    rawBody:
+                        '{"type":"https://api.example.com/errors/test","title":"Test Error","detail":"Test error detail"}',
                     url: 'https://api.example.com',
                     method: 'GET',
                 });

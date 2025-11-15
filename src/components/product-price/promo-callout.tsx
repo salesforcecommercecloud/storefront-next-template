@@ -6,14 +6,14 @@
  */
 import { useMemo } from 'react';
 import { findLowestPrice } from './utils';
-import type { ShopperBasketsTypes, ShopperProductsTypes, ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2, ShopperSearch, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { cn } from '@/lib/utils';
 
 // for different pages
 type Product =
-    | ShopperProductsTypes.Product
-    | (ShopperBasketsTypes.ProductItem & Partial<ShopperProductsTypes.Product>)
-    | ShopperSearchTypes.ProductSearchHit;
+    | ShopperProducts.schemas['Product']
+    | (ShopperBasketsV2.schemas['ProductItem'] & Partial<ShopperProducts.schemas['Product']>)
+    | ShopperSearch.schemas['ProductSearchHit'];
 
 /**
  * Component that calls out the promo message for a product

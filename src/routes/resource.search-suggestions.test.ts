@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { LoaderFunctionArgs } from 'react-router';
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { loader } from './resource.search-suggestions';
 import { createTestContext } from '@/lib/test-utils';
 import { fetchSearchSuggestions } from '@/lib/api/search';
@@ -19,7 +19,7 @@ vi.mock('@/lib/api/search', () => ({
 }));
 
 describe('Search Suggestions API', () => {
-    const mockResponse: ShopperSearchTypes.SuggestionResult = {
+    const mockResponse: ShopperSearch.schemas['SuggestionResult'] = {
         searchPhrase: 'dress',
         categorySuggestions: {
             categories: [{ id: 'dresses', name: 'Dresses', parentCategoryName: 'Clothing' }],

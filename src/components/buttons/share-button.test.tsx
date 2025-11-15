@@ -9,7 +9,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { ShareButton } from './share-button';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { createConfigWrapper } from '@/test-utils/config';
 
 // Mock useToast
@@ -56,11 +56,11 @@ Object.defineProperty(window, 'location', {
 });
 
 describe('ShareButton', () => {
-    const mockProduct: ShopperProductsTypes.Product = {
+    const mockProduct: ShopperProducts.schemas['Product'] = {
         id: '25686571M',
         name: 'Charcoal Single Pleat Wool Suit',
         shortDescription: 'This suit is great for any occasion.',
-    } as ShopperProductsTypes.Product;
+    } as ShopperProducts.schemas['Product'];
 
     // Create a wrapper with default config
     const defaultConfigWrapper = createConfigWrapper({
@@ -448,7 +448,7 @@ describe('ShareButton', () => {
 
     describe('Product Data Handling', () => {
         test('handles missing product name', async () => {
-            const productWithoutName = { ...mockProduct, name: undefined } as ShopperProductsTypes.Product;
+            const productWithoutName = { ...mockProduct, name: undefined } as ShopperProducts.schemas['Product'];
 
             const user = userEvent.setup();
             render(<ShareButton product={productWithoutName} />, { wrapper: defaultConfigWrapper });
@@ -468,7 +468,7 @@ describe('ShareButton', () => {
             const productWithoutDesc = {
                 ...mockProduct,
                 shortDescription: undefined,
-            } as ShopperProductsTypes.Product;
+            } as ShopperProducts.schemas['Product'];
 
             const user = userEvent.setup();
             render(<ShareButton product={productWithoutDesc} />, { wrapper: defaultConfigWrapper });

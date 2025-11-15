@@ -6,12 +6,12 @@
  */
 
 import { render, screen } from '@testing-library/react';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { vi } from 'vitest';
 import InventoryMessage from './index';
 
 describe('InventoryMessage', () => {
-    const baseProduct: ShopperProductsTypes.Product = {
+    const baseProduct: ShopperProducts.schemas['Product'] = {
         id: 'test-product',
         name: 'Test Product',
         price: 99.99,
@@ -95,7 +95,7 @@ describe('InventoryMessage', () => {
     });
 
     it('uses variant inventory when currentVariant is provided', () => {
-        const variant: ShopperProductsTypes.Variant = {
+        const variant: ShopperProducts.schemas['Variant'] = {
             productId: 'test-product',
             variationValues: {},
             inventory: {
@@ -152,7 +152,7 @@ describe('InventoryMessage', () => {
         });
 
         it('uses custom getInventoryStatus function with variant when provided', () => {
-            const variant: ShopperProductsTypes.Variant = {
+            const variant: ShopperProducts.schemas['Variant'] = {
                 productId: 'test-product',
                 variationValues: {},
                 inventory: {

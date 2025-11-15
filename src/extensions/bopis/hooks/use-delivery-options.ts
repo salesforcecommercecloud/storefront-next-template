@@ -6,7 +6,7 @@
  */
 
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { DELIVERY_OPTIONS, type DeliveryOption } from '@/extensions/bopis/constants';
 import { isStoreOutOfStock as storeOutOfStockFor, isSiteOutOfStock as siteOutOfStockFor } from '@/lib/inventory-utils';
 import { usePickup } from '@/extensions/bopis/context/pickup-context';
@@ -14,7 +14,7 @@ import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-
 
 interface UseDeliveryOptionsProps {
     /** The product to check inventory for */
-    product?: ShopperProductsTypes.Product;
+    product?: ShopperProducts.schemas['Product'];
     /** The selected quantity to check inventory against */
     quantity: number;
     /** Whether the item is already in the basket - prevents auto-sync and auto-change behavior */

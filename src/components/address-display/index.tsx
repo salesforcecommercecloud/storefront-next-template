@@ -1,8 +1,8 @@
 import { Typography } from '@/components/typography';
-import type { ShopperBasketsTypes, ShopperCustomersTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2, ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 
 interface AddressDisplayProps {
-    address: ShopperBasketsTypes.OrderAddress | ShopperCustomersTypes.CustomerAddress;
+    address: ShopperBasketsV2.schemas['OrderAddress'] | ShopperCustomers.schemas['CustomerAddress'];
 }
 
 export default function AddressDisplay({ address }: AddressDisplayProps) {

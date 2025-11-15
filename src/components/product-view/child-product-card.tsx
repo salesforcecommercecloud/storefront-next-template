@@ -19,23 +19,23 @@ import { useProductImages } from '@/hooks/product/use-product-images';
 import { useProductActions } from '@/hooks/product/use-product-actions';
 import uiStrings from '@/temp-ui-string';
 import ProductPrice from '@/components/product-price';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { type ReactElement, useEffect, useRef } from 'react';
 import { isProductSet, isStandardProduct } from '@/lib/product-utils';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import DeliveryOptions from '@/extensions/bopis/components/delivery-options/delivery-options';
 
 interface ProductSelectionValues {
-    product: ShopperProductsTypes.Product;
-    variant?: ShopperProductsTypes.Variant;
+    product: ShopperProducts.schemas['Product'];
+    variant?: ShopperProducts.schemas['Variant'];
     quantity: number;
 }
 
 interface ChildProductCardProps {
     /** Child product from the parent set or bundle */
-    childProduct: ShopperProductsTypes.Product;
+    childProduct: ShopperProducts.schemas['Product'];
     /** Parent product (set or bundle) containing this child */
-    parentProduct: ShopperProductsTypes.Product;
+    parentProduct: ShopperProducts.schemas['Product'];
     /** Callback to notify parent component of selection changes (variant, quantity) */
     onSelectionChange: (productId: string, selection: ProductSelectionValues) => void;
     /** Mode for swatch interaction: 'uncontrolled' render as link button, controlled renders as normal button*/

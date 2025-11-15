@@ -8,16 +8,12 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { clientAction } from './action.cart-bundle-add';
 import { getBasket } from '@/middlewares/basket.client';
-import createClient from '@/lib/scapi';
+import { createApiClients } from '@/lib/api-clients';
+import { getConfig } from '@/config';
 
 vi.mock('@/middlewares/basket.client');
-vi.mock('@/lib/scapi');
-vi.mock('@/lib/utils', () => ({
-    extractResponseError: vi.fn((error) => ({
-        responseMessage: error instanceof Error ? error.message : 'Unknown error',
-        status_code: '400',
-    })),
-}));
+vi.mock('@/lib/api-clients');
+vi.mock('@/config');
 vi.mock('react-router', async () => {
     const actual = await vi.importActual('react-router');
     return {
@@ -46,8 +42,17 @@ describe('action.cart-bundle-add', () => {
         ],
     };
 
-    const mockClient = {
-        ShopperBasketsV2: {
+    const mockConfig = {
+        commerce: {
+            api: {
+                organizationId: 'test-org',
+                siteId: 'test-site',
+            },
+        },
+    };
+
+    const mockClients = {
+        shopperBasketsV2: {
             addItemToBasket: vi.fn(),
             updateItemsInBasket: vi.fn(),
             getBasket: vi.fn(),
@@ -57,7 +62,8 @@ describe('action.cart-bundle-add', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         vi.mocked(getBasket).mockReturnValue(mockBasket);
-        vi.mocked(createClient).mockReturnValue(mockClient as any);
+        vi.mocked(createApiClients).mockReturnValue(mockClients as any);
+        vi.mocked(getConfig).mockReturnValue(mockConfig as any);
     });
 
     describe('clientAction', () => {
@@ -68,7 +74,9 @@ describe('action.cart-bundle-add', () => {
                 { productId: 'standard-product-2', quantity: 1 },
             ];
 
-            mockClient.ShopperBasketsV2.addItemToBasket.mockResolvedValue(mockUpdatedBasket);
+            mockClients.shopperBasketsV2.addItemToBasket.mockResolvedValue({ data: mockUpdatedBasket });
+            mockClients.shopperBasketsV2.updateItemsInBasket.mockResolvedValue({ data: mockUpdatedBasket });
+            mockClients.shopperBasketsV2.getBasket.mockResolvedValue({ data: mockUpdatedBasket });
 
             const formData = new FormData();
             formData.append('bundleItem', JSON.stringify(bundleItem));
@@ -87,7 +95,7 @@ describe('action.cart-bundle-add', () => {
 
             const result = await response.json();
             expect(result.success).toBe(true);
-            expect(mockClient.ShopperBasketsV2.addItemToBasket).toHaveBeenCalled();
+            expect(mockClients.shopperBasketsV2.addItemToBasket).toHaveBeenCalled();
         });
 
         test('adds bundle with variant products to cart', async () => {
@@ -97,7 +105,9 @@ describe('action.cart-bundle-add', () => {
                 { productId: 'variant-456', quantity: 2 },
             ];
 
-            mockClient.ShopperBasketsV2.addItemToBasket.mockResolvedValue(mockUpdatedBasket);
+            mockClients.shopperBasketsV2.addItemToBasket.mockResolvedValue({ data: mockUpdatedBasket });
+            mockClients.shopperBasketsV2.updateItemsInBasket.mockResolvedValue({ data: mockUpdatedBasket });
+            mockClients.shopperBasketsV2.getBasket.mockResolvedValue({ data: mockUpdatedBasket });
 
             const formData = new FormData();
             formData.append('bundleItem', JSON.stringify(bundleItem));
@@ -125,7 +135,9 @@ describe('action.cart-bundle-add', () => {
                 { productId: 'variant-123', quantity: 2 },
             ];
 
-            mockClient.ShopperBasketsV2.addItemToBasket.mockResolvedValue(mockUpdatedBasket);
+            mockClients.shopperBasketsV2.addItemToBasket.mockResolvedValue({ data: mockUpdatedBasket });
+            mockClients.shopperBasketsV2.updateItemsInBasket.mockResolvedValue({ data: mockUpdatedBasket });
+            mockClients.shopperBasketsV2.getBasket.mockResolvedValue({ data: mockUpdatedBasket });
 
             const formData = new FormData();
             formData.append('bundleItem', JSON.stringify(bundleItem));
@@ -144,12 +156,18 @@ describe('action.cart-bundle-add', () => {
 
             const result = await response.json();
             expect(result.success).toBe(true);
-            expect(mockClient.ShopperBasketsV2.addItemToBasket).toHaveBeenCalledWith({
-                parameters: { basketId: 'test-basket-123' },
+            expect(mockClients.shopperBasketsV2.addItemToBasket).toHaveBeenCalledWith({
+                params: {
+                    path: { organizationId: 'test-org', basketId: 'test-basket-123' },
+                    query: {
+                        siteId: 'test-site',
+                    },
+                },
                 body: [
                     {
                         productId: 'bundle-123',
                         quantity: 2,
+                        inventoryId: undefined,
                         bundledProductItems: childSelections,
                     },
                 ],

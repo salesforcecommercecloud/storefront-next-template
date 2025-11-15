@@ -2,14 +2,17 @@
  * Checkout utility functions
  */
 
-import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import { CHECKOUT_STEPS, type CheckoutStep, type CustomerProfile } from './checkout-context-types';
 import type { ClientLoaderFunctionArgs } from 'react-router';
 import { getBasket, updateBasket } from '@/middlewares/basket.client';
-import createClient from '@/lib/scapi';
+import { createApiClients } from '@/lib/api-clients';
+import { getConfig } from '@/config';
 import { getShippingMethodsForShipment } from '@/lib/api/shipping-methods';
 
-function hasValidPaymentCard(paymentInstrument: ShopperBasketsTypes.OrderPaymentInstrument | undefined): boolean {
+function hasValidPaymentCard(
+    paymentInstrument: ShopperBasketsV2.schemas['OrderPaymentInstrument'] | undefined
+): boolean {
     if (!paymentInstrument || paymentInstrument.paymentMethodId !== 'CREDIT_CARD') {
         return false;
     }
@@ -25,7 +28,7 @@ function hasValidPaymentCard(paymentInstrument: ShopperBasketsTypes.OrderPayment
 }
 
 function computeFinalStepForReturningCustomer(
-    basket: ShopperBasketsTypes.Basket | undefined,
+    basket: ShopperBasketsV2.schemas['Basket'] | undefined,
     customerProfile: CustomerProfile
 ): CheckoutStep | null {
     if (!customerProfile?.customer || !basket) {
@@ -64,7 +67,7 @@ function computeFinalStepForReturningCustomer(
 }
 
 export function computeStepFromBasket(
-    basket: ShopperBasketsTypes.Basket | undefined,
+    basket: ShopperBasketsV2.schemas['Basket'] | undefined,
     hasUserSelectedShippingOptions: boolean,
     autoAdvanceMode: boolean = false
 ): CheckoutStep {
@@ -102,7 +105,7 @@ export function computeStepFromBasket(
 }
 
 export function getCompletedSteps(
-    basket: ShopperBasketsTypes.Basket | undefined,
+    basket: ShopperBasketsV2.schemas['Basket'] | undefined,
     currentStep: CheckoutStep
 ): CheckoutStep[] {
     const completed: CheckoutStep[] = [];
@@ -157,7 +160,7 @@ export function shouldAutoAdvanceForReturningCustomer(
 }
 
 export function shouldPrefillBasket(
-    basket: ShopperBasketsTypes.Basket | undefined,
+    basket: ShopperBasketsV2.schemas['Basket'] | undefined,
     customerProfile: CustomerProfile
 ): boolean {
     if (!customerProfile?.customer || !customerProfile?.addresses?.length) {
@@ -173,7 +176,7 @@ export function shouldPrefillBasket(
 export async function initializeBasketForReturningCustomer(
     context: ClientLoaderFunctionArgs['context'],
     customerProfile: CustomerProfile
-): Promise<ShopperBasketsTypes.Basket | null> {
+): Promise<ShopperBasketsV2.schemas['Basket'] | null> {
     try {
         const basket = getBasket(context);
 
@@ -181,15 +184,25 @@ export async function initializeBasketForReturningCustomer(
             return null;
         }
 
-        const basketClient = createClient(context).ShopperBasketsV2;
+        const config = getConfig(context);
+        const clients = createApiClients(context);
         let updatedBasket = basket;
         let hasUpdates = false;
 
         if (!updatedBasket.customerInfo?.email && customerProfile.customer.login) {
-            updatedBasket = await basketClient.updateCustomerForBasket({
-                parameters: { basketId: updatedBasket.basketId },
+            const { data } = await clients.shopperBasketsV2.updateCustomerForBasket({
+                params: {
+                    path: {
+                        organizationId: config.commerce.api.organizationId,
+                        basketId: updatedBasket.basketId,
+                    },
+                    query: {
+                        siteId: config.commerce.api.siteId,
+                    },
+                },
                 body: { email: customerProfile.customer.login },
             });
+            updatedBasket = data;
             updateBasket(context, updatedBasket);
             hasUpdates = true;
         }
@@ -216,13 +229,20 @@ export async function initializeBasketForReturningCustomer(
                         undefined,
                 };
 
-                updatedBasket = await basketClient.updateShippingAddressForShipment({
-                    parameters: {
-                        basketId: updatedBasket.basketId,
-                        shipmentId: updatedBasket.shipments?.[0]?.shipmentId || 'me',
+                const { data } = await clients.shopperBasketsV2.updateShippingAddressForShipment({
+                    params: {
+                        path: {
+                            organizationId: config.commerce.api.organizationId,
+                            basketId: updatedBasket.basketId,
+                            shipmentId: updatedBasket.shipments?.[0]?.shipmentId || 'me',
+                        },
+                        query: {
+                            siteId: config.commerce.api.siteId,
+                        },
                     },
                     body: shippingAddress,
                 });
+                updatedBasket = data;
                 updateBasket(context, updatedBasket);
                 hasUpdates = true;
             }
@@ -232,8 +252,16 @@ export async function initializeBasketForReturningCustomer(
             const shippingAddr = updatedBasket.shipments?.[0]?.shippingAddress;
             if (shippingAddr) {
                 try {
-                    updatedBasket = await basketClient.updateBillingAddressForBasket({
-                        parameters: { basketId: updatedBasket.basketId },
+                    const { data } = await clients.shopperBasketsV2.updateBillingAddressForBasket({
+                        params: {
+                            path: {
+                                organizationId: config.commerce.api.organizationId,
+                                basketId: updatedBasket.basketId,
+                            },
+                            query: {
+                                siteId: config.commerce.api.siteId,
+                            },
+                        },
                         body: {
                             firstName: shippingAddr.firstName,
                             lastName: shippingAddr.lastName,
@@ -246,6 +274,7 @@ export async function initializeBasketForReturningCustomer(
                             phone: shippingAddr.phone,
                         },
                     });
+                    updatedBasket = data;
                     updateBasket(context, updatedBasket);
                 } catch {
                     // Billing address update failed - continue without it (not critical)
@@ -265,13 +294,20 @@ export async function initializeBasketForReturningCustomer(
                     shippingMethods?.applicableShippingMethods?.length > 0
                 ) {
                     const defaultMethod = shippingMethods.applicableShippingMethods[0];
-                    updatedBasket = await basketClient.updateShippingMethodForShipment({
-                        parameters: {
-                            basketId: updatedBasket.basketId,
-                            shipmentId: updatedBasket.shipments[0].shipmentId || 'me',
+                    const { data } = await clients.shopperBasketsV2.updateShippingMethodForShipment({
+                        params: {
+                            path: {
+                                organizationId: config.commerce.api.organizationId,
+                                basketId: updatedBasket.basketId,
+                                shipmentId: updatedBasket.shipments[0].shipmentId || 'me',
+                            },
+                            query: {
+                                siteId: config.commerce.api.siteId,
+                            },
                         },
                         body: { id: defaultMethod.id },
                     });
+                    updatedBasket = data;
                     updateBasket(context, updatedBasket);
                     hasUpdates = true;
                 }

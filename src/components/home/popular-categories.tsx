@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { Await } from 'react-router';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { ContentCard } from '@/components/content-card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Typography } from '@/components/typography';
@@ -8,7 +8,7 @@ import uiStrings from '@/temp-ui-string';
 import heroImage from '/images/hero-cube.png';
 
 interface PopularCategoriesProps {
-    categoriesPromise: Promise<ShopperProductsTypes.Category[]>;
+    categoriesPromise: Promise<ShopperProducts.schemas['Category'][]>;
     paddingX?: string;
 }
 

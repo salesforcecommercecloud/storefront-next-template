@@ -6,7 +6,7 @@ import { render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 
 // Commerce SDK
-import type { ShopperBasketsTypes, ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 // Components
 import ProductItemsList from './index';
@@ -57,7 +57,7 @@ const renderWithRouter = (component: React.ReactElement) => {
 };
 
 // Test data
-const mockProductItem: ShopperBasketsTypes.ProductItem = {
+const mockProductItem: ShopperBasketsV2.schemas['ProductItem'] = {
     itemId: 'item-1',
     productId: 'product-1',
     productName: 'Test Product',
@@ -82,7 +82,7 @@ const mockProductItem: ShopperBasketsTypes.ProductItem = {
     ],
 };
 
-const mockProduct: ShopperProductsTypes.Product = {
+const mockProduct: ShopperProducts.schemas['Product'] = {
     id: 'product-1',
     name: 'Test Product',
     productName: 'Test Product',
@@ -158,7 +158,7 @@ describe('ProductItemsList', () => {
         test('handles null/undefined product items', () => {
             renderWithRouter(
                 <ProductItemsList
-                    productItems={null as unknown as ShopperBasketsTypes.ProductItem[]}
+                    productItems={null as unknown as ShopperBasketsV2.schemas['ProductItem'][]}
                     productsByItemId={{}}
                 />
             );
@@ -677,7 +677,7 @@ describe('ProductItemsList', () => {
             const minimalProductItem = {
                 itemId: 'minimal-item',
                 productId: 'minimal-product',
-            } as ShopperBasketsTypes.ProductItem;
+            } as ShopperBasketsV2.schemas['ProductItem'];
 
             renderWithRouter(<ProductItemsList productItems={[minimalProductItem]} productsByItemId={{}} />);
 

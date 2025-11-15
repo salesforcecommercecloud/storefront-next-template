@@ -1,8 +1,8 @@
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import type { BadgeDetail } from '@/config';
 
 interface GetProductBadgesProps {
-    product: ShopperSearchTypes.ProductSearchHit;
+    product: ShopperSearch.schemas['ProductSearchHit'];
     badgeDetails: BadgeDetail[];
     maxBadges?: number;
 }

@@ -5,15 +5,15 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import type { ShopperProductsTypes, ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 
 /**
- * Converts a ShopperProductsTypes.Product to ShopperSearchTypes.ProductSearchHit format
+ * Converts a ShopperProducts.schemas['Product'] to ShopperSearch.schemas['ProductSearchHit'] format
  * This allows ProductTile and ProductGrid components to work with Product objects from wishlist
  */
 export function convertProductToProductSearchHit(
-    product: ShopperProductsTypes.Product
-): ShopperSearchTypes.ProductSearchHit {
+    product: ShopperProducts.schemas['Product']
+): ShopperSearch.schemas['ProductSearchHit'] {
     // Get the first image group's first image for the main image
     const firstImageGroup = product.imageGroups?.[0];
     const firstImage = firstImageGroup?.images?.[0];
@@ -50,5 +50,5 @@ export function convertProductToProductSearchHit(
         // Additional properties that ProductSearchHit might have
         promotions: [],
         customProperties: product.customProperties,
-    } as ShopperSearchTypes.ProductSearchHit;
+    };
 }

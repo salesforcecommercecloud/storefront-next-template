@@ -1,7 +1,7 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { PopularCategories } from './popular-categories';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 // Mock the ContentCard component to avoid Link issues
 vi.mock('@/components/content-card', () => ({
@@ -26,7 +26,7 @@ vi.mock('@/components/content-card', () => ({
     ),
 }));
 
-const mockCategories: ShopperProductsTypes.Category[] = [
+const mockCategories: ShopperProducts.schemas['Category'][] = [
     {
         id: 'cat1',
         name: 'Electronics',

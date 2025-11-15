@@ -1,7 +1,8 @@
 import type { ActionFunctionArgs } from 'react-router';
-import { type ShopperBasketsTypes, type ShopperCustomersTypes } from 'commerce-sdk-isomorphic';
+import { type ShopperBasketsV2, type ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { customAlphabet, nanoid } from 'nanoid';
-import createClient from '@/lib/scapi';
+import { createApiClients } from '@/lib/api-clients';
+import { getConfig } from '@/config';
 import { getAuth, updateAuth } from '@/middlewares/auth.client';
 import uiStrings from '@/temp-ui-string';
 import { extractResponseError } from '@/lib/utils';
@@ -11,7 +12,7 @@ import { extractResponseError } from '@/lib/utils';
  */
 export interface CustomerLookupResult {
     isRegistered: boolean;
-    customer?: ShopperCustomersTypes.Customer;
+    customer?: ShopperCustomers.schemas['Customer'];
     requiresLogin?: boolean;
     error?: string;
 }
@@ -22,7 +23,7 @@ export interface CustomerLookupResult {
  * @param address - The address to validate
  * @throws Error if any required field is missing
  */
-function validateAddress(address: ShopperBasketsTypes.OrderAddress): void {
+function validateAddress(address: ShopperBasketsV2.schemas['OrderAddress']): void {
     if (!address.countryCode) {
         throw new Error(uiStrings.errors.customer.countryCodeRequired);
     }
@@ -70,9 +71,18 @@ export async function lookupCustomerByEmail(
         // If this is already a registered user session, check if email matches
         if (session.userType === 'registered' && session.customer_id) {
             try {
-                const shopperCustomersClient = createClient(context).ShopperCustomers;
-                const customer = await shopperCustomersClient.getCustomer({
-                    parameters: { customerId: session.customer_id },
+                const config = getConfig(context);
+                const clients = createApiClients(context);
+                const { data: customer } = await clients.shopperCustomers.getCustomer({
+                    params: {
+                        path: {
+                            organizationId: config.commerce.api.organizationId,
+                            customerId: session.customer_id,
+                        },
+                        query: {
+                            siteId: config.commerce.api.siteId,
+                        },
+                    },
                 });
 
                 // Check if the provided email matches the current user's email
@@ -130,7 +140,7 @@ export function isRegisteredCustomer(context: ActionFunctionArgs['context']): bo
  */
 export async function getCurrentCustomer(
     context: ActionFunctionArgs['context']
-): Promise<ShopperCustomersTypes.Customer | null> {
+): Promise<ShopperCustomers.schemas['Customer'] | null> {
     try {
         if (!isRegisteredCustomer(context)) {
             return null;
@@ -142,11 +152,22 @@ export async function getCurrentCustomer(
             return null;
         }
 
-        const shopperCustomersClient = createClient(context).ShopperCustomers;
+        const config = getConfig(context);
+        const clients = createApiClients(context);
 
-        return await shopperCustomersClient.getCustomer({
-            parameters: { customerId: session.customer_id },
+        const { data: customer } = await clients.shopperCustomers.getCustomer({
+            params: {
+                path: {
+                    organizationId: config.commerce.api.organizationId,
+                    customerId: session.customer_id,
+                },
+                query: {
+                    siteId: config.commerce.api.siteId,
+                },
+            },
         });
+
+        return customer;
     } catch {
         return null;
     }
@@ -337,8 +358,8 @@ export async function registerGuestUser(
     email: string,
     orderInfo?: {
         orderNo: string;
-        customerInfo?: ShopperBasketsTypes.CustomerInfo;
-        shippingAddress?: ShopperBasketsTypes.OrderAddress;
+        customerInfo?: ShopperBasketsV2.schemas['CustomerInfo'];
+        shippingAddress?: ShopperBasketsV2.schemas['OrderAddress'];
     }
 ): Promise<{
     success: boolean;
@@ -367,7 +388,7 @@ export async function registerGuestUser(
         const password = generateRandomPassword();
 
         // Prepare registration data
-        const registrationData: ShopperCustomersTypes.CustomerRegistration = {
+        const registrationData: ShopperCustomers.schemas['CustomerRegistration'] = {
             customer: {
                 login: email,
                 email,
@@ -378,10 +399,19 @@ export async function registerGuestUser(
         };
 
         // Register the customer directly using Commerce Cloud API
-        const shopperCustomersClient = createClient(context).ShopperCustomers;
+        const config = getConfig(context);
+        const clients = createApiClients(context);
 
         // Register the customer
-        await shopperCustomersClient.registerCustomer({
+        await clients.shopperCustomers.registerCustomer({
+            params: {
+                path: {
+                    organizationId: config.commerce.api.organizationId,
+                },
+                query: {
+                    siteId: config.commerce.api.siteId,
+                },
+            },
             body: registrationData,
         });
 
@@ -432,11 +462,12 @@ export async function registerGuestUser(
 export async function saveShippingAddressToCustomer(
     context: ActionFunctionArgs['context'],
     customerId: string,
-    address: ShopperBasketsTypes.OrderAddress,
+    address: ShopperBasketsV2.schemas['OrderAddress'],
     _addressName: string = uiStrings.customer.defaults.defaultAddressName
 ): Promise<boolean> {
     try {
-        const client = createClient(context).ShopperCustomers;
+        const config = getConfig(context);
+        const clients = createApiClients(context);
 
         // Validate required address fields
         validateAddress(address);
@@ -456,8 +487,16 @@ export async function saveShippingAddressToCustomer(
             preferred: true, // Set as preferred shipping address
         };
 
-        await client.createCustomerAddress({
-            parameters: { customerId },
+        await clients.shopperCustomers.createCustomerAddress({
+            params: {
+                path: {
+                    organizationId: config.commerce.api.organizationId,
+                    customerId,
+                },
+                query: {
+                    siteId: config.commerce.api.siteId,
+                },
+            },
             body: customerAddress,
         });
 
@@ -480,11 +519,12 @@ export async function saveShippingAddressToCustomer(
 export async function saveBillingAddressToCustomer(
     context: ActionFunctionArgs['context'],
     customerId: string,
-    address: ShopperBasketsTypes.OrderAddress,
+    address: ShopperBasketsV2.schemas['OrderAddress'],
     _addressName: string = uiStrings.customer.defaults.defaultBillingAddressName
 ): Promise<boolean> {
     try {
-        const client = createClient(context).ShopperCustomers;
+        const config = getConfig(context);
+        const clients = createApiClients(context);
 
         // Validate required address fields
         validateAddress(address);
@@ -504,8 +544,16 @@ export async function saveBillingAddressToCustomer(
             preferred: false, // Will be set as preferred billing in the profile logic
         };
 
-        await client.createCustomerAddress({
-            parameters: { customerId },
+        await clients.shopperCustomers.createCustomerAddress({
+            params: {
+                path: {
+                    organizationId: config.commerce.api.organizationId,
+                    customerId,
+                },
+                query: {
+                    siteId: config.commerce.api.siteId,
+                },
+            },
             body: customerAddress,
         });
 
@@ -535,7 +583,8 @@ export async function updateCustomerContactInfo(
     }
 ): Promise<boolean> {
     try {
-        const client = createClient(context).ShopperCustomers;
+        const config = getConfig(context);
+        const clients = createApiClients(context);
 
         // Update customer profile with contact information
         const customerUpdate = {
@@ -545,8 +594,16 @@ export async function updateCustomerContactInfo(
             ...(contactInfo.lastName && { lastName: contactInfo.lastName }),
         };
 
-        await client.updateCustomer({
-            parameters: { customerId },
+        await clients.shopperCustomers.updateCustomer({
+            params: {
+                path: {
+                    organizationId: config.commerce.api.organizationId,
+                    customerId,
+                },
+                query: {
+                    siteId: config.commerce.api.siteId,
+                },
+            },
             body: customerUpdate,
         });
 
@@ -568,13 +625,22 @@ export async function updateCustomerContactInfo(
 export async function getCustomerAddresses(
     context: ActionFunctionArgs['context'],
     customerId: string
-): Promise<ShopperCustomersTypes.CustomerAddress[]> {
+): Promise<ShopperCustomers.schemas['CustomerAddress'][]> {
     try {
-        const client = createClient(context).ShopperCustomers;
+        const config = getConfig(context);
+        const clients = createApiClients(context);
 
         // Get customer profile which includes addresses
-        const customer = await client.getCustomer({
-            parameters: { customerId },
+        const { data: customer } = await clients.shopperCustomers.getCustomer({
+            params: {
+                path: {
+                    organizationId: config.commerce.api.organizationId,
+                    customerId,
+                },
+                query: {
+                    siteId: config.commerce.api.siteId,
+                },
+            },
         });
 
         // Extract addresses from customer profile
@@ -597,13 +663,22 @@ export async function getCustomerAddresses(
 export async function getCustomerPaymentInstruments(
     context: ActionFunctionArgs['context'],
     customerId: string
-): Promise<ShopperCustomersTypes.CustomerPaymentInstrument[]> {
+): Promise<ShopperCustomers.schemas['CustomerPaymentInstrument'][]> {
     try {
-        const client = createClient(context).ShopperCustomers;
+        const config = getConfig(context);
+        const clients = createApiClients(context);
 
         // Get customer profile which includes payment instruments
-        const customer = await client.getCustomer({
-            parameters: { customerId },
+        const { data: customer } = await clients.shopperCustomers.getCustomer({
+            params: {
+                path: {
+                    organizationId: config.commerce.api.organizationId,
+                    customerId,
+                },
+                query: {
+                    siteId: config.commerce.api.siteId,
+                },
+            },
         });
 
         // Extract payment instruments from customer profile
@@ -627,17 +702,28 @@ export async function getCustomerProfileForCheckout(
     context: ActionFunctionArgs['context'],
     customerId: string
 ): Promise<{
-    customer?: ShopperCustomersTypes.Customer;
-    addresses: ShopperCustomersTypes.CustomerAddress[];
-    paymentInstruments: ShopperCustomersTypes.CustomerPaymentInstrument[];
-    preferredShippingAddress?: ShopperCustomersTypes.CustomerAddress;
-    preferredBillingAddress?: ShopperCustomersTypes.CustomerAddress;
+    customer?: ShopperCustomers.schemas['Customer'];
+    addresses: ShopperCustomers.schemas['CustomerAddress'][];
+    paymentInstruments: ShopperCustomers.schemas['CustomerPaymentInstrument'][];
+    preferredShippingAddress?: ShopperCustomers.schemas['CustomerAddress'];
+    preferredBillingAddress?: ShopperCustomers.schemas['CustomerAddress'];
 } | null> {
     try {
-        const client = createClient(context).ShopperCustomers;
+        const config = getConfig(context);
+        const clients = createApiClients(context);
 
         // Get customer profile which includes addresses and payment instruments
-        const customer = await client.getCustomer({ parameters: { customerId } });
+        const { data: customer } = await clients.shopperCustomers.getCustomer({
+            params: {
+                path: {
+                    organizationId: config.commerce.api.organizationId,
+                    customerId,
+                },
+                query: {
+                    siteId: config.commerce.api.siteId,
+                },
+            },
+        });
 
         // Extract addresses and payment instruments from customer profile
         const addresses = customer.addresses || [];
@@ -708,10 +794,11 @@ export async function getCustomerProfileForCheckout(
 export async function savePaymentMethodToCustomer(
     context: ActionFunctionArgs['context'],
     customerId: string,
-    paymentInstrument: ShopperBasketsTypes.PaymentInstrument
+    paymentInstrument: ShopperCustomers.schemas['CustomerPaymentInstrumentRequest']
 ): Promise<boolean> {
     try {
-        const client = createClient(context).ShopperCustomers;
+        const config = getConfig(context);
+        const clients = createApiClients(context);
 
         // Create the payment instrument for the customer
         // Filter out read-only properties like maskedNumber, issuerNumber, etc.
@@ -730,8 +817,16 @@ export async function savePaymentMethodToCustomer(
                 : undefined,
         };
 
-        await client.createCustomerPaymentInstrument({
-            parameters: { customerId },
+        await clients.shopperCustomers.createCustomerPaymentInstrument({
+            params: {
+                path: {
+                    organizationId: config.commerce.api.organizationId,
+                    customerId,
+                },
+                query: {
+                    siteId: config.commerce.api.siteId,
+                },
+            },
             body: customerPaymentInstrument,
         });
 
@@ -745,8 +840,19 @@ export async function savePaymentMethodToCustomer(
 export async function getCustomer(
     context: ActionFunctionArgs['context'],
     customerId: string
-): Promise<ShopperCustomersTypes.Customer> {
-    return createClient(context).ShopperCustomers.getCustomer({
-        parameters: { customerId },
+): Promise<ShopperCustomers.schemas['Customer']> {
+    const config = getConfig(context);
+    const clients = createApiClients(context);
+    const { data: customer } = await clients.shopperCustomers.getCustomer({
+        params: {
+            path: {
+                organizationId: config.commerce.api.organizationId,
+                customerId,
+            },
+            query: {
+                siteId: config.commerce.api.siteId,
+            },
+        },
     });
+    return customer;
 }

@@ -16,6 +16,7 @@ import type {
     ShopperStores,
 } from './types';
 import { createClient } from './createClient';
+import { defaultQuerySerializer } from './defaultQuerySerializer';
 import type { ProxyClient } from './proxy-types';
 
 // Import operation maps for all APIs
@@ -53,56 +54,60 @@ export type Clients = {
 };
 
 export function createCommerceApiClients(config: ClientOptions): Clients {
-    const { baseUrl, fetch: customFetch } = config;
+    const { baseUrl, fetch: customFetch, querySerializer, ...rest } = config;
 
-    const clientOptions = customFetch ? { fetch: customFetch } : {};
+    const clientOptions = {
+        ...(customFetch ? { fetch: customFetch } : {}),
+        querySerializer: querySerializer || defaultQuerySerializer,
+        ...rest,
+    };
 
     // Create base clients and wrap with proxy for operation methods
     const shopperBasketsV1 = createClient(
         createBaseClient<ShopperBasketsV1.endpoints>({
-            baseUrl: `${baseUrl}/shopper/baskets/v1`,
+            baseUrl: `${baseUrl}/checkout/shopper-baskets/v1`,
             ...clientOptions,
         }),
         shopperBasketsV1Ops
     );
     const shopperBasketsV2 = createClient(
         createBaseClient<ShopperBasketsV2.endpoints>({
-            baseUrl: `${baseUrl}/shopper/baskets/v2`,
+            baseUrl: `${baseUrl}/checkout/shopper-baskets/v2`,
             ...clientOptions,
         }),
         shopperBasketsV2Ops
     );
     const shopperConsents = createClient(
         createBaseClient<ShopperConsents.endpoints>({
-            baseUrl: `${baseUrl}/shopper/consents/v1`,
+            baseUrl: `${baseUrl}/shopper/shopper-consents/v1`,
             ...clientOptions,
         }),
         shopperConsentsOps
     );
     const shopperContext = createClient(
         createBaseClient<ShopperContext.endpoints>({
-            baseUrl: `${baseUrl}/shopper/context/v1`,
+            baseUrl: `${baseUrl}/shopper/shopper-context/v1`,
             ...clientOptions,
         }),
         shopperContextOps
     );
     const shopperCustomers = createClient(
         createBaseClient<ShopperCustomers.endpoints>({
-            baseUrl: `${baseUrl}/shopper/customers/v1`,
+            baseUrl: `${baseUrl}/customer/shopper-customers/v1`,
             ...clientOptions,
         }),
         shopperCustomersOps
     );
     const shopperExperience = createClient(
         createBaseClient<ShopperExperience.endpoints>({
-            baseUrl: `${baseUrl}/shopper/experience/v1`,
+            baseUrl: `${baseUrl}/experience/shopper-experience/v1`,
             ...clientOptions,
         }),
         shopperExperienceOps
     );
     const shopperGiftCertificates = createClient(
         createBaseClient<ShopperGiftCertificates.endpoints>({
-            baseUrl: `${baseUrl}/shopper/gift-certificates/v1`,
+            baseUrl: `${baseUrl}/pricing/shopper-gift-certificates/v1`,
             ...clientOptions,
         }),
         shopperGiftCertificatesOps
@@ -116,7 +121,7 @@ export function createCommerceApiClients(config: ClientOptions): Clients {
     );
     const shopperOrders = createClient(
         createBaseClient<ShopperOrders.endpoints>({
-            baseUrl: `${baseUrl}/shopper/orders/v1`,
+            baseUrl: `${baseUrl}/checkout/shopper-orders/v1`,
             ...clientOptions,
         }),
         shopperOrdersOps
@@ -130,28 +135,28 @@ export function createCommerceApiClients(config: ClientOptions): Clients {
     );
     const shopperPromotions = createClient(
         createBaseClient<ShopperPromotions.endpoints>({
-            baseUrl: `${baseUrl}/shopper/promotions/v1`,
+            baseUrl: `${baseUrl}/pricing/shopper-promotions/v1`,
             ...clientOptions,
         }),
         shopperPromotionsOps
     );
     const shopperSearch = createClient(
         createBaseClient<ShopperSearch.endpoints>({
-            baseUrl: `${baseUrl}/shopper/search/v1`,
+            baseUrl: `${baseUrl}/search/shopper-search/v1`,
             ...clientOptions,
         }),
         shopperSearchOps
     );
     const shopperSeo = createClient(
         createBaseClient<ShopperSeo.endpoints>({
-            baseUrl: `${baseUrl}/shopper/seo/v1`,
+            baseUrl: `${baseUrl}/site/shopper-seo/v1`,
             ...clientOptions,
         }),
         shopperSeoOps
     );
     const shopperStores = createClient(
         createBaseClient<ShopperStores.endpoints>({
-            baseUrl: `${baseUrl}/shopper/stores/v1`,
+            baseUrl: `${baseUrl}/store/shopper-stores/v1`,
             ...clientOptions,
         }),
         shopperStoresOps

@@ -6,20 +6,22 @@
  */
 
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import type { ShopperProductsTypes, ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { loader, clientLoader } from './product.$productId';
+import { appConfigContext } from '@/config';
+import { authContext } from '@/middlewares/auth.utils';
 
-// Mock the SCAPI client
+// Mock the API client creation
 const mockGetProduct = vi.fn();
 const mockGetCategory = vi.fn();
 
-vi.mock('@/lib/scapi', () => ({
-    default: () => ({
-        ShopperProducts: {
+vi.mock('@/lib/api-clients', () => ({
+    createApiClients: vi.fn(() => ({
+        shopperProducts: {
             getProduct: mockGetProduct,
             getCategory: mockGetCategory,
         },
-    }),
+    })),
 }));
 
 // Mock the recommendations function
@@ -38,13 +40,13 @@ vi.mock('@/lib/recommendations', () => ({
                 count: 0,
                 offset: 0,
                 limit: 8,
-            } as ShopperSearchTypes.ProductSearchResult),
+            } as ShopperSearch.schemas['ProductSearchResult']),
         },
     ]),
 }));
 
 describe('Product Route Loaders', () => {
-    const mockProduct: ShopperProductsTypes.Product = {
+    const mockProduct: ShopperProducts.schemas['Product'] = {
         id: 'test-product-123',
         name: 'Test Product',
         primaryCategoryId: 'test-category-123',
@@ -53,18 +55,48 @@ describe('Product Route Loaders', () => {
         master: undefined,
     };
 
-    const mockCategory: ShopperProductsTypes.Category = {
+    const mockCategory: ShopperProducts.schemas['Category'] = {
         id: 'test-category-123',
         name: 'Test Category',
         parentCategoryId: 'parent-category-123',
         categories: [],
     };
 
+    const mockAppConfig = {
+        commerce: {
+            api: {
+                organizationId: 'test-org',
+                siteId: 'test-site',
+                clientId: 'test-client-id',
+                proxy: '/api/commerce',
+            },
+        },
+        sitePreferences: {
+            productDetailSitePreferences: {},
+        },
+    };
+
+    const mockAuthSession = {
+        ref: Promise.resolve({
+            access_token: 'test-access-token',
+            refresh_token: 'test-refresh-token',
+            token_type: 'Bearer',
+        }),
+    };
+
     const mockContext = {
         locale: 'en-US',
         currency: 'USD',
         siteId: 'test-site',
-        get: vi.fn(),
+        get: vi.fn((context) => {
+            if (context === appConfigContext) {
+                return mockAppConfig;
+            }
+            if (context === authContext) {
+                return mockAuthSession;
+            }
+            return undefined;
+        }),
         set: vi.fn(),
     };
 
@@ -74,8 +106,8 @@ describe('Product Route Loaders', () => {
 
     describe('loader function', () => {
         test('fetches product data successfully', async () => {
-            mockGetProduct.mockResolvedValue(mockProduct);
-            mockGetCategory.mockResolvedValue(mockCategory);
+            mockGetProduct.mockResolvedValue({ data: mockProduct });
+            mockGetCategory.mockResolvedValue({ data: mockCategory });
 
             const request = new Request('https://example.com/product/test-product-123');
             const params = { productId: 'test-product-123' };
@@ -120,7 +152,7 @@ describe('Product Route Loaders', () => {
         });
 
         test('handles category fetch failure gracefully', async () => {
-            mockGetProduct.mockResolvedValue(mockProduct);
+            mockGetProduct.mockResolvedValue({ data: mockProduct });
             mockGetCategory.mockRejectedValue(new Error('Category not found'));
 
             const request = new Request('https://example.com/product/test-product-123');
@@ -155,9 +187,9 @@ describe('Product Route Loaders', () => {
             };
 
             mockGetProduct
-                .mockResolvedValueOnce(variantProduct) // First call for variant
-                .mockResolvedValueOnce(masterProduct); // Second call for master
-            mockGetCategory.mockResolvedValue(mockCategory);
+                .mockResolvedValueOnce({ data: variantProduct }) // First call for variant
+                .mockResolvedValueOnce({ data: masterProduct }); // Second call for master
+            mockGetCategory.mockResolvedValue({ data: mockCategory });
 
             const request = new Request('https://example.com/product/variant-product-123');
             const params = { productId: 'variant-product-123' };
@@ -176,8 +208,8 @@ describe('Product Route Loaders', () => {
         });
 
         test('handles product with variant ID in search params', () => {
-            mockGetProduct.mockResolvedValue(mockProduct);
-            mockGetCategory.mockResolvedValue(mockCategory);
+            mockGetProduct.mockResolvedValue({ data: mockProduct });
+            mockGetCategory.mockResolvedValue({ data: mockCategory });
 
             const request = new Request('https://example.com/product/test-product-123?pid=variant-123');
             const params = { productId: 'test-product-123' };
@@ -187,8 +219,10 @@ describe('Product Route Loaders', () => {
 
             // Should use the pid parameter instead of productId
             expect(mockGetProduct).toHaveBeenCalledWith({
-                parameters: expect.objectContaining({
-                    id: 'variant-123',
+                params: expect.objectContaining({
+                    path: expect.objectContaining({
+                        id: 'variant-123',
+                    }),
                 }),
             });
         });
@@ -196,8 +230,8 @@ describe('Product Route Loaders', () => {
 
     describe('clientLoader function', () => {
         test('returns same data structure as server loader', async () => {
-            mockGetProduct.mockResolvedValue(mockProduct);
-            mockGetCategory.mockResolvedValue(mockCategory);
+            mockGetProduct.mockResolvedValue({ data: mockProduct });
+            mockGetCategory.mockResolvedValue({ data: mockCategory });
 
             const request = new Request('https://example.com/product/test-product-123');
             const params = { productId: 'test-product-123' };

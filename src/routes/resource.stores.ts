@@ -6,9 +6,10 @@
  */
 /** @sfdc-extension-file SFDC_EXT_STORE_LOCATOR */
 import { type ClientLoaderFunctionArgs, data, type LoaderFunctionArgs } from 'react-router';
-import type { ShopperStoresTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
 import { extractResponseError } from '@/lib/utils';
-import createClient from '@/lib/scapi';
+import { createApiClients } from '@/lib/api-clients';
+import { getConfig } from '@/config';
 
 /**
  * Client resource to search for stores
@@ -26,8 +27,10 @@ export async function searchStores(context: LoaderFunctionArgs['context'], reque
         const distanceUnit = url.searchParams.get('distanceUnit') ?? 'km';
         const limit = url.searchParams.get('limit');
 
-        // siteId seems not required for searchStores API
-        const parameters: Omit<ShopperStoresTypes.searchStoresQueryParameters, 'siteId'> =
+        const config = getConfig(context);
+        const clients = createApiClients(context);
+
+        const queryParams: ShopperStores.operations['searchStores']['parameters']['query'] =
             mode === 'device'
                 ? {
                       latitude: latitude ? Number(latitude) : undefined,
@@ -35,6 +38,7 @@ export async function searchStores(context: LoaderFunctionArgs['context'], reque
                       maxDistance: maxDistance ? Number(maxDistance) : undefined,
                       distanceUnit: distanceUnit as 'mi' | 'km',
                       limit: limit ? Number(limit) : undefined,
+                      siteId: config.commerce.api.siteId,
                   }
                 : {
                       countryCode,
@@ -42,10 +46,18 @@ export async function searchStores(context: LoaderFunctionArgs['context'], reque
                       maxDistance: maxDistance ? Number(maxDistance) : undefined,
                       distanceUnit: distanceUnit as 'mi' | 'km',
                       limit: limit ? Number(limit) : undefined,
+                      siteId: config.commerce.api.siteId,
                   };
 
-        const client = createClient(context);
-        const stores = await client.ShopperStores.searchStores({ parameters });
+        const { data: stores } = await clients.shopperStores.searchStores({
+            params: {
+                path: {
+                    organizationId: config.commerce.api.organizationId,
+                },
+                query: queryParams,
+            },
+        });
+
         return Response.json({
             success: true,
             stores,

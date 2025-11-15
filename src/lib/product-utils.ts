@@ -18,7 +18,7 @@
  * // returns { "Colour": "royal" }
  */
 
-import { type ShopperProductsTypes, type ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { findImageGroupBy } from '@/lib/image-groups-utils';
 
 /**
@@ -43,8 +43,8 @@ export type SwatchData = {
  * // Returns all color variation values from the product
  */
 export function getColorValues(
-    variationAttributes: ShopperProductsTypes.VariationAttribute[] | undefined
-): ShopperProductsTypes.VariationAttributeValue[] {
+    variationAttributes: ShopperProducts.schemas['VariationAttribute'][] | undefined
+): ShopperProducts.schemas['VariationAttributeValue'][] {
     if (variationAttributes && Array.isArray(variationAttributes)) {
         for (const attr of variationAttributes) {
             if (attr.id === 'color' && attr.values && Array.isArray(attr.values)) {
@@ -68,14 +68,14 @@ export function getColorValues(
  * // Returns swatch data for all images in the image group
  */
 export function buildImageSwatchData(
-    imageGroup: ShopperProductsTypes.ImageGroup,
+    imageGroup: ShopperProducts.schemas['ImageGroup'],
     colorValue: string,
     colorName: string
 ): SwatchData[] {
     const swatchData: SwatchData[] = [];
 
     if (imageGroup.images && Array.isArray(imageGroup.images)) {
-        imageGroup.images.forEach((image: ShopperProductsTypes.Image) => {
+        imageGroup.images.forEach((image: ShopperProducts.schemas['Image']) => {
             const imageLink = image.disBaseLink || image.link;
             // Only add swatch if we have a valid color value and image link
             if (colorValue && imageLink) {
@@ -138,7 +138,7 @@ export function buildImageSwatchData(
  * // => { Color: "Red", Size: "Medium" }
  */
 export const getDisplayVariationValues = (
-    variationAttributes: ShopperProductsTypes.VariationAttribute[] = [],
+    variationAttributes: ShopperProducts.schemas['VariationAttribute'][] = [],
     values: Record<string, string> = {}
 ): Record<string, string> => {
     return Object.entries(values).reduce((acc: Record<string, string>, [id, value]) => {
@@ -185,7 +185,7 @@ export const createProductUrl = (
 /**
  * Get images filtered by color variation attribute
  *
- * @param {ShopperProductsTypes.Product} product - The product containing image groups
+ * @param {ShopperProducts.schemas['Product']} product - The product containing image groups
  * @param {string | null} selectedColor - The selected color value to filter by
  * @returns {ShopperProductsTypes.Image[]} Array of images matching the color, or default images
  *
@@ -194,9 +194,9 @@ export const createProductUrl = (
  * // Returns images for the red color variant, or default images if no match
  */
 export function getImagesForColor(
-    product: ShopperProductsTypes.Product,
+    product: ShopperProducts.schemas['Product'],
     selectedColor: string | null
-): ShopperProductsTypes.Image[] {
+): ShopperProducts.schemas['Image'][] {
     // Return all images if no color is selected or no image groups exist
     if (!selectedColor || !product.imageGroups) {
         return product.imageGroups?.find((group) => group.viewType === 'large')?.images || [];
@@ -217,16 +217,16 @@ export function getImagesForColor(
 /**
  * Decorated variation attribute with href and swatch image
  */
-export type DecoratedVariationAttribute = ShopperProductsTypes.VariationAttribute & {
+export type DecoratedVariationAttribute = ShopperProducts.schemas['VariationAttribute'] & {
     values: DecoratedVariationAttributeValue[];
 };
 
 /**
  * Decorated variation attribute value with href and swatch image
  */
-export type DecoratedVariationAttributeValue = ShopperProductsTypes.VariationAttributeValue & {
+export type DecoratedVariationAttributeValue = ShopperProducts.schemas['VariationAttributeValue'] & {
     href: string;
-    swatch?: ShopperProductsTypes.Image;
+    swatch?: ShopperProducts.schemas['Image'];
 };
 
 /**
@@ -234,14 +234,14 @@ export type DecoratedVariationAttributeValue = ShopperProductsTypes.VariationAtt
  * `href` and `swatch` image for the given attribute values. This allows easier access
  * when creating components that commonly use this information.
  *
- * @param {ShopperProductsTypes.Product} product - The product to decorate attributes for
+ * @param {ShopperProducts.schemas['Product']} product - The product to decorate attributes for
  * @param {object} [opts={}] - Options for decoration
  * @param {string} [opts.swatchViewType='swatch'] - The viewType for the swatch image
  *
  * @returns {DecoratedVariationAttribute[]} decoratedVariationAttributes
  */
 export const getDecoratedVariationAttributes = (
-    product: ShopperSearchTypes.ProductSearchHit,
+    product: ShopperSearch.schemas['ProductSearchHit'],
     opts: { swatchViewType?: string } = {}
 ): DecoratedVariationAttribute[] => {
     const { swatchViewType = 'swatch' } = opts;
@@ -287,7 +287,7 @@ export const getDecoratedVariationAttributes = (
  * @param product - The product to check
  * @returns true if the product is a product set, false otherwise
  */
-export function isProductSet(product: ShopperProductsTypes.Product): boolean {
+export function isProductSet(product: ShopperProducts.schemas['Product']): boolean {
     return Boolean(product?.type?.set);
 }
 
@@ -297,7 +297,7 @@ export function isProductSet(product: ShopperProductsTypes.Product): boolean {
  * @param product - The product to check
  * @returns true if the product is a product bundle, false otherwise
  */
-export function isProductBundle(product: ShopperProductsTypes.Product): boolean {
+export function isProductBundle(product: ShopperProducts.schemas['Product']): boolean {
     return Boolean(product?.type?.bundle);
 }
 
@@ -307,6 +307,6 @@ export function isProductBundle(product: ShopperProductsTypes.Product): boolean 
  * @param product - The product to check
  * @returns true if the product is a standard product, false otherwise
  */
-export function isStandardProduct(product: ShopperProductsTypes.Product): boolean {
+export function isStandardProduct(product: ShopperProducts.schemas['Product']): boolean {
     return Boolean(product?.type?.item);
 }

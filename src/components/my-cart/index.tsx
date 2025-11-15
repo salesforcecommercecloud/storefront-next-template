@@ -5,7 +5,7 @@ import { type ReactElement } from 'react';
 import { ShoppingCart } from 'lucide-react';
 
 // Commerce SDK
-import type { ShopperBasketsTypes, ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 // Components
 import { Card, CardContent } from '@/components/ui/card';
@@ -19,13 +19,13 @@ import uiStrings from '@/temp-ui-string';
  * Props for the MyCart component
  *
  * @interface MyCartProps
- * @property {ShopperBasketsTypes.Basket} basket - The shopping basket containing product items
- * @property {Record<string, ShopperProductsTypes.Product>} [productMap] - Optional product details mapping
+ * @property {ShopperBasketsV2.schemas['Basket']} basket - The shopping basket containing product items
+ * @property {Record<string, ShopperProducts.schemas['Product']>} [productMap] - Optional product details mapping
  * @property {boolean} [itemsExpanded] - Whether the accordion should be expanded by default
  */
 interface MyCartProps {
-    basket: ShopperBasketsTypes.Basket;
-    productMap?: Record<string, ShopperProductsTypes.Product>;
+    basket: ShopperBasketsV2.schemas['Basket'];
+    productMap?: Record<string, ShopperProducts.schemas['Product']>;
     itemsExpanded?: boolean;
 }
 
@@ -63,7 +63,7 @@ export default function MyCart({ basket, productMap = {}, itemsExpanded = false 
                         <AccordionContent className="px-0 pb-6">
                             <ProductItemsList
                                 productItems={basket.productItems}
-                                productMap={productMap}
+                                productsByItemId={productMap}
                                 variant="summary"
                             />
                         </AccordionContent>

@@ -1,5 +1,5 @@
 import type { ComponentProps } from 'react';
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { cn } from '@/lib/utils';
 import { type BadgeDetail, useConfig } from '@/config';
 import {
@@ -60,7 +60,7 @@ function ProductBadge({ variant = 'default', className, ...props }: ProductBadge
  * <ProductBadges product={product} maxBadges={3} />
  */
 interface ProductBadgesProps extends ComponentProps<'div'>, ProductBadgesVariantsProps {
-    product: ShopperSearchTypes.ProductSearchHit;
+    product: ShopperSearch.schemas['ProductSearchHit'];
     badgeDetails?: BadgeDetail[];
     maxBadges?: number;
     'aria-label'?: string;

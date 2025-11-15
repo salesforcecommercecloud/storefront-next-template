@@ -8,7 +8,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, test, expect } from 'vitest';
 import AddressDisplay from './index';
-import type { ShopperCustomersTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 
 describe('AddressDisplay', () => {
     describe('when no address is provided', () => {
@@ -27,7 +27,7 @@ describe('AddressDisplay', () => {
     });
 
     describe('when complete address with all fields is provided', () => {
-        const completeAddress: ShopperCustomersTypes.CustomerAddress = {
+        const completeAddress: ShopperCustomers.schemas['CustomerAddress'] = {
             addressId: 'address-1',
             firstName: 'John',
             lastName: 'Doe',
@@ -53,7 +53,7 @@ describe('AddressDisplay', () => {
     });
 
     describe('when address has only required fields', () => {
-        const minimalAddress: ShopperCustomersTypes.CustomerAddress = {
+        const minimalAddress: ShopperCustomers.schemas['CustomerAddress'] = {
             addressId: 'address-2',
             countryCode: 'US',
             firstName: 'Jane',
@@ -97,7 +97,7 @@ describe('AddressDisplay', () => {
     });
 
     describe('when address has city with state but no postal code', () => {
-        const addressWithState: ShopperCustomersTypes.CustomerAddress = {
+        const addressWithState: ShopperCustomers.schemas['CustomerAddress'] = {
             addressId: 'address-3',
             countryCode: 'US',
             firstName: 'Bob',
@@ -123,7 +123,7 @@ describe('AddressDisplay', () => {
     });
 
     describe('when address has city with postal code but no state', () => {
-        const addressWithPostal: ShopperCustomersTypes.CustomerAddress = {
+        const addressWithPostal: ShopperCustomers.schemas['CustomerAddress'] = {
             addressId: 'address-4',
             countryCode: 'US',
             firstName: 'Alice',
@@ -141,7 +141,7 @@ describe('AddressDisplay', () => {
     });
 
     describe('when address has all city fields', () => {
-        const fullCityAddress: ShopperCustomersTypes.CustomerAddress = {
+        const fullCityAddress: ShopperCustomers.schemas['CustomerAddress'] = {
             addressId: 'address-5',
             countryCode: 'US',
             firstName: 'Charlie',
@@ -160,7 +160,7 @@ describe('AddressDisplay', () => {
     });
 
     describe('when address has empty string values', () => {
-        const addressWithEmptyStrings: ShopperCustomersTypes.CustomerAddress = {
+        const addressWithEmptyStrings: ShopperCustomers.schemas['CustomerAddress'] = {
             addressId: 'address-6',
             firstName: 'Test',
             lastName: 'User',
@@ -189,7 +189,7 @@ describe('AddressDisplay', () => {
     });
 
     describe('international addresses', () => {
-        const ukAddress: ShopperCustomersTypes.CustomerAddress = {
+        const ukAddress: ShopperCustomers.schemas['CustomerAddress'] = {
             addressId: 'address-7',
             firstName: 'David',
             lastName: 'Taylor',
@@ -208,7 +208,7 @@ describe('AddressDisplay', () => {
             expect(screen.getByText('GB')).toBeInTheDocument();
         });
 
-        const canadianAddress: ShopperCustomersTypes.CustomerAddress = {
+        const canadianAddress: ShopperCustomers.schemas['CustomerAddress'] = {
             addressId: 'address-8',
             firstName: 'Sarah',
             lastName: 'Martin',

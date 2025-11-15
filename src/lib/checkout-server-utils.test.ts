@@ -13,16 +13,31 @@ vi.mock('react-router', async (importOriginal) => {
     };
 });
 
-vi.mock('@/lib/scapi', () => ({
-    default: vi.fn(() => ({
-        ShopperBasketsV2: {
+vi.mock('@/lib/api-clients', () => ({
+    createApiClients: vi.fn(() => ({
+        shopperBasketsV2: {
             getBasket: vi.fn(),
         },
-        ShopperCustomers: {
+        shopperCustomers: {
             getCustomer: vi.fn(),
         },
     })),
 }));
+
+vi.mock('@/config', async (importOriginal) => {
+    const actual = await importOriginal();
+    return {
+        ...actual,
+        getConfig: vi.fn(() => ({
+            commerce: {
+                api: {
+                    organizationId: 'test-org-id',
+                    siteId: 'test-site-id',
+                },
+            },
+        })),
+    };
+});
 
 vi.mock('@/lib/api/shipping-methods', () => ({
     getShippingMethodsForShipment: vi.fn(),
@@ -44,7 +59,7 @@ describe('Checkout Server Utils', () => {
 
     describe('getServerCustomerProfile', () => {
         it('should fetch customer profile for registered users', async () => {
-            const createClient = (await import('@/lib/scapi')).default;
+            const { createApiClients } = await import('@/lib/api-clients');
 
             const mockAuthSession = {
                 access_token: 'test-token',
@@ -67,20 +82,28 @@ describe('Checkout Server Utils', () => {
             };
 
             const mockCustomerClient = {
-                getCustomer: vi.fn().mockResolvedValue(mockCustomer),
+                getCustomer: vi.fn().mockResolvedValue({ data: mockCustomer }),
             };
 
-            const mockClient = {
-                ShopperCustomers: mockCustomerClient,
+            const mockClients = {
+                shopperCustomers: mockCustomerClient,
             };
 
-            vi.mocked(createClient).mockReturnValue(mockClient as any);
+            vi.mocked(createApiClients).mockReturnValue(mockClients as any);
 
             const result = await getServerCustomerProfile(mockContext, mockAuthSession);
 
             expect(result).toEqual(mockProfile);
             expect(mockCustomerClient.getCustomer).toHaveBeenCalledWith({
-                parameters: { customerId: 'test-customer-id' },
+                params: {
+                    path: {
+                        organizationId: 'test-org-id',
+                        customerId: 'test-customer-id',
+                    },
+                    query: {
+                        siteId: 'test-site-id',
+                    },
+                },
             });
         });
 
@@ -105,7 +128,7 @@ describe('Checkout Server Utils', () => {
 
     describe('getServerCheckoutData', () => {
         it('should fetch all checkout data successfully', async () => {
-            const createClient = (await import('@/lib/scapi')).default;
+            const { createApiClients } = await import('@/lib/api-clients');
             const { getShippingMethodsForShipment: getShippingMethods } = await import('@/lib/api/shipping-methods');
             const { getBasket } = await import('@/middlewares/basket.client');
 
@@ -131,14 +154,14 @@ describe('Checkout Server Utils', () => {
             };
 
             const mockCustomerClient = {
-                getCustomer: vi.fn().mockResolvedValue(mockCustomer),
+                getCustomer: vi.fn().mockResolvedValue({ data: mockCustomer }),
             };
 
-            const mockClient = {
-                ShopperCustomers: mockCustomerClient,
+            const mockClients = {
+                shopperCustomers: mockCustomerClient,
             };
 
-            vi.mocked(createClient).mockReturnValue(mockClient as any);
+            vi.mocked(createApiClients).mockReturnValue(mockClients as any);
             vi.mocked(getBasket).mockReturnValue(mockBasket as any);
             vi.mocked(getShippingMethods).mockResolvedValue(mockShippingMethods as any);
 

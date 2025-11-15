@@ -1,11 +1,11 @@
 import { describe, test, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import type { ShopperStoresTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
 import StoreDetails from './details';
 import uiStringsSL from '@/extensions/store-locator/temp-ui-string-store-locator';
 
-const store: ShopperStoresTypes.Store = {
+const store: ShopperStores.schemas['Store'] = {
     id: 's1',
     name: 'Downtown Store',
     address1: '1 Market St',

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { searchUrlBuilder } from '@/lib/url';
 
 // Simple transformation interface for UI purposes only
@@ -31,7 +31,7 @@ interface TransformedSuggestions {
  * Uses only official SDK types as input, minimal transformation for UI needs
  */
 export function useTransformSearchSuggestions(
-    data: ShopperSearchTypes.SuggestionResult | null
+    data: ShopperSearch.schemas['SuggestionResult'] | null
 ): TransformedSuggestions | null {
     return useMemo(() => {
         if (!data) return null;

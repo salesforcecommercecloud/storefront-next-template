@@ -1,17 +1,17 @@
 import { useCallback, useMemo } from 'react';
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { useScapiFetcher } from './use-scapi-fetcher';
 
 export interface UseSearchSuggestionsOptions {
     q: string;
     expand?: ('images' | 'prices')[];
     limit?: number;
-    currency?: ShopperSearchTypes.CurrencyCode;
+    currency?: string;
     enabled?: boolean;
 }
 
 export interface SearchSuggestionsResult {
-    data?: ShopperSearchTypes.SuggestionResult;
+    data?: ShopperSearch.schemas['SuggestionResult'];
     isLoading: boolean;
     refetch: () => Promise<void>;
 }

@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import CategoryBreadcrumbs from './index';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 const createTestWrapper = (component: React.ReactElement) => {
     const router = createMemoryRouter(
@@ -19,7 +19,7 @@ const createTestWrapper = (component: React.ReactElement) => {
 
 describe('CategoryBreadcrumbs', () => {
     it('should render breadcrumbs from parentCategoryTree when provided', () => {
-        const category: ShopperProductsTypes.Category = {
+        const category: ShopperProducts.schemas['Category'] = {
             id: 'category-3',
             name: 'Subcategory',
             parentCategoryTree: [
@@ -38,7 +38,7 @@ describe('CategoryBreadcrumbs', () => {
     });
 
     it('should render single breadcrumb when parentCategoryTree is undefined', () => {
-        const category: ShopperProductsTypes.Category = {
+        const category: ShopperProducts.schemas['Category'] = {
             id: 'category-1',
             name: 'Root Category',
             // parentCategoryTree is undefined
@@ -51,7 +51,7 @@ describe('CategoryBreadcrumbs', () => {
     });
 
     it('should render links with correct hrefs', () => {
-        const category: ShopperProductsTypes.Category = {
+        const category: ShopperProducts.schemas['Category'] = {
             id: 'category-2',
             name: 'Category',
             parentCategoryTree: [
@@ -70,7 +70,7 @@ describe('CategoryBreadcrumbs', () => {
     });
 
     it('should show chevron icons between breadcrumb items', () => {
-        const category: ShopperProductsTypes.Category = {
+        const category: ShopperProducts.schemas['Category'] = {
             id: 'category-3',
             name: 'Third',
             parentCategoryTree: [
@@ -88,7 +88,7 @@ describe('CategoryBreadcrumbs', () => {
     });
 
     it('should not show chevron before first item', () => {
-        const category: ShopperProductsTypes.Category = {
+        const category: ShopperProducts.schemas['Category'] = {
             id: 'cat-1',
             name: 'Single',
             parentCategoryTree: [{ id: 'cat-1', name: 'Single' }],

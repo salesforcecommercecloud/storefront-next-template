@@ -1,9 +1,9 @@
-import type { ShopperBasketsTypes, ShopperProductsTypes, ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2, ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 
 type Product =
-    | ShopperProductsTypes.Product
-    | (ShopperBasketsTypes.ProductItem & Partial<ShopperProductsTypes.Product>)
-    | ShopperSearchTypes.ProductSearchHit;
+    | ShopperProducts.schemas['Product']
+    | (ShopperBasketsV2.schemas['ProductItem'] & Partial<ShopperProducts.schemas['Product']>)
+    | ShopperSearch.schemas['ProductSearchHit'];
 
 // Type for product promotions - based on the commerce SDK structure
 interface ProductPromotion {

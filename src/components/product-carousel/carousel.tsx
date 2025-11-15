@@ -1,5 +1,5 @@
 import { type ReactNode } from 'react';
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { ProductTile } from '@/components/product-tile';
 import withSuspense from '@/components/with-suspense';
@@ -42,7 +42,7 @@ export default function ProductCarousel({
     title,
     className,
 }: {
-    products: ShopperSearchTypes.ProductSearchHit[];
+    products: ShopperSearch.schemas['ProductSearchHit'][];
     title?: string;
     className?: string;
 }): ReactNode {
@@ -128,7 +128,7 @@ export function ProductCarouselWithData({
     title,
     ...props
 }: {
-    data?: ShopperSearchTypes.ProductSearchResult | ShopperSearchTypes.ProductSearchHit[];
+    data?: ShopperSearch.schemas['ProductSearchResult'] | ShopperSearch.schemas['ProductSearchHit'][];
     title?: string;
     [key: string]: unknown;
 }) {

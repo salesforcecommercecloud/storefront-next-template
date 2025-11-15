@@ -1,7 +1,9 @@
 import type { ActionFunctionArgs } from 'react-router';
 import { getBasket, updateBasket } from '@/middlewares/basket.client';
 import { shippingOptionsSchema, parseShippingOptionsFromFormData } from '@/lib/checkout-schemas';
-import createClient from '@/lib/scapi';
+import { createApiClients } from '@/lib/api-clients';
+import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
+import { getConfig } from '@/config';
 import uiStrings from '@/temp-ui-string';
 
 export async function clientAction({ request, context }: ActionFunctionArgs) {
@@ -40,11 +42,18 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
     }
 
     try {
-        const client = createClient(context).ShopperBasketsV2;
-        const updatedBasket = await client.updateShippingMethodForShipment({
-            parameters: {
-                basketId: basket.basketId,
-                shipmentId: 'me',
+        const config = getConfig(context);
+        const clients = createApiClients(context);
+        const { data: updatedBasket } = await clients.shopperBasketsV2.updateShippingMethodForShipment({
+            params: {
+                path: {
+                    organizationId: config.commerce.api.organizationId,
+                    basketId: basket.basketId,
+                    shipmentId: 'me',
+                },
+                query: {
+                    siteId: config.commerce.api.siteId,
+                },
             },
             body: {
                 id: shippingMethodId,
@@ -73,11 +82,14 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
             // API response includes all necessary data, use it directly
             updateBasket(context, updatedBasket);
         }
-    } catch {
+    } catch (error) {
         return Response.json(
             {
                 success: false,
-                error: 'Failed to save shipping method. Please try again.',
+                error:
+                    error instanceof ApiError
+                        ? `Failed to save shipping method: ${error.statusText}`
+                        : 'Failed to save shipping method. Please try again.',
                 step: 'shippingOptions',
             },
             { status: 500 }

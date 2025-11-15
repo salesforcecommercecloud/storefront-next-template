@@ -12,14 +12,14 @@ import { Button } from '@/components/ui/button';
 import { useProductSetsBundles } from '@/hooks/product/use-product-sets-bundles';
 import { useProductActions } from '@/hooks/product/use-product-actions';
 import uiStrings from '@/temp-ui-string';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { type ReactElement } from 'react';
 import { isProductSet, isProductBundle } from '@/lib/product-utils';
 import ChildProductCard from './child-product-card';
 
 type ChildProductsBaseProps = {
     /** Parent product (must be a set or bundle) */
-    parentProduct: ShopperProductsTypes.Product;
+    parentProduct: ShopperProducts.schemas['Product'];
     /** Called immediately before cart action starts (add or update) - for optimistic UI like closing modal */
     onBeforeCartAction?: () => void;
     /** Callback invoked after successful cart operation (add or update) */
@@ -204,7 +204,7 @@ export default function ChildProducts({
         <div className="space-y-8">
             {/* Child Products Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {childProducts.map((childProduct: ShopperProductsTypes.Product) => (
+                {childProducts.map((childProduct: ShopperProducts.schemas['Product']) => (
                     <ChildProductCard
                         // if in edit mode (Edit cart), we want to use internal state to control swatch navigation
                         // in add mode (PDP), we let the swatches to be uncontrolled, which will render as link buttons

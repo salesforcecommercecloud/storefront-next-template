@@ -1,9 +1,9 @@
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 
 /**
  * Type-safe query parameter keys for product search
  */
-export type ProductSearchQueryKeys = keyof ShopperSearchTypes.productSearchQueryParameters;
+export type ProductSearchQueryKeys = keyof ShopperSearch.operations['productSearch']['parameters']['query'];
 
 /**
  * Type-safe query parameter constants for product search

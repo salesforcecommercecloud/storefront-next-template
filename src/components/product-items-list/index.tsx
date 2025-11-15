@@ -2,7 +2,7 @@
 import { useMemo, type ReactElement } from 'react';
 
 // Commerce SDK
-import type { ShopperBasketsTypes, ShopperProductsTypes, ShopperPromotionsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@salesforce/storefront-next-runtime/scapi';
 
 // Components
 import ProductItem from '@/components/product-item';
@@ -24,20 +24,20 @@ const SUMMARY_SPACING = 'space-y-5';
  * Props for the ProductItemsList component
  *
  * @interface ProductItemsListProps
- * @property {ShopperBasketsTypes.ProductItem[] | undefined} productItems - Array of product items from the basket
- * @property {Record<string, ShopperProductsTypes.Product>} [productsByItemId] - Item ID to product mapping for enhanced product data
- * @property {Record<string, ShopperPromotionsTypes.Promotion>} [promotions] - Promotions by ID for displaying promotion information
+ * @property {ShopperBasketsV2.schemas['ProductItem'][] | undefined} productItems - Array of product items from the basket
+ * @property {Record<string, ShopperProducts.schemas['Product']>} [productsByItemId] - Item ID to product mapping for enhanced product data
+ * @property {Record<string, ShopperPromotions.schemas['Promotion']>} [promotions] - Promotions by ID for displaying promotion information
  * @property {'default' | 'summary'} [variant='default'] - Display variant: 'default' for full product cards, 'summary' for compact list view
  * @property {function} [primaryAction] - Optional render prop function to generate primary action buttons for each product
  * @property {function} [secondaryActions] - Optional render prop function to generate secondary action buttons for each product
  */
 interface ProductItemsListProps {
     /** Array of product items from the basket */
-    productItems: ShopperBasketsTypes.ProductItem[] | undefined;
+    productItems: ShopperBasketsV2.schemas['ProductItem'][] | undefined;
     /** Required item ID to product mapping for enhanced product data */
-    productsByItemId: Record<string, ShopperProductsTypes.Product>;
+    productsByItemId: Record<string, ShopperProducts.schemas['Product']>;
     /** Optional promotions by ID for displaying promotion information */
-    promotions?: Record<string, ShopperPromotionsTypes.Promotion>;
+    promotions?: Record<string, ShopperPromotions.schemas['Promotion']>;
     /** Display variant: 'default' for full product cards, 'summary' for compact list view */
     variant?: 'default' | 'summary';
     /**
@@ -46,7 +46,7 @@ interface ProductItemsListProps {
      * @returns React element for primary action or undefined
      */
     primaryAction?: (
-        product: ShopperBasketsTypes.ProductItem & Partial<ShopperProductsTypes.Product>
+        product: ShopperBasketsV2.schemas['ProductItem'] & Partial<ShopperProducts.schemas['Product']>
     ) => ReactElement | undefined;
     /**
      * Optional render prop function to generate secondary action buttons for each product
@@ -54,7 +54,7 @@ interface ProductItemsListProps {
      * @returns React element for secondary actions or undefined
      */
     secondaryActions?: (
-        product: ShopperBasketsTypes.ProductItem & Partial<ShopperProductsTypes.Product>
+        product: ShopperBasketsV2.schemas['ProductItem'] & Partial<ShopperProducts.schemas['Product']>
     ) => ReactElement | undefined;
 }
 
@@ -134,7 +134,7 @@ export default function ProductItemsList({
 
             /**
              * Basket item data enriched with product details
-             * @type {ShopperBasketsTypes.ProductItem & Partial<ShopperProductsTypes.Product> & { isProductUnavailable: boolean }}
+             * @type {ShopperBasketsV2.schemas['ProductItem'] & Partial<ShopperProducts.schemas['Product']> & { isProductUnavailable: boolean }}
              */
             const enrichedProductItem = {
                 ...productItem,

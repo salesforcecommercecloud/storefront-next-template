@@ -1,6 +1,7 @@
 import type { LoaderFunctionArgs } from 'react-router';
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
-import createClient from '@/lib/scapi';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import { createApiClients } from '@/lib/api-clients';
+import { getConfig } from '@/config';
 
 export const fetchSearchProducts = (
     context: LoaderFunctionArgs['context'],
@@ -11,15 +12,15 @@ export const fetchSearchProducts = (
         sort?: string;
         limit?: number;
         offset?: number;
-        expand?: ShopperSearchTypes.ProductSearchExpandEnum[];
-        refine?: string[];
-        select?: string;
-        currency?: ShopperSearchTypes.CurrencyCode;
+        expand?: ShopperSearch.operations['productSearch']['parameters']['query']['expand'];
+        refine?: ShopperSearch.operations['productSearch']['parameters']['query']['refine'];
+        select?: ShopperSearch.operations['productSearch']['parameters']['query']['select'];
+        currency?: ShopperSearch.operations['productSearch']['parameters']['query']['currency'];
         allImages?: boolean;
         allVariationProperties?: boolean;
         perPricebook?: boolean;
     }
-): Promise<ShopperSearchTypes.ProductSearchResult> => {
+): Promise<ShopperSearch.schemas['ProductSearchResult']> => {
     const {
         categoryId,
         q = '',
@@ -48,39 +49,62 @@ export const fetchSearchProducts = (
         });
     }
 
-    return createClient(context).ShopperSearch.productSearch({
-        parameters: {
-            q,
-            sort,
-            limit,
-            offset,
-            expand,
-            refine: [...refineSet] as never, // <-- This is an ugly type hack to get around the fact that the SDK doesn't officially accept a string array for the refine parameter
-            currency,
-            allImages,
-            allVariationProperties,
-            perPricebook,
-        },
-    });
+    const config = getConfig(context);
+    const clients = createApiClients(context);
+
+    return clients.shopperSearch
+        .productSearch({
+            params: {
+                path: {
+                    organizationId: config.commerce.api.organizationId,
+                },
+                query: {
+                    siteId: config.commerce.api.siteId,
+                    q,
+                    sort,
+                    limit,
+                    offset,
+                    expand,
+
+                    // This is a known type limitation, the API intelligently serializes the refine parameter (array) automatically, but the OAS types refers to string.
+                    ...(refineSet.size > 0 && { refine: [...refineSet] as unknown as string }),
+                    currency,
+                    allImages,
+                    allVariationProperties,
+                    perPricebook,
+                },
+            },
+        })
+        .then(({ data }) => data);
 };
 
 export const fetchSearchSuggestions = (
     context: LoaderFunctionArgs['context'],
     parameters: {
-        q: string;
-        expand?: ('images' | 'prices')[];
-        limit?: number;
-        currency?: ShopperSearchTypes.CurrencyCode;
+        q: ShopperSearch.operations['getSearchSuggestions']['parameters']['query']['q'];
+        expand?: ShopperSearch.operations['getSearchSuggestions']['parameters']['query']['expand'];
+        limit?: ShopperSearch.operations['getSearchSuggestions']['parameters']['query']['limit'];
+        currency?: ShopperSearch.operations['getSearchSuggestions']['parameters']['query']['currency'];
     }
-): Promise<ShopperSearchTypes.SuggestionResult> => {
+): Promise<ShopperSearch.schemas['SuggestionResult']> => {
     const { q, expand, limit, currency } = parameters;
+    const config = getConfig(context);
+    const clients = createApiClients(context);
 
-    return createClient(context).ShopperSearch.getSearchSuggestions({
-        parameters: {
-            q,
-            ...(expand && { expand }),
-            ...(limit && { limit }),
-            ...(currency && { currency }),
-        },
-    });
+    return clients.shopperSearch
+        .getSearchSuggestions({
+            params: {
+                path: {
+                    organizationId: config.commerce.api.organizationId,
+                },
+                query: {
+                    siteId: config.commerce.api.siteId,
+                    q,
+                    ...(expand && { expand }),
+                    ...(limit && { limit }),
+                    ...(currency && { currency }),
+                },
+            },
+        })
+        .then(({ data }) => data);
 };

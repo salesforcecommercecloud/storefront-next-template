@@ -15,14 +15,14 @@ import { AccountNavList, type AccountNavItemData } from '@/components/account-na
 import { createPage, type RouteComponentProps } from '@/components/create-page';
 import { AccountSkeleton } from '@/components/account-skeleton';
 import uiStrings from '@/temp-ui-string';
-import type { ShopperCustomersTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import type { SessionData } from '@/lib/api/types';
 
 /**
  * Type definition for the account page data including page key
  */
 type AccountPageData = {
-    customer: Promise<ShopperCustomersTypes.Customer>;
+    customer: Promise<ShopperCustomers.schemas['Customer']>;
     pageKey: string;
 };
 
@@ -45,7 +45,7 @@ function getPageData(
     session: AuthSession,
     context: LoaderFunctionArgs['context'],
     pageKey: string
-): { customer: Promise<ShopperCustomersTypes.Customer>; pageKey: string } {
+): { customer: Promise<ShopperCustomers.schemas['Customer']>; pageKey: string } {
     const { access_token, access_token_expiry, userType, customer_id } = session;
 
     if (

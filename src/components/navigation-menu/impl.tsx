@@ -7,7 +7,7 @@ import {
     type ReactNode,
 } from 'react';
 import { NavLink } from 'react-router';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import {
     NavigationMenu,
     NavigationMenuContent,
@@ -21,16 +21,16 @@ import {
 
 export type CategoryNavigationMenuListCtx = {
     level: number;
-    categories: ShopperProductsTypes.Category[];
-    parent: ShopperProductsTypes.Category | undefined;
-    path: ReadonlyArray<ShopperProductsTypes.Category>;
+    categories: ShopperProducts.schemas['Category'][];
+    parent: ShopperProducts.schemas['Category'] | undefined;
+    path: ReadonlyArray<ShopperProducts.schemas['Category']>;
 };
 
 export type CategoryNavigationMenuListItemCtx = {
-    category: ShopperProductsTypes.Category;
-    parent: ShopperProductsTypes.Category | undefined;
+    category: ShopperProducts.schemas['Category'];
+    parent: ShopperProducts.schemas['Category'] | undefined;
     level: number;
-    path: ReadonlyArray<ShopperProductsTypes.Category>;
+    path: ReadonlyArray<ShopperProducts.schemas['Category']>;
     index: number;
     isFirst: boolean;
     isLast: boolean;
@@ -42,7 +42,7 @@ type SlotType<T> = ReactNode | ((ctx: T) => ReactNode);
 type PropsSlot<T, P extends Record<string, any> = Record<string, any>> = P | ((ctx: T) => P | undefined);
 
 type CategoryNavigationMenuProps = ComponentPropsWithoutRef<typeof NavigationMenu> & {
-    categories?: ShopperProductsTypes.Category[];
+    categories?: ShopperProducts.schemas['Category'][];
 
     // Maximum depth (0=no display, 1=only top-level categories, ...). Default: unlimited
     maxDepth?: number;
@@ -75,7 +75,7 @@ function renderSlot<T>(slot: SlotType<T> | undefined, ctx: T) {
     return typeof slot === 'function' ? (slot(ctx) ?? null) : (slot ?? null);
 }
 
-function hasChildren(category: ShopperProductsTypes.Category): boolean {
+function hasChildren(category: ShopperProducts.schemas['Category']): boolean {
     return typeof category.onlineSubCategoriesCount === 'number' && category.onlineSubCategoriesCount > 0;
 }
 
@@ -102,10 +102,10 @@ function CategoryNavigationMenuItemLeaf({
 
 function CategoryNavigationMenuNested(
     props: Omit<Omit<CategoryNavigationMenuProps, 'categories'>, keyof typeof NavigationMenu> & {
-        category: ShopperProductsTypes.Category;
+        category: ShopperProducts.schemas['Category'];
         level: number;
         maxDepth: number;
-        path: ReadonlyArray<ShopperProductsTypes.Category>;
+        path: ReadonlyArray<ShopperProducts.schemas['Category']>;
     }
 ) {
     const { category, level, maxDepth } = props;
@@ -138,7 +138,7 @@ function CategoryNavigationMenuNested(
             {renderSlot(renderSlotListBefore, listCtx)}
 
             <ul {...propsFor(propsList, listCtx)}>
-                {category.categories?.map?.((subCategory: ShopperProductsTypes.Category, index: number) => {
+                {category.categories?.map?.((subCategory: ShopperProducts.schemas['Category'], index: number) => {
                     const itemCtx: CategoryNavigationMenuListItemCtx = {
                         category: subCategory,
                         parent: category,
@@ -198,7 +198,7 @@ function CategoryNavigationMenuNested(
 
 /**
  * This component is a specialized and highly customizable navigation menu implementation based on the shadcn/ui
- * {@link NavigationMenu}. The component is optimized for the use of B2C Commerce {@link ShopperProductsTypes.Category}
+ * {@link NavigationMenu}. The component is optimized for the use of B2C Commerce {@link ShopperProducts.schemas['Category']}
  * data and its nested data structure passed as `categories` prop.
  *
  * ## Render Customization Capabilities
@@ -273,7 +273,7 @@ export default function CategoryNavigationMenu({
             {renderSlot(renderSlotListBefore, listCtx)}
 
             <NavigationMenuList {...propsFor(propsList, listCtx)}>
-                {categories.map((category: ShopperProductsTypes.Category, index: number) => {
+                {categories.map((category: ShopperProducts.schemas['Category'], index: number) => {
                     const itemCtx: CategoryNavigationMenuListItemCtx = {
                         category,
                         parent: undefined,

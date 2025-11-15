@@ -11,7 +11,7 @@ import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 
 import { expect, within, userEvent } from 'storybook/test';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import ProductViewProvider from '@/providers/product-view';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
@@ -209,7 +209,7 @@ The Product Info component is the main information panel on the Product Detail P
             const RouterWrapper = (): ReactElement => {
                 const inRouter = useInRouterContext();
                 const productArg =
-                    (context.args.product as ShopperProductsTypes.Product | undefined) ?? createMockProduct();
+                    (context.args.product as ShopperProducts.schemas['Product'] | undefined) ?? createMockProduct();
                 const content = (
                     <ProductViewProvider product={productArg}>
                         <ActionLogger>
@@ -250,7 +250,9 @@ export default meta;
 type Story = StoryObj<typeof ProductInfo>;
 
 // Helper function to create mock product with variations
-const createMockProduct = (overrides?: Partial<ShopperProductsTypes.Product>): ShopperProductsTypes.Product => ({
+const createMockProduct = (
+    overrides?: Partial<ShopperProducts.schemas['Product']>
+): ShopperProducts.schemas['Product'] => ({
     id: 'test-product-123',
     name: 'Premium Cotton T-Shirt',
     shortDescription: 'Soft, breathable cotton t-shirt perfect for everyday wear',

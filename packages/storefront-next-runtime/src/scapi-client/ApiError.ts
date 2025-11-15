@@ -1,11 +1,30 @@
 /**
+ * Standard RFC 7807 Problem Details error structure
+ * This is the default structure returned by most Salesforce Commerce APIs
+ *
+ * @see https://datatracker.ietf.org/doc/html/rfc7807
+ */
+export interface ErrorDetail {
+    /** A URI reference that identifies the problem type */
+    type: string;
+    /** A short, human-readable summary of the problem type */
+    title: string;
+    /** A human-readable explanation specific to this occurrence of the problem */
+    detail: string;
+    /** Additional properties that may be included in the error response */
+    [key: string]: unknown;
+}
+
+/**
  * Custom error class for API errors
  *
  * This error is thrown when an API request returns a non-2xx status code.
  * It includes comprehensive information about the error including the parsed
  * and raw response bodies, headers, status code, and request details.
  *
- * @typeParam TBody - The type of the error response body (inferred from OpenAPI spec)
+ * The error body is always typed as ErrorDetail (RFC 7807), which matches
+ * the standard error format used by Salesforce Commerce APIs. If the response
+ * cannot be parsed as JSON, an empty ErrorDetail object is returned.
  *
  * @example
  * ```typescript
@@ -15,7 +34,8 @@
  *   if (error instanceof ApiError) {
  *     console.log(error.status); // 404
  *     console.log(error.statusText); // "Not Found"
- *     console.log(error.body); // Typed error response
+ *     console.log(error.body.title); // "Product Not Found" (always typed!)
+ *     console.log(error.body.detail); // Detailed error message (always typed!)
  *     console.log(error.rawBody); // Raw response text
  *     console.log(error.headers.get('content-type')); // Access headers
  *     console.log(error.url); // Request URL
@@ -24,7 +44,7 @@
  * }
  * ```
  */
-export class ApiError<TBody = unknown> extends Error {
+export class ApiError extends Error {
     /**
      * HTTP status code (e.g., 404, 500)
      */
@@ -41,10 +61,11 @@ export class ApiError<TBody = unknown> extends Error {
     readonly headers: Headers;
 
     /**
-     * Parsed response body
-     * Automatically parsed from JSON if possible, otherwise contains the raw text
+     * Parsed response body as ErrorDetail
+     * Automatically parsed from JSON if the response is valid JSON.
+     * If parsing fails, returns an empty ErrorDetail object with empty strings.
      */
-    readonly body: TBody;
+    readonly body: ErrorDetail;
 
     /**
      * Raw response body as text
@@ -69,7 +90,7 @@ export class ApiError<TBody = unknown> extends Error {
      * @param options.status - HTTP status code
      * @param options.statusText - HTTP status message
      * @param options.headers - Response headers
-     * @param options.body - Parsed response body
+     * @param options.body - Parsed response body as ErrorDetail
      * @param options.rawBody - Raw response body text
      * @param options.url - Request URL
      * @param options.method - HTTP method
@@ -78,7 +99,7 @@ export class ApiError<TBody = unknown> extends Error {
         status: number;
         statusText: string;
         headers: Headers;
-        body: TBody;
+        body: ErrorDetail;
         rawBody: string;
         url: string;
         method: string;

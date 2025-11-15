@@ -8,7 +8,7 @@
 
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useFetcher, useSearchParams } from 'react-router';
-import type { ShopperStoresTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
 import { useStoreLocator } from '@/extensions/store-locator/providers/store-locator';
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
 
@@ -20,7 +20,7 @@ import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-
  */
 export interface SearchStoresResult {
     success: boolean;
-    stores?: ShopperStoresTypes.StoreResult;
+    stores?: ShopperStores.schemas['StoreResult'];
     error?: string;
 }
 

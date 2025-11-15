@@ -7,22 +7,23 @@
  */
 
 import type { LoaderFunctionArgs, ClientLoaderFunctionArgs } from 'react-router';
-import type { ShopperBasketsTypes, ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import type { CustomerProfile } from '@/components/checkout/utils/checkout-context-types';
 import type { SessionData } from '@/lib/api/types';
 import { getAuth as getAuthClient } from '@/middlewares/auth.client';
 import { getBasket } from '@/middlewares/basket.client';
 import { getCustomerProfileForCheckout, isRegisteredCustomer } from '@/lib/api/customer';
 import { getShippingMethodsForShipment } from '@/lib/api/shipping-methods';
-import createClient from '@/lib/scapi';
+import { createApiClients } from '@/lib/api-clients';
+import { getConfig } from '@/config';
 
 /**
  * Checkout page data type
  */
 export type CheckoutPageData = {
-    shippingMethods?: Promise<ShopperBasketsTypes.ShippingMethodResult | null>;
+    shippingMethods?: Promise<ShopperBasketsV2.schemas['ShippingMethodResult'] | null>;
     customerProfile?: Promise<CustomerProfile | null>;
-    productMap: Promise<Record<string, ShopperProductsTypes.Product>>;
+    productMap: Promise<Record<string, ShopperProducts.schemas['Product']>>;
     isRegisteredCustomer?: boolean;
 };
 
@@ -55,7 +56,7 @@ export function getServerCustomerProfileData(
 export function getServerShippingMethodsData(
     _context: LoaderFunctionArgs['context'],
     authSession: SessionData | null
-): Promise<ShopperBasketsTypes.ShippingMethodResult | null> {
+): Promise<ShopperBasketsV2.schemas['ShippingMethodResult'] | null> {
     // Always return null, client loader will handle shipping methods
     if (!authSession) {
         return Promise.resolve(null);
@@ -73,37 +74,44 @@ export function getServerShippingMethodsData(
  */
 async function fetchProductsInBasket(
     context: ClientLoaderFunctionArgs['context'],
-    productItems: ShopperBasketsTypes.ProductItem[]
-): Promise<Record<string, ShopperProductsTypes.Product>> {
+    productItems: ShopperBasketsV2.schemas['ProductItem'][]
+): Promise<Record<string, ShopperProducts.schemas['Product']>> {
     // Main product IDs from basket items
     const ids = productItems.map((item) => item.productId ?? '').filter(Boolean);
     if (!ids.length) {
         return {};
     }
 
-    const client = createClient(context);
-    const productsResponse = await client.ShopperProducts.getProducts({
-        parameters: {
-            ids,
-            allImages: true,
-            perPricebook: true,
+    const config = getConfig(context);
+    const clients = createApiClients(context);
+    const { data: productsData } = await clients.shopperProducts.getProducts({
+        params: {
+            path: {
+                organizationId: config.commerce.api.organizationId,
+            },
+            query: {
+                siteId: config.commerce.api.siteId,
+                ids,
+                allImages: true,
+                perPricebook: true,
+            },
         },
     });
 
-    if (!productsResponse.data) {
+    if (!productsData.data) {
         return {};
     }
 
-    const products = productsResponse.data.reduce(
+    const products = productsData.data.reduce(
         (acc, product) => {
             acc[product.id] = product;
             return acc;
         },
-        {} as Record<string, ShopperProductsTypes.Product>
+        {} as Record<string, ShopperProducts.schemas['Product']>
     );
 
     // Create productsByItemId mapping
-    const productsByItemId: Record<string, ShopperProductsTypes.Product> = {};
+    const productsByItemId: Record<string, ShopperProducts.schemas['Product']> = {};
     productItems.forEach((productItem) => {
         if (productItem?.productId && productItem.itemId && products[productItem.productId]) {
             productsByItemId[productItem.itemId] = products[productItem.productId];
@@ -127,7 +135,7 @@ async function fetchProductsInBasket(
 async function handleBasketPrefill(
     context: ClientLoaderFunctionArgs['context'],
     profile: CustomerProfile
-): Promise<ShopperBasketsTypes.Basket | null> {
+): Promise<ShopperBasketsV2.schemas['Basket'] | null> {
     try {
         const { shouldPrefillBasket, initializeBasketForReturningCustomer } = await import(
             '@/components/checkout/utils/checkout-utils'

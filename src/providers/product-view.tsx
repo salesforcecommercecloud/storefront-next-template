@@ -6,19 +6,19 @@
  */
 
 import { createContext, useContext, type PropsWithChildren } from 'react';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { useProductActions } from '@/hooks/product/use-product-actions';
 import { useCurrentVariant } from '@/hooks/product/use-current-variant';
 
 interface ProductViewContextValue extends ReturnType<typeof useProductActions> {
-    product: ShopperProductsTypes.Product;
+    product: ShopperProducts.schemas['Product'];
     mode: 'add' | 'edit';
 }
 
 const ProductViewContext = createContext<ProductViewContextValue | null>(null);
 
 interface ProductViewProviderProps {
-    product: ShopperProductsTypes.Product;
+    product: ShopperProducts.schemas['Product'];
     mode?: 'add' | 'edit';
     initialQuantity?: number;
     itemId?: string;

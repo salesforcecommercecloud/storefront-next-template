@@ -3,7 +3,7 @@ import { render, waitFor } from '@testing-library/react';
 import { createTestContext } from '@/lib/test-utils';
 import { type PropsWithChildren } from 'react';
 import { createRoutesStub } from 'react-router';
-import type { ShopperBasketsTypes, ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import type { SessionData } from '@/lib/api/types';
 import { clientLoader, default as App, ErrorBoundary, Layout, loader } from './root';
 import { mockConfig } from '@/test-utils/config';
@@ -328,7 +328,7 @@ describe('root.tsx', () => {
         it('should render html structure with provider components', async () => {
             const { fetchCategory } = await import('@/lib/api/categories');
 
-            const mockCategory: ShopperProductsTypes.Category = {
+            const mockCategory: ShopperProducts.schemas['Category'] = {
                 id: 'root',
                 name: 'Root Category',
                 categories: [
@@ -376,7 +376,7 @@ describe('root.tsx', () => {
         it('should return category promises and auth function', async () => {
             const { fetchCategory } = await import('@/lib/api/categories');
 
-            const mockRootCategory: ShopperProductsTypes.Category = {
+            const mockRootCategory: ShopperProducts.schemas['Category'] = {
                 id: 'root',
                 name: 'Root',
                 categories: [
@@ -412,7 +412,7 @@ describe('root.tsx', () => {
         it('should not fetch sub categories when onlineSubCategoriesCount is 0', async () => {
             const { fetchCategory } = await import('@/lib/api/categories');
 
-            const mockRootCategory: ShopperProductsTypes.Category = {
+            const mockRootCategory: ShopperProducts.schemas['Category'] = {
                 id: 'root',
                 name: 'Root',
                 categories: [
@@ -465,7 +465,7 @@ describe('root.tsx', () => {
                 userType: 'registered',
             };
 
-            const mockBasket: ShopperBasketsTypes.Basket = {
+            const mockBasket: ShopperBasketsV2.schemas['Basket'] = {
                 basketId: 'test-basket',
                 productItems: [],
             };

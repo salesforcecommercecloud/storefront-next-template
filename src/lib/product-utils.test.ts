@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import {
     getDisplayVariationValues,
     createProductUrl,
@@ -14,7 +14,7 @@ import {
 
 describe('product-utils', () => {
     describe('getDisplayVariationValues', () => {
-        const mockVariationAttributes: ShopperProductsTypes.VariationAttribute[] = [
+        const mockVariationAttributes: ShopperProducts.schemas['VariationAttribute'][] = [
             {
                 id: 'color',
                 name: 'Color',
@@ -124,7 +124,7 @@ describe('product-utils', () => {
         });
 
         it('should handle attributes without names', () => {
-            const attributesWithoutNames: ShopperProductsTypes.VariationAttribute[] = [
+            const attributesWithoutNames: ShopperProducts.schemas['VariationAttribute'][] = [
                 {
                     id: 'color',
                     // name is missing
@@ -138,7 +138,7 @@ describe('product-utils', () => {
         });
 
         it('should handle attribute values without names', () => {
-            const attributesWithoutValueNames: ShopperProductsTypes.VariationAttribute[] = [
+            const attributesWithoutValueNames: ShopperProducts.schemas['VariationAttribute'][] = [
                 {
                     id: 'color',
                     name: 'Color',
@@ -154,7 +154,7 @@ describe('product-utils', () => {
         });
 
         it('should handle attributes without values array', () => {
-            const attributesWithoutValues: ShopperProductsTypes.VariationAttribute[] = [
+            const attributesWithoutValues: ShopperProducts.schemas['VariationAttribute'][] = [
                 {
                     id: 'color',
                     name: 'Color',
@@ -195,7 +195,7 @@ describe('product-utils', () => {
     });
 
     describe('getImagesForColor', () => {
-        const defaultLargeImages: ShopperProductsTypes.Image[] = [
+        const defaultLargeImages: ShopperProducts.schemas['Image'][] = [
             {
                 link: 'https://example.com/default1.jpg',
                 disBaseLink: 'https://example.com/default1.jpg',
@@ -208,7 +208,7 @@ describe('product-utils', () => {
             },
         ];
 
-        const redImages: ShopperProductsTypes.Image[] = [
+        const redImages: ShopperProducts.schemas['Image'][] = [
             {
                 link: 'https://example.com/red1.jpg',
                 disBaseLink: 'https://example.com/red1.jpg',
@@ -221,7 +221,7 @@ describe('product-utils', () => {
             },
         ];
 
-        const blueImages: ShopperProductsTypes.Image[] = [
+        const blueImages: ShopperProducts.schemas['Image'][] = [
             {
                 link: 'https://example.com/blue1.jpg',
                 disBaseLink: 'https://example.com/blue1.jpg',
@@ -229,7 +229,7 @@ describe('product-utils', () => {
             },
         ];
 
-        const productWithColorVariants: ShopperProductsTypes.Product = {
+        const productWithColorVariants: ShopperProducts.schemas['Product'] = {
             id: 'test-product',
             imageGroups: [
                 {
@@ -284,7 +284,7 @@ describe('product-utils', () => {
         });
 
         it('should handle product without imageGroups', () => {
-            const productWithoutImages: ShopperProductsTypes.Product = {
+            const productWithoutImages: ShopperProducts.schemas['Product'] = {
                 id: 'test-product',
                 // imageGroups is missing
             };
@@ -295,7 +295,7 @@ describe('product-utils', () => {
         });
 
         it('should handle product with empty imageGroups array', () => {
-            const productWithEmptyImageGroups: ShopperProductsTypes.Product = {
+            const productWithEmptyImageGroups: ShopperProducts.schemas['Product'] = {
                 id: 'test-product',
                 imageGroups: [],
             };
@@ -308,7 +308,7 @@ describe('product-utils', () => {
         });
 
         it('should handle large image group without images array', () => {
-            const productWithIncompleteImageGroup: ShopperProductsTypes.Product = {
+            const productWithIncompleteImageGroup: ShopperProducts.schemas['Product'] = {
                 id: 'test-product',
                 imageGroups: [
                     {
@@ -324,7 +324,7 @@ describe('product-utils', () => {
         });
 
         it('should prioritize exact color matches over default images', () => {
-            const productWithDefaultAndColorImages: ShopperProductsTypes.Product = {
+            const productWithDefaultAndColorImages: ShopperProducts.schemas['Product'] = {
                 id: 'test-product',
                 imageGroups: [
                     {
@@ -350,7 +350,7 @@ describe('product-utils', () => {
         });
 
         it('should handle multiple variation attributes in image groups', () => {
-            const productWithMultipleAttributes: ShopperProductsTypes.Product = {
+            const productWithMultipleAttributes: ShopperProducts.schemas['Product'] = {
                 id: 'test-product',
                 imageGroups: [
                     {
@@ -390,22 +390,22 @@ describe('product-utils', () => {
 
     describe('product type helpers', () => {
         it('isProductBundle returns true when product.type.bundle is true', () => {
-            const product = { id: 'p1', type: { bundle: true } } as unknown as ShopperProductsTypes.Product;
+            const product = { id: 'p1', type: { bundle: true } } as unknown as ShopperProducts.schemas['Product'];
             expect(isProductBundle(product)).toBe(true);
         });
 
         it('isProductBundle returns false when product.type.bundle is falsy', () => {
-            const product = { id: 'p2', type: { item: true } } as unknown as ShopperProductsTypes.Product;
+            const product = { id: 'p2', type: { item: true } } as unknown as ShopperProducts.schemas['Product'];
             expect(isProductBundle(product)).toBe(false);
         });
 
         it('isStandardProduct returns true when product.type.item is true', () => {
-            const product = { id: 'p4', type: { item: true } } as unknown as ShopperProductsTypes.Product;
+            const product = { id: 'p4', type: { item: true } } as unknown as ShopperProducts.schemas['Product'];
             expect(isStandardProduct(product)).toBe(true);
         });
 
         it('isStandardProduct returns false when product.type.item is falsy', () => {
-            const product = { id: 'p5', type: { master: true } } as unknown as ShopperProductsTypes.Product;
+            const product = { id: 'p5', type: { master: true } } as unknown as ShopperProducts.schemas['Product'];
             expect(isStandardProduct(product)).toBe(false);
         });
     });

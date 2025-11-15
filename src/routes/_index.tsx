@@ -1,5 +1,5 @@
 import { type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from 'react-router';
-import type { ShopperSearchTypes, ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchSearchProducts } from '@/lib/api/search';
 import { fetchCategories } from '@/lib/api/categories';
 import { createPage, type RouteComponentProps } from '@/components/create-page';
@@ -15,8 +15,8 @@ import heroImage from '/images/hero-cube.png';
 import heroNewArrivals from '/images/hero-new-arrivals.png';
 
 type HomePageData = {
-    searchResult: Promise<ShopperSearchTypes.ProductSearchResult>;
-    categories: Promise<ShopperProductsTypes.Category[]>;
+    searchResult: Promise<ShopperSearch.schemas['ProductSearchResult']>;
+    categories: Promise<ShopperProducts.schemas['Category'][]>;
 };
 
 // Hero carousel slides data

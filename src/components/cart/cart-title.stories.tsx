@@ -201,7 +201,7 @@ This component is typically used at the top of cart pages to provide users with 
             description: 'Shopping basket data containing productItems array with quantities',
             control: 'object',
             table: {
-                type: { summary: 'ShopperBasketsTypes.Basket' },
+                type: { summary: 'ShopperBasketsV2.schemas["Basket"]' },
             },
         },
     },

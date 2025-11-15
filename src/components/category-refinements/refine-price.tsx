@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, type ReactElement } from 'react';
 import { useLocation } from 'react-router';
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import PriceRangeInput from '@/components/price-range-input';
 import DefaultRefinement from './refine-default';
 import type { FilterValue } from './types';
@@ -18,7 +18,7 @@ export default function RefinePrice({
     attributeId: string;
     isFilterSelected: (attributeId: string, value: string) => boolean;
     toggleFilter: (attributeId: string, value: string) => void;
-    result?: ShopperSearchTypes.ProductSearchResult;
+    result?: ShopperSearch.schemas['ProductSearchResult'];
 }): ReactElement {
     const location = useLocation();
     const [minPrice, setMinPrice] = useState('');

@@ -8,12 +8,12 @@
 'use client';
 
 import { useMemo } from 'react';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import type { GalleryImage } from '@/components/image-gallery';
 import { findImageGroupBy } from '@/lib/image-groups-utils';
 
 interface UseProductImagesProps {
-    product: ShopperProductsTypes.Product;
+    product: ShopperProducts.schemas['Product'];
     selectedAttributes?: Record<string, string>;
     viewType?: string;
 }
@@ -29,7 +29,7 @@ interface UseProductImagesReturn {
  * @returns Array of images for the specified view type
  */
 const getDefaultImages = (
-    imageGroups: ShopperProductsTypes.ImageGroup[] | undefined,
+    imageGroups: ShopperProducts.schemas['ImageGroup'][] | undefined,
     viewType: string = 'large'
 ): ShopperProductsTypes.Image[] => {
     return imageGroups?.find((group) => group.viewType === viewType)?.images || [];

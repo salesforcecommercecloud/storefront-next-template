@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import type { ShopperStoresTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
 import uiStringsSL from '@/extensions/store-locator/temp-ui-string-store-locator';
 
 interface StoreAddressProps {
     /** Store object containing address information */
-    store: ShopperStoresTypes.Store;
+    store: ShopperStores.schemas['Store'];
     /** Whether to show each address line on separate lines */
     multiline?: boolean;
 }

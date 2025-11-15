@@ -8,11 +8,11 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { vi, describe, test, expect, beforeEach } from 'vitest';
-import type { ShopperSearchTypes, ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import HomeView from './_index';
 
 // Mock data
-const mockSearchResult: ShopperSearchTypes.ProductSearchResult = {
+const mockSearchResult: ShopperSearch.schemas['ProductSearchResult'] = {
     hits: [
         {
             productId: 'product-1',
@@ -41,7 +41,7 @@ const mockSearchResult: ShopperSearchTypes.ProductSearchResult = {
     limit: 10,
 };
 
-const mockCategories: ShopperProductsTypes.Category[] = [
+const mockCategories: ShopperProducts.schemas['Category'][] = [
     {
         id: 'category-1',
         name: 'Category 1',

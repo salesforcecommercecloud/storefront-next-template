@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Typography } from '@/components/typography';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
-import type { ShopperBasketsTypes, ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import uiStrings from '@/temp-ui-string';
 
 // Lazy load heavy components
@@ -23,7 +23,7 @@ const MyCart = lazy(() => import('@/components/my-cart'));
 const ExpressPayments = lazy(() => import('./partials/express-payments'));
 
 interface GuestAccountCreationProps {
-    cart: ShopperBasketsTypes.Basket;
+    cart: ShopperBasketsV2.schemas['Basket'];
     customerProfile: ReturnType<typeof useCustomerProfile>;
     onSaved: (shouldCreate: boolean) => void;
 }
@@ -56,8 +56,8 @@ function GuestAccountCreation({ cart, customerProfile, onSaved }: GuestAccountCr
 }
 
 interface CheckoutFormPageProps {
-    shippingMethods?: ShopperBasketsTypes.ShippingMethodResult;
-    productMapPromise: Promise<Record<string, ShopperProductsTypes.Product>>;
+    shippingMethods?: ShopperBasketsV2.schemas['ShippingMethodResult'];
+    productMapPromise: Promise<Record<string, ShopperProducts.schemas['Product']>>;
 }
 
 /**
@@ -71,8 +71,8 @@ function MyCartWithData({
     basket,
     productMapPromise,
 }: {
-    basket: ShopperBasketsTypes.Basket;
-    productMapPromise: Promise<Record<string, ShopperProductsTypes.Product>>;
+    basket: ShopperBasketsV2.schemas['Basket'];
+    productMapPromise: Promise<Record<string, ShopperProducts.schemas['Product']>>;
 }) {
     // Resolve promise within Suspense boundary - allows component to suspend independently
     const productMap = use(productMapPromise);

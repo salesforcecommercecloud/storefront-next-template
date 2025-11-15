@@ -1,11 +1,15 @@
 import type { ReactElement } from 'react';
 import { Link } from 'react-router';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { ChevronRight } from 'lucide-react';
 
-type PathRecord = Required<ShopperProductsTypes.Category>['parentCategoryTree'][0];
+type PathRecord = Required<ShopperProducts.schemas['Category']>['parentCategoryTree'][0];
 
-export default function CategoryBreadcrumbs({ category }: { category: ShopperProductsTypes.Category }): ReactElement {
+export default function CategoryBreadcrumbs({
+    category,
+}: {
+    category: ShopperProducts.schemas['Category'];
+}): ReactElement {
     const items: PathRecord[] = category.parentCategoryTree ?? [{ id: category.id, name: category.name }];
     return (
         <nav aria-label="Breadcrumb" className="mb-6">

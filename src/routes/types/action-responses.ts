@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 
 // Generic response types for actions
 export interface ActionResponse<T = unknown> {
@@ -16,7 +16,7 @@ export interface ActionResponse<T = unknown> {
 
 // Specific response types for common actions
 export interface BasketActionResponse extends ActionResponse {
-    basket?: ShopperBasketsTypes.Basket;
+    basket?: ShopperBasketsV2.schemas['Basket'];
 }
 
 // Utility functions for creating standardized responses
@@ -30,7 +30,7 @@ export const createErrorResponse = (error: string): ActionResponse => ({
     error,
 });
 
-export const createBasketSuccessResponse = (basket: ShopperBasketsTypes.Basket): BasketActionResponse => ({
+export const createBasketSuccessResponse = (basket: ShopperBasketsV2.schemas['Basket']): BasketActionResponse => ({
     success: true,
     basket,
 });

@@ -6,7 +6,7 @@
  */
 
 import { vi, describe, test, expect, beforeEach } from 'vitest';
-import type { ShopperProductsTypes, ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import {
     generateRecommendationPromises,
     getSearchParamsForType,
@@ -61,22 +61,22 @@ vi.mock('@/temp-ui-string', () => ({
     },
 }));
 
-const mockProduct: ShopperProductsTypes.Product = {
+const mockProduct: ShopperProducts.schemas['Product'] = {
     id: 'test-product-id',
     name: 'Test Product',
     primaryCategoryId: 'test-category-id',
     master: {
         masterId: 'test-master-id',
     },
-} as ShopperProductsTypes.Product;
+} as ShopperProducts.schemas['Product'];
 
-const mockCategory: ShopperProductsTypes.Category = {
+const mockCategory: ShopperProducts.schemas['Category'] = {
     id: 'test-category-id',
     name: 'Test Category',
     parentCategoryId: 'parent-category-id',
-} as ShopperProductsTypes.Category;
+} as ShopperProducts.schemas['Category'];
 
-const mockSearchResult: ShopperSearchTypes.ProductSearchResult = {
+const mockSearchResult: ShopperSearch.schemas['ProductSearchResult'] = {
     hits: [],
     total: 0,
     query: '',

@@ -2,7 +2,7 @@
 
 import { type ReactElement, useCallback, useMemo, useId } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 
 import { SelectNative } from '@/components/ui/select-native';
 import { PRODUCT_SEARCH_QUERY_PARAMS } from '@/lib/query-params';
@@ -36,7 +36,7 @@ import { PRODUCT_SEARCH_QUERY_PARAMS } from '@/lib/query-params';
 export default function CategorySorting({
     result,
 }: {
-    result: ShopperSearchTypes.ProductSearchResult;
+    result: ShopperSearch.schemas['ProductSearchResult'];
 }): ReactElement | null {
     const navigate = useNavigate();
     const location = useLocation();

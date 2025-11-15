@@ -4,7 +4,7 @@
 import { useMemo, type ReactElement } from 'react';
 
 // Commerce SDK
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 // Utils
 import { getDisplayVariationValues } from '@/lib/product-utils';
@@ -22,7 +22,7 @@ import uiStrings from '@/temp-ui-string';
 export default function BundledProductItems({
     bundledProducts,
 }: {
-    bundledProducts: ShopperProductsTypes.BundledProduct[];
+    bundledProducts: ShopperProducts.schemas['BundledProduct'][];
 }): ReactElement {
     const allVariationDisplayValues = useMemo(
         () =>

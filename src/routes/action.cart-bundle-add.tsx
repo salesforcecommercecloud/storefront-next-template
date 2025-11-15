@@ -5,23 +5,23 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { data, type ActionFunctionArgs } from 'react-router';
-import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
+import { ApiError, type ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import { getBasket, updateBasket } from '@/middlewares/basket.client';
-import { extractResponseError } from '@/lib/utils';
-import createClient, { type CommerceSdkClient } from '@/lib/scapi';
+import { createApiClients } from '@/lib/api-clients';
+import { getConfig } from '@/config';
 import uiStrings from '@/temp-ui-string';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import { updateShipmentForPickup } from '@/extensions/bopis/lib/api/shipment';
 
 async function addBundleToCart(
     context: ActionFunctionArgs['context'],
-    bundleItem: Pick<ShopperBasketsTypes.ProductItem, 'productId' | 'quantity' | 'inventoryId'> & {
+    bundleItem: Pick<ShopperBasketsV2.schemas['ProductItem'], 'productId' | 'quantity' | 'inventoryId'> & {
         storeId?: string | null;
     },
     childSelections: Array<{ productId: string; quantity: number }>
 ): Promise<{
     success: boolean;
-    basket?: ShopperBasketsTypes.Basket;
+    basket?: ShopperBasketsV2.schemas['Basket'];
     error?: string;
 }> {
     const basket = getBasket(context);
@@ -37,9 +37,15 @@ async function addBundleToCart(
 
     try {
         // Add bundle to basket with bundled product items
-        const client = createClient(context).ShopperBasketsV2;
-        let updatedBasket = await client.addItemToBasket({
-            parameters: { basketId },
+        const config = getConfig(context);
+        const clients = createApiClients(context);
+        const { data: initialBasket } = await clients.shopperBasketsV2.addItemToBasket({
+            params: {
+                path: { organizationId: config.commerce.api.organizationId, basketId },
+                query: {
+                    siteId: config.commerce.api.siteId,
+                },
+            },
             body: [
                 {
                     productId: bundleItem.productId,
@@ -47,8 +53,10 @@ async function addBundleToCart(
                     inventoryId: bundleItem.inventoryId,
                     bundledProductItems: childSelections,
                 },
-            ] as Parameters<CommerceSdkClient['ShopperBasketsV2']['addItemToBasket']>[0]['body'],
+            ],
         });
+
+        let updatedBasket = initialBasket;
 
         // If there are child selections, we may need to update them
         // This is a follow-up call similar to the original implementation
@@ -72,17 +80,26 @@ async function addBundleToCart(
                     };
                 });
 
-                await client.updateItemsInBasket({
-                    parameters: { basketId },
-                    body: itemsToUpdate as Parameters<
-                        CommerceSdkClient['ShopperBasketsV2']['updateItemsInBasket']
-                    >[0]['body'],
+                await clients.shopperBasketsV2.updateItemsInBasket({
+                    params: {
+                        path: { organizationId: config.commerce.api.organizationId, basketId },
+                        query: {
+                            siteId: config.commerce.api.siteId,
+                        },
+                    },
+                    body: itemsToUpdate,
                 });
 
                 // Get the updated basket after child items update
-                updatedBasket = await client.getBasket({
-                    parameters: { basketId },
+                const { data: refreshedBasket } = await clients.shopperBasketsV2.getBasket({
+                    params: {
+                        path: { organizationId: config.commerce.api.organizationId, basketId },
+                        query: {
+                            siteId: config.commerce.api.siteId,
+                        },
+                    },
                 });
+                updatedBasket = refreshedBasket;
             }
         }
 
@@ -101,10 +118,15 @@ async function addBundleToCart(
             basket: updatedBasket,
         };
     } catch (error) {
-        const { responseMessage } = await extractResponseError(error);
+        if (error instanceof ApiError) {
+            return {
+                success: false,
+                error: error.body?.detail || error.statusText,
+            };
+        }
         return {
             success: false,
-            error: responseMessage,
+            error: error instanceof Error ? error.message : 'An unexpected error occurred',
         };
     }
 }
@@ -133,13 +155,21 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
 
         return Response.json(result);
     } catch (error) {
-        const { responseMessage, status_code } = await extractResponseError(error);
+        if (error instanceof ApiError) {
+            return data(
+                {
+                    success: false,
+                    error: error.body?.detail || error.statusText,
+                },
+                { status: error.status }
+            );
+        }
         return data(
             {
                 success: false,
-                error: responseMessage,
+                error: error instanceof Error ? error.message : 'An unexpected error occurred',
             },
-            { status: Number(status_code) }
+            { status: 500 }
         );
     }
 }

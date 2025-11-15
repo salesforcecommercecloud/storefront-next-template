@@ -5,12 +5,16 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { type ActionFunctionArgs, data } from 'react-router';
-import type { ShopperCustomersTypes } from 'commerce-sdk-isomorphic';
+import { type ShopperCustomers, ApiError } from '@salesforce/storefront-next-runtime/scapi';
 import { getAuth } from '@/middlewares/auth.client';
-import { extractResponseError, extractStatusCode } from '@/lib/utils';
-import createClient from '@/lib/scapi';
+import { extractStatusCode } from '@/lib/utils';
+import { createApiClients } from '@/lib/api-clients';
 import { isRegisteredCustomer } from '@/lib/api/customer';
+import { getConfig } from '@/config';
 import uiStrings from '@/temp-ui-string';
+
+type CustomerProductList = ShopperCustomers.schemas['CustomerProductList'];
+type CustomerProductListItem = ShopperCustomers.schemas['CustomerProductListItem'];
 
 /**
  * Constants for wishlist operations
@@ -24,17 +28,21 @@ const WISHLIST_RETRY_DELAY_MS = 2000; // Time to wait before retrying to fetch w
 async function getOrCreateWishlist(
     context: ActionFunctionArgs['context'],
     customerId: string
-): Promise<ShopperCustomersTypes.CustomerProductList> {
-    const client = createClient(context).ShopperCustomers;
+): Promise<CustomerProductList> {
+    const clients = createApiClients(context);
+    const config = getConfig(context);
 
     try {
         // Try to get the default wishlist (product list type 'wish_list')
-        const productLists = await client.getCustomerProductLists({
-            parameters: { customerId },
+        const { data: productLists } = await clients.shopperCustomers.getCustomerProductLists({
+            params: {
+                path: { organizationId: config.commerce.api.organizationId, customerId },
+                query: { siteId: config.commerce.api.siteId },
+            },
         });
 
         // Find the default wishlist
-        const wishlist = productLists.data?.find((list) => list.type === 'wish_list');
+        const wishlist = productLists?.data?.find((list) => list.type === 'wish_list');
 
         if (wishlist) {
             return wishlist;
@@ -43,8 +51,11 @@ async function getOrCreateWishlist(
         // Create a new wishlist if it doesn't exist
         // Commerce SDK createCustomerProductList might not return listId immediately
         // So we'll always fetch the list after creation to ensure we have the listId
-        await client.createCustomerProductList({
-            parameters: { customerId },
+        await clients.shopperCustomers.createCustomerProductList({
+            params: {
+                path: { organizationId: config.commerce.api.organizationId, customerId },
+                query: { siteId: config.commerce.api.siteId },
+            },
             body: {
                 type: 'wish_list',
                 public: false,
@@ -57,11 +68,14 @@ async function getOrCreateWishlist(
         await new Promise((resolve) => setTimeout(resolve, WISHLIST_CREATION_DELAY_MS));
 
         // Fetch the newly created wishlist
-        const productListsResponse = await client.getCustomerProductLists({
-            parameters: { customerId },
+        const { data: productListsResponse } = await clients.shopperCustomers.getCustomerProductLists({
+            params: {
+                path: { organizationId: config.commerce.api.organizationId, customerId },
+                query: { siteId: config.commerce.api.siteId },
+            },
         });
 
-        const createdWishlist = productListsResponse.data?.find((list) => list.type === 'wish_list');
+        const createdWishlist = productListsResponse?.data?.find((list) => list.type === 'wish_list');
         // Commerce SDK might return 'id' instead of 'listId' - check both
         const createdListId = createdWishlist?.listId || createdWishlist?.id;
 
@@ -74,10 +88,13 @@ async function getOrCreateWishlist(
         return createdWishlist;
     } catch (error) {
         // If creating fails, try to get the first available list
-        const productLists = await client.getCustomerProductLists({
-            parameters: { customerId },
+        const { data: productLists } = await clients.shopperCustomers.getCustomerProductLists({
+            params: {
+                path: { organizationId: config.commerce.api.organizationId, customerId },
+                query: { siteId: config.commerce.api.siteId },
+            },
         });
-        const firstList = productLists.data?.[0];
+        const firstList = productLists?.data?.[0];
         if (firstList) {
             return firstList;
         }
@@ -93,7 +110,7 @@ async function addToWishlist(
     productId: string
 ): Promise<{
     success: boolean;
-    productList?: ShopperCustomersTypes.CustomerProductList;
+    productList?: CustomerProductList;
     error?: string;
     alreadyInWishlist?: boolean;
 }> {
@@ -115,7 +132,8 @@ async function addToWishlist(
 
     try {
         const customerId = session.customer_id;
-        const client = createClient(context).ShopperCustomers;
+        const clients = createApiClients(context);
+        const config = getConfig(context);
 
         // Get or create the wishlist
         const wishlist = await getOrCreateWishlist(context, customerId);
@@ -128,23 +146,30 @@ async function addToWishlist(
             // Try one more time to get the wishlist after a longer delay
             try {
                 await new Promise((resolve) => setTimeout(resolve, WISHLIST_RETRY_DELAY_MS));
-                const retryProductLists = await client.getCustomerProductLists({
-                    parameters: { customerId },
+                const { data: retryProductLists } = await clients.shopperCustomers.getCustomerProductLists({
+                    params: {
+                        path: { organizationId: config.commerce.api.organizationId, customerId },
+                        query: { siteId: config.commerce.api.siteId },
+                    },
                 });
-                const retryWishlist = retryProductLists.data?.find((list) => list.type === 'wish_list');
-                const retryListId = retryWishlist?.listId || retryWishlist?.id;
+                const retryWishlist = retryProductLists?.data?.find((list) => list.type === 'wish_list');
+                const retryListId = retryWishlist?.id;
 
                 if (retryWishlist && retryListId) {
                     // Use the retry wishlist instead
-                    const fullWishlist = await client.getCustomerProductList({
-                        parameters: {
-                            customerId,
-                            listId: retryListId,
+                    const { data: fullWishlist } = await clients.shopperCustomers.getCustomerProductList({
+                        params: {
+                            path: {
+                                organizationId: config.commerce.api.organizationId,
+                                customerId,
+                                listId: retryListId,
+                            },
+                            query: { siteId: config.commerce.api.siteId },
                         },
                     });
 
-                    const existingItem = fullWishlist.items?.find(
-                        (item: ShopperCustomersTypes.CustomerProductListItem) => item.productId === productId
+                    const existingItem = fullWishlist.customerProductListItems?.find(
+                        (item: CustomerProductListItem) => item.productId === productId
                     );
                     if (existingItem) {
                         return {
@@ -156,29 +181,31 @@ async function addToWishlist(
 
                     // Add the product to the wishlist using createCustomerProductListItem
                     try {
-                        await client.createCustomerProductListItem({
-                            parameters: {
-                                customerId,
-                                listId: retryListId,
+                        await clients.shopperCustomers.createCustomerProductListItem({
+                            params: {
+                                path: {
+                                    organizationId: config.commerce.api.organizationId,
+                                    customerId,
+                                    listId: retryListId,
+                                },
+                                query: { siteId: config.commerce.api.siteId },
                             },
                             body: {
-                                product_id: productId,
+                                productId,
                                 quantity: 1,
                                 type: 'product',
                                 public: false, // Required by API
-                                priority: 0, // Required by API
-                            } as Parameters<typeof client.createCustomerProductListItem>[0]['body'],
+                                priority: 1, // Required by API
+                            },
                         });
                     } catch (createError) {
                         let responseMessage: string | undefined;
                         let status_code: string | undefined;
 
-                        try {
-                            const extracted = await extractResponseError(createError);
-                            responseMessage = extracted.responseMessage;
-                            status_code = extracted.status_code;
-                        } catch {
-                            // Response body may already be read, fall back to error message
+                        if (createError instanceof ApiError) {
+                            responseMessage = createError.body?.message || createError.message;
+                            status_code = String(createError.status);
+                        } else {
                             responseMessage = createError instanceof Error ? createError.message : String(createError);
                             status_code = extractStatusCode(createError);
                         }
@@ -189,12 +216,17 @@ async function addToWishlist(
                             (responseMessage?.toLowerCase().includes('already') ||
                                 responseMessage?.toLowerCase().includes('duplicate'))
                         ) {
-                            const duplicateCheckWishlist = await client.getCustomerProductList({
-                                parameters: {
-                                    customerId,
-                                    listId: retryListId,
-                                },
-                            });
+                            const { data: duplicateCheckWishlist } =
+                                await clients.shopperCustomers.getCustomerProductList({
+                                    params: {
+                                        path: {
+                                            organizationId: config.commerce.api.organizationId,
+                                            customerId,
+                                            listId: retryListId,
+                                        },
+                                        query: { siteId: config.commerce.api.siteId },
+                                    },
+                                });
                             return {
                                 success: true,
                                 productList: duplicateCheckWishlist,
@@ -205,10 +237,14 @@ async function addToWishlist(
                     }
 
                     // Fetch the updated wishlist to return it
-                    const updatedList = await client.getCustomerProductList({
-                        parameters: {
-                            customerId,
-                            listId: retryListId,
+                    const { data: updatedList } = await clients.shopperCustomers.getCustomerProductList({
+                        params: {
+                            path: {
+                                organizationId: config.commerce.api.organizationId,
+                                customerId,
+                                listId: retryListId,
+                            },
+                            query: { siteId: config.commerce.api.siteId },
                         },
                     });
 
@@ -231,15 +267,19 @@ async function addToWishlist(
         }
 
         // Check if product is already in the wishlist
-        const fullWishlist = await client.getCustomerProductList({
-            parameters: {
-                customerId,
-                listId,
+        const { data: fullWishlist } = await clients.shopperCustomers.getCustomerProductList({
+            params: {
+                path: {
+                    organizationId: config.commerce.api.organizationId,
+                    customerId,
+                    listId,
+                },
+                query: { siteId: config.commerce.api.siteId },
             },
         });
 
-        const existingItem = fullWishlist.items?.find(
-            (item: ShopperCustomersTypes.CustomerProductListItem) => item.productId === productId
+        const existingItem = fullWishlist.customerProductListItems?.find(
+            (item: CustomerProductListItem) => item.productId === productId
         );
         if (existingItem) {
             return {
@@ -250,36 +290,45 @@ async function addToWishlist(
         }
 
         // Add the product to the wishlist using createCustomerProductListItem
-        let updatedList: ShopperCustomersTypes.CustomerProductList | undefined;
+        let updatedList: CustomerProductList | undefined;
 
         try {
-            await client.createCustomerProductListItem({
-                parameters: {
-                    customerId,
-                    listId,
+            await clients.shopperCustomers.createCustomerProductListItem({
+                params: {
+                    path: {
+                        organizationId: config.commerce.api.organizationId,
+                        customerId,
+                        listId,
+                    },
+                    query: { siteId: config.commerce.api.siteId },
                 },
                 body: {
-                    product_id: productId,
+                    productId,
                     quantity: 1,
                     type: 'product',
                     public: false, // Required by API
-                    priority: 0, // Required by API
-                } as Parameters<typeof client.createCustomerProductListItem>[0]['body'],
+                    priority: 1, // Required by API
+                },
             });
 
             // After successful creation, check if there are now duplicates
             // (Commerce API might allow duplicates without throwing an error)
-            updatedList = await client.getCustomerProductList({
-                parameters: {
-                    customerId,
-                    listId,
+            const { data: refetchedList } = await clients.shopperCustomers.getCustomerProductList({
+                params: {
+                    path: {
+                        organizationId: config.commerce.api.organizationId,
+                        customerId,
+                        listId,
+                    },
+                    query: { siteId: config.commerce.api.siteId },
                 },
             });
+            updatedList = refetchedList;
 
             // Check if there are multiple items with the same productId
             const itemsWithSameProductId =
-                updatedList.items?.filter(
-                    (item: ShopperCustomersTypes.CustomerProductListItem) => item.productId === productId
+                updatedList.customerProductListItems?.filter(
+                    (item: CustomerProductListItem) => item.productId === productId
                 ) || [];
 
             if (itemsWithSameProductId.length > 1) {
@@ -294,12 +343,10 @@ async function addToWishlist(
             let responseMessage: string | undefined;
             let status_code: string | undefined;
 
-            try {
-                const extracted = await extractResponseError(createError);
-                responseMessage = extracted.responseMessage;
-                status_code = extracted.status_code;
-            } catch {
-                // Response body may already be read, fall back to error message
+            if (createError instanceof ApiError) {
+                responseMessage = createError.body?.message || createError.message;
+                status_code = String(createError.status);
+            } else {
                 responseMessage = createError instanceof Error ? createError.message : String(createError);
                 status_code = extractStatusCode(createError);
             }
@@ -312,10 +359,14 @@ async function addToWishlist(
                     responseMessage?.toLowerCase().includes('exists'))
             ) {
                 // Product already in wishlist - return success with alreadyInWishlist flag
-                const duplicateWishlist = await client.getCustomerProductList({
-                    parameters: {
-                        customerId,
-                        listId,
+                const { data: duplicateWishlist } = await clients.shopperCustomers.getCustomerProductList({
+                    params: {
+                        path: {
+                            organizationId: config.commerce.api.organizationId,
+                            customerId,
+                            listId,
+                        },
+                        query: { siteId: config.commerce.api.siteId },
                     },
                 });
                 return {
@@ -331,12 +382,17 @@ async function addToWishlist(
         // If we reach here and didn't return earlier, the item was added successfully (no duplicate)
         // Fetch the updated wishlist to return it (already fetched in the try block above)
         if (!updatedList) {
-            updatedList = await client.getCustomerProductList({
-                parameters: {
-                    customerId,
-                    listId,
+            const { data: fetchedList } = await clients.shopperCustomers.getCustomerProductList({
+                params: {
+                    path: {
+                        organizationId: config.commerce.api.organizationId,
+                        customerId,
+                        listId,
+                    },
+                    query: { siteId: config.commerce.api.siteId },
                 },
             });
+            updatedList = fetchedList;
         }
 
         return {
@@ -348,12 +404,10 @@ async function addToWishlist(
         let responseMessage: string | undefined;
         let status_code: string | undefined;
 
-        try {
-            const extracted = await extractResponseError(error);
-            responseMessage = extracted.responseMessage;
-            status_code = extracted.status_code;
-        } catch {
-            // Response body may already be read, fall back to error message
+        if (error instanceof ApiError) {
+            responseMessage = error.body?.message || error.message;
+            status_code = String(error.status);
+        } else {
             responseMessage = error instanceof Error ? error.message : String(error);
             status_code = extractStatusCode(error);
         }
@@ -377,14 +431,19 @@ async function addToWishlist(
             // Try to get the current wishlist to return it
             try {
                 const customerId = session.customer_id;
-                const client = createClient(context).ShopperCustomers;
+                const clients = createApiClients(context);
+                const config = getConfig(context);
                 const wishlist = await getOrCreateWishlist(context, customerId);
                 const listId = wishlist.listId || wishlist.id;
                 if (listId) {
-                    const duplicateCheckList = await client.getCustomerProductList({
-                        parameters: {
-                            customerId,
-                            listId,
+                    const { data: duplicateCheckList } = await clients.shopperCustomers.getCustomerProductList({
+                        params: {
+                            path: {
+                                organizationId: config.commerce.api.organizationId,
+                                customerId,
+                                listId,
+                            },
+                            query: { siteId: config.commerce.api.siteId },
                         },
                     });
                     return {
@@ -434,12 +493,10 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
         let responseMessage: string | undefined;
         let status_code: string | undefined;
 
-        try {
-            const extracted = await extractResponseError(error);
-            responseMessage = extracted.responseMessage;
-            status_code = extracted.status_code;
-        } catch {
-            // Response body may already be read, fall back to error message
+        if (error instanceof ApiError) {
+            responseMessage = error.body?.message || error.message;
+            status_code = String(error.status);
+        } else {
             responseMessage = error instanceof Error ? error.message : String(error);
             status_code = extractStatusCode(error);
         }

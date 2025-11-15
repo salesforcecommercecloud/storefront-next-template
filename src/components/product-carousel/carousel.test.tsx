@@ -8,11 +8,11 @@
 import type React from 'react';
 import { render, screen } from '@testing-library/react';
 import { vi, describe, test, expect, beforeEach } from 'vitest';
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import ProductCarousel, { ProductCarouselWithSuspense, ProductCarouselWithData } from './carousel';
 
 // Mock data
-const mockProducts: ShopperSearchTypes.ProductSearchHit[] = [
+const mockProducts: ShopperSearch.schemas['ProductSearchHit'][] = [
     {
         productId: 'test-product-1',
         productName: 'Test Product 1',
@@ -60,7 +60,7 @@ const mockProducts: ShopperSearchTypes.ProductSearchHit[] = [
     },
 ];
 
-const mockProductSearchResult: ShopperSearchTypes.ProductSearchResult = {
+const mockProductSearchResult: ShopperSearch.schemas['ProductSearchResult'] = {
     hits: mockProducts,
     total: 3,
     query: '',
@@ -75,7 +75,13 @@ const mockProductSearchResult: ShopperSearchTypes.ProductSearchResult = {
 
 // Mock the ProductTile component
 vi.mock('@/components/product-tile', () => ({
-    ProductTile: ({ product, className }: { product: ShopperSearchTypes.ProductSearchHit; className?: string }) => (
+    ProductTile: ({
+        product,
+        className,
+    }: {
+        product: ShopperSearch.schemas['ProductSearchHit'];
+        className?: string;
+    }) => (
         <div data-testid={`product-tile-${product.productId}`} className={className}>
             <h3>{product.productName}</h3>
             <p>${product.price}</p>

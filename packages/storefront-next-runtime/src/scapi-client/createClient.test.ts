@@ -268,7 +268,11 @@ describe('createClient', () => {
         });
 
         it('should throw ApiError with parsed JSON body', async () => {
-            const errorBody = { message: 'Validation Error', errors: ['field1', 'field2'] };
+            const errorBody = {
+                type: 'https://api.example.com/errors/validation',
+                title: 'Validation Error',
+                detail: 'The request contained invalid fields',
+            };
             const errorResponse = {
                 status: 400,
                 statusText: 'Bad Request',
@@ -297,7 +301,7 @@ describe('createClient', () => {
             }
         });
 
-        it('should throw ApiError with raw body text when JSON parsing fails', async () => {
+        it('should throw ApiError with generic body when response is not ProblemDetail', async () => {
             const rawErrorText = '<html>Internal Server Error</html>';
             const errorResponse = {
                 status: 500,
@@ -323,13 +327,19 @@ describe('createClient', () => {
                 expect.fail('Should have thrown ApiError');
             } catch (error) {
                 expect(error).toBeInstanceOf(ApiError);
-                expect((error as ApiError).body).toBeNull();
+                expect((error as ApiError).body.type).toBe('Unknown Error');
+                expect((error as ApiError).body.title).toBe('Internal Server Error');
+                expect((error as ApiError).body.detail).toBe('The API returned a 500 error. See rawBody for details.');
                 expect((error as ApiError).rawBody).toBe(rawErrorText);
             }
         });
 
         it('should throw ApiError with both rawBody and parsed body', async () => {
-            const errorBody = { code: 'ERR_001', message: 'Error occurred' };
+            const errorBody = {
+                type: 'https://api.example.com/errors/forbidden',
+                title: 'Forbidden',
+                detail: 'Access to this resource is denied',
+            };
             const rawBody = JSON.stringify(errorBody);
             const errorResponse = {
                 status: 403,

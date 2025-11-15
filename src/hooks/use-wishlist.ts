@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { useFetcher } from 'react-router';
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { useToast } from '@/components/toast';
 import { useRequireAuth } from '@/hooks/use-require-auth';
 import uiStrings from '@/temp-ui-string';
@@ -25,7 +25,7 @@ export const useWishlist = () => {
     const isLoading = addFetcher.state !== 'idle' || removeFetcher.state !== 'idle';
 
     const isItemInWishlist = useCallback(
-        (product: ShopperSearchTypes.ProductSearchHit, variant?: ShopperSearchTypes.ProductSearchHit) => {
+        (product: ShopperSearch.schemas['ProductSearchHit'], variant?: ShopperSearch.schemas['ProductSearchHit']) => {
             const productId = variant?.productId || product.productId;
             return productId ? productIds.has(productId) : false;
         },
@@ -34,7 +34,10 @@ export const useWishlist = () => {
 
     // Base toggle function (without auth check)
     const toggleWishlistBase = useCallback(
-        async (product: ShopperSearchTypes.ProductSearchHit, variant?: ShopperSearchTypes.ProductSearchHit) => {
+        async (
+            product: ShopperSearch.schemas['ProductSearchHit'],
+            variant?: ShopperSearch.schemas['ProductSearchHit']
+        ) => {
             const productId = variant?.productId || product.productId;
             if (!productId) {
                 addToast(uiStrings.product.failedToAddToWishlist, 'error');
@@ -128,16 +131,16 @@ export const useWishlist = () => {
     const toggleWishlist = useRequireAuth(toggleWishlistBase as (...args: unknown[]) => Promise<unknown>, {
         actionName: 'toggleWishlist',
         getActionParams: (...args: unknown[]) => {
-            const product = args[0] as ShopperSearchTypes.ProductSearchHit;
-            const variant = args[1] as ShopperSearchTypes.ProductSearchHit | undefined;
+            const product = args[0] as ShopperSearch.schemas['ProductSearchHit'];
+            const variant = args[1] as ShopperSearch.schemas['ProductSearchHit'] | undefined;
             const productId = variant?.productId || product.productId;
             return productId ? { productId } : {};
         },
         getReturnUrl: () => window.location.pathname + window.location.search,
         toastMessage: uiStrings.product.signInToAddToWishlist,
     }) as (
-        product: ShopperSearchTypes.ProductSearchHit,
-        variant?: ShopperSearchTypes.ProductSearchHit
+        product: ShopperSearch.schemas['ProductSearchHit'],
+        variant?: ShopperSearch.schemas['ProductSearchHit']
     ) => Promise<void>;
 
     return {

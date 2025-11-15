@@ -6,22 +6,24 @@ import { PasswordUpdateForm } from '@/components/password-update-form';
 import { CustomerProfileForm } from '@/components/customer-profile-form';
 import { useToast } from '@/components/toast';
 import uiStrings from '@/temp-ui-string';
-import type { ShopperCustomersTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { useFetcherEffect } from '@/hooks/use-fetcher-effect';
 import { useScapiFetcher, type ScapiFetcher } from '@/hooks/use-scapi-fetcher';
 import { useAuth } from '@/providers/auth';
 import type { CustomerProfileFetcherData } from '@/components/customer-profile-form/types';
 import type { PasswordUpdateFetcherData } from '@/components/password-update-form/types';
 
+type Customer = ShopperCustomers.schemas['Customer'];
+
 type AccountLayoutContext = {
-    customer: Promise<ShopperCustomersTypes.Customer | null>;
+    customer: Promise<Customer | null>;
 };
 
 /**
  * Account details content component that renders when customer data is loaded.
  * This component receives the resolved customer data and displays the profile information.
  */
-function AccountDetailsContent({ customer }: { customer: ShopperCustomersTypes.Customer | null }): ReactElement {
+function AccountDetailsContent({ customer }: { customer: Customer | null }): ReactElement {
     const [isEditingProfile, setIsEditingProfile] = useState(false);
     const [isEditingPassword, setIsEditingPassword] = useState(false);
 
@@ -329,7 +331,7 @@ export default function AccountDetails(): ReactElement {
     return (
         <Suspense fallback={<AccountDetailSkeleton />}>
             <Await resolve={customerPromise}>
-                {(customer: ShopperCustomersTypes.Customer | null) => <AccountDetailsContent customer={customer} />}
+                {(customer: Customer | null) => <AccountDetailsContent customer={customer} />}
             </Await>
         </Suspense>
     );

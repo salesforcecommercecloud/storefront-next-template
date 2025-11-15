@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach, type MockedFunction } from 'vitest';
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { useSearchSuggestions } from './use-search-suggestions';
 import { useScapiFetcher } from './use-scapi-fetcher';
 
@@ -14,12 +14,12 @@ describe('useSearchSuggestions', () => {
     let mockFetcher: {
         state: 'idle' | 'loading' | 'submitting';
         load: MockedFunction<() => Promise<void>>;
-        data: ShopperSearchTypes.SuggestionResult | undefined;
+        data: ShopperSearch.schemas['SuggestionResult'] | undefined;
         success: boolean;
         errors: string[] | undefined;
     };
 
-    const mockSuggestionResult: ShopperSearchTypes.SuggestionResult = {
+    const mockSuggestionResult: ShopperSearch.schemas['SuggestionResult'] = {
         searchPhrase: 'dress',
         categorySuggestions: {
             categories: [{ id: 'dresses', name: 'Dresses', parentCategoryName: 'Clothing' }],
@@ -187,7 +187,7 @@ describe('useSearchSuggestions', () => {
                         q: 'dress',
                         expand: ['images'] as ('images' | 'prices')[],
                         limit: 5,
-                        currency: 'USD' as ShopperSearchTypes.CurrencyCode,
+                        currency: 'USD',
                     },
                 }
             );

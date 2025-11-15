@@ -9,7 +9,7 @@
 
 import { type ReactElement, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import uiStrings from '@/temp-ui-string';
 import { useToast } from '@/components/toast';
 import { useConfig } from '@/config';
@@ -23,7 +23,7 @@ import {
 import { Share2, Link as LinkIcon, Mail, MessageSquare, Copy, type LucideIcon } from 'lucide-react';
 
 interface ShareButtonProps {
-    product: ShopperProductsTypes.Product;
+    product: ShopperProducts.schemas['Product'];
     className?: string;
 }
 

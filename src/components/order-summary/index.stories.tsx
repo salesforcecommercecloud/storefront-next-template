@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect } from 'storybook/test';
-import type { ShopperBasketsTypes, ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import OrderSummary from './index';
 import emptyBasket from '@/components/__mocks__/empty-basket';
 import { basketWithMultipleItems, inBasketProductDetails } from '@/components/__mocks__/basket-with-multiple-items';
@@ -153,7 +153,7 @@ export default meta;
 type Story = StoryObj<typeof OrderSummary>;
 
 // Use real mock data from @mocks directory
-const mockBasket = basketWithMultipleItems as ShopperBasketsTypes.Basket;
+const mockBasket = basketWithMultipleItems as ShopperBasketsV2.schemas['Basket'];
 
 const mockBasketWithPromos = {
     ...basketWithMultipleItems,
@@ -171,17 +171,17 @@ const mockBasketWithPromos = {
             price: -59.99,
         },
     ],
-} as ShopperBasketsTypes.Basket;
+} as ShopperBasketsV2.schemas['Basket'];
 
-const mockProductMap: Record<string, ShopperProductsTypes.Product> = {};
+const mockProductMap: Record<string, ShopperProducts.schemas['Product']> = {};
 
 if (inBasketProductDetails?.data && basketWithMultipleItems?.productItems) {
-    basketWithMultipleItems.productItems.forEach((item: ShopperBasketsTypes.ProductItem) => {
+    basketWithMultipleItems.productItems.forEach((item: ShopperBasketsV2.schemas['ProductItem']) => {
         const productData = inBasketProductDetails.data.find(
-            (product: ShopperProductsTypes.Product) => product.id === item.productId
+            (product: ShopperProducts.schemas['Product']) => product.id === item.productId
         );
         if (productData && item.itemId) {
-            mockProductMap[item.itemId] = productData as ShopperProductsTypes.Product;
+            mockProductMap[item.itemId] = productData as ShopperProducts.schemas['Product'];
         }
     });
 }
@@ -360,7 +360,7 @@ export const Minimal: Story = {
 
 export const EmptyBasket: Story = {
     args: {
-        basket: emptyBasket as ShopperBasketsTypes.Basket,
+        basket: emptyBasket as ShopperBasketsV2.schemas['Basket'],
         showPromoCodeForm: false,
         showCartItems: true,
         showHeading: true,

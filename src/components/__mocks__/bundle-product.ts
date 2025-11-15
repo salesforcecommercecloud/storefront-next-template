@@ -1,6 +1,6 @@
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
-export const bundleProd: ShopperProductsTypes.Product = {
+export const bundleProd: ShopperProducts.schemas['Product'] = {
     bundledProducts: [
         {
             id: '013742002836M',

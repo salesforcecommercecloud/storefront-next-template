@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import { CHECKOUT_STEPS, type CustomerProfile } from './checkout-context-types';
 import {
     computeFinalStepForReturningCustomer,
@@ -18,11 +18,24 @@ const mockShopperBasketsClient = {
     updateShippingMethodForShipment: vi.fn(),
 };
 
-vi.mock('commerce-sdk-isomorphic/shopperBasketsv2', async () => {
-    const actual = await vi.importActual('commerce-sdk-isomorphic/shopperBasketsv2');
+vi.mock('@/lib/api-clients', () => ({
+    createApiClients: vi.fn(() => ({
+        shopperBasketsV2: mockShopperBasketsClient,
+    })),
+}));
+
+vi.mock('@/config', async (importOriginal) => {
+    const actual = await importOriginal();
     return {
         ...actual,
-        ShopperBasketsV2: vi.fn(() => mockShopperBasketsClient),
+        getConfig: vi.fn(() => ({
+            commerce: {
+                api: {
+                    organizationId: 'test-org-id',
+                    siteId: 'test-site-id',
+                },
+            },
+        })),
     };
 });
 
@@ -47,7 +60,7 @@ describe('Checkout Utils', () => {
             const basket = {
                 basketId: 'test-basket',
                 customerInfo: {},
-            } as ShopperBasketsTypes.Basket;
+            } as ShopperBasketsV2.schemas['Basket'];
 
             const result = computeStepFromBasket(basket, false);
             expect(result).toBe(CHECKOUT_STEPS.CONTACT_INFO);
@@ -58,7 +71,7 @@ describe('Checkout Utils', () => {
                 basketId: 'test-basket',
                 customerInfo: { email: 'test@example.com' },
                 shipments: [{}],
-            } as ShopperBasketsTypes.Basket;
+            } as ShopperBasketsV2.schemas['Basket'];
 
             const result = computeStepFromBasket(basket, false);
             expect(result).toBe(CHECKOUT_STEPS.SHIPPING_ADDRESS);
@@ -81,7 +94,7 @@ describe('Checkout Utils', () => {
                         },
                     },
                 ],
-            } as ShopperBasketsTypes.Basket;
+            } as ShopperBasketsV2.schemas['Basket'];
 
             const result = computeStepFromBasket(basket, false);
             expect(result).toBe(CHECKOUT_STEPS.SHIPPING_OPTIONS);
@@ -109,7 +122,7 @@ describe('Checkout Utils', () => {
                     },
                 ],
                 paymentInstruments: [],
-            } as ShopperBasketsTypes.Basket;
+            } as ShopperBasketsV2.schemas['Basket'];
 
             const result = computeStepFromBasket(basket, true); // User has selected shipping options
             expect(result).toBe(CHECKOUT_STEPS.PAYMENT);
@@ -147,7 +160,7 @@ describe('Checkout Utils', () => {
                         },
                     },
                 ],
-            } as ShopperBasketsTypes.Basket;
+            } as ShopperBasketsV2.schemas['Basket'];
 
             const result = computeStepFromBasket(basket, true);
             expect(result).toBe(CHECKOUT_STEPS.REVIEW_ORDER);
@@ -174,7 +187,7 @@ describe('Checkout Utils', () => {
                         },
                     },
                 ],
-            } as ShopperBasketsTypes.Basket;
+            } as ShopperBasketsV2.schemas['Basket'];
 
             const result = computeStepFromBasket(basket, false); // User hasn't completed shipping options
             expect(result).toBe(CHECKOUT_STEPS.SHIPPING_OPTIONS);
@@ -204,7 +217,7 @@ describe('Checkout Utils', () => {
                         },
                     },
                 ],
-            } as ShopperBasketsTypes.Basket;
+            } as ShopperBasketsV2.schemas['Basket'];
 
             const result = getCompletedSteps(basket, CHECKOUT_STEPS.SHIPPING_OPTIONS);
             expect(result).toContain(CHECKOUT_STEPS.CONTACT_INFO);
@@ -216,7 +229,7 @@ describe('Checkout Utils', () => {
             const basket = {
                 basketId: 'test-basket',
                 customerInfo: {},
-            } as ShopperBasketsTypes.Basket;
+            } as ShopperBasketsV2.schemas['Basket'];
 
             // Mock sessionStorage to be undefined (server-side)
             Object.defineProperty(window, 'sessionStorage', {
@@ -297,13 +310,13 @@ describe('Checkout Utils', () => {
 
     describe('shouldPrefillBasket', () => {
         it('should return false when customer profile is missing', () => {
-            const basket = { basketId: 'test' } as ShopperBasketsTypes.Basket;
+            const basket = { basketId: 'test' } as ShopperBasketsV2.schemas['Basket'];
             const result = shouldPrefillBasket(basket, undefined as unknown as CustomerProfile);
             expect(result).toBe(false);
         });
 
         it('should return false when customer has no addresses', () => {
-            const basket = { basketId: 'test' } as ShopperBasketsTypes.Basket;
+            const basket = { basketId: 'test' } as ShopperBasketsV2.schemas['Basket'];
             const customerProfile = {
                 customer: { login: 'test@example.com' },
                 addresses: [],
@@ -318,7 +331,7 @@ describe('Checkout Utils', () => {
             const basket = {
                 basketId: 'test',
                 customerInfo: {},
-            } as ShopperBasketsTypes.Basket;
+            } as ShopperBasketsV2.schemas['Basket'];
 
             const customerProfile = {
                 customer: { login: 'test@example.com' },
@@ -335,7 +348,7 @@ describe('Checkout Utils', () => {
                 basketId: 'test',
                 customerInfo: { email: 'test@example.com' },
                 shipments: [{}],
-            } as ShopperBasketsTypes.Basket;
+            } as ShopperBasketsV2.schemas['Basket'];
 
             const customerProfile = {
                 customer: { login: 'test@example.com' },
@@ -360,7 +373,7 @@ describe('Checkout Utils', () => {
                         },
                     },
                 ],
-            } as ShopperBasketsTypes.Basket;
+            } as ShopperBasketsV2.schemas['Basket'];
 
             const customerProfile = {
                 customer: { login: 'test@example.com' },
@@ -375,7 +388,7 @@ describe('Checkout Utils', () => {
 
     describe('initializeBasketForReturningCustomer', () => {
         let mockContext: ReturnType<typeof createTestContext>;
-        let mockBasket: ShopperBasketsTypes.Basket;
+        let mockBasket: ShopperBasketsV2.schemas['Basket'];
         let mockCustomerProfile: CustomerProfile;
 
         beforeEach(async () => {
@@ -387,7 +400,7 @@ describe('Checkout Utils', () => {
                 basketId: 'test-basket',
                 customerInfo: {},
                 shipments: [{}],
-            } as ShopperBasketsTypes.Basket;
+            } as ShopperBasketsV2.schemas['Basket'];
 
             mockCustomerProfile = {
                 customer: { login: 'test@example.com' },
@@ -409,15 +422,19 @@ describe('Checkout Utils', () => {
             } as CustomerProfile;
 
             mockShopperBasketsClient.updateCustomerForBasket.mockResolvedValue({
-                ...mockBasket,
-                customerInfo: { email: 'test@example.com' },
+                data: {
+                    ...mockBasket,
+                    customerInfo: { email: 'test@example.com' },
+                },
             });
             mockShopperBasketsClient.updateShippingAddressForShipment.mockResolvedValue({
-                ...mockBasket,
-                shipments: [{ shippingAddress: { address1: '123 Main St' } }],
+                data: {
+                    ...mockBasket,
+                    shipments: [{ shippingAddress: { address1: '123 Main St' } }],
+                },
             });
-            mockShopperBasketsClient.updateBillingAddressForBasket.mockResolvedValue(mockBasket);
-            mockShopperBasketsClient.updateShippingMethodForShipment.mockResolvedValue(mockBasket);
+            mockShopperBasketsClient.updateBillingAddressForBasket.mockResolvedValue({ data: mockBasket });
+            mockShopperBasketsClient.updateShippingMethodForShipment.mockResolvedValue({ data: mockBasket });
 
             const { getBasket, updateBasket } = await import('@/middlewares/basket.client');
             // const createClient = (await import('@/lib/scapi')).default;
@@ -451,7 +468,15 @@ describe('Checkout Utils', () => {
             const result = await initializeBasketForReturningCustomer(mockContext, mockCustomerProfile);
 
             expect(mockShopperBasketsClient.updateCustomerForBasket).toHaveBeenCalledWith({
-                parameters: { basketId: 'test-basket' },
+                params: {
+                    path: {
+                        organizationId: 'test-org-id',
+                        basketId: 'test-basket',
+                    },
+                    query: {
+                        siteId: 'test-site-id',
+                    },
+                },
                 body: { email: 'test@example.com' },
             });
             expect(result).toBeTruthy();
@@ -464,9 +489,15 @@ describe('Checkout Utils', () => {
             const result = await initializeBasketForReturningCustomer(mockContext, mockCustomerProfile);
 
             expect(mockShopperBasketsClient.updateShippingAddressForShipment).toHaveBeenCalledWith({
-                parameters: {
-                    basketId: 'test-basket',
-                    shipmentId: 'me',
+                params: {
+                    path: {
+                        organizationId: 'test-org-id',
+                        basketId: 'test-basket',
+                        shipmentId: 'me',
+                    },
+                    query: {
+                        siteId: 'test-site-id',
+                    },
                 },
                 body: expect.objectContaining({
                     firstName: 'John',
@@ -512,7 +543,7 @@ describe('Checkout Utils', () => {
 
     describe('computeFinalStepForReturningCustomer', () => {
         it('should return null when customer profile is missing', () => {
-            const basket = { basketId: 'test' } as ShopperBasketsTypes.Basket;
+            const basket = { basketId: 'test' } as ShopperBasketsV2.schemas['Basket'];
             const result = computeFinalStepForReturningCustomer(basket, undefined as unknown as CustomerProfile);
             expect(result).toBeNull();
         });
@@ -521,7 +552,7 @@ describe('Checkout Utils', () => {
             const basket = {
                 basketId: 'test',
                 customerInfo: {},
-            } as ShopperBasketsTypes.Basket;
+            } as ShopperBasketsV2.schemas['Basket'];
 
             const customerProfile = {
                 customer: {},
@@ -538,7 +569,7 @@ describe('Checkout Utils', () => {
                 basketId: 'test',
                 customerInfo: { email: 'test@example.com' },
                 shipments: [{}],
-            } as ShopperBasketsTypes.Basket;
+            } as ShopperBasketsV2.schemas['Basket'];
 
             const customerProfile = {
                 customer: { login: 'test@example.com' },
@@ -554,7 +585,7 @@ describe('Checkout Utils', () => {
             const basket = {
                 basketId: 'test',
                 customerInfo: { email: 'test@example.com' },
-            } as ShopperBasketsTypes.Basket;
+            } as ShopperBasketsV2.schemas['Basket'];
 
             const customerProfile = {
                 customer: { login: 'test@example.com' },
@@ -575,7 +606,7 @@ describe('Checkout Utils', () => {
             const basket = {
                 basketId: 'test',
                 customerInfo: { email: 'test@example.com' },
-            } as ShopperBasketsTypes.Basket;
+            } as ShopperBasketsV2.schemas['Basket'];
 
             const customerProfile = {
                 customer: { login: 'test@example.com' },

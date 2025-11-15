@@ -1,6 +1,6 @@
 import { type ReactNode, Suspense, useEffect, useState, cloneElement, isValidElement } from 'react';
 import { Await } from 'react-router';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import CategoryNavigationMenu from './impl';
 
 export type { CategoryNavigationMenuListCtx, CategoryNavigationMenuListItemCtx } from './impl';
@@ -8,21 +8,23 @@ export type { CategoryNavigationMenuListCtx, CategoryNavigationMenuListItemCtx }
 export default CategoryNavigationMenu;
 
 type CategoryNavigationMenuChildProps = {
-    categories: ShopperProductsTypes.Category[];
+    categories: ShopperProducts.schemas['Category'][];
 };
 
 type WithCategoryNavigationMenuProps = {
     children?: ReactNode | ((props: CategoryNavigationMenuChildProps) => ReactNode);
-    resolve?: Promise<ShopperProductsTypes.Category>;
-    defer?: Promise<ShopperProductsTypes.Category[]>;
+    resolve?: Promise<ShopperProducts.schemas['Category']>;
+    defer?: Promise<ShopperProducts.schemas['Category'][]>;
     fallback?: ReactNode;
     errorElement?: ReactNode;
     // Programmatically filter out items that you do not want to show. Default: 'c_showInMenu'
-    itemsFilter?: keyof ShopperProductsTypes.Category | ((category: ShopperProductsTypes.Category) => boolean);
+    itemsFilter?:
+        | keyof ShopperProducts.schemas['Category']
+        | ((category: ShopperProducts.schemas['Category']) => boolean);
 };
 
 function filterItem(
-    category: ShopperProductsTypes.Category,
+    category: ShopperProducts.schemas['Category'],
     itemsFilter: WithCategoryNavigationMenuProps['itemsFilter']
 ): boolean {
     if (typeof itemsFilter === 'function') {
@@ -37,29 +39,32 @@ function WithCategoryNavigationMenuView({
     itemsFilter,
     children,
 }: Omit<WithCategoryNavigationMenuProps, 'resolve' | 'fallback' | 'errorElement'> & {
-    root?: ShopperProductsTypes.Category;
+    root?: ShopperProducts.schemas['Category'];
 }) {
     const [rootCategories, setRootCategories] = useState(
-        (rootCategory?.categories ?? []).filter((c: ShopperProductsTypes.Category) => filterItem(c, itemsFilter))
+        (rootCategory?.categories ?? []).filter((c: ShopperProducts.schemas['Category']) => filterItem(c, itemsFilter))
     );
 
     useEffect(() => {
         // Once the subcategories promise resolves, update the root categories
-        void subCategoriesPromise?.then((subCategories: ShopperProductsTypes.Category[]) => {
+        void subCategoriesPromise?.then((subCategories: ShopperProducts.schemas['Category'][]) => {
             const subCategoriesMap = subCategories.reduce(
-                (acc: Map<string, ShopperProductsTypes.Category>, category: ShopperProductsTypes.Category) =>
+                (
+                    acc: Map<string, ShopperProducts.schemas['Category']>,
+                    category: ShopperProducts.schemas['Category']
+                ) =>
                     acc.set(category.id, {
                         ...category,
-                        categories: category.categories?.filter((c: ShopperProductsTypes.Category) =>
+                        categories: category.categories?.filter((c: ShopperProducts.schemas['Category']) =>
                             filterItem(c, itemsFilter)
                         ),
                     }),
-                new Map<string, ShopperProductsTypes.Category>()
+                new Map<string, ShopperProducts.schemas['Category']>()
             );
 
             setRootCategories(
                 rootCategories.map(
-                    (category: ShopperProductsTypes.Category) => subCategoriesMap.get(category.id) ?? category
+                    (category: ShopperProducts.schemas['Category']) => subCategoriesMap.get(category.id) ?? category
                 )
             );
         });
@@ -81,7 +86,7 @@ function WithCategoryNavigationMenuView({
 }
 
 /**
- * Higher-order component that provides category navigation data ({@link ShopperProductsTypes.Category}) to its
+ * Higher-order component that provides category navigation data ({@link ShopperProducts.schemas['Category']}) to its
  * children.
  *
  * This HOC consumes up to two promises / data streams (e.g.,returned by the route’s/layout’s loader). This allows

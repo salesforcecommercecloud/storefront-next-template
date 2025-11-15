@@ -9,7 +9,7 @@
 import { type ReactElement, useState, useEffect, useCallback, useMemo } from 'react';
 
 // Types
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 // Components
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -31,7 +31,7 @@ import { usePickup } from '@/extensions/bopis/context/pickup-context';
 
 export interface CartItemEditModalProps extends Omit<React.ComponentProps<typeof Dialog>, 'onOpenChange'> {
     /** The product being edited */
-    product: ShopperProductsTypes.Product;
+    product: ShopperProducts.schemas['Product'];
     /** Initial variant selections from cart item */
     initialVariantSelections?: Record<string, string>;
     /** Initial quantity from cart item (required for editing) */

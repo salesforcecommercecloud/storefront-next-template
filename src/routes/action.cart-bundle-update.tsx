@@ -7,12 +7,17 @@
 // React Router
 import type { ClientActionFunctionArgs } from 'react-router';
 
+// Commerce SDK
+import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
+
 // Middlewares
 import { getBasket, updateBasket } from '@/middlewares/basket.client';
 
+// API
+import { createApiClients } from '@/lib/api-clients';
+import { getConfig } from '@/config';
+
 // Utils
-import { extractResponseError } from '@/lib/utils';
-import createClient, { type CommerceSdkClient } from '@/lib/scapi';
 import {
     type BasketActionResponse,
     createBasketSuccessResponse,
@@ -73,8 +78,7 @@ export async function clientAction({ request, context }: ClientActionFunctionArg
         }
 
         // Parse the items array
-        const items: Parameters<CommerceSdkClient['ShopperBasketsV2']['updateItemsInBasket']>[0]['body'] =
-            JSON.parse(itemsJson);
+        const items = JSON.parse(itemsJson);
 
         if (!Array.isArray(items) || items.length === 0) {
             return createBasketErrorResponse('Items must be a non-empty array');
@@ -87,12 +91,16 @@ export async function clientAction({ request, context }: ClientActionFunctionArg
             }
         }
 
-        const client = createClient(context).ShopperBasketsV2;
+        const config = getConfig(context);
+        const clients = createApiClients(context);
 
         // Update all items in the bundle using updateItemsInBasket
-        const updatedBasket = await client.updateItemsInBasket({
-            parameters: {
-                basketId,
+        const { data: updatedBasket } = await clients.shopperBasketsV2.updateItemsInBasket({
+            params: {
+                path: { organizationId: config.commerce.api.organizationId, basketId },
+                query: {
+                    siteId: config.commerce.api.siteId,
+                },
             },
             body: items,
         });
@@ -102,7 +110,9 @@ export async function clientAction({ request, context }: ClientActionFunctionArg
 
         return createBasketSuccessResponse(updatedBasket);
     } catch (error) {
-        const { responseMessage } = await extractResponseError(error as Error);
-        return createBasketErrorResponse(responseMessage || 'An unexpected error occurred');
+        if (error instanceof ApiError) {
+            return createBasketErrorResponse(error.body?.detail || error.statusText);
+        }
+        return createBasketErrorResponse(error instanceof Error ? error.message : 'An unexpected error occurred');
     }
 }

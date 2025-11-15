@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import type { ShopperStoresTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
 import type { ReactNode } from 'react';
 import { MapPin } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
 
 interface StoreDetailsProps {
     /** Store object containing store information */
-    store: ShopperStoresTypes.Store;
+    store: ShopperStores.schemas['Store'];
     /** Whether to show distance information */
     showDistance?: boolean;
     /** Distance unit from config (km/mi) */

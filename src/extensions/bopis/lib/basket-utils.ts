@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import type { PickupItemInfo } from '../context/pickup-context';
 
 /**
@@ -34,7 +34,9 @@ import type { PickupItemInfo } from '../context/pickup-context';
  * );
  * ```
  */
-export function getPickupItemsFromBasket(basket: ShopperBasketsTypes.Basket | undefined): Map<string, PickupItemInfo> {
+export function getPickupItemsFromBasket(
+    basket: ShopperBasketsV2.schemas['Basket'] | undefined
+): Map<string, PickupItemInfo> {
     const pickupItems = new Map<string, PickupItemInfo>();
 
     // Return empty map if basket, shipments, or product items don't exist
@@ -99,7 +101,9 @@ export function getPickupItemsFromBasket(basket: ShopperBasketsTypes.Basket | un
  * });
  * ```
  */
-export function getInventoryIdsFromPickupShipments(basket: ShopperBasketsTypes.Basket | null | undefined): string[] {
+export function getInventoryIdsFromPickupShipments(
+    basket: ShopperBasketsV2.schemas['Basket'] | null | undefined
+): string[] {
     // Return empty array if basket, shipments, or product items don't exist
     if (!basket?.shipments || !basket.productItems) {
         return [];
@@ -155,7 +159,7 @@ export function getInventoryIdsFromPickupShipments(basket: ShopperBasketsTypes.B
  * });
  * ```
  */
-export function getStoreIdsFromBasket(basket: ShopperBasketsTypes.Basket | null | undefined): string[] {
+export function getStoreIdsFromBasket(basket: ShopperBasketsV2.schemas['Basket'] | null | undefined): string[] {
     // Collect unique store IDs from shipments
     const storeIds = new Set<string>();
     basket?.shipments?.forEach((shipment) => {
@@ -194,7 +198,7 @@ export function getStoreIdsFromBasket(basket: ShopperBasketsTypes.Basket | null 
  * ```
  */
 export function getStoreIdForBasketItem(
-    basket: ShopperBasketsTypes.Basket | null | undefined,
+    basket: ShopperBasketsV2.schemas['Basket'] | null | undefined,
     itemId?: string
 ): string | undefined {
     if (!itemId) return undefined;

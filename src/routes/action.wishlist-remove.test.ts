@@ -13,7 +13,7 @@ import { createTestContext } from '@/lib/test-utils';
 // Mock dependencies
 const mockIsRegisteredCustomer = vi.fn();
 const mockGetAuth = vi.fn();
-const mockCreateClient = vi.fn();
+const mockCreateApiClients = vi.fn();
 const mockExtractResponseError = vi.fn();
 
 vi.mock('@/middlewares/auth.client', () => ({
@@ -24,10 +24,24 @@ vi.mock('@/lib/api/customer', () => ({
     isRegisteredCustomer: () => mockIsRegisteredCustomer(),
 }));
 
-vi.mock('@/lib/scapi', () => ({
-    default: () => mockCreateClient(),
-    createClient: () => mockCreateClient(),
+vi.mock('@/lib/api-clients', () => ({
+    createApiClients: () => mockCreateApiClients(),
 }));
+
+vi.mock('@/config', async (importOriginal) => {
+    const actual = (await importOriginal()) as any;
+    return {
+        ...actual,
+        getConfig: vi.fn(() => ({
+            commerce: {
+                api: {
+                    organizationId: 'test-org-id',
+                    siteId: 'test-site-id',
+                },
+            },
+        })),
+    };
+});
 
 vi.mock('@/lib/utils', async () => {
     const actual = await vi.importActual('@/lib/utils');
@@ -117,8 +131,8 @@ describe('action.wishlist-remove', () => {
             deleteCustomerProductListItem: vi.fn(),
         };
 
-        mockCreateClient.mockReturnValue({
-            ShopperCustomers: mockShopperCustomers,
+        mockCreateApiClients.mockReturnValue({
+            shopperCustomers: mockShopperCustomers,
         } as any);
     });
 
@@ -224,15 +238,14 @@ describe('action.wishlist-remove', () => {
             };
 
             mockShopperCustomers.getCustomerProductLists.mockResolvedValue({
-                data: [{ id: 'wishlist-123', listId: 'wishlist-123', type: 'wish_list' }],
+                data: { data: [{ id: 'wishlist-123', listId: 'wishlist-123', type: 'wish_list' }] },
             });
 
-            // First call: get full wishlist to find the item to remove (line 114)
-            // Second call: get updated wishlist after removal (line 149)
-            // Note: Commerce SDK getCustomerProductList returns the data directly (unwrapped)
+            // First call: get full wishlist to find the item to remove (line 81)
+            // Second call: get updated wishlist after removal (line 125)
             mockShopperCustomers.getCustomerProductList
-                .mockResolvedValueOnce(wishlist as any)
-                .mockResolvedValueOnce(wishlistAfterRemoval as any);
+                .mockResolvedValueOnce({ data: wishlist } as any)
+                .mockResolvedValueOnce({ data: wishlistAfterRemoval } as any);
 
             mockShopperCustomers.deleteCustomerProductListItem.mockResolvedValue({
                 data: {},
@@ -255,17 +268,20 @@ describe('action.wishlist-remove', () => {
             }
             expect(json.success).toBe(true);
             expect(mockShopperCustomers.deleteCustomerProductListItem).toHaveBeenCalledWith({
-                parameters: {
-                    customerId: 'customer-123',
-                    listId: 'wishlist-123',
-                    itemId: 'item-123',
+                params: {
+                    path: expect.objectContaining({
+                        customerId: 'customer-123',
+                        listId: 'wishlist-123',
+                        itemId: 'item-123',
+                    }),
+                    query: expect.any(Object),
                 },
             });
         });
 
         test('should return error when wishlist is not found', async () => {
             mockShopperCustomers.getCustomerProductLists.mockResolvedValue({
-                data: [],
+                data: { data: [] },
             });
 
             const request = createRequest('product-123');
@@ -292,11 +308,11 @@ describe('action.wishlist-remove', () => {
             };
 
             mockShopperCustomers.getCustomerProductLists.mockResolvedValue({
-                data: [{ id: 'wishlist-123', listId: 'wishlist-123', type: 'wish_list' }],
+                data: { data: [{ id: 'wishlist-123', listId: 'wishlist-123', type: 'wish_list' }] },
             });
 
             // Note: Commerce SDK getCustomerProductList returns the data directly (unwrapped)
-            mockShopperCustomers.getCustomerProductList.mockResolvedValue(wishlist as any);
+            mockShopperCustomers.getCustomerProductList.mockResolvedValue({ data: wishlist } as any);
 
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
@@ -393,14 +409,14 @@ describe('action.wishlist-remove', () => {
             };
 
             mockShopperCustomers.getCustomerProductLists.mockResolvedValue({
-                data: [{ id: 'wishlist-123', listId: 'wishlist-123', type: 'wish_list' }],
+                data: { data: [{ id: 'wishlist-123', listId: 'wishlist-123', type: 'wish_list' }] },
             });
 
-            // First call: get full wishlist to find the item (line 114)
-            // Second call: get updated wishlist after removal (line 149)
+            // First call: get full wishlist to find the item (line 81)
+            // Second call: get updated wishlist after removal (line 125)
             mockShopperCustomers.getCustomerProductList
-                .mockResolvedValueOnce(wishlistWithItemsInAltField)
-                .mockResolvedValueOnce(wishlistAfterRemoval as any);
+                .mockResolvedValueOnce({ data: wishlistWithItemsInAltField })
+                .mockResolvedValueOnce({ data: wishlistAfterRemoval } as any);
 
             mockShopperCustomers.deleteCustomerProductListItem.mockResolvedValue({
                 data: {},
@@ -426,10 +442,13 @@ describe('action.wishlist-remove', () => {
             expect(json).toBeDefined();
             expect(json.success).toBe(true);
             expect(mockShopperCustomers.deleteCustomerProductListItem).toHaveBeenCalledWith({
-                parameters: {
-                    customerId: 'customer-123',
-                    listId: 'wishlist-123',
-                    itemId: 'item-123',
+                params: {
+                    path: expect.objectContaining({
+                        customerId: 'customer-123',
+                        listId: 'wishlist-123',
+                        itemId: 'item-123',
+                    }),
+                    query: expect.any(Object),
                 },
             });
         });

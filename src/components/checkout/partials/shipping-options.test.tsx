@@ -2,7 +2,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ShippingOptions from './shipping-options';
-import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 
 // Use real hooks for integration tests
 vi.mock('@/providers/basket', () => ({ useBasket: vi.fn() }));
@@ -30,7 +30,7 @@ const createMockBasket = (overrides = {}) => ({
     ...overrides,
 });
 
-const createShippingMethods = (): ShopperBasketsTypes.ShippingMethodResult => ({
+const createShippingMethods = (): ShopperBasketsV2.schemas['ShippingMethodResult'] => ({
     applicableShippingMethods: [
         {
             id: 'standard',
@@ -101,7 +101,7 @@ describe('ShippingOptions Integration Tests', () => {
         });
 
         test('displays "Free" for zero-price shipping methods', () => {
-            const methodsWithFree: ShopperBasketsTypes.ShippingMethodResult = {
+            const methodsWithFree: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
                 applicableShippingMethods: [
                     {
                         id: 'free-shipping',
@@ -118,7 +118,7 @@ describe('ShippingOptions Integration Tests', () => {
         });
 
         test('displays estimated arrival time when provided', () => {
-            const methodsWithArrival: ShopperBasketsTypes.ShippingMethodResult = {
+            const methodsWithArrival: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
                 applicableShippingMethods: [
                     {
                         id: 'standard',
@@ -174,7 +174,7 @@ describe('ShippingOptions Integration Tests', () => {
         });
 
         test('handles missing estimated arrival time gracefully', () => {
-            const methodsWithoutArrival: ShopperBasketsTypes.ShippingMethodResult = {
+            const methodsWithoutArrival: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
                 applicableShippingMethods: [
                     {
                         id: 'standard',
@@ -196,7 +196,7 @@ describe('ShippingOptions Integration Tests', () => {
 
     describe('Free Shipping Rendering', () => {
         test('renders "Free" instead of "$0.00" for free shipping in selection list', () => {
-            const methodsWithFree: ShopperBasketsTypes.ShippingMethodResult = {
+            const methodsWithFree: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
                 applicableShippingMethods: [
                     {
                         id: 'free-standard',
@@ -244,7 +244,7 @@ describe('ShippingOptions Integration Tests', () => {
 
             useBasket.mockReturnValue(basketWithFreeShipping);
 
-            const methodsWithFree: ShopperBasketsTypes.ShippingMethodResult = {
+            const methodsWithFree: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
                 applicableShippingMethods: [
                     {
                         id: 'free-standard',
@@ -265,7 +265,7 @@ describe('ShippingOptions Integration Tests', () => {
         });
 
         test('handles mixed free and paid shipping methods correctly', () => {
-            const mixedMethods: ShopperBasketsTypes.ShippingMethodResult = {
+            const mixedMethods: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
                 applicableShippingMethods: [
                     {
                         id: 'free-standard',
@@ -299,7 +299,7 @@ describe('ShippingOptions Integration Tests', () => {
         });
 
         test('free shipping from promotion (base price reduced to 0)', () => {
-            const promotionalFreeMethods: ShopperBasketsTypes.ShippingMethodResult = {
+            const promotionalFreeMethods: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
                 applicableShippingMethods: [
                     {
                         id: 'standard',
@@ -380,7 +380,7 @@ describe('ShippingOptions Integration Tests', () => {
         });
 
         test('prevents submission when no methods available', () => {
-            const emptyMethods: ShopperBasketsTypes.ShippingMethodResult = {
+            const emptyMethods: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
                 applicableShippingMethods: [],
             };
 
@@ -506,7 +506,7 @@ describe('ShippingOptions Integration Tests', () => {
             useCustomerProfile.mockReturnValue(customerProfile);
 
             // Default method ID that doesn't exist in applicable methods
-            const methodsWithInvalidDefault: ShopperBasketsTypes.ShippingMethodResult = {
+            const methodsWithInvalidDefault: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
                 applicableShippingMethods: [
                     {
                         id: 'standard',
@@ -569,7 +569,7 @@ describe('ShippingOptions Integration Tests', () => {
             useCustomerProfile.mockReturnValue(customerProfile);
 
             // Valid default method ID
-            const methodsWithValidDefault: ShopperBasketsTypes.ShippingMethodResult = {
+            const methodsWithValidDefault: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
                 applicableShippingMethods: [
                     {
                         id: 'standard',
@@ -606,7 +606,7 @@ describe('ShippingOptions Integration Tests', () => {
 
     describe('Empty State', () => {
         test('shows message when no shipping methods available', () => {
-            const emptyMethods: ShopperBasketsTypes.ShippingMethodResult = {
+            const emptyMethods: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
                 applicableShippingMethods: [],
             };
 
@@ -621,7 +621,7 @@ describe('ShippingOptions Integration Tests', () => {
         });
 
         test('button shows disabled state when no methods', () => {
-            const emptyMethods: ShopperBasketsTypes.ShippingMethodResult = {
+            const emptyMethods: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
                 applicableShippingMethods: [],
             };
 

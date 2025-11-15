@@ -9,7 +9,7 @@
 import { render, screen } from '@testing-library/react';
 import { vi, test, beforeEach } from 'vitest';
 // Commerce SDK
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 // React Router
 import { createMemoryRouter, RouterProvider } from 'react-router';
 // Components
@@ -58,7 +58,7 @@ const renderProductView = (props: React.ComponentProps<typeof ProductView>) => {
 };
 
 describe('ProductView', () => {
-    const mockProduct: ShopperProductsTypes.Product = {
+    const mockProduct: ShopperProducts.schemas['Product'] = {
         id: 'test-product',
         name: 'Test Product',
         shortDescription: 'Test product description',
@@ -99,7 +99,7 @@ describe('ProductView', () => {
         ],
     };
 
-    const mockCategory: ShopperProductsTypes.Category = {
+    const mockCategory: ShopperProducts.schemas['Category'] = {
         id: 'test-category',
         name: 'Test Category',
         parentCategoryTree: [

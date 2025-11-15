@@ -18,7 +18,7 @@ import {
     destroyAuth,
     flashAuth,
 } from './auth.server';
-import type { ShopperLoginTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
 
 // Mock commerce-sdk-isomorphic helpers to match dynamic imports in implementation
 vi.mock('commerce-sdk-isomorphic/helpers', () => ({
@@ -84,7 +84,7 @@ function createMockShopperLoginClient() {
     };
 }
 
-function getMockTokenResponse(): ShopperLoginTypes.TokenResponse {
+function getMockTokenResponse(): ShopperLogin.schemas['TokenResponse'] {
     return {
         access_token: 'access-token-123',
         id_token: 'id-token-123',

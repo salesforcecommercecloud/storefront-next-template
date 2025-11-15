@@ -8,7 +8,7 @@
 'use client';
 
 import { type ReactElement } from 'react';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { Button } from '@/components/ui/button';
 import { useProductView } from '@/providers/product-view';
 import { useCurrentVariant } from '@/hooks/product/use-current-variant';
@@ -18,7 +18,7 @@ import { ShareButton } from '@/components/buttons/share-button';
 import { useCheckAndExecutePendingAction } from '@/hooks/check-and-execute-pending-action';
 
 interface ProductCartActionsProps {
-    product: ShopperProductsTypes.Product;
+    product: ShopperProducts.schemas['Product'];
     /** Called immediately before cart action starts (add or update) - useful for optimistic UI like closing modal */
     onBeforeCartAction?: () => void;
     /** Called after successful cart operation completes (add or update) */

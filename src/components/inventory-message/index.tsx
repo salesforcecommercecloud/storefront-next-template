@@ -6,7 +6,7 @@
  */
 
 import { type ReactElement } from 'react';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { cn } from '@/lib/utils';
 import uiStrings from '@/temp-ui-string';
 
@@ -21,8 +21,8 @@ export const InventoryStatus = {
 export type InventoryStatusType = (typeof InventoryStatus)[keyof typeof InventoryStatus];
 
 interface InventoryMessageProps {
-    product: ShopperProductsTypes.Product;
-    currentVariant?: ShopperProductsTypes.Variant | null;
+    product: ShopperProducts.schemas['Product'];
+    currentVariant?: ShopperProducts.schemas['Variant'] | null;
     className?: string;
     /**
      * Whether to show unknown inventory status messages. Defaults to false.
@@ -35,8 +35,8 @@ interface InventoryMessageProps {
      * Should return UNKNOWN instead of null when inventory data is unavailable.
      */
     getInventoryStatus?: (
-        product: ShopperProductsTypes.Product,
-        currentVariant?: ShopperProductsTypes.Variant | null
+        product: ShopperProducts.schemas['Product'],
+        currentVariant?: ShopperProducts.schemas['Variant'] | null
     ) => InventoryStatusType;
 }
 
@@ -44,8 +44,8 @@ interface InventoryMessageProps {
  * Gets the inventory status based on product/variant data
  */
 function getInventoryStatus(
-    product: ShopperProductsTypes.Product,
-    currentVariant?: ShopperProductsTypes.Variant | null
+    product: ShopperProducts.schemas['Product'],
+    currentVariant?: ShopperProducts.schemas['Variant'] | null
 ): InventoryStatusType {
     // Use variant inventory if available, otherwise use product inventory
     const inventory = currentVariant?.inventory || product.inventory;

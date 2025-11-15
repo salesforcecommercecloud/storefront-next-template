@@ -6,11 +6,11 @@
  */
 
 import type { ReactElement } from 'react';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import uiStrings from '@/temp-ui-string';
 
 interface ProductFeaturesProps {
-    product: ShopperProductsTypes.Product;
+    product: ShopperProducts.schemas['Product'];
     /** Delimiter used to separate features in longDescription. Defaults to '|' */
     delimiter?: string;
     /** CSS classes applied when content is detected as HTML fragment */

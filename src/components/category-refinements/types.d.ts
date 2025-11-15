@@ -1,3 +1,3 @@
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 
-export type FilterValue = NonNullable<ShopperSearchTypes.ProductSearchRefinement['values']>[0];
+export type FilterValue = NonNullable<ShopperSearch.schemas['ProductSearchRefinement']['values']>[0];

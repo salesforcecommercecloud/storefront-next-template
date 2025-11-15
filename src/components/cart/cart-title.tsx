@@ -2,7 +2,7 @@
 import type { ReactElement } from 'react';
 
 // Commerce SDK
-import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 
 // Components
 import { Typography } from '@/components/typography';
@@ -14,10 +14,10 @@ import uiStrings from '@/temp-ui-string';
  * Props for the CartTitle component
  *
  * @interface CartTitleProps
- * @property {ShopperBasketsTypes.Basket} basket - The shopping basket containing product items
+ * @property {ShopperBasketsV2.schemas['Basket']} basket - The shopping basket containing product items
  */
 interface CartTitleProps {
-    basket: ShopperBasketsTypes.Basket;
+    basket: ShopperBasketsV2.schemas['Basket'];
 }
 
 /**

@@ -117,8 +117,8 @@ function ProductCard({ product }) {
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| \`product\` | \`ShopperSearchTypes.ProductSearchHit\` | - | The product to add/remove from wishlist |
-| \`variant\` | \`ShopperSearchTypes.ProductSearchHit\` | \`undefined\` | Optional variant of the product |
+| \`product\` | \`ShopperSearch.schemas['ProductSearchHit']\` | - | The product to add/remove from wishlist |
+| \`variant\` | \`ShopperSearch.schemas['ProductSearchHit']\` | \`undefined\` | Optional variant of the product |
 | \`size\` | \`'sm' | 'md' | 'lg'\` | \`'md'\` | Size of the wishlist button |
 | \`className\` | \`string\` | \`undefined\` | Additional CSS classes for styling |
 
@@ -151,14 +151,14 @@ function ProductCard({ product }) {
             control: 'object',
             description: 'The product to add/remove from wishlist',
             table: {
-                type: { summary: 'ShopperSearchTypes.ProductSearchHit' },
+                type: { summary: 'ShopperSearch.schemas["ProductSearchHit"]' },
             },
         },
         variant: {
             control: 'object',
             description: 'Optional variant of the product',
             table: {
-                type: { summary: 'ShopperSearchTypes.ProductSearchHit' },
+                type: { summary: 'ShopperSearch.schemas["ProductSearchHit"]' },
                 defaultValue: { summary: 'undefined' },
             },
         },

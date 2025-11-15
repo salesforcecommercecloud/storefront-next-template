@@ -1,8 +1,8 @@
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 export function createMockCategory(
-    overrides: Partial<ShopperProductsTypes.Category> = {}
-): ShopperProductsTypes.Category {
+    overrides: Partial<ShopperProducts.schemas['Category']> = {}
+): ShopperProducts.schemas['Category'] {
     const { onlineSubCategoriesCount, ...rest } = overrides;
     return {
         id: 'category-1',
@@ -14,8 +14,8 @@ export function createMockCategory(
 }
 
 export function createMockCategoryWithChildren(
-    overrides: Partial<ShopperProductsTypes.Category> = {}
-): ShopperProductsTypes.Category {
+    overrides: Partial<ShopperProducts.schemas['Category']> = {}
+): ShopperProducts.schemas['Category'] {
     const { id, name, categories, onlineSubCategoriesCount, ...rest } = overrides;
     return createMockCategory({
         id,

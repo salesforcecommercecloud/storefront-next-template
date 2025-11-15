@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { ProductTile } from './index';
-import { type ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import { type ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { ConfigWrapper } from '@/test-utils/config';
 
 vi.mock('@/lib/product-utils', () => ({
@@ -50,7 +50,7 @@ vi.mock('react-router', async () => {
     };
 });
 
-const mockProduct: ShopperSearchTypes.ProductSearchHit = {
+const mockProduct: ShopperSearch.schemas['ProductSearchHit'] = {
     productId: 'test-product',
     productName: 'Test Product',
     price: 99.99,

@@ -1,13 +1,13 @@
 'use client';
 
 import { useCallback, useMemo } from 'react';
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { HeartIcon } from '../icons';
 import { useWishlist } from '@/hooks/use-wishlist';
 
 interface WishlistButtonProps {
-    product: ShopperSearchTypes.ProductSearchHit;
-    variant?: ShopperSearchTypes.ProductSearchHit;
+    product: ShopperSearch.schemas['ProductSearchHit'];
+    variant?: ShopperSearch.schemas['ProductSearchHit'];
     size?: 'sm' | 'md' | 'lg';
     className?: string;
 }

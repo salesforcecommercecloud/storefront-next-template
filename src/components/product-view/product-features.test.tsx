@@ -9,7 +9,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, test, expect } from 'vitest';
 // Commerce SDK
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 // React Router
 import { createRoutesStub } from 'react-router';
 // Components
@@ -27,7 +27,7 @@ const renderProductFeatures = (props: React.ComponentProps<typeof ProductFeature
 };
 
 describe('ProductFeatures', () => {
-    const baseMockProduct: ShopperProductsTypes.Product = {
+    const baseMockProduct: ShopperProducts.schemas['Product'] = {
         id: 'test-product',
         name: 'Test Product',
         shortDescription: 'Short description',

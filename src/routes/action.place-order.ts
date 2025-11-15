@@ -1,7 +1,8 @@
 import { redirect, type ActionFunctionArgs } from 'react-router';
 import { getBasket, updateBasket, destroyBasket } from '@/middlewares/basket.client';
 import { getAuth } from '@/middlewares/auth.client';
-import createClient from '@/lib/scapi';
+import { createApiClients } from '@/lib/api-clients';
+import { getConfig } from '@/config';
 import {
     calculateBasket,
     getBasketCurrency,
@@ -201,7 +202,18 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
         updateBasket(context, calculatedBasket);
 
         // Create the order
-        const order = await createClient(context).ShopperOrders.createOrder({
+        const config = getConfig(context);
+        const clients = createApiClients(context);
+
+        const { data: order } = await clients.shopperOrders.createOrder({
+            params: {
+                path: {
+                    organizationId: config.commerce.api.organizationId,
+                },
+                query: {
+                    siteId: config.commerce.api.siteId,
+                },
+            },
             body: { basketId: calculatedBasket.basketId },
         });
 

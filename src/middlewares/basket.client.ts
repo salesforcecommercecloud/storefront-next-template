@@ -4,7 +4,7 @@ import {
     type MiddlewareFunction,
     type RouterContextProvider,
 } from 'react-router';
-import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
+import { ApiError, type ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import {
     clearStorage,
     type StorageErrorData,
@@ -13,68 +13,91 @@ import {
     updateStorage,
     updateStorageObject,
 } from '@/lib/middleware';
-import { extractResponseError } from '@/lib/utils';
-import createClient from '@/lib/scapi';
+import { createApiClients } from '@/lib/api-clients';
+import { getConfig } from '@/config';
 
-type BasketStorageData = ShopperBasketsTypes.Basket & StorageMetaData & StorageErrorData;
+type BasketStorageData = ShopperBasketsV2.schemas['Basket'] & StorageMetaData & StorageErrorData;
 
 /**
  * As we're on the client, we can define and use a singleton basket store instance here.
  */
-const basketCache: { ref: ShopperBasketsTypes.Basket | undefined } = { ref: undefined };
+const basketCache: { ref: ShopperBasketsV2.schemas['Basket'] | undefined } = { ref: undefined };
 const basketStorageKey = '__sfdc_basket';
 const basketStorageContext = createContext<Map<keyof BasketStorageData, BasketStorageData[keyof BasketStorageData]>>();
 
 const retrieveBasket = (
     context: Readonly<RouterContextProvider>,
     storage: Map<keyof BasketStorageData, BasketStorageData[keyof BasketStorageData]>
-): Promise<ShopperBasketsTypes.Basket> => {
-    const client = createClient(context).ShopperBasketsV2;
+): Promise<ShopperBasketsV2.schemas['Basket']> => {
+    const config = getConfig(context);
+    const clients = createApiClients(context);
     const basketId = storage.get('basketId');
 
-    const createBasket = (): Promise<ShopperBasketsTypes.Basket> => {
-        return client
-            .createBasket({
+    const createBasket = async (): Promise<ShopperBasketsV2.schemas['Basket']> => {
+        try {
+            const { data } = await clients.shopperBasketsV2.createBasket({
+                params: {
+                    path: {
+                        organizationId: config.commerce.api.organizationId,
+                    },
+                    query: {
+                        siteId: config.commerce.api.siteId,
+                    },
+                },
                 body: {
                     currency: import.meta.env.PUBLIC_SITE_CURRENCY || 'USD',
                 },
-            })
-            .catch(async (error) => {
-                const { type, basketIds } = await extractResponseError(error);
+            });
+            return data;
+        } catch (error) {
+            if (error instanceof ApiError) {
                 if (
-                    type ===
+                    error.body?.type ===
                     'https://api.commercecloud.salesforce.com/documentation/error/v1/errors/customer-baskets-quota-exceeded'
                 ) {
-                    const id = (Array.isArray(basketIds) ? basketIds : [String(basketIds as string)]).at(0) as string;
-                    return client.getBasket({
-                        parameters: {
-                            basketId: id,
+                    // Extract basket ID from the error body
+                    const basketIds = error.body?.basketIds;
+                    const id = (Array.isArray(basketIds) ? basketIds : [String(basketIds)]).at(0) as string;
+                    const { data } = await clients.shopperBasketsV2.getBasket({
+                        params: {
+                            path: { organizationId: config.commerce.api.organizationId, basketId: id },
+                            query: {
+                                siteId: config.commerce.api.siteId,
+                            },
                         },
                     });
+                    return data;
                 }
-                throw error;
-            });
+            }
+            throw error;
+        }
     };
 
     if (typeof basketId === 'string' && basketId.length) {
-        return client
+        return clients.shopperBasketsV2
             .getBasket({
-                parameters: {
-                    basketId,
+                params: {
+                    path: { organizationId: config.commerce.api.organizationId, basketId },
+                    query: {
+                        siteId: config.commerce.api.siteId,
+                    },
                 },
             })
+            .then(({ data }) => data)
             .catch(async (error) => {
-                const { type } = await extractResponseError(error);
-                if (
-                    type === 'https://api.commercecloud.salesforce.com/documentation/error/v1/errors/basket-not-found'
-                ) {
-                    return createBasket();
-                }
+                if (error instanceof ApiError) {
+                    if (
+                        error.body?.type ===
+                        'https://api.commercecloud.salesforce.com/documentation/error/v1/errors/basket-not-found'
+                    ) {
+                        return createBasket();
+                    }
 
-                // Handle 400 Bad Request errors (invalid basket ID format) by creating a new basket
-                if (error.status === 400) {
-                    // Invalid basket ID format, creating new basket
-                    return createBasket();
+                    // Handle 400 Bad Request errors (invalid basket ID format) by creating a new basket
+                    if (error.status === 400) {
+                        // Invalid basket ID format, creating new basket
+                        return createBasket();
+                    }
                 }
 
                 throw error;
@@ -89,7 +112,7 @@ const retrieveBasketStorageData = (
     storage: Map<keyof BasketStorageData, BasketStorageData[keyof BasketStorageData]>
 ): Promise<void> => {
     return retrieveBasket(context, storage).then(
-        (basket: ShopperBasketsTypes.Basket) => {
+        (basket: ShopperBasketsV2.schemas['Basket']) => {
             // Store current/updated basket
             basketCache.ref = basket;
             updateStorageObject(storage, basket);
@@ -163,7 +186,9 @@ const basketMiddleware: MiddlewareFunction<Record<string, DataStrategyResult>> =
     }
 };
 
-export const getBasket = (context: Readonly<RouterContextProvider>): ShopperBasketsTypes.Basket & StorageErrorData => {
+export const getBasket = (
+    context: Readonly<RouterContextProvider>
+): ShopperBasketsV2.schemas['Basket'] & StorageErrorData => {
     const storage = context.get(basketStorageContext);
     if (!storage) {
         throw new Error('getBasket must be used within the basket middleware');
@@ -175,17 +200,19 @@ export const updateBasket = (
     context: Readonly<RouterContextProvider>,
     updater:
         | undefined
-        | (ShopperBasketsTypes.Basket & StorageErrorData)
+        | (ShopperBasketsV2.schemas['Basket'] & StorageErrorData)
         | ((
-              data: (ShopperBasketsTypes.Basket & StorageErrorData) | undefined
-          ) => (ShopperBasketsTypes.Basket & StorageErrorData) | undefined)
+              data: (ShopperBasketsV2.schemas['Basket'] & StorageErrorData) | undefined
+          ) => (ShopperBasketsV2.schemas['Basket'] & StorageErrorData) | undefined)
 ): void => {
     const storage = context.get(basketStorageContext);
     if (!storage) {
         throw new Error('updateBasket must be used within the basket middleware');
     }
     updateStorage(storage, typeof updater === 'function' ? updater : () => updater);
-    basketCache.ref = storage.has('error') ? undefined : (unpackStorage(storage) satisfies ShopperBasketsTypes.Basket);
+    basketCache.ref = storage.has('error')
+        ? undefined
+        : (unpackStorage(storage) satisfies ShopperBasketsV2.schemas['Basket']);
 };
 
 /**

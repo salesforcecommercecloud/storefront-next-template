@@ -7,7 +7,7 @@
 
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { updateShipmentForPickup } from './shipment';
-import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import type { RouterContextProvider } from 'react-router';
 
 // Mock createClient
@@ -24,7 +24,7 @@ describe('Shipment API utilities', () => {
         });
 
         test('should update shipment with c_fromStoreId', async () => {
-            const mockBasket: Partial<ShopperBasketsTypes.Basket> = {
+            const mockBasket: Partial<ShopperBasketsV2.schemas['Basket']> = {
                 basketId: 'test-basket',
                 shipments: [
                     {
@@ -34,7 +34,7 @@ describe('Shipment API utilities', () => {
                 ],
             };
 
-            const mockUpdateShipmentForBasket = vi.fn().mockResolvedValue(mockBasket);
+            const mockUpdateShipmentForBasket = vi.fn().mockResolvedValue({ data: mockBasket });
 
             const createClient = await import('@/lib/scapi');
             vi.mocked(createClient.default).mockReturnValue({
@@ -58,11 +58,11 @@ describe('Shipment API utilities', () => {
         });
 
         test('should use default shipmentId "me"', async () => {
-            const mockBasket: Partial<ShopperBasketsTypes.Basket> = {
+            const mockBasket: Partial<ShopperBasketsV2.schemas['Basket']> = {
                 basketId: 'test-basket',
             };
 
-            const mockUpdateShipmentForBasket = vi.fn().mockResolvedValue(mockBasket);
+            const mockUpdateShipmentForBasket = vi.fn().mockResolvedValue({ data: mockBasket });
 
             const createClient = await import('@/lib/scapi');
             vi.mocked(createClient.default).mockReturnValue({

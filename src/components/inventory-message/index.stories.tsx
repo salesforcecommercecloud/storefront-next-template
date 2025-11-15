@@ -9,7 +9,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { action } from 'storybook/actions';
 import { expect, within } from 'storybook/test';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 import InventoryMessage from './index';
 
@@ -184,10 +184,12 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 // Helper function to create mock product data
-const createMockProduct = (inventory?: Partial<ShopperProductsTypes.Inventory>): ShopperProductsTypes.Product => ({
+const createMockProduct = (
+    inventory?: Partial<ShopperProducts.schemas['Inventory']>
+): ShopperProducts.schemas['Product'] => ({
     id: 'test-product-123',
     name: 'Test Product',
-    ...(inventory ? { inventory: inventory as ShopperProductsTypes.Inventory } : {}),
+    ...(inventory ? { inventory: inventory as ShopperProducts.schemas['Inventory'] } : {}),
 });
 
 /**

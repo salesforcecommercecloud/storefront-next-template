@@ -1,6 +1,6 @@
-import { type ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
-export const standardProd: ShopperProductsTypes.Product = {
+export const standardProd: ShopperProducts.schemas['Product'] = {
     currency: 'USD',
     id: 'P0048M',
     imageGroups: [

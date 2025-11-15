@@ -5,12 +5,16 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { type ActionFunctionArgs, data } from 'react-router';
-import type { ShopperCustomersTypes } from 'commerce-sdk-isomorphic';
+import { type ShopperCustomers, ApiError } from '@salesforce/storefront-next-runtime/scapi';
 import { getAuth } from '@/middlewares/auth.client';
-import { extractResponseError, extractStatusCode } from '@/lib/utils';
-import createClient from '@/lib/scapi';
+import { extractStatusCode } from '@/lib/utils';
+import { createApiClients } from '@/lib/api-clients';
 import { isRegisteredCustomer } from '@/lib/api/customer';
+import { getConfig } from '@/config';
 import uiStrings from '@/temp-ui-string';
+
+type CustomerProductList = ShopperCustomers.schemas['CustomerProductList'];
+type CustomerProductListItem = ShopperCustomers.schemas['CustomerProductListItem'];
 
 /**
  * Remove a product from the customer's wishlist
@@ -20,7 +24,7 @@ async function removeFromWishlist(
     productId: string
 ): Promise<{
     success: boolean;
-    productList?: ShopperCustomersTypes.CustomerProductList;
+    productList?: CustomerProductList;
     error?: string;
 }> {
     // Check if user is authenticated as registered customer
@@ -43,15 +47,19 @@ async function removeFromWishlist(
 
     try {
         const customerId = session.customer_id;
-        const client = createClient(context).ShopperCustomers;
+        const clients = createApiClients(context);
+        const config = getConfig(context);
 
         // Get the customer's product lists
-        const productLists = await client.getCustomerProductLists({
-            parameters: { customerId },
+        const { data: productLists } = await clients.shopperCustomers.getCustomerProductLists({
+            params: {
+                path: { organizationId: config.commerce.api.organizationId, customerId },
+                query: { siteId: config.commerce.api.siteId },
+            },
         });
 
         // Find the wishlist
-        const wishlist = productLists.data?.find((list) => list.type === 'wish_list');
+        const wishlist = productLists?.data?.find((list) => list.type === 'wish_list');
 
         if (!wishlist) {
             return {
@@ -70,25 +78,22 @@ async function removeFromWishlist(
         }
 
         // Get the full wishlist to find the item
-        const fullWishlistRaw = await client.getCustomerProductList({
-            parameters: {
-                customerId,
-                listId,
+        const { data: fullWishlist } = await clients.shopperCustomers.getCustomerProductList({
+            params: {
+                path: {
+                    organizationId: config.commerce.api.organizationId,
+                    customerId,
+                    listId,
+                },
+                query: { siteId: config.commerce.api.siteId },
             },
         });
 
-        // Type assertion to access customerProductListItems field
-        const fullWishlist = fullWishlistRaw as ShopperCustomersTypes.CustomerProductList & {
-            customerProductListItems?: ShopperCustomersTypes.CustomerProductListItem[];
-        };
+        // Find the item in the wishlist
+        const items = fullWishlist.customerProductListItems || [];
+        const wishlistItem = items.find((item: CustomerProductListItem) => item.productId === productId);
 
-        // Find the item in the wishlist - check both 'items' and 'customerProductListItems' fields
-        const items = fullWishlist.items || fullWishlist.customerProductListItems || [];
-        const wishlistItem = items.find(
-            (item: ShopperCustomersTypes.CustomerProductListItem) => item.productId === productId
-        );
-
-        if (!wishlistItem) {
+        if (!wishlistItem || !wishlistItem.id) {
             return {
                 success: false,
                 error: uiStrings.account.wishlist.itemNotFound,
@@ -96,19 +101,27 @@ async function removeFromWishlist(
         }
 
         // Remove the item from the wishlist using deleteCustomerProductListItem
-        await client.deleteCustomerProductListItem({
-            parameters: {
-                customerId,
-                listId,
-                itemId: wishlistItem.id,
+        await clients.shopperCustomers.deleteCustomerProductListItem({
+            params: {
+                path: {
+                    organizationId: config.commerce.api.organizationId,
+                    customerId,
+                    listId,
+                    itemId: wishlistItem.id,
+                },
+                query: { siteId: config.commerce.api.siteId },
             },
         });
 
         // Fetch the updated wishlist to return it
-        const updatedList = await client.getCustomerProductList({
-            parameters: {
-                customerId,
-                listId,
+        const { data: updatedList } = await clients.shopperCustomers.getCustomerProductList({
+            params: {
+                path: {
+                    organizationId: config.commerce.api.organizationId,
+                    customerId,
+                    listId,
+                },
+                query: { siteId: config.commerce.api.siteId },
             },
         });
 
@@ -120,12 +133,10 @@ async function removeFromWishlist(
         let responseMessage: string | undefined;
         let status_code: string | undefined;
 
-        try {
-            const extracted = await extractResponseError(error);
-            responseMessage = extracted.responseMessage;
-            status_code = extracted.status_code;
-        } catch {
-            // Response body may already be read, fall back to error message
+        if (error instanceof ApiError) {
+            responseMessage = error.body?.message || error.message;
+            status_code = String(error.status);
+        } else {
             responseMessage = error instanceof Error ? error.message : String(error);
             status_code = extractStatusCode(error);
         }
@@ -174,12 +185,10 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
         let responseMessage: string | undefined;
         let status_code: string | undefined;
 
-        try {
-            const extracted = await extractResponseError(error);
-            responseMessage = extracted.responseMessage;
-            status_code = extracted.status_code;
-        } catch {
-            // Response body may already be read, fall back to error message
+        if (error instanceof ApiError) {
+            responseMessage = error.body?.message || error.message;
+            status_code = String(error.status);
+        } else {
             responseMessage = error instanceof Error ? error.message : String(error);
             status_code = extractStatusCode(error);
         }

@@ -8,10 +8,10 @@
 import { describe, test, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import PromoCallout from './promo-callout';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 describe('PromoCallout', () => {
-    const baseMockProduct: ShopperProductsTypes.Product = {
+    const baseMockProduct: ShopperProducts.schemas['Product'] = {
         id: 'test-product',
         name: 'Test Product',
         price: 29.99,
@@ -19,7 +19,7 @@ describe('PromoCallout', () => {
     };
 
     test('renders nothing when promotion has no calloutMsg', () => {
-        const productWithEmptyPromo: ShopperProductsTypes.Product = {
+        const productWithEmptyPromo: ShopperProducts.schemas['Product'] = {
             ...baseMockProduct,
             productPromotions: [
                 {
@@ -36,7 +36,7 @@ describe('PromoCallout', () => {
     });
 
     test('renders plain text callout message', () => {
-        const productWithTextPromo: ShopperProductsTypes.Product = {
+        const productWithTextPromo: ShopperProducts.schemas['Product'] = {
             ...baseMockProduct,
             productPromotions: [
                 {
@@ -52,7 +52,7 @@ describe('PromoCallout', () => {
     });
 
     test('renders callout message with HTML formatting', () => {
-        const productWithHtmlPromo: ShopperProductsTypes.Product = {
+        const productWithHtmlPromo: ShopperProducts.schemas['Product'] = {
             ...baseMockProduct,
             productPromotions: [
                 {
@@ -74,7 +74,7 @@ describe('PromoCallout', () => {
     });
 
     test('renders first promotion when multiple promotions exist', () => {
-        const productWithMultiplePromos: ShopperProductsTypes.Product = {
+        const productWithMultiplePromos: ShopperProducts.schemas['Product'] = {
             ...baseMockProduct,
             productPromotions: [
                 {
@@ -96,7 +96,7 @@ describe('PromoCallout', () => {
     });
 
     test('handles script tags safely (scripts do not execute via innerHTML)', () => {
-        const productWithScriptTag: ShopperProductsTypes.Product = {
+        const productWithScriptTag: ShopperProducts.schemas['Product'] = {
             ...baseMockProduct,
             productPromotions: [
                 {
@@ -117,7 +117,7 @@ describe('PromoCallout', () => {
     });
 
     test('handles variant products with promotions from findLowestPrice', () => {
-        const masterProductWithVariants: ShopperProductsTypes.Product = {
+        const masterProductWithVariants: ShopperProducts.schemas['Product'] = {
             ...baseMockProduct,
             hitType: 'master' as const,
             type: { master: true },

@@ -1,4 +1,4 @@
-import type { ShopperProductsTypes, ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import type { LoaderFunctionArgs } from 'react-router';
 import { fetchSearchProducts } from '@/lib/api/search';
 import { getConfig } from '@/config';
@@ -15,8 +15,8 @@ export interface RecommendationType {
 }
 
 export interface RecommendationContext {
-    product?: ShopperProductsTypes.Product;
-    category?: ShopperProductsTypes.Category;
+    product?: ShopperProducts.schemas['Product'];
+    category?: ShopperProducts.schemas['Category'];
     subcategories?: Array<{ id: string; name: string; parentCategoryId: string }>;
 }
 
@@ -127,7 +127,7 @@ export function generateRecommendationPromises(
     recommendationContext: RecommendationContext
 ): Array<{
     config: RecommendationType;
-    promise: Promise<ShopperSearchTypes.ProductSearchResult>;
+    promise: Promise<ShopperSearch.schemas['ProductSearchResult']>;
 }> {
     if (!context) {
         return [];
@@ -164,7 +164,7 @@ export function generateRecommendationPromises(
                     count: 0,
                     offset: 0,
                     limit: 0,
-                } as ShopperSearchTypes.ProductSearchResult),
+                } as ShopperSearch.schemas['ProductSearchResult']),
             };
         }
 
@@ -191,7 +191,7 @@ export function generateRecommendationPromises(
                     count: 0,
                     offset: 0,
                     limit: 0,
-                } as ShopperSearchTypes.ProductSearchResult),
+                } as ShopperSearch.schemas['ProductSearchResult']),
             };
         }
 
@@ -272,7 +272,7 @@ export function generateRecommendationPromises(
                 count: 0,
                 offset: 0,
                 limit: 0,
-            } as ShopperSearchTypes.ProductSearchResult;
+            } as ShopperSearch.schemas['ProductSearchResult'];
         });
 
         return {

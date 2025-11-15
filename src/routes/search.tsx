@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { Await, type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from 'react-router';
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import type { Route } from './+types/search';
 import { fetchSearchProducts } from '@/lib/api/search';
 import { getConfig, useConfig } from '@/config';
@@ -13,8 +13,8 @@ import uiStrings from '@/temp-ui-string';
 
 type SearchPageData = {
     searchTerm: string;
-    refinements: Promise<ShopperSearchTypes.ProductSearchResult>;
-    searchResult: Promise<ShopperSearchTypes.ProductSearchResult>;
+    refinements: Promise<ShopperSearch.schemas['ProductSearchResult']>;
+    searchResult: Promise<ShopperSearch.schemas['ProductSearchResult']>;
 };
 
 function getPageData({ request, context }: LoaderFunctionArgs, limit: number): SearchPageData {
@@ -30,7 +30,9 @@ function getPageData({ request, context }: LoaderFunctionArgs, limit: number): S
             limit: 1,
             offset: 0,
             sort,
-            refine,
+
+            // This is a known type limitation, the API intelligently serializes the refine parameter (array) automatically, but the OAS types refers to string.
+            refine: refine as unknown as string,
             expand: ['none'],
         }),
         searchResult: fetchSearchProducts(context, {
@@ -38,7 +40,9 @@ function getPageData({ request, context }: LoaderFunctionArgs, limit: number): S
             limit,
             offset,
             sort,
-            refine,
+
+            // This is a known type limitation, the API intelligently serializes the refine parameter (array) automatically, but the OAS types refers to string.
+            refine: refine as unknown as string,
         }),
     };
 }

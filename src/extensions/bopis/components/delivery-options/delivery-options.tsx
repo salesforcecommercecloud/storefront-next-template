@@ -7,7 +7,7 @@
 'use client';
 
 import { type ReactElement, useMemo } from 'react';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import PickupOrDelivery from './pickup-or-delivery';
 import { useDeliveryOptions } from '@/extensions/bopis/hooks/use-delivery-options';
 import { useStoreLocator } from '@/extensions/store-locator/providers/store-locator';
@@ -18,7 +18,7 @@ import uiStringsBopis from '@/extensions/bopis/temp-ui-string-bopis';
 
 interface DeliveryOptionsProps {
     /** The product to check inventory for */
-    product?: ShopperProductsTypes.Product;
+    product?: ShopperProducts.schemas['Product'];
     /** The selected quantity to check inventory against */
     quantity: number;
     /** The pickup store for basket items. When provided, indicates item is in basket with this pickup store. When falsy, item is not in basket. */

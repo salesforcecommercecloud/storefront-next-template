@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within } from 'storybook/test';
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
-import type { ShopperBasketsTypes, ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { action } from 'storybook/actions';
 
 import CartContent from './cart-content';
@@ -217,14 +217,14 @@ This component integrates with:
             description: 'Shopping basket data containing items, totals, and pricing information',
             control: 'object',
             table: {
-                type: { summary: 'ShopperBasketsTypes.Basket | undefined' },
+                type: { summary: 'ShopperBasketsV2.schemas["Basket"] | undefined' },
             },
         },
         productsByItemId: {
             description: 'Mapping of item IDs to product details for enhanced display',
             control: 'object',
             table: {
-                type: { summary: 'Record<string, ShopperProductsTypes.Product>' },
+                type: { summary: 'Record<string, ShopperProducts.schemas["Product"]>' },
             },
         },
         promotions: {
@@ -251,9 +251,11 @@ type Story = StoryObj<typeof meta>;
 const createProductMap = (items: typeof basketWithOneItem.productItems, productDetails: typeof dressProductDetails) => {
     const productMap: Record<string, (typeof productDetails.data)[0]> = {};
     if (items) {
-        items.forEach((item: ShopperBasketsTypes.ProductItem) => {
+        items.forEach((item: ShopperBasketsV2.schemas['ProductItem']) => {
             if (item.itemId) {
-                const product = productDetails.data.find((p: ShopperProductsTypes.Product) => p.id === item.productId);
+                const product = productDetails.data.find(
+                    (p: ShopperProducts.schemas['Product']) => p.id === item.productId
+                );
                 if (product) {
                     productMap[item.itemId] = product;
                 }

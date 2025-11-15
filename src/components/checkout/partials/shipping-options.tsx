@@ -9,7 +9,7 @@ import uiStrings from '@/temp-ui-string';
 import { getDefaultShippingMethod } from '@/lib/customer-profile-utils';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import type { CheckoutActionData } from '../types';
-import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 
 interface ShippingMethod {
     id: string;
@@ -23,7 +23,7 @@ interface ShippingOptionsProps {
     onSubmit: (formData: FormData) => void;
     isLoading: boolean;
     actionData?: CheckoutActionData;
-    shippingMethods?: ShopperBasketsTypes.ShippingMethodResult;
+    shippingMethods?: ShopperBasketsV2.schemas['ShippingMethodResult'];
     // Step state managed by container
     isCompleted: boolean;
     isEditing: boolean;

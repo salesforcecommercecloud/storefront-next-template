@@ -1,6 +1,6 @@
-import { type ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
-const setProductWithInventories: ShopperProductsTypes.Product = {
+const setProductWithInventories: ShopperProducts.schemas['Product'] = {
     currency: 'USD',
     id: 'winter-lookM',
     imageGroups: [

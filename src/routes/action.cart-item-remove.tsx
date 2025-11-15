@@ -5,10 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import type { ClientActionFunctionArgs } from 'react-router';
-import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
+import { ApiError, type ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import { getBasket, updateBasket } from '@/middlewares/basket.client';
 import { extractResponseError } from '@/lib/utils';
-import createClient from '@/lib/scapi';
+import { createApiClients } from '@/lib/api-clients';
+import { getConfig } from '@/config';
 import uiStrings from '@/temp-ui-string';
 
 /**
@@ -47,10 +48,11 @@ import uiStrings from '@/temp-ui-string';
  * </form>
  * ```
  */
-export async function clientAction({
-    request,
-    context,
-}: ClientActionFunctionArgs): Promise<{ success: boolean; basket?: ShopperBasketsTypes.Basket; error?: string }> {
+export async function clientAction({ request, context }: ClientActionFunctionArgs): Promise<{
+    success: boolean;
+    basket?: ShopperBasketsV2.schemas['Basket'];
+    error?: string;
+}> {
     if (request.method !== 'POST') {
         throw new Response(uiStrings.errors.methodNotAllowed, { status: 405 });
     }
@@ -73,11 +75,18 @@ export async function clientAction({
             };
         }
 
-        const client = createClient(context).ShopperBasketsV2;
-        const updatedBasket = await client.removeItemFromBasket({
-            parameters: {
-                basketId,
-                itemId,
+        const config = getConfig(context);
+        const clients = createApiClients(context);
+        const { data: updatedBasket } = await clients.shopperBasketsV2.removeItemFromBasket({
+            params: {
+                path: {
+                    organizationId: config.commerce.api.organizationId,
+                    basketId,
+                    itemId,
+                },
+                query: {
+                    siteId: config.commerce.api.siteId,
+                },
             },
         });
 
@@ -86,6 +95,12 @@ export async function clientAction({
 
         return { success: true, basket: updatedBasket };
     } catch (error) {
+        if (error instanceof ApiError) {
+            return {
+                success: false,
+                error: error.body?.detail || error.statusText,
+            };
+        }
         const { responseMessage } = await extractResponseError(error as Error);
         return {
             success: false,

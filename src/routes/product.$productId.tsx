@@ -1,7 +1,8 @@
 import { use } from 'react';
 import { type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from 'react-router';
-import type { ShopperProductsTypes, ShopperSearchTypes } from 'commerce-sdk-isomorphic';
-import createClient from '@/lib/scapi';
+import { type ShopperProducts, type ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import { createApiClients } from '@/lib/api-clients';
+import { getConfig } from '@/config';
 import ProductSkeleton from '@/components/product-skeleton';
 import { createPage, type RouteComponentProps } from '@/components/create-page';
 import ProductView from '@/components/product-view';
@@ -23,12 +24,12 @@ import PickupProvider from '@/extensions/bopis/context/pickup-context';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
 type ProductPageData = {
-    product: Promise<ShopperProductsTypes.Product>;
-    category: Promise<ShopperProductsTypes.Category | undefined>;
+    product: Promise<ShopperProducts.schemas['Product']>;
+    category: Promise<ShopperProducts.schemas['Category'] | undefined>;
     recommendations: Promise<
         Array<{
             config: { id: string; title: string };
-            promise: Promise<ShopperSearchTypes.ProductSearchResult>;
+            promise: Promise<ShopperSearch.schemas['ProductSearchResult']>;
         }>
     >;
     pageKey: string;
@@ -47,56 +48,91 @@ function getPageData(
 ): ProductPageData {
     const { productId = '' } = params;
     const { searchParams } = new URL(request.url);
+    const config = getConfig(context);
 
     // Check for variant product ID in search params (for product variants)
-    const client = createClient(context);
-    const productPromise = client.ShopperProducts.getProduct({
-        parameters: {
-            id: searchParams.get('pid') || productId,
-            expand: [
-                'availability',
-                'bundled_products',
-                'images',
-                'options',
-                'page_meta_tags',
-                'prices',
-                'promotions',
-                'set_products',
-                'variations',
-            ],
-            allImages: true,
-            perPricebook: true,
-            // @sfdc-extension-block-start SFDC_EXT_BOPIS
-            // Include inventoryIds parameter when store is selected
-            ...(selectedStoreInfo?.inventoryId ? { inventoryIds: [selectedStoreInfo.inventoryId] } : {}),
-            // @sfdc-extension-block-end SFDC_EXT_BOPIS
-        },
-    });
+    const clients = createApiClients(context);
+    const productPromise = clients.shopperProducts
+        .getProduct({
+            params: {
+                path: {
+                    organizationId: config.commerce.api.organizationId,
+                    id: searchParams.get('pid') || productId,
+                },
+                query: {
+                    siteId: config.commerce.api.siteId,
+                    expand: [
+                        'availability',
+                        'bundled_products',
+                        'images',
+                        'options',
+                        'page_meta_tags',
+                        'prices',
+                        'promotions',
+                        'set_products',
+                        'variations',
+                    ],
+                    allImages: true,
+                    perPricebook: true,
+                    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+                    // Include inventoryIds parameter when store is selected
+                    ...(selectedStoreInfo?.inventoryId ? { inventoryIds: [selectedStoreInfo.inventoryId] } : {}),
+                    // @sfdc-extension-block-end SFDC_EXT_BOPIS
+                },
+            },
+        })
+        .then(({ data }) => data);
 
     // Create category promise that handles the optional fetch
     const categoryPromise = productPromise.then((product) => {
         if (product.primaryCategoryId) {
-            return client.ShopperProducts.getCategory({
-                parameters: {
-                    id: product.primaryCategoryId,
-                    levels: 1,
-                },
-            }).catch(() => undefined);
+            return clients.shopperProducts
+                .getCategory({
+                    params: {
+                        path: {
+                            organizationId: config.commerce.api.organizationId,
+                            id: product.primaryCategoryId,
+                        },
+                        query: {
+                            siteId: config.commerce.api.siteId,
+                            levels: 1,
+                        },
+                    },
+                })
+                .then(({ data }) => data)
+                .catch(() => undefined);
         }
 
         // For variant products, try to get the master product's category
         if (!product.primaryCategoryId && product.master?.masterId) {
-            return client.ShopperProducts.getProduct({
-                parameters: { id: product.master.masterId },
-            })
-                .then((masterProduct) => {
+            return clients.shopperProducts
+                .getProduct({
+                    params: {
+                        path: {
+                            organizationId: config.commerce.api.organizationId,
+                            id: product.master.masterId,
+                        },
+                        query: {
+                            siteId: config.commerce.api.siteId,
+                        },
+                    },
+                })
+                .then(({ data: masterProduct }) => {
                     if (masterProduct.primaryCategoryId) {
-                        return client.ShopperProducts.getCategory({
-                            parameters: {
-                                id: masterProduct.primaryCategoryId,
-                                levels: 1, // Get subcategories
-                            },
-                        });
+                        return clients.shopperProducts
+                            .getCategory({
+                                params: {
+                                    path: {
+                                        organizationId: config.commerce.api.organizationId,
+                                        id: masterProduct.primaryCategoryId,
+                                    },
+                                    query: {
+                                        siteId: config.commerce.api.siteId,
+                                        levels: 1, // Get subcategories
+                                    },
+                                },
+                            })
+                            .then(({ data }) => data);
                     }
                     return undefined;
                 })
@@ -118,15 +154,21 @@ function getPageData(
         // Extract subcategories from the parent category for recommendations
         let subcategories: Array<{ id: string; name: string; parentCategoryId: string }> = [];
         if (category?.parentCategoryId) {
-            const parentCategoryPromise = client.ShopperProducts.getCategory({
-                parameters: {
-                    id: category.parentCategoryId,
-                    levels: 1, // Get subcategories
+            const parentCategoryResponse = await clients.shopperProducts.getCategory({
+                params: {
+                    path: {
+                        organizationId: config.commerce.api.organizationId,
+                        id: category.parentCategoryId,
+                    },
+                    query: {
+                        siteId: config.commerce.api.siteId,
+                        levels: 1, // Get subcategories
+                    },
                 },
             });
-            const parentCategory = await parentCategoryPromise;
+            const parentCategory = parentCategoryResponse.data;
             subcategories =
-                parentCategory.categories?.map((sub: ShopperProductsTypes.Category) => ({
+                parentCategory.categories?.map((sub) => ({
                     id: sub.id,
                     name: sub.name || '',
                     parentCategoryId: sub.parentCategoryId || category.parentCategoryId || '',
@@ -225,7 +267,10 @@ export function shouldRevalidate({ currentUrl, nextUrl }: { currentUrl: string; 
 const RecommendationsContent = ({
     data,
 }: {
-    data: Array<{ config: { id: string; title: string }; promise: Promise<ShopperSearchTypes.ProductSearchResult> }>;
+    data: Array<{
+        config: { id: string; title: string };
+        promise: Promise<ShopperSearch.schemas['ProductSearchResult']>;
+    }>;
 }) => {
     if (!data || data.length === 0) {
         return null;
@@ -251,7 +296,7 @@ const Recommendations = withSuspense(RecommendationsContent, {
     fallback: <ProductRecommendationsSkeleton />,
 }) as React.ComponentType<{
     resolve: Promise<
-        Array<{ config: { id: string; title: string }; promise: Promise<ShopperSearchTypes.ProductSearchResult> }>
+        Array<{ config: { id: string; title: string }; promise: Promise<ShopperSearch.schemas['ProductSearchResult']> }>
     >;
 }>;
 

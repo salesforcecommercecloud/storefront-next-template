@@ -7,7 +7,7 @@ import { useMemo, type ReactElement } from 'react';
 import { Link } from 'react-router';
 
 // Commerce SDK
-import type { ShopperBasketsTypes, ShopperProductsTypes, ShopperPromotionsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@salesforce/storefront-next-runtime/scapi';
 
 // Components
 import PromoPopover from '@/components/promo-popover';
@@ -36,7 +36,7 @@ import uiStrings from '@/temp-ui-string';
 /**
  * Basket item data enriched with product details
  */
-type Item = ShopperBasketsTypes.ProductItem & Partial<ShopperProductsTypes.Product>;
+type Item = ShopperBasketsV2.schemas['ProductItem'] & Partial<ShopperProducts.schemas['Product']>;
 
 /**
  * ProductItemVariantImage component that renders product images with fallback
@@ -136,7 +136,7 @@ function ProductItemVariantAttributes({
 }: {
     productItem: Item;
     displayVariant?: 'default' | 'summary';
-    promotions?: Record<string, ShopperPromotionsTypes.Promotion>;
+    promotions?: Record<string, ShopperPromotions.schemas['Promotion']>;
 }): ReactElement {
     // Memoize expensive calculations
     const displayVariationValues = useMemo(
@@ -148,7 +148,7 @@ function ProductItemVariantAttributes({
         () =>
             (productItem.priceAdjustments
                 ?.map((adjustment) => (adjustment.promotionId ? promotions?.[adjustment.promotionId] : undefined))
-                .filter(Boolean) as ShopperPromotionsTypes.Promotion[]) || [],
+                .filter(Boolean) as ShopperPromotions.schemas['Promotion'][]) || [],
         [productItem.priceAdjustments, promotions]
     );
 
@@ -289,14 +289,14 @@ function ProductItemVariantPrice({
  * @interface ProductItemProps
  * @property {Product | undefined} product - Combined basket item and product data
  * @property {'default' | 'summary'} [displayVariant] - Display variant: 'default' for full, 'summary' for compact
- * @property {Record<string, ShopperPromotionsTypes.Promotion>} [promotions] - Promotions data by ID
+ * @property {Record<string, ShopperPromotions.schemas['Promotion']>} [promotions] - Promotions data by ID
  * @property {function} [primaryAction] - Render prop function to create primary actions
  * @property {function} [secondaryActions] - Render prop function to create secondary actions
  */
 interface ProductItemProps {
     productItem: Item | undefined;
     displayVariant?: 'default' | 'summary';
-    promotions?: Record<string, ShopperPromotionsTypes.Promotion>;
+    promotions?: Record<string, ShopperPromotions.schemas['Promotion']>;
     primaryAction?: (productItem: Item) => ReactElement | undefined;
     secondaryActions?: (productItem: Item) => ReactElement | undefined;
 }

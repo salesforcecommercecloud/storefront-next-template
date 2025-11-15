@@ -5,10 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { data, type ActionFunctionArgs } from 'react-router';
-import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
+import { ApiError, type ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import { getBasket, updateBasket } from '@/middlewares/basket.client';
 import { extractResponseError } from '@/lib/utils';
-import createClient, { type CommerceSdkClient } from '@/lib/scapi';
+import { createApiClients } from '@/lib/api-clients';
+import { getConfig } from '@/config';
 import uiStrings from '@/temp-ui-string';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import { updateShipmentForPickup } from '@/extensions/bopis/lib/api/shipment';
@@ -16,13 +17,13 @@ import { updateShipmentForPickup } from '@/extensions/bopis/lib/api/shipment';
 async function addMultipleItemsToCart(
     context: ActionFunctionArgs['context'],
     productItems: Array<
-        Pick<ShopperBasketsTypes.ProductItem, 'productId' | 'quantity' | 'inventoryId'> & {
+        Pick<ShopperBasketsV2.schemas['ProductItem'], 'productId' | 'quantity' | 'inventoryId'> & {
             storeId?: string | null;
         }
     >
 ): Promise<{
     success: boolean;
-    basket?: ShopperBasketsTypes.Basket;
+    basket?: ShopperBasketsV2.schemas['Basket'];
     error?: string;
 }> {
     const basket = getBasket(context);
@@ -38,33 +39,47 @@ async function addMultipleItemsToCart(
 
     try {
         // Add all items to basket in a single API call
-        const client = createClient(context).ShopperBasketsV2;
-        let updatedBasket = await client.addItemToBasket({
-            parameters: { basketId },
+        const config = getConfig(context);
+        const clients = createApiClients(context);
+        const { data: updatedBasket } = await clients.shopperBasketsV2.addItemToBasket({
+            params: {
+                path: { organizationId: config.commerce.api.organizationId, basketId },
+                query: {
+                    siteId: config.commerce.api.siteId,
+                },
+            },
             body: productItems.map((item) => ({
                 productId: item.productId,
                 quantity: item.quantity,
                 inventoryId: item.inventoryId,
-            })) as Parameters<CommerceSdkClient['ShopperBasketsV2']['addItemToBasket']>[0]['body'],
+            })),
         });
+
+        let finalBasket = updatedBasket;
 
         // @sfdc-extension-block-start SFDC_EXT_BOPIS
         // Update shipment with store information when pickup items are added
         // Find the first item with both storeId and inventoryId (pickup item)
         const pickupItem = productItems.find((item) => item.storeId && item.inventoryId);
         if (pickupItem?.storeId) {
-            updatedBasket = await updateShipmentForPickup(context, basketId, 'me', pickupItem.storeId);
+            finalBasket = await updateShipmentForPickup(context, basketId, 'me', pickupItem.storeId);
         }
         // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
         // Update the basket storage
-        updateBasket(context, updatedBasket);
+        updateBasket(context, finalBasket);
 
         return {
             success: true,
-            basket: updatedBasket,
+            basket: finalBasket,
         };
     } catch (error) {
+        if (error instanceof ApiError) {
+            return {
+                success: false,
+                error: error.body?.detail || error.statusText,
+            };
+        }
         const { responseMessage } = await extractResponseError(error);
         return {
             success: false,

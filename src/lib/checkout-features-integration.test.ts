@@ -1,13 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import { getDefaultShippingMethod } from './customer-profile-utils';
-import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 
 describe('Checkout Features Integration Tests', () => {
     // Helper to create Commerce Cloud shipping method result
     const createMockShippingMethodResult = (
         methods: Array<{ id: string; name: string; price: number }>,
         defaultId?: string
-    ): ShopperBasketsTypes.ShippingMethodResult => ({
+    ): ShopperBasketsV2.schemas['ShippingMethodResult'] => ({
         applicableShippingMethods: methods.map((m) => ({
             id: m.id,
             name: m.name,
@@ -142,7 +142,7 @@ describe('Checkout Features Integration Tests', () => {
 
         describe('Validate with SCAPI Response Structures', () => {
             it('should handle typical SFCC API response', () => {
-                const apiResponse: ShopperBasketsTypes.ShippingMethodResult = {
+                const apiResponse: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
                     applicableShippingMethods: [
                         {
                             id: '001',

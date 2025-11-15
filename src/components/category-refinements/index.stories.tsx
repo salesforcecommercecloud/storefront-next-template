@@ -3,7 +3,7 @@ import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { expect, within, userEvent } from 'storybook/test';
 import { action } from 'storybook/actions';
 
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import CategoryRefinements from './index';
 // @ts-expect-error Mock data file is JavaScript
 import searchResults from '@/components/__mocks__/search-results';
@@ -135,14 +135,14 @@ export default meta;
 type Story = StoryObj<typeof CategoryRefinements>;
 
 // Use real mock data from @mocks directory
-const mockSearchResult = searchResults as ShopperSearchTypes.ProductSearchResult;
+const mockSearchResult = searchResults as ShopperSearch.schemas['ProductSearchResult'];
 
-const mockSearchResultMinimal: ShopperSearchTypes.ProductSearchResult = {
+const mockSearchResultMinimal: ShopperSearch.schemas['ProductSearchResult'] = {
     ...mockSearchResult,
     refinements: mockSearchResult.refinements?.slice(0, 1) ?? [],
 };
 
-const mockSearchResultEmpty: ShopperSearchTypes.ProductSearchResult = {
+const mockSearchResultEmpty: ShopperSearch.schemas['ProductSearchResult'] = {
     ...mockSearchResult,
     refinements: [],
 };

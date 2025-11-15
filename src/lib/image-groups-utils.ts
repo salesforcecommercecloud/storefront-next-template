@@ -1,4 +1,4 @@
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 interface ImageGroupOptions {
     viewType: string;
@@ -13,9 +13,9 @@ interface ImageGroupOptions {
  * @returns The ImageGroup matching the search criteria
  */
 export const findImageGroupBy = (
-    imageGroups: ShopperProductsTypes.ImageGroup[] = [],
+    imageGroups: ShopperProducts.schemas['ImageGroup'][] = [],
     options: ImageGroupOptions
-): ShopperProductsTypes.ImageGroup | undefined => {
+): ShopperProducts.schemas['ImageGroup'] | undefined => {
     const { viewType } = options;
     let { selectedVariationAttributes = {} } = options;
 

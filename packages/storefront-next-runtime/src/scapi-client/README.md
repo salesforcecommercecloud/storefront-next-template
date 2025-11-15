@@ -546,6 +546,97 @@ Each operation method accepts a `FetchOptions` object with these properties:
 }
 ```
 
+### Query Parameter Serialization
+
+The SCAPI client includes a smart default query serializer that handles Commerce Cloud API requirements automatically.
+
+#### Default Behavior
+
+**Comma-separated arrays (most parameters):**
+```typescript
+// Input
+await clients.shopperProducts.getProduct({
+  params: {
+    query: {
+      expand: ['images', 'prices', 'variations']
+    }
+  }
+});
+
+// Generated URL
+// ?expand=images,prices,variations
+```
+
+**Repeated parameters (whitelisted):**
+```typescript
+// Input - individual refinements
+await clients.shopperSearch.productSearch({
+  params: {
+    query: {
+      refine: ['c_refinementColor=Black', 'c_refinementColor=Green', 'price=(0..20)']
+    }
+  }
+});
+
+// SDK automatically groups by attribute ID:
+// ['c_refinementColor=Black|Green', 'price=(0..20)']
+
+// Generated URL
+// ?refine=c_refinementColor=Black|Green&refine=price=(0..20)
+```
+
+#### How It Works
+
+The default query serializer (`defaultQuerySerializer`) provides two key features:
+
+1. **Automatic Grouping**: For whitelisted parameters like `refine`, the serializer automatically groups values by attribute ID
+   - Input: `['c_color=Black', 'c_color=Green', 'price=(0..10)']`
+   - Grouped: `['c_color=Black|Green', 'price=(0..10)']`
+   - Multiple values for the same attribute are combined with pipes (`|`)
+
+2. **Smart Serialization**: Different parameters use different serialization strategies
+   - **Comma-separated** (`explode: false`): Most array parameters like `expand`
+   - **Repeated** (`explode: true`): Whitelisted parameters like `refine`
+
+**Whitelisted parameters using repeated format:**
+- `refine` - Product search refinements
+
+**Example configuration in `defaultQuerySerializer.ts`:**
+```typescript
+const EXPLODED_PARAMS = ['refine'];  // Repeated parameters
+const GROUPED_PARAMS = ['refine'];   // Auto-grouping by attribute ID
+```
+
+#### Customizing Query Serialization
+
+You can override the default serializer if needed:
+
+```typescript
+import { createQuerySerializer } from 'openapi-fetch';
+
+const clients = createCommerceApiClients({
+  baseUrl: 'https://your-instance.api.commercecloud.salesforce.com',
+  querySerializer: createQuerySerializer({
+    array: {
+      style: 'form',
+      explode: true  // All arrays use repeated format
+    }
+  })
+});
+```
+
+Or create a custom serializer function:
+
+```typescript
+const clients = createCommerceApiClients({
+  baseUrl: 'https://your-instance.api.commercecloud.salesforce.com',
+  querySerializer: (queryParams) => {
+    // Custom serialization logic
+    return new URLSearchParams(/* ... */).toString();
+  }
+});
+```
+
 ### Middleware
 
 Middleware allows you to intercept and modify requests and responses. Common use cases:

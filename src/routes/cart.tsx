@@ -5,19 +5,20 @@ import { type ReactElement, use } from 'react';
 import type { ClientLoaderFunction, ClientLoaderFunctionArgs } from 'react-router';
 
 // Commerce SDK
-import type {
-    ShopperBasketsTypes,
-    ShopperProductsTypes,
-    ShopperPromotionsTypes,
+import {
+    type ShopperBasketsV2,
+    type ShopperProducts,
+    type ShopperPromotions,
     // @sfdc-extension-line SFDC_EXT_BOPIS
-    ShopperStoresTypes,
-} from 'commerce-sdk-isomorphic';
+    type ShopperStores,
+} from '@salesforce/storefront-next-runtime/scapi';
 
 // Middlewares
 import { getBasket } from '@/middlewares/basket.client';
 
 // API
-import createClient from '@/lib/scapi';
+import { createApiClients } from '@/lib/api-clients';
+import { getConfig } from '@/config';
 
 // Components
 import CartContent from '@/components/cart/cart-content';
@@ -36,11 +37,11 @@ import {
  * Data structure returned by cart loader functions.
  */
 type CartPageData = {
-    basket: ShopperBasketsTypes.Basket;
-    productsByItemId: Promise<Record<string, ShopperProductsTypes.Product>>;
-    promotions?: Promise<Record<string, ShopperPromotionsTypes.Promotion>>;
+    basket: ShopperBasketsV2.schemas['Basket'];
+    productsByItemId: Promise<Record<string, ShopperProducts.schemas['Product']>>;
+    promotions?: Promise<Record<string, ShopperPromotions.schemas['Promotion']>>;
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
-    storesByStoreId: Promise<Map<string, ShopperStoresTypes.Store>>;
+    storesByStoreId: Promise<Map<string, ShopperStores.schemas['Store']>>;
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 };
 
@@ -53,8 +54,8 @@ type CartPageData = {
  */
 async function fetchPromotionsForBasket(
     context: ClientLoaderFunctionArgs['context'],
-    productItems: ShopperBasketsTypes.ProductItem[]
-): Promise<Record<string, ShopperPromotionsTypes.Promotion>> {
+    productItems: ShopperBasketsV2.schemas['ProductItem'][]
+): Promise<Record<string, ShopperPromotions.schemas['Promotion']>> {
     const productIds = productItems?.map((item) => item.productId).filter(Boolean);
     if (!productIds) {
         return {};
@@ -78,20 +79,27 @@ async function fetchPromotionsForBasket(
     }
 
     // Fetch promotion details for all unique promotion IDs
-    const client = createClient(context);
-    const promotionsResponse = await client.ShopperPromotions.getPromotions({
-        parameters: {
-            ids: Array.from(promotionIds),
+    const config = getConfig(context);
+    const clients = createApiClients(context);
+    const { data: promotionsData } = await clients.shopperPromotions.getPromotions({
+        params: {
+            path: {
+                organizationId: config.commerce.api.organizationId,
+            },
+            query: {
+                siteId: config.commerce.api.siteId,
+                ids: Array.from(promotionIds),
+            },
         },
     });
 
-    if (!promotionsResponse.data) {
+    if (!promotionsData?.data) {
         return {};
     }
 
     // Transform API response into a lookup map: promotionId → promotion details
-    const promotions: Record<string, ShopperPromotionsTypes.Promotion> = {};
-    promotionsResponse.data.forEach((promotion) => {
+    const promotions: Record<string, ShopperPromotions.schemas['Promotion']> = {};
+    promotionsData.data.forEach((promotion) => {
         if (promotion.id) {
             promotions[promotion.id] = promotion;
         }
@@ -116,8 +124,8 @@ async function fetchPromotionsForBasket(
  */
 async function fetchProductsInBasket(
     context: ClientLoaderFunctionArgs['context'],
-    basket: ShopperBasketsTypes.Basket | null
-): Promise<Record<string, ShopperProductsTypes.Product>> {
+    basket: ShopperBasketsV2.schemas['Basket'] | null
+): Promise<Record<string, ShopperProducts.schemas['Product']>> {
     const productItems = basket?.productItems ?? [];
 
     // Collect all product IDs (both parent products and bundled child products)
@@ -147,33 +155,40 @@ async function fetchProductsInBasket(
     const inventoryIds = getInventoryIdsFromPickupShipments(basket);
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
-    const client = createClient(context);
-    const productsResponse = await client.ShopperProducts.getProducts({
-        parameters: {
-            ids,
-            allImages: true,
-            perPricebook: true,
-            // NOTE: if we do use `expand` parameter here, we can't pass in `bundled_products` for this API endpoint
-            // @sfdc-extension-block-start SFDC_EXT_BOPIS
-            // Include store inventory IDs for pickup items
-            ...(inventoryIds.length > 0 ? { inventoryIds } : {}),
-            // @sfdc-extension-block-end SFDC_EXT_BOPIS
+    const config = getConfig(context);
+    const clients = createApiClients(context);
+    const { data: productsData } = await clients.shopperProducts.getProducts({
+        params: {
+            path: {
+                organizationId: config.commerce.api.organizationId,
+            },
+            query: {
+                siteId: config.commerce.api.siteId,
+                ids,
+                allImages: true,
+                perPricebook: true,
+                // NOTE: if we do use `expand` parameter here, we can't pass in `bundled_products` for this API endpoint
+                // @sfdc-extension-block-start SFDC_EXT_BOPIS
+                // Include store inventory IDs for pickup items
+                ...(inventoryIds.length > 0 ? { inventoryIds } : {}),
+                // @sfdc-extension-block-end SFDC_EXT_BOPIS
+            },
         },
     });
 
-    if (!productsResponse.data) {
+    if (!productsData?.data) {
         return {};
     }
 
-    const products = productsResponse.data.reduce(
+    const products = productsData.data.reduce(
         (acc, product) => {
             acc[product.id] = product;
             return acc;
         },
-        {} as Record<string, ShopperProductsTypes.Product>
+        {} as Record<string, ShopperProducts.schemas['Product']>
     );
 
-    const productsByItemId: Record<string, ShopperProductsTypes.Product> = {};
+    const productsByItemId: Record<string, ShopperProducts.schemas['Product']> = {};
 
     productItems.forEach((productItem) => {
         if (!productItem.itemId || !productItem.productId || !products[productItem.productId]) {
@@ -186,7 +201,7 @@ async function fetchProductsInBasket(
         if (productItem.bundledProductItems && productItem.bundledProductItems.length > 0) {
             // Reconstruct the product with bundledProducts structure
             // Why? Because the products API endpoint does not allow us to pass in expand=['bundled_products']
-            const bundledProducts: ShopperProductsTypes.BundledProduct[] = productItem.bundledProductItems
+            const bundledProducts: ShopperProducts.schemas['BundledProduct'][] = productItem.bundledProductItems
                 .map((bundledItem) => {
                     const childProduct = bundledItem.productId ? products[bundledItem.productId] : null;
                     if (!childProduct) return null;
@@ -195,7 +210,7 @@ async function fetchProductsInBasket(
                         quantity: bundledItem.quantity ?? 1,
                     };
                 })
-                .filter((item): item is ShopperProductsTypes.BundledProduct => item !== null);
+                .filter((item): item is ShopperProducts.schemas['BundledProduct'] => item !== null);
 
             productsByItemId[productItem.itemId] = {
                 ...product,
@@ -219,8 +234,8 @@ async function fetchProductsInBasket(
  */
 async function fetchStoresForBasket(
     context: ClientLoaderFunctionArgs['context'],
-    basket: ShopperBasketsTypes.Basket | null
-): Promise<Map<string, ShopperStoresTypes.Store>> {
+    basket: ShopperBasketsV2.schemas['Basket'] | null
+): Promise<Map<string, ShopperStores.schemas['Store']>> {
     const storeIds = getStoreIdsFromBasket(basket);
 
     // Early return if no stores found
@@ -229,20 +244,27 @@ async function fetchStoresForBasket(
     }
 
     // Fetch store details for all unique store IDs
-    const client = createClient(context);
-    const storesResponse = await client.ShopperStores.getStores({
-        parameters: {
-            ids: storeIds.join(','),
+    const config = getConfig(context);
+    const clients = createApiClients(context);
+    const { data: storesData } = await clients.shopperStores.getStores({
+        params: {
+            path: {
+                organizationId: config.commerce.api.organizationId,
+            },
+            query: {
+                siteId: config.commerce.api.siteId,
+                ids: storeIds.join(','),
+            },
         },
     });
 
-    if (!storesResponse.data) {
+    if (!storesData?.data) {
         return new Map();
     }
 
     // Transform API response into a Map: storeId → store details
-    const storesMap = new Map<string, ShopperStoresTypes.Store>();
-    storesResponse.data.forEach((store) => {
+    const storesMap = new Map<string, ShopperStores.schemas['Store']>();
+    storesData.data.forEach((store) => {
         if (store.id) {
             storesMap.set(store.id, store);
         }

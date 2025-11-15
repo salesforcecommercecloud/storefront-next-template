@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactElement } from 'react';
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { Checkbox } from '@/components/ui/checkbox';
 import type { FilterValue } from './types';
 
@@ -20,7 +20,7 @@ export default function DefaultRefinement({
 }): ReactElement {
     return (
         <div className="space-y-1 mt-2">
-            {values.map((value: ShopperSearchTypes.ProductSearchRefinementValue, idx) => {
+            {values.map((value: ShopperSearch.schemas['ProductSearchRefinementValue'], idx) => {
                 const id = `refine-${attributeId}-${idx}`;
                 const isSelected = isFilterSelected(attributeId, value.value);
 

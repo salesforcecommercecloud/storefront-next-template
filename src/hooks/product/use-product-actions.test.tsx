@@ -8,7 +8,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { describe, expect, test, vi, beforeEach } from 'vitest';
 import { createMemoryRouter, RouterProvider, useFetcher } from 'react-router';
-import type { ShopperProductsTypes, ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts, ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import { useProductActions } from './use-product-actions';
 import BasketProvider from '@/providers/basket';
 import PickupProvider from '@/extensions/bopis/context/pickup-context';
@@ -48,7 +48,7 @@ vi.mock('@/hooks/product/use-current-variant', () => ({
 // We wrap components with PickupProvider to provide the real context
 // This allows tests to use the actual pickup context for proper integration testing
 
-const mockBasket: ShopperBasketsTypes.Basket = {
+const mockBasket: ShopperBasketsV2.schemas['Basket'] = {
     basketId: 'test-basket-123',
     productItems: [
         {
@@ -66,7 +66,7 @@ const mockBasket: ShopperBasketsTypes.Basket = {
     ],
 };
 
-const wrapper = ({ children, basket }: { children: React.ReactNode; basket?: ShopperBasketsTypes.Basket }) => {
+const wrapper = ({ children, basket }: { children: React.ReactNode; basket?: ShopperBasketsV2.schemas['Basket'] }) => {
     const router = createMemoryRouter(
         [
             {
@@ -110,7 +110,7 @@ const wrapper = ({ children, basket }: { children: React.ReactNode; basket?: Sho
 };
 
 describe('useProductActions', () => {
-    const createStandardProduct = (): ShopperProductsTypes.Product => ({
+    const createStandardProduct = (): ShopperProducts.schemas['Product'] => ({
         id: 'standard-123',
         name: 'Standard Product',
         type: { item: true },
@@ -121,7 +121,7 @@ describe('useProductActions', () => {
         },
     });
 
-    const createVariantProduct = (): ShopperProductsTypes.Product => ({
+    const createVariantProduct = (): ShopperProducts.schemas['Product'] => ({
         id: 'variant-123',
         name: 'Variant Product',
         type: { variant: true },
@@ -132,7 +132,7 @@ describe('useProductActions', () => {
         },
     });
 
-    const createBundleProduct = (): ShopperProductsTypes.Product => ({
+    const createBundleProduct = (): ShopperProducts.schemas['Product'] => ({
         id: 'bundle-123',
         name: 'Bundle Product',
         type: { bundle: true },
@@ -143,7 +143,7 @@ describe('useProductActions', () => {
         },
     });
 
-    const createSetProduct = (): ShopperProductsTypes.Product => ({
+    const createSetProduct = (): ShopperProducts.schemas['Product'] => ({
         id: 'set-123',
         name: 'Set Product',
         type: { set: true },
@@ -256,7 +256,7 @@ describe('useProductActions', () => {
         });
 
         test('prevents adding master product', () => {
-            const product: ShopperProductsTypes.Product = {
+            const product: ShopperProducts.schemas['Product'] = {
                 id: 'master-123',
                 name: 'Master Product',
                 type: { master: true },
@@ -308,7 +308,7 @@ describe('useProductActions', () => {
             const childSelections = [
                 {
                     product: standardProduct,
-                    variant: { productId: standardProduct.id } as ShopperProductsTypes.Variant,
+                    variant: { productId: standardProduct.id } as ShopperProducts.schemas['Variant'],
                     quantity: 1,
                 },
             ];
@@ -382,12 +382,12 @@ describe('useProductActions', () => {
             const childSelections = [
                 {
                     product: standardProduct,
-                    variant: { productId: standardProduct.id } as ShopperProductsTypes.Variant,
+                    variant: { productId: standardProduct.id } as ShopperProducts.schemas['Variant'],
                     quantity: 1,
                 },
                 {
                     product: createVariantProduct(),
-                    variant: { productId: 'variant-selected-123' } as ShopperProductsTypes.Variant,
+                    variant: { productId: 'variant-selected-123' } as ShopperProducts.schemas['Variant'],
                     quantity: 2,
                 },
             ];

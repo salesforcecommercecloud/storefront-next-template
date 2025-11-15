@@ -3,16 +3,17 @@ import { type ClientLoaderFunctionArgs, Link, type LoaderFunctionArgs } from 're
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Typography } from '@/components/typography';
-import createClient from '@/lib/scapi';
+import { createApiClients } from '@/lib/api-clients';
 import createPage, { type RouteComponentProps } from '@/components/create-page';
-import type { ShopperOrdersTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperOrders } from '@salesforce/storefront-next-runtime/scapi';
 import AddressDisplay from '@/components/address-display';
+import { getConfig } from '@/config';
 import { getCardTypeDisplay, getFormattedMaskedCardNumber } from '@/lib/payment-utils';
 import uiStrings from '@/temp-ui-string';
 import OrderSkeleton from '@/components/order-skeleton';
 
 type CheckoutConfirmationLoaderData = {
-    order: Promise<ShopperOrdersTypes.Order>;
+    order: Promise<ShopperOrders.schemas['Order']>;
 };
 
 /**
@@ -24,10 +25,22 @@ type CheckoutConfirmationLoaderData = {
  */
 function getPageData({ context, params }: LoaderFunctionArgs): CheckoutConfirmationLoaderData {
     const { orderNo } = params;
+    const config = getConfig(context);
+    const clients = createApiClients(context);
 
-    const orderPromise = createClient(context).ShopperOrders.getOrder({
-        parameters: { orderNo },
-    });
+    const orderPromise = clients.shopperOrders
+        .getOrder({
+            params: {
+                path: {
+                    organizationId: config.commerce.api.organizationId,
+                    orderNo: orderNo as string,
+                },
+                query: {
+                    siteId: config.commerce.api.siteId,
+                },
+            },
+        })
+        .then(({ data }) => data);
 
     return {
         order: orderPromise,

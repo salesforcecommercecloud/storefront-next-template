@@ -7,7 +7,7 @@
 'use client';
 
 import { createContext, useContext, useState, useCallback, type PropsWithChildren } from 'react';
-import type { ShopperStoresTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
 
 /**
  * Store and inventory information for pickup items
@@ -31,7 +31,7 @@ interface PickupContextType {
     /** Map of productId to pickup info (inventoryId, storeId) for items marked for store pickup */
     pickupBasketItems: Map<string, PickupItemInfo>;
     /** Map of storeId to store details for pickup stores in the basket */
-    pickupStores: Map<string, ShopperStoresTypes.Store>;
+    pickupStores: Map<string, ShopperStores.schemas['Store']>;
     /** Add a product to the pickup items map */
     addItem: (productId: string, inventoryId: string, storeId: string) => void;
     /** Remove a product from the pickup items map */
@@ -46,7 +46,7 @@ interface PickupProviderProps {
     /** Optional initial pickup items (e.g., from server state or cart) */
     initialItems?: Map<string, PickupItemInfo>;
     /** Store details for pickup stores in the basket */
-    initialPickupStores?: Map<string, ShopperStoresTypes.Store>;
+    initialPickupStores?: Map<string, ShopperStores.schemas['Store']>;
 }
 
 /**
@@ -76,7 +76,7 @@ interface PickupProviderProps {
  */
 const PickupProvider = ({ children, initialItems, initialPickupStores }: PropsWithChildren<PickupProviderProps>) => {
     const [pickupBasketItems, setPickupBasketItems] = useState<Map<string, PickupItemInfo>>(initialItems ?? new Map());
-    const [pickupStores] = useState<Map<string, ShopperStoresTypes.Store>>(initialPickupStores ?? new Map());
+    const [pickupStores] = useState<Map<string, ShopperStores.schemas['Store']>>(initialPickupStores ?? new Map());
 
     const addItem = useCallback((productId: string, inventoryId: string, storeId: string) => {
         setPickupBasketItems((prev) => {

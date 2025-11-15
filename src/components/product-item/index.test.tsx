@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider, useFetchers } from 'react-router';
 
 // Commerce SDK
-import type { ShopperBasketsTypes, ShopperProductsTypes, ShopperPromotionsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@salesforce/storefront-next-runtime/scapi';
 
 // Components
 import ProductItem from './index';
@@ -54,7 +54,7 @@ const renderWithRouter = (component: React.ReactElement) => {
 };
 
 describe('ProductItem', () => {
-    const mockProduct: ShopperBasketsTypes.ProductItem & Partial<ShopperProductsTypes.Product> = {
+    const mockProduct: ShopperBasketsV2.schemas['ProductItem'] & Partial<ShopperProducts.schemas['Product']> = {
         id: 'test-product-id',
         itemId: 'item-1',
         productId: 'test-product-id',
@@ -96,12 +96,12 @@ describe('ProductItem', () => {
         inventoryMessage: '',
     };
 
-    const mockPrimaryAction = (_product: ShopperBasketsTypes.ProductItem & Partial<ShopperProductsTypes.Product>) => (
-        <button data-testid="primary-action">Update Quantity</button>
-    );
-    const mockSecondaryActions = (product: ShopperBasketsTypes.ProductItem & Partial<ShopperProductsTypes.Product>) => (
-        <button data-testid={`remove-item-${product.itemId}`}>Remove Item</button>
-    );
+    const mockPrimaryAction = (
+        _product: ShopperBasketsV2.schemas['ProductItem'] & Partial<ShopperProducts.schemas['Product']>
+    ) => <button data-testid="primary-action">Update Quantity</button>;
+    const mockSecondaryActions = (
+        product: ShopperBasketsV2.schemas['ProductItem'] & Partial<ShopperProducts.schemas['Product']>
+    ) => <button data-testid={`remove-item-${product.itemId}`}>Remove Item</button>;
 
     beforeEach(() => {
         vi.clearAllMocks();
@@ -303,7 +303,8 @@ describe('ProductItem', () => {
 
     describe('Edge cases', () => {
         test('handles missing product data gracefully', () => {
-            const emptyProduct = {} as ShopperBasketsTypes.ProductItem & Partial<ShopperProductsTypes.Product>;
+            const emptyProduct = {} as ShopperBasketsV2.schemas['ProductItem'] &
+                Partial<ShopperProducts.schemas['Product']>;
 
             renderWithRouter(<ProductItem productItem={emptyProduct} />);
 
@@ -316,7 +317,7 @@ describe('ProductItem', () => {
         test('handles product with only productId', () => {
             const minimalProduct = {
                 productId: 'minimal-product-id',
-            } as ShopperBasketsTypes.ProductItem & Partial<ShopperProductsTypes.Product>;
+            } as ShopperBasketsV2.schemas['ProductItem'] & Partial<ShopperProducts.schemas['Product']>;
 
             renderWithRouter(<ProductItem productItem={minimalProduct} />);
 
@@ -327,7 +328,7 @@ describe('ProductItem', () => {
         test('handles product with only id (no productId)', () => {
             const productWithIdOnly = {
                 id: 'product-with-id-only',
-            } as ShopperBasketsTypes.ProductItem & Partial<ShopperProductsTypes.Product>;
+            } as ShopperBasketsV2.schemas['ProductItem'] & Partial<ShopperProducts.schemas['Product']>;
 
             renderWithRouter(<ProductItem productItem={productWithIdOnly} />);
 
@@ -503,7 +504,7 @@ describe('ProductItem', () => {
     });
 
     describe('PromoPopover and promotion info', () => {
-        const mockPromotions: Record<string, ShopperPromotionsTypes.Promotion> = {
+        const mockPromotions: Record<string, ShopperPromotions.schemas['Promotion']> = {
             'promo-1': {
                 id: 'promo-1',
                 calloutMsg: '<strong>20% Off!</strong> Limited time offer',
@@ -849,7 +850,7 @@ describe('ProductItem', () => {
 
         test('still render bundled product that does not have variation attributes yet', () => {
             // Create a minimal bundled product without variation attributes
-            const bundledProduct: ShopperProductsTypes.BundledProduct = {
+            const bundledProduct: ShopperProducts.schemas['BundledProduct'] = {
                 id: 'bundle-simple',
                 product: {
                     id: 'bundled-item-1',

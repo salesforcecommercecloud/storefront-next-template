@@ -7,13 +7,26 @@ import {
     extractNameFromEmail,
     registerGuestUser,
 } from './customer';
-// Removed unused commerceClient import
 import { getAuth } from '@/middlewares/auth.client';
-import createClient from '@/lib/scapi';
+import { createApiClients } from '@/lib/api-clients';
 import type { ActionFunctionArgs } from 'react-router';
 
 vi.mock('@/middlewares/auth.client');
-vi.mock('@/lib/scapi');
+vi.mock('@/lib/api-clients');
+vi.mock('@/config', async (importOriginal) => {
+    const actual = await importOriginal();
+    return {
+        ...actual,
+        getConfig: vi.fn(() => ({
+            commerce: {
+                api: {
+                    organizationId: 'test-org-id',
+                    siteId: 'test-site-id',
+                },
+            },
+        })),
+    };
+});
 
 const mockContext = {} as ActionFunctionArgs['context'];
 
@@ -51,12 +64,12 @@ describe('Customer API', () => {
             };
 
             const mockClient = {
-                getCustomer: vi.fn().mockResolvedValue(mockCustomer),
+                getCustomer: vi.fn().mockResolvedValue({ data: mockCustomer }),
             };
 
             vi.mocked(getAuth).mockReturnValue(mockSession);
-            vi.mocked(createClient).mockReturnValue({
-                ShopperCustomers: mockClient,
+            vi.mocked(createApiClients).mockReturnValue({
+                shopperCustomers: mockClient,
             } as any);
 
             const result = await lookupCustomerByEmail(mockContext, 'test@example.com');
@@ -65,7 +78,15 @@ describe('Customer API', () => {
             expect(result.customer).toEqual(mockCustomer);
             expect(result.requiresLogin).toBe(false);
             expect(mockClient.getCustomer).toHaveBeenCalledWith({
-                parameters: { customerId: 'cust123' },
+                params: {
+                    path: {
+                        organizationId: 'test-org-id',
+                        customerId: 'cust123',
+                    },
+                    query: {
+                        siteId: 'test-site-id',
+                    },
+                },
             });
         });
 
@@ -81,12 +102,12 @@ describe('Customer API', () => {
             };
 
             const mockClient = {
-                getCustomer: vi.fn().mockResolvedValue(mockCustomer),
+                getCustomer: vi.fn().mockResolvedValue({ data: mockCustomer }),
             };
 
             vi.mocked(getAuth).mockReturnValue(mockSession);
-            vi.mocked(createClient).mockReturnValue({
-                ShopperCustomers: mockClient,
+            vi.mocked(createApiClients).mockReturnValue({
+                shopperCustomers: mockClient,
             } as any);
 
             const result = await lookupCustomerByEmail(mockContext, 'test@example.com');
@@ -107,12 +128,12 @@ describe('Customer API', () => {
             };
 
             const mockClient = {
-                getCustomer: vi.fn().mockResolvedValue(mockCustomer),
+                getCustomer: vi.fn().mockResolvedValue({ data: mockCustomer }),
             };
 
             vi.mocked(getAuth).mockReturnValue(mockSession);
-            vi.mocked(createClient).mockReturnValue({
-                ShopperCustomers: mockClient,
+            vi.mocked(createApiClients).mockReturnValue({
+                shopperCustomers: mockClient,
             } as any);
 
             const result = await lookupCustomerByEmail(mockContext, 'test@example.com');
@@ -132,8 +153,8 @@ describe('Customer API', () => {
             };
 
             vi.mocked(getAuth).mockReturnValue(mockSession);
-            vi.mocked(createClient).mockReturnValue({
-                ShopperCustomers: mockClient,
+            vi.mocked(createApiClients).mockReturnValue({
+                shopperCustomers: mockClient,
             } as any);
 
             const result = await lookupCustomerByEmail(mockContext, 'test@example.com');
@@ -225,19 +246,27 @@ describe('Customer API', () => {
             };
 
             const mockClient = {
-                getCustomer: vi.fn().mockResolvedValue(mockCustomer),
+                getCustomer: vi.fn().mockResolvedValue({ data: mockCustomer }),
             };
 
             vi.mocked(getAuth).mockReturnValue(mockSession);
-            vi.mocked(createClient).mockReturnValue({
-                ShopperCustomers: mockClient,
+            vi.mocked(createApiClients).mockReturnValue({
+                shopperCustomers: mockClient,
             } as any);
 
             const result = await getCurrentCustomer(mockContext);
 
             expect(result).toEqual(mockCustomer);
             expect(mockClient.getCustomer).toHaveBeenCalledWith({
-                parameters: { customerId: 'cust123' },
+                params: {
+                    path: {
+                        organizationId: 'test-org-id',
+                        customerId: 'cust123',
+                    },
+                    query: {
+                        siteId: 'test-site-id',
+                    },
+                },
             });
         });
 
@@ -265,8 +294,8 @@ describe('Customer API', () => {
             };
 
             vi.mocked(getAuth).mockReturnValue(mockSession);
-            vi.mocked(createClient).mockReturnValue({
-                ShopperCustomers: mockClient,
+            vi.mocked(createApiClients).mockReturnValue({
+                shopperCustomers: mockClient,
             } as any);
 
             const result = await getCurrentCustomer(mockContext);
@@ -287,12 +316,12 @@ describe('Customer API', () => {
             };
 
             const mockClient = {
-                getCustomer: vi.fn().mockResolvedValue(mockCustomer),
+                getCustomer: vi.fn().mockResolvedValue({ data: mockCustomer }),
             };
 
             vi.mocked(getAuth).mockReturnValue(mockSession);
-            vi.mocked(createClient).mockReturnValue({
-                ShopperCustomers: mockClient,
+            vi.mocked(createApiClients).mockReturnValue({
+                shopperCustomers: mockClient,
             } as any);
 
             const result = await customerLookup(mockContext, 'test@example.com');
@@ -561,8 +590,8 @@ describe('Customer API', () => {
                 getCustomer: vi.fn(),
             };
 
-            vi.mocked(createClient).mockReturnValue({
-                ShopperCustomers: mockClient,
+            vi.mocked(createApiClients).mockReturnValue({
+                shopperCustomers: mockClient,
             } as any);
 
             vi.mocked(getAuth).mockReturnValue({
@@ -580,6 +609,14 @@ describe('Customer API', () => {
 
             // Verify registration was called
             expect(mockRegisterCustomer).toHaveBeenCalledWith({
+                params: {
+                    path: {
+                        organizationId: 'test-org-id',
+                    },
+                    query: {
+                        siteId: 'test-site-id',
+                    },
+                },
                 body: expect.objectContaining({
                     customer: expect.objectContaining({
                         login: 'test@example.com',
@@ -603,8 +640,8 @@ describe('Customer API', () => {
                 getCustomer: vi.fn(),
             };
 
-            vi.mocked(createClient).mockReturnValue({
-                ShopperCustomers: mockClient,
+            vi.mocked(createApiClients).mockReturnValue({
+                shopperCustomers: mockClient,
             } as any);
 
             // Override fetch implementation for this specific test
@@ -651,8 +688,8 @@ describe('Customer API', () => {
                 getCustomer: vi.fn(),
             };
 
-            vi.mocked(createClient).mockReturnValue({
-                ShopperCustomers: mockClient,
+            vi.mocked(createApiClients).mockReturnValue({
+                shopperCustomers: mockClient,
             } as any);
 
             const result = await registerGuestUser(mockContext, 'test@example.com');

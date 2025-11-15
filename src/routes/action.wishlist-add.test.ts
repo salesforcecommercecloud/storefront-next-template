@@ -9,11 +9,12 @@ import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { ActionFunctionArgs } from 'react-router';
 import { clientAction } from './action.wishlist-add';
 import { createTestContext } from '@/lib/test-utils';
+import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 
 // Mock dependencies
 const mockIsRegisteredCustomer = vi.fn();
 const mockGetAuth = vi.fn();
-const mockCreateClient = vi.fn();
+const mockCreateApiClients = vi.fn();
 const mockExtractResponseError = vi.fn();
 
 vi.mock('@/middlewares/auth.client', () => ({
@@ -24,10 +25,24 @@ vi.mock('@/lib/api/customer', () => ({
     isRegisteredCustomer: () => mockIsRegisteredCustomer(),
 }));
 
-vi.mock('@/lib/scapi', () => ({
-    default: () => mockCreateClient(),
-    createClient: () => mockCreateClient(),
+vi.mock('@/lib/api-clients', () => ({
+    createApiClients: () => mockCreateApiClients(),
 }));
+
+vi.mock('@/config', async (importOriginal) => {
+    const actual = (await importOriginal()) as any;
+    return {
+        ...actual,
+        getConfig: vi.fn(() => ({
+            commerce: {
+                api: {
+                    organizationId: 'test-org-id',
+                    siteId: 'test-site-id',
+                },
+            },
+        })),
+    };
+});
 
 vi.mock('@/lib/utils', async () => {
     const actual = await vi.importActual('@/lib/utils');
@@ -121,9 +136,9 @@ describe('action.wishlist-add', () => {
             createCustomerProductListItem: vi.fn(),
         };
 
-        // Ensure createClient returns the mocked client
-        mockCreateClient.mockReturnValue({
-            ShopperCustomers: mockShopperCustomers,
+        // Ensure createApiClients returns the mocked client
+        mockCreateApiClients.mockReturnValue({
+            shopperCustomers: mockShopperCustomers,
         } as any);
     });
 
@@ -229,7 +244,7 @@ describe('action.wishlist-add', () => {
             };
 
             mockShopperCustomers.getCustomerProductLists.mockResolvedValue({
-                data: [existingWishlist],
+                data: { data: [existingWishlist] },
             });
 
             // Mock getCustomerProductList calls:
@@ -266,14 +281,17 @@ describe('action.wishlist-add', () => {
             }
             expect(json.success).toBe(true);
             expect(mockShopperCustomers.createCustomerProductListItem).toHaveBeenCalledWith({
-                parameters: {
-                    customerId: 'customer-123',
-                    listId: 'wishlist-123',
+                params: {
+                    path: expect.objectContaining({
+                        customerId: 'customer-123',
+                        listId: 'wishlist-123',
+                    }),
+                    query: expect.any(Object),
                 },
                 body: expect.objectContaining({
-                    product_id: 'product-123',
+                    productId: 'product-123',
                     public: false,
-                    priority: 0,
+                    priority: 1,
                 }),
             });
         });
@@ -290,13 +308,13 @@ describe('action.wishlist-add', () => {
             // createCustomerProductList throws error
             // Second call in catch: get all lists and use first one (line 112-117)
             mockShopperCustomers.getCustomerProductLists.mockResolvedValueOnce({
-                data: [], // No wishlist found
+                data: { data: [] }, // No wishlist found
             });
 
             mockShopperCustomers.createCustomerProductList.mockRejectedValue(new Error('Failed to create wishlist'));
 
             mockShopperCustomers.getCustomerProductLists.mockResolvedValueOnce({
-                data: [firstList], // Fallback: return first available list
+                data: { data: [firstList] }, // Fallback: return first available list
             });
 
             mockShopperCustomers.getCustomerProductList.mockResolvedValue({
@@ -352,10 +370,10 @@ describe('action.wishlist-add', () => {
             // Fourth call: getCustomerProductList - get updated wishlist after adding item (duplicate check)
             mockShopperCustomers.getCustomerProductLists
                 .mockResolvedValueOnce({
-                    data: [],
+                    data: { data: [] },
                 })
                 .mockResolvedValueOnce({
-                    data: [newWishlist],
+                    data: { data: [newWishlist] },
                 });
 
             mockShopperCustomers.createCustomerProductList.mockResolvedValue({
@@ -403,32 +421,31 @@ describe('action.wishlist-add', () => {
                 listId: 'wishlist-123',
                 type: 'wish_list',
                 name: 'Wishlist',
-                items: [], // Initially empty
+                customerProductListItems: [], // Initially empty
             };
 
             // After adding, we have 2 items with same productId (duplicate)
             const wishlistWithDuplicate = {
                 ...wishlist,
-                items: [
+                customerProductListItems: [
                     { id: 'item-1', productId: 'product-123' },
                     { id: 'item-2', productId: 'product-123' }, // Duplicate detected
                 ],
             };
 
             mockShopperCustomers.getCustomerProductLists.mockResolvedValue({
-                data: [{ id: 'wishlist-123', listId: 'wishlist-123', type: 'wish_list' }],
+                data: { data: [{ id: 'wishlist-123', listId: 'wishlist-123', type: 'wish_list' }] },
             });
 
-            // First call: get wishlist before adding (empty list, so item doesn't exist - line 269)
+            // First call: get wishlist before adding (empty list, so item doesn't exist - line 270)
             // createCustomerProductListItem is called
-            // Second call: get wishlist after adding item to check for duplicates (line 307) - finds 2 items
-            // Note: Commerce SDK getCustomerProductList returns the data directly (unwrapped)
+            // Second call: get wishlist after adding item to check for duplicates (line 316) - finds 2 items
             mockShopperCustomers.getCustomerProductList
                 .mockResolvedValueOnce(
-                    wishlist as any // Empty, so item doesn't exist yet - line 269
+                    { data: wishlist } as any // Empty, so item doesn't exist yet - line 270
                 )
                 .mockResolvedValueOnce(
-                    wishlistWithDuplicate as any // After adding, we have 2 items (duplicate) - line 307
+                    { data: wishlistWithDuplicate } as any // After adding, we have 2 items (duplicate) - line 316
                 );
 
             mockShopperCustomers.createCustomerProductListItem.mockResolvedValue({
@@ -495,7 +512,7 @@ describe('action.wishlist-add', () => {
             };
 
             mockShopperCustomers.getCustomerProductLists.mockResolvedValue({
-                data: [existingWishlist],
+                data: { data: [existingWishlist] },
             });
 
             mockShopperCustomers.getCustomerProductList.mockResolvedValue({
@@ -503,13 +520,11 @@ describe('action.wishlist-add', () => {
             });
 
             // Mock createCustomerProductListItem to throw a duplicate error
-            const duplicateError = new Error('Duplicate product');
+            const duplicateError = Object.create(ApiError.prototype);
+            duplicateError.status = 400;
+            duplicateError.body = { message: 'Product is duplicate' };
+            duplicateError.message = 'Product is duplicate';
             mockShopperCustomers.createCustomerProductListItem.mockRejectedValue(duplicateError);
-
-            mockExtractResponseError.mockResolvedValue({
-                responseMessage: 'Product is duplicate',
-                status_code: '400',
-            });
 
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
@@ -546,14 +561,14 @@ describe('action.wishlist-add', () => {
             };
 
             mockShopperCustomers.getCustomerProductLists.mockResolvedValue({
-                data: [existingWishlist],
+                data: { data: [existingWishlist] },
             });
 
             // First call: get existing wishlist (before adding item) - line 269
-            // Second call: get updated wishlist after adding (if updatedList is not set) - line 368
+            // Second call: get updated wishlist after adding (if updatedList is not set) - line 316
             mockShopperCustomers.getCustomerProductList
-                .mockResolvedValueOnce(existingWishlist as any) // Empty, so item doesn't exist yet
-                .mockResolvedValueOnce(wishlistWithItem as any); // After adding item
+                .mockResolvedValueOnce({ data: existingWishlist } as any) // Empty, so item doesn't exist yet
+                .mockResolvedValueOnce({ data: wishlistWithItem } as any); // After adding item
 
             // Mock createCustomerProductListItem to succeed but not set updatedList
             mockShopperCustomers.createCustomerProductListItem.mockResolvedValue({
@@ -590,20 +605,18 @@ describe('action.wishlist-add', () => {
             };
 
             mockShopperCustomers.getCustomerProductLists.mockResolvedValue({
-                data: [existingWishlist],
+                data: { data: [existingWishlist] },
             });
 
             mockShopperCustomers.getCustomerProductList.mockResolvedValue({
                 data: existingWishlist,
             });
 
-            const duplicateError = new Error('Product already exists');
+            const duplicateError = Object.create(ApiError.prototype);
+            duplicateError.status = 400;
+            duplicateError.body = { message: 'Product already exists in wishlist' };
+            duplicateError.message = 'Product already exists in wishlist';
             mockShopperCustomers.createCustomerProductListItem.mockRejectedValue(duplicateError);
-
-            mockExtractResponseError.mockResolvedValue({
-                responseMessage: 'Product already exists in wishlist',
-                status_code: '400',
-            });
 
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
@@ -635,22 +648,20 @@ describe('action.wishlist-add', () => {
             };
 
             mockShopperCustomers.getCustomerProductLists.mockResolvedValue({
-                data: [existingWishlist],
+                data: { data: [existingWishlist] },
             });
 
-            // First call: check if item exists (line 269)
-            // Second call: get wishlist for duplicate check (line 419)
+            // First call: check if item exists (line 270)
+            // Second call: get wishlist for duplicate check (line 362)
             mockShopperCustomers.getCustomerProductList
-                .mockResolvedValueOnce(existingWishlist as any)
-                .mockResolvedValueOnce(existingWishlist as any);
+                .mockResolvedValueOnce({ data: existingWishlist } as any)
+                .mockResolvedValueOnce({ data: existingWishlist } as any);
 
-            const duplicateError = new Error('Product already exists');
+            const duplicateError = Object.create(ApiError.prototype);
+            duplicateError.status = 400;
+            duplicateError.body = { message: 'Product already exists in wishlist' };
+            duplicateError.message = 'Product already exists in wishlist';
             mockShopperCustomers.createCustomerProductListItem.mockRejectedValue(duplicateError);
-
-            mockExtractResponseError.mockResolvedValue({
-                responseMessage: 'Product already exists in wishlist',
-                status_code: '400',
-            });
 
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
@@ -761,15 +772,15 @@ describe('action.wishlist-add', () => {
             // Fourth call: getCustomerProductList after adding item
             mockShopperCustomers.getCustomerProductLists
                 .mockResolvedValueOnce({
-                    data: [wishlistWithoutId],
+                    data: { data: [wishlistWithoutId] },
                 })
                 .mockResolvedValueOnce({
-                    data: [wishlistWithId],
+                    data: { data: [wishlistWithId] },
                 });
 
             mockShopperCustomers.getCustomerProductList
-                .mockResolvedValueOnce(wishlistWithId as any) // Retry path - line 174
-                .mockResolvedValueOnce(wishlistWithItem as any); // After adding item
+                .mockResolvedValueOnce({ data: wishlistWithId } as any) // Retry path - line 160
+                .mockResolvedValueOnce({ data: wishlistWithItem } as any); // After adding item
 
             mockShopperCustomers.createCustomerProductListItem.mockResolvedValue({
                 data: { id: 'item-123', productId: 'product-123' },
@@ -813,19 +824,19 @@ describe('action.wishlist-add', () => {
                 listId: 'wishlist-123',
                 type: 'wish_list',
                 name: 'Wishlist',
-                items: [{ id: 'item-123', productId: 'product-123' }], // Item already exists
+                customerProductListItems: [{ id: 'item-123', productId: 'product-123' }], // Item already exists
             };
 
             mockShopperCustomers.getCustomerProductLists
                 .mockResolvedValueOnce({
-                    data: [wishlistWithoutId],
+                    data: { data: [wishlistWithoutId] },
                 })
                 .mockResolvedValueOnce({
-                    data: [wishlistWithId],
+                    data: { data: [wishlistWithId] },
                 });
 
-            // In retry path, getCustomerProductList is called once to get the full wishlist (line 174)
-            mockShopperCustomers.getCustomerProductList.mockResolvedValueOnce(wishlistWithId as any);
+            // In retry path, getCustomerProductList is called once to get the full wishlist (line 160)
+            mockShopperCustomers.getCustomerProductList.mockResolvedValueOnce({ data: wishlistWithId } as any);
 
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {

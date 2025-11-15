@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import { useSearchParams } from 'react-router';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 interface UseSelectedVariationsParams {
-    product: ShopperProductsTypes.Product;
+    product: ShopperProducts.schemas['Product'];
     isChildProduct?: boolean;
 }
 

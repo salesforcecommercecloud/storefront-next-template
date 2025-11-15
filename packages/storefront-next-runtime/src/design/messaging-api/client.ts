@@ -68,7 +68,6 @@ export function createClientApi({ emitter, id, forwardedKeys = [], logger }: Cli
             onError?: (error: Error) => void;
         } = {}) => {
             if (isConnected) {
-                /* eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion */
                 onHostConnected?.(hostConfig as HostToClientConfiguration);
 
                 return;

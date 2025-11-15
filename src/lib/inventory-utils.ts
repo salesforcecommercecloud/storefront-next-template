@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { isProductSet } from './product-utils';
 
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -18,9 +18,9 @@ import { isProductSet } from './product-utils';
  * @returns Store-specific inventory data, or null if not found, product is undefined, inventoryId is undefined, or product.inventories is undefined/empty
  */
 export function getStoreInventoryById(
-    product: ShopperProductsTypes.Product | undefined,
+    product: ShopperProducts.schemas['Product'] | undefined,
     inventoryId: string | undefined
-): ShopperProductsTypes.Inventory | null {
+): ShopperProducts.schemas['Inventory'] | null {
     if (!inventoryId || !product?.inventories) {
         return null;
     }
@@ -46,7 +46,7 @@ export function getStoreInventoryById(
  * @returns true if product is out of stock at the store, false if in stock or if product/selectedStoreInventoryId is undefined
  */
 export function isStoreOutOfStock(
-    product: ShopperProductsTypes.Product | undefined,
+    product: ShopperProducts.schemas['Product'] | undefined,
     selectedStoreInventoryId: string | undefined,
     quantity: number = 1
 ): boolean {
@@ -89,9 +89,9 @@ export function isStoreOutOfStock(
  * @returns true if product is out of stock at site level, false if in stock or if product is undefined
  */
 export function isSiteOutOfStock(
-    product: ShopperProductsTypes.Product | undefined,
+    product: ShopperProducts.schemas['Product'] | undefined,
     quantity: number = 1,
-    variant?: ShopperProductsTypes.Variant | null
+    variant?: ShopperProducts.schemas['Variant'] | null
 ): boolean {
     if (!product) {
         return false;
@@ -128,13 +128,13 @@ export function isSiteOutOfStock(
  * @returns Inventory object if found, or null if not found or if product is undefined
  */
 export function getEffectiveInventory(
-    product: ShopperProductsTypes.Product | undefined,
+    product: ShopperProducts.schemas['Product'] | undefined,
     // @sfdc-extension-line SFDC_EXT_BOPIS
     isPickup: boolean,
     // @sfdc-extension-line SFDC_EXT_BOPIS
     storeInventoryId: string | undefined,
-    variant?: ShopperProductsTypes.Variant | null
-): ShopperProductsTypes.Inventory | null {
+    variant?: ShopperProducts.schemas['Variant'] | null
+): ShopperProducts.schemas['Inventory'] | null {
     if (!product) return null;
 
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -167,12 +167,12 @@ export function getEffectiveInventory(
  * @returns The stock level number (0 if product is undefined, inventory not found, or stock level is unavailable)
  */
 export function getEffectiveStockLevel(
-    product: ShopperProductsTypes.Product | undefined,
+    product: ShopperProducts.schemas['Product'] | undefined,
     // @sfdc-extension-line SFDC_EXT_BOPIS
     isPickup: boolean,
     // @sfdc-extension-line SFDC_EXT_BOPIS
     storeInventoryId: string | undefined,
-    variant?: ShopperProductsTypes.Variant | null
+    variant?: ShopperProducts.schemas['Variant'] | null
 ): number {
     if (!product) return 0;
 
@@ -234,13 +234,13 @@ export function getEffectiveStockLevel(
  * @returns true if product is orderable and has sufficient stock, false if out of stock or if product is undefined
  */
 export function isInStock(
-    product: ShopperProductsTypes.Product | undefined,
+    product: ShopperProducts.schemas['Product'] | undefined,
     // @sfdc-extension-line SFDC_EXT_BOPIS
     isPickup: boolean,
     // @sfdc-extension-line SFDC_EXT_BOPIS
     storeInventoryId: string | undefined,
     quantity: number = 1,
-    variant?: ShopperProductsTypes.Variant | null
+    variant?: ShopperProducts.schemas['Variant'] | null
 ): boolean {
     if (!product) return false;
 

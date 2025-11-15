@@ -1,22 +1,22 @@
 import type { ComponentPropsWithoutRef } from 'react';
 import { NavLink } from 'react-router';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { type AppConfig, useConfig } from '@/config';
 import { NavigationMenuLink } from '@/components/ui/navigation-menu';
 import CategoryNavigationMenu, { WithCategoryNavigationMenu } from '@/components/navigation-menu';
 
 const disHostName = 'edge.disstg.commercecloud.salesforce.com';
-const imageCache = new WeakMap<ShopperProductsTypes.Category, string | undefined>();
+const imageCache = new WeakMap<ShopperProducts.schemas['Category'], string | undefined>();
 
-function hasBanner(category?: ShopperProductsTypes.Category): category is ShopperProductsTypes.Category {
+function hasBanner(category?: ShopperProducts.schemas['Category']): category is ShopperProducts.schemas['Category'] {
     return category?.c_headerMenuBanner?.length > 0;
 }
 
-function isVertical(category?: ShopperProductsTypes.Category): category is ShopperProductsTypes.Category {
+function isVertical(category?: ShopperProducts.schemas['Category']): category is ShopperProducts.schemas['Category'] {
     return category?.c_headerMenuOrientation?.toLowerCase() === 'vertical';
 }
 
-function getImageHref(category: ShopperProductsTypes.Category, config: AppConfig): string | undefined {
+function getImageHref(category: ShopperProducts.schemas['Category'], config: AppConfig): string | undefined {
     // Luckily when this gets called, we're always in the browser and can use the `DOMParser`, if available
     if (!imageCache.has(category) && 'DOMParser' in globalThis) {
         const organizationId = config.commerce.api.organizationId;
@@ -50,7 +50,7 @@ function getImageHref(category: ShopperProductsTypes.Category, config: AppConfig
 function CategoryBanner({
     category,
     ...props
-}: ComponentPropsWithoutRef<'a'> & { category: ShopperProductsTypes.Category }) {
+}: ComponentPropsWithoutRef<'a'> & { category: ShopperProducts.schemas['Category'] }) {
     const appConfig = useConfig();
     const imageSrc = getImageHref(category, appConfig);
 

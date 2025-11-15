@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { type ReactElement } from 'react';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import ImageGallery from '@/components/image-gallery';
 import ProductInfo from './product-info';
 import ProductCartActions from '@/components/product-cart-actions';
@@ -16,8 +16,8 @@ import CategoryBreadcrumbs from '../category-breadcrumbs';
 import { isProductSet, isProductBundle } from '@/lib/product-utils';
 
 interface ProductViewProps {
-    product: ShopperProductsTypes.Product;
-    category?: ShopperProductsTypes.Category;
+    product: ShopperProducts.schemas['Product'];
+    category?: ShopperProducts.schemas['Category'];
     mode?: 'add' | 'edit';
 }
 

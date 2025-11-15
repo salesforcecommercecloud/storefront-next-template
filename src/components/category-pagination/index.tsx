@@ -2,7 +2,7 @@
 
 import { type JSX, useCallback, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -11,7 +11,7 @@ export default function CategoryPagination({
     result,
 }: {
     limit: number;
-    result: ShopperSearchTypes.ProductSearchResult;
+    result: ShopperSearch.schemas['ProductSearchResult'];
 }): JSX.Element | null {
     const navigate = useNavigate();
     const location = useLocation();

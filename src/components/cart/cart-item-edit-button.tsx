@@ -11,7 +11,7 @@
 import { type ReactElement, useState } from 'react';
 
 // Types
-import type { ShopperBasketsTypes, ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 // Components
 import { Button } from '@/components/ui/button';
@@ -21,7 +21,7 @@ import { CartItemEditModal } from '@/components/cart-item-edit-modal';
 import uiStrings from '@/temp-ui-string';
 
 interface CartItemEditButtonProps {
-    product: ShopperBasketsTypes.ProductItem & Partial<ShopperProductsTypes.Product>;
+    product: ShopperBasketsV2.schemas['ProductItem'] & Partial<ShopperProducts.schemas['Product']>;
     className?: string;
 }
 
@@ -58,7 +58,7 @@ export function CartItemEditButton({ product, className = '' }: CartItemEditButt
                 <CartItemEditModal
                     open={isOpen}
                     onOpenChange={setIsOpen}
-                    product={product as ShopperProductsTypes.Product}
+                    product={product as ShopperProducts.schemas['Product']}
                     initialQuantity={product.quantity || 1}
                     itemId={product.itemId}
                 />

@@ -1,4 +1,4 @@
-import type { ShopperBasketsTypes, ShopperOrdersTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2, ShopperOrders } from '@salesforce/storefront-next-runtime/scapi';
 
 /**
  * Safely extracts and formats a masked credit card number from various payment instrument structures
@@ -7,8 +7,8 @@ import type { ShopperBasketsTypes, ShopperOrdersTypes } from 'commerce-sdk-isomo
  */
 export function getFormattedMaskedCardNumber(
     paymentInstrument:
-        | ShopperBasketsTypes.OrderPaymentInstrument
-        | ShopperOrdersTypes.OrderPaymentInstrument
+        | ShopperBasketsV2.schemas['OrderPaymentInstrument']
+        | ShopperOrders.schemas['OrderPaymentInstrument']
         | undefined
 ): string {
     if (!paymentInstrument) {
@@ -69,8 +69,8 @@ export function getLastFourDigits(maskedNumber: string | undefined): string {
  */
 export function getCardTypeDisplay(
     paymentInstrument:
-        | ShopperBasketsTypes.OrderPaymentInstrument
-        | ShopperOrdersTypes.OrderPaymentInstrument
+        | ShopperBasketsV2.schemas['OrderPaymentInstrument']
+        | ShopperOrders.schemas['OrderPaymentInstrument']
         | undefined,
     fallback: string = 'Credit Card'
 ): string {
@@ -152,7 +152,7 @@ export function detectCardType(cardNumber: string): string {
  * @returns True if payment instrument has valid card data
  */
 export function hasValidPaymentCard(
-    paymentInstrument: ShopperBasketsTypes.OrderPaymentInstrument | undefined
+    paymentInstrument: ShopperBasketsV2.schemas['OrderPaymentInstrument'] | undefined
 ): boolean {
     if (!paymentInstrument) {
         return false;

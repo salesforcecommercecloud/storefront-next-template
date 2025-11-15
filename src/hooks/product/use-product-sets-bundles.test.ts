@@ -8,10 +8,13 @@
 import { renderHook, act } from '@testing-library/react';
 import { describe, expect, test } from 'vitest';
 import { useProductSetsBundles } from './use-product-sets-bundles';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 describe('useProductSetsBundles', () => {
-    const createMockProduct = (type: 'set' | 'bundle', childProducts: any[] = []): ShopperProductsTypes.Product => ({
+    const createMockProduct = (
+        type: 'set' | 'bundle',
+        childProducts: any[] = []
+    ): ShopperProducts.schemas['Product'] => ({
         id: 'parent-product-123',
         name: 'Test Product',
         type: type === 'set' ? { set: true } : { bundle: true },
@@ -20,14 +23,14 @@ describe('useProductSetsBundles', () => {
             type === 'bundle' ? childProducts.map((p) => ({ product: p, quantity: p.quantity || 1 })) : undefined,
     });
 
-    const createStandardProduct = (id: string): ShopperProductsTypes.Product => ({
+    const createStandardProduct = (id: string): ShopperProducts.schemas['Product'] => ({
         id,
         name: `Standard Product ${id}`,
         type: { item: true },
         product: { id, name: `Standard Product ${id}` },
     });
 
-    const createVariantProduct = (id: string): ShopperProductsTypes.Product => ({
+    const createVariantProduct = (id: string): ShopperProducts.schemas['Product'] => ({
         id,
         name: `Variant Product ${id}`,
         type: { variant: true },

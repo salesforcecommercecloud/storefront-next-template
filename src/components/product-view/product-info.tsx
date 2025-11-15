@@ -6,7 +6,7 @@
  */
 
 import { type ReactElement } from 'react';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import ProductQuantityPicker from '@/components/product-quantity-picker';
 import { SwatchGroup, Swatch } from '@/components/swatch-group';
 import { useVariationAttributes } from '@/hooks/product/use-variation-attributes';
@@ -22,7 +22,7 @@ import { useCurrentVariant } from '@/hooks/product/use-current-variant';
 import DeliveryOptions from '@/extensions/bopis/components/delivery-options/delivery-options';
 
 type ProductInfoBaseProps = {
-    product: ShopperProductsTypes.Product;
+    product: ShopperProducts.schemas['Product'];
 };
 type ProductInfoUncontrolledProps = ProductInfoBaseProps & {
     /** Mode for swatch interaction: 'uncontrolled' uses URL navigation */

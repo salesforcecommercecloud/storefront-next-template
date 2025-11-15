@@ -16,7 +16,7 @@ import {
     useMatches,
     useRouteLoaderData,
 } from 'react-router';
-import type { ShopperBasketsTypes, ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { type i18n } from 'i18next';
 import { I18nextProvider } from 'react-i18next';
 // @sfdc-extension-line SFDC_EXT_STORE_LOCATOR
@@ -73,8 +73,8 @@ export const clientMiddleware: MiddlewareFunction<Record<string, DataStrategyRes
 export const loader = ({
     context,
 }: LoaderFunctionArgs): {
-    root: Promise<ShopperProductsTypes.Category>;
-    subs: Promise<ShopperProductsTypes.Category[]>;
+    root: Promise<ShopperProducts.schemas['Category']>;
+    subs: Promise<ShopperProducts.schemas['Category'][]>;
     auth: () => SessionData; // Use a function to prevent state serialization
     appConfig: AppConfig;
     locale: string;
@@ -96,10 +96,13 @@ export const loader = ({
     // Load each second-level sub categories tree as well, in case the resolved root-level category has any sub
     // categories. We then base this composed second-level promise on the initial root category promise to allow
     // for parallel loading and streaming of the two main promises.
-    const subCategoriesPromise = rootCategoryPromise.then((rootCategory: ShopperProductsTypes.Category) =>
+    const subCategoriesPromise = rootCategoryPromise.then((rootCategory: ShopperProducts.schemas['Category']) =>
         Promise.all(
             rootCategory.categories?.reduce(
-                (acc: Promise<ShopperProductsTypes.Category>[], subCategory: ShopperProductsTypes.Category) => {
+                (
+                    acc: Promise<ShopperProducts.schemas['Category']>[],
+                    subCategory: ShopperProducts.schemas['Category']
+                ) => {
                     if (
                         typeof subCategory.onlineSubCategoriesCount === 'number' &&
                         subCategory.onlineSubCategoriesCount > 0
@@ -137,7 +140,7 @@ export const clientLoader = ({
     context,
 }: ClientLoaderFunctionArgs): {
     auth: () => SessionData;
-    basket: ShopperBasketsTypes.Basket;
+    basket: ShopperBasketsV2.schemas['Basket'];
 } => {
     return {
         auth: () => getAuthClient(context),
@@ -224,8 +227,8 @@ export default function App({ loaderData: { root, subs, auth, basket, getI18next
 
     // We're only loading the root and sub categories from the server on the very first navigation. These refs ensure
     // that the initial data/promises don't get overwritten/removed on subsequent client-side navigations.
-    const refRoot = useRef<Promise<ShopperProductsTypes.Category> | undefined>(undefined);
-    const refSubs = useRef<Promise<ShopperProductsTypes.Category[]> | undefined>(undefined);
+    const refRoot = useRef<Promise<ShopperProducts.schemas['Category']> | undefined>(undefined);
+    const refSubs = useRef<Promise<ShopperProducts.schemas['Category'][]> | undefined>(undefined);
     if (root && subs) {
         refRoot.current = root;
         refSubs.current = subs;

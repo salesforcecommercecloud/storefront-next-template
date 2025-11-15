@@ -1,8 +1,8 @@
 import { Suspense } from 'react';
 import { Await, type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from 'react-router';
-import type { ShopperProductsTypes, ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import type { Route } from './+types/category.$categoryId';
-import createClient from '@/lib/scapi';
+import { fetchCategory } from '@/lib/api/categories';
 import { fetchSearchProducts } from '@/lib/api/search';
 import { getAllQueryParams, getQueryParam, PRODUCT_SEARCH_QUERY_PARAMS } from '@/lib/query-params';
 import { getConfig, useConfig } from '@/config';
@@ -18,9 +18,9 @@ import CategorySorting from '@/components/category-sorting';
 import ProductGrid from '@/components/product-grid';
 
 type CategoryPageData = {
-    category: Promise<ShopperProductsTypes.Category>;
-    refinements: Promise<ShopperSearchTypes.ProductSearchResult>;
-    searchResult: Promise<ShopperSearchTypes.ProductSearchResult>;
+    category: Promise<ShopperProducts.schemas['Category']>;
+    refinements: Promise<ShopperSearch.schemas['ProductSearchResult']>;
+    searchResult: Promise<ShopperSearch.schemas['ProductSearchResult']>;
 };
 
 /**
@@ -55,12 +55,7 @@ function getPageData({ request, params, context }: LoaderFunctionArgs, limit: nu
             sort,
             refine,
         }),
-        category: createClient(context).ShopperProducts.getCategory({
-            parameters: {
-                id: safeCategoryId,
-                levels: 0,
-            },
-        }),
+        category: fetchCategory(context, safeCategoryId, 0),
     };
 }
 

@@ -1,6 +1,6 @@
 import { type UseFormReturn } from 'react-hook-form';
 import type { FetcherWithComponents } from 'react-router';
-import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 
 // Type for the form data (inferred from schema in index.tsx)
 export type PromoCodeFormData = {
@@ -10,13 +10,13 @@ export type PromoCodeFormData = {
 // Type for the fetcher data response
 export type PromoCodeFetcherData = {
     success: boolean;
-    basket?: ShopperBasketsTypes.Basket;
+    basket?: ShopperBasketsV2.schemas['Basket'];
     error?: string;
 };
 
 // Props interface for PromoCodeForm component
 export interface PromoCodeFormProps {
-    basket?: ShopperBasketsTypes.Basket;
+    basket?: ShopperBasketsV2.schemas['Basket'];
 }
 
 // Props interface for PromoCodeFields component

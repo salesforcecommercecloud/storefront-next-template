@@ -10,7 +10,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import ChildProductCard from './child-product-card';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { StoreLocatorWrapper } from '@/test-utils/context-provider';
 
 vi.mock('@/hooks/product/use-current-variant', () => ({
@@ -64,7 +64,7 @@ vi.mock('@/extensions/bopis/hooks/use-delivery-options', () => ({
     }),
 }));
 
-const createStandardProduct = (): ShopperProductsTypes.Product => ({
+const createStandardProduct = (): ShopperProducts.schemas['Product'] => ({
     id: 'standard-123',
     name: 'Standard Product',
     type: { item: true },
@@ -75,7 +75,7 @@ const createStandardProduct = (): ShopperProductsTypes.Product => ({
     },
 });
 
-const createVariantProduct = (): ShopperProductsTypes.Product => ({
+const createVariantProduct = (): ShopperProducts.schemas['Product'] => ({
     id: 'variant-123',
     name: 'Variant Product',
     type: { variant: true },
@@ -86,7 +86,7 @@ const createVariantProduct = (): ShopperProductsTypes.Product => ({
     },
 });
 
-const createSetProduct = (): ShopperProductsTypes.Product => ({
+const createSetProduct = (): ShopperProducts.schemas['Product'] => ({
     id: 'set-123',
     name: 'Set Product',
     type: { set: true },
@@ -281,7 +281,7 @@ describe('ChildProductCard', () => {
     describe('product bundle behavior', () => {
         test('does not show quantity picker for bundle products', () => {
             const standardProduct = createStandardProduct();
-            const parentProduct: ShopperProductsTypes.Product = {
+            const parentProduct: ShopperProducts.schemas['Product'] = {
                 id: 'bundle-123',
                 name: 'Bundle Product',
                 type: { bundle: true },
@@ -299,7 +299,7 @@ describe('ChildProductCard', () => {
 
         test('does not show individual add to cart button for bundle products', () => {
             const standardProduct = createStandardProduct();
-            const parentProduct: ShopperProductsTypes.Product = {
+            const parentProduct: ShopperProducts.schemas['Product'] = {
                 id: 'bundle-123',
                 name: 'Bundle Product',
                 type: { bundle: true },

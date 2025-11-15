@@ -10,7 +10,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { test } from 'vitest';
 // Commerce SDK
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 // React Router
 import { createMemoryRouter, RouterProvider } from 'react-router';
 // Components
@@ -34,13 +34,13 @@ const renderProductAccordion = (props: React.ComponentProps<typeof ProductAccord
 };
 
 describe('ProductAccordion', () => {
-    const basicProduct: ShopperProductsTypes.Product = {
+    const basicProduct: ShopperProducts.schemas['Product'] = {
         id: 'test-product',
         name: 'Test Product',
         shortDescription: 'Test short description',
     };
 
-    const detailedProduct: ShopperProductsTypes.Product = {
+    const detailedProduct: ShopperProducts.schemas['Product'] = {
         id: 'detailed-product',
         name: 'Detailed Product',
         shortDescription: 'Short description',

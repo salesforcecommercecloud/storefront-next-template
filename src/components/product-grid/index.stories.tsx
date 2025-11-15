@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within, userEvent } from 'storybook/test';
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { action } from 'storybook/actions';
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import ProductGrid from './index';
 import {
     mockProductSearchItem,
@@ -144,16 +144,16 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 function cloneHit(
-    base: ShopperSearchTypes.ProductSearchHit,
-    overrides: Partial<ShopperSearchTypes.ProductSearchHit> = {}
+    base: ShopperSearch.schemas['ProductSearchHit'],
+    overrides: Partial<ShopperSearch.schemas['ProductSearchHit']> = {}
 ) {
     return {
         ...base,
         ...overrides,
-    } as ShopperSearchTypes.ProductSearchHit;
+    } as ShopperSearch.schemas['ProductSearchHit'];
 }
 
-const defaultProducts: ShopperSearchTypes.ProductSearchHit[] = [
+const defaultProducts: ShopperSearch.schemas['ProductSearchHit'][] = [
     cloneHit(mockStandardProductHit, { productId: 'STD-1', productName: 'Standard Product 1' }),
     cloneHit(mockMasterProductHitWithOneVariant, { productId: 'MASTER-1', productName: 'Master Product 1' }),
     cloneHit(mockMasterProductHitWithMultipleVariants, { productId: 'MASTER-MULTI-1', productName: 'Master Multi 1' }),
@@ -233,7 +233,7 @@ export const EmptyState: Story = {
     },
 };
 
-const manyProducts: ShopperSearchTypes.ProductSearchHit[] = Array.from({ length: 24 }).map((_, idx) =>
+const manyProducts: ShopperSearch.schemas['ProductSearchHit'][] = Array.from({ length: 24 }).map((_, idx) =>
     cloneHit(mockStandardProductHit, {
         productId: `STD-MANY-${idx + 1}`,
         productName: `Standard Product ${idx + 1}`,

@@ -563,7 +563,12 @@ describe('createCommerceApiClients', () => {
             });
 
             it('should throw ApiError with correct error details', async () => {
-                const errorData = { message: 'Unauthorized', type: 'UnauthorizedException' };
+                // RFC 7807 error format
+                const errorData = {
+                    type: 'UnauthorizedException',
+                    title: 'Unauthorized',
+                    detail: 'Authentication credentials are missing or invalid',
+                };
                 const errorHeaders = new Headers({
                     'content-type': 'application/json',
                     'www-authenticate': 'Bearer realm="example"',

@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useLocation } from 'react-router';
 import { useSelectedVariations } from './use-selected-variations';
 import { findImageGroupBy } from '@/lib/image-groups-utils';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 const getProductViewSearchParams = (search: string, productId: string) => {
     const allParams = new URLSearchParams(search);
@@ -51,7 +51,7 @@ const buildVariantValueHref = ({
  * passed in attribute values.
  */
 const isVariantValueOrderable = (
-    product: ShopperProductsTypes.Product,
+    product: ShopperProducts.schemas['Product'],
     variationParams: Record<string, string>
 ): boolean => {
     if (!product.variants) return true;
@@ -82,9 +82,9 @@ export interface VariationAttribute {
 }
 
 interface UseVariationAttributesParams {
-    product: ShopperProductsTypes.Product;
+    product: ShopperProducts.schemas['Product'];
     isChildProduct?: boolean;
-    masterProduct?: ShopperProductsTypes.Product;
+    masterProduct?: ShopperProducts.schemas['Product'];
 }
 
 /**

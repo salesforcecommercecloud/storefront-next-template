@@ -6,7 +6,7 @@
  */
 
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import type { ShopperProductsTypes, ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { shouldRevalidate } from './product.$productId';
 
 // Mock the components and utilities
@@ -84,7 +84,7 @@ vi.mock('@/components/create-page', () => ({
 import { isProductSet, isProductBundle } from '@/lib/product-utils';
 
 describe('Product Detail Route', () => {
-    const mockProduct: ShopperProductsTypes.Product = {
+    const mockProduct: ShopperProducts.schemas['Product'] = {
         id: 'test-product-123',
         name: 'Test Product',
         primaryCategoryId: 'test-category-123',
@@ -93,7 +93,7 @@ describe('Product Detail Route', () => {
         master: undefined,
     };
 
-    const mockCategory: ShopperProductsTypes.Category = {
+    const mockCategory: ShopperProducts.schemas['Category'] = {
         id: 'test-category-123',
         name: 'Test Category',
         parentCategoryId: 'parent-category-123',
@@ -114,7 +114,7 @@ describe('Product Detail Route', () => {
                 count: 0,
                 offset: 0,
                 limit: 8,
-            } as ShopperSearchTypes.ProductSearchResult),
+            } as ShopperSearch.schemas['ProductSearchResult']),
         },
     ];
 

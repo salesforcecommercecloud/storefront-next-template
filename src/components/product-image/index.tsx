@@ -2,12 +2,12 @@
 
 import { useCallback } from 'react';
 import { Link } from 'react-router';
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { createProductUrl } from '@/lib/product-utils';
 import { ProductImage } from './product-image';
 
 interface ProductImageContainerProps {
-    product: ShopperSearchTypes.ProductSearchHit;
+    product: ShopperSearch.schemas['ProductSearchHit'];
     selectedColorValue?: string | null;
     className?: string;
 }

@@ -9,7 +9,7 @@
 
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useFetcher, useLocation, useNavigate } from 'react-router';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { useToast } from '@/components/toast';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { usePickup } from '@/extensions/bopis/context/pickup-context';
@@ -24,16 +24,16 @@ import { isProductSet, isProductBundle } from '@/lib/product-utils';
 import { getEffectiveStockLevel, getEffectiveInventory, isInStock as isProductInStock } from '@/lib/inventory-utils';
 
 interface ProductSelectionValues {
-    product: ShopperProductsTypes.Product;
-    variant: ShopperProductsTypes.Variant;
+    product: ShopperProducts.schemas['Product'];
+    variant: ShopperProducts.schemas['Variant'];
     quantity: number;
 }
 
 interface UseProductActionsProps {
-    product: ShopperProductsTypes.Product;
+    product: ShopperProducts.schemas['Product'];
     isChildProduct?: boolean;
     /** Current variant (null/undefined if no variant selected) - optional, defaults to undefined */
-    currentVariant?: ShopperProductsTypes.Variant | null | undefined;
+    currentVariant?: ShopperProducts.schemas['Variant'] | null | undefined;
     initialQuantity?: number;
     itemId?: string; // Cart item ID for update operations
 }
@@ -496,7 +496,10 @@ export function useProductActions({
             buildFormData: (params: TParams) => FormData | Record<string, string>;
             actionName?: string; // For debug logging
         }) => {
-            return async (selectedVariant?: ShopperProductsTypes.Variant, additionalParams?: Partial<TParams>) => {
+            return async (
+                selectedVariant?: ShopperProducts.schemas['Variant'],
+                additionalParams?: Partial<TParams>
+            ) => {
                 const { actionRoute, isLoading, setLoading, fetcher, errorMessage, buildFormData } = config;
 
                 if (isLoading) {
@@ -551,13 +554,13 @@ export function useProductActions({
     // Wrap the base handler with auth requirement - must be called at render time (not in async functions)
     const handleAddToWishlist = useRequireAuth(
         (async (...args: unknown[]) => {
-            const variant = args[0] as ShopperProductsTypes.Variant | undefined;
+            const variant = args[0] as ShopperProducts.schemas['Variant'] | undefined;
             return handleAddToWishlistBase(variant);
         }) as (...args: unknown[]) => Promise<unknown>,
         {
             actionName: 'addToWishlist',
             getActionParams: (...args: unknown[]) => {
-                const variant = args[0] as ShopperProductsTypes.Variant | undefined;
+                const variant = args[0] as ShopperProducts.schemas['Variant'] | undefined;
                 const productToAdd = isMasterOrVariantProduct ? variant || currentVariant : product;
                 const itemProductId = productToAdd?.productId || productToAdd?.id || product.id;
                 if (!itemProductId) {
@@ -569,7 +572,7 @@ export function useProductActions({
                 typeof window !== 'undefined' ? window.location.pathname + window.location.search : '',
             toastMessage: uiStrings.product.signInToAddToWishlist,
         }
-    ) as (variant?: ShopperProductsTypes.Variant) => Promise<void>;
+    ) as (variant?: ShopperProducts.schemas['Variant']) => Promise<void>;
 
     // Handle product set add to cart (multiple products)
     const handleProductSetAddToCart = useCallback(

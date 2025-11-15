@@ -1,7 +1,7 @@
 import { describe, test, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import type { ShopperBasketsTypes, ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import uiStrings from '@/temp-ui-string';
 import OrderSummary from './index';
 
@@ -71,7 +71,7 @@ vi.mock('@/components/toast', () => ({
 }));
 
 describe('OrderSummary', () => {
-    const mockBasket: ShopperBasketsTypes.Basket = {
+    const mockBasket: ShopperBasketsV2.schemas['Basket'] = {
         basketId: 'test-basket-id',
         productSubTotal: 100.0,
         shippingTotal: 10.0,
@@ -99,7 +99,7 @@ describe('OrderSummary', () => {
         ],
     };
 
-    const mockProductsByItemId: Record<string, ShopperProductsTypes.Product> = {
+    const mockProductsByItemId: Record<string, ShopperProducts.schemas['Product']> = {
         item1: {
             id: 'product1',
             name: 'Test Product 1',
@@ -364,7 +364,7 @@ describe('OrderSummary', () => {
     });
 
     test('handles missing basket data gracefully', () => {
-        render(<OrderSummary basket={{} as ShopperBasketsTypes.Basket} />);
+        render(<OrderSummary basket={{} as ShopperBasketsV2.schemas['Basket']} />);
 
         expect(screen.getByText(uiStrings.cart.summary.noBasketData)).toBeInTheDocument();
     });

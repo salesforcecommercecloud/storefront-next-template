@@ -1,6 +1,6 @@
 import { describe, test, expect, vi } from 'vitest';
 import { getBasketCurrency } from './basket';
-import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 
 describe('getBasketCurrency', () => {
     afterEach(() => {
@@ -8,12 +8,12 @@ describe('getBasketCurrency', () => {
     });
 
     test('should return basket currency when available', () => {
-        const basket: Partial<ShopperBasketsTypes.Basket> = {
+        const basket: Partial<ShopperBasketsV2.schemas['Basket']> = {
             basketId: 'test-basket',
             currency: 'EUR',
         };
 
-        const result = getBasketCurrency(basket as ShopperBasketsTypes.Basket);
+        const result = getBasketCurrency(basket as ShopperBasketsV2.schemas['Basket']);
 
         expect(result).toBe('EUR');
     });
@@ -21,12 +21,12 @@ describe('getBasketCurrency', () => {
     test('should return site currency when basket has no currency', () => {
         vi.stubEnv('PUBLIC_SITE_CURRENCY', 'EUR');
 
-        const basket: Partial<ShopperBasketsTypes.Basket> = {
+        const basket: Partial<ShopperBasketsV2.schemas['Basket']> = {
             basketId: 'test-basket',
             // currency is undefined
         };
 
-        const result = getBasketCurrency(basket as ShopperBasketsTypes.Basket);
+        const result = getBasketCurrency(basket as ShopperBasketsV2.schemas['Basket']);
 
         expect(result).toBe('EUR');
     });
@@ -34,12 +34,12 @@ describe('getBasketCurrency', () => {
     test('should return USD fallback when basket and site have no currency', () => {
         vi.stubEnv('PUBLIC_SITE_CURRENCY', '');
 
-        const basket: Partial<ShopperBasketsTypes.Basket> = {
+        const basket: Partial<ShopperBasketsV2.schemas['Basket']> = {
             basketId: 'test-basket',
             // currency is undefined
         };
 
-        const result = getBasketCurrency(basket as ShopperBasketsTypes.Basket);
+        const result = getBasketCurrency(basket as ShopperBasketsV2.schemas['Basket']);
 
         expect(result).toBe('USD');
     });
@@ -51,12 +51,12 @@ describe('getBasketCurrency', () => {
     });
 
     test('should handle empty string currency', () => {
-        const basket: Partial<ShopperBasketsTypes.Basket> = {
+        const basket: Partial<ShopperBasketsV2.schemas['Basket']> = {
             basketId: 'test-basket',
             currency: '',
         };
 
-        const result = getBasketCurrency(basket as ShopperBasketsTypes.Basket);
+        const result = getBasketCurrency(basket as ShopperBasketsV2.schemas['Basket']);
 
         expect(result).toBe('USD');
     });
@@ -65,12 +65,12 @@ describe('getBasketCurrency', () => {
         const currencies = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD'];
 
         currencies.forEach((currency) => {
-            const basket: Partial<ShopperBasketsTypes.Basket> = {
+            const basket: Partial<ShopperBasketsV2.schemas['Basket']> = {
                 basketId: 'test-basket',
                 currency,
             };
 
-            const result = getBasketCurrency(basket as ShopperBasketsTypes.Basket);
+            const result = getBasketCurrency(basket as ShopperBasketsV2.schemas['Basket']);
 
             expect(result).toBe(currency);
         });

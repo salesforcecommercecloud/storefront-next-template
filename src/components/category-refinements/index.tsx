@@ -2,10 +2,9 @@
 
 import { type ReactElement, useCallback, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import type { FilterValue } from './types';
-import { toRefinesMap, toSearchParams } from './utils';
 import ActiveFilters from './active-filters';
 import RefineDefault from './refine-default';
 import RefineColor from './refine-color';
@@ -17,7 +16,7 @@ import RefineInventory from '@/extensions/bopis/components/refine-inventory';
 export default function CategoryRefinements({
     result,
 }: {
-    result: ShopperSearchTypes.ProductSearchResult;
+    result: ShopperSearch.schemas['ProductSearchResult'];
 }): ReactElement {
     const navigate = useNavigate();
     const location = useLocation();
@@ -30,19 +29,15 @@ export default function CategoryRefinements({
 
     const toggleFilter = useCallback(
         (attributeId: string, value: string) => {
-            const refinesMap = toRefinesMap(location);
-            if (refinesMap.has(attributeId) && refinesMap.get(attributeId)?.has(value)) {
-                // Attribute already exists in the current refinements --> Remove attribute value
-                refinesMap.get(attributeId)?.delete(value);
+            const params = new URLSearchParams(location.search);
+            const refines = params.getAll('refine');
+            const refinePair = `${attributeId}=${value}`;
 
-                // If now the map entry is empty --> Clean it up altogether
-                if (!refinesMap.get(attributeId)?.size) {
-                    refinesMap.delete(attributeId);
-                }
+            if (refines.includes(refinePair)) {
+                // Remove this refinement
+                params.delete('refine');
+                refines.filter((r) => r !== refinePair).forEach((r) => params.append('refine', r));
             } else {
-                if (!refinesMap.has(attributeId)) {
-                    refinesMap.set(attributeId, new Set<string>());
-                }
                 // Exclusive refinements - only one value can be selected at a time
                 const exclusiveRefinements = [
                     'price',
@@ -50,16 +45,13 @@ export default function CategoryRefinements({
                     'ilids',
                 ];
                 if (exclusiveRefinements.includes(attributeId)) {
-                    // Price refinements turn out to be exclusive, i.e. it doesn't seem to be
-                    // considered legit by the SCAPI to refine for multiple price ranges. Needs
-                    // verification whether this is just a usage/syntax issue here.
-                    refinesMap.get(attributeId)?.clear();
+                    // Remove all refinements for this attribute first
+                    params.delete('refine');
+                    refines.filter((r) => !r.startsWith(`${attributeId}=`)).forEach((r) => params.append('refine', r));
                 }
-                refinesMap.get(attributeId)?.add(value);
+                params.append('refine', refinePair);
             }
 
-            // Navigate
-            const params = toSearchParams(location, refinesMap);
             params.set('offset', '0');
             void navigate({
                 ...location,
@@ -72,14 +64,17 @@ export default function CategoryRefinements({
     // Check if a filter value is selected
     const isFilterSelected = useCallback(
         (attributeId: string, value: string) => {
-            const refinesMap = toRefinesMap(location);
-            return refinesMap.get(attributeId)?.has(value) ?? false;
+            const params = new URLSearchParams(location.search);
+            const refines = params.getAll('refine');
+            return refines.includes(`${attributeId}=${value}`);
         },
         [location]
     );
 
     // Render the appropriate filter component based on type
-    const renderFilterValues = (refinement: ShopperSearchTypes.ProductSearchRefinement & { values: FilterValue[] }) => {
+    const renderFilterValues = (
+        refinement: ShopperSearch.schemas['ProductSearchRefinement'] & { values: FilterValue[] }
+    ) => {
         const { attributeId, values } = refinement;
         const refinementProps = {
             values,
@@ -130,7 +125,7 @@ export default function CategoryRefinements({
                             <AccordionTrigger>{label}</AccordionTrigger>
                             <AccordionContent>
                                 {renderFilterValues(
-                                    refinement as ShopperSearchTypes.ProductSearchRefinement & {
+                                    refinement as ShopperSearch.schemas['ProductSearchRefinement'] & {
                                         values: FilterValue[];
                                     }
                                 )}

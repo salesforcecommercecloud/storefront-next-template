@@ -14,7 +14,7 @@
 
 import type { Client } from 'openapi-fetch';
 import type { OperationMap, ProxyClient } from './proxy-types';
-import { ApiError } from './ApiError';
+import { ApiError, type ErrorDetail } from './ApiError';
 
 /**
  * Create a proxied client with operation methods
@@ -111,20 +111,41 @@ export function createClient<TClient extends Client<any, any>, TOperations exten
 
                     const result = await clientMethod.call(target, path, ...args);
 
-                    // If there's an error, parse the response body and throw ApiError
+                    // If there's an error, throw ApiError with the parsed error from openapi-fetch
                     if (result.error !== undefined) {
                         const response = result.response;
 
-                        // Read the raw response body
-                        // Use clone() to allow the body to be read multiple times
-                        const rawBody = await response.clone().text();
+                        // openapi-fetch has already parsed the response body into result.error
+                        // Don't try to clone/read the response again as the body is already consumed
+                        const parsedError = result.error;
 
-                        // Try to parse the body as JSON, fall back to raw text
-                        let parsedBody: Record<string, unknown> | null = null;
+                        // Convert to ErrorDetail structure
+                        let body: ErrorDetail;
+                        if (
+                            parsedError &&
+                            typeof parsedError === 'object' &&
+                            'type' in parsedError &&
+                            'title' in parsedError &&
+                            'detail' in parsedError
+                        ) {
+                            // Valid ErrorDetail response - use it directly
+                            body = parsedError as ErrorDetail;
+                        } else {
+                            // Non-ErrorDetail response (string, HTML, or other format)
+                            // Create a generic ErrorDetail with helpful defaults
+                            body = {
+                                type: 'Unknown Error',
+                                title: response.statusText || 'API Error',
+                                detail: `The API returned a ${response.status} error. See rawBody for details.`,
+                            };
+                        }
+
+                        // Try to stringify the error for rawBody
+                        let rawBody: string;
                         try {
-                            parsedBody = JSON.parse(rawBody);
+                            rawBody = typeof parsedError === 'string' ? parsedError : JSON.stringify(parsedError);
                         } catch {
-                            // If JSON parsing fails, leave parsedBody as null
+                            rawBody = String(parsedError);
                         }
 
                         // Throw a typed ApiError with all response details
@@ -132,7 +153,7 @@ export function createClient<TClient extends Client<any, any>, TOperations exten
                             status: response.status,
                             statusText: response.statusText,
                             headers: response.headers,
-                            body: parsedBody,
+                            body,
                             rawBody,
                             url: response.url,
                             method: httpMethod,

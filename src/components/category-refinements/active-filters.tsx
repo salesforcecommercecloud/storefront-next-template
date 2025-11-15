@@ -2,10 +2,9 @@
 
 import { useCallback, useMemo, type JSX } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { Button } from '@/components/ui/button';
 import { X as Close } from 'lucide-react';
-import { toRefinesMap, toSearchParams } from './utils';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { useStoreLocator } from '@/extensions/store-locator/providers/store-locator';
 import uiStringsBopis from '@/extensions/bopis/temp-ui-string-bopis';
@@ -15,7 +14,7 @@ import uiStringsBopis from '@/extensions/bopis/temp-ui-string-bopis';
 const getValueLabel = (
     attributeId: string,
     value: string,
-    refinements: ShopperSearchTypes.ProductSearchRefinement[],
+    refinements: ShopperSearch.schemas['ProductSearchRefinement'][],
     // @sfdc-extension-line SFDC_EXT_BOPIS
     selectedStoreInfo: { inventoryId?: string; name?: string } | null
 ): string => {
@@ -36,7 +35,7 @@ const getValueLabel = (
 export default function CategoryFilters({
     result,
 }: {
-    result: ShopperSearchTypes.ProductSearchResult;
+    result: ShopperSearch.schemas['ProductSearchResult'];
 }): JSX.Element | null {
     const navigate = useNavigate();
     const location = useLocation();
@@ -45,28 +44,33 @@ export default function CategoryFilters({
     const selectedStoreInfo = useStoreLocator((s) => s.selectedStoreInfo);
 
     const activeFilters = useMemo(() => {
-        const refinesMap = toRefinesMap(location);
+        const params = new URLSearchParams(location.search);
+        const refines = params.getAll('refine');
         const filters: Array<{
             attributeId: string;
             value: string;
             valueLabel: string;
         }> = [];
 
-        for (const [attributeId, values] of refinesMap) {
-            for (const value of values) {
-                const valueLabel = getValueLabel(
-                    attributeId,
-                    value,
-                    refinements,
-                    // @sfdc-extension-line SFDC_EXT_BOPIS
-                    selectedStoreInfo
-                );
-                filters.push({
-                    attributeId,
-                    value,
-                    valueLabel,
-                });
-            }
+        for (const refine of refines) {
+            const separatorIndex = refine.indexOf('=');
+            if (separatorIndex === -1) continue;
+
+            const attributeId = refine.substring(0, separatorIndex);
+            const value = refine.substring(separatorIndex + 1);
+
+            const valueLabel = getValueLabel(
+                attributeId,
+                value,
+                refinements,
+                // @sfdc-extension-line SFDC_EXT_BOPIS
+                selectedStoreInfo
+            );
+            filters.push({
+                attributeId,
+                value,
+                valueLabel,
+            });
         }
         return filters;
     }, [
@@ -79,19 +83,14 @@ export default function CategoryFilters({
     // Remove a specific filter
     const removeFilter = useCallback(
         (attributeId: string, value: string) => {
-            const refinesMap = toRefinesMap(location);
-            if (refinesMap.has(attributeId)) {
-                // Remove attribute value
-                refinesMap.get(attributeId)?.delete(value);
+            const params = new URLSearchParams(location.search);
+            const refines = params.getAll('refine');
+            const refinePair = `${attributeId}=${value}`;
 
-                // If now the map entry is empty --> Clean it up
-                if (!refinesMap.get(attributeId)?.size) {
-                    refinesMap.delete(attributeId);
-                }
-            }
+            // Remove this specific refinement
+            params.delete('refine');
+            refines.filter((r) => r !== refinePair).forEach((r) => params.append('refine', r));
 
-            // Navigate
-            const params = toSearchParams(location, refinesMap);
             params.set('offset', '0');
             return navigate({
                 ...location,

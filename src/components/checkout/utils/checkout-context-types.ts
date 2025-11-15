@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import type { ShopperCustomersTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 
 export const CHECKOUT_STEPS = {
     CONTACT_INFO: 0,
@@ -12,11 +12,11 @@ export const CHECKOUT_STEPS = {
 export type CheckoutStep = (typeof CHECKOUT_STEPS)[keyof typeof CHECKOUT_STEPS];
 
 export interface CustomerProfile {
-    customer?: ShopperCustomersTypes.Customer;
-    addresses: ShopperCustomersTypes.CustomerAddress[];
-    paymentInstruments: ShopperCustomersTypes.CustomerPaymentInstrument[];
-    preferredShippingAddress?: ShopperCustomersTypes.CustomerAddress;
-    preferredBillingAddress?: ShopperCustomersTypes.CustomerAddress;
+    customer?: ShopperCustomers.schemas['Customer'];
+    addresses: ShopperCustomers.schemas['CustomerAddress'][];
+    paymentInstruments: ShopperCustomers.schemas['CustomerPaymentInstrument'][];
+    preferredShippingAddress?: ShopperCustomers.schemas['CustomerAddress'];
+    preferredBillingAddress?: ShopperCustomers.schemas['CustomerAddress'];
 }
 
 export interface CheckoutContextValue {

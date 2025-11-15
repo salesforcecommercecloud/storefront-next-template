@@ -6,11 +6,12 @@
  */
 
 import type { LoaderFunctionArgs } from 'react-router';
-import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import { getShippingMethodsForShipment } from '@/lib/api/shipping-methods';
 import type { SessionData as AuthData } from '@/lib/api/types';
 import type { CustomerProfile } from '@/components/checkout/utils/checkout-context-types';
-import createClient from '@/lib/scapi';
+import { createApiClients } from '@/lib/api-clients';
+import { getConfig } from '@/config';
 import { getBasket } from '@/middlewares/basket.client';
 
 /**
@@ -34,14 +35,23 @@ export function getServerCustomerProfile(
         }
 
         // Use the provided auth session and proper context
-        const shopperCustomersClient = createClient(context).ShopperCustomers;
+        const config = getConfig(context);
+        const clients = createApiClients(context);
 
         // Fetch customer data and return promise for streaming
-        return shopperCustomersClient
+        return clients.shopperCustomers
             .getCustomer({
-                parameters: { customerId: authSession.customer_id },
+                params: {
+                    path: {
+                        organizationId: config.commerce.api.organizationId,
+                        customerId: authSession.customer_id,
+                    },
+                    query: {
+                        siteId: config.commerce.api.siteId,
+                    },
+                },
             })
-            .then((customer) => ({
+            .then(({ data: customer }) => ({
                 customer,
                 addresses: customer.addresses || [],
                 paymentInstruments: customer.paymentInstruments || [],
@@ -59,7 +69,7 @@ export function getServerCustomerProfile(
  */
 export function getServerShippingMethods(
     context: LoaderFunctionArgs['context']
-): Promise<ShopperBasketsTypes.ShippingMethodResult | null> {
+): Promise<ShopperBasketsV2.schemas['ShippingMethodResult'] | null> {
     try {
         // Get basket using existing basket middleware
         const basket = getBasket(context);
@@ -82,9 +92,9 @@ export function getServerShippingMethods(
  * since server-side rendering should resolve data before sending to client.
  */
 export type ServerCheckoutData = {
-    basket?: ShopperBasketsTypes.Basket | null;
+    basket?: ShopperBasketsV2.schemas['Basket'] | null;
     customerProfile?: Promise<CustomerProfile | null>;
-    shippingMethods?: Promise<ShopperBasketsTypes.ShippingMethodResult | null>;
+    shippingMethods?: Promise<ShopperBasketsV2.schemas['ShippingMethodResult'] | null>;
     isRegisteredCustomer?: boolean;
 };
 

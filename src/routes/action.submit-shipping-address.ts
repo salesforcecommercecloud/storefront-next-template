@@ -1,7 +1,9 @@
 import type { ActionFunctionArgs } from 'react-router';
 import { getBasket, updateBasket } from '@/middlewares/basket.client';
-import createClient from '@/lib/scapi';
+import { createApiClients } from '@/lib/api-clients';
+import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 import { shippingAddressSchema, parseShippingAddressFromFormData } from '@/lib/checkout-schemas';
+import { getConfig } from '@/config';
 import uiStrings from '@/temp-ui-string';
 
 export async function clientAction({ request, context }: ActionFunctionArgs) {
@@ -44,12 +46,19 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
     }
 
     try {
-        const client = createClient(context).ShopperBasketsV2;
-        const updatedBasket = await client.updateShippingAddressForShipment({
-            parameters: {
-                basketId: basket.basketId,
-                shipmentId: 'me',
-                useAsBilling: false,
+        const config = getConfig(context);
+        const clients = createApiClients(context);
+        const { data: updatedBasket } = await clients.shopperBasketsV2.updateShippingAddressForShipment({
+            params: {
+                path: {
+                    organizationId: config.commerce.api.organizationId,
+                    basketId: basket.basketId,
+                    shipmentId: 'me',
+                },
+                query: {
+                    siteId: config.commerce.api.siteId,
+                    useAsBilling: false,
+                },
             },
             body: {
                 address1: addressDataWithExtras.address1,
@@ -67,11 +76,14 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
         // Update local basket state with API response
         // For shipping address updates, the API should preserve existing basket data
         updateBasket(context, updatedBasket);
-    } catch {
+    } catch (error) {
         return Response.json(
             {
                 success: false,
-                error: 'Failed to save shipping address. Please try again.',
+                error:
+                    error instanceof ApiError
+                        ? `Failed to save shipping address: ${error.statusText}`
+                        : 'Failed to save shipping address. Please try again.',
                 step: 'shippingAddress',
             },
             { status: 500 }

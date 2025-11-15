@@ -317,7 +317,7 @@ This component is used by CartContent and integrates with:
             description: 'Shopping basket data containing items, totals, and pricing information',
             control: 'object',
             table: {
-                type: { summary: 'ShopperBasketsTypes.Basket' },
+                type: { summary: 'ShopperBasketsV2.schemas["Basket"]' },
             },
         },
         showPromoCodeForm: {
@@ -356,7 +356,7 @@ This component is used by CartContent and integrates with:
             description: 'Optional mapping of product IDs to product details for enhanced display',
             control: 'object',
             table: {
-                type: { summary: 'Record<string, ShopperProductsTypes.Product>' },
+                type: { summary: 'Record<string, ShopperProducts.schemas["Product"]>' },
                 defaultValue: { summary: 'undefined' },
             },
         },

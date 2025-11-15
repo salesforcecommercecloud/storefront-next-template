@@ -16,7 +16,7 @@ import {
 import { masterProductWithInventories } from '@/components/__mocks__/master-product-with-inventories';
 import { setProductWithInventories } from '@/components/__mocks__/set-product-with-inventories';
 import { bundleProductWithInventories } from '@/components/__mocks__/bundle-product-with-inventories';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 const mockProduct = masterProductWithInventories;
 const mockSetProduct = setProductWithInventories;
@@ -140,7 +140,7 @@ describe('inventory-utils', () => {
                         },
                         mockSetProduct.setProducts?.[1],
                     ],
-                } as ShopperProductsTypes.Product;
+                } as ShopperProducts.schemas['Product'];
                 expect(isStoreOutOfStock(setWithUnorderableChild, 'inventory_m', 1)).toBe(true);
             });
         });
@@ -169,7 +169,7 @@ describe('inventory-utils', () => {
                     ats: 100,
                     orderable: true,
                 },
-            } as ShopperProductsTypes.Product;
+            } as ShopperProducts.schemas['Product'];
             expect(isSiteOutOfStock(productWithInventory, 1)).toBe(false);
         });
 
@@ -189,7 +189,7 @@ describe('inventory-utils', () => {
                     ats: 0,
                     orderable: false,
                 },
-            } as ShopperProductsTypes.Product;
+            } as ShopperProducts.schemas['Product'];
             expect(isSiteOutOfStock(productOutOfStock, 1)).toBe(true);
         });
 
@@ -201,7 +201,7 @@ describe('inventory-utils', () => {
                     ats: 5,
                     orderable: true,
                 },
-            } as ShopperProductsTypes.Product;
+            } as ShopperProducts.schemas['Product'];
             expect(isSiteOutOfStock(productLowStock, 10)).toBe(true);
         });
 
@@ -213,7 +213,7 @@ describe('inventory-utils', () => {
                     ats: 100,
                     orderable: true,
                 },
-            } as ShopperProductsTypes.Product;
+            } as ShopperProducts.schemas['Product'];
             expect(isSiteOutOfStock(productWithStock, 10)).toBe(false);
         });
 
@@ -225,7 +225,7 @@ describe('inventory-utils', () => {
                     ats: 100,
                     orderable: false,
                 },
-            } as ShopperProductsTypes.Product;
+            } as ShopperProducts.schemas['Product'];
             expect(isSiteOutOfStock(unorderableProduct, 1)).toBe(true);
         });
 
@@ -251,7 +251,7 @@ describe('inventory-utils', () => {
                             },
                         },
                     ],
-                } as ShopperProductsTypes.Product;
+                } as ShopperProducts.schemas['Product'];
                 expect(isSiteOutOfStock(setWithInventory, 1)).toBe(false);
             });
 
@@ -276,7 +276,7 @@ describe('inventory-utils', () => {
                             },
                         },
                     ],
-                } as ShopperProductsTypes.Product;
+                } as ShopperProducts.schemas['Product'];
                 expect(isSiteOutOfStock(setWithOneOutOfStock, 1)).toBe(true);
             });
 
@@ -301,7 +301,7 @@ describe('inventory-utils', () => {
                             },
                         },
                     ],
-                } as ShopperProductsTypes.Product;
+                } as ShopperProducts.schemas['Product'];
                 expect(isSiteOutOfStock(setWithLowStock, 10)).toBe(true);
             });
 
@@ -326,7 +326,7 @@ describe('inventory-utils', () => {
                             },
                         },
                     ],
-                } as ShopperProductsTypes.Product;
+                } as ShopperProducts.schemas['Product'];
                 expect(isSiteOutOfStock(setWithUnorderableChild, 1)).toBe(true);
             });
         });
@@ -340,7 +340,7 @@ describe('inventory-utils', () => {
                         ats: 100,
                         orderable: true,
                     },
-                } as ShopperProductsTypes.Product;
+                } as ShopperProducts.schemas['Product'];
                 expect(isSiteOutOfStock(bundleWithInventory, 1)).toBe(false);
             });
 
@@ -352,7 +352,7 @@ describe('inventory-utils', () => {
                         ats: 0,
                         orderable: false,
                     },
-                } as ShopperProductsTypes.Product;
+                } as ShopperProducts.schemas['Product'];
                 expect(isSiteOutOfStock(bundleOutOfStock, 1)).toBe(true);
             });
         });
@@ -396,12 +396,12 @@ describe('inventory-utils', () => {
                         ats: 100,
                         orderable: true,
                     },
-                } as ShopperProductsTypes.Product;
+                } as ShopperProducts.schemas['Product'];
                 expect(getEffectiveStockLevel(productWithInventory, false, undefined)).toBe(100);
             });
 
             it('returns variant inventory ats when variant is provided', () => {
-                const variant: ShopperProductsTypes.Variant = {
+                const variant: ShopperProducts.schemas['Variant'] = {
                     orderable: true,
                     price: 299.99,
                     productId: '640188016716M',
@@ -418,12 +418,12 @@ describe('inventory-utils', () => {
                         ats: 100,
                         orderable: true,
                     },
-                } as ShopperProductsTypes.Product;
+                } as ShopperProducts.schemas['Product'];
                 expect(getEffectiveStockLevel(productWithInventory, false, undefined, variant)).toBe(50);
             });
 
             it('returns product inventory ats when variant has no inventory', () => {
-                const variant: ShopperProductsTypes.Variant = {
+                const variant: ShopperProducts.schemas['Variant'] = {
                     orderable: true,
                     price: 299.99,
                     productId: '640188016716M',
@@ -436,12 +436,12 @@ describe('inventory-utils', () => {
                         ats: 100,
                         orderable: true,
                     },
-                } as ShopperProductsTypes.Product;
+                } as ShopperProducts.schemas['Product'];
                 expect(getEffectiveStockLevel(productWithInventory, false, undefined, variant)).toBe(100);
             });
 
             it('returns 0 when neither product nor variant has inventory', () => {
-                const variant: ShopperProductsTypes.Variant = {
+                const variant: ShopperProducts.schemas['Variant'] = {
                     orderable: true,
                     price: 299.99,
                     productId: '640188016716M',
@@ -481,7 +481,7 @@ describe('inventory-utils', () => {
                             },
                         },
                     ],
-                } as ShopperProductsTypes.Product;
+                } as ShopperProducts.schemas['Product'];
                 expect(getEffectiveStockLevel(setWithInventory, false, undefined)).toBe(50);
             });
 
@@ -506,7 +506,7 @@ describe('inventory-utils', () => {
                             },
                         },
                     ],
-                } as ShopperProductsTypes.Product;
+                } as ShopperProducts.schemas['Product'];
                 expect(getEffectiveStockLevel(setWithNoInventory, false, undefined)).toBe(0);
             });
         });
@@ -524,7 +524,7 @@ describe('inventory-utils', () => {
                         ats: 100,
                         orderable: true,
                     },
-                } as ShopperProductsTypes.Product;
+                } as ShopperProducts.schemas['Product'];
                 expect(getEffectiveStockLevel(bundleWithInventory, false, undefined)).toBe(100);
             });
         });
@@ -580,7 +580,7 @@ describe('inventory-utils', () => {
                         ats: 100,
                         orderable: true,
                     },
-                } as ShopperProductsTypes.Product;
+                } as ShopperProducts.schemas['Product'];
                 expect(isInStock(productWithInventory, false, undefined, 1)).toBe(true);
             });
 
@@ -600,7 +600,7 @@ describe('inventory-utils', () => {
                         ats: 0,
                         orderable: false,
                     },
-                } as ShopperProductsTypes.Product;
+                } as ShopperProducts.schemas['Product'];
                 expect(isInStock(productOutOfStock, false, undefined, 1)).toBe(false);
             });
 
@@ -612,7 +612,7 @@ describe('inventory-utils', () => {
                         ats: 5,
                         orderable: true,
                     },
-                } as ShopperProductsTypes.Product;
+                } as ShopperProducts.schemas['Product'];
                 expect(isInStock(productLowStock, false, undefined, 10)).toBe(false);
             });
 
@@ -624,7 +624,7 @@ describe('inventory-utils', () => {
                         ats: 100,
                         orderable: true,
                     },
-                } as ShopperProductsTypes.Product;
+                } as ShopperProducts.schemas['Product'];
                 expect(isInStock(productWithStock, false, undefined, 10)).toBe(true);
             });
 
@@ -636,12 +636,12 @@ describe('inventory-utils', () => {
                         ats: 100,
                         orderable: false,
                     },
-                } as ShopperProductsTypes.Product;
+                } as ShopperProducts.schemas['Product'];
                 expect(isInStock(unorderableProduct, false, undefined, 1)).toBe(false);
             });
 
             it('uses variant inventory when variant is provided', () => {
-                const variant: ShopperProductsTypes.Variant = {
+                const variant: ShopperProducts.schemas['Variant'] = {
                     orderable: true,
                     price: 299.99,
                     productId: '640188016716M',
@@ -658,12 +658,12 @@ describe('inventory-utils', () => {
                         ats: 100,
                         orderable: true,
                     },
-                } as ShopperProductsTypes.Product;
+                } as ShopperProducts.schemas['Product'];
                 expect(isInStock(productWithInventory, false, undefined, 1, variant)).toBe(true);
             });
 
             it('falls back to product inventory when variant has no inventory', () => {
-                const variant: ShopperProductsTypes.Variant = {
+                const variant: ShopperProducts.schemas['Variant'] = {
                     orderable: true,
                     price: 299.99,
                     productId: '640188016716M',
@@ -676,12 +676,12 @@ describe('inventory-utils', () => {
                         ats: 100,
                         orderable: true,
                     },
-                } as ShopperProductsTypes.Product;
+                } as ShopperProducts.schemas['Product'];
                 expect(isInStock(productWithInventory, false, undefined, 1, variant)).toBe(true);
             });
 
             it('returns false when variant inventory is out of stock', () => {
-                const variant: ShopperProductsTypes.Variant = {
+                const variant: ShopperProducts.schemas['Variant'] = {
                     orderable: true,
                     price: 299.99,
                     productId: '640188016716M',
@@ -698,7 +698,7 @@ describe('inventory-utils', () => {
                         ats: 100,
                         orderable: true,
                     },
-                } as ShopperProductsTypes.Product;
+                } as ShopperProducts.schemas['Product'];
                 expect(isInStock(productWithInventory, false, undefined, 1, variant)).toBe(false);
             });
         });
@@ -741,7 +741,7 @@ describe('inventory-utils', () => {
                             },
                         },
                     ],
-                } as ShopperProductsTypes.Product;
+                } as ShopperProducts.schemas['Product'];
                 expect(isInStock(setWithInventory, false, undefined, 1)).toBe(true);
             });
 
@@ -766,7 +766,7 @@ describe('inventory-utils', () => {
                             },
                         },
                     ],
-                } as ShopperProductsTypes.Product;
+                } as ShopperProducts.schemas['Product'];
                 expect(isInStock(setWithOneOutOfStock, false, undefined, 1)).toBe(false);
             });
 
@@ -791,7 +791,7 @@ describe('inventory-utils', () => {
                             },
                         },
                     ],
-                } as ShopperProductsTypes.Product;
+                } as ShopperProducts.schemas['Product'];
                 expect(isInStock(setWithLowStock, false, undefined, 10)).toBe(false);
             });
 
@@ -816,7 +816,7 @@ describe('inventory-utils', () => {
                             },
                         },
                     ],
-                } as ShopperProductsTypes.Product;
+                } as ShopperProducts.schemas['Product'];
                 expect(isInStock(setWithUnorderableChild, false, undefined, 1)).toBe(false);
             });
         });
@@ -838,7 +838,7 @@ describe('inventory-utils', () => {
                         ats: 100,
                         orderable: true,
                     },
-                } as ShopperProductsTypes.Product;
+                } as ShopperProducts.schemas['Product'];
                 expect(isInStock(bundleWithInventory, false, undefined, 1)).toBe(true);
             });
 
@@ -850,7 +850,7 @@ describe('inventory-utils', () => {
                         ats: 0,
                         orderable: false,
                     },
-                } as ShopperProductsTypes.Product;
+                } as ShopperProducts.schemas['Product'];
                 expect(isInStock(bundleOutOfStock, false, undefined, 1)).toBe(false);
             });
         });

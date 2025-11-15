@@ -365,7 +365,7 @@ describe('ProductCartActions', () => {
         test('executes pending wishlist action when URL has matching params', async () => {
             const mockOnBeforeAddToWishlist = vi.fn();
             const mockOnAddToWishlistSuccess = vi.fn();
-            const productId = standardProd.productId || standardProd.id;
+            const productId = (standardProd.productId as string) || standardProd.id;
 
             const router = createMemoryRouter(
                 [
@@ -402,7 +402,7 @@ describe('ProductCartActions', () => {
 
         test('does not execute pending action when productId does not match', async () => {
             const mockOnBeforeAddToWishlist = vi.fn();
-            const productId = standardProd.productId || standardProd.id;
+            const productId = (standardProd.productId as string) || standardProd.id;
             const differentProductId = 'different-product-id';
 
             const router = createMemoryRouter(
@@ -436,7 +436,7 @@ describe('ProductCartActions', () => {
         });
 
         test('shows loading state when pending action is executing', async () => {
-            const productId = standardProd.productId || standardProd.id;
+            const productId = (standardProd.productId as string) || standardProd.id;
 
             // Mock handleAddToWishlist to be async and take some time
             mockHandleAddToWishlist.mockImplementation(() => new Promise((resolve) => setTimeout(resolve, 100)));

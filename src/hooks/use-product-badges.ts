@@ -1,9 +1,9 @@
 import { useCallback, useMemo } from 'react';
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { useConfig, type BadgeDetail } from '@/config';
 
 interface UseProductBadgesProps {
-    product: ShopperSearchTypes.ProductSearchHit;
+    product: ShopperSearch.schemas['ProductSearchHit'];
     badgeDetails?: BadgeDetail[];
     maxBadges?: number;
 }

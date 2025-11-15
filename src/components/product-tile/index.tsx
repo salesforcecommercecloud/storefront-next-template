@@ -5,7 +5,7 @@ import { forwardRef, type ComponentProps, useState, useCallback, useMemo, useEff
 import { Link, useNavigate } from 'react-router';
 
 // Types
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 
 // Libs & Utils
 import { cn } from '@/lib/utils';
@@ -23,7 +23,7 @@ import { ProductImageContainer } from '@/components/product-image';
 import { SwatchGroup, Swatch } from '@/components/swatch-group';
 
 interface ProductTileProps extends ComponentProps<'div'> {
-    product: ShopperSearchTypes.ProductSearchHit;
+    product: ShopperSearch.schemas['ProductSearchHit'];
     maxSwatches?: number;
     /** Custom footer action button. If provided, replaces the default "More Options" button */
     footerAction?: React.ReactNode;

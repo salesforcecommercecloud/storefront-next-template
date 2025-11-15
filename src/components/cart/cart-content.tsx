@@ -2,11 +2,7 @@
 import type { ReactElement } from 'react';
 
 // Commerce SDK
-import {
-    type ShopperBasketsTypes,
-    type ShopperProductsTypes,
-    type ShopperPromotionsTypes,
-} from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@salesforce/storefront-next-runtime/scapi';
 
 // Components
 import ProductItemsList from '@/components/product-items-list';
@@ -26,14 +22,14 @@ import { isStandardProduct } from '@/lib/product-utils';
  * Props for the CartContent component
  *
  * @interface CartContentProps
- * @property {ShopperBasketsTypes.Basket | undefined} basket - The basket data from the loader
- * @property {Record<string, ShopperProductsTypes.Product>} [productsByItemId] - Item ID to product mapping
- * @property {Record<string, ShopperPromotionsTypes.Promotion>} [promotions] - Promotion ID to promotion mapping
+ * @property {ShopperBasketsV2.schemas['Basket'] | undefined} basket - The basket data from the loader
+ * @property {Record<string, ShopperProducts.schemas['Product']>} [productsByItemId] - Item ID to product mapping
+ * @property {Record<string, ShopperPromotions.schemas['Promotion']>} [promotions] - Promotion ID to promotion mapping
  */
 interface CartContentProps {
-    basket: ShopperBasketsTypes.Basket | undefined;
-    productsByItemId: Record<string, ShopperProductsTypes.Product>;
-    promotions?: Record<string, ShopperPromotionsTypes.Promotion>;
+    basket: ShopperBasketsV2.schemas['Basket'] | undefined;
+    productsByItemId: Record<string, ShopperProducts.schemas['Product']>;
+    promotions?: Record<string, ShopperPromotions.schemas['Promotion']>;
 }
 
 /**
@@ -59,12 +55,14 @@ export default function CartContent({ basket, productsByItemId, promotions }: Ca
     const productItems = basket?.productItems || [];
 
     // Render prop function for cart-specific secondary actions
-    const cartSecondaryActions = (product: ShopperBasketsTypes.ProductItem & Partial<ShopperProductsTypes.Product>) => {
+    const cartSecondaryActions = (
+        product: ShopperBasketsV2.schemas['ProductItem'] & Partial<ShopperProducts.schemas['Product']>
+    ) => {
         // Return undefined if no itemId - this will hide the buttons in the UI
         if (!product.itemId) return undefined;
 
         // Decide if Edit should be shown based on product type. Do not show edit buttons for standard products.
-        const productDetails = product as ShopperProductsTypes.Product | undefined;
+        const productDetails = product as ShopperProducts.schemas['Product'] | undefined;
         const isStandardProd = productDetails && isStandardProduct(productDetails);
 
         return (

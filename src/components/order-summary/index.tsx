@@ -6,7 +6,7 @@ import { ShoppingCart, Lock } from 'lucide-react';
 import { Link } from 'react-router';
 
 // Commerce SDK
-import type { ShopperBasketsTypes, ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 // Components
 import { Typography } from '@/components/typography';
@@ -27,13 +27,13 @@ import PromoPopover from '@/components/promo-popover';
  * Props for the OrderSummary component
  *
  * @interface OrderSummaryProps
- * @property {ShopperBasketsTypes.Basket} basket - The shopping basket containing items and totals
+ * @property {ShopperBasketsV2.schemas['Basket']} basket - The shopping basket containing items and totals
  * @property {boolean} [showPromoCodeForm] - Whether to display the promo code form
  * @property {boolean} [showCartItems] - Whether to display the cart items accordion
  * @property {boolean} [showHeading] - Whether to display the "Order Summary" heading
  * @property {boolean} [itemsExpanded] - Whether the cart items accordion should be expanded by default
  * @property {boolean} [isEstimate] - Whether to show "Est." prefix for totals
- * @property {Record<string, ShopperProductsTypes.Product>} [productsByItemId] - Optional item ID to product
+ * @property {Record<string, ShopperProducts.schemas['Product']>} [productsByItemId] - Optional item ID to product
  *   details mapping
  * @property {() => void} [onEditCart] - Optional callback function called when the "Edit Cart" button is clicked.
  *   If not provided, the component will navigate to '/cart' using the default navigation behavior.
@@ -41,13 +41,13 @@ import PromoPopover from '@/components/promo-popover';
  * @property {boolean} [showCheckoutAction] - Whether to display the checkout button and payment icons
  */
 interface OrderSummaryProps {
-    basket: ShopperBasketsTypes.Basket;
+    basket: ShopperBasketsV2.schemas['Basket'];
     showPromoCodeForm?: boolean;
     showCartItems?: boolean;
     showHeading?: boolean;
     itemsExpanded?: boolean;
     isEstimate?: boolean;
-    productsByItemId?: Record<string, ShopperProductsTypes.Product>;
+    productsByItemId?: Record<string, ShopperProducts.schemas['Product']>;
     onEditCart?: () => void;
     showCheckoutAction?: boolean;
 }
@@ -61,8 +61,8 @@ interface OrderSummaryProps {
  * - Edit cart button for navigation
  *
  * @param props - Component props
- * @param {ShopperBasketsTypes.Basket} props.basket - The shopping basket containing product items
- * @param {Record<string, ShopperProductsTypes.Product>} [props.productsByItemId] - Optional item ID to product mapping
+ * @param {ShopperBasketsV2.schemas['Basket']} props.basket - The shopping basket containing product items
+ * @param {Record<string, ShopperProducts.schemas['Product']>} [props.productsByItemId] - Optional item ID to product mapping
  * @param {boolean} [props.itemsExpanded] - Whether the accordion should be expanded by default
  * @param {() => void} [props.onEditCart] - Optional callback for "Edit Cart" button click. If not provided, navigates to '/cart'
  * @returns JSX element representing the cart items summary accordion
@@ -73,8 +73,8 @@ function CartItemsSummary({
     itemsExpanded = false,
     onEditCart,
 }: {
-    basket: ShopperBasketsTypes.Basket;
-    productsByItemId?: Record<string, ShopperProductsTypes.Product>;
+    basket: ShopperBasketsV2.schemas['Basket'];
+    productsByItemId?: Record<string, ShopperProducts.schemas['Product']>;
     itemsExpanded?: boolean;
     onEditCart?: () => void;
 }): ReactElement {

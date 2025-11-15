@@ -6,36 +6,45 @@
  */
 import { use, type ReactElement, useEffect, useRef } from 'react';
 import { useLoaderData, useFetcher, type LoaderFunctionArgs, type ClientLoaderFunctionArgs } from 'react-router';
-import type { ShopperCustomersTypes, ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import { type ShopperCustomers, type ShopperProducts, ApiError } from '@salesforce/storefront-next-runtime/scapi';
 import { Button } from '@/components/ui/button';
 import { getAuth } from '@/middlewares/auth.client';
-import createClient from '@/lib/scapi';
+import { createApiClients } from '@/lib/api-clients';
 import { isRegisteredCustomer } from '@/lib/api/customer';
-import { extractResponseError } from '@/lib/utils';
+import { getConfig } from '@/config';
 import { convertProductToProductSearchHit } from '@/lib/product-conversion';
 import { ProductTile } from '@/components/product-tile';
 import { useToast } from '@/components/toast';
 import uiStrings from '@/temp-ui-string';
+
+type CustomerProductList = ShopperCustomers.schemas['CustomerProductList'];
+type CustomerProductListItem = ShopperCustomers.schemas['CustomerProductListItem'];
+type Product = ShopperProducts.schemas['Product'];
 
 /**
  * Fetch product details for wishlist items
  */
 async function fetchProductsForWishlist(
     context: LoaderFunctionArgs['context'],
-    items: ShopperCustomersTypes.CustomerProductListItem[]
-): Promise<Record<string, ShopperProductsTypes.Product>> {
+    items: CustomerProductListItem[]
+): Promise<Record<string, Product>> {
     const productIds = items.map((item) => item.productId).filter(Boolean) as string[];
 
     if (!productIds.length) {
         return {};
     }
 
-    const client = createClient(context);
-    const productsResponse = await client.ShopperProducts.getProducts({
-        parameters: {
-            ids: productIds,
-            allImages: true,
-            perPricebook: true,
+    const clients = createApiClients(context);
+    const config = getConfig(context);
+    const { data: productsResponse } = await clients.shopperProducts.getProducts({
+        params: {
+            path: { organizationId: config.commerce.api.organizationId },
+            query: {
+                siteId: config.commerce.api.siteId,
+                ids: productIds,
+                allImages: true,
+                perPricebook: true,
+            },
         },
     });
 
@@ -50,7 +59,7 @@ async function fetchProductsForWishlist(
             }
             return acc;
         },
-        {} as Record<string, ShopperProductsTypes.Product>
+        {} as Record<string, Product>
     );
 
     return productsByProductId;
@@ -61,9 +70,9 @@ async function fetchProductsForWishlist(
  */
 // eslint-disable-next-line custom/no-async-page-loader, react-refresh/only-export-components
 export async function loader({ context }: LoaderFunctionArgs): Promise<{
-    wishlist: ShopperCustomersTypes.CustomerProductList | null;
-    items: ShopperCustomersTypes.CustomerProductListItem[];
-    productsByProductId: Promise<Record<string, ShopperProductsTypes.Product>>;
+    wishlist: CustomerProductList | null;
+    items: CustomerProductListItem[];
+    productsByProductId: Promise<Record<string, Product>>;
 }> {
     const { getAuth: getAuthServer } = await import('@/middlewares/auth.server');
     const session = getAuthServer(context);
@@ -86,15 +95,19 @@ export async function loader({ context }: LoaderFunctionArgs): Promise<{
 
     try {
         const customerId = session.customer_id;
-        const client = createClient(context).ShopperCustomers;
+        const clients = createApiClients(context);
+        const config = getConfig(context);
 
         // Get the customer's product lists
-        const productLists = await client.getCustomerProductLists({
-            parameters: { customerId },
+        const { data: productLists } = await clients.shopperCustomers.getCustomerProductLists({
+            params: {
+                path: { organizationId: config.commerce.api.organizationId, customerId },
+                query: { siteId: config.commerce.api.siteId },
+            },
         });
 
         // Find the wishlist
-        const wishlist = productLists.data?.find((list) => list.type === 'wish_list');
+        const wishlist = productLists?.data?.find((list) => list.type === 'wish_list');
 
         if (!wishlist) {
             return {
@@ -103,11 +116,6 @@ export async function loader({ context }: LoaderFunctionArgs): Promise<{
                 productsByProductId: Promise.resolve({}),
             };
         }
-
-        // Type assertion to access customerProductListItems field (may be present in API response but not in TypeScript types)
-        const wishlistWithItems = wishlist as ShopperCustomersTypes.CustomerProductList & {
-            customerProductListItems?: ShopperCustomersTypes.CustomerProductListItem[];
-        };
 
         // Commerce SDK might return 'id' instead of 'listId' - use 'id' if 'listId' is not available
         const listId = wishlist.listId || wishlist.id;
@@ -119,33 +127,30 @@ export async function loader({ context }: LoaderFunctionArgs): Promise<{
             };
         }
 
-        // Try to get items from the initial response first (items may already be included in customerProductListItems)
-        let items: ShopperCustomersTypes.CustomerProductListItem[] =
-            wishlistWithItems.items || wishlistWithItems.customerProductListItems || [];
+        // Try to get items from the initial response first
+        let items: CustomerProductListItem[] = wishlist.customerProductListItems || [];
 
         // If items are already in the initial response, use them
         // Otherwise, fetch the full wishlist
         if (items.length > 0) {
             return {
-                wishlist: wishlistWithItems,
+                wishlist,
                 items,
                 productsByProductId: fetchProductsForWishlist(context, items),
             };
         }
 
         // Get the full wishlist with items (if not already included)
-        const fullWishlistRaw = await client.getCustomerProductList({
-            parameters: {
-                customerId,
-                listId,
+        const { data: fullWishlist } = await clients.shopperCustomers.getCustomerProductList({
+            params: {
+                path: {
+                    organizationId: config.commerce.api.organizationId,
+                    customerId,
+                    listId,
+                },
+                query: { siteId: config.commerce.api.siteId },
             },
         });
-
-        // Type assertion to access customerProductListItems field
-        const fullWishlist = fullWishlistRaw as ShopperCustomersTypes.CustomerProductList & {
-            customerProductListItems?: ShopperCustomersTypes.CustomerProductListItem[];
-        };
-
         // Commerce SDK may return items in 'items' or 'customerProductListItems' field
         // Check both fields to ensure we get the items
         items = fullWishlist.items || fullWishlist.customerProductListItems || [];
@@ -158,9 +163,11 @@ export async function loader({ context }: LoaderFunctionArgs): Promise<{
     } catch (error) {
         // Handle authentication errors gracefully - wishlist requires authenticated registered customers
         // If auth fails, return empty wishlist (user will need to log in)
-        const { status_code } = await extractResponseError(error).catch(() => ({
-            status_code: undefined,
-        }));
+        let status_code: string | undefined;
+
+        if (error instanceof ApiError) {
+            status_code = String(error.status);
+        }
 
         if (status_code === '401' || status_code === '403') {
             // Authentication required - return empty wishlist
@@ -185,9 +192,9 @@ export async function loader({ context }: LoaderFunctionArgs): Promise<{
  */
 // eslint-disable-next-line custom/no-async-page-loader, react-refresh/only-export-components
 export async function clientLoader({ context }: ClientLoaderFunctionArgs): Promise<{
-    wishlist: ShopperCustomersTypes.CustomerProductList | null;
-    items: ShopperCustomersTypes.CustomerProductListItem[];
-    productsByProductId: Promise<Record<string, ShopperProductsTypes.Product>>;
+    wishlist: CustomerProductList | null;
+    items: CustomerProductListItem[];
+    productsByProductId: Promise<Record<string, Product>>;
 }> {
     // Check if user is authenticated as registered customer
     if (!isRegisteredCustomer(context)) {
@@ -209,15 +216,19 @@ export async function clientLoader({ context }: ClientLoaderFunctionArgs): Promi
 
     try {
         const customerId = session.customer_id;
-        const client = createClient(context).ShopperCustomers;
+        const clients = createApiClients(context);
+        const config = getConfig(context);
 
         // Get the customer's product lists
-        const productLists = await client.getCustomerProductLists({
-            parameters: { customerId },
+        const { data: productLists } = await clients.shopperCustomers.getCustomerProductLists({
+            params: {
+                path: { organizationId: config.commerce.api.organizationId, customerId },
+                query: { siteId: config.commerce.api.siteId },
+            },
         });
 
         // Find the wishlist
-        const wishlist = productLists.data?.find((list) => list.type === 'wish_list');
+        const wishlist = productLists?.data?.find((list) => list.type === 'wish_list');
 
         if (!wishlist) {
             return {
@@ -228,8 +239,8 @@ export async function clientLoader({ context }: ClientLoaderFunctionArgs): Promi
         }
 
         // Type assertion to access customerProductListItems field (may be present in API response but not in TypeScript types)
-        const wishlistWithItems = wishlist as ShopperCustomersTypes.CustomerProductList & {
-            customerProductListItems?: ShopperCustomersTypes.CustomerProductListItem[];
+        const wishlistWithItems = wishlist as CustomerProductList & {
+            customerProductListItems?: CustomerProductListItem[];
         };
 
         // Commerce SDK might return 'id' instead of 'listId' - use 'id' if 'listId' is not available
@@ -242,9 +253,8 @@ export async function clientLoader({ context }: ClientLoaderFunctionArgs): Promi
             };
         }
 
-        // Try to get items from the initial response first (items may already be included in customerProductListItems)
-        let items: ShopperCustomersTypes.CustomerProductListItem[] =
-            wishlistWithItems.items || wishlistWithItems.customerProductListItems || [];
+        // Try to get items from the initial response first
+        let items: CustomerProductListItem[] = wishlist.customerProductListItems || [];
 
         // If items are already in the initial response, use them
         // Otherwise, fetch the full wishlist
@@ -257,17 +267,19 @@ export async function clientLoader({ context }: ClientLoaderFunctionArgs): Promi
         }
 
         // Get the full wishlist with items (if not already included)
-        const fullWishlistRaw = await client.getCustomerProductList({
-            parameters: {
-                customerId,
-                listId,
+        const { data: fullWishlistRaw } = await clients.shopperCustomers.getCustomerProductList({
+            params: {
+                path: {
+                    organizationId: config.commerce.api.organizationId,
+                    customerId,
+                    listId,
+                },
+                query: { siteId: config.commerce.api.siteId },
             },
         });
 
         // Type assertion to access customerProductListItems field
-        const fullWishlist = fullWishlistRaw as ShopperCustomersTypes.CustomerProductList & {
-            customerProductListItems?: ShopperCustomersTypes.CustomerProductListItem[];
-        };
+        const fullWishlist = fullWishlistRaw;
 
         // Commerce SDK may return items in 'items' or 'customerProductListItems' field
         // Check both fields to ensure we get the items
@@ -281,9 +293,11 @@ export async function clientLoader({ context }: ClientLoaderFunctionArgs): Promi
     } catch (error) {
         // Handle authentication errors gracefully - wishlist requires authenticated registered customers
         // If auth fails, return empty wishlist (user will need to log in)
-        const { status_code } = await extractResponseError(error).catch(() => ({
-            status_code: undefined,
-        }));
+        let status_code: string | undefined;
+
+        if (error instanceof ApiError) {
+            status_code = String(error.status);
+        }
 
         if (status_code === '401' || status_code === '403') {
             // Authentication required - return empty wishlist
@@ -358,8 +372,8 @@ function WishlistRemoveButton({ productId }: { productId: string }) {
 export default function AccountWishlist(): ReactElement {
     const loaderData = useLoaderData<Awaited<ReturnType<typeof clientLoader>>>();
     const { items, productsByProductId: productsPromise } = loaderData || {
-        items: [] as ShopperCustomersTypes.CustomerProductListItem[],
-        productsByProductId: Promise.resolve({} as Record<string, ShopperProductsTypes.Product>),
+        items: [] as CustomerProductListItem[],
+        productsByProductId: Promise.resolve({} as Record<string, Product>),
     };
 
     const productsByProductId = use(productsPromise);

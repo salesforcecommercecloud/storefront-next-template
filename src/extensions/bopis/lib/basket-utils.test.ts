@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import {
     getPickupItemsFromBasket,
     getInventoryIdsFromPickupShipments,
@@ -21,7 +21,7 @@ describe('getPickupItemsFromBasket', () => {
     });
 
     it('returns empty map when basket has no shipments', () => {
-        const basket: ShopperBasketsTypes.Basket = {
+        const basket: ShopperBasketsV2.schemas['Basket'] = {
             basketId: 'test-basket',
             productItems: [
                 {
@@ -36,7 +36,7 @@ describe('getPickupItemsFromBasket', () => {
     });
 
     it('returns empty map when basket has no product items', () => {
-        const basket: ShopperBasketsTypes.Basket = {
+        const basket: ShopperBasketsV2.schemas['Basket'] = {
             basketId: 'test-basket',
             shipments: [
                 {
@@ -50,7 +50,7 @@ describe('getPickupItemsFromBasket', () => {
     });
 
     it('extracts pickup items when shipment has c_fromStoreId', () => {
-        const basket: ShopperBasketsTypes.Basket = {
+        const basket: ShopperBasketsV2.schemas['Basket'] = {
             basketId: 'test-basket',
             shipments: [
                 {
@@ -88,7 +88,7 @@ describe('getPickupItemsFromBasket', () => {
     });
 
     it('ignores items without inventoryId', () => {
-        const basket: ShopperBasketsTypes.Basket = {
+        const basket: ShopperBasketsV2.schemas['Basket'] = {
             basketId: 'test-basket',
             shipments: [
                 {
@@ -123,7 +123,7 @@ describe('getPickupItemsFromBasket', () => {
     });
 
     it('ignores items when shipment has no c_fromStoreId', () => {
-        const basket: ShopperBasketsTypes.Basket = {
+        const basket: ShopperBasketsV2.schemas['Basket'] = {
             basketId: 'test-basket',
             shipments: [
                 {
@@ -153,7 +153,7 @@ describe('getPickupItemsFromBasket', () => {
     });
 
     it('ignores items without productId', () => {
-        const basket: ShopperBasketsTypes.Basket = {
+        const basket: ShopperBasketsV2.schemas['Basket'] = {
             basketId: 'test-basket',
             shipments: [
                 {
@@ -173,7 +173,7 @@ describe('getPickupItemsFromBasket', () => {
                     inventoryId: 'inventory-B',
                     shipmentId: 'shipment-1',
                     quantity: 2,
-                } as ShopperBasketsTypes.ProductItem,
+                } as ShopperBasketsV2.schemas['ProductItem'],
             ],
         };
 
@@ -187,7 +187,7 @@ describe('getPickupItemsFromBasket', () => {
     });
 
     it('ignores items without shipmentId', () => {
-        const basket: ShopperBasketsTypes.Basket = {
+        const basket: ShopperBasketsV2.schemas['Basket'] = {
             basketId: 'test-basket',
             shipments: [
                 {
@@ -222,7 +222,7 @@ describe('getPickupItemsFromBasket', () => {
     });
 
     it('handles duplicate productIds by keeping the last one', () => {
-        const basket: ShopperBasketsTypes.Basket = {
+        const basket: ShopperBasketsV2.schemas['Basket'] = {
             basketId: 'test-basket',
             shipments: [
                 {
@@ -257,7 +257,7 @@ describe('getPickupItemsFromBasket', () => {
     });
 
     it('handles multiple shipments with mixed pickup and delivery', () => {
-        const basket: ShopperBasketsTypes.Basket = {
+        const basket: ShopperBasketsV2.schemas['Basket'] = {
             basketId: 'test-basket',
             shipments: [
                 {
@@ -297,7 +297,7 @@ describe('getPickupItemsFromBasket', () => {
     });
 
     it('handles multiple pickup shipments from different stores', () => {
-        const basket: ShopperBasketsTypes.Basket = {
+        const basket: ShopperBasketsV2.schemas['Basket'] = {
             basketId: 'test-basket',
             shipments: [
                 {
@@ -362,7 +362,7 @@ describe('getInventoryIdsFromPickupShipments', () => {
                     shipmentId: 'shipment-1',
                 },
             ],
-        } as ShopperBasketsTypes.Basket;
+        } as ShopperBasketsV2.schemas['Basket'];
 
         const result = getInventoryIdsFromPickupShipments(basket);
         expect(result).toEqual([]);
@@ -377,7 +377,7 @@ describe('getInventoryIdsFromPickupShipments', () => {
                     c_fromStoreId: 'store-123',
                 },
             ],
-        } as ShopperBasketsTypes.Basket;
+        } as ShopperBasketsV2.schemas['Basket'];
 
         const result = getInventoryIdsFromPickupShipments(basket);
         expect(result).toEqual([]);
@@ -400,7 +400,7 @@ describe('getInventoryIdsFromPickupShipments', () => {
                     shipmentId: 'shipment-1',
                 },
             ],
-        } as ShopperBasketsTypes.Basket;
+        } as ShopperBasketsV2.schemas['Basket'];
 
         const result = getInventoryIdsFromPickupShipments(basket);
         expect(result).toEqual([]);
@@ -423,7 +423,7 @@ describe('getInventoryIdsFromPickupShipments', () => {
                     shipmentId: 'shipment-1',
                 },
             ],
-        } as ShopperBasketsTypes.Basket;
+        } as ShopperBasketsV2.schemas['Basket'];
 
         const result = getInventoryIdsFromPickupShipments(basket);
         expect(result).toEqual(['inventory-store-123']);
@@ -452,7 +452,7 @@ describe('getInventoryIdsFromPickupShipments', () => {
                     shipmentId: 'shipment-1',
                 },
             ],
-        } as ShopperBasketsTypes.Basket;
+        } as ShopperBasketsV2.schemas['Basket'];
 
         const result = getInventoryIdsFromPickupShipments(basket);
         expect(result).toEqual(['inventory-store-123']);
@@ -485,7 +485,7 @@ describe('getInventoryIdsFromPickupShipments', () => {
                     shipmentId: 'shipment-2',
                 },
             ],
-        } as ShopperBasketsTypes.Basket;
+        } as ShopperBasketsV2.schemas['Basket'];
 
         const result = getInventoryIdsFromPickupShipments(basket);
         expect(result).toEqual(['inventory-store-123']);
@@ -514,7 +514,7 @@ describe('getInventoryIdsFromPickupShipments', () => {
                     shipmentId: 'shipment-1',
                 },
             ],
-        } as ShopperBasketsTypes.Basket;
+        } as ShopperBasketsV2.schemas['Basket'];
 
         const result = getInventoryIdsFromPickupShipments(basket);
         expect(result).toEqual(['inventory-store-123']);
@@ -543,7 +543,7 @@ describe('getInventoryIdsFromPickupShipments', () => {
                     // Missing shipmentId
                 },
             ],
-        } as ShopperBasketsTypes.Basket;
+        } as ShopperBasketsV2.schemas['Basket'];
 
         const result = getInventoryIdsFromPickupShipments(basket);
         expect(result).toEqual(['inventory-store-123']);
@@ -576,7 +576,7 @@ describe('getInventoryIdsFromPickupShipments', () => {
                     shipmentId: 'shipment-2',
                 },
             ],
-        } as ShopperBasketsTypes.Basket;
+        } as ShopperBasketsV2.schemas['Basket'];
 
         const result = getInventoryIdsFromPickupShipments(basket);
         // Should return sorted array
@@ -612,7 +612,7 @@ describe('getInventoryIdsFromPickupShipments', () => {
                     shipmentId: 'shipment-1',
                 },
             ],
-        } as ShopperBasketsTypes.Basket;
+        } as ShopperBasketsV2.schemas['Basket'];
 
         const result = getInventoryIdsFromPickupShipments(basket);
         expect(result).toEqual(['inventory-apple', 'inventory-banana', 'inventory-zebra']);
@@ -651,7 +651,7 @@ describe('getInventoryIdsFromPickupShipments', () => {
                     shipmentId: 'shipment-pickup',
                 },
             ],
-        } as ShopperBasketsTypes.Basket;
+        } as ShopperBasketsV2.schemas['Basket'];
 
         const result = getInventoryIdsFromPickupShipments(basket);
         // Should only include inventory from pickup shipment, not delivery
@@ -679,7 +679,7 @@ describe('getInventoryIdsFromPickupShipments', () => {
                     shipmentId: 'shipment-2',
                 },
             ],
-        } as ShopperBasketsTypes.Basket;
+        } as ShopperBasketsV2.schemas['Basket'];
 
         const result = getInventoryIdsFromPickupShipments(basket);
         expect(result).toEqual(['inventory-store-456']);
@@ -707,7 +707,7 @@ describe('getStoreIdsFromBasket', () => {
                     inventoryId: 'inventory-A',
                 },
             ],
-        } as ShopperBasketsTypes.Basket;
+        } as ShopperBasketsV2.schemas['Basket'];
 
         const result = getStoreIdsFromBasket(basket);
         expect(result).toEqual([]);
@@ -717,7 +717,7 @@ describe('getStoreIdsFromBasket', () => {
         const basket = {
             basketId: 'basket-1',
             shipments: [],
-        } as ShopperBasketsTypes.Basket;
+        } as ShopperBasketsV2.schemas['Basket'];
 
         const result = getStoreIdsFromBasket(basket);
         expect(result).toEqual([]);
@@ -736,7 +736,7 @@ describe('getStoreIdsFromBasket', () => {
                     // No c_fromStoreId - regular delivery shipment
                 },
             ],
-        } as ShopperBasketsTypes.Basket;
+        } as ShopperBasketsV2.schemas['Basket'];
 
         const result = getStoreIdsFromBasket(basket);
         expect(result).toEqual([]);
@@ -751,7 +751,7 @@ describe('getStoreIdsFromBasket', () => {
                     c_fromStoreId: 'store-123',
                 },
             ],
-        } as ShopperBasketsTypes.Basket;
+        } as ShopperBasketsV2.schemas['Basket'];
 
         const result = getStoreIdsFromBasket(basket);
         expect(result).toEqual(['store-123']);
@@ -770,7 +770,7 @@ describe('getStoreIdsFromBasket', () => {
                     c_fromStoreId: 'store-456',
                 },
             ],
-        } as ShopperBasketsTypes.Basket;
+        } as ShopperBasketsV2.schemas['Basket'];
 
         const result = getStoreIdsFromBasket(basket);
         expect(result).toHaveLength(2);
@@ -795,7 +795,7 @@ describe('getStoreIdsFromBasket', () => {
                     c_fromStoreId: 'store-banana',
                 },
             ],
-        } as ShopperBasketsTypes.Basket;
+        } as ShopperBasketsV2.schemas['Basket'];
 
         const result = getStoreIdsFromBasket(basket);
         expect(result).toEqual(['store-apple', 'store-banana', 'store-zebra']);
@@ -818,7 +818,7 @@ describe('getStoreIdsFromBasket', () => {
                     c_fromStoreId: 'store-456',
                 },
             ],
-        } as ShopperBasketsTypes.Basket;
+        } as ShopperBasketsV2.schemas['Basket'];
 
         const result = getStoreIdsFromBasket(basket);
         expect(result).toEqual(['store-123', 'store-456']);
@@ -841,7 +841,7 @@ describe('getStoreIdsFromBasket', () => {
                     c_fromStoreId: 'store-456',
                 },
             ],
-        } as ShopperBasketsTypes.Basket;
+        } as ShopperBasketsV2.schemas['Basket'];
 
         const result = getStoreIdsFromBasket(basket);
         expect(result).toEqual(['store-123', 'store-456']);
@@ -860,7 +860,7 @@ describe('getStoreIdsFromBasket', () => {
                     c_fromStoreId: 'store-123',
                 },
             ],
-        } as ShopperBasketsTypes.Basket;
+        } as ShopperBasketsV2.schemas['Basket'];
 
         const result = getStoreIdsFromBasket(basket);
         // Empty strings are falsy in JS and should be excluded (invalid store ID)
@@ -884,7 +884,7 @@ describe('getStoreIdsFromBasket', () => {
                     c_fromStoreId: '001',
                 },
             ],
-        } as ShopperBasketsTypes.Basket;
+        } as ShopperBasketsV2.schemas['Basket'];
 
         const result = getStoreIdsFromBasket(basket);
         // Alphabetical sort treats them as strings
@@ -928,7 +928,7 @@ describe('getStoreIdsFromBasket', () => {
                     shipmentId: 'delivery-shipment-1',
                 },
             ],
-        } as ShopperBasketsTypes.Basket;
+        } as ShopperBasketsV2.schemas['Basket'];
 
         const result = getStoreIdsFromBasket(basket);
         expect(result).toEqual(['LA-005', 'NYC-001']);
@@ -952,7 +952,7 @@ describe('getStoreIdForBasketItem', () => {
                     shipmentId: 'shipment-1',
                 },
             ],
-        } as ShopperBasketsTypes.Basket;
+        } as ShopperBasketsV2.schemas['Basket'];
 
         expect(getStoreIdForBasketItem(basket, 'item-999')).toBeUndefined();
     });
@@ -968,7 +968,7 @@ describe('getStoreIdForBasketItem', () => {
                     shipmentId: 'shipment-1',
                 },
             ],
-        } as ShopperBasketsTypes.Basket;
+        } as ShopperBasketsV2.schemas['Basket'];
 
         expect(getStoreIdForBasketItem(basket, 'item-1')).toBeUndefined();
     });
@@ -984,7 +984,7 @@ describe('getStoreIdForBasketItem', () => {
                     shipmentId: 'shipment-1',
                 },
             ],
-        } as ShopperBasketsTypes.Basket;
+        } as ShopperBasketsV2.schemas['Basket'];
 
         expect(getStoreIdForBasketItem(basket, 'item-1')).toBe('store-123');
     });
@@ -1002,7 +1002,7 @@ describe('getStoreIdForBasketItem', () => {
                 { itemId: 'item-2', productId: 'product-B', shipmentId: 'pickup-2' },
                 { itemId: 'item-3', productId: 'product-C', shipmentId: 'delivery-1' },
             ],
-        } as ShopperBasketsTypes.Basket;
+        } as ShopperBasketsV2.schemas['Basket'];
 
         expect(getStoreIdForBasketItem(basket, 'item-1')).toBe('store-NYC');
         expect(getStoreIdForBasketItem(basket, 'item-2')).toBe('store-LA');

@@ -3,7 +3,7 @@ import { renderHook, waitFor, act } from '@testing-library/react';
 
 import { useStoreLocatorList, type SearchStoresResult } from './use-store-locator-list';
 import { StoreLocatorWrapper } from '@/test-utils/context-provider';
-import type { ShopperStoresTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
 
 // Mock react-router useFetcher and useSearchParams
 const mockFetcher = {
@@ -92,7 +92,7 @@ describe('useStoreLocatorList', () => {
             stores: {
                 data: new Array(15)
                     .fill(null)
-                    .map((_, i) => ({ id: String(i) })) as unknown as ShopperStoresTypes.Store[],
+                    .map((_, i) => ({ id: String(i) })) as unknown as ShopperStores.schemas['Store'][],
                 limit: 15,
                 total: 15,
             },

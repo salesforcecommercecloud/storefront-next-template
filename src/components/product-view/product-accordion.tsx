@@ -6,12 +6,12 @@
  */
 
 import type { ReactElement } from 'react';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import uiStrings from '@/temp-ui-string';
 
 interface ProductAccordionProps {
-    product: ShopperProductsTypes.Product;
+    product: ShopperProducts.schemas['Product'];
 }
 
 export default function ProductAccordion({ product }: ProductAccordionProps): ReactElement {
