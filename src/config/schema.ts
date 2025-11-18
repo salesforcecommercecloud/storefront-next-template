@@ -96,9 +96,13 @@ export type Config = {
                 enableInfiniteScroll: boolean;
                 sortOptions: Array<'relevance' | 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc' | 'newest'>;
                 enableQuickView: boolean;
+                defaultProductTileImgAspectRatio: number;
             };
             carousel: {
                 defaultItemCount: number;
+            };
+            paginatedProductCarousel: {
+                defaultLimit: number;
             };
             badges: BadgeDetail[];
             skeleton: {

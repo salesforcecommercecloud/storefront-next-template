@@ -31,6 +31,8 @@ interface ProductTileProps extends ComponentProps<'div'> {
     disableSwatchInteraction?: boolean;
     /** For variant products in read-only mode, filter swatches to only show this variant's color value */
     selectedVariantColorValue?: string | null;
+    /** Image aspect ratio (width/height). If provided, calculates height based on viewport width. Defaults to 1 (square) */
+    imgAspectRatio?: number;
 }
 
 // Simple component to display the "+X more" indicator for additional swatches
@@ -58,6 +60,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
             footerAction,
             disableSwatchInteraction = false,
             selectedVariantColorValue,
+            imgAspectRatio,
             ...props
         },
         ref
@@ -69,6 +72,9 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
             badgeDetails: config.global.badges,
             maxBadges: 2,
         });
+
+        // Use config default if imgAspectRatio is not provided
+        const effectiveImgAspectRatio = imgAspectRatio ?? config.global.productListing.defaultProductTileImgAspectRatio;
 
         // Business logic: use representedProduct for product-tile swatches if available
         // For wishlist items, prioritize selectedVariantColorValue
@@ -119,7 +125,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
             <Card
                 ref={ref}
                 className={cn(
-                    'group border rounded-xl overflow-hidden w-full min-w-0 flex flex-col-reverse h-full shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md',
+                    'group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse h-full shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md',
                     className
                 )}
                 {...props}>
@@ -247,6 +253,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                             selectedColorValue={
                                 PRODUCT_TILE_SELECTABLE_ATTRIBUTE_ID === 'color' ? selectedAttributeValue : null
                             }
+                            imgAspectRatio={effectiveImgAspectRatio}
                             className="w-full !aspect-auto [&_img]:!object-contain [&_img]:!h-auto [&_img]:!max-w-full [&_img]:!mx-auto"
                         />
                     </div>

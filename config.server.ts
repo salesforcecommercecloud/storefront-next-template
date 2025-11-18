@@ -110,8 +110,12 @@ export default defineConfig({
                 enableInfiniteScroll: false,
                 sortOptions: ['relevance', 'price-asc', 'price-desc', 'name-asc'],
                 enableQuickView: true,
+                defaultProductTileImgAspectRatio: 1,
             },
             carousel: { defaultItemCount: 4 },
+            paginatedProductCarousel: {
+                defaultLimit: 8,
+            },
             badges: [
                 { propertyName: 'c_isNew', label: 'New', color: 'green', priority: 1 },
                 { propertyName: 'c_isSale', label: 'Sale', color: 'orange', priority: 2 },

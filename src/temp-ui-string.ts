@@ -13,6 +13,7 @@ const additionalStrings = {
     },
     common: {
         loading: 'Loading',
+        loadingMore: 'Loading more...',
         product: 'the product',
         noImageAvailable: 'No image available',
         productGeneric: 'Product',
@@ -342,6 +343,7 @@ const additionalStrings = {
         removedFromWishlist: 'Removed from wishlist',
         failedToRemoveFromWishlist: 'Failed to remove item from wishlist',
         removeFromWishlist: 'Remove from wishlist',
+        removedLabel: 'Removed',
         itemAlreadyInWishlist: 'Item is already in your wishlist',
         addedToWishlistGeneric: 'Added to wishlist',
         productIdRequired: 'Product ID is required',

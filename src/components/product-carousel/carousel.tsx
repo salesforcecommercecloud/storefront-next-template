@@ -68,8 +68,10 @@ export default function ProductCarousel({
                     {products.map((product) => (
                         <CarouselItem
                             key={product.productId}
-                            className="basis-1/2 sm:basis-1/3 md:basis-1/4 py-1 flex justify-center pl-0">
-                            <ProductTile product={product} className="h-auto" />
+                            className="basis-1/2 sm:basis-1/3 md:basis-1/4 py-1 flex justify-center pl-0 min-w-0">
+                            <div className="w-full max-w-full min-w-0">
+                                <ProductTile product={product} className="h-auto" />
+                            </div>
                         </CarouselItem>
                     ))}
                 </CarouselContent>
