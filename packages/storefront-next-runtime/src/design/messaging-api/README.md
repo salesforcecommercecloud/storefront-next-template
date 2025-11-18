@@ -7,7 +7,7 @@ A TypeScript-based messaging system for real-time communication between client (
 ### Client Setup
 
 ```typescript
-import {createClientApi, ClientApi} from '@commerce-sdk-isomorphic/design';
+import {createClientApi, ClientApi} from '@salesforce/storefront-next-runtime/design';
 
 // Create client API instance
 const clientApi: ClientApi = createClientApi({
@@ -43,7 +43,7 @@ clientApi.on('ComponentPropertiesChanged', event => {
 ### Host Setup
 
 ```typescript
-import { createHostApi, HostApi } from '@commerce-sdk-isomorphic/design';
+import { createHostApi, HostApi } from '@salesforce/storefront-next-runtime/design';
 
 // Create host API instance
 const iframe = document.querySelector('iframe');

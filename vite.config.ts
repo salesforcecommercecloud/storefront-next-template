@@ -1,5 +1,5 @@
 /// <reference types="vitest" />
-import { dirname, resolve } from 'node:path';
+import { dirname, resolve, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { readFileSync } from 'node:fs';
 import { defineConfig, loadEnv, perEnvironmentPlugin } from 'vite';
@@ -24,16 +24,15 @@ const enableReadableChunkNames = enableBundlesizeCheck || enableBundlesizeAnalyz
  * @see {@link https://github.com/http-party/node-http-proxy?tab=readme-ov-file#modify-response}
  */
 export default defineConfig(({ mode }) => {
-    // Load environment variables for dev proxy target
-    // Note: We don't use envPrefix anymore because config is read from
-    // process.env at runtime (server-side)
-    const environment = loadEnv(mode, __dirname);
+    // Load environment variables
+    const environment = loadEnv(mode, __dirname, '');
     const target = `https://${environment.PUBLIC_COMMERCE_API_SHORT_CODE || 'kv7kzm78'}.api.commercecloud.salesforce.com`;
 
     return {
         build: {
             sourcemap: 'hidden',
             rollupOptions: {
+                external: ['_local'],
                 output: {
                     // TODO: consider extracting this as a plugin instead
                     manualChunks(id) {
@@ -139,7 +138,77 @@ export default defineConfig(({ mode }) => {
         },
         server: {
             proxy: {
-                // Proxy Commerce Cloud API requests directly to your instance
+                // Development-only: Page proxy with local fallback
+                ...(mode === 'development' && {
+                    '^/mobify/proxy/api/experience/shopper-experience/.*/pages': {
+                        target,
+                        changeOrigin: true,
+                        rewrite: (path) => path.replace(/^\/mobify\/proxy\/api/, ''),
+                        selfHandleResponse: true,
+                        configure: (proxy, _options) => {
+                            proxy.on('proxyReq', (proxyReq, req) => {
+                                console.log(
+                                    '🔄 Proxying request:',
+                                    req.method,
+                                    req.url,
+                                    '→',
+                                    `${String(proxyReq.getHeader('host'))}${proxyReq.path}`
+                                );
+                            });
+                            proxy.on('proxyRes', (proxyRes, req, res) => {
+                                const chunks: Buffer[] = [];
+                                proxyRes.on('data', (chunk) => chunks.push(chunk));
+                                proxyRes.on('end', () => {
+                                    const body = Buffer.concat(chunks);
+
+                                    if (
+                                        typeof proxyRes.statusCode === 'number' &&
+                                        proxyRes.statusCode >= 200 &&
+                                        proxyRes.statusCode <= 399
+                                    ) {
+                                        console.log('✅ Proxy response:', proxyRes.statusCode, req.url);
+                                        // Pass through successful response
+                                        res.statusCode = proxyRes.statusCode;
+                                        Object.entries(proxyRes.headers).forEach(([k, v]) => v && res.setHeader(k, v));
+                                        res.end(body);
+                                    } else {
+                                        const bodyStr = body.toString();
+                                        console.log('❌ Fetch page error:', proxyRes.statusCode, req.url, bodyStr);
+
+                                        // Try to serve local fallback for error responses
+                                        const pageId = req.url?.match(/\/pages\/([^/?#]+)/i)?.[1];
+                                        if (pageId) {
+                                            try {
+                                                const localPath = join(process.cwd(), `_local/pages/${pageId}.json`);
+                                                const file = readFileSync(localPath, 'utf-8');
+                                                console.log(`✅ Serving fallback for ${pageId}`);
+
+                                                console.log('PAGE', file);
+
+                                                // Override the response
+                                                res.statusCode = 200;
+                                                res.setHeader('Content-Type', 'application/json; charset=utf-8');
+                                                res.setHeader('X-Dev-Fallback', 'local-json');
+                                                res.end(file);
+                                                return;
+                                            } catch {
+                                                console.log(`❌ No fallback found for ${pageId}`);
+                                            }
+                                        }
+
+                                        // No fallback available, return original error
+                                        res.statusCode = proxyRes.statusCode || 404;
+                                        Object.entries(proxyRes.headers).forEach(([k, v]) => v && res.setHeader(k, v));
+                                        res.end(body);
+                                    }
+                                });
+                            });
+                            proxy.on('error', (err, req) => {
+                                console.error('❌ Fetch Page error:', err.message, req.url);
+                            });
+                        },
+                    },
+                }),
                 '/mobify/proxy/api': {
                     target,
                     changeOrigin: true,

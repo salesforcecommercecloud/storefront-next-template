@@ -3,6 +3,70 @@ import { Link } from 'react-router';
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '@/components/ui/carousel';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Component } from '@/lib/decorators/component';
+import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
+import heroImage from '/images/hero-cube.png';
+
+@Component('heroCarousel', {
+    name: 'Hero Carousel',
+    description:
+        'Interactive carousel component with multiple hero slides, autoplay, navigation controls, and dot indicators',
+})
+export class HeroCarouselMetadata {
+    @AttributeDefinition()
+    autoPlay?: boolean;
+
+    @AttributeDefinition()
+    autoPlayInterval?: number;
+
+    @AttributeDefinition()
+    showDots?: boolean;
+
+    @AttributeDefinition()
+    showNavigation?: boolean;
+}
+
+type Image = {
+    url: string;
+    meta_data?: {
+        height?: string;
+        width?: string;
+    };
+    focal_point?: {
+        x?: string;
+        y?: string;
+    };
+};
+
+const heroSlides: HeroSlide[] = [
+    {
+        id: 'slide-1',
+        title: 'Adventure Awaits',
+        subtitle: 'Gear up for your next outdoor expedition with premium equipment',
+        imageUrl: heroImage,
+        imageAlt: 'Outdoor adventure gear',
+        ctaText: 'Shop Now',
+        ctaLink: '/category/mens-clothing-shorts',
+    },
+    {
+        id: 'slide-2',
+        title: 'Built for the Wild',
+        subtitle: 'Durable, weather-resistant gear for every terrain and season',
+        imageUrl: heroImage,
+        imageAlt: 'Outdoor equipment for all seasons',
+        ctaText: 'Explore Collection',
+        ctaLink: '/category/mens-clothing-shorts',
+    },
+    {
+        id: 'slide-3',
+        title: 'Your Journey Starts Here',
+        subtitle: 'From mountain peaks to forest trails, we have everything you need',
+        imageUrl: heroImage,
+        imageAlt: 'Hiking and camping equipment',
+        ctaText: 'Discover Gear',
+        ctaLink: '/category/mens-clothing-shorts',
+    },
+];
 
 export interface HeroSlide {
     id: string;
@@ -15,7 +79,8 @@ export interface HeroSlide {
 }
 
 interface HeroCarouselProps {
-    slides: HeroSlide[];
+    slides?: HeroSlide[];
+    image?: Image;
     autoPlay?: boolean;
     autoPlayInterval?: number;
     showDots?: boolean;
@@ -23,8 +88,9 @@ interface HeroCarouselProps {
 }
 
 export default function HeroCarousel({
-    slides,
+    slides = heroSlides,
     autoPlay = true,
+    image,
     autoPlayInterval = 5000,
     showDots = true,
     showNavigation = true,
@@ -143,7 +209,7 @@ export default function HeroCarousel({
                 <CarouselContent className="-ml-0 h-full">
                     {slides.map((slide) => (
                         <CarouselItem key={slide.id} className="pl-0 h-full">
-                            <HeroSlideContent slide={slide} />
+                            <HeroSlideContent slide={image ? { ...slide, imageUrl: image.url } : slide} />
                         </CarouselItem>
                     ))}
                 </CarouselContent>
@@ -262,6 +328,9 @@ const HeroSlideContent = React.memo(
                 className="w-full h-full min-h-[300px] object-cover"
             />
 
+            {/* Dark overlay for better text contrast */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent z-[5]" />
+
             <div className="absolute inset-0 z-10 flex items-center">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="max-w-2xl" data-theme="light">
@@ -270,7 +339,7 @@ const HeroSlideContent = React.memo(
                         </h1>
 
                         {slide.subtitle && (
-                            <p className="text-sm sm:text-base md:text-lg lg:text-xl font-normal text-muted-foreground mb-4 sm:mb-6 md:mb-8 leading-none tracking-wide">
+                            <p className="text-sm sm:text-base md:text-lg lg:text-xl font-normal text-white/90 mb-4 sm:mb-6 md:mb-8 leading-none tracking-wide drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
                                 {slide.subtitle}
                             </p>
                         )}

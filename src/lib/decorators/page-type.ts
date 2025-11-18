@@ -1,0 +1,49 @@
+import 'reflect-metadata';
+
+/**
+ * Configuration interface for the PageType decorator
+ */
+export interface PageTypeConfig {
+    name: string; // Human-readable name for the page type
+    description: string; // Description of the page type
+    supportedAspectTypes: string[]; // Array of supported aspect types
+}
+
+/**
+ * PageType decorator for marking page components with metadata
+ * This decorator stores page type information that can be used for
+ * page categorization, documentation, and SFCC integration.
+ *
+ * @param config - Configuration object containing page type metadata
+ */
+export function PageType(config: PageTypeConfig) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return function (target: any): any {
+        // Store the page type metadata on the class/function
+        Reflect.defineMetadata('page:type', config, target);
+
+        return target;
+    };
+}
+
+/**
+ * Helper function to get page type metadata from a class or function
+ *
+ * @param target - The class constructor or function
+ * @returns PageTypeConfig object or undefined if not found
+ */
+export function getPageTypeMetadata(target: unknown): PageTypeConfig | undefined {
+    return Reflect.getMetadata('page:type', target);
+}
+
+/**
+ * Helper function to get all page type definitions
+ *
+ * @param target - The class constructor or function
+ * @returns Object containing page type metadata
+ */
+export function getPageTypeDefinitions(target: unknown): { pageType?: PageTypeConfig } {
+    const pageType = Reflect.getMetadata('page:type', target) || undefined;
+
+    return { pageType };
+}

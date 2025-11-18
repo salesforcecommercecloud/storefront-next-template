@@ -42,6 +42,7 @@ import { ToasterTheme } from '@/components/toast';
 import { ConfigProvider, getConfig, type AppConfig } from '@/config';
 import { useExecutePendingAction } from '@/hooks/use-execute-pending-action';
 import './app.css';
+import { PageDesignerProvider } from '@salesforce/storefront-next-runtime/design/react';
 import { getCookie } from '@/lib/cookies.client';
 import { initI18next } from '@/lib/i18next.client';
 import { ComposeProviders } from './providers/compose-providers';
@@ -289,13 +290,15 @@ export default function App({ loaderData: { root, subs, auth, basket, getI18next
             <Header>
                 <CategoryNavigationMenuMega resolve={refRoot.current} defer={refSubs.current} />
             </Header>
-            <main className="flex-grow pt-8">
-                {/* Outlet-level `<Suspense/>` boundary to contain pending promises. */}
-                {/* This at least prevents suspended components without a suggested local `<Suspense/>` boundary from further affecting global layout sections. */}
-                <Suspense key={pageKey} fallback={null}>
-                    <Outlet />
-                </Suspense>
-            </main>
+            <PageDesignerProvider clientId="odyssey" targetOrigin="*">
+                <main className="flex-grow pt-8">
+                    {/* Outlet-level `<Suspense/>` boundary to contain pending promises. */}
+                    {/* This at least prevents suspended components without a suggested local `<Suspense/>` boundary from further affecting global layout sections. */}
+                    <Suspense key={pageKey} fallback={null}>
+                        <Outlet />
+                    </Suspense>
+                </main>
+            </PageDesignerProvider>
             <Footer />
         </ComposeProviders>
     );

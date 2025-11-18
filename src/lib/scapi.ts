@@ -183,6 +183,7 @@ function createCommerceSdkClient<T>(
  * export function loader({ params, context }: LoaderFunctionArgs) {
  *   const client = createClient(context);
  *   return {
+ *     page: client.ShopperExperience.getPage({ parameters: { pageId: 'home' } }),
  *     basket: client.ShopperBasketsV2.getBasket({ parameters: { basketId: 'test' } }),
  *     products: client.ShopperProducts.getProduct({ parameters: { id: params.productId } }),
  *   };

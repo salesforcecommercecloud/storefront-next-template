@@ -1,67 +1,66 @@
-import { type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from 'react-router';
-import type { ShopperSearch, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import { Suspense } from 'react';
+import { Await, type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from 'react-router';
+import type { ShopperSearch, ShopperProducts, ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchSearchProducts } from '@/lib/api/search';
 import { fetchCategories } from '@/lib/api/categories';
 import { createPage, type RouteComponentProps } from '@/components/create-page';
-import HeroCarousel, { type HeroSlide } from '@/components/hero-carousel';
 import HomeSkeleton from '@/components/home/skeleton';
+import { Region } from '@/components/region';
 import { PopularCategories } from '@/components/home/popular-categories';
-import { ProductCarouselWithSuspense } from '@/components/product-carousel';
 import { ContentCard } from '@/components/content-card';
 import { Button } from '@/components/ui/button';
 import { getConfig } from '@/config';
 import uiStrings from '@/temp-ui-string';
-import heroImage from '/images/hero-cube.png';
+import { PageType } from '@/lib/decorators/page-type';
+import { getRegionDefinition, RegionDefinition } from '@/lib/decorators/region-definition';
+
+import { collectComponentDataPromises, fetchPageFromLoader } from '@/lib/util/pageLoader';
+
 import heroNewArrivals from '/images/hero-new-arrivals.png';
 
+@PageType({
+    name: 'Home Page',
+    description: 'Main landing page with hero carousel, featured products, and help sections',
+    supportedAspectTypes: [],
+})
+@RegionDefinition([
+    {
+        id: 'headerbanner',
+        name: 'Header Banner Region',
+        description: 'Region for promotional banners and hero content',
+        maxComponents: 3,
+        componentTypeExclusions: ['heroCarousel'],
+    },
+])
+export class HomePageMetadata {}
+
 type HomePageData = {
+    page: Promise<ShopperExperience.schemas['Page']>;
     searchResult: Promise<ShopperSearch.schemas['ProductSearchResult']>;
     categories: Promise<ShopperProducts.schemas['Category'][]>;
+    componentData: Promise<Record<string, Promise<unknown>>>;
 };
-
-// Hero carousel slides data
-const heroSlides: HeroSlide[] = [
-    {
-        id: 'slide-1',
-        title: uiStrings.home.hero.slide1.title,
-        subtitle: uiStrings.home.hero.slide1.subtitle,
-        imageUrl: heroImage,
-        imageAlt: uiStrings.home.hero.slide1.imageAlt,
-        ctaText: uiStrings.home.hero.slide1.ctaText,
-        ctaLink: '/category/root',
-    },
-    {
-        id: 'slide-2',
-        title: uiStrings.home.hero.slide2.title,
-        subtitle: uiStrings.home.hero.slide2.subtitle,
-        imageUrl: heroImage,
-        imageAlt: uiStrings.home.hero.slide1.imageAlt,
-        ctaText: uiStrings.home.hero.slide2.ctaText,
-        ctaLink: '/category/root',
-    },
-    {
-        id: 'slide-3',
-        title: uiStrings.home.hero.slide3.title,
-        subtitle: uiStrings.home.hero.slide3.subtitle,
-        imageUrl: heroImage,
-        imageAlt: uiStrings.home.hero.slide1.imageAlt,
-        ctaText: uiStrings.home.hero.slide3.ctaText,
-        ctaLink: '/shipping',
-    },
-];
 
 /**
  * Internal helper function that fetches home page data.
  * This function handles the actual data fetching logic shared between server and client loaders.
  * @returns Promise that resolves to an object containing search result promise
  */
-function getPageData({ context }: LoaderFunctionArgs, limit: number): HomePageData {
+function getPageData(loaderCtx: LoaderFunctionArgs, limit: number): HomePageData | void {
+    const pagePromise = fetchPageFromLoader(loaderCtx, {
+        pageId: 'homepage',
+    });
+
+    const componentDataPromises = collectComponentDataPromises(loaderCtx, pagePromise);
+
     return {
-        searchResult: fetchSearchProducts(context, {
+        page: pagePromise,
+        searchResult: fetchSearchProducts(loaderCtx.context, {
             categoryId: 'root',
             limit,
         }),
-        categories: fetchCategories(context, 'root', 1),
+        categories: fetchCategories(loaderCtx.context, 'root', 1),
+        componentData: componentDataPromises,
     };
 }
 
@@ -91,27 +90,34 @@ export function clientLoader(args: ClientLoaderFunctionArgs) {
  * @returns JSX element representing the home page layout
  */
 // eslint-disable-next-line react-refresh/only-export-components
-function HomeView({
-    loaderData: { searchResult: searchResultPromise, categories: categoriesPromise },
-}: RouteComponentProps<HomePageData>) {
+function HomeView({ loaderData }: RouteComponentProps<HomePageData>) {
     return (
         <div className="pb-16 -mt-8">
-            <HeroCarousel
-                slides={heroSlides}
-                autoPlay={true}
-                autoPlayInterval={6000}
-                showNavigation={true}
-                showDots={true}
-            />
-
-            {/* Featured Products */}
-            <div className="pt-16 max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
-                <ProductCarouselWithSuspense
-                    resolve={searchResultPromise}
-                    title={uiStrings.home.featuredProducts.title}
-                />
-            </div>
-
+            <Suspense fallback={<div />}>
+                <Await resolve={loaderData.page} errorElement={<div />}>
+                    {(page) => {
+                        const { regions } = page;
+                        const headerBannerRegion = regions?.find((region) => region.id === 'headerbanner');
+                        const headerBannerDesignMetadata = getRegionDefinition(HomePageMetadata, 'headerbanner');
+                        return (
+                            <>
+                                <div className="py-8">
+                                    <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+                                        {headerBannerRegion && (
+                                            <Region
+                                                region={headerBannerRegion}
+                                                metadata={headerBannerDesignMetadata}
+                                                key={headerBannerRegion.id}
+                                                componentData={loaderData.componentData}
+                                            />
+                                        )}
+                                    </div>
+                                </div>
+                            </>
+                        );
+                    }}
+                </Await>
+            </Suspense>
             {/* New Arrivals */}
             <div className="pt-16">
                 <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -140,7 +146,7 @@ function HomeView({
             </div>
 
             {/* Popular Categories */}
-            <PopularCategories categoriesPromise={categoriesPromise} />
+            <PopularCategories categoriesPromise={loaderData.categories} />
 
             {/* Featured Content Cards */}
             <div className="pt-16">

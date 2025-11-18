@@ -16,7 +16,7 @@
         "sourceMap": true,
         "resolveJsonModule": true,
         "allowImportingTsExtensions": false,
-        "jsx": "preserve",
+        "jsx": "react-jsx",
         "tsBuildInfoFile": "./node_modules/.cache/storefront-next-runtime.tsbuildinfo",
     },
     "include": ["src/**/*"],

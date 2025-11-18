@@ -344,15 +344,19 @@ function extractRegionDefinitionsFromSource(sourceFile: SourceFile, className: s
                             }
 
                             if (Array.isArray(regionConfig.componentTypeInclusions)) {
-                                regionDefinition.component_types = regionConfig.componentTypeInclusions.map((incl) => ({
-                                    type_id: incl,
-                                }));
+                                regionDefinition.component_type_inclusions = regionConfig.componentTypeInclusions.map(
+                                    (incl) => ({
+                                        type_id: incl,
+                                    })
+                                );
                             }
 
                             if (Array.isArray(regionConfig.componentTypeExclusions)) {
-                                regionDefinition.component_types = regionConfig.componentTypeExclusions.map((incl) => ({
-                                    type_id: incl,
-                                }));
+                                regionDefinition.component_type_exclusions = regionConfig.componentTypeExclusions.map(
+                                    (excl) => ({
+                                        type_id: excl,
+                                    })
+                                );
                             }
 
                             if (regionConfig.maxComponents !== undefined) {

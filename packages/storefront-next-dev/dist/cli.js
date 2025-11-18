@@ -797,8 +797,8 @@ function extractRegionDefinitionsFromSource(sourceFile, className) {
 							name: regionConfig.name || "Region"
 						};
 						if (regionConfig.componentTypes) regionDefinition.component_types = regionConfig.componentTypes;
-						if (Array.isArray(regionConfig.componentTypeInclusions)) regionDefinition.component_types = regionConfig.componentTypeInclusions.map((incl) => ({ type_id: incl }));
-						if (Array.isArray(regionConfig.componentTypeExclusions)) regionDefinition.component_types = regionConfig.componentTypeExclusions.map((incl) => ({ type_id: incl }));
+						if (Array.isArray(regionConfig.componentTypeInclusions)) regionDefinition.component_type_inclusions = regionConfig.componentTypeInclusions.map((incl) => ({ type_id: incl }));
+						if (Array.isArray(regionConfig.componentTypeExclusions)) regionDefinition.component_type_exclusions = regionConfig.componentTypeExclusions.map((excl) => ({ type_id: excl }));
 						if (regionConfig.maxComponents !== void 0) regionDefinition.max_components = regionConfig.maxComponents;
 						if (regionConfig.minComponents !== void 0) regionDefinition.min_components = regionConfig.minComponents;
 						if (regionConfig.allowMultiple !== void 0) regionDefinition.allow_multiple = regionConfig.allowMultiple;
@@ -53836,7 +53836,7 @@ program.command("deploy-cartridge").description("Deploy a cartridge to Commerce 
 			process.exit(1);
 		}
 		const dwConfig = JSON.parse(fs.readFileSync(dwJsonPath, "utf8"));
-		const { metadataDir } = validateAndBuildPaths(options);
+		const { cartridgeBaseDir, metadataDir } = validateAndBuildPaths(options);
 		if (!fs.existsSync(metadataDir)) {
 			info(`Warning: Metadata directory does not exist: ${metadataDir}`);
 			info(`Run 'generate-cartridge' first to create metadata files.`);
@@ -53857,7 +53857,7 @@ program.command("deploy-cartridge").description("Deploy a cartridge to Commerce 
 			process.exit(1);
 		}
 		const credentials = `${dwConfig.username}:${dwConfig.password}`;
-		success(`Code deployed to version "${(await deployCode(instance, codeVersion, metadataDir, Buffer.from(credentials).toString("base64"))).version}" successfully!`);
+		success(`Code deployed to version "${(await deployCode(instance, codeVersion, cartridgeBaseDir, Buffer.from(credentials).toString("base64"))).version}" successfully!`);
 		process.exit(0);
 	} catch (err) {
 		error(`Deploy failed: ${err.message}`);

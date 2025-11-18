@@ -6,16 +6,25 @@
  *
  * @fileoverview Exports for product carousel functionality including loading states and Suspense boundaries
  */
-
-// Main carousel component
-export { default as ProductCarousel } from './carousel';
+import { AttributeDefinition, Component, Loader } from '@/lib/decorators';
 
 // Skeleton component for loading states
 export { default as ProductCarouselSkeleton } from './skeleton';
+export { default as Carousel } from './carousel';
 
 // ProductCarousel wrapped with Suspense boundary
 export { ProductCarouselWithSuspense } from './carousel';
+export { ProductCarouselWithSuspense as default } from './carousel';
 
-// Re-export the main component as default for backward compatibility
-// eslint-disable-next-line react-refresh/only-export-components
-export { default } from './carousel';
+import { loader } from './loaders';
+
+@Component('productCarousel', {
+    name: 'Product Carousel',
+    description:
+        'A responsive, interactive carousel that displays a collection of product cards in a horizontally scrollable layout.',
+})
+@Loader(loader)
+export class ProductCarouselWithSuspenseMetadata {
+    @AttributeDefinition()
+    title?: string;
+}

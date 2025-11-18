@@ -1,0 +1,58 @@
+{
+  "name": "Hero Metadata",
+  "description": "Custom component: HeroMetadata",
+  "group": "odyssey_base",
+  "arch_type": "headless",
+  "region_definitions": [],
+  "attribute_definition_groups": [
+    {
+      "id": "hero",
+      "name": "Hero Metadata",
+      "description": "Custom component: HeroMetadata",
+      "attribute_definitions": [
+        {
+          "id": "title",
+          "name": "Title",
+          "type": "string",
+          "required": false,
+          "description": "Field: title"
+        },
+        {
+          "id": "imageUrl",
+          "name": "Image Url",
+          "type": "string",
+          "required": false,
+          "description": "Field: imageUrl"
+        },
+        {
+          "id": "imageAlt",
+          "name": "Image Alt",
+          "type": "string",
+          "required": false,
+          "description": "Field: imageAlt"
+        },
+        {
+          "id": "subtitle",
+          "name": "Subtitle",
+          "type": "string",
+          "required": false,
+          "description": "Field: subtitle"
+        },
+        {
+          "id": "ctaText",
+          "name": "Cta Text",
+          "type": "string",
+          "required": false,
+          "description": "Field: ctaText"
+        },
+        {
+          "id": "ctaLink",
+          "name": "CTA Link",
+          "type": "url",
+          "required": false,
+          "description": "Field: ctaLink"
+        }
+      ]
+    }
+  ]
+}
