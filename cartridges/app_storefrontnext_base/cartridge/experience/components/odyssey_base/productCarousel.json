@@ -1,0 +1,23 @@
+{
+  "name": "Product Carousel With Suspense Metadata",
+  "description": "Custom component: ProductCarouselWithSuspenseMetadata",
+  "group": "odyssey_base",
+  "arch_type": "headless",
+  "region_definitions": [],
+  "attribute_definition_groups": [
+    {
+      "id": "productCarousel",
+      "name": "Product Carousel With Suspense Metadata",
+      "description": "Custom component: ProductCarouselWithSuspenseMetadata",
+      "attribute_definitions": [
+        {
+          "id": "title",
+          "name": "Title",
+          "type": "string",
+          "required": false,
+          "description": "Field: title"
+        }
+      ]
+    }
+  ]
+}

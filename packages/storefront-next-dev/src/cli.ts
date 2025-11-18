@@ -233,7 +233,7 @@ program
 
             const dwConfig = JSON.parse(fs.readFileSync(dwJsonPath, 'utf8'));
 
-            const { metadataDir } = validateAndBuildPaths(options);
+            const { cartridgeBaseDir, metadataDir } = validateAndBuildPaths(options);
 
             // Verify metadata directory exists within cartridge base
             if (!fs.existsSync(metadataDir)) {
@@ -264,8 +264,8 @@ program
             const credentials = `${dwConfig.username}:${dwConfig.password}`;
             const encoded = Buffer.from(credentials).toString('base64');
 
-            // Deploy the metadata directory
-            const result = await deployCode(instance, codeVersion, metadataDir, encoded);
+            // Deploy the cartridge base directory (includes full cartridge path structure)
+            const result = await deployCode(instance, codeVersion, cartridgeBaseDir, encoded);
 
             success(`Code deployed to version "${result.version}" successfully!`);
 

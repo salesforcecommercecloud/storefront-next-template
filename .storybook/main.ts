@@ -21,6 +21,18 @@ const config: StorybookConfig = {
         name: "@storybook/react-vite",
         options: {},
     },
+    typescript: {
+        reactDocgen: 'react-docgen-typescript',
+        reactDocgenTypescriptOptions: {
+            compilerOptions: {
+                experimentalDecorators: true,
+                emitDecoratorMetadata: true,
+            },
+            // Exclude node_modules from prop tables
+            propFilter: (prop) =>
+                prop.parent ? !/node_modules/.test(prop.parent.fileName) : true,
+        },
+    },
     async viteFinal(inlineConfig: InlineConfig): Promise<InlineConfig> {
         // Remove project-specific plugins that conflict with Storybook
         inlineConfig.plugins = inlineConfig.plugins?.filter((plugin) => {

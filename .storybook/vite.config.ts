@@ -13,7 +13,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
  */
 export default defineConfig({
     plugins: [
-        react(), // Include React plugin for JSX processing
+        react({
+            babel: {
+                parserOpts: {
+                    plugins: [['decorators', { decoratorsBeforeExport: true }]],
+                },
+            },
+        }), // Include React plugin for JSX processing with decorator support
         tailwindcss(), // Include Tailwind CSS plugin
         tsconfigPaths(),
     ],

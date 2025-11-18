@@ -1,0 +1,18 @@
+{
+  "data": {},
+  "id": "homepage",
+  "name": "homepage",
+  "regions": [
+    {
+      "components": [
+        {
+          "data": {},
+          "id": "e5bafadd5c3e2a575b3accd6d8",
+          "typeId": "odyssey_base.heroCarousel"
+        }
+      ],
+      "id": "headerbanner"
+    }
+  ],
+  "typeId": "homePage"
+}

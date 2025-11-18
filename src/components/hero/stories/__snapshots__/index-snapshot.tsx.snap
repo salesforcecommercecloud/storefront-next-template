@@ -3,40 +3,47 @@
 exports[`Hero stories snapshot > Default story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="relative w-full h-full min-h-[500px] max-h-[70vh] overflow-hidden"
+    class="relative w-full overflow-hidden"
   >
-    <img
-      alt="Hero background"
-      class="w-full h-full object-cover"
-      fetchpriority="high"
-      src="https://via.placeholder.com/1920x1080"
-    />
     <div
-      class="absolute inset-0 z-10 flex items-center"
+      class="relative w-full aspect-[16/9] sm:aspect-[21/9] md:aspect-[2.5/1] lg:aspect-[3/1] min-h-[400px] sm:min-h-[450px] md:min-h-[500px] lg:min-h-[600px]"
     >
+      <img
+        alt="Hero background"
+        class="absolute inset-0 w-full h-full object-cover"
+        fetchpriority="high"
+        style="object-position: 50% 50%;"
+      />
       <div
-        class="container mx-auto px-4 sm:px-6 lg:px-8"
+        class="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent"
+      />
+      <div
+        class="absolute inset-0 z-10 flex items-center"
       >
         <div
-          class="max-w-2xl"
+          class="container mx-auto px-4 sm:px-6 lg:px-8"
         >
-          <h1
-            class="text-3xl font-bold text-foreground mb-6 leading-none tracking-tight"
+          <div
+            class="max-w-xl lg:max-w-2xl"
           >
-            Welcome to Our Store
-          </h1>
-          <p
-            class="text-lg font-normal text-muted-foreground mb-8 leading-none tracking-wide"
-          >
-            Discover amazing products for your everyday needs
-          </p>
-          <a
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-9 has-[>svg]:px-3 text-xl p-6"
-            data-slot="button"
-            href="/category/all"
-          >
-            Shop Now
-          </a>
+            <h1
+              class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-3 sm:mb-4 md:mb-6 leading-tight tracking-tight drop-shadow-lg"
+            >
+              Welcome to Our Store
+            </h1>
+            <p
+              class="text-base sm:text-lg md:text-xl lg:text-2xl font-normal text-primary-foreground/90 mb-6 sm:mb-8 leading-relaxed tracking-wide drop-shadow-md max-w-prose"
+            >
+              Discover amazing products for your everyday needs
+            </p>
+            <a
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-10 rounded-md has-[>svg]:px-4 text-base sm:text-lg md:text-xl px-6 py-4 sm:px-8 sm:py-5 md:px-10 md:py-6 shadow-xl hover:shadow-2xl transition-all"
+              data-slot="button"
+              href="/category/all"
+            >
+              Shop Now
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -47,35 +54,42 @@ exports[`Hero stories snapshot > Default story renders and matches snapshot 1`] 
 exports[`Hero stories snapshot > WithoutSubtitle story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="relative w-full h-full min-h-[500px] max-h-[70vh] overflow-hidden"
+    class="relative w-full overflow-hidden"
   >
-    <img
-      alt="Hero background"
-      class="w-full h-full object-cover"
-      fetchpriority="high"
-      src="https://via.placeholder.com/1920x1080"
-    />
     <div
-      class="absolute inset-0 z-10 flex items-center"
+      class="relative w-full aspect-[16/9] sm:aspect-[21/9] md:aspect-[2.5/1] lg:aspect-[3/1] min-h-[400px] sm:min-h-[450px] md:min-h-[500px] lg:min-h-[600px]"
     >
+      <img
+        alt="Hero background"
+        class="absolute inset-0 w-full h-full object-cover"
+        fetchpriority="high"
+        style="object-position: 50% 50%;"
+      />
       <div
-        class="container mx-auto px-4 sm:px-6 lg:px-8"
+        class="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent"
+      />
+      <div
+        class="absolute inset-0 z-10 flex items-center"
       >
         <div
-          class="max-w-2xl"
+          class="container mx-auto px-4 sm:px-6 lg:px-8"
         >
-          <h1
-            class="text-3xl font-bold text-foreground mb-6 leading-none tracking-tight"
+          <div
+            class="max-w-xl lg:max-w-2xl"
           >
-            Simple Hero
-          </h1>
-          <a
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-9 has-[>svg]:px-3 text-xl p-6"
-            data-slot="button"
-            href="/explore"
-          >
-            Explore
-          </a>
+            <h1
+              class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-3 sm:mb-4 md:mb-6 leading-tight tracking-tight drop-shadow-lg"
+            >
+              Simple Hero
+            </h1>
+            <a
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-10 rounded-md has-[>svg]:px-4 text-base sm:text-lg md:text-xl px-6 py-4 sm:px-8 sm:py-5 md:px-10 md:py-6 shadow-xl hover:shadow-2xl transition-all"
+              data-slot="button"
+              href="/explore"
+            >
+              Explore
+            </a>
+          </div>
         </div>
       </div>
     </div>

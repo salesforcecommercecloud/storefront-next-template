@@ -1,7 +1,8 @@
 import "./modeDetection-BZMGik06.js";
 import "./client-IwF8G5Dm.js";
-import { a as isComponentTypeAllowedInRegion, c as usePageDesignerMode, i as useDesignState, o as useComponentDiscovery, r as useDesignContext, s as PageDesignerProvider } from "./DesignContext-CtmhEgsl.js";
+import { a as isComponentTypeAllowedInRegion, c as usePageDesignerMode, i as useDesignState, o as useComponentDiscovery, r as useDesignContext, s as PageDesignerProvider } from "./DesignContext-DguxL6EF.js";
 import React, { useCallback, useMemo, useRef } from "react";
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 
 //#region src/design/react/hooks/useComponentDecoratorClasses.ts
 function useComponentDecoratorClasses({ componentId, isFragment }) {
@@ -82,19 +83,46 @@ function useComponentType(componentId) {
 
 //#endregion
 //#region src/design/react/components/DeleteToolboxButton.tsx
-const DeleteToolboxButton = ({ title, onClick }) => <button className="pd-design__frame__toolbox-button" title={title} type="button" onClick={onClick}>
-        <svg className="pd-design__frame__delete-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-    </button>;
+const DeleteToolboxButton = ({ title, onClick }) => /* @__PURE__ */ jsx("button", {
+	className: "pd-design__frame__toolbox-button",
+	title,
+	type: "button",
+	onClick,
+	children: /* @__PURE__ */ jsx("svg", {
+		className: "pd-design__frame__delete-icon",
+		viewBox: "0 0 24 24",
+		fill: "none",
+		xmlns: "http://www.w3.org/2000/svg",
+		children: /* @__PURE__ */ jsx("path", {
+			d: "M18 6L6 18M6 6l12 12",
+			stroke: "currentColor",
+			strokeWidth: "2",
+			strokeLinecap: "round",
+			strokeLinejoin: "round"
+		})
+	})
+});
 
 //#endregion
 //#region src/design/react/components/MoveToolboxButton.tsx
-const MoveToolboxButton = ({ title, onMouseDown }) => <button className="pd-design__frame__toolbox-button" title={title} type="button" onMouseDown={onMouseDown}>
-        <svg className="pd-design__frame__move-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M22.9 11.7l-3.8-4.2c-.3-.3-.6 0-.6.4v2.7h-4.7c-.2 0-.4-.2-.4-.4V5.5h2.7c.5 0 .7-.4.4-.6l-4.1-3.8c-.2-.2-.5-.2-.7 0L7.6 4.9c-.3.3-.1.6.4.6h2.6v4.7c0 .2-.2.4-.4.4H5.5V7.9c0-.5-.4-.7-.6-.4l-3.8 4.1c-.2.2-.2.5 0 .7l3.8 4.1c.3.3.6.1.6-.4v-2.6h4.7c.2 0 .4.2.4.4v4.7H7.9c-.5 0-.7.4-.4.6l4.1 3.8c.2.2.5.2.7 0l4.1-3.8c.3-.3.1-.6-.4-.6h-2.6v-4.7c0-.2.2-.4.4-.4h4.7v2.7c0 .5.4.7.6.4l3.8-4.1c.2-.3.2-.5 0-.7z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-    </button>;
+const MoveToolboxButton = ({ title, onMouseDown }) => /* @__PURE__ */ jsx("button", {
+	className: "pd-design__frame__toolbox-button",
+	title,
+	type: "button",
+	onMouseDown,
+	children: /* @__PURE__ */ jsx("svg", {
+		className: "pd-design__frame__move-icon",
+		viewBox: "0 0 24 24",
+		xmlns: "http://www.w3.org/2000/svg",
+		children: /* @__PURE__ */ jsx("path", {
+			d: "M22.9 11.7l-3.8-4.2c-.3-.3-.6 0-.6.4v2.7h-4.7c-.2 0-.4-.2-.4-.4V5.5h2.7c.5 0 .7-.4.4-.6l-4.1-3.8c-.2-.2-.5-.2-.7 0L7.6 4.9c-.3.3-.1.6.4.6h2.6v4.7c0 .2-.2.4-.4.4H5.5V7.9c0-.5-.4-.7-.6-.4l-3.8 4.1c-.2.2-.2.5 0 .7l3.8 4.1c.3.3.6.1.6-.4v-2.6h4.7c.2 0 .4.2.4.4v4.7H7.9c-.5 0-.7.4-.4.6l4.1 3.8c.2.2.5.2.7 0l4.1-3.8c.3-.3.1-.6-.4-.6h-2.6v-4.7c0-.2.2-.4.4-.4h4.7v2.7c0 .5.4.7.6.4l3.8-4.1c.2-.3.2-.5 0-.7z",
+			stroke: "currentColor",
+			strokeWidth: "2",
+			strokeLinecap: "round",
+			strokeLinejoin: "round"
+		})
+	})
+});
 
 //#endregion
 //#region src/design/react/hooks/useLabels.ts
@@ -127,24 +155,37 @@ const DesignFrame = ({ componentId, children, name, parentId, regionId, showFram
 		regionId,
 		startComponentMove
 	]);
-	const classes = `pd-design__frame ${showFrame ? "pd-design__frame--visible" : ""}`.trim();
-	return <div className={classes} ref={nodeRef}>
-            {showFrame && <>
-                    <div className="pd-design__frame--x" />
-                    <div className="pd-design__frame--y" />
-                </>}
-            <div className="pd-design__frame__label">
-                {componentType?.image && <span className="pd-design__icon">
-                        <img src={componentType.image} alt="" />
-                    </span>}
-                <span className="pd-design__frame__name">{name}</span>
-            </div>
-            {showToolbox && <div className="pd-design__frame__toolbox">
-                    <MoveToolboxButton title={labels.moveComponent ?? "Move component"} onMouseDown={handleMouseDown} />
-                    <DeleteToolboxButton title={labels.deleteComponent ?? "Delete component"} onClick={handleDelete} />
-                </div>}
-            {children}
-        </div>;
+	return /* @__PURE__ */ jsxs("div", {
+		className: `pd-design__frame ${showFrame ? "pd-design__frame--visible" : ""}`.trim(),
+		ref: nodeRef,
+		children: [
+			showFrame && /* @__PURE__ */ jsxs(Fragment, { children: [/* @__PURE__ */ jsx("div", { className: "pd-design__frame--x" }), /* @__PURE__ */ jsx("div", { className: "pd-design__frame--y" })] }),
+			/* @__PURE__ */ jsxs("div", {
+				className: "pd-design__frame__label",
+				children: [componentType?.image && /* @__PURE__ */ jsx("span", {
+					className: "pd-design__icon",
+					children: /* @__PURE__ */ jsx("img", {
+						src: componentType.image,
+						alt: ""
+					})
+				}), /* @__PURE__ */ jsx("span", {
+					className: "pd-design__frame__name",
+					children: name
+				})]
+			}),
+			showToolbox && /* @__PURE__ */ jsxs("div", {
+				className: "pd-design__frame__toolbox",
+				children: [/* @__PURE__ */ jsx(MoveToolboxButton, {
+					title: labels.moveComponent ?? "Move component",
+					onMouseDown: handleMouseDown
+				}), /* @__PURE__ */ jsx(DeleteToolboxButton, {
+					title: labels.deleteComponent ?? "Delete component",
+					onClick: handleDelete
+				})]
+			}),
+			children
+		]
+	});
 };
 DesignFrame.defaultProps = {
 	parentId: void 0,
@@ -208,15 +249,28 @@ function DesignComponent(props) {
 		componentId: id,
 		name
 	}), [id, name]);
-	const handleDragOver = React.useCallback((event) => {
-		if (draggingSourceComponentId !== componentId) event.preventDefault();
-	}, [draggingSourceComponentId, componentId]);
-	return <div ref={dragRef} className={classes} draggable={isDraggingComponent} onClick={handleClick} onDragOver={handleDragOver} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-            <div className="pd-design__component__drop-target" />
-            <DesignFrame showFrame={showFrame} componentId={componentId} name={componentName} parentId={parentComponentId} regionId={regionId}>
-                <ComponentContext.Provider value={context}>{children}</ComponentContext.Provider>
-            </DesignFrame>
-        </div>;
+	return /* @__PURE__ */ jsxs("div", {
+		ref: dragRef,
+		className: classes,
+		draggable: isDraggingComponent,
+		onClick: handleClick,
+		onDragOver: React.useCallback((event) => {
+			if (draggingSourceComponentId !== componentId) event.preventDefault();
+		}, [draggingSourceComponentId, componentId]),
+		onMouseEnter: handleMouseEnter,
+		onMouseLeave: handleMouseLeave,
+		children: [/* @__PURE__ */ jsx("div", { className: "pd-design__component__drop-target" }), /* @__PURE__ */ jsx(DesignFrame, {
+			showFrame,
+			componentId,
+			name: componentName,
+			parentId: parentComponentId,
+			regionId,
+			children: /* @__PURE__ */ jsx(ComponentContext.Provider, {
+				value: context,
+				children
+			})
+		})]
+	});
 }
 
 //#endregion
@@ -234,9 +288,16 @@ function createReactComponentDesignDecorator(Component) {
 	return function DesignDecoratedComponent(props) {
 		const { designMetadata, children,...componentProps } = props;
 		const { isDesignMode } = usePageDesignerMode();
-		return isDesignMode ? <DesignComponent designMetadata={designMetadata}>
-                <Component {...componentProps}>{children}</Component>
-            </DesignComponent> : <Component {...componentProps}>{children}</Component>;
+		return isDesignMode ? /* @__PURE__ */ jsx(DesignComponent, {
+			designMetadata,
+			children: /* @__PURE__ */ jsx(Component, {
+				...componentProps,
+				children
+			})
+		}) : /* @__PURE__ */ jsx(Component, {
+			...componentProps,
+			children
+		});
 	};
 }
 
@@ -293,18 +354,29 @@ function DesignRegion(props) {
 		regionDirection,
 		componentIds
 	]);
-	const handleDragOver = useCallback((event) => {
-		if (isComponentTypeAllowedInRegion(dragState.componentType, componentTypeInclusions, componentTypeExclusions)) event.preventDefault();
-	}, [
-		dragState.componentType,
-		componentTypeInclusions,
-		componentTypeExclusions
-	]);
-	return <div className={classes} ref={nodeRef} onDragOver={handleDragOver} data-region-id={id}>
-            <DesignFrame name={name ?? labels.defaultRegionName ?? "Region"} parentId={parentComponentId} regionId={id} showFrame={showFrame} showToolbox={false}>
-                <RegionContext.Provider value={context}>{children}</RegionContext.Provider>
-            </DesignFrame>
-        </div>;
+	return /* @__PURE__ */ jsx("div", {
+		className: classes,
+		ref: nodeRef,
+		onDragOver: useCallback((event) => {
+			if (isComponentTypeAllowedInRegion(dragState.componentType, componentTypeInclusions, componentTypeExclusions)) event.preventDefault();
+		}, [
+			dragState.componentType,
+			componentTypeInclusions,
+			componentTypeExclusions
+		]),
+		"data-region-id": id,
+		children: /* @__PURE__ */ jsx(DesignFrame, {
+			name: name ?? labels.defaultRegionName ?? "Region",
+			parentId: parentComponentId,
+			regionId: id,
+			showFrame,
+			showToolbox: false,
+			children: /* @__PURE__ */ jsx(RegionContext.Provider, {
+				value: context,
+				children
+			})
+		})
+	});
 }
 
 //#endregion
@@ -313,9 +385,16 @@ function createReactRegionDesignDecorator(Region) {
 	return function DesignDecoratedRegion(props) {
 		const { designMetadata, children,...componentProps } = props;
 		const { isDesignMode } = usePageDesignerMode();
-		return isDesignMode ? <DesignRegion designMetadata={designMetadata}>
-                <Region {...componentProps}>{children}</Region>
-            </DesignRegion> : <Region {...componentProps}>{children}</Region>;
+		return isDesignMode ? /* @__PURE__ */ jsx(DesignRegion, {
+			designMetadata,
+			children: /* @__PURE__ */ jsx(Region, {
+				...componentProps,
+				children
+			})
+		}) : /* @__PURE__ */ jsx(Region, {
+			...componentProps,
+			children
+		});
 	};
 }
 

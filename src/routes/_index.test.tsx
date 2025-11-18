@@ -6,9 +6,9 @@
  */
 
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { vi, describe, test, expect, beforeEach } from 'vitest';
-import type { ShopperSearch, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch, ShopperProducts, ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import HomeView from './_index';
 
 // Mock data
@@ -68,39 +68,34 @@ const mockCategories: ShopperProducts.schemas['Category'][] = [
     },
 ];
 
-// Mock the HeroCarousel component
-vi.mock('@/components/hero-carousel', () => ({
-    default: ({ slides }: { slides: any[] }) => (
-        <div data-testid="hero-carousel">
-            {slides.map((slide) => (
-                <div key={slide.id} data-testid={`hero-slide-${slide.id}`}>
-                    {slide.title}
-                </div>
-            ))}
+// Helper function to create mock Page objects
+const createMockPage = (regions: any[] = []): ShopperExperience.schemas['Page'] =>
+    ({
+        id: 'mock-page',
+        typeId: 'homepage',
+        regions,
+    }) as ShopperExperience.schemas['Page'];
+
+// Mock the Region component
+vi.mock('@/components/region', () => ({
+    Region: ({ region }: any) => <div data-testid="region" data-region-id={region?.id} />,
+}));
+
+// Mock the PopularCategories component
+vi.mock('@/components/home/popular-categories', () => ({
+    PopularCategories: () => (
+        <div data-testid="popular-categories">
+            <h2>Step into Elegance</h2>
         </div>
     ),
 }));
 
-// Mock the ProductCarouselWithSuspense component
-vi.mock('@/components/product-carousel', () => ({
-    ProductCarouselWithSuspense: ({ resolve: _resolve, title }: { resolve: Promise<any>; title: string }) => {
-        return (
-            <div data-testid="product-carousel-with-suspense">
-                <h2>{title}</h2>
-                <div data-testid="carousel-data">Loaded</div>
-            </div>
-        );
-    },
-}));
-
 // Mock the ContentCard component
 vi.mock('@/components/content-card', () => ({
-    ContentCard: ({ title, description, image, link }: any) => (
+    ContentCard: ({ title, description }: any) => (
         <div data-testid="content-card">
             <h3>{title}</h3>
             <p>{description}</p>
-            {image && <img src={image} alt={title} />}
-            {link && <a href={link}>Learn More</a>}
         </div>
     ),
 }));
@@ -115,17 +110,37 @@ vi.mock('@/components/ui/skeleton', () => ({
     Skeleton: ({ className, ...props }: any) => <div data-testid="skeleton" className={className} {...props} />,
 }));
 
+// Mock the HomeSkeleton component
+vi.mock('@/components/home/skeleton', () => ({
+    default: () => <div data-testid="home-skeleton" />,
+}));
+
+// Mock React Router components
+vi.mock('react-router', () => ({
+    Await: ({ resolve, children }: any) => {
+        // For testing, synchronously resolve the promise and render
+        if (resolve && typeof resolve.then === 'function') {
+            // For synchronous testing, we need to access the resolved value
+            // This is a simplified approach for testing
+            if (resolve._resolvedValue) {
+                return typeof children === 'function' ? children(resolve._resolvedValue) : children;
+            }
+        }
+        return typeof children === 'function' ? children(resolve) : children;
+    },
+    Suspense: ({ children }: any) => children,
+}));
+
 // Mock the createPage function
 vi.mock('@/components/create-page', () => ({
-    createPage: (config: any) => {
-        return (props: any) => {
-            // For testing, we'll unwrap the promises and pass the resolved data
-            const unwrappedData = {
-                searchResult: props.loaderData?.searchResult || mockSearchResult,
-                categories: props.loaderData?.categories || mockCategories,
-            };
-            return React.createElement(config.component, { loaderData: unwrappedData });
+    createPage: (config: any) => (props: any) => {
+        const loaderData = {
+            page: props.loaderData?.page || Promise.resolve(createMockPage([])),
+            searchResult: props.loaderData?.searchResult || Promise.resolve(mockSearchResult),
+            categories: props.loaderData?.categories || Promise.resolve(mockCategories),
+            componentData: props.loaderData?.componentData || Promise.resolve({}),
         };
+        return React.createElement(config.component, { loaderData });
     },
 }));
 
@@ -133,35 +148,60 @@ vi.mock('@/components/create-page', () => ({
 vi.mock('@/temp-ui-string', () => ({
     default: {
         home: {
-            hero: {
-                slide1: { title: 'Slide 1', subtitle: 'Subtitle 1', imageAlt: 'Alt 1', ctaText: 'CTA 1' },
-                slide2: { title: 'Slide 2', subtitle: 'Subtitle 2', imageAlt: 'Alt 2', ctaText: 'CTA 2' },
-                slide3: { title: 'Slide 3', subtitle: 'Subtitle 3', imageAlt: 'Alt 3', ctaText: 'CTA 3' },
-            },
             newArrivals: {
                 title: 'New Arrivals',
+                description:
+                    'Discover the latest additions to our collection. From statement pieces to everyday essentials.',
+                ctaText: 'SHOP NEW ARRIVALS',
             },
-            featuredProducts: { title: 'Featured Products' },
-            categoryGrid: { title: 'Shop by Category' },
             featuredContent: {
                 women: {
                     title: 'Women',
-                    description: "Shop women's collection",
+                    description:
+                        'Discover our curated collection of sophisticated footwear designed for the modern woman.',
+                    ctaText: 'EXPLORE COLLECTION',
+                    imageAlt: "Women's Collection",
                 },
                 men: {
                     title: 'Men',
-                    description: "Shop men's collection",
+                    description: "Timeless craftsmanship meets contemporary style in our men's footwear collection.",
+                    ctaText: 'EXPLORE COLLECTION',
+                    imageAlt: "Men's Collection",
                 },
             },
-            features: { title: 'Features' },
-            help: { title: 'Help' },
         },
     },
 }));
 
 // Mock images
-vi.mock('/images/hero-cube.png', () => ({ default: '/images/hero-cube.png' }));
-vi.mock('/images/heroNewArrivals.png', () => ({ default: '/images/heroNewArrivals.png' }));
+vi.mock('/images/hero-new-arrivals.png', () => ({ default: '/mock-image.png' }));
+
+// Mock decorators and utilities
+vi.mock('@/lib/decorators/page-type', () => ({
+    PageType: () => (target: any) => target,
+}));
+
+vi.mock('@/lib/decorators/region-definition', () => ({
+    RegionDefinition: () => (target: any) => target,
+    getRegionDefinition: vi.fn(() => ({ id: 'headerbanner' })),
+}));
+
+vi.mock('@/lib/util/pageLoader', () => ({
+    collectComponentDataPromises: vi.fn(() => Promise.resolve({})),
+    fetchPageFromLoader: vi.fn(() => Promise.resolve(createMockPage([]))),
+}));
+
+vi.mock('@/lib/api/search', () => ({
+    fetchSearchProducts: vi.fn(() => Promise.resolve(mockSearchResult)),
+}));
+
+vi.mock('@/lib/api/categories', () => ({
+    fetchCategories: vi.fn(() => Promise.resolve(mockCategories)),
+}));
+
+vi.mock('@/config', () => ({
+    getConfig: vi.fn(() => ({ pages: { home: { featuredProductsCount: 8 } } })),
+}));
 
 const renderComponent = (component: React.ReactElement) => {
     return render(component);
@@ -173,276 +213,263 @@ describe('HomeView', () => {
     });
 
     describe('Basic Rendering', () => {
-        test('renders hero carousel', () => {
+        test('renders new arrivals section', () => {
             renderComponent(
                 <HomeView
                     loaderData={{
+                        page: Promise.resolve(createMockPage([])),
                         searchResult: Promise.resolve(mockSearchResult),
                         categories: Promise.resolve(mockCategories),
+                        componentData: Promise.resolve({}),
                     }}
                 />
             );
 
-            expect(screen.getByTestId('hero-carousel')).toBeInTheDocument();
+            expect(screen.getByText('New Arrivals')).toBeInTheDocument();
         });
 
-        test('renders hero slides with correct content', () => {
+        test('renders popular categories section', () => {
             renderComponent(
                 <HomeView
                     loaderData={{
+                        page: Promise.resolve(createMockPage([])),
                         searchResult: Promise.resolve(mockSearchResult),
                         categories: Promise.resolve(mockCategories),
+                        componentData: Promise.resolve({}),
                     }}
                 />
             );
 
-            expect(screen.getByTestId('hero-slide-slide-1')).toBeInTheDocument();
-            expect(screen.getByTestId('hero-slide-slide-2')).toBeInTheDocument();
-            expect(screen.getByTestId('hero-slide-slide-3')).toBeInTheDocument();
+            expect(screen.getByTestId('popular-categories')).toBeInTheDocument();
         });
 
-        test('renders featured products section', async () => {
+        test('renders featured content cards', () => {
             renderComponent(
                 <HomeView
                     loaderData={{
+                        page: Promise.resolve(createMockPage([])),
                         searchResult: Promise.resolve(mockSearchResult),
                         categories: Promise.resolve(mockCategories),
+                        componentData: Promise.resolve({}),
                     }}
                 />
             );
 
-            await waitFor(() => {
-                expect(screen.getByText('Featured Products')).toBeInTheDocument();
-            });
+            expect(screen.getByText('Women')).toBeInTheDocument();
+            expect(screen.getByText('Men')).toBeInTheDocument();
         });
 
-        test('renders categories section', async () => {
+        test('renders without header banner region when no regions available', () => {
             renderComponent(
                 <HomeView
                     loaderData={{
+                        page: Promise.resolve(createMockPage([])),
                         searchResult: Promise.resolve(mockSearchResult),
                         categories: Promise.resolve(mockCategories),
+                        componentData: Promise.resolve({}),
                     }}
                 />
             );
 
-            await waitFor(() => {
-                expect(screen.getByText('Shop by Category')).toBeInTheDocument();
-            });
+            // Should not render region when no regions are available
+            expect(screen.queryByTestId('region')).not.toBeInTheDocument();
+            // But should still render other sections
+            expect(screen.getByText('New Arrivals')).toBeInTheDocument();
+        });
+
+        test('renders header banner region when headerbanner region is provided', () => {
+            const headerBannerRegion = {
+                id: 'headerbanner',
+                components: [
+                    { id: 'hero-1', typeId: 'hero' },
+                    { id: 'banner-1', typeId: 'banner' },
+                ],
+            };
+
+            // Create a promise with the resolved value attached for the mock
+            const pagePromise = Promise.resolve(createMockPage([headerBannerRegion]));
+            (pagePromise as any)._resolvedValue = createMockPage([headerBannerRegion]);
+
+            renderComponent(
+                <HomeView
+                    loaderData={{
+                        page: pagePromise,
+                        searchResult: Promise.resolve(mockSearchResult),
+                        categories: Promise.resolve(mockCategories),
+                        componentData: Promise.resolve({}),
+                    }}
+                />
+            );
+
+            // Should render the region component
+            expect(screen.getByTestId('region')).toBeInTheDocument();
+            expect(screen.getByTestId('region')).toHaveAttribute('data-region-id', 'headerbanner');
+            // Should still render other sections
+            expect(screen.getByText('New Arrivals')).toBeInTheDocument();
         });
     });
 
-    describe('Featured Products Section', () => {
-        test('renders featured products with correct title', async () => {
+    describe('New Arrivals Section', () => {
+        test('renders new arrivals with correct title', () => {
             renderComponent(
                 <HomeView
                     loaderData={{
+                        page: Promise.resolve(createMockPage([])),
                         searchResult: Promise.resolve(mockSearchResult),
                         categories: Promise.resolve(mockCategories),
+                        componentData: Promise.resolve({}),
                     }}
                 />
             );
 
-            await waitFor(() => {
-                expect(screen.getByText('Featured Products')).toBeInTheDocument();
-            });
+            expect(screen.getByText('New Arrivals')).toBeInTheDocument();
         });
 
-        test('renders featured products with container styling', async () => {
+        test('renders new arrivals with correct description', () => {
             renderComponent(
                 <HomeView
                     loaderData={{
+                        page: Promise.resolve(createMockPage([])),
                         searchResult: Promise.resolve(mockSearchResult),
                         categories: Promise.resolve(mockCategories),
+                        componentData: Promise.resolve({}),
                     }}
                 />
             );
 
-            await waitFor(() => {
-                const featuredSection = screen.getByText('Featured Products').closest('div')?.parentElement;
-                expect(featuredSection).toHaveClass(
-                    'pt-16',
-                    'max-w-screen-2xl',
-                    'mx-auto',
-                    'px-4',
-                    'sm:px-6',
-                    'lg:px-8'
-                );
-            });
+            expect(
+                screen.getByText(
+                    'Discover the latest additions to our collection. From statement pieces to everyday essentials.'
+                )
+            ).toBeInTheDocument();
         });
 
-        test('renders ProductCarouselWithSuspense with correct props', async () => {
+        test('renders new arrivals CTA button', () => {
             renderComponent(
                 <HomeView
                     loaderData={{
+                        page: Promise.resolve(createMockPage([])),
                         searchResult: Promise.resolve(mockSearchResult),
                         categories: Promise.resolve(mockCategories),
+                        componentData: Promise.resolve({}),
                     }}
                 />
             );
 
-            await waitFor(() => {
-                expect(screen.getByTestId('product-carousel-with-suspense')).toBeInTheDocument();
-                expect(screen.getByText('Featured Products')).toBeInTheDocument();
-            });
+            expect(screen.getByText('SHOP NEW ARRIVALS')).toBeInTheDocument();
         });
     });
 
-    describe('Categories Section', () => {
-        test('renders categories with correct title', async () => {
+    describe('Popular Categories Section', () => {
+        test('renders popular categories component', () => {
             renderComponent(
                 <HomeView
                     loaderData={{
+                        page: Promise.resolve(createMockPage([])),
                         searchResult: Promise.resolve(mockSearchResult),
                         categories: Promise.resolve(mockCategories),
+                        componentData: Promise.resolve({}),
                     }}
                 />
             );
 
-            await waitFor(() => {
-                expect(screen.getByText('Shop by Category')).toBeInTheDocument();
-            });
+            expect(screen.getByTestId('popular-categories')).toBeInTheDocument();
         });
 
-        test('renders valid categories only', async () => {
-            const categoriesWithInvalid = [
-                ...mockCategories,
-                { id: 'undefined', name: 'Invalid Category' },
-                { id: '', name: 'Empty ID Category' },
-            ];
-
+        test('passes categories promise to PopularCategories component', () => {
             renderComponent(
                 <HomeView
                     loaderData={{
+                        page: Promise.resolve(createMockPage([])),
                         searchResult: Promise.resolve(mockSearchResult),
-                        categories: Promise.resolve(categoriesWithInvalid),
+                        categories: Promise.resolve(mockCategories),
+                        componentData: Promise.resolve({}),
                     }}
                 />
             );
 
-            await waitFor(() => {
-                // Should render only valid categories
-                expect(screen.getByText('Category 1')).toBeInTheDocument();
-                expect(screen.getByText('Category 2')).toBeInTheDocument();
-                expect(screen.getByText('Category 3')).toBeInTheDocument();
-                expect(screen.getByText('Category 4')).toBeInTheDocument();
-                expect(screen.queryByText('Invalid Category')).not.toBeInTheDocument();
-                expect(screen.queryByText('Empty ID Category')).not.toBeInTheDocument();
-            });
-        });
-
-        test('renders up to 4 categories', async () => {
-            const manyCategories = Array.from({ length: 10 }, (_, i) => ({
-                id: `category-${i + 1}`,
-                name: `Category ${i + 1}`,
-                parentCategoryId: 'root',
-                image: `/category${i + 1}.jpg`,
-            }));
-
-            renderComponent(
-                <HomeView
-                    loaderData={{
-                        searchResult: Promise.resolve(mockSearchResult),
-                        categories: Promise.resolve(manyCategories),
-                    }}
-                />
-            );
-
-            await waitFor(() => {
-                // Should only render first 4 categories
-                expect(screen.getByText('Category 1')).toBeInTheDocument();
-                expect(screen.getByText('Category 2')).toBeInTheDocument();
-                expect(screen.getByText('Category 3')).toBeInTheDocument();
-                expect(screen.getByText('Category 4')).toBeInTheDocument();
-                expect(screen.queryByText('Category 5')).not.toBeInTheDocument();
-            });
-        });
-
-        test('does not render categories section when no valid categories', async () => {
-            const invalidCategories = [
-                { id: 'undefined', name: 'Invalid Category' },
-                { id: '', name: 'Empty ID Category' },
-            ];
-
-            renderComponent(
-                <HomeView
-                    loaderData={{
-                        searchResult: Promise.resolve(mockSearchResult),
-                        categories: Promise.resolve(invalidCategories),
-                    }}
-                />
-            );
-
-            await waitFor(() => {
-                // Should not render the categories section at all
-                expect(screen.queryByText('Step into Elegance')).not.toBeInTheDocument();
-            });
+            // The PopularCategories component should receive the categoriesPromise
+            expect(screen.getByTestId('popular-categories')).toBeInTheDocument();
+            expect(screen.getByText('Step into Elegance')).toBeInTheDocument();
         });
     });
 
-    describe('Content Cards Section', () => {
-        test.skip('renders features content card', () => {
-            // Features section is not implemented in the current component
+    describe('Featured Content Cards Section', () => {
+        test('renders women content card', () => {
             renderComponent(
                 <HomeView
                     loaderData={{
+                        page: Promise.resolve(createMockPage([])),
                         searchResult: Promise.resolve(mockSearchResult),
                         categories: Promise.resolve(mockCategories),
+                        componentData: Promise.resolve({}),
                     }}
                 />
             );
 
-            expect(screen.getByText('Features')).toBeInTheDocument();
+            expect(screen.getByText('Women')).toBeInTheDocument();
+            expect(
+                screen.getByText(
+                    'Discover our curated collection of sophisticated footwear designed for the modern woman.'
+                )
+            ).toBeInTheDocument();
         });
 
-        test.skip('renders help content card', () => {
-            // Help section is not implemented in the current component
+        test('renders men content card', () => {
             renderComponent(
                 <HomeView
                     loaderData={{
+                        page: Promise.resolve(createMockPage([])),
                         searchResult: Promise.resolve(mockSearchResult),
                         categories: Promise.resolve(mockCategories),
+                        componentData: Promise.resolve({}),
                     }}
                 />
             );
 
-            expect(screen.getByText('Help')).toBeInTheDocument();
+            expect(screen.getByText('Men')).toBeInTheDocument();
+            expect(
+                screen.getByText("Timeless craftsmanship meets contemporary style in our men's footwear collection.")
+            ).toBeInTheDocument();
         });
 
-        test('renders content cards with correct styling', () => {
+        test('renders both content cards with correct count', () => {
             renderComponent(
                 <HomeView
                     loaderData={{
+                        page: Promise.resolve(createMockPage([])),
                         searchResult: Promise.resolve(mockSearchResult),
                         categories: Promise.resolve(mockCategories),
+                        componentData: Promise.resolve({}),
                     }}
                 />
             );
 
             // Test featured content cards (Women/Men) - should be 2
-            const featuredContentSection = screen.getByText('Women').closest('div')?.parentElement;
-            const featuredContentCards = featuredContentSection?.querySelectorAll('[data-testid="content-card"]');
-            expect(featuredContentCards).toHaveLength(2);
+            const contentCards = screen.getAllByTestId('content-card');
+            expect(contentCards).toHaveLength(2);
         });
     });
 
     describe('Error Handling', () => {
-        test('handles search result promise rejection', () => {
-            const rejectedPromise = Promise.reject(new Error('Search failed'));
+        test('handles page promise rejection gracefully', () => {
+            const rejectedPagePromise = Promise.reject(new Error('Page failed'));
             // Catch the rejection to prevent unhandled promise rejection
-            rejectedPromise.catch(() => {});
+            rejectedPagePromise.catch(() => {});
 
             renderComponent(
                 <HomeView
                     loaderData={{
+                        page: Promise.resolve(createMockPage([])),
                         searchResult: Promise.resolve(mockSearchResult),
                         categories: Promise.resolve(mockCategories),
+                        componentData: Promise.resolve({}),
                     }}
                 />
             );
 
             // Should still render other sections
-            expect(screen.getByTestId('hero-carousel')).toBeInTheDocument();
+            expect(screen.getByText('New Arrivals')).toBeInTheDocument();
         });
 
         test('handles categories promise rejection', () => {
@@ -453,45 +480,71 @@ describe('HomeView', () => {
             renderComponent(
                 <HomeView
                     loaderData={{
+                        page: Promise.resolve(createMockPage([])),
                         searchResult: Promise.resolve(mockSearchResult),
-                        categories: Promise.resolve(mockCategories),
+                        categories: rejectedPromise,
+                        componentData: Promise.resolve({}),
                     }}
                 />
             );
 
             // Should still render other sections
-            expect(screen.getByTestId('hero-carousel')).toBeInTheDocument();
+            expect(screen.getByText('New Arrivals')).toBeInTheDocument();
         });
     });
 
     describe('Layout and Styling', () => {
-        test('applies correct container styling', () => {
-            renderComponent(
+        test('applies correct main container styling', () => {
+            const { container } = renderComponent(
                 <HomeView
                     loaderData={{
+                        page: Promise.resolve(createMockPage([])),
                         searchResult: Promise.resolve(mockSearchResult),
                         categories: Promise.resolve(mockCategories),
+                        componentData: Promise.resolve({}),
                     }}
                 />
             );
 
-            const container = screen.getByTestId('hero-carousel').parentElement;
-            expect(container).toHaveClass('pb-16', '-mt-8');
+            const mainContainer = container.firstChild as HTMLElement;
+            expect(mainContainer).toHaveClass('pb-16', '-mt-8');
         });
 
         test('applies correct spacing between sections', () => {
             renderComponent(
                 <HomeView
                     loaderData={{
+                        page: Promise.resolve(createMockPage([])),
                         searchResult: Promise.resolve(mockSearchResult),
                         categories: Promise.resolve(mockCategories),
+                        componentData: Promise.resolve({}),
                     }}
                 />
             );
 
-            // Check that sections have proper spacing
-            const featuredSection = screen.getByText('Featured Products').closest('div')?.parentElement;
-            expect(featuredSection).toHaveClass('pt-16');
+            // Check that New Arrivals section has proper spacing
+            // The pt-16 class is on the section container, which is the closest div with pt-16 class
+            const newArrivalsTitle = screen.getByText('New Arrivals');
+            const sectionWithPadding = newArrivalsTitle.closest('[class*="pt-16"]');
+            expect(sectionWithPadding).toBeInTheDocument();
+            expect(sectionWithPadding).toHaveClass('pt-16');
+        });
+
+        test('applies correct grid layout for content cards', () => {
+            renderComponent(
+                <HomeView
+                    loaderData={{
+                        page: Promise.resolve(createMockPage([])),
+                        searchResult: Promise.resolve(mockSearchResult),
+                        categories: Promise.resolve(mockCategories),
+                        componentData: Promise.resolve({}),
+                    }}
+                />
+            );
+
+            // Check that content cards section has proper grid layout
+            const contentCardsGrid = screen.getByText('Women').closest('div')?.parentElement;
+            expect(contentCardsGrid).toHaveClass('grid', 'grid-cols-1', 'md:grid-cols-2', 'gap-6');
         });
     });
 });

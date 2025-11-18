@@ -1,10 +1,11 @@
 import { n as isPreviewModeActive, t as isDesignModeActive } from "./modeDetection-BZMGik06.js";
 import { t as createClientApi } from "./client-IwF8G5Dm.js";
 import React, { Suspense, createContext, lazy, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, jsx } from "react/jsx-runtime";
 
 //#region src/design/react/context/PageDesignerProvider.tsx
-const LazyDesignProvider = lazy(() => import("./DesignContext-BiTtKMMR.js").then((module) => ({ default: module.DesignProvider })));
-const LazyPreviewProvider = lazy(() => import("./PreviewContext-BDox5UnQ.js").then((module) => ({ default: module.PreviewProvider })));
+const LazyDesignProvider = lazy(() => import("./DesignContext-CHTpbUC6.js").then((module) => ({ default: module.DesignProvider })));
+const LazyPreviewProvider = lazy(() => import("./PreviewContext-BIyqZxsF.js").then((module) => ({ default: module.PreviewProvider })));
 const LoadingFallback = () => null;
 const PageDesignerContext = createContext({
 	isDesignMode: false,
@@ -18,17 +19,27 @@ const PageDesignerProvider = ({ children, targetOrigin, clientId, clientLogger, 
 	}), [mode]);
 	const { isDesignMode, isPreviewMode } = contextValue;
 	if (isDesignMode && !targetOrigin) throw new Error("PageDesignerProvider: targetOrigin is required when in design mode for security reasons. This should be the origin of the host application that contains this iframe ");
-	if (!isDesignMode && !isPreviewMode) return <>{children}</>;
+	if (!isDesignMode && !isPreviewMode) return /* @__PURE__ */ jsx(Fragment, { children });
 	let content = children;
-	if (isPreviewMode) content = <Suspense fallback={<LoadingFallback />}>
-                <LazyPreviewProvider>{content}</LazyPreviewProvider>
-            </Suspense>;
-	if (isDesignMode) content = <Suspense fallback={<LoadingFallback />}>
-                <LazyDesignProvider targetOrigin={targetOrigin} clientId={clientId} clientLogger={clientLogger} clientConnectionTimeout={clientConnectionTimeout} clientConnectionInterval={clientConnectionInterval}>
-                    {content}
-                </LazyDesignProvider>
-            </Suspense>;
-	return <PageDesignerContext.Provider value={contextValue}>{content}</PageDesignerContext.Provider>;
+	if (isPreviewMode) content = /* @__PURE__ */ jsx(Suspense, {
+		fallback: /* @__PURE__ */ jsx(LoadingFallback, {}),
+		children: /* @__PURE__ */ jsx(LazyPreviewProvider, { children: content })
+	});
+	if (isDesignMode) content = /* @__PURE__ */ jsx(Suspense, {
+		fallback: /* @__PURE__ */ jsx(LoadingFallback, {}),
+		children: /* @__PURE__ */ jsx(LazyDesignProvider, {
+			targetOrigin,
+			clientId,
+			clientLogger,
+			clientConnectionTimeout,
+			clientConnectionInterval,
+			children: content
+		})
+	});
+	return /* @__PURE__ */ jsx(PageDesignerContext.Provider, {
+		value: contextValue,
+		children: content
+	});
 };
 PageDesignerProvider.defaultProps = {
 	clientConnectionTimeout: 6e4,
@@ -500,7 +511,10 @@ const DesignStateProvider = ({ children }) => {
 		dragInteraction,
 		nodeToTargetMap
 	]);
-	return <DesignStateContext.Provider value={state}>{children}</DesignStateContext.Provider>;
+	return /* @__PURE__ */ jsx(DesignStateContext.Provider, {
+		value: state,
+		children
+	});
 };
 
 //#endregion
@@ -568,7 +582,7 @@ function useGlobalDragListener() {
 */
 const DesignApp = ({ children }) => {
 	useGlobalDragListener();
-	return <>{children}</>;
+	return /* @__PURE__ */ jsx(Fragment, { children });
 };
 
 //#endregion
@@ -640,11 +654,10 @@ const DesignProvider = ({ children, targetOrigin, clientId, clientConnectionTime
 		isConnected,
 		pageDesignerConfig
 	]);
-	return <DesignContext.Provider value={contextValue}>
-            <DesignStateProvider>
-                <DesignApp>{children}</DesignApp>
-            </DesignStateProvider>
-        </DesignContext.Provider>;
+	return /* @__PURE__ */ jsx(DesignContext.Provider, {
+		value: contextValue,
+		children: /* @__PURE__ */ jsx(DesignStateProvider, { children: /* @__PURE__ */ jsx(DesignApp, { children }) })
+	});
 };
 DesignProvider.defaultProps = {
 	clientLogger: noop,
@@ -661,4 +674,4 @@ const useDesignContext = () => React.useContext(DesignContext);
 
 //#endregion
 export { isComponentTypeAllowedInRegion as a, usePageDesignerMode as c, useDesignState as i, DesignProvider as n, useComponentDiscovery as o, useDesignContext as r, PageDesignerProvider as s, DesignContext as t };
-//# sourceMappingURL=DesignContext-CtmhEgsl.js.map
+//# sourceMappingURL=DesignContext-DguxL6EF.js.map
