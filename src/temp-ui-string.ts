@@ -656,6 +656,15 @@ const additionalStrings = {
         },
         addresses: {
             empty: 'No addresses saved. Add an address to make checkout faster!',
+            preferred: 'Preferred',
+            billing: 'Billing',
+            shipping: 'Shipping',
+            removeSuccess: 'Address removed successfully',
+            removeError: 'Failed to remove address. Please try again.',
+            removeConfirmTitle: 'Confirm Remove Address',
+            removeConfirmDescription: 'Are you sure you want to remove address "{addressName}"?',
+            removeCancelButton: 'Cancel',
+            removeConfirmButton: 'Yes, remove address',
         },
         addressForm: {
             addressTitleLabel: 'Address Title',
