@@ -13,7 +13,7 @@ describe('getBasketCurrency', () => {
             currency: 'EUR',
         };
 
-        const result = getBasketCurrency(basket as ShopperBasketsV2.schemas['Basket']);
+        const result = getBasketCurrency(basket);
 
         expect(result).toBe('EUR');
     });
@@ -26,7 +26,7 @@ describe('getBasketCurrency', () => {
             // currency is undefined
         };
 
-        const result = getBasketCurrency(basket as ShopperBasketsV2.schemas['Basket']);
+        const result = getBasketCurrency(basket);
 
         expect(result).toBe('EUR');
     });
@@ -39,7 +39,7 @@ describe('getBasketCurrency', () => {
             // currency is undefined
         };
 
-        const result = getBasketCurrency(basket as ShopperBasketsV2.schemas['Basket']);
+        const result = getBasketCurrency(basket);
 
         expect(result).toBe('USD');
     });
@@ -56,7 +56,7 @@ describe('getBasketCurrency', () => {
             currency: '',
         };
 
-        const result = getBasketCurrency(basket as ShopperBasketsV2.schemas['Basket']);
+        const result = getBasketCurrency(basket);
 
         expect(result).toBe('USD');
     });
@@ -70,7 +70,7 @@ describe('getBasketCurrency', () => {
                 currency,
             };
 
-            const result = getBasketCurrency(basket as ShopperBasketsV2.schemas['Basket']);
+            const result = getBasketCurrency(basket);
 
             expect(result).toBe(currency);
         });

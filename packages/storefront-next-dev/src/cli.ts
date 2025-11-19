@@ -1,16 +1,19 @@
 import { Command } from 'commander';
-import { push } from './push.js';
-import { generateInstructions } from './extensibility/create-instructions.js';
-import { generateMetadata } from './cartridge-services/generate-cartridge.js';
-import { deployCode } from './cartridge-services/deploy-cartridge.js';
-import { CARTRIDGES_BASE_DIR, SFNEXT_BASE_CARTRIDGE_OUTPUT_DIR } from './config.js';
-import { DEFAULT_CLOUD_ORIGIN, error, success, info } from './utils.js';
+import { push } from './commands/push';
+import { dev } from './commands/dev';
+import { serve } from './commands/serve';
+import { generateInstructions } from './extensibility/create-instructions';
+import { error, info, success } from './utils/logger';
+import { generateMetadata } from './cartridge-services/generate-cartridge';
+import { deployCode } from './cartridge-services/deploy-cartridge';
+import { CARTRIDGES_BASE_DIR, SFNEXT_BASE_CARTRIDGE_OUTPUT_DIR } from './config';
+import { DEFAULT_CLOUD_ORIGIN } from './utils';
 import pkg from '../package.json' with { type: 'json' };
 import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
 import fs from 'fs-extra';
-import { createStorefront } from './create-storefront.js';
-import { manageExtensions } from './extensibility/manage-extensions.js';
+import { createStorefront } from './create-storefront';
+import { manageExtensions } from './extensibility/manage-extensions';
 
 // Shared path resolution and validation
 interface PathOptions {
@@ -107,6 +110,38 @@ program
             process.exit(0);
         } catch (err) {
             handleCommandError('Push', err);
+        }
+    });
+
+program
+    .command('dev')
+    .description('Start Vite development server with SSR')
+    .option('-d, --project-directory <dir>', 'Project directory (default: current directory)')
+    .option('-p, --port <port>', 'Port number (default: 5173)', (val) => parseInt(val, 10))
+    .action(async (options) => {
+        try {
+            await dev({
+                projectDirectory: options.projectDirectory,
+                port: options.port,
+            });
+        } catch (err) {
+            handleCommandError('Dev', err);
+        }
+    });
+
+program
+    .command('serve')
+    .description('Start preview server with production build (auto-builds if needed)')
+    .option('-d, --project-directory <dir>', 'Project directory (default: current directory)')
+    .option('-p, --port <port>', 'Port number (default: 3000)', (val) => parseInt(val, 10))
+    .action(async (options) => {
+        try {
+            await serve({
+                projectDirectory: options.projectDirectory,
+                port: options.port,
+            });
+        } catch (err) {
+            handleCommandError('Serve', err);
         }
     });
 

@@ -1,6 +1,6 @@
-import "./modeDetection-BZMGik06.js";
-import "./client-IwF8G5Dm.js";
-import { a as isComponentTypeAllowedInRegion, c as usePageDesignerMode, i as useDesignState, o as useComponentDiscovery, r as useDesignContext, s as PageDesignerProvider } from "./DesignContext-DguxL6EF.js";
+import "./modeDetection-Dl3LxZN8.js";
+import "./client-Bz2sROFf.js";
+import { a as isComponentTypeAllowedInRegion, c as usePageDesignerMode, i as useDesignState, o as useComponentDiscovery, r as useDesignContext, s as PageDesignerProvider } from "./DesignContext-C2Oy6DJo.js";
 import React, { useCallback, useMemo, useRef } from "react";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 
@@ -286,7 +286,7 @@ function DesignComponent(props) {
 */
 function createReactComponentDesignDecorator(Component) {
 	return function DesignDecoratedComponent(props) {
-		const { designMetadata, children,...componentProps } = props;
+		const { designMetadata, children, ...componentProps } = props;
 		const { isDesignMode } = usePageDesignerMode();
 		return isDesignMode ? /* @__PURE__ */ jsx(DesignComponent, {
 			designMetadata,
@@ -383,7 +383,7 @@ function DesignRegion(props) {
 //#region src/design/react/components/RegionDecorator.tsx
 function createReactRegionDesignDecorator(Region) {
 	return function DesignDecoratedRegion(props) {
-		const { designMetadata, children,...componentProps } = props;
+		const { designMetadata, children, ...componentProps } = props;
 		const { isDesignMode } = usePageDesignerMode();
 		return isDesignMode ? /* @__PURE__ */ jsx(DesignRegion, {
 			designMetadata,

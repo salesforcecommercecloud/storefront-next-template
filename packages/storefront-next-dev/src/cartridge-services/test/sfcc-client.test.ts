@@ -1,7 +1,7 @@
 // @ts-check
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
-import { getWebdavOptions, checkAuthenticationError, makeRequest } from '../sfcc-client.js';
+import { getWebdavOptions, checkAuthenticationError, makeRequest } from '../sfcc-client';
 
 // Mock fetch globally
 const mockFetch = (response: any, status = 200) => {

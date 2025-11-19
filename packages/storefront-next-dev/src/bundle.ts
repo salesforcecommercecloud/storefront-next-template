@@ -3,8 +3,8 @@ import fs from 'fs-extra';
 import os from 'os';
 import archiver from 'archiver';
 import { Minimatch } from 'minimatch';
-import { getProjectPkg, getProjectDependencyTree, getPwaKitDependencies } from './utils.js';
-import type { Bundle, BundleMetadata, SSRParameters, FilePatterns } from './types.js';
+import { getProjectPkg, getProjectDependencyTree, getPwaKitDependencies } from './utils';
+import type { Bundle, BundleMetadata, SSRParameters, FilePatterns } from './types';
 
 interface CreateBundleOptions {
     message: string;

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { Project as TsMorphProject, Project } from 'ts-morph';
-import { filePathToRoute, generateMetadata } from '../generate-cartridge.js';
+import { filePathToRoute, generateMetadata } from '../generate-cartridge';
 
 // Test utility functions (copied from the main script for testing)
 const ARCH_TYPE_HEADLESS = 'headless';

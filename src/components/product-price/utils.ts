@@ -73,8 +73,7 @@ export const findLowestPrice = (product: Product): LowestPriceResult | undefined
 
     const res = array.reduce(
         (prev, data) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const promotions = (data as any).productPromotions || [];
+            const promotions = data.productPromotions || [];
             const [smallestPromotionalPrice, promo] = getSmallestValByProperty(promotions, 'promotionalPrice');
 
             const dataPrice = data.price || 0;

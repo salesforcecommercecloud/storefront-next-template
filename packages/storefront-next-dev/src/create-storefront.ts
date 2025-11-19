@@ -1,5 +1,6 @@
 import { execSync } from 'child_process';
-import { error, generateEnvFile } from './utils';
+import { generateEnvFile } from './utils';
+import { error } from './utils/logger';
 import prompts from 'prompts';
 import path from 'path';
 import fs from 'fs-extra';

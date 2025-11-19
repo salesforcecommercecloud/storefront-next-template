@@ -2,7 +2,7 @@
 import { dirname, resolve, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { readFileSync } from 'node:fs';
-import { defineConfig, loadEnv, perEnvironmentPlugin } from 'vite';
+import { defineConfig, perEnvironmentPlugin, loadEnv } from 'vite';
 import { coverageConfigDefaults } from 'vitest/config';
 import coverageConfigThresholds from './vitest.thresholds';
 import { reactRouter } from '@react-router/dev/vite';
@@ -213,47 +213,6 @@ export default defineConfig(({ mode }) => {
                         },
                     },
                 }),
-                '/mobify/proxy/api': {
-                    target,
-                    changeOrigin: true,
-                    rewrite: (path) => path.replace(/^\/mobify\/proxy\/api/, ''),
-                    configure: (proxy, _options) => {
-                        proxy.on('proxyReq', (proxyReq, req) => {
-                            console.log(
-                                '🔄 Proxying request:',
-                                req.method,
-                                req.url,
-                                '→',
-                                `${String(proxyReq.getHeader('host'))}${proxyReq.path}`
-                            );
-                        });
-                        proxy.on('proxyRes', (proxyRes, req) => {
-                            if (
-                                typeof proxyRes.statusCode === 'number' &&
-                                proxyRes.statusCode >= 200 &&
-                                proxyRes.statusCode <= 399
-                            ) {
-                                console.log('✅ Proxy response:', proxyRes.statusCode, req.url);
-                            } else {
-                                const body: Buffer[] = [];
-                                proxyRes.on('data', (chunk: Buffer) => {
-                                    body.push(chunk);
-                                });
-                                proxyRes.on('end', () => {
-                                    console.log(
-                                        '❌ Proxy error:',
-                                        proxyRes.statusCode,
-                                        req.url,
-                                        Buffer.concat(body).toString()
-                                    );
-                                });
-                            }
-                        });
-                        proxy.on('error', (err, req) => {
-                            console.error('❌ Proxy error:', err.message, req.url);
-                        });
-                    },
-                },
             },
         },
     };

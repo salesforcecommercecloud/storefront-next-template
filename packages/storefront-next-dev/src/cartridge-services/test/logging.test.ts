@@ -1,6 +1,6 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import chalk from 'chalk';
-import { warn, error, success, info, debug } from '../logging.js';
+import { warn, error, success, info, debug } from '../logging';
 
 // Mock chalk
 vi.mock('chalk', () => ({

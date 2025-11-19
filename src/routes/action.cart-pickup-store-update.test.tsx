@@ -138,7 +138,7 @@ describe('action.cart-pickup-store-update', () => {
             ...mockBasketWithPickupItems,
         } as ShopperBasketsV2.schemas['Basket']);
         vi.mocked(createClient).mockReturnValue(mockClient as any);
-        vi.mocked(updateShipmentForPickup).mockResolvedValue(mockUpdatedBasket as ShopperBasketsV2.schemas['Basket']);
+        vi.mocked(updateShipmentForPickup).mockResolvedValue(mockUpdatedBasket);
         vi.mocked(isStoreOutOfStock).mockReturnValue(false);
         vi.mocked(getFirstPickupStoreId).mockReturnValue('old-store-123');
         vi.mocked(getPickupProductItemsForStore).mockImplementation((basket, storeId) => {
@@ -151,9 +151,9 @@ describe('action.cart-pickup-store-update', () => {
         });
         vi.mocked(createApiClients).mockReturnValue(mockApiClients as any);
         vi.mocked(getConfig).mockReturnValue(mockConfig as any);
-        mockBasketsClient.getBasket.mockResolvedValue(mockUpdatedBasket as ShopperBasketsV2.schemas['Basket']);
+        mockBasketsClient.getBasket.mockResolvedValue(mockUpdatedBasket);
         mockApiClients.shopperBasketsV2.getBasket.mockResolvedValue({
-            data: mockUpdatedBasket as ShopperBasketsV2.schemas['Basket'],
+            data: mockUpdatedBasket,
         });
         mockProductsClient.getProducts.mockResolvedValue(mockProductsResponse);
     });
@@ -658,8 +658,8 @@ describe('action.cart-pickup-store-update', () => {
 
             // Mock successful shipment update, but item update fails
             vi.mocked(updateShipmentForPickup)
-                .mockResolvedValueOnce(mockUpdatedBasket as ShopperBasketsV2.schemas['Basket']) // First call succeeds
-                .mockResolvedValueOnce(mockBasketWithPickupItems as ShopperBasketsV2.schemas['Basket']); // Rollback succeeds
+                .mockResolvedValueOnce(mockUpdatedBasket) // First call succeeds
+                .mockResolvedValueOnce(mockBasketWithPickupItems); // Rollback succeeds
 
             mockBasketsClient.updateItemsInBasket.mockRejectedValue(mockError);
 
@@ -808,8 +808,8 @@ describe('action.cart-pickup-store-update', () => {
 
             // Mock successful shipment update and item update, but basket retrieval fails
             vi.mocked(updateShipmentForPickup)
-                .mockResolvedValueOnce(mockUpdatedBasket as ShopperBasketsV2.schemas['Basket']) // First call succeeds
-                .mockResolvedValueOnce(mockBasketWithPickupItems as ShopperBasketsV2.schemas['Basket']); // Rollback succeeds
+                .mockResolvedValueOnce(mockUpdatedBasket) // First call succeeds
+                .mockResolvedValueOnce(mockBasketWithPickupItems); // Rollback succeeds
 
             mockBasketsClient.updateItemsInBasket.mockResolvedValue({} as any);
             mockApiClients.shopperBasketsV2.getBasket.mockRejectedValue(mockError);
@@ -858,9 +858,7 @@ describe('action.cart-pickup-store-update', () => {
             };
 
             // Mock that after shipment update, getPickupProductItemsForStore returns empty array
-            vi.mocked(updateShipmentForPickup).mockResolvedValue(
-                basketAfterUpdate as ShopperBasketsV2.schemas['Basket']
-            );
+            vi.mocked(updateShipmentForPickup).mockResolvedValue(basketAfterUpdate);
             vi.mocked(getPickupProductItemsForStore).mockReturnValueOnce(mockBasketWithPickupItems.productItems || []); // First call for validation
             vi.mocked(getPickupProductItemsForStore).mockReturnValueOnce([]); // Second call after update returns empty
 
@@ -904,9 +902,7 @@ describe('action.cart-pickup-store-update', () => {
                 ],
             };
 
-            vi.mocked(updateShipmentForPickup).mockResolvedValue(
-                basketWithMissingItemId as ShopperBasketsV2.schemas['Basket']
-            );
+            vi.mocked(updateShipmentForPickup).mockResolvedValue(basketWithMissingItemId);
 
             const mockError = new Error('API Error: itemId is required');
             mockBasketsClient.updateItemsInBasket.mockRejectedValue(mockError);

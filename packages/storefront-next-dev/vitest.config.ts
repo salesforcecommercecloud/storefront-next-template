@@ -14,7 +14,6 @@ export default defineConfig({
                 'src/bundle.ts',
                 'src/cloud-api.ts',
                 'src/config.ts',
-                'src/push.ts',
                 'src/utils.ts',
                 'src/types.ts',
                 'src/cli.ts',
@@ -22,14 +21,12 @@ export default defineConfig({
                 'node_modules/**',
             ],
             thresholds: {
-                lines: 95,
-                functions: 95,
-                branches: 95,
-                statements: 95,
+                lines: 98,
+                functions: 98,
+                branches: 96,
+                statements: 98,
             },
-            reporters: ['text', 'lcov', 'json-summary'],
         },
-        // Vitest tests - now includes all test files
         include: ['src/**/*.test.{ts,tsx}', 'src/**/*.spec.{ts,tsx}'],
         exclude: [
             '**/node_modules/**',

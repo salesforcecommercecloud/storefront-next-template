@@ -1,5 +1,5 @@
-import { n as isPreviewModeActive, t as isDesignModeActive } from "./modeDetection-BZMGik06.js";
-import { n as Messenger, t as createClientApi } from "./client-IwF8G5Dm.js";
+import { n as isPreviewModeActive, t as isDesignModeActive } from "./modeDetection-Dl3LxZN8.js";
+import { n as Messenger, t as createClientApi } from "./client-Bz2sROFf.js";
 
 //#region src/design/componentRegistry.ts
 /**

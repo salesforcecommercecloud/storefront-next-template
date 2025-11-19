@@ -300,6 +300,9 @@ importers:
       commander:
         specifier: ^12.1.0
         version: 12.1.0
+      compression:
+        specifier: ^1.7.4
+        version: 1.8.1
       dotenv:
         specifier: ^16.4.7
         version: 16.6.1
@@ -312,15 +315,24 @@ importers:
       handlebars:
         specifier: 4.7.8
         version: 4.7.8
+      http-proxy-middleware:
+        specifier: ^3.0.0
+        version: 3.0.5
       minimatch:
         specifier: ^10.0.1
         version: 10.1.1
+      morgan:
+        specifier: ^1.10.0
+        version: 1.10.1
       prompts:
         specifier: 2.4.2
         version: 2.4.2
       ts-morph:
         specifier: ^24.0.0
         version: 24.0.0
+      tsx:
+        specifier: ^4.20.5
+        version: 4.20.6
       undici:
         specifier: ^6.21.3
         version: 6.22.0
@@ -343,6 +355,9 @@ importers:
       '@types/babel__traverse':
         specifier: 7.28.0
         version: 7.28.0
+      '@types/compression':
+        specifier: ^1.7.5
+        version: 1.8.1
       '@types/express':
         specifier: 4.17.23
         version: 4.17.23
@@ -358,6 +373,9 @@ importers:
       '@types/minimatch':
         specifier: ^5.1.2
         version: 5.1.2
+      '@types/morgan':
+        specifier: ^1.9.9
+        version: 1.9.10
       '@types/node':
         specifier: ^22.0.0
         version: 22.19.1
@@ -397,9 +415,6 @@ importers:
       tsdown:
         specifier: ^0.15.4
         version: 0.15.12(ms@2.1.3)(typescript@5.9.3)
-      tsx:
-        specifier: ^4.19.2
-        version: 4.20.6
       typescript:
         specifier: ^5.6.0
         version: 5.9.3
@@ -2531,6 +2546,9 @@ packages:
   '@types/chai@5.2.3':
     resolution: {integrity: sha512-Mw558oeA9fFbv65/y4mHtXDs9bPnFMZAL/jxdPFUpOHHIXX91mcgEHbS5Lahr+pwZFR8A7GQleRWeI6cGFC2UA==}
 
+  '@types/compression@1.8.1':
+    resolution: {integrity: sha512-kCFuWS0ebDbmxs0AXYn6e2r2nrGAb5KwQhknjSPSPgJcGd8+HVSILlUyFhGqML2gk39HcG7D1ydW9/qpYkN00Q==}
+
   '@types/connect@3.4.38':
     resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==}
 
@@ -2600,6 +2618,9 @@ packages:
 
   '@types/minimatch@5.1.2':
     resolution: {integrity: sha512-K0VQKziLUWkVKiRVrx4a40iPaxTUefQmjtkQofBkYRcoaaL/8rhwDWww9qWbrgicNOgnpIsMxyNIUM4+n6dUIA==}
+
+  '@types/morgan@1.9.10':
+    resolution: {integrity: sha512-sS4A1zheMvsADRVfT0lYbJ4S9lmsey8Zo2F7cnbYjWHP67Q0AwMYuuzLlkIM2N8gAbb9cubhIVFwcIN2XyYCkA==}
 
   '@types/node@20.19.25':
     resolution: {integrity: sha512-ZsJzA5thDQMSQO788d7IocwwQbI8B5OPzmqNvpf3NY/+MHDAS759Wo0gd2WQeXYt5AAAQjzcrTVC6SKCuYgoCQ==}
@@ -3643,8 +3664,8 @@ packages:
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  electron-to-chromium@1.5.256:
-    resolution: {integrity: sha512-uqYq1IQhpXXLX+HgiXdyOZml7spy4xfy42yPxcCCRjswp0fYM2X+JwCON07lqnpLEGVCj739B7Yr+FngmHBMEQ==}
+  electron-to-chromium@1.5.257:
+    resolution: {integrity: sha512-VNSOB6JZan5IQNMqaurYpZC4bDPXcvKlUwVD/ztMeVD7SwOpMYGOY7dgt+4lNiIHIpvv/FdULnZKqKEy2KcuHQ==}
 
   embla-carousel-react@8.6.0:
     resolution: {integrity: sha512-0/PjqU7geVmo6F734pmPqpyHqiM99olvyecY7zdweCw+6tKEXnrE90pBiBbMMU8s5tICemzpQ3hi5EpxzGW+JA==}
@@ -9098,6 +9119,11 @@ snapshots:
       '@types/deep-eql': 4.0.2
       assertion-error: 2.0.1
 
+  '@types/compression@1.8.1':
+    dependencies:
+      '@types/express': 4.17.23
+      '@types/node': 22.19.1
+
   '@types/connect@3.4.38':
     dependencies:
       '@types/node': 22.19.1
@@ -9175,6 +9201,10 @@ snapshots:
   '@types/mdx@2.0.13': {}
 
   '@types/minimatch@5.1.2': {}
+
+  '@types/morgan@1.9.10':
+    dependencies:
+      '@types/node': 22.19.1
 
   '@types/node@20.19.25':
     dependencies:
@@ -9812,7 +9842,7 @@ snapshots:
     dependencies:
       baseline-browser-mapping: 2.8.29
       caniuse-lite: 1.0.30001756
-      electron-to-chromium: 1.5.256
+      electron-to-chromium: 1.5.257
       node-releases: 2.0.27
       update-browserslist-db: 1.1.4(browserslist@4.28.0)
 
@@ -10238,7 +10268,7 @@ snapshots:
 
   ee-first@1.1.1: {}
 
-  electron-to-chromium@1.5.256: {}
+  electron-to-chromium@1.5.257: {}
 
   embla-carousel-react@8.6.0(react@19.1.1):
     dependencies:

@@ -7,7 +7,7 @@ import {
     validateVersion,
     validateWebdavPath,
     validateDeployCodeParams,
-} from '../validation.js';
+} from '../validation';
 
 // Test data
 const testCases = {

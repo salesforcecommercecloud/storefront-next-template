@@ -1,4 +1,4 @@
-import type { MrtSsrConfig } from './types.js';
+import type { MrtSsrConfig } from './types';
 
 export const CARTRIDGES_BASE_DIR = 'cartridges';
 export const SFNEXT_BASE_CARTRIDGE_NAME = 'app_storefrontnext_base';

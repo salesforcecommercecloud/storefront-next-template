@@ -21,6 +21,8 @@ export default defineConfig([
         dts: true,
         outDir: 'dist',
         clean: true,
+        // Don't bundle dependencies - they should be installed by consumers
+        external: [/node_modules/],
     },
     // 2. React Router Scripts component
     {
@@ -32,6 +34,7 @@ export default defineConfig([
         dts: true,
         outDir: 'dist/react-router',
         clean: false,
+        external: [/node_modules/],
     },
     // 3. MRT SSR server build
     {
@@ -53,12 +56,7 @@ export default defineConfig([
         outDir: 'dist/mrt',
         // This is the react-router server build entry point, it is created from the user land when running `vite build`
         // it is a relative path from within the build directory
-        external: ['./server/index.js'],
-        // unlike rollup where we can use `noExternal: true`, tsdown doesn't support it.
-        // This regex will bundle all dependencies (except node internals?)
-        // this regex is not extensively tested, if you encounter any issues like "require('xxx') not found"
-        // you may need to fix this
-        noExternal: '/.*/',
+        external: ['./server/index.js', /node_modules/],
         clean: false,
     },
     // 4. React Router preset config
@@ -72,20 +70,9 @@ export default defineConfig([
         dts: true,
         outDir: 'dist/configs',
         clean: false,
+        external: [/node_modules/],
     },
-    // 5. Push API (programmatic API for bundle deployment)
-    {
-        entry: {
-            push: 'src/push.ts',
-        },
-        platform: 'node',
-        target: 'node22',
-        format: ['esm'],
-        dts: true,
-        outDir: 'dist',
-        clean: false,
-    },
-    // 6. CLI build (with shebang)
+    // 5. CLI build (with shebang)
     {
         entry: {
             cli: 'src/cli.ts',
@@ -106,5 +93,6 @@ export default defineConfig([
             },
         ],
         clean: false,
+        external: [/node_modules/],
     },
 ]);

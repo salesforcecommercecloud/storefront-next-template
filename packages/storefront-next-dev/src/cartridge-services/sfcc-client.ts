@@ -3,7 +3,7 @@
  * Handles SSL, authentication, and network requests for WebDAV and OCAPI
  */
 
-import { type HttpRequestOptions, type HttpResponse, CONTENT_TYPES, WEBDAV_BASE } from './types.js';
+import { type HttpRequestOptions, type HttpResponse, CONTENT_TYPES, WEBDAV_BASE } from './types';
 
 /**
  * Create HTTP request options for WebDAV operations (file upload/download)

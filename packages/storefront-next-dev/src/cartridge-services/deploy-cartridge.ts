@@ -14,9 +14,9 @@ import {
     HTTP_METHODS,
     CONTENT_TYPES,
     WEBDAV_OPERATIONS,
-} from './types.js';
-import { getWebdavOptions, checkAuthenticationError, makeRequest } from './sfcc-client.js';
-import { validateDeployCodeParams } from './validation.js';
+} from './types';
+import { getWebdavOptions, checkAuthenticationError, makeRequest } from './sfcc-client';
+import { validateDeployCodeParams } from './validation';
 
 /**
  * Extract the filename (including extension) from a file path

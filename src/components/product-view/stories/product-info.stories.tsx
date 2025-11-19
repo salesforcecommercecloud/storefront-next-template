@@ -208,8 +208,7 @@ The Product Info component is the main information panel on the Product Detail P
         (Story: React.ComponentType, context) => {
             const RouterWrapper = (): ReactElement => {
                 const inRouter = useInRouterContext();
-                const productArg =
-                    (context.args.product as ShopperProducts.schemas['Product'] | undefined) ?? createMockProduct();
+                const productArg = context.args.product ?? createMockProduct();
                 const content = (
                     <ProductViewProvider product={productArg}>
                         <ActionLogger>

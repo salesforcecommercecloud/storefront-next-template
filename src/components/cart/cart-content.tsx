@@ -83,7 +83,7 @@ export default function CartContent({ basket, productsByItemId, promotions }: Ca
         if (!product.itemId) return undefined;
 
         // Decide if Edit should be shown based on product type. Do not show edit buttons for standard products.
-        const productDetails = product as ShopperProducts.schemas['Product'] | undefined;
+        const productDetails = product;
         const isStandardProd = productDetails && isStandardProduct(productDetails);
 
         return (

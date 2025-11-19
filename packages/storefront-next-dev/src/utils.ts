@@ -2,35 +2,15 @@ import os from 'os';
 import path from 'path';
 import fs from 'fs-extra';
 import { execSync } from 'child_process';
-import chalk from 'chalk';
 import dotenv from 'dotenv';
-import type { Credentials, ProjectPackage, DependencyTree, DependencyRecord } from './types.js';
+import { warn, debug } from './utils/logger';
+import type { Credentials, ProjectPackage, DependencyTree, DependencyRecord } from './types';
 
 // Configuration
 export const DEFAULT_CLOUD_ORIGIN = 'https://cloud.mobify.com';
 
 export const getDefaultBuildDir = (targetDir: string) => path.join(targetDir, 'build');
 
-// Utility functions for colored output
-const colors = {
-    warn: 'yellow',
-    error: 'red',
-    success: 'cyan',
-    info: 'green',
-    debug: 'gray',
-} as const;
-
-const fancyLog = (level: keyof typeof colors, msg: string) => {
-    const color = colors[level];
-    const colorFn = chalk[color];
-    // eslint-disable-next-line no-console
-    console.log(`${colorFn(level)}: ${msg}`);
-};
-
-export const info = (msg: string) => fancyLog('info', msg);
-export const success = (msg: string) => fancyLog('success', msg);
-export const warn = (msg: string) => fancyLog('warn', msg);
-export const error = (msg: string) => fancyLog('error', msg);
 // Set default NODE_ENV if not specified
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
@@ -48,17 +28,6 @@ export const isProduction = () => NODE_ENV === 'production';
  * Check if running in development mode
  */
 export const isDevelopment = () => NODE_ENV === 'development';
-
-export const debug = (msg: string, data?: unknown) => {
-    // Only log debug messages if DEBUG environment variable is set or not in production
-    if (process.env.DEBUG || NODE_ENV !== 'production') {
-        fancyLog('debug', msg);
-        if (data) {
-            // eslint-disable-next-line no-console
-            console.log(data);
-        }
-    }
-};
 
 /**
  * Get credentials file path based on cloud origin
@@ -113,9 +82,8 @@ export const loadEnvFile = (projectDir: string): void => {
 
     if (fs.existsSync(envPath)) {
         dotenv.config({ path: envPath });
-        debug('Loaded .env file', { envPath });
     } else {
-        debug('No .env file found', { envPath });
+        warn('No .env file found');
     }
 };
 

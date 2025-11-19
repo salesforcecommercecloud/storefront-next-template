@@ -381,7 +381,7 @@ describe('generateRecommendationPromises', () => {
 
     describe('Edge Cases and Additional Coverage', () => {
         test('handles product without id for complete-the-look', () => {
-            const productWithoutId = { ...mockProduct, id: undefined } as any;
+            const productWithoutId = { ...mockProduct, id: undefined };
             const promises = generateRecommendationPromises(mockContext, {
                 product: productWithoutId,
                 category: mockCategory,

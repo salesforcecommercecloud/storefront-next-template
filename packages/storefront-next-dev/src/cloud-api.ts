@@ -1,6 +1,6 @@
 // Using built-in fetch (Node.js 18+)
 import { URL } from 'url';
-import type { Credentials, Bundle, CloudAPIResponse } from './types.js';
+import type { Credentials, Bundle, CloudAPIResponse } from './types';
 import pkg from '../package.json' with { type: 'json' };
 
 export class CloudAPIClient {
