@@ -93,7 +93,7 @@ const meta: Meta<typeof Footer> = {
         docs: {
             description: {
                 component: `
-Site footer with support, company links, newsletter signup, social icons, and theme switcher (if enabled).
+Site footer with support, account, company links, newsletter signup, social icons, and theme switcher (if enabled).
                 `,
             },
         },
@@ -138,11 +138,41 @@ export const Default: Story = {
             });
         });
 
-        await step('Test basic user interactions', async () => {
+        await step('Test button interactions', async () => {
             const buttons = canvas.queryAllByRole('button');
-            if (buttons.length > 0 && !buttons[0].hasAttribute('disabled')) {
-                await userEvent.hover(buttons[0]);
-                // Skip click to avoid hook re-render errors
+            for (const button of buttons) {
+                if (!button.hasAttribute('disabled')) {
+                    await userEvent.click(button);
+                }
+            }
+        });
+
+        await step('Test link interactions', async () => {
+            const links = canvas.queryAllByRole('link');
+            for (const link of links) {
+                await userEvent.click(link);
+            }
+        });
+
+        await step('Test input interactions', async () => {
+            const emailInput = canvas.queryByPlaceholderText('Your email');
+            if (emailInput) {
+                await userEvent.clear(emailInput);
+                await userEvent.type(emailInput, 'test@example.com');
+                await expect(emailInput).toHaveValue('test@example.com');
+            }
+        });
+
+        await step('Test select interactions', async () => {
+            const themeSelect = canvas.queryByRole('combobox', { name: /theme switcher/i });
+            if (themeSelect) {
+                // Test changing to dark theme
+                await userEvent.selectOptions(themeSelect, 'dark');
+                await expect(themeSelect).toHaveValue('dark');
+
+                // Test changing back to light theme
+                await userEvent.selectOptions(themeSelect, 'light');
+                await expect(themeSelect).toHaveValue('light');
             }
         });
 
@@ -191,11 +221,41 @@ export const LongPage: Story = {
             });
         });
 
-        await step('Test basic user interactions', async () => {
+        await step('Test button interactions', async () => {
             const buttons = canvas.queryAllByRole('button');
-            if (buttons.length > 0 && !buttons[0].hasAttribute('disabled')) {
-                await userEvent.hover(buttons[0]);
-                // Skip click to avoid hook re-render errors
+            for (const button of buttons) {
+                if (!button.hasAttribute('disabled')) {
+                    await userEvent.click(button);
+                }
+            }
+        });
+
+        await step('Test link interactions', async () => {
+            const links = canvas.queryAllByRole('link');
+            for (const link of links) {
+                await userEvent.click(link);
+            }
+        });
+
+        await step('Test input interactions', async () => {
+            const emailInput = canvas.queryByPlaceholderText('Your email');
+            if (emailInput) {
+                await userEvent.clear(emailInput);
+                await userEvent.type(emailInput, 'test@example.com');
+                await expect(emailInput).toHaveValue('test@example.com');
+            }
+        });
+
+        await step('Test select interactions', async () => {
+            const themeSelect = canvas.queryByRole('combobox', { name: /theme switcher/i });
+            if (themeSelect) {
+                // Test changing to dark theme
+                await userEvent.selectOptions(themeSelect, 'dark');
+                await expect(themeSelect).toHaveValue('dark');
+
+                // Test changing back to light theme
+                await userEvent.selectOptions(themeSelect, 'light');
+                await expect(themeSelect).toHaveValue('light');
             }
         });
 
@@ -207,14 +267,16 @@ export const LongPage: Story = {
 };
 
 export const MobileView: Story = {
+    globals: {
+        // Set default viewport to small mobile view
+        viewport: { value: 'mobile1', isRotated: false },
+    },
     parameters: {
-        viewport: {
-            defaultViewport: 'mobile1',
-        },
         docs: {
             description: {
                 story: 'Footer layout on small/mobile viewport.',
             },
+            viewport: { value: 'mobile1', isRotated: false },
         },
     },
     play: async ({ canvasElement, step }) => {
@@ -226,12 +288,47 @@ export const MobileView: Story = {
             const container = canvasElement.firstChild;
             void expect(container).toBeVisible();
         });
-        await step('Test mobile interactions', async () => {
+        await step('Test button interactions', async () => {
             const buttons = canvas.queryAllByRole('button');
-            if (buttons.length > 0) {
-                await userEvent.hover(buttons[0]);
-                // Skip click to avoid hook re-render errors
+            for (const button of buttons) {
+                if (!button.hasAttribute('disabled')) {
+                    await userEvent.click(button);
+                }
             }
+        });
+
+        await step('Test link interactions', async () => {
+            const links = canvas.queryAllByRole('link');
+            for (const link of links) {
+                await userEvent.click(link);
+            }
+        });
+
+        await step('Test input interactions', async () => {
+            const emailInput = canvas.queryByPlaceholderText('Your email');
+            if (emailInput) {
+                await userEvent.clear(emailInput);
+                await userEvent.type(emailInput, 'test@example.com');
+                await expect(emailInput).toHaveValue('test@example.com');
+            }
+        });
+
+        await step('Test select interactions', async () => {
+            const themeSelect = canvas.queryByRole('combobox', { name: /theme switcher/i });
+            if (themeSelect) {
+                // Test changing to dark theme
+                await userEvent.selectOptions(themeSelect, 'dark');
+                await expect(themeSelect).toHaveValue('dark');
+
+                // Test changing back to light theme
+                await userEvent.selectOptions(themeSelect, 'light');
+                await expect(themeSelect).toHaveValue('light');
+            }
+        });
+
+        await step('Verify component state after interaction', () => {
+            // Component should remain functional after interactions
+            void expect(canvasElement.firstChild).toBeInTheDocument();
         });
     },
 };
@@ -239,7 +336,7 @@ export const MobileView: Story = {
 export const DarkBackground: Story = {
     render: () => (
         <div className="min-h-[50vh] bg-foreground text-background flex flex-col">
-            <div className="flex-1" />
+            <div className="flex-1 min-h-[20vh]" />
             <Footer />
         </div>
     ),
@@ -267,11 +364,41 @@ export const DarkBackground: Story = {
             });
         });
 
-        await step('Test basic user interactions', async () => {
+        await step('Test button interactions', async () => {
             const buttons = canvas.queryAllByRole('button');
-            if (buttons.length > 0 && !buttons[0].hasAttribute('disabled')) {
-                await userEvent.hover(buttons[0]);
-                // Skip click to avoid hook re-render errors
+            for (const button of buttons) {
+                if (!button.hasAttribute('disabled')) {
+                    await userEvent.click(button);
+                }
+            }
+        });
+
+        await step('Test link interactions', async () => {
+            const links = canvas.queryAllByRole('link');
+            for (const link of links) {
+                await userEvent.click(link);
+            }
+        });
+
+        await step('Test input interactions', async () => {
+            const emailInput = canvas.queryByPlaceholderText('Your email');
+            if (emailInput) {
+                await userEvent.clear(emailInput);
+                await userEvent.type(emailInput, 'test@example.com');
+                await expect(emailInput).toHaveValue('test@example.com');
+            }
+        });
+
+        await step('Test select interactions', async () => {
+            const themeSelect = canvas.queryByRole('combobox', { name: /theme switcher/i });
+            if (themeSelect) {
+                // Test changing to dark theme
+                await userEvent.selectOptions(themeSelect, 'dark');
+                await expect(themeSelect).toHaveValue('dark');
+
+                // Test changing back to light theme
+                await userEvent.selectOptions(themeSelect, 'light');
+                await expect(themeSelect).toHaveValue('light');
             }
         });
 

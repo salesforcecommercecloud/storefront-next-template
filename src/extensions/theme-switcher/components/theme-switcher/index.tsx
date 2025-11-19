@@ -9,6 +9,7 @@
 import { type ReactElement, useId } from 'react';
 
 import { SelectNative } from '@/components/ui/select-native';
+import uiStrings from '@/temp-ui-string';
 
 export default function ThemeSwitcher(): ReactElement {
     const id = useId();
@@ -18,9 +19,9 @@ export default function ThemeSwitcher(): ReactElement {
     };
     return (
         <div className="*:not-first:mt-2">
-            <SelectNative id={id} onChange={handleStyleChange}>
-                <option value="light">Light Theme</option>
-                <option value="dark">Dark Theme</option>
+            <SelectNative id={id} onChange={handleStyleChange} aria-label={uiStrings.themeSwitcher.ariaLabel}>
+                <option value="light">{uiStrings.themeSwitcher.lightTheme}</option>
+                <option value="dark">{uiStrings.themeSwitcher.darkTheme}</option>
             </SelectNative>
         </div>
     );

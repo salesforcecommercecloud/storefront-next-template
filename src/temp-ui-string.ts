@@ -787,6 +787,11 @@ const additionalStrings = {
         copyright:
             'Salesforce or its affiliates. All rights reserved. This is a demo store only. Orders made WILL NOT be processed.',
     },
+    themeSwitcher: {
+        ariaLabel: 'Theme switcher',
+        lightTheme: 'Light Theme',
+        darkTheme: 'Dark Theme',
+    },
 } as const;
 
 // Export UI strings

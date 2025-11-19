@@ -94,42 +94,18 @@ Default footer signup component.
         const canvas = within(canvasElement);
 
         // Check for heading
-        const heading = await canvas.findByText(/be the first to know/i, {}, { timeout: 5000 });
+        const heading = canvas.getByText(/be the first to know/i);
         await expect(heading).toBeInTheDocument();
 
         // Check for email input
-        const emailInput = await canvas.findByPlaceholderText(/your email/i, {}, { timeout: 5000 });
+        const emailInput = await canvas.findByPlaceholderText(/your email/i, {}, { timeout: 500 });
         await expect(emailInput).toBeInTheDocument();
-
-        // Check for subscribe button
-        const subscribeButton = await canvas.findByRole('button', { name: /subscribe/i }, { timeout: 5000 });
-        await expect(subscribeButton).toBeInTheDocument();
-    },
-};
-
-export const Interactive: Story = {
-    render: () => <Signup />,
-    parameters: {
-        docs: {
-            story: `
-Interactive footer signup component for testing user interactions.
-
-### Features:
-- Email input interaction
-- Form submission
-            `,
-        },
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        // Find and interact with email input
-        const emailInput = await canvas.findByPlaceholderText(/your email/i, {}, { timeout: 5000 });
         await userEvent.type(emailInput, 'user@example.com');
         await expect(emailInput).toHaveValue('user@example.com');
 
-        // Find and click subscribe button
-        const subscribeButton = await canvas.findByRole('button', { name: /subscribe/i }, { timeout: 5000 });
+        // Check for subscribe button
+        const subscribeButton = await canvas.findByRole('button', { name: /subscribe/i }, { timeout: 500 });
+        await expect(subscribeButton).toBeInTheDocument();
         await userEvent.click(subscribeButton);
     },
 };

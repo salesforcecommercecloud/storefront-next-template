@@ -1,15 +1,19 @@
 import { vi, expect, test, describe, afterEach } from 'vitest';
-import type React from 'react';
+
+type MockFormProps = React.PropsWithChildren<Record<string, unknown>>;
+type MockLinkProps = React.PropsWithChildren<{ to?: string; href?: string; [key: string]: unknown }>;
+
+const fetcherMock = {
+    data: null,
+    state: 'idle',
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    submit: () => {},
+    Form: (props: MockFormProps) => <form {...props}>{props.children}</form>,
+};
 
 vi.mock('react-router', () => ({
     createContext: vi.fn().mockImplementation(() => ({})),
-    useFetcher: () => ({
-        data: null,
-        state: 'idle',
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        submit: () => {},
-        Form: (props: React.PropsWithChildren<Record<string, unknown>>) => <form {...props}>{props.children}</form>,
-    }),
+    useFetcher: () => fetcherMock,
     useFetchers: () => [],
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     useNavigate: () => () => {},
@@ -19,7 +23,7 @@ vi.mock('react-router', () => ({
         location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
     }),
     useSearchParams: () => [new URLSearchParams(), vi.fn()],
-    Link: (props: React.PropsWithChildren<{ to?: string; href?: string; [key: string]: unknown }>) => {
+    Link: (props: MockLinkProps) => {
         const { to, href, children, ...rest } = props ?? {};
         return (
             <a href={to ?? href} {...rest}>
@@ -27,10 +31,35 @@ vi.mock('react-router', () => ({
             </a>
         );
     },
-    createMemoryRouter: vi.fn(),
-    RouterProvider: ({ router }: { router: { routes: Array<{ element?: unknown }> } }) => (
-        <div>{router.routes[0]?.element || null}</div>
-    ),
+}));
+vi.mock('react-router-dom', async (importOriginal) => {
+    const actual = await importOriginal();
+    return {
+        ...actual,
+        useFetcher: () => fetcherMock,
+        useFetchers: () => [],
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        useNavigate: () => () => {},
+        useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
+        useNavigation: () => ({
+            state: 'idle',
+            location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
+        }),
+        Link: (props: MockLinkProps) => {
+            const { to, href, children, ...rest } = props ?? {};
+            return (
+                <a href={to ?? href} {...rest}>
+                    {children}
+                </a>
+            );
+        },
+    };
+});
+vi.mock('@/components/toast', () => ({
+    useToast: () => ({
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        addToast: () => {},
+    }),
 }));
 
 import { composeStories } from '@storybook/react-vite';
@@ -46,7 +75,6 @@ afterEach(() => {
 
 describe('Footer Signup stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
-        if (Story?.parameters?.snapshot === false || /interactiontests?/i.test(storyName)) continue;
         test(`${storyName} story renders and matches snapshot`, () => {
             const { container } = render(<Story />);
             expect(container.firstChild).toMatchSnapshot();
