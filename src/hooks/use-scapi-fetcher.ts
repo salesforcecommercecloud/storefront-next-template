@@ -119,15 +119,23 @@ export function useScapiFetcher<
 >(client: C, method: M, ...options: ExtractMethodParams<I, M>): ScapiFetcher<Awaited<R>> {
     // Use the spread options directly as method parameters
     // Memoize the method parameters to prevent creating new fetchers on every render
-    // We use a ref to track the previous options string for deep comparison
+    // We use refs to track the previous options string and params for deep comparison
     const prevOptionsStringRef = useRef<string>('');
+    const prevMethodParamsRef = useRef<ExtractMethodParams<I, M>>(options as unknown as ExtractMethodParams<I, M>);
+    const currentOptionsRef = useRef<ExtractMethodParams<I, M>>(options as unknown as ExtractMethodParams<I, M>);
+
+    // Update the current options ref on every render
+    currentOptionsRef.current = options as unknown as ExtractMethodParams<I, M>;
     const optionsString = JSON.stringify(options);
+
+    // Only update methodParams when the stringified options actually change
     const methodParams = useMemo(() => {
         if (prevOptionsStringRef.current !== optionsString) {
             prevOptionsStringRef.current = optionsString;
+            prevMethodParamsRef.current = currentOptionsRef.current;
         }
-        return options as unknown as ExtractMethodParams<I, M>;
-    }, [options, optionsString]);
+        return prevMethodParamsRef.current;
+    }, [optionsString]);
 
     /* c8 ignore next */
     const parameters = Array.isArray(methodParams) ? JSON.stringify(methodParams) : '[]';

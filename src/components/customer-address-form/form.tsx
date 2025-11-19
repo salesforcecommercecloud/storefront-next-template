@@ -13,6 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 // components
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
+import { Spinner } from '@/components/spinner';
 import { CustomerAddressFields } from './customer-address-fields';
 
 //hooks
@@ -88,7 +89,7 @@ export const CustomerAddressForm = ({
             city: initialData?.city || '',
             stateCode: initialData?.stateCode || '',
             postalCode: initialData?.postalCode || '',
-            preferred: initialData?.preferred ?? false,
+            preferred: Boolean(initialData?.preferred ?? false),
         },
     });
 
@@ -120,7 +121,7 @@ export const CustomerAddressForm = ({
                 city: address.city || '',
                 stateCode: address.stateCode || '',
                 postalCode: address.postalCode || '',
-                preferred: address.preferred || false,
+                preferred: Boolean(address.preferred ?? false),
             };
 
             // Clear inline error on success
@@ -176,7 +177,7 @@ export const CustomerAddressForm = ({
             city: data.city,
             stateCode: data.stateCode || undefined,
             postalCode: data.postalCode,
-            preferred: data.preferred,
+            preferred: Boolean(data.preferred),
         };
 
         // Submit the update request - response will be handled by parent component's fetcher effect
@@ -235,6 +236,14 @@ export const CustomerAddressForm = ({
                     </div>
                 </form>
             </Form>
+            {/* Spinner Overlay */}
+            {isSubmitting && (
+                <div
+                    className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 pointer-events-none flex items-center justify-center rounded-md"
+                    data-testid="customer-address-form-loading">
+                    <Spinner size="lg" />
+                </div>
+            )}
         </div>
     );
 };

@@ -9,6 +9,7 @@ import { type ReactElement } from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardAction } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Spinner } from '@/components/spinner';
 import AddressDisplay from '@/components/address-display';
 import type { ShopperCustomersTypes } from 'commerce-sdk-isomorphic';
 import uiStrings from '@/temp-ui-string';
@@ -22,6 +23,8 @@ interface AddressCardProps {
     onRemove?: () => void;
     /** Whether this address is the preferred address */
     isPreferred?: boolean;
+    /** Whether the remove action is in progress */
+    isRemoving?: boolean;
 }
 
 /**
@@ -49,9 +52,10 @@ export default function AddressCard({
     onEdit,
     onRemove,
     isPreferred = false,
+    isRemoving = false,
 }: AddressCardProps): ReactElement {
     return (
-        <Card className="border-border gap-0 py-4">
+        <Card className="border-border gap-0 py-4 relative">
             <CardHeader>
                 <CardTitle className="text-left">{address.addressId}</CardTitle>
                 <CardAction>
@@ -78,11 +82,18 @@ export default function AddressCard({
                             variant="link"
                             size="sm"
                             className="text-destructive hover:text-destructive"
-                            aria-label={uiStrings.actionCard.remove}>
+                            aria-label={uiStrings.actionCard.remove}
+                            disabled={isRemoving}>
                             {uiStrings.actionCard.remove}
                         </Button>
                     )}
                 </CardFooter>
+            )}
+            {/* Loading Spinner Overlay */}
+            {isRemoving && (
+                <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 pointer-events-none flex items-center justify-center rounded-lg">
+                    <Spinner size="lg" />
+                </div>
             )}
         </Card>
     );

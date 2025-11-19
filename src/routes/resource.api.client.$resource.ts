@@ -130,9 +130,15 @@ async function act<
         const formData = await request.formData();
 
         // Convert FormData to a plain object for the body
-        const bodyData: Record<string, FormDataEntryValue> = {};
+        // Note: FormData converts all values to strings, so we need to convert known boolean fields back
+        const bodyData: Record<string, FormDataEntryValue | boolean> = {};
         for (const [key, value] of formData.entries()) {
-            bodyData[key] = value;
+            // Convert known boolean fields from string to boolean
+            if (key === 'preferred' && typeof value === 'string') {
+                bodyData[key] = value === 'true' || value === '1';
+            } else {
+                bodyData[key] = value;
+            }
         }
 
         // Merge the original parameters with the form data as body
@@ -151,13 +157,19 @@ async function act<
 
         // If no body parameter exists, add one to the last parameter or create a new one
         const lastParam = updatedParameters[updatedParameters.length - 1];
-        if (updatedParameters.length === 0 || !lastParam || typeof lastParam !== 'object' || !('body' in lastParam)) {
+        if (
+            updatedParameters.length === 0 ||
+            !lastParam ||
+            typeof lastParam !== 'object' ||
+            lastParam === null ||
+            !('body' in lastParam)
+        ) {
             if (updatedParameters.length === 0) {
                 updatedParameters.push({ body: bodyData });
             } else {
                 // Add body to the last parameter
                 updatedParameters[updatedParameters.length - 1] = {
-                    ...lastParam,
+                    ...(lastParam as Record<string, unknown>),
                     body: bodyData,
                 };
             }

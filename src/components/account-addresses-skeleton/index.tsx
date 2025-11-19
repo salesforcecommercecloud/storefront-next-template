@@ -7,6 +7,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardAction, CardFooter } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import uiStrings from '@/temp-ui-string';
 
 /**
  * Skeleton component for the account addresses page content.
@@ -17,7 +18,9 @@ export function AccountAddressesSkeleton() {
         <div className="space-y-6">
             {/* Page Header Skeleton */}
             <div>
-                <Skeleton className="h-8 w-40" />
+                <h1 className="text-2xl font-bold text-foreground" tabIndex={0}>
+                    {uiStrings.account.navigation.addresses}
+                </h1>
             </div>
 
             {/* Address Cards Grid Skeleton */}
