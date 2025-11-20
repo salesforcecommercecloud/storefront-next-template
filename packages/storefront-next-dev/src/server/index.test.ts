@@ -322,7 +322,7 @@ describe('server/index', () => {
 
             it('should default to process.cwd() when projectDirectory is not provided', async () => {
                 const options: ServerOptions = {
-                    mode: 'serve',
+                    mode: 'preview',
                     build: mockBuild,
                 };
 
