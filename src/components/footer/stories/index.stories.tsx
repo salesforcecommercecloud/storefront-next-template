@@ -279,9 +279,6 @@ export const MobileView: Story = {
             viewport: { value: 'mobile1', isRotated: false },
         },
     },
-    globals: {
-        viewport: 'mobile2',
-    },
     play: async ({ canvasElement, step }) => {
         const canvas = within(canvasElement);
         await step('Verify mobile viewport rendering', () => {
