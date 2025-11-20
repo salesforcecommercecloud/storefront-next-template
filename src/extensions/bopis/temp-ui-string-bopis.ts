@@ -28,6 +28,15 @@ export default {
         openStoreLocator: 'Open Store Locator to {action}',
         selectStoreLink: 'Select a Store',
     },
+    storePickup: {
+        title: 'Store Pickup Location',
+        viewButton: 'View',
+        closeButton: 'Close',
+        pickupDetailsTitle: 'Pickup Location Details',
+        phoneLabel: 'Phone:',
+        storeHoursTitle: 'Store Hours',
+        pickupLastName: 'Pickup',
+    },
     cart: {
         pickupStoreInfo: {
             pickupInStore: 'Pick up in {storeName}',

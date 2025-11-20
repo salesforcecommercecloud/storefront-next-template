@@ -7,7 +7,12 @@
  */
 
 import type { LoaderFunctionArgs, ClientLoaderFunctionArgs } from 'react-router';
-import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type {
+    ShopperBasketsV2,
+    ShopperProducts,
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    ShopperStores,
+} from '@salesforce/storefront-next-runtime/scapi';
 import type { CustomerProfile } from '@/components/checkout/utils/checkout-context-types';
 import type { SessionData } from '@/lib/api/types';
 import { getAuth as getAuthClient } from '@/middlewares/auth.client';
@@ -16,6 +21,12 @@ import { getCustomerProfileForCheckout, isRegisteredCustomer } from '@/lib/api/c
 import { getShippingMethodsForShipment } from '@/lib/api/shipping-methods';
 import { createApiClients } from '@/lib/api-clients';
 import { getConfig } from '@/config';
+// @sfdc-extension-block-start SFDC_EXT_BOPIS
+import { getPickupShipment } from '@/extensions/bopis/lib/basket-utils';
+import { setAddressAndMethodForPickup } from '@/extensions/bopis/lib/api/shipment';
+import { fetchStoresForBasket } from '@/extensions/bopis/lib/api/stores';
+import { isPickupAddressSet } from '@/extensions/bopis/lib/store-utils';
+// @sfdc-extension-block-end SFDC_EXT_BOPIS
 
 /**
  * Checkout page data type
@@ -25,6 +36,9 @@ export type CheckoutPageData = {
     customerProfile?: Promise<CustomerProfile | null>;
     productMap: Promise<Record<string, ShopperProducts.schemas['Product']>>;
     isRegisteredCustomer?: boolean;
+    shippingDefaultSet?: Promise<ShopperBasketsV2.schemas['Basket']>;
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    storesByStoreId?: Map<string, ShopperStores.schemas['Store']>;
 };
 
 /**
@@ -185,6 +199,30 @@ export async function clientLoader(args: ClientLoaderFunctionArgs): Promise<Chec
         // Fetch product details for cart items display
         const productMapPromise = fetchProductsInBasket(context, basket?.productItems ?? []);
 
+        let shippingDefaultSet: Promise<ShopperBasketsV2.schemas['Basket']> = Promise.resolve();
+        // @sfdc-extension-block-start SFDC_EXT_BOPIS
+        // Check if this is a BOPIS order and fetch store details if so
+        let storesByStoreId: Map<string, ShopperStores.schemas['Store']> | undefined;
+        const pickupShipment = getPickupShipment(basket);
+        if (pickupShipment) {
+            storesByStoreId = await fetchStoresForBasket(context, basket);
+            const store = storesByStoreId?.get(pickupShipment.c_fromStoreId);
+            if (store) {
+                // Check if address is already set to avoid unnecessary calls
+                const addressAlreadySet = isPickupAddressSet(pickupShipment.shippingAddress, store);
+
+                if (!addressAlreadySet) {
+                    shippingDefaultSet = setAddressAndMethodForPickup(
+                        context,
+                        basket.basketId,
+                        store,
+                        pickupShipment.shipmentId
+                    );
+                }
+            }
+        }
+        // @sfdc-extension-block-end SFDC_EXT_BOPIS
+
         // IMPORTANT: For returning shopper must prefill basket before fetching shipping methods
         if (userIsRegistered && session.customer_id) {
             // Step 1: Fetch customer profile (await for saved addresses)
@@ -207,6 +245,9 @@ export async function clientLoader(args: ClientLoaderFunctionArgs): Promise<Chec
                     customerProfile: Promise.resolve(customerProfile),
                     productMap: productMapPromise,
                     isRegisteredCustomer: true,
+                    shippingDefaultSet,
+                    // @sfdc-extension-line SFDC_EXT_BOPIS
+                    ...(storesByStoreId && { storesByStoreId }),
                 };
             }
         }
@@ -221,6 +262,9 @@ export async function clientLoader(args: ClientLoaderFunctionArgs): Promise<Chec
             ...(shippingMethodsPromise && { shippingMethods: shippingMethodsPromise }),
             productMap: productMapPromise,
             isRegisteredCustomer: false,
+            shippingDefaultSet,
+            // @sfdc-extension-line SFDC_EXT_BOPIS
+            ...(storesByStoreId && { storesByStoreId }),
         };
     } catch {
         // Fallback to empty data on any error

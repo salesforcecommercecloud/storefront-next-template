@@ -5,7 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
+import { PICKUP_SHIPPING_METHOD_ID } from '../../constants';
 
 /**
  * Creates a mock basket with pickup items for testing.
@@ -55,6 +56,22 @@ export function createMockBasketWithPickupItems(
         shipments.push({
             shipmentId,
             c_fromStoreId: storeId,
+            shippingAddress: {
+                // Store address - typical for BOPIS orders
+                firstName: 'Test Store',
+                lastName: 'Pickup',
+                address1: '123 Main St',
+                city: 'San Francisco',
+                stateCode: 'CA',
+                postalCode: '94102',
+                countryCode: 'US',
+                phone: '555-1234',
+            },
+            shippingMethod: {
+                id: PICKUP_SHIPPING_METHOD_ID,
+                name: 'Store Pickup',
+                c_storePickupEnabled: true,
+            },
         });
 
         pickupItems
@@ -74,6 +91,48 @@ export function createMockBasketWithPickupItems(
         basketId: 'basket-1',
         shipments,
         productItems,
+        ...overrides,
+    };
+}
+
+/**
+ * Creates a mock store for testing.
+ *
+ * This utility function generates a realistic store structure with common fields
+ * populated with default values. The storeId and inventoryId can be explicitly provided,
+ * and all other fields can be overridden via the overrides parameter.
+ *
+ * @param storeId - Store ID (defaults to 'store-1')
+ * @param inventoryId - Inventory ID (defaults to 'inventory-1')
+ * @param overrides - Optional partial store object to override default values
+ * @returns A mock store with the specified storeId, inventoryId, and overrides
+ *
+ * @example
+ * ```ts
+ * const store = createMockStore('store-123', 'inventory-456', {
+ *   name: 'Test Store',
+ *   city: 'San Francisco',
+ * });
+ * ```
+ */
+export function createMockStore(
+    storeId: string = 'store-1',
+    inventoryId: string = 'inventory-1',
+    overrides?: Partial<ShopperStores.schemas['Store']>
+): ShopperStores.schemas['Store'] {
+    return {
+        id: storeId,
+        inventoryId,
+        name: 'Test Store',
+        address1: '123 Main St',
+        address2: 'Suite 100',
+        city: 'San Francisco',
+        stateCode: 'CA',
+        postalCode: '94102',
+        countryCode: 'US',
+        phone: '555-1234',
+        email: 'store@example.com',
+        storeLocatorEnabled: true,
         ...overrides,
     };
 }

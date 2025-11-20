@@ -19,6 +19,8 @@ import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import { getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';
 import uiStrings from '@/temp-ui-string';
 import type { CheckoutActionData } from '../types';
+// @sfdc-extension-line SFDC_EXT_BOPIS
+import { isStorePickup } from '@/extensions/bopis/lib/basket-utils';
 
 interface PaymentProps {
     onSubmit: (data: PaymentData) => void;
@@ -42,6 +44,9 @@ export default function Payment({
     const customerProfile = useCustomerProfile();
     const [detectedCardType, setDetectedCardType] = useState<string>('');
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('new'); // 'new' or payment method ID
+    let showBillingSameAsShipping = true;
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    showBillingSameAsShipping = !isStorePickup(cart);
 
     // Get customer's saved payment methods
     const savedPaymentMethods = getPaymentMethodsFromCustomer(customerProfile);
@@ -113,10 +118,25 @@ export default function Payment({
             ...baseDefaults,
             useSavedPaymentMethod: isUsingSavedPayment,
             selectedSavedPaymentMethod: isUsingSavedPayment ? selectedPaymentMethod : undefined,
+            billingSameAsShipping: showBillingSameAsShipping ? baseDefaults.billingSameAsShipping : false,
+            // @sfdc-extension-block-start SFDC_EXT_BOPIS
+            // For BOPIS orders, don't pre-fill billing address or cardholder name from shipping (which is the store address)
+            ...(!showBillingSameAsShipping && {
+                cardholderName: '',
+                billingFirstName: '',
+                billingLastName: '',
+                billingAddress1: '',
+                billingAddress2: '',
+                billingCity: '',
+                billingStateCode: '',
+                billingPostalCode: '',
+                billingPhone: '',
+            }),
+            // @sfdc-extension-block-end SFDC_EXT_BOPIS
         };
 
         return computedDefaults;
-    }, [selectedPaymentMethod, shippingAddress, paymentMethod, savedPaymentMethods.length]);
+    }, [selectedPaymentMethod, shippingAddress, paymentMethod, savedPaymentMethods.length, showBillingSameAsShipping]);
 
     const form = useForm<PaymentData>({
         resolver: zodResolver(paymentSchema),
@@ -392,35 +412,40 @@ export default function Payment({
 
                         {/* Billing Address Section */}
                         <div className="space-y-4">
-                            <FormField
-                                control={form.control}
-                                name="billingSameAsShipping"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <div className="rounded-lg border border-border bg-card p-4 transition-colors hover:bg-accent/50">
-                                            <div className="flex items-start space-x-3">
-                                                <FormControl>
-                                                    <Checkbox
-                                                        checked={field.value}
-                                                        onCheckedChange={(checked) => {
-                                                            field.onChange(checked === true);
-                                                        }}
-                                                        className="mt-0.5"
-                                                    />
-                                                </FormControl>
-                                                <div className="space-y-1 leading-none">
-                                                    <FormLabel className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                                        {uiStrings.checkout.payment.billingSameAsShipping}
-                                                    </FormLabel>
-                                                    <Typography variant="small" className="text-muted-foreground">
-                                                        {uiStrings.checkout.payment.billingSameAsShippingDescription}
-                                                    </Typography>
+                            {showBillingSameAsShipping && (
+                                <FormField
+                                    control={form.control}
+                                    name="billingSameAsShipping"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <div className="rounded-lg border border-border bg-card p-4 transition-colors hover:bg-accent/50">
+                                                <div className="flex items-start space-x-3">
+                                                    <FormControl>
+                                                        <Checkbox
+                                                            checked={field.value}
+                                                            onCheckedChange={(checked) => {
+                                                                field.onChange(checked === true);
+                                                            }}
+                                                            className="mt-0.5"
+                                                        />
+                                                    </FormControl>
+                                                    <div className="space-y-1 leading-none">
+                                                        <FormLabel className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                                            {uiStrings.checkout.payment.billingSameAsShipping}
+                                                        </FormLabel>
+                                                        <Typography variant="small" className="text-muted-foreground">
+                                                            {
+                                                                uiStrings.checkout.payment
+                                                                    .billingSameAsShippingDescription
+                                                            }
+                                                        </Typography>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </FormItem>
-                                )}
-                            />
+                                        </FormItem>
+                                    )}
+                                />
+                            )}
 
                             {!billingSameAsShipping && (
                                 <div className="space-y-4">
@@ -668,8 +693,10 @@ export default function Payment({
                                 </div>
                             </div>
                         ) : (
-                            <Typography variant="p" as="span" className="font-medium">
-                                Same as shipping address
+                            <Typography variant="p" className="text-muted-foreground">
+                                {showBillingSameAsShipping
+                                    ? uiStrings.checkout.payment.sameAsShippingAddress
+                                    : uiStrings.checkout.payment.noBillingAddressSaved}
                             </Typography>
                         )}
                     </div>

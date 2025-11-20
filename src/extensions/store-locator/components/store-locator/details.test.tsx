@@ -41,4 +41,10 @@ describe('StoreDetails', () => {
         expect(screen.getByText('help@example.com')).toBeInTheDocument();
         expect(screen.getByText(uiStringsSL.storeLocator.details.storeHoursTitle)).toBeInTheDocument();
     });
+
+    test('renders compact address with store name inline', () => {
+        render(<StoreDetails store={store} compactAddress={true} />);
+
+        expect(screen.getByText('Downtown Store -')).toBeInTheDocument();
+    });
 });

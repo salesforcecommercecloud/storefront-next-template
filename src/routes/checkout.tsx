@@ -13,6 +13,8 @@ import CheckoutProvider from '@/components/checkout/utils/checkout-context';
 import { CheckoutErrorBoundary } from '@/components/checkout-error-boundary';
 import { Skeleton } from '@/components/ui/skeleton';
 import Loading from '@/components/loading';
+// @sfdc-extension-line SFDC_EXT_BOPIS
+import PickupProvider from '@/extensions/bopis/context/pickup-context';
 
 /**
  * Server-side loader function for checkout route
@@ -132,7 +134,14 @@ export function HydrateFallback() {
  * - productMap: Passed as Promise to allow MyCart to stream independently
  */
 function CheckoutView({
-    loaderData: { customerProfile, shippingMethods, productMap },
+    loaderData: {
+        customerProfile,
+        shippingMethods,
+        productMap,
+        shippingDefaultSet,
+        // @sfdc-extension-line SFDC_EXT_BOPIS
+        storesByStoreId,
+    },
 }: RouteComponentProps<CheckoutPageData>) {
     // Handle each promise individually, only calling use() if the promise exists
     // React automatically parallelizes multiple use() calls in the same component
@@ -141,11 +150,20 @@ function CheckoutView({
 
     // Pass productMap Promise to CheckoutFormPage for streaming-friendly rendering
     // MyCart component (wrapped in Suspense) will resolve it independently
-    return (
-        <CheckoutProvider customerProfile={customerProfileData ?? undefined}>
+    const content = (
+        <CheckoutProvider
+            customerProfile={customerProfileData ?? undefined}
+            shippingDefaultSet={shippingDefaultSet ?? undefined}>
             <CheckoutFormPage shippingMethods={shippingMethodsData ?? undefined} productMapPromise={productMap} />
         </CheckoutProvider>
     );
+
+    let finalContent = content;
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    /// Initialize PickupProvider with stores by store id
+    finalContent = <PickupProvider initialPickupStores={storesByStoreId}>{content}</PickupProvider>;
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
+    return finalContent;
 }
 
 /**

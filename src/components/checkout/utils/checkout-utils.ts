@@ -9,6 +9,8 @@ import { getBasket, updateBasket } from '@/middlewares/basket.client';
 import { createApiClients } from '@/lib/api-clients';
 import { getConfig } from '@/config';
 import { getShippingMethodsForShipment } from '@/lib/api/shipping-methods';
+// @sfdc-extension-line SFDC_EXT_BOPIS
+import { isStorePickup } from '@/extensions/bopis/lib/basket-utils';
 
 function hasValidPaymentCard(
     paymentInstrument: ShopperBasketsV2.schemas['OrderPaymentInstrument'] | undefined
@@ -79,21 +81,27 @@ export function computeStepFromBasket(
         return CHECKOUT_STEPS.CONTACT_INFO;
     }
 
-    const shippingAddress = basket.shipments?.[0]?.shippingAddress;
-    if (!shippingAddress?.firstName || !shippingAddress?.lastName || !shippingAddress?.address1) {
-        return CHECKOUT_STEPS.SHIPPING_ADDRESS;
-    }
+    let showAddressAndOptions = true;
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    showAddressAndOptions = !isStorePickup(basket);
 
-    const hasShippingMethod = basket.shipments?.[0]?.shippingMethod;
-    if (!hasShippingMethod) {
-        return CHECKOUT_STEPS.SHIPPING_OPTIONS;
-    }
+    if (showAddressAndOptions) {
+        const shippingAddress = basket.shipments?.[0]?.shippingAddress;
+        if (!shippingAddress?.firstName || !shippingAddress?.lastName || !shippingAddress?.address1) {
+            return CHECKOUT_STEPS.SHIPPING_ADDRESS;
+        }
 
-    // For auto-advance mode (returning customers), skip shipping options if they have a valid method
-    if (autoAdvanceMode && hasShippingMethod) {
-        // Skip shipping options step for returning customers with valid shipping method
-    } else if (!hasUserSelectedShippingOptions) {
-        return CHECKOUT_STEPS.SHIPPING_OPTIONS;
+        const hasShippingMethod = basket.shipments?.[0]?.shippingMethod;
+        if (!hasShippingMethod) {
+            return CHECKOUT_STEPS.SHIPPING_OPTIONS;
+        }
+
+        // For auto-advance mode (returning customers), skip shipping options if they have a valid method
+        if (autoAdvanceMode && hasShippingMethod) {
+            // Skip shipping options step for returning customers with valid shipping method
+        } else if (!hasUserSelectedShippingOptions) {
+            return CHECKOUT_STEPS.SHIPPING_OPTIONS;
+        }
     }
 
     const paymentInstrument = basket.paymentInstruments?.[0];
@@ -114,6 +122,10 @@ export function getCompletedSteps(
         return completed;
     }
 
+    let showAddressAndOptions = true;
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    showAddressAndOptions = !isStorePickup(basket);
+
     const hasEmail =
         basket.customerInfo?.email ||
         (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('checkoutEmail'));
@@ -121,20 +133,22 @@ export function getCompletedSteps(
         completed.push(CHECKOUT_STEPS.CONTACT_INFO);
     }
 
-    const hasShippingAddress = basket.shipments?.[0]?.shippingAddress;
-    if (
-        hasShippingAddress &&
-        hasShippingAddress.firstName &&
-        hasShippingAddress.lastName &&
-        hasShippingAddress.address1 &&
-        currentStep > CHECKOUT_STEPS.SHIPPING_ADDRESS
-    ) {
-        completed.push(CHECKOUT_STEPS.SHIPPING_ADDRESS);
-    }
+    if (showAddressAndOptions) {
+        const hasShippingAddress = basket.shipments?.[0]?.shippingAddress;
+        if (
+            hasShippingAddress &&
+            hasShippingAddress.firstName &&
+            hasShippingAddress.lastName &&
+            hasShippingAddress.address1 &&
+            currentStep > CHECKOUT_STEPS.SHIPPING_ADDRESS
+        ) {
+            completed.push(CHECKOUT_STEPS.SHIPPING_ADDRESS);
+        }
 
-    const hasShippingMethod = basket.shipments?.[0]?.shippingMethod;
-    if (hasShippingMethod && currentStep > CHECKOUT_STEPS.SHIPPING_OPTIONS) {
-        completed.push(CHECKOUT_STEPS.SHIPPING_OPTIONS);
+        const hasShippingMethod = basket.shipments?.[0]?.shippingMethod;
+        if (hasShippingMethod && currentStep > CHECKOUT_STEPS.SHIPPING_OPTIONS) {
+            completed.push(CHECKOUT_STEPS.SHIPPING_OPTIONS);
+        }
     }
 
     const paymentInstrument = basket.paymentInstruments?.[0];

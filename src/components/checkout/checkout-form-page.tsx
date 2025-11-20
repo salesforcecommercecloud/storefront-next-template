@@ -11,9 +11,13 @@ import { Typography } from '@/components/typography';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import uiStrings from '@/temp-ui-string';
+// @sfdc-extension-line SFDC_EXT_BOPIS
+import { isStorePickup } from '@/extensions/bopis/lib/basket-utils';
 
 // Lazy load heavy components
 const ContactInfo = lazy(() => import('./partials/contact-info'));
+// @sfdc-extension-line SFDC_EXT_BOPIS
+const StorePickup = lazy(() => import('@/extensions/bopis/components/checkout/store-pickup'));
 const ShippingAddress = lazy(() => import('./partials/shipping-address'));
 const ShippingOptions = lazy(() => import('./partials/shipping-options'));
 const Payment = lazy(() => import('./partials/payment'));
@@ -88,6 +92,11 @@ export default function CheckoutFormPage({ shippingMethods, productMapPromise }:
 
     // Get navigation state
     const navigation = useNavigation();
+    let showAddressAndOptions = true;
+    // @sfdc-extension-start-block SFDC_EXT_BOPIS
+    const isPickup = isStorePickup(cart);
+    showAddressAndOptions = !isPickup;
+    // @sfdc-extension-end-block SFDC_EXT_BOPIS
 
     // Checkout actions hook with all fetchers and submission handlers
     const {
@@ -242,24 +251,38 @@ export default function CheckoutFormPage({ shippingMethods, productMapPromise }:
                             />
                         </Suspense>
 
-                        <Suspense fallback={<div className="h-32 bg-muted animate-pulse rounded" />}>
-                            <ShippingAddress
-                                onSubmit={handleShippingAddressSubmit}
-                                isLoading={isSubmitting('shipping-address')}
-                                actionData={shippingAddressFetcher.data}
-                                {...shippingAddressState}
-                            />
-                        </Suspense>
+                        {/* @sfdc-extension-block-start SFDC_EXT_BOPIS */}
+                        {/* Store Pickup Information - Only show if this is a BOPIS order */}
+                        {isPickup && (
+                            <Suspense fallback={<div className="h-32 bg-muted animate-pulse rounded" />}>
+                                <StorePickup />
+                            </Suspense>
+                        )}
+                        {/* @sfdc-extension-block-end SFDC_EXT_BOPIS */}
 
-                        <Suspense fallback={<div className="h-32 bg-muted animate-pulse rounded" />}>
-                            <ShippingOptions
-                                onSubmit={handleShippingOptionsSubmit}
-                                isLoading={isSubmitting('shipping-options')}
-                                actionData={shippingOptionsFetcher.data}
-                                shippingMethods={shippingMethods}
-                                {...shippingOptionsState}
-                            />
-                        </Suspense>
+                        {/* Shipping Address & Options */}
+                        {showAddressAndOptions && (
+                            <>
+                                <Suspense fallback={<div className="h-32 bg-muted animate-pulse rounded" />}>
+                                    <ShippingAddress
+                                        onSubmit={handleShippingAddressSubmit}
+                                        isLoading={isSubmitting('shipping-address')}
+                                        actionData={shippingAddressFetcher.data}
+                                        {...shippingAddressState}
+                                    />
+                                </Suspense>
+
+                                <Suspense fallback={<div className="h-32 bg-muted animate-pulse rounded" />}>
+                                    <ShippingOptions
+                                        onSubmit={handleShippingOptionsSubmit}
+                                        isLoading={isSubmitting('shipping-options')}
+                                        actionData={shippingOptionsFetcher.data}
+                                        shippingMethods={shippingMethods}
+                                        {...shippingOptionsState}
+                                    />
+                                </Suspense>
+                            </>
+                        )}
 
                         <Suspense fallback={<div className="h-32 bg-muted animate-pulse rounded" />}>
                             <Payment

@@ -61,11 +61,11 @@ exports[`Payment stories snapshot > CompletedState story renders and matches sna
           >
             Billing Address
           </p>
-          <span
-            class="leading-7 [&:not(:first-child)]:mt-6 text-left font-medium"
+          <p
+            class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground"
           >
             Same as shipping address
-          </span>
+          </p>
         </div>
       </div>
     </div>
@@ -393,11 +393,11 @@ exports[`Payment stories snapshot > DesktopView story renders and matches snapsh
           >
             Billing Address
           </p>
-          <span
-            class="leading-7 [&:not(:first-child)]:mt-6 text-left font-medium"
+          <p
+            class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground"
           >
             Same as shipping address
-          </span>
+          </p>
         </div>
       </div>
     </div>
@@ -466,11 +466,11 @@ exports[`Payment stories snapshot > DisabledState story renders and matches snap
           >
             Billing Address
           </p>
-          <span
-            class="leading-7 [&:not(:first-child)]:mt-6 text-left font-medium"
+          <p
+            class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground"
           >
             Same as shipping address
-          </span>
+          </p>
         </div>
       </div>
     </div>

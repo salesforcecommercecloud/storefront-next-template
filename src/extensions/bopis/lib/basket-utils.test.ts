@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import {
     getPickupItemsFromBasket,
@@ -15,8 +15,22 @@ import {
     getStoreIdForBasketItem,
     getPickupProductItemsForStore,
     filterPickupProductItems,
+    isStorePickup,
+    getPickupShipment,
 } from './basket-utils';
-import type { PickupItemInfo } from '../context/pickup-context';
+import type { PickupItemInfo } from '@/extensions/bopis/context/pickup-context';
+
+vi.mock('@/lib/api-clients', () => ({
+    createApiClients: vi.fn(),
+}));
+
+vi.mock('@/config', () => ({
+    getConfig: vi.fn(),
+}));
+
+beforeEach(() => {
+    vi.resetAllMocks();
+});
 
 describe('getPickupItemsFromBasket', () => {
     it('returns empty map when basket is undefined', () => {
@@ -1579,5 +1593,101 @@ describe('getPickupProductItemsForStore', () => {
         // This is expected behavior - empty string is not a valid store ID
         const result = getPickupProductItemsForStore(basket, '');
         expect(result).toEqual([]);
+    });
+});
+
+describe('isStorePickup', () => {
+    it('returns false when basket is undefined', () => {
+        expect(isStorePickup(undefined)).toBe(false);
+    });
+
+    it('returns false when basket is null', () => {
+        expect(isStorePickup(null)).toBe(false);
+    });
+
+    it('returns false when basket has no shipments', () => {
+        const basket = {
+            basketId: 'basket-1',
+        } as ShopperBasketsV2.schemas['Basket'];
+
+        expect(isStorePickup(basket)).toBe(false);
+    });
+
+    it('returns false when shipments lack store pickup configuration', () => {
+        const basket = {
+            basketId: 'basket-1',
+            shipments: [{ shipmentId: 'delivery-1' }],
+        } as ShopperBasketsV2.schemas['Basket'];
+
+        expect(isStorePickup(basket)).toBe(false);
+    });
+
+    it('returns true when any shipment has store pickup enabled', () => {
+        const basket = {
+            basketId: 'basket-1',
+            shipments: [{ shipmentId: 'delivery-1' }, { shipmentId: 'pickup-1', c_fromStoreId: 'store-123' }],
+        } as ShopperBasketsV2.schemas['Basket'];
+
+        expect(isStorePickup(basket)).toBe(true);
+    });
+
+    it('treats empty string store IDs as falsy', () => {
+        const basket = {
+            basketId: 'basket-1',
+            shipments: [{ shipmentId: 'pickup-1', c_fromStoreId: '' }, { shipmentId: 'pickup-2' }],
+        } as ShopperBasketsV2.schemas['Basket'];
+
+        expect(isStorePickup(basket)).toBe(false);
+    });
+});
+
+describe('getPickupShipment', () => {
+    it('returns undefined when basket is undefined', () => {
+        expect(getPickupShipment(undefined)).toBeUndefined();
+    });
+
+    it('returns undefined when basket is null', () => {
+        expect(getPickupShipment(null)).toBeUndefined();
+    });
+
+    it('returns undefined when basket has no shipments', () => {
+        const basket = {
+            basketId: 'basket-1',
+        } as ShopperBasketsV2.schemas['Basket'];
+
+        expect(getPickupShipment(basket)).toBeUndefined();
+    });
+
+    it('returns undefined when no shipments have store pickup configured', () => {
+        const basket = {
+            basketId: 'basket-1',
+            shipments: [{ shipmentId: 'delivery-1' }],
+        } as ShopperBasketsV2.schemas['Basket'];
+
+        expect(getPickupShipment(basket)).toBeUndefined();
+    });
+
+    it('returns the first shipment with store pickup enabled', () => {
+        const pickupShipment = { shipmentId: 'pickup-1', c_fromStoreId: 'store-123' };
+        const basket = {
+            basketId: 'basket-1',
+            shipments: [{ shipmentId: 'delivery-1' }, pickupShipment],
+        } as ShopperBasketsV2.schemas['Basket'];
+
+        expect(getPickupShipment(basket)).toBe(pickupShipment);
+    });
+
+    it('skips shipments with falsy store IDs', () => {
+        const validPickupShipment = { shipmentId: 'pickup-2', c_fromStoreId: 'store-456' };
+        const basket = {
+            basketId: 'basket-1',
+            shipments: [
+                { shipmentId: 'pickup-1', c_fromStoreId: '' },
+                { shipmentId: 'pickup-1b' },
+                validPickupShipment,
+            ],
+        } as ShopperBasketsV2.schemas['Basket'];
+
+        expect(getPickupShipment(basket)).toBe(validPickupShipment);
     });
 });

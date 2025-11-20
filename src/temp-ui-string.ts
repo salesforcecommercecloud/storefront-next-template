@@ -556,6 +556,8 @@ const additionalStrings = {
             billingAddressRequired: 'Billing address is required when different from shipping',
             billingSameAsShipping: 'Same as shipping address',
             billingSameAsShippingDescription: 'Use the same address for billing and shipping',
+            sameAsShippingAddress: 'Same as shipping address',
+            noBillingAddressSaved: 'No billing address saved',
             continue: 'Continue to Review',
             saving: 'Saving...',
             saved: 'Payment information saved',

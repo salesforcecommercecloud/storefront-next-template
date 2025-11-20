@@ -23,4 +23,10 @@ describe('StoreAddress', () => {
         render(<StoreAddress store={baseStore} multiline={false} />);
         expect(screen.getByText('1 Market St, San Francisco, CA 94105')).toBeInTheDocument();
     });
+
+    test('includes store name when includeStoreName=true', () => {
+        render(<StoreAddress store={baseStore} includeStoreName />);
+        expect(screen.getByText('Test Store -')).toBeInTheDocument();
+        expect(screen.getByText('1 Market St')).toBeInTheDocument();
+    });
 });

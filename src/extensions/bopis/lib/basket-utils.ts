@@ -6,7 +6,7 @@
  */
 
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
-import type { PickupItemInfo } from '../context/pickup-context';
+import type { PickupItemInfo } from '@/extensions/bopis/context/pickup-context';
 
 /**
  * Extracts pickup items from basket by checking shipments for store pickup.
@@ -334,4 +334,33 @@ export function filterPickupProductItems(
     pickupBasketItems?: Map<string, PickupItemInfo>
 ): ShopperBasketsV2.schemas['ProductItem'][] {
     return basket?.productItems?.filter((item) => item.productId && pickupBasketItems?.has(item.productId)) ?? [];
+}
+
+/**
+ * Checks if the basket has store pickup enabled.
+ *
+ * This function checks all shipments in the basket for the c_fromStoreId field.
+ * When present in any shipment, it indicates that the order (or at least part of it)
+ * is configured for store pickup.
+ *
+ * @param basket - The shopping basket to check
+ * @returns true if any shipment in the basket has store pickup enabled, false otherwise
+ */
+export function isStorePickup(basket: ShopperBasketsV2.schemas['Basket'] | null | undefined): boolean {
+    return basket?.shipments?.some((shipment) => Boolean(shipment.c_fromStoreId)) ?? false;
+}
+
+/**
+ * Gets the pickup shipment with store pickup (c_fromStoreId) configured.
+ *
+ * This function iterates through the basket's shipments and returns the first one
+ * that has a c_fromStoreId value set, indicating it's configured for store pickup.
+ *
+ * @param basket - The shopping basket containing shipments
+ * @returns The first shipment with c_fromStoreId set, or undefined if none found
+ */
+export function getPickupShipment(
+    basket: ShopperBasketsV2.schemas['Basket'] | null | undefined
+): ShopperBasketsV2.schemas['Shipment'] | undefined {
+    return basket?.shipments?.find((shipment) => Boolean(shipment.c_fromStoreId));
 }

@@ -12,6 +12,8 @@ interface StoreAddressProps {
     store: ShopperStores.schemas['Store'];
     /** Whether to show each address line on separate lines */
     multiline?: boolean;
+    /** Include store name inline with first address line */
+    includeStoreName?: boolean;
 }
 
 /**
@@ -22,6 +24,7 @@ interface StoreAddressProps {
  *
  * @param store - Store object containing address information
  * @param multiline - Whether to render each line separately (default true)
+ * @param includeStoreName - Include store name inline with first address line
  * @returns ReactElement | null
  *
  * @example
@@ -29,8 +32,11 @@ interface StoreAddressProps {
  *
  * @example
  * <StoreAddress store={store} multiline={false} />
+ *
+ * @example
+ * <StoreAddress store={store} includeStoreName={true} />
  */
-export default function StoreAddress({ store, multiline = true }: StoreAddressProps) {
+export default function StoreAddress({ store, multiline = true, includeStoreName = false }: StoreAddressProps) {
     if (!store) {
         return null;
     }
@@ -47,8 +53,11 @@ export default function StoreAddress({ store, multiline = true }: StoreAddressPr
 
     return (
         <>
-            {lines.map((line) => (
-                <div key={`address-${line}`}>{line}</div>
+            {lines.map((line, index) => (
+                <div key={`address-${line}`}>
+                    {index === 0 && includeStoreName && store.name && <span>{store.name} - </span>}
+                    {line}
+                </div>
             ))}
         </>
     );

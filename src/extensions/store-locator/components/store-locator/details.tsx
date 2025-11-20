@@ -31,6 +31,10 @@ interface StoreDetailsProps {
     id?: string;
     /** Optional primary action slot rendered in the reserved area */
     primaryAction?: ReactNode;
+    /** Use mobile layout regardless of screen size */
+    mobileLayout?: boolean;
+    /** Use compact address format with store name inline (for checkout/BOPIS) */
+    compactAddress?: boolean;
 }
 
 /**
@@ -47,6 +51,8 @@ interface StoreDetailsProps {
  * @param showEmail - Whether to show the email address
  * @param id - Optional id for accessibility/anchoring
  * @param primaryAction - Optional slot rendered in the reserved area (top-right on mobile, third column on desktop)
+ * @param forceMobile - Force mobile layout regardless of screen size (overrides context)
+ * @param compactAddress - Use compact address format with store name inline (for checkout/BOPIS)
  * @returns ReactElement | null
  *
  * @example
@@ -56,6 +62,18 @@ interface StoreDetailsProps {
  * <StoreDetails
  *   store={store}
  *   primaryAction={<Button size="sm">Select Store</Button>}
+ * />
+ *
+ * @example
+ * <StoreDetails
+ *   store={store}
+ *   forceMobile={true}  // Always show vertical layout
+ * />
+ *
+ * @example
+ * <StoreDetails
+ *   store={store}
+ *   compactAddress={true}  // Shows "Store Name - 123 Main St" format
  * />
  */
 export default function StoreDetails({
@@ -67,8 +85,12 @@ export default function StoreDetails({
     showEmail = true,
     id,
     primaryAction,
+    mobileLayout = false,
+    compactAddress = false,
 }: StoreDetailsProps) {
-    const { forceMobile } = useStoreLocatorLayout();
+    const { forceMobile: forceMobileContext } = useStoreLocatorLayout();
+    // Use prop if provided, otherwise use context value
+    const forceMobile = mobileLayout || forceMobileContext;
 
     if (!store) {
         return null;
@@ -84,8 +106,8 @@ export default function StoreDetails({
 
     return (
         <div id={id} className={containerGridClass}>
-            {/* Store Name */}
-            {store.name && (
+            {/* Store Name - only show separately if not using compact address */}
+            {store.name && !compactAddress && (
                 <div className="col-span-1">
                     <Typography variant="large" as="div">
                         {store.name}
@@ -106,8 +128,8 @@ export default function StoreDetails({
 
             {/* Address (mobile: full width; desktop: middle column) */}
             <div className={cn('col-span-2', !forceMobile && 'md:col-span-1 md:col-start-2')}>
-                <Typography variant="muted" as="div" className="space-y-1">
-                    <StoreAddress store={store} />
+                <Typography variant="muted" as="div">
+                    <StoreAddress store={store} includeStoreName={compactAddress} />
                 </Typography>
             </div>
 
