@@ -8,8 +8,6 @@ const config: StorybookConfig = {
         "../**/*.stories.@(ts|tsx)",
         "../**/*.mdx"
     ],
-    // Output Storybook build to .storybook/storybook-static (relative to project root)
-    outputDir: '.storybook/storybook-static',
     addons: [getAbsolutePath("@chromatic-com/storybook"), getAbsolutePath("@storybook/addon-docs"), getAbsolutePath("@storybook/addon-a11y"), getAbsolutePath("@storybook/addon-vitest")],
     core: {
         builder: {

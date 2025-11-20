@@ -21,7 +21,7 @@
         "lint:check-extensions": "node scripts/check-typescript-only.js",
         "lint:colors": "eslint src --ext .ts,.tsx,.js,.jsx --rule 'no-restricted-classnames: error'",
         "storybook": "storybook dev -p 6006",
-        "build-storybook": "storybook build",
+        "build-storybook": "storybook build -o .storybook/storybook-static",
         "test-storybook:snapshot": "vitest run --config ./.storybook/vite.config.ts",
         "test-storybook:snapshot:update": "vitest run -u --config ./.storybook/vite.config.ts",
         "test-storybook:interaction": "cross-env STORYBOOK_DISABLE_A11Y=true concurrently \"cross-env STORYBOOK_DISABLE_A11Y=true pnpm storybook\" \"wait-on http://127.0.0.1:6006 && sleep 1 && test-storybook --url http://127.0.0.1:6006 --index-json --config-dir .storybook --browsers chromium --maxWorkers 3 --includeTags interaction\" --success first --kill-others",
