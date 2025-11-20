@@ -10,4 +10,4 @@ import { Preset } from "@react-router/dev/config";
 declare function odysseyPreset(): Preset;
 //#endregion
 export { odysseyPreset };
-//# sourceMappingURL=react-router.config-Duj6pdXx.d.ts.map
+//# sourceMappingURL=react-router.config.d.ts.map

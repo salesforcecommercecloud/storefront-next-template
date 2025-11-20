@@ -25502,4 +25502,4 @@ declare class ApiError extends Error {
 }
 //#endregion
 export { ApiError, Clients, type ErrorDetail, ShopperBasketsV1, ShopperBasketsV2, ShopperConsents, ShopperContext, ShopperCustomers, ShopperExperience, ShopperGiftCertificates, ShopperLogin, ShopperOrders, ShopperProducts, ShopperPromotions, ShopperSearch, ShopperSeo, ShopperStores, createClient, createCommerceApiClients };
-//# sourceMappingURL=scapi-BVE6Bf0M.d.ts.map
+//# sourceMappingURL=scapi.d.ts.map

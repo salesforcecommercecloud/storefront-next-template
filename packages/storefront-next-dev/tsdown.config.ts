@@ -23,6 +23,7 @@ export default defineConfig([
         clean: true,
         // Don't bundle dependencies - they should be installed by consumers
         external: [/node_modules/],
+        hash: false
     },
     // 2. React Router Scripts component
     {
@@ -35,6 +36,7 @@ export default defineConfig([
         outDir: 'dist/react-router',
         clean: false,
         external: [/node_modules/],
+        hash: false
     },
     // 3. MRT SSR server build
     {
@@ -58,6 +60,7 @@ export default defineConfig([
         // it is a relative path from within the build directory
         external: ['./server/index.js', /node_modules/],
         clean: false,
+        hash: false
     },
     // 4. React Router preset config
     {
@@ -71,6 +74,7 @@ export default defineConfig([
         outDir: 'dist/configs',
         clean: false,
         external: [/node_modules/],
+        hash: false
     },
     // 5. CLI build (with shebang)
     {
@@ -94,5 +98,6 @@ export default defineConfig([
         ],
         clean: false,
         external: [/node_modules/],
+        hash: false
     },
 ]);

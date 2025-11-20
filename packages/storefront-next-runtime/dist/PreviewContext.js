@@ -1,4 +1,4 @@
-import { n as isPreviewModeActive } from "./modeDetection-Dl3LxZN8.js";
+import { n as isPreviewModeActive } from "./modeDetection.js";
 import { createContext, useMemo } from "react";
 import { jsx } from "react/jsx-runtime";
 
@@ -15,4 +15,4 @@ const PreviewProvider = ({ children }) => {
 
 //#endregion
 export { PreviewProvider };
-//# sourceMappingURL=PreviewContext-7pJkpQK-.js.map
+//# sourceMappingURL=PreviewContext.js.map

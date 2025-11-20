@@ -33,4 +33,4 @@ import * as react_jsx_runtime0 from "react/jsx-runtime";
 declare function Scripts(props: React.ComponentProps<typeof Scripts$1>): react_jsx_runtime0.JSX.Element;
 //#endregion
 export { Scripts };
-//# sourceMappingURL=Scripts-CdqbajoV.d.ts.map
+//# sourceMappingURL=Scripts.d.ts.map

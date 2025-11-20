@@ -1,4 +1,4 @@
-import { b as ClientAcknowledgedEvent, m as IsomorphicConfiguration, s as EventPayload, t as ClientApi } from "./api-types-BVfvV-Hg.js";
+import { b as ClientAcknowledgedEvent, m as IsomorphicConfiguration, s as EventPayload, t as ClientApi } from "./api-types.js";
 import React$1 from "react";
 
 //#region src/design/react/context/PageDesignerProvider.d.ts
@@ -121,4 +121,4 @@ declare function createReactComponentDesignDecorator<TProps>(Component: React$1.
 declare function createReactRegionDesignDecorator<TProps>(Region: React$1.ComponentType<TProps>): (props: RegionDecoratorProps<TProps>) => React$1.JSX.Element;
 //#endregion
 export { type ComponentDecoratorProps, type ComponentDesignMetadata, type DesignContextType, PageDesignerProvider, type RegionDecoratorProps, type RegionDesignMetadata, createReactComponentDesignDecorator, createReactRegionDesignDecorator, useDesignContext, usePageDesignerMode };
-//# sourceMappingURL=design-react-C12z3nSJ.d.ts.map
+//# sourceMappingURL=design-react.d.ts.map

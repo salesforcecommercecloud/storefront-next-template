@@ -214,4 +214,4 @@ function createClientApi({ emitter, id, forwardedKeys = [], logger }) {
 
 //#endregion
 export { Messenger as n, createClientApi as t };
-//# sourceMappingURL=client-Bz2sROFf.js.map
+//# sourceMappingURL=client.js.map

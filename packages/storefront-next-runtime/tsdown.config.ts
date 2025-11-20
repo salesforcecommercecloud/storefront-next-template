@@ -18,6 +18,7 @@ export default defineConfig([
         dts: true,
         outDir: 'dist',
         clean: true,
+        hash: false
     },
     // scapi module entry
     {
@@ -31,6 +32,7 @@ export default defineConfig([
         outDir: 'dist',
         clean: true,
         minify: true,
-        noExternal: ['openapi-fetch']
+        noExternal: ['openapi-fetch'],
+        hash: false
     },
 ]);

@@ -162,4 +162,4 @@ type ExtensionsSelection = Record<string, boolean>;
 declare function trimExtensions(directory: string, selectedExtensions?: Partial<ExtensionsSelection>, extensionConfig?: typeof ExtensionConfig, verboseOverride?: boolean): void;
 //#endregion
 export { type PushOptions, type StorefrontNextPluginsConfig, createServer, storefrontNextPlugins as default, loadConfigFromEnv, loadProjectConfig, push, trimExtensions };
-//# sourceMappingURL=index-DISIRZD_.d.ts.map
+//# sourceMappingURL=index.d.ts.map
