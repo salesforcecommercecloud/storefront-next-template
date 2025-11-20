@@ -6,10 +6,11 @@
  */
 
 import type { ClientLoaderFunctionArgs } from 'react-router';
-import type { ShopperBasketsV2, ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperOrders, ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
 import { createApiClients } from '@/lib/api-clients';
 import { getConfig } from '@/config';
 import { getStoreIdsFromBasket } from '@/extensions/bopis/lib/basket-utils';
+import { getStoreIdsFromOrder } from '@/extensions/bopis/lib/order-utils';
 
 /**
  * Fetches store details for a list of store IDs.
@@ -73,5 +74,23 @@ export async function fetchStoresForBasket(
     basket: ShopperBasketsV2.schemas['Basket'] | null | undefined
 ): Promise<Map<string, ShopperStores.schemas['Store']>> {
     const storeIds = getStoreIdsFromBasket(basket);
+    return fetchStores(context, storeIds);
+}
+
+/**
+ * Fetches store details for all pickup stores in the order.
+ *
+ * This function extracts unique store IDs from order shipments that have
+ * c_fromStoreId set (indicating store pickup) and fetches the corresponding
+ * store data from the Commerce API.
+ * @param context - Router context
+ * @param order - Order to fetch stores for
+ * @returns Promise that resolves to a Map of store IDs to store data
+ */
+export async function fetchStoresForOrder(
+    context: ClientLoaderFunctionArgs['context'],
+    order: ShopperOrders.schemas['Order'] | null | undefined
+): Promise<Map<string, ShopperStores.schemas['Store']>> {
+    const storeIds = getStoreIdsFromOrder(order);
     return fetchStores(context, storeIds);
 }

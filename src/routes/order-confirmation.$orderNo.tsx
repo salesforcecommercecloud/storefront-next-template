@@ -5,15 +5,28 @@ import { Button } from '@/components/ui/button';
 import { Typography } from '@/components/typography';
 import { createApiClients } from '@/lib/api-clients';
 import createPage, { type RouteComponentProps } from '@/components/create-page';
-import type { ShopperOrders } from '@salesforce/storefront-next-runtime/scapi';
+import type {
+    ShopperOrders,
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    ShopperStores,
+} from '@salesforce/storefront-next-runtime/scapi';
 import AddressDisplay from '@/components/address-display';
 import { getConfig } from '@/config';
 import { getCardTypeDisplay, getFormattedMaskedCardNumber } from '@/lib/payment-utils';
 import uiStrings from '@/temp-ui-string';
 import OrderSkeleton from '@/components/order-skeleton';
+// @sfdc-extension-block-start SFDC_EXT_BOPIS
+import { fetchStoresForOrder } from '@/extensions/bopis/lib/api/stores';
+import { getOrderPickupShipment } from '@/extensions/bopis/lib/order-utils';
+import { getPickupStoreFromMap } from '@/extensions/bopis/lib/store-utils';
+import StoreDetails from '@/extensions/store-locator/components/store-locator/details';
+import bopisUiStrings from '@/extensions/bopis/temp-ui-string-bopis';
+// @sfdc-extension-block-end SFDC_EXT_BOPIS
 
 type CheckoutConfirmationLoaderData = {
     order: Promise<ShopperOrders.schemas['Order']>;
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    storesByStoreId: Promise<Map<string, ShopperStores.schemas['Store']>>;
 };
 
 /**
@@ -42,8 +55,13 @@ function getPageData({ context, params }: LoaderFunctionArgs): CheckoutConfirmat
         })
         .then(({ data }) => data);
 
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    const storesByStoreIdPromise = orderPromise.then((order) => fetchStoresForOrder(context, order));
+
     return {
         order: orderPromise,
+        // @sfdc-extension-line SFDC_EXT_BOPIS
+        storesByStoreId: storesByStoreIdPromise,
     };
 }
 
@@ -119,9 +137,24 @@ export function ErrorBoundary() {
  * @returns JSX element representing the order confirmation page layout
  */
 function CheckoutConfirmation({
-    loaderData: { order: orderPromise },
+    loaderData: {
+        order: orderPromise,
+        // @sfdc-extension-line SFDC_EXT_BOPIS
+        storesByStoreId: storesByStoreIdPromise,
+    },
 }: RouteComponentProps<CheckoutConfirmationLoaderData>): ReactElement {
     const order = use(orderPromise);
+    let showShippingDetails = true;
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    const storesByStoreId = use(storesByStoreIdPromise);
+    const store = getPickupStoreFromMap(
+        getOrderPickupShipment(order)?.c_fromStoreId as string | undefined,
+        storesByStoreId
+    );
+    if (store) {
+        showShippingDetails = false;
+    }
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     return (
         <div className="min-h-screen bg-background">
@@ -179,33 +212,57 @@ function CheckoutConfirmation({
                     </CardContent>
                 </Card>
 
+                {/* @sfdc-extension-block-start SFDC_EXT_BOPIS */}
+                {/* Pickup Details */}
+                {store && (
+                    <Card className="mb-8">
+                        <CardHeader>
+                            <CardTitle>{bopisUiStrings.storePickup.title}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <StoreDetails
+                                store={store}
+                                showDistance={true}
+                                showEmail={true}
+                                showStoreHours={true}
+                                showPhone={true}
+                                mobileLayout={true} // Always show vertical layout
+                                compactAddress={true} // Use compact address format with store name inline
+                            />
+                        </CardContent>
+                    </Card>
+                )}
+                {/* @sfdc-extension-block-end SFDC_EXT_BOPIS */}
+
                 {/* Shipping Details */}
-                <Card className="mb-8">
-                    <CardHeader>
-                        <CardTitle>{uiStrings.checkout.confirmation.sections.shippingDetails}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            <div>
-                                <Typography variant="h5" as="h3" className="mb-2">
-                                    {uiStrings.checkout.confirmation.fields.shippingAddress}
-                                </Typography>
-                                {order.shipments?.[0]?.shippingAddress && (
-                                    <AddressDisplay address={order.shipments[0].shippingAddress} />
-                                )}
+                {showShippingDetails && (
+                    <Card className="mb-8">
+                        <CardHeader>
+                            <CardTitle>{uiStrings.checkout.confirmation.sections.shippingDetails}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <Typography variant="h5" as="h3" className="mb-2">
+                                        {uiStrings.checkout.confirmation.fields.shippingAddress}
+                                    </Typography>
+                                    {order.shipments?.[0]?.shippingAddress && (
+                                        <AddressDisplay address={order.shipments[0].shippingAddress} />
+                                    )}
+                                </div>
+                                <div>
+                                    <Typography variant="h5" as="h3" className="mb-2">
+                                        {uiStrings.checkout.confirmation.fields.shippingMethod}
+                                    </Typography>
+                                    <Typography variant="p" className="text-muted-foreground">
+                                        {order.shipments?.[0]?.shippingMethod?.name ||
+                                            uiStrings.checkout.confirmation.fields.defaultShippingMethod}
+                                    </Typography>
+                                </div>
                             </div>
-                            <div>
-                                <Typography variant="h5" as="h3" className="mb-2">
-                                    {uiStrings.checkout.confirmation.fields.shippingMethod}
-                                </Typography>
-                                <Typography variant="p" className="text-muted-foreground">
-                                    {order.shipments?.[0]?.shippingMethod?.name ||
-                                        uiStrings.checkout.confirmation.fields.defaultShippingMethod}
-                                </Typography>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                        </CardContent>
+                    </Card>
+                )}
 
                 {/* Payment Details */}
                 <Card className="mb-8">

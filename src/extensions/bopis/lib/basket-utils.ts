@@ -144,7 +144,7 @@ export function getInventoryIdsFromPickupShipments(
         }
     });
 
-    // Convert to array and sort
+    // Convert to array and sort, ensuring consistent order for cache keys
     return Array.from(inventoryIds).sort();
 }
 
@@ -182,7 +182,7 @@ export function getStoreIdsFromBasket(basket: ShopperBasketsV2.schemas['Basket']
         }
     });
 
-    // Convert to array and sort
+    // Convert to array and sort, ensuring consistent order for cache keys
     return Array.from(storeIds).sort();
 }
 

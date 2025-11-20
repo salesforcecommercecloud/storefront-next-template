@@ -187,6 +187,147 @@ describe('Shipment API utilities', () => {
             expect(result).toEqual(mockBasket);
         });
 
+        test('should use default shipmentId "me"', async () => {
+            const mockBasket = createMockBasketWithPickupItems([], {
+                basketId: 'test-basket',
+            });
+
+            const mockUpdateShipmentForBasket = vi.fn().mockResolvedValue({ data: mockBasket });
+
+            vi.mocked(createApiClients).mockReturnValue({
+                shopperBasketsV2: {
+                    updateShipmentForBasket: mockUpdateShipmentForBasket,
+                },
+            } as any);
+
+            await setAddressAndMethodForPickup(mockContext, 'test-basket', mockStore);
+
+            expect(mockUpdateShipmentForBasket).toHaveBeenCalledWith({
+                params: {
+                    path: {
+                        organizationId: 'test-org',
+                        basketId: 'test-basket',
+                        shipmentId: 'me',
+                    },
+                    query: {
+                        siteId: 'test-site',
+                    },
+                },
+                body: {
+                    shipmentId: 'me',
+                    shippingAddress: expect.any(Object),
+                    shippingMethod: {
+                        id: PICKUP_SHIPPING_METHOD_ID,
+                    },
+                },
+            });
+        });
+
+        test('should handle store with missing optional fields', async () => {
+            const incompleteStore = {
+                id: 'store-456',
+                name: 'Incomplete Store',
+                address1: '456 Oak Ave',
+                city: 'Los Angeles',
+                stateCode: 'CA',
+                postalCode: '90001',
+                countryCode: 'US',
+                // Missing address2
+            } as any;
+
+            const mockBasket = createMockBasketWithPickupItems([], {
+                basketId: 'test-basket',
+            });
+
+            const mockUpdateShipmentForBasket = vi.fn().mockResolvedValue({ data: mockBasket });
+
+            vi.mocked(createApiClients).mockReturnValue({
+                shopperBasketsV2: {
+                    updateShipmentForBasket: mockUpdateShipmentForBasket,
+                },
+            } as any);
+
+            await setAddressAndMethodForPickup(mockContext, 'test-basket', incompleteStore, 'me');
+
+            expect(mockUpdateShipmentForBasket).toHaveBeenCalledWith({
+                params: {
+                    path: {
+                        organizationId: 'test-org',
+                        basketId: 'test-basket',
+                        shipmentId: 'me',
+                    },
+                    query: {
+                        siteId: 'test-site',
+                    },
+                },
+                body: {
+                    shipmentId: 'me',
+                    shippingAddress: {
+                        firstName: 'Incomplete Store',
+                        lastName: 'Pickup',
+                        address1: '456 Oak Ave',
+                        address2: '', // Should default to empty string
+                        city: 'Los Angeles',
+                        stateCode: 'CA',
+                        postalCode: '90001',
+                        countryCode: 'US',
+                    },
+                    shippingMethod: {
+                        id: PICKUP_SHIPPING_METHOD_ID,
+                    },
+                },
+            });
+        });
+
+        test('should handle store with all undefined address fields', async () => {
+            const emptyStore = {
+                id: 'store-empty',
+            } as any;
+
+            const mockBasket = createMockBasketWithPickupItems([], {
+                basketId: 'test-basket',
+            });
+
+            const mockUpdateShipmentForBasket = vi.fn().mockResolvedValue({ data: mockBasket });
+
+            vi.mocked(createApiClients).mockReturnValue({
+                shopperBasketsV2: {
+                    updateShipmentForBasket: mockUpdateShipmentForBasket,
+                },
+            } as any);
+
+            await setAddressAndMethodForPickup(mockContext, 'test-basket', emptyStore, 'me');
+
+            expect(mockUpdateShipmentForBasket).toHaveBeenCalledWith({
+                params: {
+                    path: {
+                        organizationId: 'test-org',
+                        basketId: 'test-basket',
+                        shipmentId: 'me',
+                    },
+                    query: {
+                        siteId: 'test-site',
+                    },
+                },
+                body: {
+                    shipmentId: 'me',
+                    shippingAddress: {
+                        firstName: '', // All fields should default to empty string
+                        lastName: 'Pickup',
+                        address1: '',
+                        address2: '',
+                        city: '',
+                        stateCode: '',
+                        postalCode: '',
+                        countryCode: '',
+                    },
+                    shippingMethod: {
+                        id: PICKUP_SHIPPING_METHOD_ID,
+                    },
+                },
+            });
+        });
+
         test('should handle API errors', async () => {
             const mockError = new Error('API Error');
             const mockUpdateShipmentForBasket = vi.fn().mockRejectedValue(mockError);

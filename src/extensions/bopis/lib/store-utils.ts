@@ -41,7 +41,7 @@ export function getPickupStoreFromMap(
     pickupStoreId: string | undefined,
     pickupStores?: Map<string, SelectedStoreInfo | ShopperStores.schemas['Store']>
 ): SelectedStoreInfo | ShopperStores.schemas['Store'] | undefined {
-    return pickupStoreId ? (pickupStores?.get(pickupStoreId ?? '') ?? { id: pickupStoreId }) : undefined;
+    return pickupStoreId ? (pickupStores?.get(pickupStoreId) ?? { id: pickupStoreId }) : undefined;
 }
 
 /**
