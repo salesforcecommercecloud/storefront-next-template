@@ -1,3 +1,5 @@
+import type { EngagementAdapterConfig } from '@/lib/adapters';
+
 // Badge configuration
 export type BadgeDetail = {
     propertyName: string;
@@ -154,6 +156,12 @@ export type Config = {
                 serverPerformanceMetricsEnabled?: boolean;
                 serverTimingHeaderEnabled?: boolean;
                 clientPerformanceMetricsEnabled?: boolean;
+            };
+        };
+        engagement: {
+            adapters: Record<string, EngagementAdapterConfig>;
+            analytics: {
+                doNotTrackPaths: string[];
             };
         };
         development: {

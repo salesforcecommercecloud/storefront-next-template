@@ -1,7 +1,6 @@
-import { Suspense } from 'react';
+import { Suspense, useEffect, useRef } from 'react';
 import { Await, type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from 'react-router';
 import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
-import type { Route } from './+types/category.$categoryId';
 import { fetchCategory } from '@/lib/api/categories';
 import { fetchSearchProducts } from '@/lib/api/search';
 import { getAllQueryParams, getQueryParam, PRODUCT_SEARCH_QUERY_PARAMS } from '@/lib/query-params';
@@ -16,6 +15,7 @@ import CategoryPagination from '@/components/category-pagination';
 import CategoryRefinements from '@/components/category-refinements';
 import CategorySorting from '@/components/category-sorting';
 import ProductGrid from '@/components/product-grid';
+import { useAnalytics } from '@/hooks/use-analytics';
 
 type CategoryPageData = {
     category: Promise<ShopperProducts.schemas['Category']>;
@@ -45,7 +45,8 @@ function getPageData({ request, params, context }: LoaderFunctionArgs, limit: nu
             limit: 1,
             offset: 0,
             sort,
-            refine,
+            // This is a known type limitation, the API intelligently serializes the refine parameter (array) automatically, but the OAS types refers to string.
+            refine: refine as unknown as string,
             expand: ['none'],
         }),
         searchResult: fetchSearchProducts(context, {
@@ -53,7 +54,8 @@ function getPageData({ request, params, context }: LoaderFunctionArgs, limit: nu
             limit,
             offset,
             sort,
-            refine,
+            // This is a known type limitation, the API intelligently serializes the refine parameter (array) automatically, but the OAS types refers to string.
+            refine: refine as unknown as string,
         }),
         category: fetchCategory(context, safeCategoryId, 0),
     };
@@ -85,9 +87,38 @@ export function clientLoader(args: ClientLoaderFunctionArgs): CategoryPageData {
  * This component uses the createPage factory to handle Suspense patterns.
  * @returns JSX element representing the category page
  */
-export default function CategoryPage({ loaderData: { category, refinements, searchResult } }: Route.ComponentProps) {
+export default function CategoryPage({
+    loaderData: { category, refinements, searchResult },
+}: {
+    loaderData: CategoryPageData;
+}) {
     const config = useConfig();
     const limit = config.global.productListing.productsPerPage;
+
+    const analytics = useAnalytics();
+    const lastTrackedDataRef = useRef<string | null>(null);
+
+    useEffect(() => {
+        // Create a unique key based on the promise references
+        const dataKey = `${String(category)}-${String(searchResult)}`;
+
+        // Only track if we haven't already tracked this specific data combination
+        if (dataKey !== lastTrackedDataRef.current) {
+            void Promise.all([Promise.resolve(category), searchResult])
+                .then(([categoryData, searchData]) => {
+                    if (analytics) {
+                        analytics.trackViewCategory({
+                            category: categoryData,
+                            searchResults: searchData.hits ?? [],
+                        });
+                    }
+                })
+                .catch(() => {
+                    // Silently handle promise rejection
+                });
+            lastTrackedDataRef.current = dataKey;
+        }
+    }, [analytics, category, searchResult]);
 
     return (
         <div className="pb-16">
@@ -131,17 +162,31 @@ export default function CategoryPage({ loaderData: { category, refinements, sear
 
                     <div className="flex-grow">
                         <Suspense fallback={<CategorySkeleton />}>
-                            <Await resolve={searchResult}>
-                                {(searchResultData) => (
-                                    <>
-                                        <ProductGrid products={searchResultData.hits ?? []} />
-                                        {searchResultData.total > 1 && (
-                                            <div className="mt-10">
-                                                <CategoryPagination limit={limit} result={searchResultData} />
-                                            </div>
-                                        )}
-                                    </>
-                                )}
+                            <Await resolve={Promise.all([category, searchResult])}>
+                                {([categoryData, searchResultData]) => {
+                                    const handleProductClick = (product: ShopperSearch.schemas['ProductSearchHit']) => {
+                                        if (analytics) {
+                                            analytics.trackClickProductInCategory({
+                                                category: categoryData,
+                                                product,
+                                            });
+                                        }
+                                    };
+
+                                    return (
+                                        <>
+                                            <ProductGrid
+                                                products={searchResultData.hits ?? []}
+                                                handleProductClick={handleProductClick}
+                                            />
+                                            {searchResultData.total > 1 && (
+                                                <div className="mt-10">
+                                                    <CategoryPagination limit={limit} result={searchResultData} />
+                                                </div>
+                                            )}
+                                        </>
+                                    );
+                                }}
                             </Await>
                         </Suspense>
                     </div>

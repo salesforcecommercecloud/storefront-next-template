@@ -17,6 +17,12 @@
         "default": "./dist/design-react.js"
       }
     },
+    "./events": {
+      "import": {
+        "types": "./dist/events.d.ts",
+        "default": "./dist/events.js"
+      }
+    },
     "./scapi": {
       "import": {
         "types": "./dist/scapi.d.ts",
@@ -48,6 +54,10 @@
   ],
   "author": "cc-pwa-kit@salesforce.com",
   "license": "MIT",
+  "dependencies": {
+    "commerce-sdk-isomorphic": "4.0.0-nightly-20251027080801",
+    "openapi-fetch": "0.15.0"
+  },
   "devDependencies": {
     "@testing-library/react": "^16.1.0",
     "@types/node": "^22.0.0",
@@ -73,8 +83,5 @@
   },
   "publishConfig": {
     "access": "restricted"
-  },
-  "dependencies": {
-    "openapi-fetch": "0.15.0"
   }
 }

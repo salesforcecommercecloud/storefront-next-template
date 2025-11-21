@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, lazy, Suspense, use } from 'react';
+import { useEffect, lazy, Suspense, use, useRef } from 'react';
 import { Form, useNavigation } from 'react-router';
 import { useCheckoutContext } from '@/hooks/use-checkout';
 import { useBasket } from '@/providers/basket';
@@ -11,6 +11,8 @@ import { Typography } from '@/components/typography';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import uiStrings from '@/temp-ui-string';
+import { useAnalytics } from '@/hooks/use-analytics';
+import type { CheckoutStep } from './utils/checkout-context-types';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import { isStorePickup } from '@/extensions/bopis/lib/basket-utils';
 
@@ -97,6 +99,32 @@ export default function CheckoutFormPage({ shippingMethods, productMapPromise }:
     const isPickup = isStorePickup(cart);
     showAddressAndOptions = !isPickup;
     // @sfdc-extension-end-block SFDC_EXT_BOPIS
+
+    const analytics = useAnalytics();
+    const hasTrackedCheckoutStartRef = useRef(false);
+    const previousStepRef = useRef<CheckoutStep | null>(null);
+
+    useEffect(() => {
+        // Only track checkout start once on mount if baseket is not empty
+        if (!hasTrackedCheckoutStartRef.current && cart?.productItems && cart.productItems.length > 0) {
+            analytics.trackCheckoutStart({
+                basket: cart,
+            });
+            hasTrackedCheckoutStartRef.current = true;
+        }
+    }, [analytics, cart]);
+
+    useEffect(() => {
+        if (!previousStepRef.current && cart?.productItems && cart.productItems.length > 0) {
+            const stepName = Object.keys(STEPS).find((key) => STEPS[key as keyof typeof STEPS] === step) || '';
+            analytics.trackCheckoutStep({
+                stepName,
+                stepNumber: step,
+                basket: cart,
+            });
+            previousStepRef.current = step;
+        }
+    }, [analytics, step, STEPS, cart]);
 
     // Checkout actions hook with all fetchers and submission handlers
     const {

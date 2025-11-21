@@ -9,7 +9,7 @@
 
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useFetcher, useLocation, useNavigate } from 'react-router';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts, ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import { useToast } from '@/components/toast';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { usePickup } from '@/extensions/bopis/context/pickup-context';
@@ -21,6 +21,7 @@ import { useItemFetcher } from '@/hooks/use-item-fetcher';
 import { useRequireAuth } from '@/hooks/use-require-auth';
 import uiStrings from '@/temp-ui-string';
 import { isProductSet, isProductBundle } from '@/lib/product-utils';
+import { useAnalytics } from '../use-analytics';
 import { getEffectiveStockLevel, getEffectiveInventory, isInStock as isProductInStock } from '@/lib/inventory-utils';
 
 interface ProductSelectionValues {
@@ -103,6 +104,7 @@ export function useProductActions({
     const multipleItemsFetcher = useFetcher();
     const bundleFetcher = useItemFetcher({ itemId, componentName: 'product-bundle-actions' });
     const wishlistFetcher = useFetcher();
+    const analytics = useAnalytics();
 
     // Get product ID for pickup store check
     const productId = currentVariant?.productId || product.id;
@@ -178,6 +180,16 @@ export function useProductActions({
 
     // Check if product is a master or variant product (has variation attributes like size, color)
     const isMasterOrVariantProduct = product?.type?.master === true || product?.type?.variant === true;
+
+    // Helper to get product ID from either Variant (has productId) or Product (has id)
+    const getProductId = (
+        item: ShopperProducts.schemas['Variant'] | ShopperProducts.schemas['Product'] | null | undefined
+    ): string | undefined => {
+        if (!item) return undefined;
+        if ('productId' in item && typeof item.productId === 'string') return item.productId;
+        if ('id' in item && typeof item.id === 'string') return item.id;
+        return undefined;
+    };
 
     const unfulfillable = isProductASet
         ? // There is no quantity for product set. Shoppers choose the quantity for each _child_ products instead
@@ -318,7 +330,7 @@ export function useProductActions({
     // This tracks when actions are automatically executed after login
     // Uses URL params directly - if URL has action params for this product, action is executing
     const productToCheck = isMasterOrVariantProduct ? currentVariant : product;
-    const currentProductId = productToCheck?.productId || productToCheck?.id;
+    const currentProductId = getProductId(productToCheck);
 
     useEffect(() => {
         if (!currentProductId) {
@@ -429,7 +441,7 @@ export function useProductActions({
 
         // Remember: not all products have variation attributes, so `product` in this case could be a standard product
         const productToAdd = isMasterOrVariantProduct ? currentVariant : product;
-        const itemProductId = productToAdd?.productId || productToAdd?.id;
+        const itemProductId = getProductId(productToAdd);
         const price = productToAdd?.price;
 
         // Validate inputs
@@ -465,6 +477,11 @@ export function useProductActions({
                     action: '/action/cart-item-add',
                 }
             );
+
+            // Track cart item add
+            analytics.trackCartItemAdd({
+                cartItems: [productItem as ShopperBasketsV2.schemas['ProductItem']],
+            });
         } catch {
             setIsAddingToOrUpdatingCart(false);
             addToast(uiStrings.product.failedToAddProductToCart, 'error');
@@ -478,6 +495,7 @@ export function useProductActions({
         canAddToCart,
         cartFetcher,
         addToast,
+        analytics,
         // @sfdc-extension-line SFDC_EXT_BOPIS
         pickupContext,
     ]);
@@ -509,7 +527,7 @@ export function useProductActions({
                 // Prefer variant if available, otherwise fall back to master product ID
                 // Let the API decide if master products are allowed
                 const productToAdd = isMasterOrVariantProduct ? selectedVariant || currentVariant : product;
-                const itemProductId = productToAdd?.productId || productToAdd?.id || product.id;
+                const itemProductId = getProductId(productToAdd) || product.id;
 
                 if (!itemProductId) {
                     addToast(errorMessage, 'error');
@@ -562,7 +580,7 @@ export function useProductActions({
             getActionParams: (...args: unknown[]) => {
                 const variant = args[0] as ShopperProducts.schemas['Variant'] | undefined;
                 const productToAdd = isMasterOrVariantProduct ? variant || currentVariant : product;
-                const itemProductId = productToAdd?.productId || productToAdd?.id || product.id;
+                const itemProductId = getProductId(productToAdd) || product.id;
                 if (!itemProductId) {
                     throw new Error(uiStrings.product.productIdRequired);
                 }
@@ -615,6 +633,11 @@ export function useProductActions({
                         action: '/action/cart-set-add',
                     }
                 );
+
+                // Track cart item add
+                analytics.trackCartItemAdd({
+                    cartItems: productItems as ShopperBasketsV2.schemas['ProductItem'][],
+                });
             } catch {
                 setIsAddingToOrUpdatingCart(false);
                 addToast(uiStrings.product.failedToAddItemsToCartError, 'error');
@@ -624,6 +647,7 @@ export function useProductActions({
             isAddingToOrUpdatingCart,
             multipleItemsFetcher,
             addToast,
+            analytics,
             // @sfdc-extension-line SFDC_EXT_BOPIS
             pickupContext,
         ]
@@ -675,6 +699,11 @@ export function useProductActions({
                         action: '/action/cart-bundle-add',
                     }
                 );
+
+                // Track cart item add
+                analytics.trackCartItemAdd({
+                    cartItems: [bundleItem, ...childSelections],
+                });
             } catch {
                 setIsAddingToOrUpdatingCart(false);
                 addToast(uiStrings.product.failedToAddBundleToCartError, 'error');
@@ -685,6 +714,7 @@ export function useProductActions({
             isAddingToOrUpdatingCart,
             bundleFetcher,
             addToast,
+            analytics,
             // @sfdc-extension-line SFDC_EXT_BOPIS
             pickupContext,
         ]
@@ -772,8 +802,7 @@ export function useProductActions({
         if (isAddingToOrUpdatingCart || !canAddToCart || !itemId) return;
 
         const productToUpdate = isMasterOrVariantProduct ? currentVariant : product;
-
-        const selectedProductId = productToUpdate?.productId || productToUpdate?.id;
+        const selectedProductId = getProductId(productToUpdate);
         // Validate inputs
         if (!selectedProductId || quantity <= 0) {
             addToast(uiStrings.product.failedToUpdateItemToCart, 'error');

@@ -2,16 +2,16 @@ import type { ReactElement } from 'react';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { ProductTile } from '@/components/product-tile';
 
-export default function ProductGrid({
-    products,
-}: {
+interface ProductGridProps {
     products: ShopperSearch.schemas['ProductSearchHit'][];
-}): ReactElement {
+    handleProductClick?: (product: ShopperSearch.schemas['ProductSearchHit']) => void;
+}
+export default function ProductGrid({ products, handleProductClick }: ProductGridProps): ReactElement {
     return (
         <>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-8">
                 {products.map((product) => (
-                    <ProductTile key={product.productId} product={product} />
+                    <ProductTile key={product.productId} product={product} handleProductClick={handleProductClick} />
                 ))}
             </div>
 

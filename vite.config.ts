@@ -85,6 +85,11 @@ export default defineConfig(({ mode }) => {
                 // Server-only config access (must be before '@' to take precedence)
                 '@/config/server': resolve(__dirname, './config.server.ts'),
                 '@': resolve(__dirname, './src'),
+                // Resolve workspace package subpath exports
+                '@salesforce/storefront-next-runtime/events': resolve(
+                    __dirname,
+                    '../storefront-next-runtime/dist/events.js'
+                ),
             },
         },
         optimizeDeps: {
@@ -111,7 +116,7 @@ export default defineConfig(({ mode }) => {
         },
         ssr: {
             // Ensure Vite compiles the SDK for SSR so Node doesn't attempt to run its ESM as CJS
-            noExternal: ['commerce-sdk-isomorphic'],
+            noExternal: ['commerce-sdk-isomorphic', '@salesforce/storefront-next-runtime'],
             target: 'node',
         },
         test: {

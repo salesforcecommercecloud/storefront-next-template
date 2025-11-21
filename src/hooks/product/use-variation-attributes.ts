@@ -74,7 +74,7 @@ export interface VariationAttribute {
         name: string;
         value: string;
         orderable?: boolean;
-        image?: ShopperProductsTypes.Image;
+        image?: ShopperProducts.schemas['Image'];
         href: string;
         selected: boolean;
         disabled?: boolean;
@@ -162,7 +162,7 @@ export const useVariationAttributes = ({
                     });
 
                     // Find swatch image for this variation - only for color attributes
-                    let image: ShopperProductsTypes.Image | undefined;
+                    let image: ShopperProducts.schemas['Image'] | undefined;
                     if (product.imageGroups && variationAttribute.id === 'color') {
                         const imageGroup = findImageGroupBy(product.imageGroups, {
                             viewType: 'swatch',

@@ -1,4 +1,4 @@
-import { use } from 'react';
+import { use, useEffect, useRef } from 'react';
 import { type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from 'react-router';
 import { type ShopperProducts, type ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { createApiClients } from '@/lib/api-clients';
@@ -13,6 +13,7 @@ import { generateRecommendationPromises } from '@/lib/recommendations';
 import { ProductRecommendationsSkeleton } from '@/components/product/skeletons';
 import withSuspense from '@/components/with-suspense';
 import { ProductCarouselWithSuspense } from '@/components/product-carousel';
+import { useAnalytics } from '@/hooks/use-analytics';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import {
     getCookieFromRequestAs,
@@ -318,6 +319,19 @@ function ProductDetailView({
 }: RouteComponentProps<ProductPageData>) {
     const productData = use(product);
     const categoryData = use(category);
+    const analytics = useAnalytics();
+    const lastTrackedProductIdRef = useRef<string | null>(null);
+
+    // Track product view on mount and whenever productData changes
+    useEffect(() => {
+        // Only track if we haven't already tracked this product
+        if (productData.id !== lastTrackedProductIdRef.current) {
+            analytics.trackViewProduct({
+                product: productData,
+            });
+            lastTrackedProductIdRef.current = productData.id;
+        }
+    }, [analytics, productData]);
 
     const isProductASet = isProductSet(productData);
     const isProductABundle = isProductBundle(productData);

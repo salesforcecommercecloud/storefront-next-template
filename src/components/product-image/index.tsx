@@ -10,6 +10,7 @@ interface ProductImageContainerProps {
     product: ShopperSearch.schemas['ProductSearchHit'];
     selectedColorValue?: string | null;
     className?: string;
+    handleProductClick?: (product: ShopperSearchTypes.ProductSearchHit) => void;
     /** Image aspect ratio (width/height). If provided, calculates height based on viewport width. Defaults to 1 (square) */
     imgAspectRatio?: number;
 }
@@ -18,6 +19,7 @@ const ProductImageContainer = ({
     product,
     selectedColorValue = null,
     className,
+    handleProductClick,
     imgAspectRatio = 1,
 }: ProductImageContainerProps) => {
     // Get the product image for the selected color variant
@@ -52,6 +54,10 @@ const ProductImageContainer = ({
     );
 
     const currentImageUrl = getProductImageForColor(selectedColorValue);
+
+    const handleClick = useCallback(() => {
+        handleProductClick?.(product);
+    }, [handleProductClick, product]);
 
     // Calculate responsive widths based on viewport
     // These will be used to calculate the height based on aspect ratio
@@ -96,6 +102,7 @@ const ProductImageContainer = ({
             {/* Product Image */}
             <Link
                 to={createProductUrl(product.productId, selectedColorValue)}
+                onClick={handleClick}
                 className="block w-full h-full flex-1"
                 aria-label={`View ${product.productName}`}>
                 <ProductImage

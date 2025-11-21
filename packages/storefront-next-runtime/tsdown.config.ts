@@ -11,6 +11,7 @@ export default defineConfig([
         entry: {
             design: 'src/design/index.ts',
             'design-react': 'src/design/react/index.ts',
+            events: 'src/events/index.ts',
         },
         platform: 'neutral',
         target: 'node22',

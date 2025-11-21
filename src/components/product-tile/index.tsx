@@ -25,6 +25,7 @@ import { SwatchGroup, Swatch } from '@/components/swatch-group';
 interface ProductTileProps extends ComponentProps<'div'> {
     product: ShopperSearch.schemas['ProductSearchHit'];
     maxSwatches?: number;
+    handleProductClick?: (product: ShopperSearchTypes.ProductSearchHit) => void;
     /** Custom footer action button. If provided, replaces the default "More Options" button */
     footerAction?: React.ReactNode;
     /** If true, swatches are displayed but not interactive (read-only mode for wishlist) */
@@ -60,6 +61,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
             footerAction,
             disableSwatchInteraction = false,
             selectedVariantColorValue,
+            handleProductClick,
             imgAspectRatio,
             ...props
         },
@@ -103,6 +105,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
         }, []);
 
         const handleMoreOptions = useCallback(() => {
+            handleProductClick?.(product);
             // Navigate to PDP page with selected attribute if available
             const productUrl = createProductUrl(
                 product.productId,
@@ -110,7 +113,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                 PRODUCT_TILE_SELECTABLE_ATTRIBUTE_ID
             );
             void navigate(productUrl);
-        }, [navigate, product.productId, selectedAttributeValue]);
+        }, [navigate, product, selectedAttributeValue, handleProductClick]);
 
         // Detect if we're on desktop (≥1024px) to determine swatch interaction mode
         const swatchMode = useMemo(() => {
@@ -146,7 +149,10 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                             <Link
                                 to={createProductUrl(product.productId)}
                                 className="text-card-foreground text-left font-semibold text-sm leading-[1.25] relative hover:underline line-clamp-2 overflow-hidden block"
-                                style={{ display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2 }}>
+                                style={{ display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2 }}
+                                onClick={() => {
+                                    handleProductClick?.(product);
+                                }}>
                                 {product.productName}
                             </Link>
                         </div>
@@ -255,6 +261,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                             }
                             imgAspectRatio={effectiveImgAspectRatio}
                             className="w-full !aspect-auto [&_img]:!object-contain [&_img]:!h-auto [&_img]:!max-w-full [&_img]:!mx-auto"
+                            handleProductClick={handleProductClick}
                         />
                     </div>
                 </CardHeader>

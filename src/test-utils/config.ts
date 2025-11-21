@@ -73,6 +73,8 @@ export const mockBuildConfig: Config = {
                 guestCheckout: true,
             },
         },
+        adapters: {},
+        analytics: {},
         global: {
             branding: { name: 'Test Store', logoAlt: 'Home' },
             productListing: {

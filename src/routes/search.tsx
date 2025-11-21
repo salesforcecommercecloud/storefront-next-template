@@ -1,7 +1,6 @@
-import { Suspense } from 'react';
+import { Suspense, useEffect, useRef, useCallback } from 'react';
 import { Await, type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from 'react-router';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
-import type { Route } from './+types/search';
 import { fetchSearchProducts } from '@/lib/api/search';
 import { getConfig, useConfig } from '@/config';
 import CategorySkeleton, { CategoryHeaderSkeleton, CategoryRefinementsSkeleton } from '@/components/category-skeleton';
@@ -10,6 +9,7 @@ import CategoryRefinements from '@/components/category-refinements';
 import CategorySorting from '@/components/category-sorting';
 import ProductGrid from '@/components/product-grid';
 import uiStrings from '@/temp-ui-string';
+import { useAnalytics } from '@/hooks/use-analytics';
 
 type SearchPageData = {
     searchTerm: string;
@@ -57,9 +57,47 @@ export function clientLoader(args: ClientLoaderFunctionArgs): SearchPageData {
     return getPageData(args, getConfig().global.productListing.productsPerPage);
 }
 
-export default function SearchPage({ loaderData: { searchTerm, refinements, searchResult } }: Route.ComponentProps) {
+export default function SearchPage({
+    loaderData: { searchTerm, refinements, searchResult },
+}: {
+    loaderData: SearchPageData;
+}) {
     const config = useConfig();
     const limit = config.global.productListing.productsPerPage;
+    const analytics = useAnalytics();
+    const lastTrackedSearchRef = useRef<string | null>(null);
+
+    const handleProductClick = useCallback(
+        (product: ShopperSearch.schemas['ProductSearchHit']) => {
+            if (analytics) {
+                analytics.trackClickProductInSearch({
+                    searchInputText: searchTerm,
+                    product,
+                });
+            }
+        },
+        [analytics, searchTerm]
+    );
+
+    useEffect(() => {
+        // Create a unique key for this search (term + result promise)
+        const searchKey = `${searchTerm}-${String(searchResult)}`;
+
+        // Only track if we haven't already tracked this search
+        if (searchKey !== lastTrackedSearchRef.current) {
+            void searchResult
+                .then((data: ShopperSearch.schemas['ProductSearchResult']) => {
+                    analytics.trackViewSearch({
+                        searchInputText: searchTerm,
+                        searchResults: data.hits ?? [],
+                    });
+                })
+                .catch(() => {
+                    // Silently handle promise rejection
+                });
+            lastTrackedSearchRef.current = searchKey;
+        }
+    }, [analytics, searchTerm, searchResult]);
 
     return (
         <div className="pb-16">
@@ -99,7 +137,10 @@ export default function SearchPage({ loaderData: { searchTerm, refinements, sear
                             <Await resolve={searchResult}>
                                 {(searchResultData) => (
                                     <>
-                                        <ProductGrid products={searchResultData.hits ?? []} />
+                                        <ProductGrid
+                                            products={searchResultData.hits ?? []}
+                                            handleProductClick={handleProductClick}
+                                        />
                                         {searchResultData.total > 1 && (
                                             <div className="mt-10">
                                                 <CategoryPagination limit={limit} result={searchResultData} />

@@ -31,7 +31,7 @@ interface UseProductImagesReturn {
 const getDefaultImages = (
     imageGroups: ShopperProducts.schemas['ImageGroup'][] | undefined,
     viewType: string = 'large'
-): ShopperProductsTypes.Image[] => {
+): ShopperProducts.schemas['Image'][] => {
     return imageGroups?.find((group) => group.viewType === viewType)?.images || [];
 };
 
@@ -91,7 +91,7 @@ export function useProductImages({
             return [];
         }
 
-        return filteredImages.map((image: ShopperProductsTypes.Image) => ({
+        return filteredImages.map((image: ShopperProducts.schemas['Image']) => ({
             src: image.disBaseLink || image.link || '',
             alt: image.alt || product.name || '',
             thumbSrc: image.disBaseLink || image.link || '',
