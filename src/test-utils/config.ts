@@ -58,6 +58,9 @@ export const mockBuildConfig: Config = {
         site: {
             locale: 'en-US',
             currency: 'USD',
+            cookies: {
+                domain: undefined,
+            },
             features: {
                 passwordlessLogin: {
                     enabled: false,
@@ -68,13 +71,15 @@ export const mockBuildConfig: Config = {
                     callbackUri: '/reset-password-callback',
                     landingUri: '/reset-password-landing',
                 },
-                socialLogin: { enabled: true, providers: ['Apple', 'Google'] },
+                socialLogin: { enabled: true, callbackUri: '/social-callback', providers: ['Apple', 'Google'] },
                 socialShare: { enabled: true, providers: ['Twitter', 'Facebook', 'LinkedIn', 'Email'] },
                 guestCheckout: true,
             },
         },
-        adapters: {},
-        analytics: {},
+        i18n: {
+            fallbackLng: 'en',
+            supportedLngs: ['es', 'en'],
+        },
         global: {
             branding: { name: 'Test Store', logoAlt: 'Home' },
             productListing: {
@@ -82,6 +87,7 @@ export const mockBuildConfig: Config = {
                 enableInfiniteScroll: false,
                 sortOptions: ['relevance'],
                 enableQuickView: true,
+                defaultProductTileImgAspectRatio: 1,
             },
             carousel: { defaultItemCount: 4 },
             paginatedProductCarousel: {
@@ -91,10 +97,55 @@ export const mockBuildConfig: Config = {
                 { propertyName: 'c_isSale', label: 'Sale', color: 'orange', priority: 1 },
                 { propertyName: 'c_isNew', label: 'New', color: 'green', priority: 2 },
             ],
+            skeleton: {
+                thumbnails: 4,
+                colorVariants: 4,
+                sizeVariants: 3,
+                accordionSections: 3,
+                defaultItemCount: 4,
+            },
+            recommendations: {
+                search_limit: {
+                    youMightLike: 8,
+                    completeLook: 12,
+                    recentlyViewed: 6,
+                },
+                types: {
+                    'you-may-also-like': {
+                        enabled: true,
+                        priority: 1,
+                        sort: 'best-matches',
+                        titleKey: 'product.recommendations.youMightAlsoLike',
+                    },
+                    'complete-the-look': {
+                        enabled: true,
+                        priority: 2,
+                        sort: 'price-low-to-high',
+                        titleKey: 'product.recommendations.completeTheLook',
+                    },
+                    'recently-viewed': {
+                        enabled: false,
+                        priority: 3,
+                        sort: 'most-popular',
+                        titleKey: 'product.recommendations.recentlyViewed',
+                    },
+                },
+            },
         },
         performance: {
             images: { quality: 80, formats: ['webp', 'jpeg'], lazyLoading: true },
             caching: { apiCacheTtl: 300, staticAssetCacheTtl: 31536000 },
+            metrics: {
+                serverPerformanceMetricsEnabled: true,
+                serverTimingHeaderEnabled: false,
+                clientPerformanceMetricsEnabled: true,
+            },
+        },
+        engagement: {
+            adapters: {},
+            analytics: {
+                doNotTrackPaths: [],
+            },
         },
         development: {
             enableDevtools: true,

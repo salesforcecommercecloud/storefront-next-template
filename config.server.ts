@@ -1,14 +1,36 @@
 import { defineConfig } from '@/config/schema';
-import { parseEnvJson } from '@/config/utils';
 
+/**
+ * Application Configuration
+ *
+ * This file defines the default configuration for the application.
+ * All values can be overridden using PUBLIC__ prefixed environment variables.
+ *
+ * Environment Variable Convention:
+ *
+ * Use PUBLIC__ prefix with double underscore (__) path separators:
+ *    - PUBLIC__app__commerce__api__clientId → app.commerce.api.clientId
+ *    - PUBLIC__app__site__locale → app.site.locale
+ *    - PUBLIC__app__pages__cart__quantityUpdateDebounce → app.pages.cart.quantityUpdateDebounce
+ *    - PUBLIC__app__site__features__socialLogin__providers=["Apple","Google"] → app.site.features.socialLogin.providers
+ *
+ * The PUBLIC__ prefix indicates these values are SAFE TO EXPOSE to the client.
+ * They get bundled into window.__APP_CONFIG__ and are accessible in browser code.
+ *
+ * Server-only secrets (API keys, passwords, etc.) should NEVER use this config system.
+ * Read them directly from process.env in server-side code (loaders, actions, middleware).
+ *
+ * See src/config/README.md for complete documentation.
+ */
 export default defineConfig({
     metadata: {
         projectName: 'Odyssey Retail App',
         projectSlug: 'odyssey-retail-app',
     },
     runtime: {
-        defaultMrtProject: process.env.MRT_PROJECT || '',
-        defaultMrtTarget: process.env.MRT_TARGET || '',
+        // MRT deployment settings (server-only, set via MRT_PROJECT and MRT_TARGET env vars)
+        defaultMrtProject: '',
+        defaultMrtTarget: '',
         ssrOnly: ['loader.js', 'ssr.js', '!static/**/*'],
         ssrShared: [
             'static/**/*',
@@ -30,7 +52,9 @@ export default defineConfig({
     },
     app: {
         pages: {
-            home: { featuredProductsCount: 12 },
+            home: {
+                featuredProductsCount: 12,
+            },
             cart: {
                 quantityUpdateDebounce: 750,
                 enableRemoveConfirmation: true,
@@ -48,51 +72,43 @@ export default defineConfig({
         },
         commerce: {
             api: {
-                clientId: process.env.PUBLIC_COMMERCE_API_CLIENT_ID || '',
-                organizationId: process.env.PUBLIC_COMMERCE_API_ORG_ID || '',
-                siteId: process.env.PUBLIC_COMMERCE_API_SITE_ID || '',
-                shortCode: process.env.PUBLIC_COMMERCE_API_SHORT_CODE || '',
-                proxy: process.env.PUBLIC_COMMERCE_API_PROXY || '/mobify/proxy/api',
-                callback: process.env.PUBLIC_COMMERCE_API_CALLBACK || '/callback',
-                privateKeyEnabled: process.env.PUBLIC_COMMERCE_API_SLAS_PRIVATE === 'true',
-                registeredRefreshTokenExpirySeconds: process.env
-                    .PUBLIC_COMMERCE_API_REGISTERED_REFRESH_TOKEN_EXPIRY_SECONDS
-                    ? Number(process.env.PUBLIC_COMMERCE_API_REGISTERED_REFRESH_TOKEN_EXPIRY_SECONDS)
-                    : undefined,
-                guestRefreshTokenExpirySeconds: process.env.PUBLIC_COMMERCE_API_GUEST_REFRESH_TOKEN_EXPIRY_SECONDS
-                    ? Number(process.env.PUBLIC_COMMERCE_API_GUEST_REFRESH_TOKEN_EXPIRY_SECONDS)
-                    : undefined,
+                // Commerce Cloud API credentials (required, set via env vars)
+                clientId: '',
+                organizationId: '',
+                siteId: '',
+                shortCode: '',
+                // Optional API settings
+                proxy: '/mobify/proxy/api',
+                callback: '/callback',
+                privateKeyEnabled: false,
+                registeredRefreshTokenExpirySeconds: undefined,
+                guestRefreshTokenExpirySeconds: undefined,
             },
         },
         site: {
-            locale: process.env.PUBLIC_SITE_LOCALE || 'en-US',
-            currency: process.env.PUBLIC_SITE_CURRENCY || 'USD',
+            locale: 'en-US',
+            currency: 'USD',
             cookies: {
-                domain: process.env.PUBLIC_COOKIE_DOMAIN,
+                domain: undefined,
             },
             features: {
                 passwordlessLogin: {
-                    enabled: process.env.PUBLIC_SITE_PASSWORDLESS === 'true',
-                    callbackUri: process.env.PUBLIC_PASSWORDLESS_CALLBACK_URI || '/passwordless-login-callback',
-                    landingUri: process.env.PUBLIC_PASSWORDLESS_LANDING_URI || '/passwordless-login-landing',
+                    enabled: false,
+                    callbackUri: '/passwordless-login-callback',
+                    landingUri: '/passwordless-login-landing',
                 },
                 resetPassword: {
-                    callbackUri: process.env.PUBLIC_RESET_PASSWORD_CALLBACK_URI || '/reset-password-callback',
-                    landingUri: process.env.PUBLIC_RESET_PASSWORD_LANDING_URI || '/reset-password-landing',
+                    callbackUri: '/reset-password-callback',
+                    landingUri: '/reset-password-landing',
                 },
                 socialLogin: {
-                    enabled: process.env.PUBLIC_SITE_SOCIAL_LOGIN === 'true',
-                    callbackUri: process.env.PUBLIC_SOCIAL_LOGIN_CALLBACK_URI || '/social-callback',
-                    providers: parseEnvJson(process.env.PUBLIC_SOCIAL_IDPS, ['Apple', 'Google']),
+                    enabled: false,
+                    callbackUri: '/social-callback',
+                    providers: ['Apple', 'Google'],
                 },
                 socialShare: {
                     enabled: true,
-                    providers: parseEnvJson(process.env.PUBLIC_SOCIAL_SHARE_PROVIDERS, [
-                        'Twitter',
-                        'Facebook',
-                        'LinkedIn',
-                        'Email',
-                    ]),
+                    providers: ['Twitter', 'Facebook', 'LinkedIn', 'Email'],
                 },
                 guestCheckout: true,
             },

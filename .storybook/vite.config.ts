@@ -37,7 +37,7 @@ export default defineConfig({
         __TEST__: 'false',
     },
     // Make PUBLIC_ prefixed env vars available in Storybook
-    envPrefix: ['VITE_', 'PUBLIC_'],
+    envPrefix: ['VITE_', 'PUBLIC_', 'PUBLIC__'],
     optimizeDeps: {
         // Include dependencies that Storybook needs
         include: ['react', 'react-dom', 'react-router', '@radix-ui/react-accordion'],

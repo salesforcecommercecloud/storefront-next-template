@@ -64,47 +64,46 @@ const config: StorybookConfig = {
 
         // Define process.env variables for browser environment
         // These are needed by config.server.ts which is imported in stories
+        
+        // Default mock values for required Commerce API config when not set
+        const mockDefaults: Record<string, string> = {
+            'PUBLIC__app__commerce__api__clientId': 'storybook-mock-client-id',
+            'PUBLIC__app__commerce__api__organizationId': 'storybook-mock-org',
+            'PUBLIC__app__commerce__api__siteId': 'RefArchGlobal',
+            'PUBLIC__app__commerce__api__shortCode': 'kv7kzm78',
+            'PUBLIC__app__commerce__api__proxy': '/mobify/proxy/api',
+            'PUBLIC__app__commerce__api__callback': '/callback',
+            'PUBLIC__app__commerce__api__privateKeyEnabled': 'false',
+            'PUBLIC__app__site__locale': 'en-US',
+            'PUBLIC__app__site__currency': 'USD',
+            'PUBLIC__app__site__features__passwordlessLogin__enabled': 'false',
+            'PUBLIC__app__site__features__socialLogin__providers': '["Apple","Google"]',
+            'PUBLIC__app__site__features__passwordlessLogin__callbackUri': '/passwordless-login-callback',
+            'PUBLIC__app__site__features__passwordlessLogin__landingUri': '/passwordless-login-landing',
+            'PUBLIC__app__site__features__passwordReset__callbackUri': '/reset-password-callback',
+            'PUBLIC__app__site__features__passwordReset__landingUri': '/reset-password-landing',
+        };
+
+        // Automatically inject all PUBLIC__ environment variables
+        const publicEnvVars = Object.entries(process.env)
+            .filter(([key]) => key.startsWith('PUBLIC__'))
+            .reduce((acc, [key, value]) => {
+                acc[`process.env.${key}`] = JSON.stringify(value || mockDefaults[key] || '');
+                return acc;
+            }, {} as Record<string, string>);
+
+        // Add mock defaults for any PUBLIC__ vars that weren't set in environment
+        Object.entries(mockDefaults).forEach(([key, defaultValue]) => {
+            const envKey = `process.env.${key}`;
+            if (!publicEnvVars[envKey]) {
+                publicEnvVars[envKey] = JSON.stringify(defaultValue);
+            }
+        });
+
         inlineConfig.define = {
             ...inlineConfig.define,
-            'process.env.PUBLIC_COMMERCE_API_CLIENT_ID': JSON.stringify(
-                process.env.PUBLIC_COMMERCE_API_CLIENT_ID || 'storybook-mock-client-id'
-            ),
-            'process.env.PUBLIC_COMMERCE_API_ORG_ID': JSON.stringify(
-                process.env.PUBLIC_COMMERCE_API_ORG_ID || 'storybook-mock-org'
-            ),
-            'process.env.PUBLIC_COMMERCE_API_SITE_ID': JSON.stringify(
-                process.env.PUBLIC_COMMERCE_API_SITE_ID || 'RefArchGlobal'
-            ),
-            'process.env.PUBLIC_COMMERCE_API_SHORT_CODE': JSON.stringify(
-                process.env.PUBLIC_COMMERCE_API_SHORT_CODE || 'kv7kzm78'
-            ),
-            'process.env.PUBLIC_COMMERCE_API_PROXY': JSON.stringify(
-                process.env.PUBLIC_COMMERCE_API_PROXY || '/mobify/proxy/api'
-            ),
-            'process.env.PUBLIC_COMMERCE_API_CALLBACK': JSON.stringify(
-                process.env.PUBLIC_COMMERCE_API_CALLBACK || '/callback'
-            ),
-            'process.env.PUBLIC_COMMERCE_API_SLAS_PRIVATE': JSON.stringify(
-                process.env.PUBLIC_COMMERCE_API_SLAS_PRIVATE || 'false'
-            ),
-            'process.env.PUBLIC_SITE_LOCALE': JSON.stringify(process.env.PUBLIC_SITE_LOCALE || 'en-US'),
-            'process.env.PUBLIC_SITE_CURRENCY': JSON.stringify(process.env.PUBLIC_SITE_CURRENCY || 'USD'),
-            'process.env.PUBLIC_SITE_PASSWORDLESS': JSON.stringify(process.env.PUBLIC_SITE_PASSWORDLESS || 'false'),
-            'process.env.PUBLIC_SOCIAL_IDPS': JSON.stringify(process.env.PUBLIC_SOCIAL_IDPS || '["Apple","Google"]'),
-            'process.env.PUBLIC_PASSWORDLESS_CALLBACK_URI': JSON.stringify(
-                process.env.PUBLIC_PASSWORDLESS_CALLBACK_URI || '/passwordless-login-callback'
-            ),
-            'process.env.PUBLIC_PASSWORDLESS_LANDING_URI': JSON.stringify(
-                process.env.PUBLIC_PASSWORDLESS_LANDING_URI || '/passwordless-login-landing'
-            ),
-            'process.env.PUBLIC_RESET_PASSWORD_CALLBACK_URI': JSON.stringify(
-                process.env.PUBLIC_RESET_PASSWORD_CALLBACK_URI || '/reset-password-callback'
-            ),
-            'process.env.PUBLIC_RESET_PASSWORD_LANDING_URI': JSON.stringify(
-                process.env.PUBLIC_RESET_PASSWORD_LANDING_URI || '/reset-password-landing'
-            ),
-            'process.env.MRT_PROJECT': JSON.stringify(process.env.MRT_PROJECT || ''),
-            'process.env.MRT_TARGET': JSON.stringify(process.env.MRT_TARGET || ''),
+            ...publicEnvVars,
+            // Non-config specific Storybook variables
             'process.env.STORYBOOK_A11Y_TEST_MODE': JSON.stringify(process.env.STORYBOOK_A11Y_TEST_MODE || 'todo'),
             'process.env.STORYBOOK_DISABLE_A11Y': JSON.stringify(process.env.STORYBOOK_DISABLE_A11Y || 'false'),
         };

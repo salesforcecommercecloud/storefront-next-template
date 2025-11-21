@@ -42350,15 +42350,15 @@ var import_src = /* @__PURE__ */ __toESM$1(require_src$2(), 1);
 *
 */
 function loadConfigFromEnv() {
-	const shortCode = process.env.PUBLIC_COMMERCE_API_SHORT_CODE;
-	const organizationId = process.env.PUBLIC_COMMERCE_API_ORG_ID;
-	const clientId = process.env.PUBLIC_COMMERCE_API_CLIENT_ID;
-	const siteId = process.env.PUBLIC_COMMERCE_API_SITE_ID;
-	const proxy$1 = process.env.PUBLIC_COMMERCE_API_PROXY || "/mobify/proxy/api";
-	if (!shortCode) throw new Error("Missing PUBLIC_COMMERCE_API_SHORT_CODE environment variable.\nPlease set it in your .env file or environment.");
-	if (!organizationId) throw new Error("Missing PUBLIC_COMMERCE_API_ORG_ID environment variable.\nPlease set it in your .env file or environment.");
-	if (!clientId) throw new Error("Missing PUBLIC_COMMERCE_API_CLIENT_ID environment variable.\nPlease set it in your .env file or environment.");
-	if (!siteId) throw new Error("Missing PUBLIC_COMMERCE_API_SITE_ID environment variable.\nPlease set it in your .env file or environment.");
+	const shortCode = process.env.PUBLIC__app__commerce__api__shortCode;
+	const organizationId = process.env.PUBLIC__app__commerce__api__organizationId;
+	const clientId = process.env.PUBLIC__app__commerce__api__clientId;
+	const siteId = process.env.PUBLIC__app__commerce__api__siteId;
+	const proxy$1 = process.env.PUBLIC__app__commerce__api__proxy || "/mobify/proxy/api";
+	if (!shortCode) throw new Error("Missing PUBLIC__app__commerce__api__shortCode environment variable.\nPlease set it in your .env file or environment.");
+	if (!organizationId) throw new Error("Missing PUBLIC__app__commerce__api__organizationId environment variable.\nPlease set it in your .env file or environment.");
+	if (!clientId) throw new Error("Missing PUBLIC__app__commerce__api__clientId environment variable.\nPlease set it in your .env file or environment.");
+	if (!siteId) throw new Error("Missing PUBLIC__app__commerce__api__siteId environment variable.\nPlease set it in your .env file or environment.");
 	return { commerce: { api: {
 		shortCode,
 		organizationId,

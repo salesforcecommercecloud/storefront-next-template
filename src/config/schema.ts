@@ -1,3 +1,4 @@
+import { deepMerge, mergeEnvConfig } from './utils';
 import type { EngagementAdapterConfig } from '@/lib/adapters';
 
 // Badge configuration
@@ -191,6 +192,11 @@ export const getBadgeVariant = (color: BadgeDetail['color']): BadgeVariant => {
 };
 
 // Helper for type-safe configuration with IDE autocomplete
+// Automatically merges PUBLIC__ prefixed environment variables into config
+// Validates env vars against base config (strict mode - only allows overriding existing paths)
+// Example: PUBLIC__app__pages__cart__quantityUpdateDebounce=1000
+// Example: PUBLIC__app__site__features__socialLogin__providers=["Apple","Facebook"]
 export function defineConfig(config: Config): Config {
-    return config;
+    const envOverrides = mergeEnvConfig(process.env, config);
+    return deepMerge(config, envOverrides);
 }

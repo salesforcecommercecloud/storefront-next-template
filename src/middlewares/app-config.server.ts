@@ -24,16 +24,25 @@ function validateConfig(): void {
         .map(([key]) => key);
 
     if (missing.length > 0) {
+        // Map config keys to env var names
+        const envVarMap: Record<string, string> = {
+            clientId: 'PUBLIC__app__commerce__api__clientId',
+            organizationId: 'PUBLIC__app__commerce__api__organizationId',
+            siteId: 'PUBLIC__app__commerce__api__siteId',
+            shortCode: 'PUBLIC__app__commerce__api__shortCode',
+        };
+
         throw new Error(
-            `Missing required Commerce API configuration: ${missing.join(', ')}\n` +
+            `Missing required Commerce API configuration: ${missing.join(', ')}\n\n` +
                 `Set these environment variables in your MRT deployment or .env file:\n${missing
-                    .map((key) => `  - PUBLIC_COMMERCE_API_${key.replace(/([A-Z])/g, '_$1').toUpperCase()}`)
+                    .map((key) => `  ${envVarMap[key]}=your-value`)
                     .join('\n')}\n\n` +
                 `Example .env file:\n` +
-                `PUBLIC_COMMERCE_API_CLIENT_ID=your-client-id\n` +
-                `PUBLIC_COMMERCE_API_ORG_ID=your-org-id\n` +
-                `PUBLIC_COMMERCE_API_SITE_ID=your-site-id\n` +
-                `PUBLIC_COMMERCE_API_SHORT_CODE=your-short-code`
+                `PUBLIC__app__commerce__api__clientId=your-client-id\n` +
+                `PUBLIC__app__commerce__api__organizationId=your-org-id\n` +
+                `PUBLIC__app__commerce__api__siteId=your-site-id\n` +
+                `PUBLIC__app__commerce__api__shortCode=your-short-code\n\n` +
+                `See src/config/README.md for complete configuration documentation.`
         );
     }
 

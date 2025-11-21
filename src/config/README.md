@@ -36,24 +36,148 @@ export function MyComponent() {
 ```
 ## Environment Variables
 
-### Required (set these in your `.env` file)
-- `PUBLIC_COMMERCE_API_CLIENT_ID` - Commerce Cloud API client ID
-- `PUBLIC_COMMERCE_API_ORG_ID` - Commerce Cloud organization ID
-- `PUBLIC_COMMERCE_API_SITE_ID` - Commerce Cloud site ID
-- `PUBLIC_COMMERCE_API_SHORT_CODE` - Commerce Cloud instance short code
+Override any configuration value using environment variables with the `PUBLIC__` prefix, no need to modify `config.server.ts`.
 
-### Optional
-- `PUBLIC_SITE_LOCALE` - Site locale (default: `en-US`)
-- `PUBLIC_SITE_CURRENCY` - Site currency (default: `USD`)
-- `PUBLIC_SITE_PASSWORDLESS` - Enable passwordless login (default: `false`)
-- `PUBLIC_SOCIAL_IDPS` - Social identity providers as JSON array (default: `["Apple","Google"]`)
-- `PUBLIC_PASSWORDLESS_CALLBACK_URI` - Passwordless login callback URI (default: `/passwordless-login-callback`)
-- `PUBLIC_PASSWORDLESS_LANDING_URI` - Passwordless login landing URI (default: `/passwordless-login-landing`)
-- `PUBLIC_RESET_PASSWORD_CALLBACK_URI` - Reset password callback URI (default: `/reset-password-callback`)
-- `PUBLIC_RESET_PASSWORD_LANDING_URI` - Reset password landing URI (default: `/reset-password-landing`)
-- `MARKETING_CLOUD_RESET_PASSWORD_TEMPLATE` - Marketing Cloud template ID for reset password emails
+### Understanding the Path Syntax
 
-See `.env.default` for the complete list.
+The double underscore (`__`) lets you navigate nested config paths. Think of it as replacing the dot (`.`) in JavaScript object notation:
+
+```bash
+# This environment variable:
+PUBLIC__app__site__locale=en-US
+
+# Maps to this config path:
+config.app.site.locale
+
+# Which creates this structure:
+{
+  app: {
+    site: {
+      locale: 'en-US'
+    }
+  }
+}
+```
+
+### Required Variables
+
+Copy `.env.default` to `.env` and set these required Commerce Cloud credentials:
+
+```bash
+PUBLIC__app__commerce__api__clientId=your-client-id
+PUBLIC__app__commerce__api__organizationId=your-org-id
+PUBLIC__app__commerce__api__siteId=your-site-id
+PUBLIC__app__commerce__api__shortCode=your-short-code
+```
+
+### Value Types
+
+Values are automatically parsed to the correct type:
+
+```bash
+PUBLIC__app__myFeature__count=42           # → number
+PUBLIC__app__myFeature__enabled=true       # → boolean
+PUBLIC__app__myFeature__items=["a","b"]    # → array
+PUBLIC__app__myFeature__data='{"x":1}'     # → object
+PUBLIC__app__myFeature__name=hello         # → string
+PUBLIC__app__myFeature__value=             # → empty string
+```
+
+You can also set entire nested objects at once using JSON:
+
+```bash
+# Instead of setting each value separately:
+PUBLIC__app__myFeature__option1=value1
+PUBLIC__app__myFeature__option2=value2
+PUBLIC__app__myFeature__nested__enabled=true
+
+# Use a single JSON value:
+PUBLIC__app__myFeature='{"option1":"value1","option2":"value2","nested":{"enabled":true}}'
+```
+
+### Important Notes
+
+**Case doesn't matter:** You can use any casing (lowercase, UPPERCASE, or MixedCase), and it will normalize to match your `config.server.ts`:
+
+```bash
+PUBLIC__app__site__locale=en-US    # ✅ Works
+PUBLIC__APP__SITE__LOCALE=en-US    # ✅ Also works
+PUBLIC__App__Site__Locale=en-US    # ✅ Also works
+```
+
+**Paths must exist in config:** You can only override paths that are already defined in `config.server.ts`. This prevents typos from silently failing:
+
+```bash
+PUBLIC__app__site__local=en-US  # ❌ Error: "local" doesn't exist (did you mean "locale"?)
+```
+
+**More specific paths win:** When paths overlap, deeper paths take precedence:
+
+```bash
+PUBLIC__app__myFeature='{"setting1":500,"setting2":1000}'
+PUBLIC__app__myFeature__setting1=999  # ← This wins (more specific)
+# Result: setting1=999, setting2=1000
+```
+
+**Depth limit:** Paths are limited to 10 levels deep. For deeper structures, use JSON values instead:
+
+```bash
+# ❌ Too deep (11 levels):
+PUBLIC__a__b__c__d__e__f__g__h__i__j__k=value
+
+# ✅ Use JSON instead:
+PUBLIC__app__myFeature='{"deep":{"nested":{"structure":{"works":"fine"}}}}'
+```
+
+### Security: PUBLIC__ vs Non-Prefixed
+
+**`PUBLIC__` prefix** → Exposed to the browser (bundled into client JavaScript)
+- ✅ Use for: Client IDs, site IDs, locales, feature flags, public API endpoints
+- ❌ Never use for: API secrets, passwords, private keys, authentication tokens
+
+**No prefix** → Server-only (never exposed to client)
+- ✅ Use for: SLAS secrets, database credentials, private tokens
+
+```bash
+# ✅ Safe to expose to client:
+PUBLIC__app__commerce__api__clientId=abc123
+
+# ✅ Server-only secret (no PUBLIC__ prefix):
+COMMERCE_API_SLAS_SECRET=your-secret-here
+```
+
+Read server-only secrets directly from `process.env` in your server code—never add them to config.
+
+### Merge Behavior
+
+Environment variables are **deep merged** into defaults from `config.server.ts`:
+
+```typescript
+// config.server.ts (defaults)
+export default defineConfig({
+  app: {
+    myFeature: {
+      debounce: 750,
+      maxItems: 999,
+      enabled: true,
+    }
+  }
+});
+
+// With env var:
+// PUBLIC__app__myFeature__debounce=1000
+
+// Final result:
+{
+  app: {
+    myFeature: {
+      debounce: 1000,        // ← overridden
+      maxItems: 999,         // ← preserved
+      enabled: true,         // ← preserved
+    }
+  }
+}
+```
 
 ## Adding Configuration
 
@@ -74,14 +198,21 @@ export type Config = {
 export default defineConfig({
   app: {
     myFeature: {
-      enabled: process.env.PUBLIC_MY_FEATURE === 'true',
+      enabled: false,  // Just the default - no process.env needed!
       maxItems: 10,
     },
   },
 });
 ```
 
-### 3. Use it in your code
+### 3. Override via environment variables
+```bash
+# No code changes needed - just use the PUBLIC__ prefix!
+PUBLIC__app__myFeature__enabled=true
+PUBLIC__app__myFeature__maxItems=20
+```
+
+### 4. Use it in your code
 
 **In React components:**
 ```typescript
@@ -119,71 +250,30 @@ export function loader({ context }: LoaderFunctionArgs) {
     "configs": [
         {
             "name": "API Client ID",
-            "key": "PUBLIC_COMMERCE_API_CLIENT_ID"
-        }, 
+            "key": "PUBLIC__app__commerce__api__clientId"
+        },
         {
             "name": "API Organization ID",
-            "key": "PUBLIC_COMMERCE_API_ORG_ID"
-        }, 
+            "key": "PUBLIC__app__commerce__api__organizationId"
+        },
         {
             "name": "API Short Code",
-            "key": "PUBLIC_COMMERCE_API_SHORT_CODE"
+            "key": "PUBLIC__app__commerce__api__shortCode"
         }
     ]
 }
 ```
 
-
-## Security: PUBLIC_ Prefix
-
-**✅ Use `PUBLIC_` prefix for public configuration:**
-- Client IDs, site IDs, organization IDs
-- Feature flags, locales, currencies
-- Public API endpoints
-
-These values are safe to include in the client bundle. The `PUBLIC_` prefix makes it clear these values are sfNext-specific and will be exposed to the browser.
-
-**❌ Never use `PUBLIC_` prefix for secrets or server-only config:**
-- API secrets, private keys, passwords
-- SLAS private keys, authentication tokens
-- MRT deployment settings (only used by CLI)
-
-**Why?** Even though `config.server.ts` has a `.server.ts` suffix, the configuration values defined in it get bundled into client code via `window.__APP_CONFIG__`. 
-
-**Important:** Actual secrets (no `PUBLIC_` prefix) should never go into `config.server.ts`. Keep them in server-only code (loaders, actions, middleware) where they're read directly from `process.env` at runtime.
-
-```typescript
-// ✅ Safe: Public client ID in config.server.ts (bundled to client)
-clientId: process.env.PUBLIC_COMMERCE_API_CLIENT_ID || '',
-    
-
-// ❌ Unsafe: Secret with PUBLIC_ prefix (will leak to client!)
-secret: process.env.PUBLIC_API_SECRET || 'fallback-secret',
-
-// ✅ Safe: Secret in server middleware (never in config.server.ts)
-// middleware/auth.server.ts
-const slasSecret = process.env.COMMERCE_API_SLAS_SECRET; // No PUBLIC_ prefix
-```
-
 ## How It Works
 
-Configuration values are read from `process.env` at runtime and injected into both server and client contexts:
+1. **Defaults defined** in `config.server.ts` (clean, no `process.env` references)
+2. **Environment variables** with `PUBLIC__` prefix are automatically merged at runtime
+3. **Final config** is made available via:
+   - `getConfig(context)` for loaders/actions
+   - `useConfig()` for React components
+   - `window.__APP_CONFIG__` for client code
 
-```typescript
-// config.server.ts reads from process.env
-export default defineConfig({
-  app: {
-    commerce: {
-      api: {
-        clientId: process.env.PUBLIC_COMMERCE_API_CLIENT_ID || '',
-        // Falls back to empty string if env var not set
-      }
-    }
-  }
-})
-```
-
-The `.server.ts` suffix prevents accidental client-side imports (similar to loaders/actions). Config values are made available to the client via `window.__APP_CONFIG__` during SSR.
+The `.server.ts` suffix prevents accidental direct imports. The `PUBLIC__` prefix ensures only client-safe values are exposed.
 
 **What gets shared:**
 - The `app` section → Available on both server and client
@@ -191,12 +281,12 @@ The `.server.ts` suffix prevents accidental client-side imports (similar to load
 ## Common Issues
 
 **Changed `.env` but nothing happened?**
-- Restart your dev server (Vite needs to reload environment variables)
+- Restart your dev server (environment variables are loaded at startup)
 
 **Environment variable not working?**
-- Check the variable name has the `PUBLIC_` prefix for public config
-- Use string `"true"` for booleans, not actual boolean values
-- Make sure `.env` file is in the project root
+- Verify the variable name starts with `PUBLIC__` (double underscore)
+- Check `.env` file is in the project root
+- For booleans, use string `"true"` not bare `true`
 
 **Type errors after adding config?**
 - Update both `schema.ts` and `config.server.ts` to match
@@ -204,7 +294,29 @@ The `.server.ts` suffix prevents accidental client-side imports (similar to load
 
 **App won't start - missing credentials?**
 - Copy `.env.default` to `.env`
-- Set all required `PUBLIC_COMMERCE_API_*` variables
+- Set required Commerce Cloud credentials:
+  ```bash
+  PUBLIC__app__commerce__api__clientId=your-id
+  PUBLIC__app__commerce__api__organizationId=your-org
+  PUBLIC__app__commerce__api__siteId=your-site
+  PUBLIC__app__commerce__api__shortCode=your-code
+  ```
+
+## Deploying to MRT (Managed Runtime)
+
+When deploying to Managed Runtime, set the same environment variables in the MRT environment:
+
+1. Log into the Runtime Admin
+2. Navigate to your project → Environment Variables
+3. Add the required `PUBLIC__` variables (same ones from your `.env` file)
+4. Add any server-only secrets without the `PUBLIC__` prefix
+5. Deploy your application
+
+All the same rules apply: use the `PUBLIC__` prefix for client-safe values, use the `__` path syntax for nested config, and read server-only secrets directly from `process.env`.
+
+**MRT limits:** Variable names max 512 characters, total PUBLIC__ values max 32KB. Use JSON to consolidate related settings if needed.
+
+[Learn more about MRT environment variables →](https://developer.salesforce.com/docs/commerce/pwa-kit-managed-runtime/guide/environment-variables.html)
 
 ## Marketing Cloud Configuration (Server-Only)
 
@@ -213,7 +325,7 @@ Marketing Cloud is used for sending emails in features like passwordless login a
 ### Environment Variables
 
 ```bash
-# Marketing Cloud API Configuration (Server-only - NO PUBLIC_ prefix)
+# Marketing Cloud API Configuration (Server-only - NO PUBLIC__ prefix)
 MARKETING_CLOUD_CLIENT_ID=your-client-id
 MARKETING_CLOUD_CLIENT_SECRET=your-client-secret
 MARKETING_CLOUD_SUBDOMAIN=your-subdomain
@@ -222,5 +334,6 @@ MARKETING_CLOUD_RESET_PASSWORD_TEMPLATE=your-reset-password-template-id
 ```
 
 **Important Security Notes:**
-- ❌ These variables do NOT have the `PUBLIC_` prefix - they are **server-only**
+- ❌ These variables do NOT have the `PUBLIC__` prefix - they are **server-only**
 - ❌ They are NOT included in `config.server.ts` or exposed to the client
+- ✅ Read them directly from `process.env` in server-side code

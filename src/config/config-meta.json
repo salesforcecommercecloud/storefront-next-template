@@ -2,19 +2,19 @@
     "configs": [
         {
             "name": "API Client ID",
-            "key": "PUBLIC_COMMERCE_API_CLIENT_ID"
-        }, 
+            "key": "PUBLIC__app__commerce__api__clientId"
+        },
         {
             "name": "API Organization ID",
-            "key": "PUBLIC_COMMERCE_API_ORG_ID"
-        }, 
+            "key": "PUBLIC__app__commerce__api__organizationId"
+        },
         {
             "name": "API Short Code",
-            "key": "PUBLIC_COMMERCE_API_SHORT_CODE"
-        }, 
+            "key": "PUBLIC__app__commerce__api__shortCode"
+        },
         {
             "name": "API Site ID",
-            "key": "PUBLIC_COMMERCE_API_SITE_ID"
+            "key": "PUBLIC__app__commerce__api__siteId"
         }
     ]
 }

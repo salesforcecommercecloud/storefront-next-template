@@ -24,9 +24,22 @@ const enableReadableChunkNames = enableBundlesizeCheck || enableBundlesizeAnalyz
  * @see {@link https://github.com/http-party/node-http-proxy?tab=readme-ov-file#modify-response}
  */
 export default defineConfig(({ mode }) => {
-    // Load environment variables
-    const environment = loadEnv(mode, __dirname, '');
-    const target = `https://${environment.PUBLIC_COMMERCE_API_SHORT_CODE || 'kv7kzm78'}.api.commercecloud.salesforce.com`;
+    // Load environment variables for dev proxy target
+    const environment = loadEnv(mode, __dirname, 'PUBLIC');
+
+    const shortCode = environment.PUBLIC__app__commerce__api__shortCode;
+
+    // Only validate shortCode in development mode (when dev proxy is used)
+    if (!shortCode && mode === 'development') {
+        throw new Error(
+            'Missing required Commerce API short code for Vite dev proxy.\n\n' +
+                'Set PUBLIC__app__commerce__api__shortCode in your .env file:\n' +
+                '  PUBLIC__app__commerce__api__shortCode=your-short-code\n\n' +
+                'See .env.default for a complete example.'
+        );
+    }
+
+    const target = `https://${shortCode}.api.commercecloud.salesforce.com`;
 
     return {
         build: {
@@ -49,7 +62,7 @@ export default defineConfig(({ mode }) => {
                 },
             },
         },
-        envPrefix: ['VITE_', 'PUBLIC_'],
+        envPrefix: ['VITE_', 'PUBLIC_', 'PUBLIC__'],
         define: {
             __DEV__: `${mode !== 'production'}`,
             __TEST__: `${mode === 'test'}`,

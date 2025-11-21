@@ -29,11 +29,11 @@ describe('server config', () => {
         });
 
         it('should successfully load config from environment variables', () => {
-            process.env.PUBLIC_COMMERCE_API_SHORT_CODE = 'test-short-code';
-            process.env.PUBLIC_COMMERCE_API_ORG_ID = 'test-org-id';
-            process.env.PUBLIC_COMMERCE_API_CLIENT_ID = 'test-client-id';
-            process.env.PUBLIC_COMMERCE_API_SITE_ID = 'test-site-id';
-            process.env.PUBLIC_COMMERCE_API_PROXY = '/custom/proxy';
+            process.env.PUBLIC__app__commerce__api__shortCode = 'test-short-code';
+            process.env.PUBLIC__app__commerce__api__organizationId = 'test-org-id';
+            process.env.PUBLIC__app__commerce__api__clientId = 'test-client-id';
+            process.env.PUBLIC__app__commerce__api__siteId = 'test-site-id';
+            process.env.PUBLIC__app__commerce__api__proxy = '/custom/proxy';
 
             const config = loadConfigFromEnv();
 
@@ -51,51 +51,59 @@ describe('server config', () => {
         });
 
         it('should use default proxy value when not provided', () => {
-            process.env.PUBLIC_COMMERCE_API_SHORT_CODE = 'test-short-code';
-            process.env.PUBLIC_COMMERCE_API_ORG_ID = 'test-org-id';
-            process.env.PUBLIC_COMMERCE_API_CLIENT_ID = 'test-client-id';
-            process.env.PUBLIC_COMMERCE_API_SITE_ID = 'test-site-id';
-            delete process.env.PUBLIC_COMMERCE_API_PROXY;
+            process.env.PUBLIC__app__commerce__api__shortCode = 'test-short-code';
+            process.env.PUBLIC__app__commerce__api__organizationId = 'test-org-id';
+            process.env.PUBLIC__app__commerce__api__clientId = 'test-client-id';
+            process.env.PUBLIC__app__commerce__api__siteId = 'test-site-id';
+            delete process.env.PUBLIC__app__commerce__api__proxy;
 
             const config = loadConfigFromEnv();
 
             expect(config.commerce.api.proxy).toBe('/mobify/proxy/api');
         });
 
-        it('should throw error when PUBLIC_COMMERCE_API_SHORT_CODE is missing', () => {
-            delete process.env.PUBLIC_COMMERCE_API_SHORT_CODE;
-            process.env.PUBLIC_COMMERCE_API_ORG_ID = 'test-org-id';
-            process.env.PUBLIC_COMMERCE_API_CLIENT_ID = 'test-client-id';
-            process.env.PUBLIC_COMMERCE_API_SITE_ID = 'test-site-id';
+        it('should throw error when PUBLIC__app__commerce__api__shortCode is missing', () => {
+            delete process.env.PUBLIC__app__commerce__api__shortCode;
+            process.env.PUBLIC__app__commerce__api__organizationId = 'test-org-id';
+            process.env.PUBLIC__app__commerce__api__clientId = 'test-client-id';
+            process.env.PUBLIC__app__commerce__api__siteId = 'test-site-id';
 
-            expect(() => loadConfigFromEnv()).toThrow('Missing PUBLIC_COMMERCE_API_SHORT_CODE environment variable');
+            expect(() => loadConfigFromEnv()).toThrow(
+                'Missing PUBLIC__app__commerce__api__shortCode environment variable'
+            );
         });
 
-        it('should throw error when PUBLIC_COMMERCE_API_ORG_ID is missing', () => {
-            process.env.PUBLIC_COMMERCE_API_SHORT_CODE = 'test-short-code';
-            delete process.env.PUBLIC_COMMERCE_API_ORG_ID;
-            process.env.PUBLIC_COMMERCE_API_CLIENT_ID = 'test-client-id';
-            process.env.PUBLIC_COMMERCE_API_SITE_ID = 'test-site-id';
+        it('should throw error when PUBLIC__app__commerce__api__organizationId is missing', () => {
+            process.env.PUBLIC__app__commerce__api__shortCode = 'test-short-code';
+            delete process.env.PUBLIC__app__commerce__api__organizationId;
+            process.env.PUBLIC__app__commerce__api__clientId = 'test-client-id';
+            process.env.PUBLIC__app__commerce__api__siteId = 'test-site-id';
 
-            expect(() => loadConfigFromEnv()).toThrow('Missing PUBLIC_COMMERCE_API_ORG_ID environment variable');
+            expect(() => loadConfigFromEnv()).toThrow(
+                'Missing PUBLIC__app__commerce__api__organizationId environment variable'
+            );
         });
 
-        it('should throw error when PUBLIC_COMMERCE_API_CLIENT_ID is missing', () => {
-            process.env.PUBLIC_COMMERCE_API_SHORT_CODE = 'test-short-code';
-            process.env.PUBLIC_COMMERCE_API_ORG_ID = 'test-org-id';
-            delete process.env.PUBLIC_COMMERCE_API_CLIENT_ID;
-            process.env.PUBLIC_COMMERCE_API_SITE_ID = 'test-site-id';
+        it('should throw error when PUBLIC__app__commerce__api__clientId is missing', () => {
+            process.env.PUBLIC__app__commerce__api__shortCode = 'test-short-code';
+            process.env.PUBLIC__app__commerce__api__organizationId = 'test-org-id';
+            delete process.env.PUBLIC__app__commerce__api__clientId;
+            process.env.PUBLIC__app__commerce__api__siteId = 'test-site-id';
 
-            expect(() => loadConfigFromEnv()).toThrow('Missing PUBLIC_COMMERCE_API_CLIENT_ID environment variable');
+            expect(() => loadConfigFromEnv()).toThrow(
+                'Missing PUBLIC__app__commerce__api__clientId environment variable'
+            );
         });
 
-        it('should throw error when PUBLIC_COMMERCE_API_SITE_ID is missing', () => {
-            process.env.PUBLIC_COMMERCE_API_SHORT_CODE = 'test-short-code';
-            process.env.PUBLIC_COMMERCE_API_ORG_ID = 'test-org-id';
-            process.env.PUBLIC_COMMERCE_API_CLIENT_ID = 'test-client-id';
-            delete process.env.PUBLIC_COMMERCE_API_SITE_ID;
+        it('should throw error when PUBLIC__app__commerce__api__siteId is missing', () => {
+            process.env.PUBLIC__app__commerce__api__shortCode = 'test-short-code';
+            process.env.PUBLIC__app__commerce__api__organizationId = 'test-org-id';
+            process.env.PUBLIC__app__commerce__api__clientId = 'test-client-id';
+            delete process.env.PUBLIC__app__commerce__api__siteId;
 
-            expect(() => loadConfigFromEnv()).toThrow('Missing PUBLIC_COMMERCE_API_SITE_ID environment variable');
+            expect(() => loadConfigFromEnv()).toThrow(
+                'Missing PUBLIC__app__commerce__api__siteId environment variable'
+            );
         });
     });
 
