@@ -6,6 +6,19 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { Grid } from './index';
 
+// Mock decorators (minimal mocking to avoid testing them)
+vi.mock('@/lib/decorators/component', () => ({
+    Component: () => (target: any) => target,
+}));
+
+vi.mock('@/lib/decorators', () => ({
+    RegionDefinition: () => (target: any) => target,
+}));
+
+vi.mock('@/lib/decorators/attribute-definition', () => ({
+    AttributeDefinition: () => () => {},
+}));
+
 describe('Grid Component', () => {
     describe('Basic Rendering', () => {
         it('should render with children', () => {

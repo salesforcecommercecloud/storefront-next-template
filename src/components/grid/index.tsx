@@ -1,8 +1,28 @@
 import { type ComponentPropsWithoutRef, type CSSProperties, type ReactNode, forwardRef } from 'react';
 import { cn } from '@/lib/utils';
+import { Component } from '@/lib/decorators/component';
+import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
+import { RegionDefinition } from '@/lib/decorators';
 
 // Based on Radix UI Themes Grid component API
 // Reference: https://www.radix-ui.com/themes/docs/components/grid
+
+/* v8 ignore start - do not test decorators in unit tests, decorator functionality is tested separately*/
+@Component('grid', {
+    name: 'Grid',
+    description: 'A flexible grid layout component for organizing content in columns',
+})
+@RegionDefinition([])
+export class GridMetadata {
+    @AttributeDefinition({
+        description: 'Number of columns in the grid (1-6)',
+        type: 'enum',
+        values: ['1', '2', '3', '4', '5', '6'],
+        defaultValue: '1',
+    })
+    columns?: string;
+}
+/* v8 ignore stop */
 
 type GridFlow = 'row' | 'col' | 'dense' | 'row-dense' | 'col-dense';
 
@@ -40,7 +60,7 @@ const flowMap: Record<GridFlow, string> = {
 const Grid = forwardRef<HTMLDivElement, GridProps>(
     (
         {
-            as: Component = 'div',
+            as: ComponentElement = 'div',
             className,
             display = 'grid',
             columns = '1',
@@ -86,9 +106,9 @@ const Grid = forwardRef<HTMLDivElement, GridProps>(
         );
 
         return (
-            <Component ref={ref} className={classes} style={gridStyles} data-slot="grid" {...props}>
+            <ComponentElement ref={ref} className={classes} style={gridStyles} data-slot="grid" {...props}>
                 {children}
-            </Component>
+            </ComponentElement>
         );
     }
 );
