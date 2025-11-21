@@ -36,7 +36,7 @@ export type CheckoutPageData = {
     customerProfile?: Promise<CustomerProfile | null>;
     productMap: Promise<Record<string, ShopperProducts.schemas['Product']>>;
     isRegisteredCustomer?: boolean;
-    shippingDefaultSet?: Promise<ShopperBasketsV2.schemas['Basket']>;
+    shippingDefaultSet?: Promise<undefined>;
     // @sfdc-extension-line SFDC_EXT_BOPIS
     storesByStoreId?: Map<string, ShopperStores.schemas['Store']>;
 };
@@ -199,14 +199,14 @@ export async function clientLoader(args: ClientLoaderFunctionArgs): Promise<Chec
         // Fetch product details for cart items display
         const productMapPromise = fetchProductsInBasket(context, basket?.productItems ?? []);
 
-        let shippingDefaultSet: Promise<ShopperBasketsV2.schemas['Basket']> = Promise.resolve();
+        let shippingDefaultSet = Promise.resolve(undefined);
         // @sfdc-extension-block-start SFDC_EXT_BOPIS
         // Check if this is a BOPIS order and fetch store details if so
         let storesByStoreId: Map<string, ShopperStores.schemas['Store']> | undefined;
         const pickupShipment = getPickupShipment(basket);
         if (pickupShipment) {
             storesByStoreId = await fetchStoresForBasket(context, basket);
-            const store = storesByStoreId?.get(pickupShipment.c_fromStoreId);
+            const store = storesByStoreId?.get(pickupShipment.c_fromStoreId as string);
             if (store) {
                 // Check if address is already set to avoid unnecessary calls
                 const addressAlreadySet = isPickupAddressSet(pickupShipment.shippingAddress, store);
@@ -214,10 +214,10 @@ export async function clientLoader(args: ClientLoaderFunctionArgs): Promise<Chec
                 if (!addressAlreadySet) {
                     shippingDefaultSet = setAddressAndMethodForPickup(
                         context,
-                        basket.basketId,
+                        basket?.basketId,
                         store,
                         pickupShipment.shipmentId
-                    );
+                    ).then(() => Promise.resolve(undefined));
                 }
             }
         }

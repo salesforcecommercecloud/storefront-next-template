@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import type { ShopperCustomers, ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 
 export const CHECKOUT_STEPS = {
     CONTACT_INFO: 0,
@@ -25,7 +25,7 @@ export interface CheckoutContextValue {
     editingStep: CheckoutStep | null;
     STEPS: typeof CHECKOUT_STEPS;
     customerProfile?: CustomerProfile;
-    shippingDefaultSet?: Promise<ShopperBasketsV2.schemas['Basket']>;
+    shippingDefaultSet: Promise<undefined>;
     goToNextStep: () => void;
     goToStep: (step: CheckoutStep) => void;
     exitEditMode: () => void;

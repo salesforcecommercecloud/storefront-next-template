@@ -9,14 +9,14 @@ import { useCheckoutContext } from '@/hooks/use-checkout';
 import bopisUiStrings from '@/extensions/bopis/temp-ui-string-bopis';
 import { getPickupStoreFromMap } from '@/extensions/bopis/lib/store-utils';
 import StoreDetails from '@/extensions/store-locator/components/store-locator/details';
-import { getPickupShipment } from '@/extensions/bopis/lib/basket-utils';
+import { getFirstPickupStoreId } from '@/extensions/bopis/lib/basket-utils';
 
 export default function StorePickup() {
     const basket = useBasket();
     const pickupContext = usePickup();
     const checkoutContext = useCheckoutContext();
-    const shipment = getPickupShipment(basket);
-    const store = getPickupStoreFromMap(shipment?.c_fromStoreId, pickupContext?.pickupStores);
+    const storeId = getFirstPickupStoreId(basket);
+    const store = getPickupStoreFromMap(storeId, pickupContext?.pickupStores);
     // Avoid rendering until the shipping defaults are set in the basket.
     // Pickup address and method setting failure will be caught by checkout error boundary.
     use(checkoutContext.shippingDefaultSet);

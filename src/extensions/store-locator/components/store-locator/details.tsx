@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
 
 interface StoreDetailsProps {
     /** Store object containing store information */
-    store: ShopperStores.schemas['Store'];
+    store?: ShopperStores.schemas['Store'];
     /** Whether to show distance information */
     showDistance?: boolean;
     /** Distance unit from config (km/mi) */

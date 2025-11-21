@@ -3,6 +3,7 @@ import { CHECKOUT_STEPS } from '@/components/checkout/utils/checkout-context-typ
 import { computeStepFromBasket, getCompletedSteps } from '@/components/checkout/utils/checkout-utils';
 import { createMockBasketWithPickupItems } from '@/extensions/bopis/tests/__mocks__/basket';
 import { isStorePickup } from '@/extensions/bopis/lib/basket-utils';
+import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 
 // Mock the isStorePickup function
 vi.mock('@/extensions/bopis/lib/basket-utils', () => ({
@@ -63,7 +64,7 @@ describe('Checkout Utils - BOPIS/Store Pickup Scenarios', () => {
             const basketWithPickup = createMockBasketWithPickupItems(
                 [{ productId: 'product-1', inventoryId: 'store-inv-1', storeId: 'store-1' }],
                 {
-                    customerInfo: {}, // No email
+                    customerInfo: {} as ShopperCustomers.schemas['CustomerInfo'], // No email
                 }
             );
 

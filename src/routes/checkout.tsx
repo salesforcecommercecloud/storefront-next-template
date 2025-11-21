@@ -153,7 +153,7 @@ function CheckoutView({
     const content = (
         <CheckoutProvider
             customerProfile={customerProfileData ?? undefined}
-            shippingDefaultSet={shippingDefaultSet ?? undefined}>
+            shippingDefaultSet={shippingDefaultSet ?? Promise.resolve(undefined)}>
             <CheckoutFormPage shippingMethods={shippingMethodsData ?? undefined} productMapPromise={productMap} />
         </CheckoutProvider>
     );

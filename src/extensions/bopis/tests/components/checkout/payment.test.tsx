@@ -59,13 +59,13 @@ describe('Payment Component - BOPIS/Store Pickup Scenarios', () => {
         const addressInput = screen.getByPlaceholderText(/street address/i);
 
         // These should be empty, not filled with "Store", "Location", "456 Store Avenue"
-        expect(firstNameInput.value).toBe('');
-        expect(lastNameInput.value).toBe('');
-        expect(addressInput.value).toBe('');
+        expect(firstNameInput).toHaveValue('');
+        expect(lastNameInput).toHaveValue('');
+        expect(addressInput).toHaveValue('');
 
         // Also check cardholder name is not pre-filled
         const cardholderInput = screen.getByRole('textbox', { name: /cardholder name/i });
-        expect(cardholderInput.value).toBe('');
+        expect(cardholderInput).toHaveValue('');
     });
 
     test('shows appropriate billing address text in summary for store pickup', () => {

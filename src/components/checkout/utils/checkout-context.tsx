@@ -1,7 +1,6 @@
 'use client';
 
 import { type ReactNode, useEffect, useState } from 'react';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import {
     CHECKOUT_STEPS,
     CheckoutContext,
@@ -17,7 +16,7 @@ import { isStorePickup } from '@/extensions/bopis/lib/basket-utils';
 interface CheckoutProviderProps {
     children: ReactNode;
     customerProfile?: CustomerProfile;
-    shippingDefaultSet?: Promise<ShopperBasketsV2.schemas['Basket']>;
+    shippingDefaultSet: Promise<undefined>;
 }
 
 export default function CheckoutProvider({ children, customerProfile, shippingDefaultSet }: CheckoutProviderProps) {
