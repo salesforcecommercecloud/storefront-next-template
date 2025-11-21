@@ -4,6 +4,9 @@ import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi'
 import { ContentCard } from '@/components/content-card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Typography } from '@/components/typography';
+import { Component } from '@/lib/decorators/component';
+import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
+import { RegionDefinition } from '@/lib/decorators';
 import uiStrings from '@/temp-ui-string';
 import heroImage from '/images/hero-cube.png';
 
@@ -11,6 +14,21 @@ interface PopularCategoriesProps {
     categoriesPromise: Promise<ShopperProducts.schemas['Category'][]>;
     paddingX?: string;
 }
+
+/* v8 ignore start - do not test decorators in unit tests, decorator functionality is tested separately*/
+@Component('popularCategories', {
+    name: 'Popular Categories',
+    description: 'Displays a grid of popular category cards with images, titles, descriptions, and shop now buttons',
+})
+@RegionDefinition([])
+export class PopularCategoriesMetadata {
+    @AttributeDefinition({
+        name: 'Horizontal Padding',
+        description: 'Horizontal padding classes (e.g., px-4 sm:px-6 lg:px-8)',
+    })
+    paddingX?: string;
+}
+/* v8 ignore stop */
 
 /**
  * Skeleton component for category grid loading state

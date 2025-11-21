@@ -3,6 +3,19 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { PopularCategories } from './popular-categories';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
+// Mock decorators (minimal mocking to avoid testing them)
+vi.mock('@/lib/decorators/component', () => ({
+    Component: () => (target: any) => target,
+}));
+
+vi.mock('@/lib/decorators', () => ({
+    RegionDefinition: () => (target: any) => target,
+}));
+
+vi.mock('@/lib/decorators/attribute-definition', () => ({
+    AttributeDefinition: () => () => {},
+}));
+
 // Mock the ContentCard component to avoid Link issues
 vi.mock('@/components/content-card', () => ({
     ContentCard: ({
