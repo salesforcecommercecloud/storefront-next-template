@@ -289,7 +289,7 @@ vi.mock('@/components/order-summary', () => ({
     default: () => <div data-testid="order-summary">Order Summary</div>,
 }));
 
-vi.mock('./partials/contact-info', () => ({
+vi.mock('./components/contact-info', () => ({
     default: ({ isCompleted, isEditing }: { isCompleted: boolean; isEditing: boolean }) => (
         <div data-testid="contact-info-form">
             <h2>Contact Information</h2>
@@ -304,7 +304,7 @@ vi.mock('./partials/contact-info', () => ({
     ),
 }));
 
-vi.mock('./partials/shipping-address', () => ({
+vi.mock('./components/shipping-address', () => ({
     default: ({ isCompleted, isEditing }: { isCompleted: boolean; isEditing: boolean }) => (
         <div data-testid="shipping-address-form">
             <h2>Shipping Address</h2>
@@ -332,7 +332,7 @@ vi.mock('./partials/shipping-address', () => ({
     ),
 }));
 
-vi.mock('./partials/shipping-options', () => ({
+vi.mock('./components/shipping-options', () => ({
     default: ({ isCompleted, isEditing }: { isCompleted: boolean; isEditing: boolean }) => (
         <div data-testid="shipping-options-form">
             <h2>Shipping Options</h2>
@@ -353,7 +353,7 @@ vi.mock('./partials/shipping-options', () => ({
     ),
 }));
 
-vi.mock('./partials/payment', () => ({
+vi.mock('./components/payment', () => ({
     default: ({ isCompleted, isEditing }: { isCompleted: boolean; isEditing: boolean }) => (
         <div data-testid="payment-form">
             <h2>Payment Information</h2>
@@ -374,7 +374,7 @@ vi.mock('./partials/payment', () => ({
     ),
 }));
 
-vi.mock('./partials/register-customer-selection', () => ({
+vi.mock('./components/register-customer-selection', () => ({
     default: ({ onSaved }: { onSaved: (value: boolean) => void }) => (
         <div data-testid="register-customer-checkbox">
             <label>

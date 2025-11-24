@@ -55,7 +55,7 @@ export class CheckoutErrorBoundary extends Component<CheckoutErrorBoundaryProps,
                 <Card className="mx-auto max-w-2xl">
                     <CardContent className="flex min-h-[400px] flex-col items-center justify-center p-8 text-center">
                         <AlertTriangle className="mb-4 h-12 w-12 text-destructive" />
-                        <Typography variant="h2" as="h2" className="mb-2 text-xl">
+                        <Typography variant="h2" as="h2" className="mb-2 text-xl font-bold text-destructive">
                             {uiStrings.checkout.errorBoundary.title}
                         </Typography>
                         <Typography variant="p" className="mb-6 max-w-md text-muted-foreground">
@@ -86,11 +86,13 @@ export function CheckoutComponentError({ retry }: { error?: Error; retry?: () =>
     return (
         <Alert variant="destructive">
             <AlertTriangle className="h-4 w-4" />
-            <AlertTitle>{uiStrings.checkout.errorBoundary.componentError.title}</AlertTitle>
-            <AlertDescription>
+            <AlertTitle className="text-xl font-bold">
+                {uiStrings.checkout.errorBoundary.componentError.title}
+            </AlertTitle>
+            <AlertDescription className="text-xl font-bold">
                 {uiStrings.checkout.errorBoundary.componentError.description}
                 {retry && (
-                    <Button variant="link" size="sm" onClick={retry} className="ml-2 h-auto p-0">
+                    <Button variant="link" size="sm" onClick={retry} className="ml-2 h-auto p-0 font-bold">
                         {uiStrings.checkout.errorBoundary.componentError.tryAgain}
                     </Button>
                 )}

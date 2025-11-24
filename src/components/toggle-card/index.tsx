@@ -68,7 +68,7 @@ export function ToggleCard({
                     <CardAction className={!description ? 'row-span-1 self-center' : undefined}>
                         {!editing && !disabled && onEdit && !disableEdit ? (
                             <Button
-                                className="cursor-pointer"
+                                className="cursor-pointer font-bold"
                                 variant="link"
                                 size="sm"
                                 onClick={() => {
@@ -83,7 +83,7 @@ export function ToggleCard({
 
                         {editing && editAction && onEditActionClick ? (
                             <Button
-                                className="cursor-pointer"
+                                className="cursor-pointer font-bold"
                                 variant="link"
                                 size="sm"
                                 onClick={onEditActionClick}

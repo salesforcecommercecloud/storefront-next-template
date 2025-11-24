@@ -17,16 +17,16 @@ import type { CheckoutStep } from './utils/checkout-context-types';
 import { isStorePickup } from '@/extensions/bopis/lib/basket-utils';
 
 // Lazy load heavy components
-const ContactInfo = lazy(() => import('./partials/contact-info'));
+const ContactInfo = lazy(() => import('./components/contact-info'));
 // @sfdc-extension-line SFDC_EXT_BOPIS
 const StorePickup = lazy(() => import('@/extensions/bopis/components/checkout/store-pickup'));
-const ShippingAddress = lazy(() => import('./partials/shipping-address'));
-const ShippingOptions = lazy(() => import('./partials/shipping-options'));
-const Payment = lazy(() => import('./partials/payment'));
-const RegisterCustomerSelection = lazy(() => import('./partials/register-customer-selection'));
+const ShippingAddress = lazy(() => import('./components/shipping-address'));
+const ShippingOptions = lazy(() => import('./components/shipping-options'));
+const Payment = lazy(() => import('./components/payment'));
+const RegisterCustomerSelection = lazy(() => import('./components/register-customer-selection'));
 const OrderSummary = lazy(() => import('@/components/order-summary'));
 const MyCart = lazy(() => import('@/components/my-cart'));
-const ExpressPayments = lazy(() => import('./partials/express-payments'));
+const ExpressPayments = lazy(() => import('./components/express-payments'));
 
 interface GuestAccountCreationProps {
     cart: ShopperBasketsV2.schemas['Basket'];

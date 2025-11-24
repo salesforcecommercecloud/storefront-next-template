@@ -91,7 +91,7 @@ export default function ShippingAddress({
                                 {Object.entries(actionData.fieldErrors).map(([field, error]) => (
                                     <div
                                         key={field}
-                                        className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded">
+                                        className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded text-xl font-bold">
                                         {error}
                                     </div>
                                 ))}
@@ -104,7 +104,7 @@ export default function ShippingAddress({
                                 name="firstName"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-base font-medium text-foreground">
+                                        <FormLabel className="text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold">
                                             {uiStrings.checkout.shippingAddress.firstNameLabel}
                                         </FormLabel>
                                         <FormControl>
@@ -116,7 +116,7 @@ export default function ShippingAddress({
                                                 {...field}
                                             />
                                         </FormControl>
-                                        <FormMessage />
+                                        <FormMessage className="text-xl font-bold" />
                                     </FormItem>
                                 )}
                             />
@@ -126,7 +126,7 @@ export default function ShippingAddress({
                                 name="lastName"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-base font-medium text-foreground">
+                                        <FormLabel className="text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold">
                                             {uiStrings.checkout.shippingAddress.lastNameLabel}
                                         </FormLabel>
                                         <FormControl>
@@ -137,7 +137,7 @@ export default function ShippingAddress({
                                                 {...field}
                                             />
                                         </FormControl>
-                                        <FormMessage />
+                                        <FormMessage className="text-xl font-bold" />
                                     </FormItem>
                                 )}
                             />
@@ -148,7 +148,7 @@ export default function ShippingAddress({
                             name="address1"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-base font-medium text-foreground">
+                                    <FormLabel className="text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold">
                                         {uiStrings.checkout.shippingAddress.addressLabel}
                                     </FormLabel>
                                     <FormControl>
@@ -169,7 +169,7 @@ export default function ShippingAddress({
                             name="address2"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-base font-medium text-foreground">
+                                    <FormLabel className="text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold">
                                         {uiStrings.checkout.shippingAddress.address2Label}
                                     </FormLabel>
                                     <FormControl>
@@ -191,7 +191,7 @@ export default function ShippingAddress({
                                 name="city"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-base font-medium text-foreground">
+                                        <FormLabel className="text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold">
                                             {uiStrings.checkout.shippingAddress.cityLabel}
                                         </FormLabel>
                                         <FormControl>
@@ -202,7 +202,7 @@ export default function ShippingAddress({
                                                 {...field}
                                             />
                                         </FormControl>
-                                        <FormMessage />
+                                        <FormMessage className="text-xl font-bold" />
                                     </FormItem>
                                 )}
                             />
@@ -212,7 +212,7 @@ export default function ShippingAddress({
                                 name="stateCode"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-base font-medium text-foreground">
+                                        <FormLabel className="text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold">
                                             {uiStrings.checkout.shippingAddress.stateLabel}
                                         </FormLabel>
                                         <FormControl>
@@ -223,7 +223,7 @@ export default function ShippingAddress({
                                                 {...field}
                                             />
                                         </FormControl>
-                                        <FormMessage />
+                                        <FormMessage className="text-xl font-bold" />
                                     </FormItem>
                                 )}
                             />
@@ -233,7 +233,7 @@ export default function ShippingAddress({
                                 name="postalCode"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-base font-medium text-foreground">
+                                        <FormLabel className="text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold">
                                             {uiStrings.checkout.shippingAddress.zipLabel}
                                         </FormLabel>
                                         <FormControl>
@@ -244,7 +244,7 @@ export default function ShippingAddress({
                                                 {...field}
                                             />
                                         </FormControl>
-                                        <FormMessage />
+                                        <FormMessage className="text-xl font-bold" />
                                     </FormItem>
                                 )}
                             />
@@ -255,7 +255,7 @@ export default function ShippingAddress({
                             name="phone"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-base font-medium text-foreground">
+                                    <FormLabel className="text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold">
                                         {uiStrings.checkout.shippingAddress.phoneLabel}
                                     </FormLabel>
                                     <FormControl>

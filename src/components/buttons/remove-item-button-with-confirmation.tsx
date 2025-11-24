@@ -105,7 +105,7 @@ export function RemoveItemButtonWithConfirmation({
                 variant="link"
                 size="sm"
                 disabled={isLoading}
-                className={className}
+                className={`font-bold ${className ?? ''}`}
                 title={uiStrings.removeItem.title}
                 data-testid={`remove-item-${itemId}`}
                 aria-busy={isLoading}

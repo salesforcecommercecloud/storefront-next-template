@@ -198,7 +198,9 @@ export default function OrderSummary({
                             {basket.orderPriceAdjustments?.map((adjustment) => (
                                 <div key={adjustment.priceAdjustmentId} className="flex justify-between items-center">
                                     <span>{adjustment.itemText}</span>
-                                    <span className="text-success">{formatCurrency(adjustment.price ?? 0)}</span>
+                                    <span className="text-success text-xl font-bold">
+                                        {formatCurrency(adjustment.price ?? 0)}
+                                    </span>
                                 </div>
                             ))}
 

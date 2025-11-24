@@ -28,7 +28,7 @@ exports[`ShippingAddress stories snapshot > CompletedState story renders and mat
       >
         <button
           aria-label="Edit"
-          class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer"
+          class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
           data-slot="button"
         >
           Edit
@@ -101,7 +101,7 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«r0»-form-item"
@@ -125,7 +125,7 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«r1»-form-item"
@@ -150,7 +150,7 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
           data-slot="form-item"
         >
           <label
-            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
             data-error="false"
             data-slot="form-label"
             for="«r2»-form-item"
@@ -174,7 +174,7 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
           data-slot="form-item"
         >
           <label
-            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
             data-error="false"
             data-slot="form-label"
             for="«r3»-form-item"
@@ -201,7 +201,7 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«r4»-form-item"
@@ -225,7 +225,7 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«r5»-form-item"
@@ -249,7 +249,7 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«r6»-form-item"
@@ -274,7 +274,7 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
           data-slot="form-item"
         >
           <label
-            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
             data-error="false"
             data-slot="form-label"
             for="«r7»-form-item"
@@ -339,7 +339,7 @@ exports[`ShippingAddress stories snapshot > DesktopView story renders and matche
       >
         <button
           aria-label="Edit"
-          class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer"
+          class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
           data-slot="button"
         >
           Edit
@@ -397,7 +397,7 @@ exports[`ShippingAddress stories snapshot > DisabledState story renders and matc
       >
         <button
           aria-label="Edit"
-          class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer"
+          class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
           data-slot="button"
         >
           Edit
@@ -470,7 +470,7 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«r18»-form-item"
@@ -494,7 +494,7 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«r19»-form-item"
@@ -519,7 +519,7 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
           data-slot="form-item"
         >
           <label
-            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
             data-error="false"
             data-slot="form-label"
             for="«r1a»-form-item"
@@ -543,7 +543,7 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
           data-slot="form-item"
         >
           <label
-            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
             data-error="false"
             data-slot="form-label"
             for="«r1b»-form-item"
@@ -570,7 +570,7 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«r1c»-form-item"
@@ -594,7 +594,7 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«r1d»-form-item"
@@ -618,7 +618,7 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«r1e»-form-item"
@@ -643,7 +643,7 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
           data-slot="form-item"
         >
           <label
-            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
             data-error="false"
             data-slot="form-label"
             for="«r1f»-form-item"
@@ -723,7 +723,7 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«rg»-form-item"
@@ -747,7 +747,7 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«rh»-form-item"
@@ -772,7 +772,7 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
           data-slot="form-item"
         >
           <label
-            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
             data-error="false"
             data-slot="form-label"
             for="«ri»-form-item"
@@ -796,7 +796,7 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
           data-slot="form-item"
         >
           <label
-            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
             data-error="false"
             data-slot="form-label"
             for="«rj»-form-item"
@@ -823,7 +823,7 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«rk»-form-item"
@@ -847,7 +847,7 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«rl»-form-item"
@@ -871,7 +871,7 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«rm»-form-item"
@@ -896,7 +896,7 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
           data-slot="form-item"
         >
           <label
-            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
             data-error="false"
             data-slot="form-label"
             for="«rn»-form-item"
@@ -988,7 +988,7 @@ exports[`ShippingAddress stories snapshot > MobileView story renders and matches
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«r1g»-form-item"
@@ -1012,7 +1012,7 @@ exports[`ShippingAddress stories snapshot > MobileView story renders and matches
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«r1h»-form-item"
@@ -1037,7 +1037,7 @@ exports[`ShippingAddress stories snapshot > MobileView story renders and matches
           data-slot="form-item"
         >
           <label
-            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
             data-error="false"
             data-slot="form-label"
             for="«r1i»-form-item"
@@ -1061,7 +1061,7 @@ exports[`ShippingAddress stories snapshot > MobileView story renders and matches
           data-slot="form-item"
         >
           <label
-            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
             data-error="false"
             data-slot="form-label"
             for="«r1j»-form-item"
@@ -1088,7 +1088,7 @@ exports[`ShippingAddress stories snapshot > MobileView story renders and matches
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«r1k»-form-item"
@@ -1112,7 +1112,7 @@ exports[`ShippingAddress stories snapshot > MobileView story renders and matches
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«r1l»-form-item"
@@ -1136,7 +1136,7 @@ exports[`ShippingAddress stories snapshot > MobileView story renders and matches
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«r1m»-form-item"
@@ -1161,7 +1161,7 @@ exports[`ShippingAddress stories snapshot > MobileView story renders and matches
           data-slot="form-item"
         >
           <label
-            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
             data-error="false"
             data-slot="form-label"
             for="«r1n»-form-item"
@@ -1241,7 +1241,7 @@ exports[`ShippingAddress stories snapshot > TabletView story renders and matches
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«r1o»-form-item"
@@ -1265,7 +1265,7 @@ exports[`ShippingAddress stories snapshot > TabletView story renders and matches
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«r1p»-form-item"
@@ -1290,7 +1290,7 @@ exports[`ShippingAddress stories snapshot > TabletView story renders and matches
           data-slot="form-item"
         >
           <label
-            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
             data-error="false"
             data-slot="form-label"
             for="«r1q»-form-item"
@@ -1314,7 +1314,7 @@ exports[`ShippingAddress stories snapshot > TabletView story renders and matches
           data-slot="form-item"
         >
           <label
-            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
             data-error="false"
             data-slot="form-label"
             for="«r1r»-form-item"
@@ -1341,7 +1341,7 @@ exports[`ShippingAddress stories snapshot > TabletView story renders and matches
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«r1s»-form-item"
@@ -1365,7 +1365,7 @@ exports[`ShippingAddress stories snapshot > TabletView story renders and matches
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«r1t»-form-item"
@@ -1389,7 +1389,7 @@ exports[`ShippingAddress stories snapshot > TabletView story renders and matches
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«r1u»-form-item"
@@ -1414,7 +1414,7 @@ exports[`ShippingAddress stories snapshot > TabletView story renders and matches
           data-slot="form-item"
         >
           <label
-            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
             data-error="false"
             data-slot="form-label"
             for="«r1v»-form-item"
@@ -1494,7 +1494,7 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«r8»-form-item"
@@ -1518,7 +1518,7 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«r9»-form-item"
@@ -1543,7 +1543,7 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
           data-slot="form-item"
         >
           <label
-            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
             data-error="false"
             data-slot="form-label"
             for="«ra»-form-item"
@@ -1567,7 +1567,7 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
           data-slot="form-item"
         >
           <label
-            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
             data-error="false"
             data-slot="form-label"
             for="«rb»-form-item"
@@ -1594,7 +1594,7 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«rc»-form-item"
@@ -1618,7 +1618,7 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«rd»-form-item"
@@ -1642,7 +1642,7 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«re»-form-item"
@@ -1667,7 +1667,7 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
           data-slot="form-item"
         >
           <label
-            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
             data-error="false"
             data-slot="form-label"
             for="«rf»-form-item"
@@ -1747,7 +1747,7 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«ro»-form-item"
@@ -1771,7 +1771,7 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«rp»-form-item"
@@ -1796,7 +1796,7 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
           data-slot="form-item"
         >
           <label
-            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
             data-error="false"
             data-slot="form-label"
             for="«rq»-form-item"
@@ -1820,7 +1820,7 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
           data-slot="form-item"
         >
           <label
-            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
             data-error="false"
             data-slot="form-label"
             for="«rr»-form-item"
@@ -1847,7 +1847,7 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«rs»-form-item"
@@ -1871,7 +1871,7 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«rt»-form-item"
@@ -1895,7 +1895,7 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«ru»-form-item"
@@ -1920,7 +1920,7 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
           data-slot="form-item"
         >
           <label
-            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
             data-error="false"
             data-slot="form-label"
             for="«rv»-form-item"
@@ -1996,22 +1996,22 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
           class="space-y-2"
         >
           <div
-            class="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded"
+            class="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded text-xl font-bold"
           >
             First name is required
           </div>
           <div
-            class="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded"
+            class="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded text-xl font-bold"
           >
             Last name is required
           </div>
           <div
-            class="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded"
+            class="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded text-xl font-bold"
           >
             Address is required
           </div>
           <div
-            class="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded"
+            class="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded text-xl font-bold"
           >
             City is required
           </div>
@@ -2024,7 +2024,7 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«r10»-form-item"
@@ -2048,7 +2048,7 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«r11»-form-item"
@@ -2073,7 +2073,7 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
           data-slot="form-item"
         >
           <label
-            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
             data-error="false"
             data-slot="form-label"
             for="«r12»-form-item"
@@ -2097,7 +2097,7 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
           data-slot="form-item"
         >
           <label
-            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
             data-error="false"
             data-slot="form-label"
             for="«r13»-form-item"
@@ -2124,7 +2124,7 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«r14»-form-item"
@@ -2148,7 +2148,7 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«r15»-form-item"
@@ -2172,7 +2172,7 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
               data-error="false"
               data-slot="form-label"
               for="«r16»-form-item"
@@ -2197,7 +2197,7 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
           data-slot="form-item"
         >
           <label
-            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
             data-error="false"
             data-slot="form-label"
             for="«r17»-form-item"

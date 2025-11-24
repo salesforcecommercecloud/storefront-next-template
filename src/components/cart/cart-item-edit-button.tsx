@@ -47,7 +47,7 @@ export function CartItemEditButton({ product, className = '' }: CartItemEditButt
             <Button
                 variant="link"
                 size="sm"
-                className={className}
+                className={`font-bold ${className ?? ''}`}
                 title={uiStrings.actionCard.edit}
                 data-testid={`edit-item-${product.itemId}`}
                 onClick={() => setIsOpen(true)}>

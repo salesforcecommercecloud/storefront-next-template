@@ -34,6 +34,7 @@ exports[`RegisterCustomerSelection stories snapshot > Checked story renders and 
       >
         <button
           aria-checked="false"
+          aria-label="Create an account for a faster checkout next time"
           class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 mt-0.5"
           data-slot="checkbox"
           data-state="unchecked"
@@ -96,6 +97,7 @@ exports[`RegisterCustomerSelection stories snapshot > Default story renders and 
       >
         <button
           aria-checked="false"
+          aria-label="Create an account for a faster checkout next time"
           class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 mt-0.5"
           data-slot="checkbox"
           data-state="unchecked"
@@ -158,6 +160,7 @@ exports[`RegisterCustomerSelection stories snapshot > WithCallback story renders
       >
         <button
           aria-checked="false"
+          aria-label="Create an account for a faster checkout next time"
           class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 mt-0.5"
           data-slot="checkbox"
           data-state="unchecked"

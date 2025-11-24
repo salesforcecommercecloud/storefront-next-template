@@ -79,8 +79,8 @@ const STEP_TITLE_STYLES = {
 } as const;
 
 const STEP_DESCRIPTION_STYLES = {
-    completed: 'text-primary/80',
-    current: 'text-primary/80',
+    completed: 'text-primary',
+    current: 'text-primary',
     pending: 'text-muted-foreground',
 } as const;
 

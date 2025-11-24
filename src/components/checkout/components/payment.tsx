@@ -194,7 +194,7 @@ export default function Payment({
                                 {Object.entries(actionData.fieldErrors).map(([field, error]) => (
                                     <div
                                         key={field}
-                                        className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded">
+                                        className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded text-xl font-bold">
                                         {error}
                                     </div>
                                 ))}
@@ -297,7 +297,9 @@ export default function Payment({
                                             const CardIcon = getCardIcon(detectedCardType);
                                             return (
                                                 <FormItem>
-                                                    <FormLabel>{uiStrings.checkout.payment.cardNumberLabel}</FormLabel>
+                                                    <FormLabel className="data-[error=true]:text-xl data-[error=true]:font-bold">
+                                                        {uiStrings.checkout.payment.cardNumberLabel}
+                                                    </FormLabel>
                                                     <FormControl>
                                                         <div className="flex items-center gap-3">
                                                             <div className="flex-1">
@@ -332,7 +334,7 @@ export default function Payment({
                                                             )}
                                                         </div>
                                                     </FormControl>
-                                                    <FormMessage />
+                                                    <FormMessage className="text-xl font-bold" />
                                                 </FormItem>
                                             );
                                         }}
@@ -343,7 +345,9 @@ export default function Payment({
                                         name="cardholderName"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>{uiStrings.checkout.payment.cardholderLabel}</FormLabel>
+                                                <FormLabel className="data-[error=true]:text-xl data-[error=true]:font-bold">
+                                                    {uiStrings.checkout.payment.cardholderLabel}
+                                                </FormLabel>
                                                 <FormControl>
                                                     <Input
                                                         placeholder={uiStrings.checkout.payment.cardholderPlaceholder}
@@ -351,7 +355,7 @@ export default function Payment({
                                                         {...field}
                                                     />
                                                 </FormControl>
-                                                <FormMessage />
+                                                <FormMessage className="text-xl font-bold" />
                                             </FormItem>
                                         )}
                                     />
@@ -362,7 +366,9 @@ export default function Payment({
                                             name="expiryDate"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>{uiStrings.checkout.payment.expiryLabel}</FormLabel>
+                                                    <FormLabel className="data-[error=true]:text-xl data-[error=true]:font-bold">
+                                                        {uiStrings.checkout.payment.expiryLabel}
+                                                    </FormLabel>
                                                     <FormControl>
                                                         <Input
                                                             placeholder={uiStrings.checkout.payment.expiryPlaceholder}
@@ -375,7 +381,7 @@ export default function Payment({
                                                             }}
                                                         />
                                                     </FormControl>
-                                                    <FormMessage />
+                                                    <FormMessage className="text-xl font-bold" />
                                                 </FormItem>
                                             )}
                                         />
@@ -385,7 +391,9 @@ export default function Payment({
                                             name="cvv"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>{uiStrings.checkout.payment.cvvLabel}</FormLabel>
+                                                    <FormLabel className="data-[error=true]:text-xl data-[error=true]:font-bold">
+                                                        {uiStrings.checkout.payment.cvvLabel}
+                                                    </FormLabel>
                                                     <FormControl>
                                                         <Input
                                                             placeholder={uiStrings.checkout.payment.cvvPlaceholder}
@@ -399,7 +407,7 @@ export default function Payment({
                                                             }}
                                                         />
                                                     </FormControl>
-                                                    <FormMessage />
+                                                    <FormMessage className="text-xl font-bold" />
                                                 </FormItem>
                                             )}
                                         />
@@ -427,10 +435,13 @@ export default function Payment({
                                                                 field.onChange(checked === true);
                                                             }}
                                                             className="mt-0.5"
+                                                            aria-label={
+                                                                uiStrings.checkout.payment.billingSameAsShipping
+                                                            }
                                                         />
                                                     </FormControl>
                                                     <div className="space-y-1 leading-none">
-                                                        <FormLabel className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                                        <FormLabel className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 data-[error=true]:text-xl data-[error=true]:font-bold">
                                                             {uiStrings.checkout.payment.billingSameAsShipping}
                                                         </FormLabel>
                                                         <Typography variant="small" className="text-muted-foreground">
@@ -459,7 +470,7 @@ export default function Payment({
                                             name="billingFirstName"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>
+                                                    <FormLabel className="data-[error=true]:text-xl data-[error=true]:font-bold">
                                                         {uiStrings.checkout.shippingAddress.firstNameLabel}
                                                     </FormLabel>
                                                     <FormControl>
@@ -471,7 +482,7 @@ export default function Payment({
                                                             {...field}
                                                         />
                                                     </FormControl>
-                                                    <FormMessage />
+                                                    <FormMessage className="text-xl font-bold" />
                                                 </FormItem>
                                             )}
                                         />
@@ -481,7 +492,7 @@ export default function Payment({
                                             name="billingLastName"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>
+                                                    <FormLabel className="data-[error=true]:text-xl data-[error=true]:font-bold">
                                                         {uiStrings.checkout.shippingAddress.lastNameLabel}
                                                     </FormLabel>
                                                     <FormControl>
@@ -493,7 +504,7 @@ export default function Payment({
                                                             {...field}
                                                         />
                                                     </FormControl>
-                                                    <FormMessage />
+                                                    <FormMessage className="text-xl font-bold" />
                                                 </FormItem>
                                             )}
                                         />
@@ -504,7 +515,9 @@ export default function Payment({
                                         name="billingAddress1"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>{uiStrings.checkout.shippingAddress.addressLabel}</FormLabel>
+                                                <FormLabel className="data-[error=true]:text-xl data-[error=true]:font-bold">
+                                                    {uiStrings.checkout.shippingAddress.addressLabel}
+                                                </FormLabel>
                                                 <FormControl>
                                                     <Input
                                                         placeholder={
@@ -514,7 +527,7 @@ export default function Payment({
                                                         {...field}
                                                     />
                                                 </FormControl>
-                                                <FormMessage />
+                                                <FormMessage className="text-xl font-bold" />
                                             </FormItem>
                                         )}
                                     />
@@ -524,7 +537,7 @@ export default function Payment({
                                         name="billingAddress2"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>
+                                                <FormLabel className="data-[error=true]:text-xl data-[error=true]:font-bold">
                                                     {uiStrings.checkout.shippingAddress.address2Label}
                                                 </FormLabel>
                                                 <FormControl>
@@ -536,7 +549,7 @@ export default function Payment({
                                                         {...field}
                                                     />
                                                 </FormControl>
-                                                <FormMessage />
+                                                <FormMessage className="text-xl font-bold" />
                                             </FormItem>
                                         )}
                                     />
@@ -547,7 +560,7 @@ export default function Payment({
                                             name="billingCity"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>
+                                                    <FormLabel className="data-[error=true]:text-xl data-[error=true]:font-bold">
                                                         {uiStrings.checkout.shippingAddress.cityLabel}
                                                     </FormLabel>
                                                     <FormControl>
@@ -559,7 +572,7 @@ export default function Payment({
                                                             {...field}
                                                         />
                                                     </FormControl>
-                                                    <FormMessage />
+                                                    <FormMessage className="text-xl font-bold" />
                                                 </FormItem>
                                             )}
                                         />
@@ -569,7 +582,7 @@ export default function Payment({
                                             name="billingStateCode"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>
+                                                    <FormLabel className="data-[error=true]:text-xl data-[error=true]:font-bold">
                                                         {uiStrings.checkout.shippingAddress.stateLabel}
                                                     </FormLabel>
                                                     <FormControl>
@@ -581,7 +594,7 @@ export default function Payment({
                                                             {...field}
                                                         />
                                                     </FormControl>
-                                                    <FormMessage />
+                                                    <FormMessage className="text-xl font-bold" />
                                                 </FormItem>
                                             )}
                                         />
@@ -591,7 +604,9 @@ export default function Payment({
                                             name="billingPostalCode"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>{uiStrings.checkout.shippingAddress.zipLabel}</FormLabel>
+                                                    <FormLabel className="data-[error=true]:text-xl data-[error=true]:font-bold">
+                                                        {uiStrings.checkout.shippingAddress.zipLabel}
+                                                    </FormLabel>
                                                     <FormControl>
                                                         <Input
                                                             placeholder={
@@ -601,7 +616,7 @@ export default function Payment({
                                                             {...field}
                                                         />
                                                     </FormControl>
-                                                    <FormMessage />
+                                                    <FormMessage className="text-xl font-bold" />
                                                 </FormItem>
                                             )}
                                         />

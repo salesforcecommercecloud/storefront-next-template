@@ -136,7 +136,7 @@ export default function CategoryFilters({
             <div className="mb-4">
                 <Button
                     variant="link"
-                    className="m-0 p-0 cursor-pointer underline text-sm text-destructive hover:text-destructive/75"
+                    className="m-0 p-0 cursor-pointer underline text-sm text-destructive hover:text-destructive/75 font-bold"
                     onClick={clearAllFilters}>
                     Clear all
                 </Button>

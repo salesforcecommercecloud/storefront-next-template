@@ -1,7 +1,7 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import Payment from '@/components/checkout/partials/payment';
+import Payment from '@/components/checkout/components/payment';
 import { createMockBasketWithPickupItems } from '@/extensions/bopis/tests/__mocks__/basket';
 import { useBasket } from '@/providers/basket';
 

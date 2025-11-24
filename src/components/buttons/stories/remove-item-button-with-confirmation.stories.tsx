@@ -443,6 +443,7 @@ function LoadingStateRemoveButton() {
             variant="link"
             size="sm"
             disabled={true}
+            className="font-bold"
             title="Remove item"
             data-testid="remove-item-loading"
             aria-busy={true}>

@@ -27,6 +27,7 @@ export default function RegisterCustomerSelection({ onSaved }: RegisterCustomerS
                         checked={shouldCreateAccount}
                         onCheckedChange={handleCheckboxChange}
                         className="mt-0.5"
+                        aria-label={uiStrings.checkout.payment.createAccountForFasterCheckout}
                     />
                     <div className="space-y-1">
                         <label

@@ -179,7 +179,7 @@ function AccountAddressesContent({ customer }: { customer: ShopperCustomersTypes
                                 <Button
                                     onClick={handleAdd}
                                     variant="link"
-                                    className="w-full h-full min-h-[200px] flex items-center justify-center gap-2">
+                                    className="w-full h-full min-h-[200px] flex items-center justify-center gap-2 font-bold">
                                     <svg
                                         className="w-5 h-5 text-muted-foreground"
                                         fill="none"

@@ -1126,7 +1126,7 @@ exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and
                 20% Off Discount
               </span>
               <span
-                class="text-success"
+                class="text-success text-xl font-bold"
               >
                 -$59.99
               </span>

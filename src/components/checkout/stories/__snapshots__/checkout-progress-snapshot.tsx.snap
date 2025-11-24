@@ -196,7 +196,7 @@ exports[`CheckoutProgress stories snapshot > ContactInfo story renders and match
               Contact Info
             </div>
             <div
-              class="text-xs mt-1 text-primary/80"
+              class="text-xs mt-1 text-primary"
             >
               Email address
             </div>
@@ -585,7 +585,7 @@ exports[`CheckoutProgress stories snapshot > Payment story renders and matches s
               Contact Info
             </div>
             <div
-              class="text-xs mt-1 text-primary/80"
+              class="text-xs mt-1 text-primary"
             >
               Email address
             </div>
@@ -631,7 +631,7 @@ exports[`CheckoutProgress stories snapshot > Payment story renders and matches s
               Shipping
             </div>
             <div
-              class="text-xs mt-1 text-primary/80"
+              class="text-xs mt-1 text-primary"
             >
               Delivery address
             </div>
@@ -677,7 +677,7 @@ exports[`CheckoutProgress stories snapshot > Payment story renders and matches s
               Delivery
             </div>
             <div
-              class="text-xs mt-1 text-primary/80"
+              class="text-xs mt-1 text-primary"
             >
               Shipping method
             </div>
@@ -709,7 +709,7 @@ exports[`CheckoutProgress stories snapshot > Payment story renders and matches s
               Payment
             </div>
             <div
-              class="text-xs mt-1 text-primary/80"
+              class="text-xs mt-1 text-primary"
             >
               Payment method
             </div>
@@ -1016,7 +1016,7 @@ exports[`CheckoutProgress stories snapshot > ReviewOrder story renders and match
               Contact Info
             </div>
             <div
-              class="text-xs mt-1 text-primary/80"
+              class="text-xs mt-1 text-primary"
             >
               Email address
             </div>
@@ -1062,7 +1062,7 @@ exports[`CheckoutProgress stories snapshot > ReviewOrder story renders and match
               Shipping
             </div>
             <div
-              class="text-xs mt-1 text-primary/80"
+              class="text-xs mt-1 text-primary"
             >
               Delivery address
             </div>
@@ -1108,7 +1108,7 @@ exports[`CheckoutProgress stories snapshot > ReviewOrder story renders and match
               Delivery
             </div>
             <div
-              class="text-xs mt-1 text-primary/80"
+              class="text-xs mt-1 text-primary"
             >
               Shipping method
             </div>
@@ -1154,7 +1154,7 @@ exports[`CheckoutProgress stories snapshot > ReviewOrder story renders and match
               Payment
             </div>
             <div
-              class="text-xs mt-1 text-primary/80"
+              class="text-xs mt-1 text-primary"
             >
               Payment method
             </div>
@@ -1183,7 +1183,7 @@ exports[`CheckoutProgress stories snapshot > ReviewOrder story renders and match
               Review
             </div>
             <div
-              class="text-xs mt-1 text-primary/80"
+              class="text-xs mt-1 text-primary"
             >
               Confirm order
             </div>
@@ -1419,7 +1419,7 @@ exports[`CheckoutProgress stories snapshot > ShippingAddress story renders and m
               Contact Info
             </div>
             <div
-              class="text-xs mt-1 text-primary/80"
+              class="text-xs mt-1 text-primary"
             >
               Email address
             </div>
@@ -1451,7 +1451,7 @@ exports[`CheckoutProgress stories snapshot > ShippingAddress story renders and m
               Shipping
             </div>
             <div
-              class="text-xs mt-1 text-primary/80"
+              class="text-xs mt-1 text-primary"
             >
               Delivery address
             </div>
@@ -1794,7 +1794,7 @@ exports[`CheckoutProgress stories snapshot > ShippingOptions story renders and m
               Contact Info
             </div>
             <div
-              class="text-xs mt-1 text-primary/80"
+              class="text-xs mt-1 text-primary"
             >
               Email address
             </div>
@@ -1840,7 +1840,7 @@ exports[`CheckoutProgress stories snapshot > ShippingOptions story renders and m
               Shipping
             </div>
             <div
-              class="text-xs mt-1 text-primary/80"
+              class="text-xs mt-1 text-primary"
             >
               Delivery address
             </div>
@@ -1872,7 +1872,7 @@ exports[`CheckoutProgress stories snapshot > ShippingOptions story renders and m
               Delivery
             </div>
             <div
-              class="text-xs mt-1 text-primary/80"
+              class="text-xs mt-1 text-primary"
             >
               Shipping method
             </div>

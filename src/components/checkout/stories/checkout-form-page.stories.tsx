@@ -607,7 +607,11 @@ function MockCheckoutFormPage({
                                         <div className="space-y-4">
                                             <div className="rounded-lg border border-border bg-card p-4 transition-colors hover:bg-accent/50">
                                                 <div className="flex items-start space-x-3">
-                                                    <Checkbox checked={true} className="mt-0.5" />
+                                                    <Checkbox
+                                                        checked={true}
+                                                        className="mt-0.5"
+                                                        aria-label={uiStrings.checkout.payment.billingSameAsShipping}
+                                                    />
                                                     <div className="space-y-1 leading-none">
                                                         <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                                                             {uiStrings.checkout.payment.billingSameAsShipping}

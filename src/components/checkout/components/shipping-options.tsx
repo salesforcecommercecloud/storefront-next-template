@@ -133,21 +133,22 @@ export default function ShippingOptions({
             <ToggleCardEdit>
                 <form method="post" className="space-y-6" onSubmit={handleSubmit}>
                     {actionData?.formError && actionData.step === 'shippingOptions' && (
-                        <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded">
+                        <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded text-xl font-bold">
                             {actionData.formError}
                         </div>
                     )}
 
                     <div className="space-y-4">
-                        <Typography variant="small" className="text-muted-foreground">
-                            Select your preferred shipping method
-                        </Typography>
+                        <label className="text-sm font-medium text-foreground">
+                            {uiStrings.checkout.shippingOptions.title}
+                        </label>
 
                         {availableShippingMethods.length > 0 ? (
                             <RadioGroup
                                 name="shippingMethodId"
                                 defaultValue={selectedMethod?.id || defaultShippingMethodId || ''}
-                                required>
+                                required
+                                aria-label={uiStrings.checkout.shippingOptions.title}>
                                 {availableShippingMethods.map((method) => (
                                     <div
                                         key={method.id}
@@ -161,14 +162,18 @@ export default function ShippingOptions({
                                         <Label htmlFor={method.id} className="flex-1 cursor-pointer">
                                             <div className="space-y-1">
                                                 {method.estimatedArrivalTime && (
-                                                    <Typography variant="small" className="text-muted-foreground">
+                                                    <Typography
+                                                        variant="small"
+                                                        className="text-muted-foreground font-bold text-base">
                                                         {uiStrings.checkout.shippingOptions.arrives.replace(
                                                             '{estimatedArrivalTime}',
                                                             method.estimatedArrivalTime
                                                         )}
                                                     </Typography>
                                                 )}
-                                                <Typography variant="small" className="text-muted-foreground">
+                                                <Typography
+                                                    variant="small"
+                                                    className="text-muted-foreground font-bold text-base">
                                                     {uiStrings.checkout.shippingOptions.priceAndMethod
                                                         .replace(
                                                             '{price}',
@@ -179,7 +184,9 @@ export default function ShippingOptions({
                                                         .replace('{methodName}', method.name)}
                                                 </Typography>
                                                 {method.description && (
-                                                    <Typography variant="small" className="text-muted-foreground">
+                                                    <Typography
+                                                        variant="small"
+                                                        className="text-muted-foreground font-bold text-base">
                                                         {method.description}
                                                     </Typography>
                                                 )}

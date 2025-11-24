@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SelectNative } from '@/components/ui/select-native';
 import { Typography } from '@/components/typography';
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useBasket } from '@/providers/basket';
 import { contactInfoSchema, type ContactInfoData } from '@/lib/checkout-schemas';
 import { useLoginSuggestion } from '@/hooks/use-customer-lookup';
@@ -72,7 +72,7 @@ export default function ContactInfo({
                 <Form {...form}>
                     <form onSubmit={(e) => void form.handleSubmit(handleFormSubmit)(e)} className="space-y-6">
                         {actionData?.formError && actionData.step === 'contactInfo' && (
-                            <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded">
+                            <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded text-xl font-bold">
                                 {actionData.formError}
                             </div>
                         )}
@@ -82,6 +82,9 @@ export default function ContactInfo({
                             name="email"
                             render={({ field }) => (
                                 <FormItem>
+                                    <FormLabel className="text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold">
+                                        {uiStrings.checkout.contactInfo.emailPlaceholder}
+                                    </FormLabel>
                                     <FormControl>
                                         <Input
                                             type="email"
@@ -92,7 +95,7 @@ export default function ContactInfo({
                                             {...field}
                                         />
                                     </FormControl>
-                                    <FormMessage />
+                                    <FormMessage className="text-xl font-bold" />
                                 </FormItem>
                             )}
                         />
@@ -105,6 +108,9 @@ export default function ContactInfo({
                                     name="countryCode"
                                     render={({ field }) => (
                                         <FormItem className="w-24">
+                                            <FormLabel className="text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold">
+                                                {uiStrings.checkout.contactInfo.countryCodeLabel}
+                                            </FormLabel>
                                             <FormControl>
                                                 <SelectNative
                                                     aria-label={uiStrings.checkout.contactInfo.countryCodeLabel}
@@ -123,7 +129,7 @@ export default function ContactInfo({
                                                     ))}
                                                 </SelectNative>
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage className="text-xl font-bold" />
                                         </FormItem>
                                     )}
                                 />
@@ -132,6 +138,9 @@ export default function ContactInfo({
                                     name="phone"
                                     render={({ field }) => (
                                         <FormItem className="flex-1">
+                                            <FormLabel className="text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold">
+                                                {uiStrings.checkout.contactInfo.phonePlaceholder}
+                                            </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     type="tel"
@@ -141,7 +150,7 @@ export default function ContactInfo({
                                                     {...field}
                                                 />
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage className="text-xl font-bold" />
                                         </FormItem>
                                     )}
                                 />

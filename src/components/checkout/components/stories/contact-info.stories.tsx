@@ -480,7 +480,7 @@ This component handles the first step of the checkout process - collecting the c
 
         // Test typing in contact fields
         if (inputs.length > 0) {
-            await userEvent.type(inputs[0], 'John Doe');
+            await userEvent.type(inputs[0], 'test@example.com');
         }
     },
 };
@@ -508,7 +508,7 @@ export const Default: Story = {
 
         // Test typing in contact fields
         if (inputs.length > 0) {
-            await userEvent.type(inputs[0], 'John Doe');
+            await userEvent.type(inputs[0], 'test@example.com');
         }
     },
 };
@@ -531,7 +531,7 @@ export const WithExistingEmail: Story = {
 
         // Test typing in contact fields
         if (inputs.length > 0) {
-            await userEvent.type(inputs[0], 'John Doe');
+            await userEvent.type(inputs[0], 'test@example.com');
         }
     },
 };
@@ -556,7 +556,7 @@ export const LoadingState: Story = {
 
         // Test typing in contact fields
         if (inputs.length > 0) {
-            await userEvent.type(inputs[0], 'John Doe');
+            await userEvent.type(inputs[0], 'test@example.com');
         }
     },
 };
@@ -609,7 +609,7 @@ export const WithFormError: Story = {
 
         // Test typing in contact fields
         if (inputs.length > 0) {
-            await userEvent.type(inputs[0], 'John Doe');
+            await userEvent.type(inputs[0], 'test@example.com');
         }
     },
 };
@@ -639,7 +639,7 @@ export const WithValidationError: Story = {
 
         // Test typing in contact fields
         if (inputs.length > 0) {
-            await userEvent.type(inputs[0], 'John Doe');
+            await userEvent.type(inputs[0], 'test@example.com');
         }
     },
 };
@@ -689,7 +689,7 @@ export const MobileView: Story = {
 
         // Test typing in contact fields
         if (inputs.length > 0) {
-            await userEvent.type(inputs[0], 'John Doe');
+            await userEvent.type(inputs[0], 'test@example.com');
         }
     },
 };
@@ -715,7 +715,7 @@ export const TabletView: Story = {
 
         // Test typing in contact fields
         if (inputs.length > 0) {
-            await userEvent.type(inputs[0], 'John Doe');
+            await userEvent.type(inputs[0], 'test@example.com');
         }
     },
 };

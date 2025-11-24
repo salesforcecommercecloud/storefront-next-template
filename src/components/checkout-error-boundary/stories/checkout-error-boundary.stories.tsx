@@ -170,7 +170,7 @@ export const WithCustomFallback: Story = {
             <CheckoutErrorBoundary
                 fallback={
                     <div className="p-4 border border-destructive rounded">
-                        <h2 className="text-lg font-semibold text-destructive">Custom Error Message</h2>
+                        <h2 className="text-xl font-bold text-destructive">Custom Error Message</h2>
                         <p className="text-sm text-muted-foreground">This is a custom fallback UI</p>
                     </div>
                 }>

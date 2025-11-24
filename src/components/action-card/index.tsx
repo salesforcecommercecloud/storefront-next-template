@@ -65,6 +65,7 @@ const ActionCard = ({
                             onClick={onEdit}
                             variant="link"
                             size="sm"
+                            className="font-bold"
                             aria-label={editBtnLabel ?? uiStrings.actionCard.edit}>
                             {uiStrings.actionCard.edit}
                         </Button>
@@ -72,7 +73,7 @@ const ActionCard = ({
                     {onRemove && (
                         <Button
                             aria-label={removeBtnLabel ?? uiStrings.actionCard.remove}
-                            className="text-destructive hover:text-destructive/80"
+                            className="text-destructive hover:text-destructive/80 font-bold"
                             onClick={() => void handleRemove()}
                             ref={removeBtnRef}
                             size="sm"

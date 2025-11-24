@@ -72,7 +72,12 @@ export default function AddressCard({
             {(onEdit || onRemove) && (
                 <CardFooter className="gap-2 px-4">
                     {onEdit && (
-                        <Button onClick={onEdit} variant="link" size="sm" aria-label={uiStrings.actionCard.edit}>
+                        <Button
+                            onClick={onEdit}
+                            variant="link"
+                            size="sm"
+                            className="font-bold"
+                            aria-label={uiStrings.actionCard.edit}>
                             {uiStrings.actionCard.edit}
                         </Button>
                     )}
@@ -81,7 +86,7 @@ export default function AddressCard({
                             onClick={onRemove}
                             variant="link"
                             size="sm"
-                            className="text-destructive hover:text-destructive"
+                            className="text-destructive hover:text-destructive font-bold"
                             aria-label={uiStrings.actionCard.remove}
                             disabled={isRemoving}>
                             {uiStrings.actionCard.remove}

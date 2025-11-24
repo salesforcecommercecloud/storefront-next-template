@@ -157,23 +157,23 @@ vi.mock('react-router', async () => {
 });
 
 // Mock step components
-vi.mock('./partials/contact-info', () => ({
+vi.mock('./components/contact-info', () => ({
     default: () => <div data-testid="contact-info">Contact Info Form</div>,
 }));
 
-vi.mock('./partials/shipping-address', () => ({
+vi.mock('./components/shipping-address', () => ({
     default: () => <div data-testid="shipping-address">Shipping Address Form</div>,
 }));
 
-vi.mock('./partials/shipping-options', () => ({
+vi.mock('./components/shipping-options', () => ({
     default: () => <div data-testid="shipping-options">Shipping Options Form</div>,
 }));
 
-vi.mock('./partials/payment', () => ({
+vi.mock('./components/payment', () => ({
     default: () => <div data-testid="payment">Payment Form</div>,
 }));
 
-vi.mock('./partials/register-customer-selection', () => ({
+vi.mock('./components/register-customer-selection', () => ({
     default: () => <div data-testid="register-customer-checkbox">Create Account Checkbox</div>,
 }));
 

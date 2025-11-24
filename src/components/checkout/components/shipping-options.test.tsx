@@ -1040,7 +1040,7 @@ describe('ShippingOptions Integration Tests', () => {
 
             render(<ShippingOptions {...createDefaultProps()} />);
 
-            expect(screen.getByText(/shipping options/i)).toBeInTheDocument();
+            expect(screen.getAllByText(/shipping options/i).length).toBeGreaterThan(0);
         });
 
         test('uses defaultShippingMethodId when selectedMethod is null', () => {
