@@ -273,30 +273,10 @@ describe('Customer API', () => {
         test('should return null for guest user', async () => {
             const mockSession = {
                 userType: 'guest' as const,
+                // no customer_id
             };
 
             vi.mocked(getAuth).mockReturnValue(mockSession);
-
-            const result = await getCurrentCustomer(mockContext);
-            expect(result).toBeNull();
-        });
-
-        test('should return null on API error', async () => {
-            const mockSession = {
-                userType: 'registered' as const,
-                customer_id: 'cust123',
-                access_token: 'token',
-                access_token_expiry: Date.now() + 10000,
-            };
-
-            const mockClient = {
-                getCustomer: vi.fn().mockRejectedValue(new Error('API Error')),
-            };
-
-            vi.mocked(getAuth).mockReturnValue(mockSession);
-            vi.mocked(createApiClients).mockReturnValue({
-                shopperCustomers: mockClient,
-            } as any);
 
             const result = await getCurrentCustomer(mockContext);
             expect(result).toBeNull();

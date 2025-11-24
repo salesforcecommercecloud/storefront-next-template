@@ -9,12 +9,12 @@ export type SessionData = {
     userType?: 'guest' | 'registered';
     usid?: string;
 
-    // social login
+    // social login - OAuth2 PKCE code verifier (server-side only, ephemeral)
     codeVerifier?: string;
 
-    // idp
+    // IDP tokens (for social login)
     idp_access_token?: string;
-    idp_refresh_token?: string;
+    idp_access_token_expiry?: number;
 
     //hybrid
     dwsid?: string;

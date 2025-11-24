@@ -194,29 +194,6 @@ describe('Commerce SDK fetch service', () => {
                 expect(mockShopperExperienceGetPage).toHaveBeenCalledWith(parameters);
                 expect(result).toBe(mockResult);
             });
-
-            it('handles session without access_token', async () => {
-                const guestContext = createTestContext({
-                    authSession: {
-                        userType: 'guest',
-                        customer_id: 'test-customer-id',
-                        access_token: undefined, // explicitly undefined for guest users
-                    },
-                });
-                mockShopperExperienceGetPage.mockResolvedValue({ success: true });
-
-                const client = createClient(guestContext);
-                await client.ShopperExperience.getPage({ parameters: { pageId: 'home' } });
-
-                expect(ShopperExperience).toHaveBeenCalledWith({
-                    parameters: expect.any(Object),
-                    headers: {
-                        authorization: 'Bearer undefined',
-                    },
-                    throwOnBadResponse: true,
-                    proxy: expect.any(String),
-                });
-            });
         });
 
         describe('error handling', () => {
@@ -226,6 +203,108 @@ describe('Commerce SDK fetch service', () => {
 
                 const client = createClient(mockContextProvider);
                 return expect(client.ShopperExperience.getPage()).rejects.toThrow(sdkError);
+            });
+        });
+
+        describe('access token expiry validation', () => {
+            it('logs warning when access token is expired but continues with request', () => {
+                const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+                const expiredContext = createTestContext({
+                    authSession: {
+                        access_token: 'expired-token',
+                        access_token_expiry: Date.now() - 1000, // 1 second ago
+                        customer_id: 'test-customer-id',
+                        userType: 'registered',
+                    },
+                });
+
+                const client = createClient(expiredContext);
+                return client.ShopperProducts.getProducts().catch((error) => {
+                    // Should continue with request (which fails due to missing parameters)
+                    expect(error.message).toContain('Missing required query parameter: ids');
+                    expect(consoleWarnSpy).toHaveBeenCalledWith(
+                        expect.stringContaining('[SCAPI] Access token expired for "ShopperProducts"')
+                    );
+                    consoleWarnSpy.mockRestore();
+                });
+            });
+
+            it('logs warning when access_token_expiry is missing but continues with request', () => {
+                const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+                const missingExpiryContext = createTestContext({
+                    authSession: {
+                        access_token: 'test-token',
+                        access_token_expiry: undefined,
+                        customer_id: 'test-customer-id',
+                        userType: 'registered',
+                    },
+                });
+
+                const client = createClient(missingExpiryContext);
+                return client.ShopperProducts.getProducts().catch((error) => {
+                    // Should continue with request (which fails due to missing parameters)
+                    expect(error.message).toContain('Missing required query parameter: ids');
+                    expect(consoleWarnSpy).toHaveBeenCalledWith(
+                        expect.stringContaining('[SCAPI] Access token expired for "ShopperProducts"')
+                    );
+                    consoleWarnSpy.mockRestore();
+                });
+            });
+
+            it('logs warning when access_token_expiry is not a number but continues with request', () => {
+                const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+                const invalidExpiryContext = createTestContext({
+                    authSession: {
+                        access_token: 'test-token',
+                        // @ts-expect-error Testing invalid type
+                        access_token_expiry: 'invalid',
+                        customer_id: 'test-customer-id',
+                        userType: 'registered',
+                    },
+                });
+
+                const client = createClient(invalidExpiryContext);
+                return client.ShopperProducts.getProducts().catch((error) => {
+                    // Should continue with request (which fails due to missing parameters)
+                    expect(error.message).toContain('Missing required query parameter: ids');
+                    expect(consoleWarnSpy).toHaveBeenCalledWith(
+                        expect.stringContaining('[SCAPI] Access token expired for "ShopperProducts"')
+                    );
+                    consoleWarnSpy.mockRestore();
+                });
+            });
+
+            it('succeeds when access token has valid future expiry', async () => {
+                const validContext = createTestContext({
+                    authSession: {
+                        access_token: 'valid-token',
+                        access_token_expiry: Date.now() + 3600000, // 1 hour from now
+                        customer_id: 'test-customer-id',
+                        userType: 'registered',
+                    },
+                });
+                mockShopperExperienceGetPage.mockResolvedValue({ success: true });
+
+                const client = createClient(validContext);
+                await expect(client.ShopperExperience.getPage({ parameters: { pageId: 'home' } })).resolves.toEqual({
+                    success: true,
+                });
+            });
+
+            it('skips expiry validation when access_token is undefined', async () => {
+                const guestContext = createTestContext({
+                    authSession: {
+                        access_token: undefined,
+                        customer_id: 'guest-customer-id',
+                        userType: 'guest',
+                    },
+                });
+                mockShopperExperienceGetPage.mockResolvedValue({ success: true });
+
+                const client = createClient(guestContext);
+                await expect(client.ShopperExperience.getPage({ parameters: { pageId: 'home' } })).resolves.toEqual({
+                    success: true,
+                });
             });
         });
 
@@ -251,6 +330,7 @@ describe('Commerce SDK fetch service', () => {
                 const context2 = createTestContext({
                     authSession: {
                         access_token: 'test-access-token-2',
+                        access_token_expiry: Date.now() + 3600000,
                         customer_id: 'test-customer-id-2',
                         userType: 'registered',
                     },
@@ -335,6 +415,7 @@ describe('Commerce SDK fetch service', () => {
                 const context2 = createTestContext({
                     authSession: {
                         access_token: 'test-access-token-2',
+                        access_token_expiry: Date.now() + 3600000,
                         customer_id: 'test-customer-id-2',
                         userType: 'registered',
                     },

@@ -1,12 +1,13 @@
 import {
-    createContext,
+    createContext as createRouterContext,
     type DataStrategyResult,
     type MiddlewareFunction,
     type RouterContextProvider,
 } from 'react-router';
 import type { ShopperLoginTypes } from 'commerce-sdk-isomorphic';
-import type { SessionData as AuthData } from '@/lib/api/types';
-import { getCookie, removeCookie, setCookie } from '@/lib/cookies.client';
+import type { SessionData } from '@/lib/api/types';
+import { getAllCookies, removeCookie } from '@/lib/cookies.client';
+import { getCookieNameWithSiteId } from '@/lib/cookie-utils';
 import { clearStorage, type StorageErrorData, unpackStorage } from '@/lib/middleware';
 import {
     authContext,
@@ -14,10 +15,111 @@ import {
     createAuthPromise,
     updateAuthStorageData,
     updateStorageAndCache,
+    getSLASAccessTokenExpiry,
+    COOKIE_REFRESH_TOKEN_GUEST,
+    COOKIE_REFRESH_TOKEN_REGISTERED,
+    COOKIE_ACCESS_TOKEN,
+    COOKIE_USID,
+    COOKIE_CUSTOMER_ID,
+    COOKIE_IDP_ACCESS_TOKEN,
+    // Note: COOKIE_CODE_VERIFIER is NOT imported - it's httpOnly and server-only
 } from '@/middlewares/auth.utils';
 import uiStrings from '@/temp-ui-string';
 import { PERFORMANCE_MARKS, performanceTimerContext } from '@/middlewares/performance-metrics';
 import { getConfig } from '@/config';
+
+type AuthData = SessionData;
+
+/**
+ * Read and parse auth cookies into structured auth data.
+ *
+ * This function reads all auth cookies once for optimal performance and returns
+ * the complete auth data structure with userType determined from which refresh token exists.
+ * Access token expiry is extracted from the JWT for fast runtime validation.
+ *
+ * **Cookie names:**
+ * - cc-nx-g: Guest user refresh token
+ * - cc-nx: Registered user refresh token
+ * - cc-at: Access token
+ * - usid: User session ID
+ * - customerId: Customer ID
+ * - cc-idp-at: IDP access token (for social login)
+ *
+ * **User type determination:**
+ * - cc-nx exists → registered user
+ * - cc-nx-g exists → guest user
+ * - neither exists → fallback to guest
+ *
+ * **Use cases:**
+ *
+ * 1. **During client-side hydration**: When React hydration starts, the client middleware
+ *    hasn't executed yet, but we need auth data to match the server-rendered HTML. This
+ *    function bridges that timing gap by reading cookies directly, preventing hydration
+ *    mismatches between server and client.
+ *
+ * 2. **In middleware**: To populate auth storage with current cookie values
+ *
+ * 3. **Anywhere**: You need to read current auth state from cookies
+ *
+ * **Hydration flow:**
+ * 1. Server renders with auth data from middleware
+ * 2. Client starts hydration (middleware hasn't run yet)
+ * 3. This function reads cookies to get auth data
+ * 4. After hydration, middleware takes over
+ *
+ * @returns Complete auth data structure or undefined if no auth tokens exist
+ */
+export function getAuthDataFromCookies(): Partial<AuthStorageData> | undefined {
+    // Single document.cookie read + parse for optimal performance
+    const allCookies = getAllCookies();
+
+    const refreshTokenGuest = allCookies[getCookieNameWithSiteId(COOKIE_REFRESH_TOKEN_GUEST)] || '';
+    const refreshTokenRegistered = allCookies[getCookieNameWithSiteId(COOKIE_REFRESH_TOKEN_REGISTERED)] || '';
+    const accessToken = allCookies[getCookieNameWithSiteId(COOKIE_ACCESS_TOKEN)] || '';
+    const usid = allCookies[getCookieNameWithSiteId(COOKIE_USID)] || '';
+    const customerId = allCookies[getCookieNameWithSiteId(COOKIE_CUSTOMER_ID)] || '';
+    const idpAccessToken = allCookies[getCookieNameWithSiteId(COOKIE_IDP_ACCESS_TOKEN)] || '';
+
+    // Return early if no auth tokens exist
+    if (!accessToken && !refreshTokenGuest && !refreshTokenRegistered) {
+        return undefined;
+    }
+
+    // Determine user type and refresh token from which cookie exists
+    // Only one should exist at a time (guest and registered are mutually exclusive)
+    //
+    // IMPORTANT: userType is derived at runtime from cookie presence, NOT stored in cookies
+    let userType: 'guest' | 'registered';
+    let refreshToken: string;
+
+    if (refreshTokenRegistered) {
+        userType = 'registered';
+        refreshToken = refreshTokenRegistered;
+    } else if (refreshTokenGuest) {
+        userType = 'guest';
+        refreshToken = refreshTokenGuest;
+    } else {
+        userType = 'guest';
+        refreshToken = '';
+    }
+
+    const authData: Partial<AuthStorageData> = {
+        access_token: accessToken || undefined,
+        refresh_token: refreshToken || undefined,
+        usid: usid || undefined,
+        customer_id: customerId || undefined,
+        userType,
+        idp_access_token: idpAccessToken || undefined,
+    };
+
+    // Inject access_token_expiry from JWT (source of truth) for fast runtime checks
+    if (accessToken) {
+        const expiry = getSLASAccessTokenExpiry(accessToken);
+        if (expiry) authData.access_token_expiry = expiry;
+    }
+
+    return authData;
+}
 
 /**
  * Client-side helper for refresh token operations
@@ -75,31 +177,33 @@ async function handleGuestLogin(usid: string | undefined): Promise<ShopperLoginT
 
 /**
  * Client-side utility to retrieve/verify the validity of stored Commerce API auth information.
+ * Validates access token expiry using the expiry injected from JWT during middleware initialization.
  */
 const retrieveAuthStorageData = async (
     context: Readonly<RouterContextProvider>,
     storage: Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>,
     cache: { ref: AuthData | undefined }
 ): Promise<void> => {
-    // Verify Commerce API token validity
-    const now = Date.now();
     const accessToken = storage.get('access_token');
     const accessTokenExpiry = storage.get('access_token_expiry');
-
-    if (accessToken && typeof accessTokenExpiry === 'number' && accessTokenExpiry >= now) {
-        return;
-    }
-
     const refreshToken = storage.get('refresh_token');
-    const refreshTokenExpiry = storage.get('refresh_token_expiry');
     const performanceTimer = context.get(performanceTimerContext);
 
+    // Check if access token exists and is not expired
+    // We use the expiry injected from JWT during middleware initialization for fast comparison
     if (
-        typeof refreshToken === 'string' &&
-        refreshToken.length &&
-        typeof refreshTokenExpiry === 'number' &&
-        refreshTokenExpiry >= now
+        accessToken &&
+        typeof accessToken === 'string' &&
+        accessToken.length &&
+        typeof accessTokenExpiry === 'number' &&
+        accessTokenExpiry > Date.now()
     ) {
+        return;
+    }
+    // Token missing or expired - proceed to refresh flow below
+
+    // If access token missing but refresh token exists, use it to get new access token
+    if (typeof refreshToken === 'string' && refreshToken.length) {
         try {
             const storedUserType = storage.get('userType');
             const userType: 'guest' | 'registered' = storedUserType === 'registered' ? 'registered' : 'guest';
@@ -134,37 +238,106 @@ const retrieveAuthStorageData = async (
 
 /**
  * As we're on the client, we can define and use a singleton auth store instance here.
+ * These are exported so entry.client.tsx can use them for pre-hydration setup.
  */
-const authCache: { ref: AuthData | undefined } = { ref: undefined };
-const authPromiseCache: { ref: Promise<AuthData | undefined> } = { ref: Promise.resolve(undefined) };
-const authCookieName = '__sfdc_auth';
-const authStorageContext = createContext<Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>>();
-const authCacheContext = createContext<{ ref: AuthData | undefined }>();
+export const authCache: { ref: AuthData | undefined } = { ref: undefined };
+export const authPromiseCache: { ref: Promise<AuthData | undefined> } = { ref: Promise.resolve(undefined) };
+
+// Cookie names for split auth storage are imported from auth.utils
+
+export const authStorageContext =
+    createRouterContext<Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>>();
+export const authCacheContext = createRouterContext<{ ref: AuthData | undefined }>();
+
+/**
+ * Populate auth storage Map from auth data object.
+ * Extracted as a reusable helper used by both entry.client.tsx and the middleware.
+ *
+ * @param storage - Auth storage Map to populate
+ * @param authData - Auth data object with token and user information
+ */
+export const populateAuthStorage = (
+    storage: Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>,
+    authData: Partial<AuthStorageData>
+): void => {
+    if (authData.refresh_token) storage.set('refresh_token', authData.refresh_token);
+    if (authData.access_token) storage.set('access_token', authData.access_token);
+    if (authData.access_token_expiry) storage.set('access_token_expiry', authData.access_token_expiry);
+    if (authData.usid) storage.set('usid', authData.usid);
+    if (authData.customer_id) storage.set('customer_id', authData.customer_id);
+    if (authData.idp_access_token) storage.set('idp_access_token', authData.idp_access_token);
+    if (authData.userType) storage.set('userType', authData.userType);
+};
+
+/**
+ * Read auth cookies from document.cookie and populate the storage Map.
+ * Cookies are set by the server via Set-Cookie headers. Client only reads them.
+ *
+ * User type is determined by which refresh token cookie exists:
+ * - cc-nx exists → registered user
+ * - cc-nx-g exists → guest user
+ * - neither exists → fallback to guest
+ *
+ * IMPORTANT: userType is NEVER written to cookies. It is ALWAYS derived at runtime
+ * from which refresh token cookie exists. userType is stored in authStorage/authCache
+ * for easy in-app access.
+ *
+ * @param storage - Auth storage Map to populate with cookie values
+ */
+const readClientAuthCookies = (storage: Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>): void => {
+    const authData = getAuthDataFromCookies();
+
+    if (!authData) {
+        return;
+    }
+
+    // Use the shared helper to populate storage
+    populateAuthStorage(storage, authData);
+};
 
 /**
  * Middleware to retrieve or refresh Commerce API auth information and provide it as part of the router `context`.
  *
- * This middleware is tailored for client-side use only! It uses a `document.cookie`-based approach to store the
- * current client's authentication information.
+ * This middleware is tailored for client-side use only! It reads auth cookies set by the server and maintains
+ * an in-memory cache for performance:
+ * - `cc-nx-g`: Guest user refresh token (expires after configured period, browser auto-deletes)
+ * - `cc-nx`: Registered user refresh token (expires after configured period, browser auto-deletes)
+ * - `cc-at`: Access token (expires after 30 min, browser auto-deletes)
+ * - `usid`: User session ID (expires with refresh token)
+ * - `customerId`: Customer ID (expires with refresh token)
+ * - `cc-idp-at`: IDP access token (for social login, expires with SLAS access token)
  *
- * **Note:** Right now we're using the `access_token_expiry` property of the `AuthStorageData` type to set the cookie's
- * expiration date. This might be subject to change in the future.
+ * Note: `cc-cv` (code verifier) is httpOnly and server-only, not accessible to client.
+ *
+ * User type is determined by which refresh token cookie exists (cc-nx-g = guest, cc-nx = registered).
+ * Only one refresh token cookie exists at a time - a user cannot be both guest and registered.
+ *
+ * **Cookie Management:** Server owns all cookie writes via Set-Cookie headers. Client only reads cookies.
+ *
+ * Token validation flow:
+ * - If access token exists and not expired (checked via JWT decode) → use it
+ * - If access token missing/expired but refresh token exists → refresh to get new access token (via server API)
+ * - If both missing → guest login (via server API)
  *
  * The router context is available in other middlewares, loader and action functions. Use it as root middleware,
  * to ensure the Commerce API context portion becomes available throughout the whole application.
  */
 const authMiddleware: MiddlewareFunction<Record<string, DataStrategyResult>> = async ({ context }, next) => {
-    // Before calling the handler: Load current Commerce API data from `authStore` or incoming cookies, if applicable
-    const authData = authCache.ref ?? getCookie<AuthStorageData>(authCookieName);
+    // Before calling the handler: Load current Commerce API data from in-memory cache
+    const authData = authCache.ref ?? {};
     const authStorage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>(
         Object.entries(authData) as [keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]][]
     );
+
+    // Read auth cookies from document.cookie to sync with server-side state
+    // This ensures the client has access to tokens set by the server
+    readClientAuthCookies(authStorage);
 
     // Ensure auth contexts are created before calling the session/auth retrieval. This is important for the `fetch`
     // client to work correctly, as the fetch client may start loading and streaming data before the middleware is
     // actually finished.
     if (!authCache.ref) {
-        authCache.ref = authData;
+        authCache.ref = unpackStorage<AuthData>(authStorage);
         authPromiseCache.ref = Promise.resolve(authCache.ref);
     }
 
@@ -182,29 +355,22 @@ const authMiddleware: MiddlewareFunction<Record<string, DataStrategyResult>> = a
     // Execute handler (loader/action/render)
     await next();
 
-    // After calling the handler: Write back storage data, if required
+    // After calling the handler: Update in-memory cache, if required
+    // Note: Cookie management is handled server-side via Set-Cookie headers
     if (authStorage.has('isDestroyed') || authStorage.has('error')) {
         // Clean up the storage container. That way the information is immediately updated for eventually
         // running middlewares after this one as well.
         clearStorage(authStorage, false);
         authCache.ref = undefined;
         authPromiseCache.ref = createAuthPromise(context, authCache.ref);
-
-        // Destroy cookie/session
-        removeCookie(authCookieName);
     } else if (authStorage.has('isUpdated')) {
         // Clean up storage container metadata
         authStorage.delete('isUpdated');
 
-        // Update the stored data in the cookie/session
+        // Update the in-memory cache
         const entry = Object.fromEntries(authStorage);
         authCache.ref = entry;
         authPromiseCache.ref = createAuthPromise(context, entry);
-        setCookie(authCookieName, entry, {
-            // TODO: Decide on the correct expiration date/strategy. The expiration also needs to depend
-            //  on the login/auth/flow type.
-            expires: new Date(authStorage.get('access_token_expiry') as number),
-        });
     }
 };
 
@@ -272,8 +438,8 @@ export const flashAuth = (context: Readonly<RouterContextProvider>, message?: st
 };
 
 /**
- * Utility function to refresh the auth middleware's state from the cookie.
- * This is useful in edge cases where the cookie has been updated outside the normal middleware flow
+ * Utility function to refresh the auth middleware's state from the cookies.
+ * This is useful in edge cases where cookies have been updated outside the normal middleware flow
  * (e.g., after a password change that triggers a re-login via server action).
  *
  * @param context - Router context
@@ -288,8 +454,11 @@ export const refreshAuthFromCookie = (context: Readonly<RouterContextProvider>):
         throw new Error('refreshAuthFromCookie must be used within the Commerce API middleware');
     }
 
-    // Get the current session from the cookie
-    const cookieSession = getCookie<AuthData>(authCookieName);
+    // Create temporary storage to read cookies
+    const tempStorage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
+    readClientAuthCookies(tempStorage);
+
+    const cookieSession = unpackStorage<AuthData>(tempStorage);
     const cookieAccessToken = cookieSession.access_token;
     const currentAccessToken = storage.get('access_token') || cache.ref?.access_token;
 
@@ -303,6 +472,56 @@ export const refreshAuthFromCookie = (context: Readonly<RouterContextProvider>):
     }
 
     return false;
+};
+
+/**
+ * Clear invalid auth session and set up a new guest session.
+ *
+ * This function is called when we detect an invalid customer_id in auth cookies
+ * (e.g., customer account deleted, cookies from different environment, token/customer sync issues).
+ *
+ * Steps:
+ * 1. Clear all auth-related cookies from the browser
+ * 2. Clear auth storage and cache
+ * 3. Request a new guest token from the server
+ * 4. Update auth context with new guest session
+ *
+ * @param context - Router context
+ * @returns Promise that resolves when cleanup and guest session setup is complete
+ */
+export const clearInvalidSessionAndRestoreGuest = async (context: Readonly<RouterContextProvider>): Promise<void> => {
+    const storage = context.get(authStorageContext);
+    const cache = context.get(authCacheContext);
+    const promiseCache = context.get(authContext);
+
+    if (!storage || !cache || !promiseCache) {
+        throw new Error('clearInvalidSessionAndRestoreGuest must be used within the Commerce API middleware');
+    }
+
+    // These cookies are invalid since the customer_id doesn't exist in Commerce Cloud
+    removeCookie(COOKIE_REFRESH_TOKEN_GUEST);
+    removeCookie(COOKIE_REFRESH_TOKEN_REGISTERED);
+    removeCookie(COOKIE_ACCESS_TOKEN);
+    removeCookie(COOKIE_USID);
+    removeCookie(COOKIE_CUSTOMER_ID);
+    removeCookie(COOKIE_IDP_ACCESS_TOKEN);
+
+    // Clear react-router auth storage context and cache
+    clearStorage(storage);
+    cache.ref = undefined;
+
+    // The server will set new auth cookies via Set-Cookie headers
+    try {
+        const tokenResponse = await handleGuestLogin(undefined); // Start fresh with new session
+        await updateStorageAndCache(context, storage, cache, tokenResponse, 'guest');
+        promiseCache.ref = createAuthPromise(context, cache.ref);
+    } catch (error) {
+        // If guest session setup fails, set error in storage
+        // The auth middleware will attempt to get a guest token on the next request
+        storage.set('error', uiStrings.errors.guestAccessTokenFailed);
+        promiseCache.ref = createAuthPromise(context, cache.ref);
+        throw error;
+    }
 };
 
 export default authMiddleware;

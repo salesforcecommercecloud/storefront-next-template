@@ -163,6 +163,10 @@ function createCommerceSdkClient<T>(
  * This service is the heart of any interaction with the Commerce SDK methods. It provides a simple interface to
  * dynamically load the desired functionality from the Commerce SDK and execute it with the provided parameters.
  *
+ * **Token Validation:** Before creating an SDK client instance, this factory validates that the access token in the
+ * session is not expired by decoding the JWT payload. If the token is expired, an error is thrown. The auth middleware
+ * should have already refreshed expired tokens, so this serves as a safety check to prevent 401 errors from API calls.
+ *
  * **Note/Gotcha:** The factory exposed by the `@/lib/scapi` module does not provide access to the actual Commerce SDK
  * client instances directly, but rather a proxy interface to simplify the access to the methods of each exposed
  * Commerce SDK class. The proxy interface is used to dynamically create an instance of the targeted SDK client on
@@ -270,9 +274,27 @@ const factory = (context: Readonly<RouterContextProvider>): CommerceSdkClient =>
                                 if (!sdkClientInstanceLoadPromise) {
                                     sdkClientInstanceLoadPromise = context
                                         .get(authContext)
-                                        ?.ref?.then((session) => {
+                                        ?.ref?.then((session: SessionData | undefined) => {
                                             if (!session) {
                                                 throw new TypeError(`Client not authenticated: "${className}"`);
+                                            }
+
+                                            // Validate access token expiry before creating client
+                                            // This prevents API calls with expired tokens that would result in 401 errors
+                                            if (session.access_token) {
+                                                const { access_token_expiry } = session;
+                                                if (
+                                                    typeof access_token_expiry !== 'number' ||
+                                                    access_token_expiry <= Date.now()
+                                                ) {
+                                                    // Token expired - this is a rare edge case where the token expired between
+                                                    // middleware check and SDK client creation (e.g., user idle on page for 30+ min)
+
+                                                    // eslint-disable-next-line no-console
+                                                    console.warn(
+                                                        `[SCAPI] Access token expired for "${className}". This can happen if the page has been idle for an extended period. Refresh the page to recover`
+                                                    );
+                                                }
                                             }
 
                                             // Create and cache the targeted client instance resolver

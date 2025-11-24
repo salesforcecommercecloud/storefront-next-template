@@ -23,6 +23,7 @@ import { I18nextProvider } from 'react-i18next';
 import StoreLocatorProvider from '@/extensions/store-locator/providers/store-locator';
 import authMiddlewareServer, { getAuth as getAuthServer } from '@/middlewares/auth.server';
 import authMiddlewareClient, { getAuth as getAuthClient } from '@/middlewares/auth.client';
+import AuthProvider, { bootstrapAuth } from '@/providers/auth';
 import basketMiddlewareClient, { getBasket } from '@/middlewares/basket.client';
 import {
     performanceMetricsMiddlewareClient,
@@ -31,7 +32,6 @@ import {
 import { appConfigMiddlewareServer } from '@/middlewares/app-config.server';
 import { appConfigMiddlewareClient } from '@/middlewares/app-config.client';
 import { getLocale, i18nextMiddleware, getInstance } from '@/middlewares/i18next';
-import AuthProvider from '@/providers/auth';
 import BasketProvider from '@/providers/basket';
 import { ComposeProviders } from '@/providers/compose-providers';
 import type { SessionData } from '@/lib/api/types';
@@ -43,9 +43,8 @@ import { ToasterTheme } from '@/components/toast';
 import { ConfigProvider, getConfig, type AppConfig } from '@/config';
 import { useExecutePendingAction } from '@/hooks/use-execute-pending-action';
 import './app.css';
-import { PageDesignerProvider } from '@salesforce/storefront-next-runtime/design/react';
-import { getCookie } from '@/lib/cookies.client';
 import { initI18next } from '@/lib/i18next.client';
+import { PageDesignerProvider } from '@salesforce/storefront-next-runtime/design/react';
 import AnalyticsProvider from '@/providers/analytics';
 import viewPageEventMiddleware, { getOrInitializeEventMediator } from '@/middlewares/view-page-event.client';
 import { adaptersMiddlewareServer } from './middlewares/adapters.server';
@@ -267,15 +266,12 @@ export default function App({ loaderData: { root, subs, auth, basket, getI18next
     // For app config: We set it via <ConfigProvider> below to ensure it's available during the initial render cycle,
     // before the client middleware runs. This prevents timing issues when components access config during hydration.
     //
-    // For auth/session:  Right now - For security reasons related
-    // to serialized data left inside the document body - we intentionally don't serialize the session/auth data on the
-    // server to pass it down to the client, but only derive it from the related session/auth cookie within the client
-    // middleware. But as that client middleware hasn't executed yet during initial hydration, we unfortunately have to
-    // explicitly do the session/auth extraction from the cookie here as well.
-    let sessionData = auth?.();
-    if (!sessionData && typeof window !== 'undefined') {
-        sessionData = getCookie('__sfdc_auth');
-    }
+    // For auth: During initial hydration (before clientLoader runs), auth?.() returns undefined.
+    // We fall back to a bootstrap auth value derived from cookies (on the client) so that hydration
+    // has access to auth data. Once clientLoader runs and provides session data, that loader-based
+    // value becomes the single source of truth.
+    const loaderSession = auth?.();
+    const sessionData = loaderSession ?? bootstrapAuth;
 
     // The event mediator only exists on the client side since we do not need the server to send events.
     const eventMediatorInstance = typeof window !== 'undefined' ? getOrInitializeEventMediator() : undefined;

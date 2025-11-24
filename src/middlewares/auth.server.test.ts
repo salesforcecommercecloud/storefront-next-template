@@ -5,7 +5,7 @@ import type { AuthStorageData } from '@/middlewares/auth.utils';
 import { performanceTimerContext } from '@/middlewares/performance-metrics';
 import { appConfigContext, type AppConfig } from '@/config';
 import { mockConfig } from '@/test-utils/config';
-import {
+import authMiddleware, {
     refreshAccessToken,
     loginGuestUser,
     loginRegisteredUser,
@@ -33,6 +33,24 @@ vi.mock('commerce-sdk-isomorphic/helpers', () => ({
 // Mock createClient
 vi.mock('@/lib/scapi', () => ({
     default: vi.fn(),
+}));
+
+// Mock cookies.server
+vi.mock('@/lib/cookies.server', () => ({
+    parseAllCookies: vi.fn(),
+    createCookie: vi.fn(),
+}));
+
+// Mock cookie-utils
+vi.mock('@/lib/cookie-utils', () => ({
+    getCookieConfig: vi.fn((overrides = {}) => ({
+        httpOnly: false,
+        secure: true,
+        sameSite: 'lax' as const,
+        path: '/',
+        ...overrides,
+    })),
+    getCookieNameWithSiteId: vi.fn((name: string) => name),
 }));
 
 // Mock performance metrics
@@ -154,7 +172,6 @@ function getMockAuthData(): AuthData {
         codeVerifier: 'codeVerifier',
         dwsid: 'dwsid',
         idp_access_token: 'idp_access_token',
-        idp_refresh_token: 'idp_refresh_token',
         dnt: 'true',
     };
 }
@@ -171,7 +188,6 @@ function getMockRegisteredAuthData(): AuthData {
         codeVerifier: 'codeVerifier',
         dwsid: 'dwsid',
         idp_access_token: 'idp_access_token',
-        idp_refresh_token: 'idp_refresh_token',
         dnt: 'true',
     };
 }
@@ -815,6 +831,653 @@ describe('auth middleware (server)', () => {
                     }),
                 })
             );
+        });
+    });
+
+    describe('authMiddleware', () => {
+        let mockParseAllCookies: any;
+        let mockCreateCookie: any;
+        let mockGetCookieConfig: any;
+        let mockgetCookieNameWithSiteId: any;
+
+        beforeEach(async () => {
+            // Get mocked modules
+            const cookiesServer = await import('@/lib/cookies.server');
+            const cookieUtils = await import('@/lib/cookie-utils');
+
+            mockParseAllCookies = cookiesServer.parseAllCookies;
+            mockCreateCookie = cookiesServer.createCookie;
+            mockGetCookieConfig = cookieUtils.getCookieConfig;
+            mockgetCookieNameWithSiteId = cookieUtils.getCookieNameWithSiteId;
+
+            // Default mock implementations
+            mockParseAllCookies.mockReturnValue({});
+            mockgetCookieNameWithSiteId.mockImplementation((name: string) => name);
+            mockGetCookieConfig.mockImplementation((overrides = {}) => ({
+                httpOnly: false,
+                secure: true,
+                sameSite: 'lax' as const,
+                path: '/',
+                ...overrides,
+            }));
+
+            // Mock createCookie to return a cookie object with serialize method
+            mockCreateCookie.mockImplementation(() => ({
+                serialize: vi.fn().mockResolvedValue('Set-Cookie: mock=value'),
+            }));
+        });
+
+        it('should parse cookies and reconstruct auth data from separate cookies', async () => {
+            const mockTokenResponse = getMockTokenResponse();
+            mockHelpers.loginGuestUser.mockResolvedValue(mockTokenResponse);
+
+            // Create valid JWT with expiry
+            const now = Math.floor(Date.now() / 1000);
+            const exp = now + 1800; // 30 min from now
+            const mockAccessToken = `header.${btoa(JSON.stringify({ exp }))}.signature`;
+
+            // Mock parseAllCookies to return split cookies
+            mockParseAllCookies.mockReturnValue({
+                'cc-nx-g': 'guest-refresh-token',
+                'cc-at': mockAccessToken,
+                usid: 'test-usid',
+                customerId: 'test-customer-id',
+            });
+
+            const request = new Request('https://example.com/test', {
+                headers: {
+                    Cookie: 'cc-nx-g=guest-refresh-token; cc-at=access-token; usid=test-usid; customerId=test-customer-id',
+                },
+            });
+
+            const context = new RouterContextProvider();
+            const appConfig = { ...mockConfig };
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return appConfig;
+                return undefined;
+            });
+
+            const mockResponse = new Response('OK');
+            const next = vi.fn().mockResolvedValue(mockResponse);
+
+            await authMiddleware({ request, context, params: {} }, next);
+
+            // Verify parseAllCookies was called
+            expect(mockParseAllCookies).toHaveBeenCalledWith(
+                'cc-nx-g=guest-refresh-token; cc-at=access-token; usid=test-usid; customerId=test-customer-id'
+            );
+
+            // Verify next was called
+            expect(next).toHaveBeenCalled();
+        });
+
+        it('should determine user type from refresh token cookie presence - guest', async () => {
+            const mockTokenResponse = getMockTokenResponse();
+            mockHelpers.loginGuestUser.mockResolvedValue(mockTokenResponse);
+
+            // Mock guest refresh token cookie only
+            mockParseAllCookies.mockReturnValue({
+                'cc-nx-g': 'guest-refresh-token',
+            });
+
+            const request = new Request('https://example.com/test', {
+                headers: {
+                    Cookie: 'cc-nx-g=guest-refresh-token',
+                },
+            });
+
+            const context = new RouterContextProvider();
+            const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
+
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                // Return storage when asked for authStorageContext
+                return storage;
+            });
+
+            vi.spyOn(context, 'set').mockImplementation((_key, value) => {
+                if (typeof value === 'object' && value instanceof Map) {
+                    // Copy entries from the middleware's storage to our test storage
+                    value.forEach((v, k) => storage.set(k, v));
+                }
+            });
+
+            const mockResponse = new Response('OK');
+            const next = vi.fn().mockResolvedValue(mockResponse);
+
+            await authMiddleware({ request, context, params: {} }, next);
+
+            // Verify userType was set to 'guest' in storage
+            expect(storage.get('userType')).toBe('guest');
+        });
+
+        it('should determine user type from refresh token cookie presence - registered', async () => {
+            const mockTokenResponse = getMockTokenResponse();
+            mockHelpers.refreshAccessToken.mockResolvedValue(mockTokenResponse);
+
+            // Create valid JWT with expiry
+            const now = Math.floor(Date.now() / 1000);
+            const exp = now + 1800;
+            const mockAccessToken = `header.${btoa(JSON.stringify({ exp }))}.signature`;
+
+            // Mock registered refresh token cookie only
+            mockParseAllCookies.mockReturnValue({
+                'cc-nx': 'registered-refresh-token',
+                'cc-at': mockAccessToken,
+            });
+
+            const request = new Request('https://example.com/test', {
+                headers: {
+                    Cookie: 'cc-nx=registered-refresh-token; cc-at=access-token',
+                },
+            });
+
+            const context = new RouterContextProvider();
+            const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
+
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return storage;
+            });
+
+            vi.spyOn(context, 'set').mockImplementation((_key, value) => {
+                if (typeof value === 'object' && value instanceof Map) {
+                    value.forEach((v, k) => storage.set(k, v));
+                }
+            });
+
+            const mockResponse = new Response('OK');
+            const next = vi.fn().mockResolvedValue(mockResponse);
+
+            await authMiddleware({ request, context, params: {} }, next);
+
+            // Verify userType was set to 'registered' in storage
+            expect(storage.get('userType')).toBe('registered');
+        });
+
+        it('should skip auth retrieval for /resource/auth/ routes', async () => {
+            mockParseAllCookies.mockReturnValue({});
+
+            const request = new Request('https://example.com/resource/auth/login', {
+                method: 'POST',
+            });
+
+            const context = new RouterContextProvider();
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return new Map();
+            });
+
+            const mockResponse = new Response('OK');
+            const next = vi.fn().mockResolvedValue(mockResponse);
+
+            await authMiddleware({ request, context, params: {} }, next);
+
+            // Verify that guest login was NOT called (auth retrieval skipped)
+            expect(mockHelpers.loginGuestUser).not.toHaveBeenCalled();
+            expect(next).toHaveBeenCalled();
+        });
+
+        it('should extract access token expiry from JWT during middleware initialization', async () => {
+            // Create JWT with specific expiry
+            const now = Math.floor(Date.now() / 1000);
+            const exp = now + 1800; // 30 min from now
+            const payload = JSON.stringify({ exp });
+            const base64Payload = btoa(payload);
+            const mockAccessToken = `header.${base64Payload}.signature`;
+
+            mockParseAllCookies.mockReturnValue({
+                'cc-nx-g': 'guest-refresh-token',
+                'cc-at': mockAccessToken,
+            });
+
+            const request = new Request('https://example.com/test', {
+                headers: {
+                    Cookie: `cc-nx-g=guest-refresh-token; cc-at=${mockAccessToken}`,
+                },
+            });
+
+            const context = new RouterContextProvider();
+            const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
+
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return storage;
+            });
+
+            vi.spyOn(context, 'set').mockImplementation((_key, value) => {
+                if (typeof value === 'object' && value instanceof Map) {
+                    value.forEach((v, k) => storage.set(k, v));
+                }
+            });
+
+            const mockResponse = new Response('OK');
+            const next = vi.fn().mockResolvedValue(mockResponse);
+
+            await authMiddleware({ request, context, params: {} }, next);
+
+            // Verify access_token_expiry was set from JWT
+            const expiry = storage.get('access_token_expiry');
+            expect(expiry).toBeDefined();
+            expect(typeof expiry).toBe('number');
+            expect(expiry).toBe(exp * 1000); // Should be in milliseconds
+        });
+
+        it('should destroy all 7 cookies when isDestroyed is set', async () => {
+            mockParseAllCookies.mockReturnValue({
+                'cc-nx-g': 'guest-refresh-token',
+            });
+
+            const request = new Request('https://example.com/test');
+
+            const context = new RouterContextProvider();
+            const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
+            storage.set('isDestroyed', true);
+
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return storage;
+            });
+
+            vi.spyOn(context, 'set').mockImplementation((_key, value) => {
+                if (typeof value === 'object' && value instanceof Map) {
+                    value.forEach((v, k) => storage.set(k, v));
+                }
+            });
+
+            const mockSerialize = vi.fn().mockResolvedValue('Set-Cookie: mock=deleted');
+            mockCreateCookie.mockReturnValue({
+                serialize: mockSerialize,
+            });
+
+            const mockResponse = new Response('OK');
+            const next = vi.fn().mockResolvedValue(mockResponse);
+
+            await authMiddleware({ request, context, params: {} }, next);
+
+            // Verify all 7 cookies were deleted:
+            // cc-nx-g, cc-nx, cc-at, usid, customerId, cc-idp-at, cc-cv
+            expect(mockSerialize).toHaveBeenCalledTimes(7);
+            expect(mockSerialize).toHaveBeenCalledWith(
+                '',
+                expect.objectContaining({
+                    expires: expect.any(Date),
+                    maxAge: undefined,
+                })
+            );
+        });
+
+        it('should set separate cookies when auth tokens are refreshed including IDP tokens', async () => {
+            // Create expired JWT to trigger refresh flow
+            const now = Math.floor(Date.now() / 1000);
+            const exp = now - 100; // Expired token
+            const expiredAccessToken = `header.${btoa(JSON.stringify({ exp }))}.signature`;
+
+            // Mock cookies with expired access token but valid refresh token
+            mockParseAllCookies.mockReturnValue({
+                'cc-nx-g': 'old-refresh-token',
+                'cc-at': expiredAccessToken,
+            });
+
+            const request = new Request('https://example.com/test');
+
+            const context = new RouterContextProvider();
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return new Map();
+            });
+
+            const mockSerialize = vi.fn().mockResolvedValue('Set-Cookie: mock=value');
+            mockCreateCookie.mockReturnValue({
+                serialize: mockSerialize,
+            });
+
+            const mockResponse = new Response('OK');
+            const next = vi.fn().mockResolvedValue(mockResponse);
+
+            // Mock token response to control what gets written after refresh
+            const mockTokenResponse = getMockTokenResponse();
+            mockHelpers.refreshAccessToken.mockResolvedValue(mockTokenResponse);
+
+            await authMiddleware({ request, context, params: {} }, next);
+
+            // Verify serialize was called multiple times
+            // Cookies: refresh_token, access_token, usid, customer_id, idp_access_token,
+            // delete other refresh token, delete code verifier
+            expect(mockSerialize).toHaveBeenCalled();
+            expect(mockSerialize.mock.calls.length).toBeGreaterThanOrEqual(6);
+
+            // Verify tokens from mock response were serialized
+            expect(mockSerialize).toHaveBeenCalledWith('refresh-token-456', expect.any(Object));
+            expect(mockSerialize).toHaveBeenCalledWith('access-token-123', expect.any(Object));
+            expect(mockSerialize).toHaveBeenCalledWith('usid-abc', expect.any(Object));
+            expect(mockSerialize).toHaveBeenCalledWith('customer-789', expect.any(Object));
+            expect(mockSerialize).toHaveBeenCalledWith('idp-access-token-123', expect.any(Object));
+        });
+
+        it('should delete other refresh token cookie when switching user types', async () => {
+            mockParseAllCookies.mockReturnValue({});
+
+            const request = new Request('https://example.com/test');
+
+            const now = Date.now();
+            const context = new RouterContextProvider();
+            const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
+            storage.set('isUpdated', true);
+            storage.set('userType', 'registered'); // Switching from guest to registered
+            storage.set('refresh_token', 'registered-refresh-token');
+            storage.set('refresh_token_expiry', now + 3600000);
+            storage.set('access_token', 'access-token');
+            storage.set('access_token_expiry', now + 1800000);
+
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return storage;
+            });
+
+            vi.spyOn(context, 'set').mockImplementation((_key, value) => {
+                if (typeof value === 'object' && value instanceof Map) {
+                    value.forEach((v, k) => storage.set(k, v));
+                }
+            });
+
+            const mockSerialize = vi.fn().mockResolvedValue('Set-Cookie: mock=value');
+            mockCreateCookie.mockReturnValue({
+                serialize: mockSerialize,
+            });
+
+            const mockResponse = new Response('OK');
+            const next = vi.fn().mockResolvedValue(mockResponse);
+
+            await authMiddleware({ request, context, params: {} }, next);
+
+            // Verify the "other" refresh token cookie (guest in this case) was deleted
+            // One call should be to delete the guest cookie with empty string
+            const deleteCallsWithEmptyString = mockSerialize.mock.calls.filter(
+                (call) => call[0] === '' && call[1]?.expires instanceof Date
+            );
+            expect(deleteCallsWithEmptyString.length).toBeGreaterThan(0);
+        });
+
+        it('should handle error in storage and destroy cookies', async () => {
+            mockParseAllCookies.mockReturnValue({
+                'cc-nx-g': 'guest-refresh-token',
+            });
+
+            const request = new Request('https://example.com/test');
+
+            const context = new RouterContextProvider();
+            const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
+            storage.set('error', 'Authentication error');
+
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return storage;
+            });
+
+            vi.spyOn(context, 'set').mockImplementation((_key, value) => {
+                if (typeof value === 'object' && value instanceof Map) {
+                    value.forEach((v, k) => storage.set(k, v));
+                }
+            });
+
+            const mockSerialize = vi.fn().mockResolvedValue('Set-Cookie: mock=deleted');
+            mockCreateCookie.mockReturnValue({
+                serialize: mockSerialize,
+            });
+
+            const mockResponse = new Response('OK');
+            const next = vi.fn().mockResolvedValue(mockResponse);
+
+            await authMiddleware({ request, context, params: {} }, next);
+
+            // Verify all 7 cookies were deleted due to error
+            expect(mockSerialize).toHaveBeenCalledTimes(7);
+        });
+
+        it('should use getCookieNameWithSiteId to get cookie names', async () => {
+            mockParseAllCookies.mockReturnValue({});
+            mockgetCookieNameWithSiteId.mockImplementation((name: string) => `namespace_${name}`);
+
+            const request = new Request('https://example.com/test', {
+                headers: {
+                    Cookie: 'namespace_cc-nx-g=guest-token',
+                },
+            });
+
+            const context = new RouterContextProvider();
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return new Map();
+            });
+
+            const mockResponse = new Response('OK');
+            const next = vi.fn().mockResolvedValue(mockResponse);
+
+            await authMiddleware({ request, context, params: {} }, next);
+
+            // Verify getCookieNameWithSiteId was called for each cookie
+            expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('cc-nx-g', context);
+            expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('cc-nx', context);
+            expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('cc-at', context);
+            expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('usid', context);
+            expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('customerId', context);
+            expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('cc-idp-at', context);
+            expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('cc-cv', context);
+        });
+
+        it('should handle missing cookies gracefully', async () => {
+            // No cookies present
+            mockParseAllCookies.mockReturnValue({});
+
+            const mockTokenResponse = getMockTokenResponse();
+            mockHelpers.loginGuestUser.mockResolvedValue(mockTokenResponse);
+
+            const request = new Request('https://example.com/test');
+
+            const context = new RouterContextProvider();
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return new Map();
+            });
+
+            const mockResponse = new Response('OK');
+            const next = vi.fn().mockResolvedValue(mockResponse);
+
+            await authMiddleware({ request, context, params: {} }, next);
+
+            // Should fall back to guest login when no cookies present
+            expect(mockHelpers.loginGuestUser).toHaveBeenCalled();
+            expect(next).toHaveBeenCalled();
+        });
+
+        it('should prioritize registered refresh token over guest when both exist', async () => {
+            // Both refresh tokens present (shouldn't happen in practice but test defensive logic)
+            mockParseAllCookies.mockReturnValue({
+                'cc-nx': 'registered-refresh-token',
+                'cc-nx-g': 'guest-refresh-token',
+            });
+
+            const mockTokenResponse = getMockTokenResponse();
+            mockHelpers.refreshAccessToken.mockResolvedValue(mockTokenResponse);
+
+            const request = new Request('https://example.com/test', {
+                headers: {
+                    Cookie: 'cc-nx=registered-refresh-token; cc-nx-g=guest-refresh-token',
+                },
+            });
+
+            const context = new RouterContextProvider();
+            const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
+
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return storage;
+            });
+
+            vi.spyOn(context, 'set').mockImplementation((_key, value) => {
+                if (typeof value === 'object' && value instanceof Map) {
+                    value.forEach((v, k) => storage.set(k, v));
+                }
+            });
+
+            const mockResponse = new Response('OK');
+            const next = vi.fn().mockResolvedValue(mockResponse);
+
+            await authMiddleware({ request, context, params: {} }, next);
+
+            // Should use registered type (cc-nx takes priority)
+            expect(storage.get('userType')).toBe('registered');
+            expect(storage.get('refresh_token')).toBe('registered-refresh-token');
+        });
+
+        it('should read and reconstruct IDP access token from cookies', async () => {
+            const mockTokenResponse = getMockTokenResponse();
+            mockHelpers.loginGuestUser.mockResolvedValue(mockTokenResponse);
+
+            // Create valid JWT with expiry
+            const now = Math.floor(Date.now() / 1000);
+            const exp = now + 1800;
+            const mockAccessToken = `header.${btoa(JSON.stringify({ exp }))}.signature`;
+
+            // Mock cookies including IDP access token
+            mockParseAllCookies.mockReturnValue({
+                'cc-nx-g': 'guest-refresh-token',
+                'cc-at': mockAccessToken,
+                'cc-idp-at': 'idp-access-token',
+            });
+
+            const request = new Request('https://example.com/test', {
+                headers: {
+                    Cookie: 'cc-nx-g=guest-refresh-token; cc-at=access-token; cc-idp-at=idp-access-token',
+                },
+            });
+
+            const context = new RouterContextProvider();
+            const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
+
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return storage;
+            });
+
+            vi.spyOn(context, 'set').mockImplementation((_key, value) => {
+                if (typeof value === 'object' && value instanceof Map) {
+                    value.forEach((v, k) => storage.set(k, v));
+                }
+            });
+
+            const mockResponse = new Response('OK');
+            const next = vi.fn().mockResolvedValue(mockResponse);
+
+            await authMiddleware({ request, context, params: {} }, next);
+
+            // Verify IDP access token was reconstructed from cookies
+            expect(storage.get('idp_access_token')).toBe('idp-access-token');
+        });
+
+        it('should read and reconstruct code verifier from cookie', async () => {
+            const mockTokenResponse = getMockTokenResponse();
+            mockHelpers.loginGuestUser.mockResolvedValue(mockTokenResponse);
+
+            // Create valid JWT with expiry
+            const now = Math.floor(Date.now() / 1000);
+            const exp = now + 1800;
+            const mockAccessToken = `header.${btoa(JSON.stringify({ exp }))}.signature`;
+
+            // Mock cookies including code verifier
+            mockParseAllCookies.mockReturnValue({
+                'cc-nx-g': 'guest-refresh-token',
+                'cc-at': mockAccessToken,
+                'cc-cv': 'code-verifier-abc123',
+            });
+
+            const request = new Request('https://example.com/test', {
+                headers: {
+                    Cookie: 'cc-nx-g=guest-refresh-token; cc-at=access-token; cc-cv=code-verifier-abc123',
+                },
+            });
+
+            const context = new RouterContextProvider();
+            const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
+
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return storage;
+            });
+
+            vi.spyOn(context, 'set').mockImplementation((_key, value) => {
+                if (typeof value === 'object' && value instanceof Map) {
+                    value.forEach((v, k) => storage.set(k, v));
+                }
+            });
+
+            const mockResponse = new Response('OK');
+            const next = vi.fn().mockResolvedValue(mockResponse);
+
+            await authMiddleware({ request, context, params: {} }, next);
+
+            // Verify code verifier was reconstructed from cookie
+            expect(storage.get('codeVerifier')).toBe('code-verifier-abc123');
+        });
+
+        it('should delete code verifier cookie when not present in storage', async () => {
+            mockParseAllCookies.mockReturnValue({});
+
+            const request = new Request('https://example.com/test');
+
+            const now = Date.now();
+            const context = new RouterContextProvider();
+            const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
+            storage.set('isUpdated', true);
+            storage.set('userType', 'guest');
+            storage.set('refresh_token', 'refresh-token');
+            storage.set('refresh_token_expiry', now + 3600000);
+            storage.set('access_token', 'access-token');
+            storage.set('access_token_expiry', now + 1800000);
+            // Note: codeVerifier is NOT in storage (e.g., after successful social login)
+
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return storage;
+            });
+
+            vi.spyOn(context, 'set').mockImplementation((_key, value) => {
+                if (typeof value === 'object' && value instanceof Map) {
+                    value.forEach((v, k) => storage.set(k, v));
+                }
+            });
+
+            const mockSerialize = vi.fn().mockResolvedValue('Set-Cookie: mock=deleted');
+            mockCreateCookie.mockReturnValue({
+                serialize: mockSerialize,
+            });
+
+            const mockResponse = new Response('OK');
+            const next = vi.fn().mockResolvedValue(mockResponse);
+
+            await authMiddleware({ request, context, params: {} }, next);
+
+            // Verify code verifier cookie was deleted (empty string with expired date)
+            const deleteCodeVerifierCalls = mockSerialize.mock.calls.filter(
+                (call) => call[0] === '' && call[1]?.httpOnly === true && call[1]?.expires instanceof Date
+            );
+            expect(deleteCodeVerifierCalls.length).toBeGreaterThan(0);
         });
     });
 });

@@ -14,6 +14,16 @@ import { getConfig, type AppConfig } from '@/config';
 export const MAX_GUEST_REFRESH_TOKEN_EXPIRY = 30 * 24 * 60 * 60; // 30 days
 export const MAX_REGISTERED_REFRESH_TOKEN_EXPIRY = 90 * 24 * 60 * 60; // 90 days
 
+// Cookie names for split auth storage
+// These are used on both server and client for auth token management
+export const COOKIE_REFRESH_TOKEN_GUEST = 'cc-nx-g'; // Guest user refresh token
+export const COOKIE_REFRESH_TOKEN_REGISTERED = 'cc-nx'; // Registered user refresh token
+export const COOKIE_ACCESS_TOKEN = 'cc-at'; // Access token
+export const COOKIE_USID = 'usid'; // User session ID
+export const COOKIE_CUSTOMER_ID = 'customerId'; // Customer ID
+export const COOKIE_IDP_ACCESS_TOKEN = 'cc-idp-at'; // IDP access token (for social login)
+export const COOKIE_CODE_VERIFIER = 'cc-cv'; // OAuth2 PKCE code verifier (server-only, short-lived)
+
 /**
  * Get refresh token expiry configuration for a specific user type.
  * Returns the final expiry time in seconds, either from environment variables or API response fallback.
@@ -92,7 +102,11 @@ export const updateAuthStorageDataByTokenResponse = (
 
     storage.set('access_token', tokenResponse?.access_token);
     storage.set('refresh_token', tokenResponse?.refresh_token);
-    storage.set('access_token_expiry', now + Number(tokenResponse?.expires_in) * 1_000);
+
+    // Get expiry from JWT token itself (source of truth) rather than calculating from expires_in
+    // This decodes once during storage and allows fast numeric comparison at runtime
+    const accessTokenExpiry = tokenResponse?.access_token ? getSLASAccessTokenExpiry(tokenResponse.access_token) : null;
+    storage.set('access_token_expiry', accessTokenExpiry ?? now + Number(tokenResponse?.expires_in) * 1_000);
 
     // Get final refresh token expiry (with environment override if configured)
     const apiResponseExpirySeconds = Number(tokenResponse?.refresh_token_expires_in);
@@ -109,11 +123,16 @@ export const updateAuthStorageDataByTokenResponse = (
         storage.set('usid', tokenResponse.usid);
     }
 
+    // Store IDP access token if available (for social login)
+    // IDP token doesn't come with its own expiry, so we use the SLAS access token expiry as a reasonable proxy
+    // If the SLAS session expires, the IDP token becomes less useful anyway
     if (tokenResponse?.idp_access_token) {
         storage.set('idp_access_token', tokenResponse.idp_access_token);
-    }
-    if (tokenResponse?.idp_refresh_token) {
-        storage.set('idp_refresh_token', tokenResponse.idp_refresh_token);
+        // Use same expiry as SLAS access token for IDP access token
+        const idpAccessTokenExpiry = storage.get('access_token_expiry');
+        if (idpAccessTokenExpiry && typeof idpAccessTokenExpiry === 'number') {
+            storage.set('idp_access_token_expiry', idpAccessTokenExpiry);
+        }
     }
 };
 
@@ -193,3 +212,79 @@ export const createAuthPromise = (
     );
     return promise;
 };
+
+/**
+ * Decoded payload from SLAS access token
+ */
+export interface SLASAccessTokenPayload {
+    /** Expiration time (Unix timestamp in seconds) */
+    exp: number;
+    /** Issued at time (Unix timestamp in seconds) */
+    iat?: number;
+    /** Issuer */
+    iss?: string;
+    /** Subject (user ID) */
+    sub?: string;
+    /** Custom claims */
+    [key: string]: unknown;
+}
+
+/**
+ * Decode a SLAS access token payload without verifying the signature
+ *
+ * SECURITY NOTE: This only decodes the payload, it does NOT verify the signature.
+ * Only use this for reading non-sensitive claims like expiry time from SLAS access tokens.
+ * Never use decoded data for authorization decisions without proper verification.
+ *
+ * For external JWT tokens (passwordless login, reset password), use `jose.decodeJwt` with verification.
+ *
+ * @param token - SLAS access token string
+ * @returns Decoded SLAS access token payload
+ * @throws Error if token is invalid or cannot be decoded
+ */
+export function decodeSLASAccessToken(token: string): SLASAccessTokenPayload {
+    if (!token || typeof token !== 'string') {
+        throw new Error('Invalid token: must be a non-empty string');
+    }
+
+    const parts = token.split('.');
+    if (parts.length !== 3) {
+        throw new Error('Invalid JWT: must have 3 parts (header.payload.signature)');
+    }
+
+    try {
+        // Decode the payload (second part)
+        const payload = parts[1];
+        if (!payload) {
+            throw new Error('Invalid JWT: missing payload');
+        }
+
+        // JWT uses base64url encoding, need to convert to standard base64
+        const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+
+        // Decode based on environment
+        const decoded =
+            typeof window === 'undefined'
+                ? Buffer.from(base64, 'base64').toString('utf-8') // Node.js
+                : atob(base64); // Browser
+
+        return JSON.parse(decoded) as SLASAccessTokenPayload;
+    } catch (error) {
+        throw new Error(`Failed to decode JWT: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+}
+
+/**
+ * Get the expiry timestamp from a SLAS access token
+ *
+ * @param token - SLAS access token string
+ * @returns Expiry timestamp in milliseconds, or null if token is invalid or has no exp claim
+ */
+export function getSLASAccessTokenExpiry(token: string): number | null {
+    try {
+        const payload = decodeSLASAccessToken(token);
+        return payload.exp !== undefined ? payload.exp * 1000 : null;
+    } catch {
+        return null;
+    }
+}

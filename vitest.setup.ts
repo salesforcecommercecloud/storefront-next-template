@@ -1,6 +1,12 @@
 import '@testing-library/jest-dom';
 import { cleanup } from '@testing-library/react';
 import { afterEach, vi } from 'vitest';
+import { mockConfig } from '@/test-utils/config';
+
+// Set window.__APP_CONFIG__ before any modules are imported
+// This ensures getConfig() works during module initialization in tests where it is used before the config provider is rendered.
+// to initialize AuthContext for hydration.
+(window as Window & { __APP_CONFIG__: typeof mockConfig }).__APP_CONFIG__ = mockConfig;
 
 afterEach(() => {
     cleanup();

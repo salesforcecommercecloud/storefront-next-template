@@ -1,11 +1,25 @@
-import type { AppConfig } from '@/config';
+import { getConfig } from '@/config/get-config';
+import type { RouterContextProvider } from 'react-router';
+
+/**
+ * List of cookie names that should NOT be namespaced.
+ * These cookies will be used as-is without siteId suffix.
+ *
+ * Add cookie names here that need to be shared across sites or
+ * that are used by external systems that don't support namespacing.
+ *
+ * @example
+ * const COOKIE_NAMESPACE_EXCLUSIONS = ['dwsid', 'external-analytics-id'];
+ */
+export const COOKIE_NAMESPACE_EXCLUSIONS: readonly string[] = [
+    // Add cookie names that should not be namespaced here
+    'dwsid',
+];
 
 /**
  * Cookie configuration attributes.
- * Compatible with both client (js-cookie) and server (React Router createCookie) environments.
+ * Compatible with both client and server environments.
  *
- * Note: `expires` is typed as `Date` for React Router compatibility.
- * js-cookie also accepts `number` (days), but use `Date` for universal compatibility.
  */
 export interface CookieConfig {
     domain?: string;
@@ -18,6 +32,46 @@ export interface CookieConfig {
 }
 
 /**
+ * Get the namespaced cookie name by appending siteId.
+ *
+ * If the cookie name is in COOKIE_NAMESPACE_EXCLUSIONS, returns the name as-is.
+ *
+ * @param name - Base cookie name
+ * @param context - Optional router context (server loaders/actions only, omit for client-side)
+ * @returns Namespaced cookie name in format: `${name}_${siteId}`, or original name if excluded
+ *
+ * @example
+ * // Server-side with context
+ * getCookieNameWithSiteId('cc-nx-g', context); // Returns "cc-nx-g_RefArch"
+ *
+ * @example
+ * // Client-side without context
+ * getCookieNameWithSiteId('cc-nx-g'); // Returns "cc-nx-g_RefArch"
+ *
+ * @example
+ * // Returns "dwsid" (if in exclusions array)
+ * getCookieNameWithSiteId('dwsid');
+ */
+export const getCookieNameWithSiteId = (name: string, context?: Readonly<RouterContextProvider>): string => {
+    // Check if this cookie should be excluded from namespacing
+    if (COOKIE_NAMESPACE_EXCLUSIONS.includes(name)) {
+        return name;
+    }
+
+    // Get config using getConfig() - handles both server (with context) and client (without)
+    const config = getConfig(context);
+    const siteId = config.commerce.api.siteId;
+
+    if (!siteId) {
+        throw new Error(
+            'siteId not available for cookie namespacing. ' + 'Ensure configuration is properly initialized.'
+        );
+    }
+
+    return `${name}_${siteId}`;
+};
+
+/**
  * Get cookie configuration with proper precedence order.
  *
  * Precedence (highest to lowest):
@@ -26,18 +80,17 @@ export interface CookieConfig {
  * 3. Default values (path, sameSite, secure)
  *
  * @param cookieOptions - Optional cookie options to merge with defaults and environment config
- * @param appConfig - Optional app config (pass from context on server-side, undefined on client-side)
+ * @param context - Optional router context (server loaders/actions only, omit for client-side)
  * @returns Final cookie attributes with proper precedence applied
  *
  * @example
- * // Get base configuration with defaults (client-side)
+ * // Client-side - uses getConfig() automatically
  * const cookieConfig = getCookieConfig();
- * // Result: { path: '/', sameSite: 'lax', secure: true }
+ * // Result: { path: '/', sameSite: 'lax', secure: true, domain: '<from env>' }
  *
  * @example
- * // Server-side with config from context
- * const appConfig = getConfig(context);
- * const cookieConfig = getCookieConfig({ httpOnly: false }, appConfig);
+ * // Server-side - pass context
+ * const cookieConfig = getCookieConfig({ httpOnly: false }, context);
  * // Result includes domain from config if set
  *
  * @example
@@ -48,17 +101,16 @@ export interface CookieConfig {
  *
  * @example
  * // Use with React Router's createCookie (server-side)
- * const appConfig = getConfig(context);
- * const authCookie = createCookie('auth', getCookieConfig({ httpOnly: false }, appConfig));
+ * const authCookie = createCookie('auth', getCookieConfig({ httpOnly: false }, context));
  *
  * @example
- * // Use with js-cookie (client-side, no config needed)
+ * // Use with js-cookie (client-side)
  * import Cookies from 'js-cookie';
  * Cookies.set('auth', value, getCookieConfig());
  */
 export const getCookieConfig = <T extends object = CookieConfig>(
     cookieOptions?: T,
-    appConfig?: AppConfig
+    context?: Readonly<RouterContextProvider>
 ): T & CookieConfig => {
     // 3. Start with defaults (lowest priority)
     const defaults: CookieConfig = {
@@ -73,13 +125,15 @@ export const getCookieConfig = <T extends object = CookieConfig>(
         ...cookieOptions,
     };
 
-    // 1. Apply app config cookie overrides (highest priority, server-side only)
+    // 1. Apply app config cookie overrides (highest priority)
     const cookieConfigOverrides: CookieConfig = {};
-    if (appConfig) {
-        const cookieDomain = appConfig.site?.cookies?.domain;
-        if (cookieDomain) {
-            cookieConfigOverrides.domain = cookieDomain;
-        }
+
+    // Get config using getConfig() - handles both server (with context) and client (without)
+    const config = getConfig(context);
+
+    const cookieDomain = config.site?.cookies?.domain;
+    if (cookieDomain) {
+        cookieConfigOverrides.domain = cookieDomain;
     }
 
     return {

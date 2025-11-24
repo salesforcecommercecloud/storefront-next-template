@@ -1,0 +1,10 @@
+<!-- 
+  CRITICAL: Initialize window.__APP_CONFIG__ before other modules load
+  This ensures getConfig() works during module initialization (e.g., AuthContext creation)
+  Imports mockConfig from test-utils (same pattern as importing AuthProvider in storybook-providers.tsx)
+-->
+<script type="module">
+  import { mockConfig } from '../src/test-utils/config';
+  window.__APP_CONFIG__ = mockConfig;
+</script>
+

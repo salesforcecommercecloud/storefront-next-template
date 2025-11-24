@@ -8,8 +8,12 @@ import authMiddleware, {
     destroyAuth,
     flashAuth,
     refreshAuthFromCookie,
+    getAuthDataFromCookies,
+    clearInvalidSessionAndRestoreGuest,
 } from '@/middlewares/auth.client';
-import { getCookie, getCookieConfig } from '@/lib/cookies.client';
+import { getAllCookies } from '@/lib/cookies.client';
+import { appConfigContext } from '@/config/context';
+import { mockConfig } from '@/test-utils/config';
 
 function expectStorage(data: AuthStorageData = {}): {
     provider: RouterContextProvider;
@@ -19,7 +23,43 @@ function expectStorage(data: AuthStorageData = {}): {
     const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>(
         Object.entries(data) as [keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]][]
     );
-    vi.spyOn(provider, 'get').mockReturnValue(storage);
+
+    // Create cache objects that match what the middleware expects
+    const authData = Object.keys(data).length > 0 ? Object.fromEntries(storage) : undefined;
+    const cache = { ref: authData };
+    const promiseCache = { ref: Promise.resolve(authData) };
+
+    // Store the contexts in a Map so we can return the right one
+    const contexts = new Map();
+    // Pre-populate with appConfig
+    contexts.set(appConfigContext, mockConfig);
+
+    // Mock context.get() and context.set() to handle different contexts appropriately
+    vi.spyOn(provider, 'set').mockImplementation((contextKey: any, value: any) => {
+        contexts.set(contextKey, value);
+        return provider;
+    });
+
+    vi.spyOn(provider, 'get').mockImplementation((contextKey: any) => {
+        // If this context was already set, return what was set
+        if (contexts.has(contextKey)) {
+            return contexts.get(contextKey);
+        }
+
+        // Otherwise, try to return appropriate defaults
+        // Check if it's a context that expects a promise cache structure
+        if (contextKey?.displayName === 'authContext' || String(contextKey).includes('Promise')) {
+            return promiseCache;
+        }
+
+        // Check if it's a context that expects a cache structure
+        if (contextKey?.displayName === 'authCacheContext' || String(contextKey).includes('Cache')) {
+            return cache;
+        }
+
+        // Default to storage Map
+        return storage;
+    });
 
     return {
         provider,
@@ -39,26 +79,39 @@ function getAuthData(): AuthData {
         codeVerifier: 'codeVerifier',
         dwsid: 'dwsid',
         idp_access_token: 'idp_access_token',
-        idp_refresh_token: 'idp_refresh_token',
+        idp_access_token_expiry: Date.now() + 1_000,
         dnt: 'true',
     };
 }
 
 // Mock cookies.client module
 vi.mock('@/lib/cookies.client', () => ({
-    getCookie: vi.fn(),
-    setCookie: vi.fn(),
     removeCookie: vi.fn(),
-    getCookieConfig: vi.fn(),
+    getAllCookies: vi.fn(),
+    setNamespacedCookie: vi.fn(),
 }));
+
+// Mock cookie-utils module
+vi.mock('@/lib/cookie-utils', async () => {
+    const actual = await vi.importActual('@/lib/cookie-utils');
+    return {
+        ...actual,
+        getCookieNameWithSiteId: vi.fn((name: string) => `${name}_test-site`),
+    };
+});
+
+// Mock fetch for token refresh and guest login API calls
+global.fetch = vi.fn();
 
 describe('auth middleware (client)', () => {
     beforeEach(() => {
-        vi.mocked(getCookie).mockReturnValue({});
-        vi.mocked(getCookieConfig).mockReturnValue({
-            path: '/',
-            sameSite: 'lax',
-            secure: true,
+        vi.mocked(getAllCookies).mockReturnValue({
+            'cc-nx-g_test-site': '',
+            'cc-nx_test-site': '',
+            'cc-at_test-site': '',
+            'usid_test-site': '',
+            'customerId_test-site': '',
+            'cc-idp-at_test-site': '',
         });
     });
 
@@ -67,19 +120,44 @@ describe('auth middleware (client)', () => {
         vi.resetModules();
     });
 
-    describe('middleware cookie configuration', () => {
-        test('should use cookie utilities from cookies.client module', async () => {
-            // This test verifies the middleware uses the centralized cookie utilities
-            // which internally use getCookieConfig for proper configuration
-            vi.mocked(getCookie).mockReturnValue({});
+    describe('middleware integration', () => {
+        test('should read cookies using getAuthDataFromCookies via readClientAuthCookies', async () => {
+            vi.mocked(getAllCookies).mockReturnValue({
+                'cc-nx-g_test-site': 'guest_refresh_token',
+                'cc-nx_test-site': '',
+                'cc-at_test-site': 'guest_access_token',
+                'usid_test-site': 'guest_usid',
+                'customerId_test-site': 'guest_customer',
+                'cc-idp-at_test-site': '',
+            });
 
             const mockContext = new RouterContextProvider();
             const mockNext = vi.fn().mockResolvedValue(undefined);
 
             await authMiddleware({ context: mockContext } as any, mockNext);
 
-            // Verify the middleware reads cookies on initialization
-            expect(getCookie).toHaveBeenCalled();
+            // Verify getAllCookies was called to read all cookies at once for optimal performance
+            expect(getAllCookies).toHaveBeenCalled();
+            expect(mockNext).toHaveBeenCalled();
+        });
+
+        test('should handle empty cookies and still execute next', async () => {
+            vi.mocked(getAllCookies).mockReturnValue({
+                'cc-nx-g_test-site': '',
+                'cc-nx_test-site': '',
+                'cc-at_test-site': '',
+                'usid_test-site': '',
+                'customerId_test-site': '',
+                'cc-idp-at_test-site': '',
+            });
+
+            const mockContext = new RouterContextProvider();
+            const mockNext = vi.fn().mockResolvedValue(undefined);
+
+            await authMiddleware({ context: mockContext } as any, mockNext);
+
+            expect(getAllCookies).toHaveBeenCalled();
+            expect(mockNext).toHaveBeenCalled();
         });
     });
 
@@ -185,6 +263,13 @@ describe('auth middleware (client)', () => {
 
             expect(storage.get('isDestroyed')).toBe(true);
         });
+
+        test('should throw error when called without proper middleware context', () => {
+            const provider = new RouterContextProvider();
+            vi.spyOn(provider, 'get').mockReturnValue(undefined);
+
+            expect(() => destroyAuth(provider)).toThrow('destroyAuth must be used within the Commerce API middleware');
+        });
     });
 
     describe('flashAuth()', () => {
@@ -205,6 +290,13 @@ describe('auth middleware (client)', () => {
 
             expect(storage.get('error')).toBe('');
         });
+
+        test('should throw error when called without proper middleware context', () => {
+            const provider = new RouterContextProvider();
+            vi.spyOn(provider, 'get').mockReturnValue(undefined);
+
+            expect(() => flashAuth(provider)).toThrow('flashAuth must be used within the Commerce API middleware');
+        });
     });
 
     describe('refreshAuthFromCookie()', () => {
@@ -220,12 +312,15 @@ describe('auth middleware (client)', () => {
         test('should return false when cookie access token matches current token', () => {
             const data = getAuthData();
             const { provider } = expectStorage(data);
-            vi.mocked(getCookie).mockReturnValue({
-                access_token: data.access_token,
-                refresh_token: data.refresh_token,
-                access_token_expiry: data.access_token_expiry,
-                refresh_token_expiry: data.refresh_token_expiry,
-                userType: 'guest',
+
+            // Mock getCookies to return current data values
+            vi.mocked(getAllCookies).mockReturnValue({
+                'cc-nx-g': data.refresh_token || '',
+                'cc-nx_test-site': '',
+                'cc-at': data.access_token || '',
+                usid: data.usid || '',
+                customerId: data.customer_id || '',
+                'cc-idp-at_test-site': '',
             });
 
             const result = refreshAuthFromCookie(provider);
@@ -243,16 +338,16 @@ describe('auth middleware (client)', () => {
                 userType: 'guest',
             });
 
-            const newCookieData = {
-                access_token: 'new_token',
-                refresh_token: 'new_refresh_token',
-                access_token_expiry: Date.now() + 5000,
-                refresh_token_expiry: Date.now() + 10000,
-                userType: 'registered',
-                customer_id: 'customer_123',
-            };
-
-            vi.mocked(getCookie).mockReturnValue(newCookieData);
+            // Mock getCookies to return new cookie values
+            // cc-nx (registered user cookie) exists, so userType should be 'registered'
+            vi.mocked(getAllCookies).mockReturnValue({
+                'cc-nx-g_test-site': '', // Guest cookie doesn't exist
+                'cc-nx_test-site': 'new_refresh_token', // Registered cookie exists
+                'cc-at_test-site': 'new_token',
+                'usid_test-site': '',
+                'customerId_test-site': 'customer_123',
+                'cc-idp-at_test-site': '',
+            });
 
             const result = refreshAuthFromCookie(provider);
 
@@ -274,15 +369,14 @@ describe('auth middleware (client)', () => {
                 userType: 'guest',
             });
 
-            vi.mocked(getCookie).mockReturnValue({
-                access_token: 'new_token',
-                access_token_expiry: currentData.access_token_expiry,
-                refresh_token: currentData.refresh_token,
-                refresh_token_expiry: currentData.refresh_token_expiry,
-                userType: 'guest',
-                isDestroyed: true,
-                error: 'some error',
-                isUpdated: true,
+            // Mock getCookies to return new cookie values (guest user)
+            vi.mocked(getAllCookies).mockReturnValue({
+                'cc-nx-g': currentData.refresh_token || '',
+                'cc-nx_test-site': '',
+                'cc-at_test-site': 'new_token',
+                'usid_test-site': '',
+                'customerId_test-site': '',
+                'cc-idp-at_test-site': '',
             });
 
             refreshAuthFromCookie(provider);
@@ -298,7 +392,15 @@ describe('auth middleware (client)', () => {
             const currentData = getAuthData();
             const { provider } = expectStorage(currentData);
 
-            vi.mocked(getCookie).mockReturnValue({});
+            // Mock getCookies to return empty values
+            vi.mocked(getAllCookies).mockReturnValue({
+                'cc-nx-g_test-site': '',
+                'cc-nx_test-site': '',
+                'cc-at_test-site': '',
+                'usid_test-site': '',
+                'customerId_test-site': '',
+                'cc-idp-at_test-site': '',
+            });
 
             const result = refreshAuthFromCookie(provider);
 
@@ -308,9 +410,14 @@ describe('auth middleware (client)', () => {
         test('should return false when current storage and cache have no access token', () => {
             const { provider } = expectStorage({});
 
-            vi.mocked(getCookie).mockReturnValue({
-                access_token: 'new_token',
-                refresh_token: 'new_refresh_token',
+            // Mock getCookies to return new cookie values
+            vi.mocked(getAllCookies).mockReturnValue({
+                'cc-nx-g_test-site': 'new_refresh_token',
+                'cc-nx_test-site': '',
+                'cc-at_test-site': 'new_token',
+                'usid_test-site': '',
+                'customerId_test-site': '',
+                'cc-idp-at_test-site': '',
             });
 
             const result = refreshAuthFromCookie(provider);
@@ -325,20 +432,428 @@ describe('auth middleware (client)', () => {
                 access_token_expiry: currentData.access_token_expiry,
             });
 
-            vi.mocked(getCookie).mockReturnValue({
-                access_token: 'new_token',
-                access_token_expiry: Date.now() + 5000,
-                usid: 'test_usid',
-                dwsid: 'test_dwsid',
-                idp_access_token: 'idp_token',
+            // Mock getCookies to return new cookie values with additional fields
+            vi.mocked(getAllCookies).mockReturnValue({
+                'cc-nx-g_test-site': 'new_refresh_token',
+                'cc-nx_test-site': '',
+                'cc-at_test-site': 'new_token',
+                'usid_test-site': 'test_usid',
+                'customerId_test-site': '',
+                'cc-idp-at_test-site': '',
             });
 
             refreshAuthFromCookie(provider);
 
             expect(storage.get('access_token')).toBe('new_token');
             expect(storage.get('usid')).toBe('test_usid');
-            expect(storage.get('dwsid')).toBe('test_dwsid');
-            expect(storage.get('idp_access_token')).toBe('idp_token');
+            expect(storage.get('userType')).toBe('guest'); // cc-nx-g exists
+        });
+    });
+
+    describe('getAuthDataFromCookies()', () => {
+        test('should return undefined when no auth cookies exist', () => {
+            vi.mocked(getAllCookies).mockReturnValue({
+                'cc-nx-g_test-site': '',
+                'cc-nx_test-site': '',
+                'cc-at_test-site': '',
+                'usid_test-site': '',
+                'customerId_test-site': '',
+                'cc-idp-at_test-site': '',
+            });
+
+            const result = getAuthDataFromCookies();
+
+            expect(result).toBeUndefined();
+        });
+
+        test('should return auth data for guest user with all fields', () => {
+            vi.mocked(getAllCookies).mockReturnValue({
+                'cc-nx-g_test-site': 'guest_refresh_token',
+                'cc-nx_test-site': '',
+                'cc-at_test-site': 'access_token',
+                'usid_test-site': 'test_usid',
+                'customerId_test-site': 'guest_customer_id',
+                'cc-idp-at_test-site': '',
+            });
+
+            const result = getAuthDataFromCookies();
+
+            expect(result).toBeDefined();
+            expect(result?.access_token).toBe('access_token');
+            expect(result?.refresh_token).toBe('guest_refresh_token');
+            expect(result?.usid).toBe('test_usid');
+            expect(result?.customer_id).toBe('guest_customer_id');
+            expect(result?.userType).toBe('guest');
+        });
+
+        test('should return auth data for registered user with all fields', () => {
+            vi.mocked(getAllCookies).mockReturnValue({
+                'cc-nx-g_test-site': '',
+                'cc-nx_test-site': 'registered_refresh_token',
+                'cc-at_test-site': 'access_token',
+                'usid_test-site': 'test_usid',
+                'customerId_test-site': 'registered_customer_id',
+                'cc-idp-at_test-site': '',
+            });
+
+            const result = getAuthDataFromCookies();
+
+            expect(result).toBeDefined();
+            expect(result?.access_token).toBe('access_token');
+            expect(result?.refresh_token).toBe('registered_refresh_token');
+            expect(result?.usid).toBe('test_usid');
+            expect(result?.customer_id).toBe('registered_customer_id');
+            expect(result?.userType).toBe('registered');
+        });
+
+        test('should prioritize registered user over guest when both cookies exist', () => {
+            vi.mocked(getAllCookies).mockReturnValue({
+                'cc-nx-g_test-site': 'guest_refresh_token',
+                'cc-nx_test-site': 'registered_refresh_token',
+                'cc-at_test-site': 'access_token',
+                'usid_test-site': 'test_usid',
+                'customerId_test-site': 'test_customer_id',
+                'cc-idp-at_test-site': '',
+            });
+
+            const result = getAuthDataFromCookies();
+
+            expect(result).toBeDefined();
+            expect(result?.refresh_token).toBe('registered_refresh_token');
+            expect(result?.userType).toBe('registered');
+        });
+
+        test('should return auth data with only access token', () => {
+            vi.mocked(getAllCookies).mockReturnValue({
+                'cc-nx-g_test-site': '',
+                'cc-nx_test-site': '',
+                'cc-at_test-site': 'access_token_only',
+                'usid_test-site': '',
+                'customerId_test-site': '',
+                'cc-idp-at_test-site': '',
+            });
+
+            const result = getAuthDataFromCookies();
+
+            expect(result).toBeDefined();
+            expect(result?.access_token).toBe('access_token_only');
+            expect(result?.refresh_token).toBeUndefined();
+            expect(result?.userType).toBe('guest');
+        });
+
+        test('should return auth data with only refresh token (guest)', () => {
+            vi.mocked(getAllCookies).mockReturnValue({
+                'cc-nx-g_test-site': 'guest_refresh_only',
+                'cc-nx_test-site': '',
+                'cc-at_test-site': '',
+                'usid_test-site': '',
+                'customerId_test-site': '',
+                'cc-idp-at_test-site': '',
+            });
+
+            const result = getAuthDataFromCookies();
+
+            expect(result).toBeDefined();
+            expect(result?.access_token).toBeUndefined();
+            expect(result?.refresh_token).toBe('guest_refresh_only');
+            expect(result?.userType).toBe('guest');
+        });
+
+        test('should return auth data with only refresh token (registered)', () => {
+            vi.mocked(getAllCookies).mockReturnValue({
+                'cc-nx-g_test-site': '',
+                'cc-nx_test-site': 'registered_refresh_only',
+                'cc-at_test-site': '',
+                'usid_test-site': '',
+                'customerId_test-site': '',
+                'cc-idp-at_test-site': '',
+            });
+
+            const result = getAuthDataFromCookies();
+
+            expect(result).toBeDefined();
+            expect(result?.access_token).toBeUndefined();
+            expect(result?.refresh_token).toBe('registered_refresh_only');
+            expect(result?.userType).toBe('registered');
+        });
+
+        test('should handle partial cookie data with usid but no customerId', () => {
+            vi.mocked(getAllCookies).mockReturnValue({
+                'cc-nx-g_test-site': 'guest_refresh_token',
+                'cc-nx_test-site': '',
+                'cc-at_test-site': 'access_token',
+                'usid_test-site': 'test_usid',
+                'customerId_test-site': '',
+                'cc-idp-at_test-site': '',
+            });
+
+            const result = getAuthDataFromCookies();
+
+            expect(result).toBeDefined();
+            expect(result?.usid).toBe('test_usid');
+            expect(result?.customer_id).toBeUndefined();
+        });
+
+        test('should handle partial cookie data with customerId but no usid', () => {
+            vi.mocked(getAllCookies).mockReturnValue({
+                'cc-nx-g_test-site': '',
+                'cc-nx_test-site': 'registered_refresh_token',
+                'cc-at_test-site': 'access_token',
+                'usid_test-site': '',
+                'customerId_test-site': 'test_customer_id',
+                'cc-idp-at_test-site': '',
+            });
+
+            const result = getAuthDataFromCookies();
+
+            expect(result).toBeDefined();
+            expect(result?.usid).toBeUndefined();
+            expect(result?.customer_id).toBe('test_customer_id');
+        });
+
+        test('should return undefined when only usid/customerId exist without tokens', () => {
+            vi.mocked(getAllCookies).mockReturnValue({
+                'cc-nx-g_test-site': '',
+                'cc-nx_test-site': '',
+                'cc-at_test-site': '',
+                'usid_test-site': 'test_usid',
+                'customerId_test-site': 'test_customer_id',
+                'cc-idp-at_test-site': '',
+            });
+
+            const result = getAuthDataFromCookies();
+
+            expect(result).toBeUndefined();
+        });
+
+        test('should extract access_token_expiry from JWT when access token exists', () => {
+            // Create a mock JWT with an expiry (simplified for testing)
+            // Real JWT structure: header.payload.signature
+            const futureExpiry = Math.floor(Date.now() / 1000) + 1800; // 30 minutes from now
+            const mockPayload = btoa(JSON.stringify({ exp: futureExpiry }));
+            const mockToken = `header.${mockPayload}.signature`;
+
+            vi.mocked(getAllCookies).mockReturnValue({
+                'cc-nx-g_test-site': 'guest_refresh_token',
+                'cc-nx_test-site': '',
+                'cc-at_test-site': mockToken,
+                'usid_test-site': 'test_usid',
+                'customerId_test-site': '',
+                'cc-idp-at_test-site': '',
+            });
+
+            const result = getAuthDataFromCookies();
+
+            expect(result).toBeDefined();
+            expect(result?.access_token).toBe(mockToken);
+            expect(result?.access_token_expiry).toBeDefined();
+            expect(typeof result?.access_token_expiry).toBe('number');
+            // Expiry should be in milliseconds
+            expect(result?.access_token_expiry).toBeGreaterThan(Date.now());
+        });
+
+        test('should handle IDP access token', () => {
+            vi.mocked(getAllCookies).mockReturnValue({
+                'cc-nx-g_test-site': 'guest_refresh_token',
+                'cc-nx_test-site': '',
+                'cc-at_test-site': 'access_token',
+                'usid_test-site': 'test_usid',
+                'customerId_test-site': 'guest_customer_id',
+                'cc-idp-at_test-site': 'idp_access_token_value',
+            });
+
+            const result = getAuthDataFromCookies();
+
+            expect(result).toBeDefined();
+            expect(result?.idp_access_token).toBe('idp_access_token_value');
+        });
+    });
+
+    describe('clearInvalidSessionAndRestoreGuest()', () => {
+        test('should throw error when called without proper middleware context', async () => {
+            const provider = new RouterContextProvider();
+            vi.spyOn(provider, 'get').mockReturnValue(undefined);
+
+            await expect(clearInvalidSessionAndRestoreGuest(provider)).rejects.toThrow(
+                'clearInvalidSessionAndRestoreGuest must be used within the Commerce API middleware'
+            );
+        });
+
+        test('should clear cookies, storage, call guest login, and update with new session', async () => {
+            const { removeCookie } = await import('@/lib/cookies.client');
+            const data = getAuthData();
+            const provider = new RouterContextProvider();
+            const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>(
+                Object.entries(data) as [keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]][]
+            );
+            const cache = { ref: data };
+            const promiseCache = { ref: Promise.resolve(data) };
+
+            // Mock context.get() and set() to handle all contexts
+            const contexts = new Map();
+            contexts.set(appConfigContext, mockConfig);
+
+            vi.spyOn(provider, 'set').mockImplementation((contextKey: any, value: any) => {
+                contexts.set(contextKey, value);
+                return provider;
+            });
+
+            // Track which values to return for unknown contexts
+            // Order: storage, cache, promiseCache for clearInvalidSessionAndRestoreGuest calls
+            let callIndex = 0;
+            const contextValues = [storage, cache, promiseCache];
+
+            const mockGet = vi.spyOn(provider, 'get');
+            mockGet.mockImplementation((contextKey: any) => {
+                // If it's appConfig, always return mockConfig
+                if (contextKey === appConfigContext) {
+                    return mockConfig;
+                }
+                // If the context was explicitly set, return it
+                if (contexts.has(contextKey)) {
+                    return contexts.get(contextKey);
+                }
+                // For unknown contexts, return in order: storage, cache, promiseCache
+                const value = contextValues[callIndex % contextValues.length];
+                callIndex++;
+                return value;
+            });
+
+            // Mock successful guest login
+            vi.mocked(fetch).mockResolvedValueOnce({
+                ok: true,
+                json: () =>
+                    Promise.resolve({
+                        success: true,
+                        data: {
+                            access_token: 'new_guest_token',
+                            refresh_token: 'new_guest_refresh',
+                            token_type: 'Bearer',
+                            expires_in: 1800,
+                            refresh_token_expires_in: 2592000,
+                            usid: 'new_usid',
+                        },
+                    }),
+            } as Response);
+
+            expect(storage.size).toBeGreaterThan(0);
+            expect(cache.ref).toBeDefined();
+
+            await clearInvalidSessionAndRestoreGuest(provider);
+
+            // Verify all auth cookies were removed
+            expect(removeCookie).toHaveBeenCalledWith('cc-nx-g');
+            expect(removeCookie).toHaveBeenCalledWith('cc-nx');
+            expect(removeCookie).toHaveBeenCalledWith('cc-at');
+            expect(removeCookie).toHaveBeenCalledWith('usid');
+            expect(removeCookie).toHaveBeenCalledWith('customerId');
+            expect(removeCookie).toHaveBeenCalledWith('cc-idp-at');
+            expect(removeCookie).toHaveBeenCalledTimes(6);
+
+            // Verify guest login API was called correctly
+            expect(fetch).toHaveBeenCalledWith('/resource/auth/login-guest', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    usid: undefined,
+                }),
+            });
+
+            // Verify storage was updated with new guest session
+            expect(storage.get('access_token')).toBe('new_guest_token');
+            expect(storage.get('refresh_token')).toBe('new_guest_refresh');
+            expect(storage.get('usid')).toBe('new_usid');
+            expect(cache.ref).toBeDefined();
+        });
+
+        test('should set error in storage and throw when guest login fails', async () => {
+            const data = getAuthData();
+            const provider = new RouterContextProvider();
+            const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>(
+                Object.entries(data) as [keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]][]
+            );
+            const cache = { ref: data };
+            const promiseCache = { ref: Promise.resolve(data) };
+
+            // Mock context.get() and set() similar to the previous test
+            const contexts = new Map();
+            contexts.set(appConfigContext, mockConfig);
+
+            vi.spyOn(provider, 'set').mockImplementation((contextKey: any, value: any) => {
+                contexts.set(contextKey, value);
+                return provider;
+            });
+
+            let callIndex = 0;
+            const contextValues = [storage, cache, promiseCache];
+
+            vi.spyOn(provider, 'get').mockImplementation((contextKey: any) => {
+                if (contextKey === appConfigContext) {
+                    return mockConfig;
+                }
+                if (contexts.has(contextKey)) {
+                    return contexts.get(contextKey);
+                }
+                const value = contextValues[callIndex % contextValues.length];
+                callIndex++;
+                return value;
+            });
+
+            // Mock failed guest login (HTTP error)
+            vi.mocked(fetch).mockResolvedValueOnce({
+                ok: false,
+                status: 500,
+                statusText: 'Internal Server Error',
+            } as Response);
+
+            await expect(clearInvalidSessionAndRestoreGuest(provider)).rejects.toThrow();
+            expect(storage.get('error')).toBeDefined();
+        });
+
+        test('should clear cache even when guest login fails', async () => {
+            const data = getAuthData();
+            const provider = new RouterContextProvider();
+            const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>(
+                Object.entries(data) as [keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]][]
+            );
+            const cache = { ref: data };
+            const promiseCache = { ref: Promise.resolve(data) };
+
+            // Mock context.get() and set() similar to the previous tests
+            const contexts = new Map();
+            contexts.set(appConfigContext, mockConfig);
+
+            vi.spyOn(provider, 'set').mockImplementation((contextKey: any, value: any) => {
+                contexts.set(contextKey, value);
+                return provider;
+            });
+
+            let callIndex = 0;
+            const contextValues = [storage, cache, promiseCache];
+
+            vi.spyOn(provider, 'get').mockImplementation((contextKey: any) => {
+                if (contextKey === appConfigContext) {
+                    return mockConfig;
+                }
+                if (contexts.has(contextKey)) {
+                    return contexts.get(contextKey);
+                }
+                const value = contextValues[callIndex % contextValues.length];
+                callIndex++;
+                return value;
+            });
+
+            expect(cache.ref).toBeDefined();
+
+            // Mock failed guest login
+            vi.mocked(fetch).mockRejectedValueOnce(new Error('Network error'));
+
+            await expect(clearInvalidSessionAndRestoreGuest(provider)).rejects.toThrow();
+
+            // Cache should be cleared even if guest login fails
+            expect(cache.ref).toBeUndefined();
         });
     });
 });

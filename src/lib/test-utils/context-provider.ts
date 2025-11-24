@@ -24,11 +24,14 @@ export interface TestContextConfig {
     authError?: Error;
 }
 
+const ACCESS_TOKEN_VALIDITY_MS = 1800000; // 30 minutes
+
 /**
  * Default session data for tests
  */
 const DEFAULT_SESSION_DATA: SessionData = {
     access_token: 'test-access-token',
+    access_token_expiry: Date.now() + ACCESS_TOKEN_VALIDITY_MS,
     customer_id: 'test-customer-id',
     userType: 'registered',
 } as const;
@@ -68,7 +71,7 @@ export function createTestContext(testConfig: TestContextConfig = {}): RouterCon
     const {
         authSession = DEFAULT_SESSION_DATA,
         performanceTimer = undefined,
-        appConfig = config.app,
+        appConfig,
         rejectAuth = false,
         authError = new Error('Auth failed'),
     } = testConfig;
@@ -94,8 +97,9 @@ export function createTestContext(testConfig: TestContextConfig = {}): RouterCon
     // Set up performance timer context
     contextProvider.set(performanceTimerContext, performanceTimer as PerformanceTimer | undefined);
 
-    // Set up app config context
-    contextProvider.set(appConfigContext, appConfig);
+    // Set up app config context - merge with default config if overrides provided
+    const mergedAppConfig = appConfig ? { ...config.app, ...appConfig } : config.app;
+    contextProvider.set(appConfigContext, mergedAppConfig);
 
     return contextProvider;
 }

@@ -3,7 +3,7 @@ import { type ShopperBasketsV2, type ShopperCustomers } from '@salesforce/storef
 import { customAlphabet, nanoid } from 'nanoid';
 import { createApiClients } from '@/lib/api-clients';
 import { getConfig } from '@/config';
-import { getAuth, updateAuth } from '@/middlewares/auth.client';
+import { getAuth, updateAuth, clearInvalidSessionAndRestoreGuest } from '@/middlewares/auth.client';
 import uiStrings from '@/temp-ui-string';
 import { extractResponseError } from '@/lib/utils';
 
@@ -168,7 +168,23 @@ export async function getCurrentCustomer(
         });
 
         return customer;
-    } catch {
+    } catch (error) {
+        const { status_code } = await extractResponseError(error);
+        // Handle specific error cases
+        if (status_code === '404') {
+            // Customer not found (404) - invalid customer_id in auth cookies
+            // This can happen when:
+            // - Customer account was deleted from Commerce Cloud
+            // - Using cookies from a different environment (e.g., staging → production)
+            // - Token/customer data sync issues
+            //
+            // Clean up invalid session and set up a new guest session.
+            // This ensures the browser has valid cookies and a fresh guest token.
+            // The cleanup runs in the background (no await) to avoid blocking the checkout flow.
+            clearInvalidSessionAndRestoreGuest(context).catch(() => {
+                // Silently catch errors - the auth middleware will retry on the next request
+            });
+        }
         return null;
     }
 }
@@ -756,25 +772,23 @@ export async function getCustomerProfileForCheckout(
         const { status_code } = await extractResponseError(error);
         // Handle specific error cases
         if (status_code === '404') {
-            // Customer not found - invalid customer ID in auth storage
-            // For client-side code, we need to clear the auth cookies
-            try {
-                // Import cookies utilities dynamically since this might be called server-side too
-                const { removeCookie } = await import('@/lib/cookies.client');
+            // Customer not found (404) - invalid customer_id in auth cookies
+            // This can happen when:
+            // - Customer account was deleted from Commerce Cloud
+            // - Using cookies from a different environment (e.g., staging → production)
+            // - Token/customer data sync issues
+            //
+            // Clean up invalid session and set up a new guest session.
+            // This ensures the browser has valid cookies and a fresh guest token.
+            // The cleanup runs in the background (no await) to avoid blocking the checkout flow.
+            clearInvalidSessionAndRestoreGuest(context).catch(() => {
+                // Silently catch errors - the auth middleware will retry on the next request
+            });
 
-                // Clear invalid auth data from cookies
-                removeCookie('__sfdc_auth');
-
-                // Also clear from localStorage if available
-                if (typeof globalThis !== 'undefined' && globalThis.localStorage) {
-                    globalThis.localStorage.removeItem('__sfdc_auth');
-                }
-            } catch {
-                // Cookie clearing failed, continue anyway
-            }
-
-            // Customer not found (404), cleared auth data and treating as guest user
-            // Return null to indicate customer should be treated as guest
+            // Return null to indicate no customer profile available.
+            // Calling code handles this by:
+            // - checkout-loaders.ts: Falls through to guest user flow
+            // - action.place-order.ts: Skips saved payment methods (treats as guest)
             return null;
         }
 

@@ -12,6 +12,7 @@ import type { Config } from '@/config/schema';
 
 /**
  * Mock build-time configuration for tests
+ * Used by both vitest unit tests and Storybook
  */
 export const mockBuildConfig: Config = {
     metadata: {
@@ -152,6 +153,10 @@ export const mockBuildConfig: Config = {
             hotReload: true,
             strictMode: true,
         },
+        i18n: {
+            fallbackLng: 'en',
+            supportedLngs: ['en', 'es'],
+        },
     },
 };
 
@@ -171,7 +176,7 @@ export const mockConfig = createAppConfig(mockBuildConfig);
  * ```
  */
 export function ConfigWrapper({ children }: { children: ReactNode }) {
-    return createElement(ConfigProvider, { config: mockConfig }, children);
+    return createElement(ConfigProvider, { config: mockConfig, children } as never);
 }
 
 /**
@@ -194,6 +199,6 @@ export function createConfigWrapper(configOverrides?: Partial<Config>) {
     const customConfig = configOverrides ? createAppConfig({ ...mockBuildConfig, ...configOverrides }) : mockConfig;
 
     return function CustomConfigWrapper({ children }: { children: ReactNode }) {
-        return createElement(ConfigProvider, { config: customConfig }, children);
+        return createElement(ConfigProvider, { config: customConfig, children } as never);
     };
 }

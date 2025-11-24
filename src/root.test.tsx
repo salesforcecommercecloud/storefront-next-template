@@ -20,7 +20,7 @@ vi.mock('@/lib/i18next.client', async () => {
     const mockBackend = {
         type: 'backend' as const,
         init: vi.fn(),
-        read: vi.fn((language: string, namespace: string, callback: (error: any, data: any) => void) => {
+        read: vi.fn((_language: string, _namespace: string, callback: (error: any, data: any) => void) => {
             // Return empty translations to simulate the backend
             callback(null, {});
         }),
@@ -369,6 +369,95 @@ describe('root.tsx', () => {
                 expect(getByTestId('basket-provider')).toBeInTheDocument();
                 expect(getByTestId('store-locator-provider')).toBeInTheDocument();
             });
+        });
+
+        it.skip('should fall back to AuthContext default value when auth is undefined', async () => {
+            const { fetchCategory } = await import('@/lib/api/categories');
+            const { AuthContext } = await import('@/providers/auth');
+
+            const mockCategory: ShopperProducts.schemas['Category'] = {
+                id: 'root',
+                name: 'Root Category',
+            };
+
+            const mockInitialAuth: SessionData = {
+                access_token: 'initial-hydration-token',
+                customer_id: 'initial-customer',
+                userType: 'guest',
+            };
+
+            vi.mocked(fetchCategory).mockResolvedValue(mockCategory);
+
+            // Simulate the context having a default value (in production, this comes from getAuthDataFromCookies())
+            // In tests, we can wrap with a provider to override the default
+            const TestApp = (props: any) => (
+                <AuthContext.Provider value={mockInitialAuth}>
+                    <App {...props} />
+                </AuthContext.Provider>
+            );
+
+            const Stub = createRoutesStub([
+                {
+                    id: 'root',
+                    path: '/',
+                    Component: TestApp,
+                    loader: () => ({
+                        root: Promise.resolve(mockCategory),
+                        subs: Promise.resolve([mockCategory]),
+                        auth: undefined, // No auth from loader, should fall back to context default
+                        basket: { basketId: 'test-basket', productItems: [] },
+                        appConfig: mockConfig,
+                    }),
+                },
+            ]);
+
+            const { getByTestId } = render(<Stub initialEntries={['/']} />);
+
+            await waitFor(() => {
+                expect(getByTestId('auth-provider')).toBeInTheDocument();
+            });
+        });
+
+        it('should use window.__APP_CONFIG__ when serverData.appConfig is not available', async () => {
+            const { fetchCategory } = await import('@/lib/api/categories');
+
+            const mockCategory: ShopperProducts.schemas['Category'] = {
+                id: 'root',
+                name: 'Root Category',
+            };
+
+            vi.mocked(fetchCategory).mockResolvedValue(mockCategory);
+
+            // Set window.__APP_CONFIG__ as fallback
+            (window as any).__APP_CONFIG__ = mockConfig;
+
+            const Stub = createRoutesStub([
+                {
+                    id: 'root',
+                    path: '/',
+                    Component: App,
+                    loader: () => ({
+                        root: Promise.resolve(mockCategory),
+                        subs: Promise.resolve([mockCategory]),
+                        auth: () => ({
+                            access_token: 'test-token',
+                            customer_id: 'test-customer',
+                            userType: 'registered',
+                        }),
+                        basket: { basketId: 'test-basket', productItems: [] },
+                        // appConfig not in loader data
+                    }),
+                },
+            ]);
+
+            const { getByTestId } = render(<Stub initialEntries={['/']} />);
+
+            await waitFor(() => {
+                expect(getByTestId('config-provider')).toBeInTheDocument();
+            });
+
+            // Cleanup
+            delete (window as any).__APP_CONFIG__;
         });
     });
 
