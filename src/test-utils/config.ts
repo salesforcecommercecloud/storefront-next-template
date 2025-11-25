@@ -153,10 +153,6 @@ export const mockBuildConfig: Config = {
             hotReload: true,
             strictMode: true,
         },
-        i18n: {
-            fallbackLng: 'en',
-            supportedLngs: ['en', 'es'],
-        },
     },
 };
 
