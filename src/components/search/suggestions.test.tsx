@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { BrowserRouter } from 'react-router';
-import SearchSuggestionsSection from './suggestions';
+import SearchSuggestionsSection from './suggestions-section';
 
 // Mock child components
 vi.mock('./suggestions-list', () => ({
@@ -10,7 +10,7 @@ vi.mock('./suggestions-list', () => ({
             {suggestions?.map((suggestion: any) => (
                 <button
                     key={suggestion.link || suggestion.name}
-                    onClick={() => closeAndNavigate?.(suggestion.link)}
+                    onMouseDown={() => closeAndNavigate?.(suggestion.link)}
                     data-testid="suggestion-item">
                     {suggestion.name}
                 </button>
@@ -25,7 +25,7 @@ vi.mock('./suggestions-grid', () => ({
             {suggestions?.map((suggestion: any) => (
                 <button
                     key={suggestion.link || suggestion.name}
-                    onClick={() => closeAndNavigate?.(suggestion.link)}
+                    onMouseDown={() => closeAndNavigate?.(suggestion.link)}
                     data-testid="grid-item">
                     {suggestion.name}
                 </button>
@@ -45,9 +45,11 @@ const renderWithRouter = (ui: React.ReactElement) => {
 
 describe('SearchSuggestionsSection Component', () => {
     const mockCloseAndNavigate = vi.fn();
+    const mockClearRecentSearches = vi.fn();
 
     beforeEach(() => {
         mockCloseAndNavigate.mockClear();
+        mockClearRecentSearches.mockClear();
     });
 
     const mockSearchSuggestions = {
@@ -106,7 +108,8 @@ describe('SearchSuggestionsSection Component', () => {
                 />
             );
 
-            expect(screen.getAllByTestId('suggestions-list')).toHaveLength(2);
+            // Mobile: 2 lists (categories + products), Desktop: 1 list (categories) = 3 total
+            expect(screen.getAllByTestId('suggestions-list')).toHaveLength(3);
             expect(screen.getByTestId('suggestions-grid')).toBeInTheDocument();
         });
 
@@ -151,7 +154,7 @@ describe('SearchSuggestionsSection Component', () => {
             expect(correctedLinks).toHaveLength(2); // One for mobile, one for desktop
         });
 
-        it('should render categories section in mobile layout', () => {
+        it('should render categories section in mobile and desktop layout', () => {
             renderWithRouter(
                 <SearchSuggestionsSection
                     searchSuggestions={mockSearchSuggestions}
@@ -159,8 +162,9 @@ describe('SearchSuggestionsSection Component', () => {
                 />
             );
 
+            // Categories shown in both mobile and desktop layouts
             const categoriesHeaders = screen.getAllByText('Categories');
-            expect(categoriesHeaders).toHaveLength(1);
+            expect(categoriesHeaders).toHaveLength(2);
         });
 
         it('should render products section in mobile layout', () => {
@@ -354,7 +358,7 @@ describe('SearchSuggestionsSection Component', () => {
             );
 
             const correctedLinks = screen.getAllByText('test search corrected?');
-            fireEvent.click(correctedLinks[0]); // Click the first one (mobile)
+            fireEvent.mouseDown(correctedLinks[0]); // Click the first one (mobile)
 
             expect(mockCloseAndNavigate).toHaveBeenCalledWith('/search?q=test%20search%20corrected');
         });
@@ -368,7 +372,7 @@ describe('SearchSuggestionsSection Component', () => {
             );
 
             const viewAllLink = screen.getByText('View All');
-            fireEvent.click(viewAllLink);
+            fireEvent.mouseDown(viewAllLink);
 
             expect(mockCloseAndNavigate).toHaveBeenCalledWith('/search?q=test%20search');
         });
@@ -383,7 +387,7 @@ describe('SearchSuggestionsSection Component', () => {
 
             // Click on a category suggestion (through mocked component)
             const suggestionItems = screen.getAllByTestId('suggestion-item');
-            fireEvent.click(suggestionItems[0]);
+            fireEvent.mouseDown(suggestionItems[0]);
 
             expect(mockCloseAndNavigate).toHaveBeenCalled();
         });
@@ -398,7 +402,7 @@ describe('SearchSuggestionsSection Component', () => {
 
             // Click on a product suggestion (through mocked grid component)
             const gridItems = screen.getAllByTestId('grid-item');
-            fireEvent.click(gridItems[0]);
+            fireEvent.mouseDown(gridItems[0]);
 
             expect(mockCloseAndNavigate).toHaveBeenCalled();
         });
@@ -543,7 +547,7 @@ describe('SearchSuggestionsSection Component', () => {
             const didYouMeanLinks = screen.getAllByText(/test search corrected/);
             const mobileLink = didYouMeanLinks[0]; // First one is mobile
 
-            fireEvent.click(mobileLink);
+            fireEvent.mouseDown(mobileLink);
 
             expect(mockCloseAndNavigate).toHaveBeenCalledWith('/search?q=test%20search%20corrected');
         });
@@ -560,7 +564,7 @@ describe('SearchSuggestionsSection Component', () => {
             const didYouMeanLinks = screen.getAllByText(/test search corrected/);
             const desktopLink = didYouMeanLinks[1]; // Second one is desktop
 
-            fireEvent.click(desktopLink);
+            fireEvent.mouseDown(desktopLink);
 
             expect(mockCloseAndNavigate).toHaveBeenCalledWith('/search?q=test%20search%20corrected');
         });
@@ -575,7 +579,7 @@ describe('SearchSuggestionsSection Component', () => {
 
             const viewAllLink = screen.getByText('View All');
 
-            fireEvent.click(viewAllLink);
+            fireEvent.mouseDown(viewAllLink);
 
             expect(mockCloseAndNavigate).toHaveBeenCalledWith('/search?q=test%20search');
         });
@@ -595,7 +599,7 @@ describe('SearchSuggestionsSection Component', () => {
 
             const viewAllLink = screen.getByText('View All');
 
-            fireEvent.click(viewAllLink);
+            fireEvent.mouseDown(viewAllLink);
 
             expect(mockCloseAndNavigate).toHaveBeenCalledWith('/search?q=');
         });
@@ -615,7 +619,7 @@ describe('SearchSuggestionsSection Component', () => {
 
             const viewAllLink = screen.getByText('View All');
 
-            fireEvent.click(viewAllLink);
+            fireEvent.mouseDown(viewAllLink);
 
             expect(mockCloseAndNavigate).toHaveBeenCalledWith('/search?q=');
         });
@@ -738,12 +742,12 @@ describe('SearchSuggestionsSection Component', () => {
 
             // Test clicking "View All" link
             const viewAllLink = screen.getByText('View All');
-            fireEvent.click(viewAllLink);
+            fireEvent.mouseDown(viewAllLink);
             expect(mockCallback).toHaveBeenCalledWith('/search?q=test%20search');
 
             // Test clicking phrase suggestion
             const phraseLinks = screen.getAllByText('test search corrected?');
-            fireEvent.click(phraseLinks[0]);
+            fireEvent.mouseDown(phraseLinks[0]);
             expect(mockCallback).toHaveBeenCalledWith('/search?q=test%20search%20corrected');
 
             // Verify callback was called the correct number of times
@@ -764,7 +768,7 @@ describe('SearchSuggestionsSection Component', () => {
             );
 
             const viewAllLink = screen.getByText('View All');
-            fireEvent.click(viewAllLink);
+            fireEvent.mouseDown(viewAllLink);
 
             // Should handle null searchPhrase gracefully
             expect(mockCloseAndNavigate).toHaveBeenCalledWith('/search?q=');
@@ -802,7 +806,7 @@ describe('SearchSuggestionsSection Component', () => {
             expect(screen.getAllByText('Popular 2')).toHaveLength(2); // Mobile + Desktop
         });
 
-        it('should render recent search suggestions on mobile and desktop', () => {
+        it('should render popular search suggestions on mobile and desktop', () => {
             renderWithRouter(
                 <SearchSuggestionsSection
                     searchSuggestions={mockEinsteinSuggestions}
@@ -810,12 +814,12 @@ describe('SearchSuggestionsSection Component', () => {
                 />
             );
 
-            expect(screen.getAllByText('Recent Searches')).toHaveLength(2);
-            expect(screen.getAllByText('Recent 1')).toHaveLength(2); // Mobile + Desktop
-            expect(screen.getAllByText('Recent 2')).toHaveLength(2); // Mobile + Desktop
+            expect(screen.getAllByText('Popular Searches')).toHaveLength(2);
+            expect(screen.getAllByText('Popular 1')).toHaveLength(2); // Mobile + Desktop
+            expect(screen.getAllByText('Popular 2')).toHaveLength(2); // Mobile + Desktop
         });
 
-        it('should apply Einstein suggestions limit when "Did you mean" is present', () => {
+        it('should show all popular search suggestions when "Did you mean" is present', () => {
             const suggestionsWithDidYouMean = {
                 ...mockEinsteinSuggestions,
                 phraseSuggestions: [{ name: 'corrected search', link: '/search?q=corrected', exactMatch: false }],
@@ -823,11 +827,6 @@ describe('SearchSuggestionsSection Component', () => {
                     { name: 'Popular 1', link: '/search?q=popular%201', type: 'popular', exactMatch: false },
                     { name: 'Popular 2', link: '/search?q=popular%202', type: 'popular', exactMatch: false },
                     { name: 'Popular 3', link: '/search?q=popular%203', type: 'popular', exactMatch: false },
-                ],
-                recentSearchSuggestions: [
-                    { name: 'Recent 1', link: '/search?q=recent%201', type: 'recent', exactMatch: false },
-                    { name: 'Recent 2', link: '/search?q=recent%202', type: 'recent', exactMatch: false },
-                    { name: 'Recent 3', link: '/search?q=recent%203', type: 'recent', exactMatch: false },
                 ],
             };
 
@@ -841,17 +840,13 @@ describe('SearchSuggestionsSection Component', () => {
             // Should show "Did you mean"
             expect(screen.getAllByText(/Did you mean/)).toHaveLength(2); // Mobile + Desktop
 
-            // Should limit Einstein suggestions to 2 when "Did you mean" is present
+            // Should show all popular searches (no limit)
             expect(screen.getAllByText('Popular 1')).toHaveLength(2); // Mobile + Desktop
             expect(screen.getAllByText('Popular 2')).toHaveLength(2); // Mobile + Desktop
-            expect(screen.queryByText('Popular 3')).not.toBeInTheDocument();
-
-            expect(screen.getAllByText('Recent 1')).toHaveLength(2); // Mobile + Desktop
-            expect(screen.getAllByText('Recent 2')).toHaveLength(2); // Mobile + Desktop
-            expect(screen.queryByText('Recent 3')).not.toBeInTheDocument();
+            expect(screen.getAllByText('Popular 3')).toHaveLength(2); // Mobile + Desktop
         });
 
-        it('should apply Einstein suggestions limit when "Did you mean" is not present', () => {
+        it('should show all popular search suggestions when "Did you mean" is not present', () => {
             const suggestionsWithoutDidYouMean = {
                 ...mockEinsteinSuggestions,
                 phraseSuggestions: [{ name: 'exact search', link: '/search?q=exact', exactMatch: true }],
@@ -873,11 +868,11 @@ describe('SearchSuggestionsSection Component', () => {
             // Should not show "Did you mean" (exactMatch: true)
             expect(screen.queryByText(/Did you mean/)).not.toBeInTheDocument();
 
-            // Should limit Einstein suggestions to 3 when "Did you mean" is not present
+            // Should show all popular searches (no limit)
             expect(screen.getAllByText('Popular 1')).toHaveLength(2); // Mobile + Desktop
             expect(screen.getAllByText('Popular 2')).toHaveLength(2); // Mobile + Desktop
             expect(screen.getAllByText('Popular 3')).toHaveLength(2); // Mobile + Desktop
-            expect(screen.queryByText('Popular 4')).not.toBeInTheDocument();
+            expect(screen.getAllByText('Popular 4')).toHaveLength(2); // Mobile + Desktop
         });
 
         it('should not render Einstein sections when suggestions are empty', () => {

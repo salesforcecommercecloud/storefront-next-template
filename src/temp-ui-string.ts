@@ -26,6 +26,7 @@ const additionalStrings = {
             products: 'Products',
             popularSearches: 'Popular Searches',
             recentSearches: 'Recent Searches',
+            clearRecentSearches: 'Clear recent searches',
             viewAll: 'View All',
         },
     },

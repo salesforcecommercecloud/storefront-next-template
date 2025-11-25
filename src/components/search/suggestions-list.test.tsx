@@ -50,12 +50,12 @@ describe('Suggestions Component', () => {
         const mockCallback = vi.fn();
         const { rerender } = render(<Suggestions suggestions={mockSuggestions} closeAndNavigate={mockCallback} />);
 
-        fireEvent.click(screen.getByText('Electronics'));
+        fireEvent.mouseDown(screen.getByText('Electronics'));
         expect(mockCallback).toHaveBeenCalledWith('/category/electronics');
 
         // Should not crash without callback
         rerender(<Suggestions suggestions={mockSuggestions} closeAndNavigate={undefined} />);
-        expect(() => fireEvent.click(screen.getByText('Clothing'))).not.toThrow();
+        expect(() => fireEvent.mouseDown(screen.getByText('Clothing'))).not.toThrow();
     });
 
     it('should apply custom className', () => {

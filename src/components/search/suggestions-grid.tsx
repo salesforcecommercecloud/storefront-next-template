@@ -35,7 +35,7 @@ const SearchSuggestionsPopup: React.FC<SearchSuggestionsPopupProps> = ({ suggest
                         data-testid="product-tile"
                         to={suggestion.link}
                         key={suggestion.link}
-                        onClick={() => handleClick(suggestion.link)}
+                        onMouseDown={() => handleClick(suggestion.link)}
                         className="block hover:underline flex-1 max-w-[20%]">
                         <div className="w-full">
                             {/* Product Image */}

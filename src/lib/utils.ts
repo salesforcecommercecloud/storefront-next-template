@@ -144,3 +144,55 @@ export const getAppOrigin = () => {
  * @returns True if the specified URL is absolute, otherwise false
  */
 export const isAbsoluteURL = (url: string): boolean => /^([a-z][a-z\d+\-.]*:)?\/\//i.test(url);
+
+/**
+ * Check if code is running on the server side
+ */
+export const isServer = typeof window === 'undefined';
+
+/**
+ * Retrieves an item from session storage and parses it as JSON
+ * @param key - The session storage key
+ * @returns The parsed JSON value or undefined if not found or on server
+ */
+export const getSessionJSONItem = <T = unknown>(key: string): T | undefined => {
+    if (isServer) {
+        return undefined;
+    }
+    try {
+        const item = window.sessionStorage.getItem(key);
+        if (item) {
+            return JSON.parse(item) as T;
+        }
+    } catch {
+        // Failed to parse, ignore silently
+    }
+    return undefined;
+};
+
+/**
+ * Sets an item in session storage as a JSON string
+ * @param key - The session storage key
+ * @param value - The value to stringify and store
+ */
+export const setSessionJSONItem = <T = unknown>(key: string, value: T): void => {
+    if (isServer) {
+        return;
+    }
+    try {
+        window.sessionStorage.setItem(key, JSON.stringify(value));
+    } catch {
+        // Failed to save, ignore silently
+    }
+};
+
+export const clearSessionJSONItem = (key: string): void => {
+    if (isServer) {
+        return;
+    }
+    try {
+        window.sessionStorage.removeItem(key);
+    } catch {
+        // Failed to remove, ignore silently
+    }
+};

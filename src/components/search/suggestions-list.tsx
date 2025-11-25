@@ -35,7 +35,7 @@ const Suggestions: React.FC<SuggestionsProps> = ({ suggestions, closeAndNavigate
                 {suggestions.map((suggestion) => (
                     <button
                         key={suggestion.link}
-                        onClick={() => handleClick(suggestion.link)}
+                        onMouseDown={() => handleClick(suggestion.link)}
                         className="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0">
                         <div className="flex items-center">
                             <div className="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0">

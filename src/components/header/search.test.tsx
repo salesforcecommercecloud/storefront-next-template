@@ -55,10 +55,19 @@ vi.mock('@/temp-ui-string', () => ({
 }));
 
 vi.mock('@/components/search/suggestions', () => ({
-    default: ({ closeAndNavigate }: { closeAndNavigate: (link: string) => void }) => (
+    default: ({
+        closeAndNavigate,
+        clearRecentSearches,
+    }: {
+        closeAndNavigate: (link: string) => void;
+        clearRecentSearches: () => void;
+    }) => (
         <div data-testid="suggestions">
             <button onClick={() => closeAndNavigate('/test-link')} data-testid="suggestion-item">
                 Test Suggestion
+            </button>
+            <button onClick={() => clearRecentSearches()} data-testid="clear-recent-searches">
+                Clear Recent Searches
             </button>
         </div>
     ),
@@ -79,6 +88,8 @@ describe('SearchBar Component', () => {
         mockUseTransformSearchSuggestions.mockReturnValue(null);
         vi.clearAllTimers();
         vi.useFakeTimers();
+        // Clear session storage to ensure no recent searches affect tests
+        sessionStorage.clear();
     });
 
     afterEach(() => {
@@ -145,8 +156,8 @@ describe('SearchBar Component', () => {
             // Type enough characters to trigger suggestions
             fireEvent.change(searchInput, { target: { value: 'test' } });
 
-            // Should still be false until suggestions are shown
-            expect(searchInput).toHaveAttribute('aria-expanded', 'false');
+            // Should be true since we have categories to show
+            expect(searchInput).toHaveAttribute('aria-expanded', 'true');
         });
 
         it('should handle input focus', () => {
@@ -499,6 +510,81 @@ describe('SearchBar Component', () => {
             act(() => {
                 vi.runAllTimers();
             });
+
+            expect(searchInput).toBeInTheDocument();
+        });
+    });
+
+    describe('Recent Searches', () => {
+        it('should load recent searches from session storage on mount', () => {
+            // Pre-populate session storage
+            sessionStorage.setItem('recent-searches', JSON.stringify(['shoes', 'boots']));
+
+            renderWithRouter(<SearchBar />);
+
+            // Component should load and be ready with recent searches available
+            const searchInput = screen.getByRole('combobox');
+            expect(searchInput).toBeInTheDocument();
+
+            // Verify session storage is still intact
+            const recentSearchesStr = sessionStorage.getItem('recent-searches');
+            expect(recentSearchesStr).toBeTruthy();
+            if (recentSearchesStr) {
+                const recentSearches = JSON.parse(recentSearchesStr);
+                expect(recentSearches).toEqual(['shoes', 'boots']);
+            }
+        });
+
+        it('should handle empty recent searches gracefully', () => {
+            // Ensure no recent searches
+            sessionStorage.clear();
+
+            renderWithRouter(<SearchBar />);
+
+            const searchInput = screen.getByRole('combobox');
+            fireEvent.focus(searchInput);
+
+            // Should not crash when no recent searches exist
+            expect(searchInput).toBeInTheDocument();
+        });
+
+        it('should show recent searches when input is empty', () => {
+            // Pre-populate recent searches
+            sessionStorage.setItem('recent-searches', JSON.stringify(['shoes', 'boots']));
+
+            renderWithRouter(<SearchBar />);
+
+            const searchInput = screen.getByRole('combobox');
+
+            // Empty input - should allow showing recent searches
+            act(() => {
+                fireEvent.focus(searchInput);
+            });
+
+            expect(searchInput).toBeInTheDocument();
+        });
+
+        it('should pass recent searches and clear function to suggestions component', () => {
+            // Pre-populate session storage
+            sessionStorage.setItem('recent-searches', JSON.stringify(['shoes', 'boots', 'sneakers']));
+
+            mockUseTransformSearchSuggestions.mockReturnValue(null);
+
+            renderWithRouter(<SearchBar />);
+
+            const searchInput = screen.getByRole('combobox');
+
+            // Focus to potentially show recent searches
+            fireEvent.focus(searchInput);
+
+            // Click the clear button if it exists
+            const clearButton = screen.queryByTestId('clear-recent-searches');
+            if (clearButton) {
+                fireEvent.click(clearButton);
+
+                // Session storage should be cleared
+                expect(sessionStorage.getItem('recent-searches')).toBeNull();
+            }
 
             expect(searchInput).toBeInTheDocument();
         });

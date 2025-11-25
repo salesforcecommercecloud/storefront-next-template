@@ -11,8 +11,11 @@ import Suggestions from '@/components/search/suggestions';
 import { useSearchSuggestions } from '@/hooks/use-search-suggestions';
 import { useTransformSearchSuggestions } from '@/hooks/use-transform-search-suggestions';
 import { useConfig } from '@/config';
+import { getSessionJSONItem, setSessionJSONItem, clearSessionJSONItem } from '@/lib/utils';
 
-// Gap between search input and popover content dropdown
+const RECENT_SEARCH_LIMIT = 5;
+const RECENT_SEARCH_KEY = 'recent-search-key';
+const RECENT_SEARCH_MIN_LENGTH = 3;
 const POPOVER_CONTENT_OFFSET = 12;
 
 export default function SearchBar(): ReactElement {
@@ -28,7 +31,7 @@ export default function SearchBar(): ReactElement {
         q: query,
         expand: ['images', 'prices'],
         includeEinsteinSuggestedPhrases: true,
-        enabled: query.trim().length >= 3,
+        enabled: query.trim().length >= RECENT_SEARCH_MIN_LENGTH,
     });
 
     const transformedSuggestions = useTransformSearchSuggestions(suggestions);
@@ -38,17 +41,26 @@ export default function SearchBar(): ReactElement {
         refetchRef.current = refetch;
     }, [query, refetch]);
 
+    const saveRecentSearch = useCallback((searchText: string) => {
+        let searches = getSessionJSONItem<string[]>(RECENT_SEARCH_KEY) || [];
+        searches = searches.filter((savedSearchTerm) => {
+            return searchText.toLowerCase() !== savedSearchTerm.toLowerCase();
+        });
+        searches = [searchText, ...searches].slice(0, RECENT_SEARCH_LIMIT);
+        setSessionJSONItem(RECENT_SEARCH_KEY, searches);
+    }, []);
+
     const debouncedRefetch = useMemo(() => {
         return debounce(() => {
             const currentQuery = queryRef.current;
-            if (currentQuery.trim().length >= 3) {
+            if (currentQuery.trim().length >= RECENT_SEARCH_MIN_LENGTH) {
                 void refetchRef.current();
             }
         }, config.pages.search.suggestionsDebounce);
     }, [config.pages.search.suggestionsDebounce]);
 
     useEffect(() => {
-        if (query.trim().length >= 3) {
+        if (query.trim().length >= RECENT_SEARCH_MIN_LENGTH) {
             debouncedRefetch();
         } else {
             debouncedRefetch.cancel();
@@ -59,60 +71,74 @@ export default function SearchBar(): ReactElement {
         };
     }, [query, debouncedRefetch]);
 
-    const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        setQuery(value);
-    }, []);
+    const shouldOpenPopover = useCallback(() => {
+        const recentSearches = getSessionJSONItem<string[]>(RECENT_SEARCH_KEY) || [];
+        const searchSuggestionsAvailable =
+            transformedSuggestions &&
+            (transformedSuggestions.categorySuggestions?.length > 0 ||
+                transformedSuggestions.productSuggestions?.length > 0 ||
+                transformedSuggestions.popularSearchSuggestions?.length > 0);
+
+        if (
+            (document.activeElement === inputRef.current && recentSearches.length > 0) ||
+            (searchSuggestionsAvailable && inputRef.current?.value && inputRef.current.value.length > 0)
+        ) {
+            setShowSuggestions(true);
+        } else {
+            setShowSuggestions(false);
+        }
+    }, [transformedSuggestions]);
+
+    const handleInputChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            const value = e.target.value;
+            setQuery(value);
+            shouldOpenPopover();
+        },
+        [shouldOpenPopover]
+    );
 
     const handleSubmit = useCallback(
         (e: FormEvent) => {
             e.preventDefault();
             if (inputRef.current?.value?.trim()) {
-                const searchQuery = inputRef.current.value;
+                const searchQuery = inputRef.current.value.trim();
+                saveRecentSearch(searchQuery);
                 setShowSuggestions(false);
                 void navigate(`/search?q=${encodeURIComponent(searchQuery)}`, {
                     state: { query: searchQuery },
                 });
             }
         },
-        [navigate]
+        [navigate, saveRecentSearch]
     );
 
     const closeAndNavigate = useCallback(
         (link: string) => {
+            inputRef.current?.blur();
             setShowSuggestions(false);
             setQuery('');
             if (inputRef.current) {
                 inputRef.current.value = '';
             }
-            void navigate(link);
+            if (link) {
+                void navigate(link);
+            }
         },
         [navigate]
     );
 
-    const hasSuggestions =
-        transformedSuggestions &&
-        (transformedSuggestions.categorySuggestions?.length > 0 ||
-            transformedSuggestions.productSuggestions?.length > 0);
-
-    const shouldShowPopover = showSuggestions && hasSuggestions && query.trim().length >= 3;
-
-    const handleInputFocus = useCallback(() => {
-        if (hasSuggestions && query.trim().length >= 3) {
-            setShowSuggestions(true);
-        }
-    }, [hasSuggestions, query]);
+    const clearRecentSearches = useCallback(() => {
+        clearSessionJSONItem(RECENT_SEARCH_KEY);
+        setShowSuggestions(false);
+    }, []);
 
     useEffect(() => {
-        if (suggestions && query.trim().length >= 3) {
-            setShowSuggestions(!!hasSuggestions);
-        } else if (query.trim().length < 3) {
-            setShowSuggestions(false);
-        }
-    }, [suggestions, query, hasSuggestions]);
+        shouldOpenPopover();
+    }, [query, suggestions, shouldOpenPopover]);
 
     return (
-        <Popover open={shouldShowPopover} onOpenChange={setShowSuggestions}>
+        <Popover open={showSuggestions}>
             <form onSubmit={handleSubmit} className="relative z-10">
                 <div className="relative">
                     <PopoverTrigger asChild>
@@ -122,10 +148,11 @@ export default function SearchBar(): ReactElement {
                             placeholder={uiStrings.header.searchPlaceholder}
                             className="w-full pl-10"
                             onChange={handleInputChange}
-                            onFocus={handleInputFocus}
+                            onFocus={shouldOpenPopover}
+                            onBlur={() => setShowSuggestions(false)}
                             aria-label={uiStrings.header.searchPlaceholder}
                             aria-autocomplete="list"
-                            aria-expanded={shouldShowPopover}
+                            aria-expanded={showSuggestions}
                             aria-haspopup="listbox"
                             role="combobox"
                         />
@@ -141,11 +168,12 @@ export default function SearchBar(): ReactElement {
                 onOpenAutoFocus={(e) => e.preventDefault()}
                 role="listbox"
                 aria-label="Search suggestions">
-                {transformedSuggestions ? (
-                    <Suggestions searchSuggestions={transformedSuggestions} closeAndNavigate={closeAndNavigate} />
-                ) : (
-                    <div className="p-4 text-center text-muted-foreground">No suggestions found</div>
-                )}
+                <Suggestions
+                    searchSuggestions={transformedSuggestions}
+                    recentSearches={getSessionJSONItem<string[]>(RECENT_SEARCH_KEY) || []}
+                    closeAndNavigate={closeAndNavigate}
+                    clearRecentSearches={clearRecentSearches}
+                />
             </PopoverContent>
         </Popover>
     );

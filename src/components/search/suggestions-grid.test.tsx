@@ -95,7 +95,7 @@ describe('SearchSuggestionsPopup Component', () => {
             <SearchSuggestionsPopup suggestions={mockSuggestions} closeAndNavigate={mockCallback} />
         );
 
-        fireEvent.click(screen.getByText('iPhone 15 Pro'));
+        fireEvent.mouseDown(screen.getByText('iPhone 15 Pro'));
         expect(mockCallback).toHaveBeenCalledWith('/product/iphone-15-pro');
 
         // Should not crash without callback

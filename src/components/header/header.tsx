@@ -1,5 +1,5 @@
 import type { ReactElement, PropsWithChildren } from 'react';
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import Search from './search';
 import CartBadge from './cart-badge';
 import UserActions from './user-actions';
@@ -9,6 +9,8 @@ import StoreLocatorBadge from '@/extensions/store-locator/components/header/stor
 import logo from '/images/market-logo.svg';
 
 export default function Header({ children }: PropsWithChildren): ReactElement {
+    const location = useLocation();
+
     return (
         <header className="bg-background shadow-md sticky top-0 z-50">
             <div className="container mx-auto px-4 py-4">
@@ -26,7 +28,7 @@ export default function Header({ children }: PropsWithChildren): ReactElement {
 
                     {/* Search, User Actions, Cart */}
                     <div className="flex items-center space-x-4">
-                        <Search />
+                        <Search key={`${location.pathname}${location.search}`} />
                         <UserActions />
                         {/*  @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */}
                         <StoreLocatorBadge />
