@@ -45,7 +45,7 @@ const retrieveBasket = (
                     },
                 },
                 body: {
-                    currency: import.meta.env.PUBLIC_SITE_CURRENCY || 'USD',
+                    currency: import.meta.env.PUBLIC__app__site__currency || 'USD',
                 },
             });
             return data;

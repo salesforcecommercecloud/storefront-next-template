@@ -20,7 +20,7 @@
  * ```
  */
 export function getSelectedStoreInfoCookieName(): string {
-    const siteId = import.meta.env.PUBLIC_COMMERCE_API_SITE_ID || 'site-default';
+    const siteId = import.meta.env.PUBLIC__app__commerce__api__siteId || 'site-default';
     return `selectedStoreInfo_${siteId}`;
 }
 

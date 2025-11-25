@@ -15,7 +15,7 @@ describe('getSelectedStoreInfoCookieName', () => {
 
     it('returns cookie name with site ID from environment', () => {
         const result = getSelectedStoreInfoCookieName();
-        // The actual site ID depends on the environment variable PUBLIC_COMMERCE_API_SITE_ID
+        // The actual site ID depends on the environment variable PUBLIC__app__commerce__api__siteId
         // In the test environment, it should be 'RefArchGlobal' or fallback to 'site-default'
         expect(result).toMatch(/^selectedStoreInfo_/);
         expect(result.length).toBeGreaterThan('selectedStoreInfo_'.length);

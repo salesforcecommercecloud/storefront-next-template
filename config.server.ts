@@ -190,11 +190,10 @@ export default defineConfig({
             adapters: {
                 einstein: {
                     enabled: true,
-                    host: process.env.PUBLIC_EINSTEIN_HOST || '',
-                    einsteinId: process.env.PUBLIC_EINSTEIN_API_CLIENT_ID || '',
-                    isProduction: process.env.PUBLIC_EINSTEIN_IS_PRODUCTION === 'true',
-                    siteId:
-                        process.env.PUBLIC_EINSTEIN_REALM_AND_SITE_ID || process.env.PUBLIC_COMMERCE_API_SITE_ID || '',
+                    host: '',
+                    einsteinId: '',
+                    isProduction: false,
+                    siteId: '',
                     eventToggles: {
                         view_page: true,
                         view_product: true,
@@ -211,9 +210,9 @@ export default defineConfig({
                 },
                 dataCloud: {
                     enabled: false,
-                    appSourceId: process.env.PUBLIC_DATACLOUD_APP_SOURCE_ID || '',
-                    tenantId: process.env.PUBLIC_DATACLOUD_TENANT_ID || '',
-                    siteId: process.env.PUBLIC_COMMERCE_API_SITE_ID || '',
+                    appSourceId: '',
+                    tenantId: '',
+                    siteId: '',
                     eventToggles: {
                         view_page: true,
                         view_product: true,
@@ -230,8 +229,8 @@ export default defineConfig({
                 },
                 activeData: {
                     enabled: false,
-                    host: process.env.PUBLIC_ACTIVEDATA_HOST || '',
-                    siteId: process.env.PUBLIC_COMMERCE_API_SITE_ID || '',
+                    host: '',
+                    siteId: '',
                     eventToggles: {
                         view_page: true,
                         view_product: true,

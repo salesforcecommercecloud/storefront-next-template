@@ -29,8 +29,8 @@ vi.mock('prompts', () => {
                 template: 'custom',
                 githubUrl: 'http://github.com/sfcc-odyssey/template-retail-rsc-app',
                 selectedExtensions: ['SFDC_EXT_STORE_LOCATOR'],
-                PUBLIC_COMMERCE_API_CLIENT_ID: '1234567890',
-                PUBLIC_COMMERCE_API_ORG_ID: '0987654321',
+                PUBLIC__app__commerce__api__clientId: '1234567890',
+                PUBLIC__app__commerce__api__organizationId: '0987654321',
             };
         }),
     } as const;
@@ -175,23 +175,23 @@ describe('create-storefront', () => {
                     configs: [
                         {
                             name: 'API Client ID',
-                            key: 'PUBLIC_COMMERCE_API_CLIENT_ID',
+                            key: 'PUBLIC__app__commerce__api__clientId',
                         },
                         {
                             name: 'API Organization ID',
-                            key: 'PUBLIC_COMMERCE_API_ORG_ID',
+                            key: 'PUBLIC__app__commerce__api__organizationId',
                         },
                     ],
                 });
             } else if (path.endsWith('.env.default')) {
-                return 'PUBLIC_COMMERCE_API_CLIENT_ID=0000000000';
+                return 'PUBLIC__app__commerce__api__clientId=0000000000';
             }
             return '';
         });
         await createStorefront();
         expect(fs.writeFileSync).toHaveBeenCalledWith(
             join('sfcc-storefront', '.env'),
-            'PUBLIC_COMMERCE_API_CLIENT_ID=1234567890'
+            'PUBLIC__app__commerce__api__clientId=1234567890'
         );
     });
 });

@@ -14,7 +14,7 @@ export function getBasketCurrency(basket: ShopperBasketsV2.schemas['Basket'] | u
     }
 
     // 2. Use site configuration currency or 3. Fallback to USD for backward compatibility
-    return import.meta.env.PUBLIC_SITE_CURRENCY || 'USD';
+    return import.meta.env.PUBLIC__app__site__currency || 'USD';
 }
 
 /**
