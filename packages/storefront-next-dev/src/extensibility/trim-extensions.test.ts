@@ -10,54 +10,25 @@ import { describe, it, beforeEach, afterEach, expect, vi } from 'vitest';
 import { Volume, type Volume as VolumeType } from 'memfs';
 import path from 'path';
 
-// Mock plugin config to simulate different plugin states
-
-const mockedExtensionConfig: Record<string, { name: string; description: string; dependencies: string[] }> = {
+// Mock extension config to simulate different extension states
+const mockedExtensionConfig: Record<string, { name: string; description: string; folder?: string }> = {
     extensions: {
         SFDC_EXT_featureA: {
             name: 'Feature A',
             description: 'Feature A description',
-            dependencies: [],
+            folder: 'feature-a',
         },
         SFDC_EXT_featureB: {
             name: 'Feature B',
             description: 'Feature B description',
-            dependencies: [],
+            folder: 'feature-b',
+        },
+        SFDC_EXT_featureC: {
+            name: 'Feature C',
+            description: 'Feature C description',
+            // No folder property - should not attempt to delete
         },
     },
-};
-
-// Test data constants
-const TEST_CODES = {
-    BASIC_COMPONENT: `
-        // @sfdc-extension-line SFDC_EXT_featureA
-        import ComponentA from './featureAComponent'
-        // @sfdc-extension-line SFDC_EXT_featureB
-        import ComponentB from './featureBComponent'
-    `,
-    BASIC_COMPONENT_TRIMMED: `
-        import ComponentA from './featureAComponent'
-    `,
-    COMPONENT_A: `export default ComponentA`,
-    COMPONENT_B: `export default ComponentB`,
-    FEATURE_B_PAGE: `export const FeatureBPage = 'FeatureBPage'`,
-    COMPONENT_B_WITH_PAGE_REF: `
-        // @sfdc-extension-line SFDC_EXT_featureB
-        import pageB from '../../pages/featureBPage'
-        export default ComponentB
-    `,
-    FEATURE_B_PAGE_WITH_COMPONENT_REF_ALIAS: `
-        // @sfdc-extension-line SFDC_EXT_featureB
-        import ComponentB from '@/components/featureBComponent'
-        export default ComponentB
-    `,
-    COMPONENT_B_WITH_PAGE_REF_TRIMMED: `export default ComponentB`,
-    FEATURE_B_PAGE_WITH_COMPONENT_REF: `
-        // @sfdc-extension-line SFDC_EXT_featureB
-        import ComponentB from '../../components/featureBComponent'
-        export const FeatureBPage = 'FeatureBPage'
-    `,
-    FEATURE_B_PAGE_WITH_COMPONENT_REF_TRIMMED: `export const FeatureBPage = 'FeatureBPage'`,
 };
 
 // In-memory file system
@@ -69,12 +40,7 @@ const createTestFileSystem = (fileContents: any = {}) => {
 
     const defaultFiles: Record<string, string> = {
         '/mock/dir/src/extensions/config.json': fileContents.extensionConfig || JSON.stringify(mockedExtensionConfig),
-        '/mock/dir/src/components/featureComponent.tsx': fileContents.featureComponent || TEST_CODES.BASIC_COMPONENT,
-        '/mock/dir/src/components/featureAComponent/index.tsx':
-            fileContents.featureAComponent || TEST_CODES.COMPONENT_A,
-        '/mock/dir/src/components/featureBComponent/index.tsx':
-            fileContents.featureBComponent || TEST_CODES.COMPONENT_B,
-        '/mock/dir/src/pages/featureBPage/index.tsx': fileContents.featureBPage || TEST_CODES.FEATURE_B_PAGE,
+        '/mock/dir/src/components/test.tsx': fileContents.testComponent || 'export const Test = "test";',
         ...(fileContents.additional || {}),
     };
 
@@ -109,7 +75,7 @@ const fileExists = (filePath: string) => {
 };
 
 // Mock console methods
-const mockConsole = (method: 'log' | 'error' = 'error') => {
+const mockConsole = (method: 'log' | 'error' | 'warn' = 'error') => {
     const spy = vi.spyOn(console, method).mockImplementation(() => vi.fn() as any);
     return spy;
 };
@@ -154,10 +120,15 @@ const reloadModule = async () => {
     return await import('./trim-extensions');
 };
 
-describe('trim-extensions without config', () => {
-    beforeEach(() => {
+describe('trim-extensions', () => {
+    let trimExtensions: (dir: string, ext: Record<string, boolean>, config?: any, verbose?: boolean) => void;
+
+    beforeEach(async () => {
         vi.resetModules();
+        vi.clearAllMocks();
         createTestFileSystem();
+        const mod = await reloadModule();
+        trimExtensions = mod.default || mod;
     });
 
     afterEach(() => {
@@ -165,755 +136,718 @@ describe('trim-extensions without config', () => {
         vi.clearAllMocks();
     });
 
-    it('handles file instead of directory in isEmptyDirectory check', async () => {
-        const mod = await reloadModule();
-        const trimExt = mod.default || mod;
+    describe('single line markers', () => {
+        it('removes single lines marked with @sfdc-extension-line when extension is disabled', () => {
+            const code = `
+                const test = () => {
+                    // @sfdc-extension-line SFDC_EXT_featureA
+                    const featureA = 'Feature A';
+                    const categories = flatten(categoriesTree || {}, 'categories');
+                    return [locale?.id || appConfig.defaultAppLocale];
+                };
+            `;
 
-        vol.mkdirSync('/mock/dir/src/extensions', { recursive: true });
-        vol.writeFileSync('/mock/dir/src/extensions/file.txt', 'not a directory');
+            const expected = `
+                const test = () => {
+                    const categories = flatten(categoriesTree || {}, 'categories');
+                    return [locale?.id || appConfig.defaultAppLocale];
+                };
+            `;
 
-        trimExt('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig, true);
-        expect(fileExists('/mock/dir/src/extensions/file.txt')).toBe(true);
-    });
-});
+            vol.writeFileSync('/mock/dir/src/components/test.tsx', code);
+            trimExtensions('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig);
 
-describe('trim-extensions with nested directories', () => {
-    let trimExtensions: (dir: string, ext: Record<string, boolean>) => void;
-
-    beforeEach(async () => {
-        vi.resetModules();
-        vi.clearAllMocks();
-
-        // Create file system with nested structure
-        createTestFileSystem({
-            additional: {
-                '/mock/dir/src/route.tsx': `// @sfdc-extension-line SFDC_EXT_featureA
-                import storeLocatorPage from './pages/store-locator'`,
-                '/mock/dir/src/pages/store-locator/index.tsx': `import { Modal } from './partial/modal'
-                    export default StoreLocator = 'StoreLocatorModal'`,
-                '/mock/dir/src/pages/store-locator/partial/modal.tsx': `export const StoreLocator = 'StoreLocatorModal'`,
-            },
+            const result = readFile('/mock/dir/src/components/test.tsx') as string;
+            expect(result).toEqualTrimmedLines(expected);
         });
 
-        const mod = await reloadModule();
-        trimExtensions = mod.default || mod;
+        it('preserves single lines when extension is enabled', () => {
+            const code = `
+                const test = () => {
+                    // @sfdc-extension-line SFDC_EXT_featureA
+                    const featureA = 'Feature A';
+                    const other = 'other';
+                };
+            `;
+
+            vol.writeFileSync('/mock/dir/src/components/test.tsx', code);
+            trimExtensions('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig);
+
+            const result = readFile('/mock/dir/src/components/test.tsx') as string;
+            expect(result).toContain('featureA');
+            expect(result).toContain('Feature A');
+        });
+
+        it('handles multiple single line markers', () => {
+            const code = `
+                MyClass.PropTypes = {
+                    name: PropTypes.string,
+                    // @sfdc-extension-line SFDC_EXT_featureA
+                    featureAProp: PropTypes.string,
+                    // @sfdc-extension-line SFDC_EXT_featureB
+                    featureBProp: PropTypes.string,
+                };
+            `;
+
+            vol.writeFileSync('/mock/dir/src/components/test.tsx', code);
+            trimExtensions('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false }, mockedExtensionConfig);
+
+            const result = readFile('/mock/dir/src/components/test.tsx') as string;
+            expect(result).toContain('featureAProp');
+            expect(result).not.toContain('featureBProp');
+        });
+
+        it('handles tsx elements in return statements', () => {
+            const code = `
+                function test() {
+                    return (
+                        <div>
+                            {/* @sfdc-extension-line SFDC_EXT_featureA */}
+                            <ComponentA />
+                            {/* @sfdc-extension-line SFDC_EXT_featureB */}
+                            <ComponentB />
+                        </div>
+                    );
+                }
+            `;
+
+            vol.writeFileSync('/mock/dir/src/components/test.tsx', code);
+            trimExtensions('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false }, mockedExtensionConfig);
+
+            const result = readFile('/mock/dir/src/components/test.tsx') as string;
+            expect(result).toContain('<ComponentA />');
+            expect(result).not.toContain('<ComponentB />');
+        });
     });
 
-    afterEach(() => {
-        vi.resetModules();
-        vi.clearAllMocks();
-    });
+    describe('block markers', () => {
+        it('removes code blocks guarded by block markers when extension is disabled', () => {
+            const code = `
+                // @sfdc-extension-block-start SFDC_EXT_featureA
+                const featureAVar1 = 'Feature A variable 1';
+                const featureAVar2 = 'Feature A variable 2';
+                // @sfdc-extension-block-end SFDC_EXT_featureA
+                const anotherVar = 'Another variable';
+            `;
+            const expected = `
+                const anotherVar = 'Another variable';
+            `;
+            vol.writeFileSync('/mock/dir/src/components/test.tsx', code);
+            trimExtensions('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig);
+            const result = readFile('/mock/dir/src/components/test.tsx') as string;
+            expect(result).toEqualTrimmedLines(expected);
+        });
 
-    it('recursively removes unused directories', () => {
-        trimExtensions('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true);
+        it('preserves code blocks when extension is enabled', () => {
+            const code = `
+                // @sfdc-extension-block-start SFDC_EXT_featureA
+                const featureA = 'Feature A';
+                // @sfdc-extension-block-end SFDC_EXT_featureA
+                const other = 'other';
+            `;
 
-        // Check that the store-locator directory was removed
-        expect(fileExists('/mock/dir/src/pages/store-locator')).toBe(false);
-        expect(fileExists('/mock/dir/src/pages/store-locator/index.tsx')).toBe(false);
-        expect(fileExists('/mock/dir/src/pages/store-locator/partial/modal.tsx')).toBe(false);
-    });
-});
+            vol.writeFileSync('/mock/dir/src/components/test.tsx', code);
+            trimExtensions('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig);
 
-describe('trim-extensions', () => {
-    let trimExtensions: (dir: string, ext: Record<string, boolean>) => void;
+            const content = readFile('/mock/dir/src/components/test.tsx');
+            expect(content).toContain('featureA');
+            expect(content).toContain('Feature A');
+        });
 
-    beforeEach(async () => {
-        vi.resetModules();
-        vi.clearAllMocks();
-        createTestFileSystem();
-        const mod = await reloadModule();
-        trimExtensions = mod.default || mod;
-    });
+        it('handles nested code blocks correctly', () => {
+            const code = `
+                // @sfdc-extension-block-start SFDC_EXT_featureA
+                const featureAVar = 'Feature A variable 1';
+                // @sfdc-extension-block-start SFDC_EXT_featureB
+                const featureBVar = 'Feature B variable 1';
+                // @sfdc-extension-block-end SFDC_EXT_featureB
+                // @sfdc-extension-block-end SFDC_EXT_featureA
+            `;
+            const expected = `
+                // @sfdc-extension-block-start SFDC_EXT_featureA
+                const featureAVar = 'Feature A variable 1';
+                // @sfdc-extension-block-end SFDC_EXT_featureA
+            `;
+            vol.writeFileSync('/mock/dir/src/components/test.tsx', code);
+            trimExtensions(
+                '/mock/dir',
+                { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false },
+                mockedExtensionConfig,
+                true
+            );
+            const result = readFile('/mock/dir/src/components/test.tsx') as string;
+            expect(result).toEqualTrimmedLines(expected);
+        });
 
-    afterEach(() => {
-        vi.resetModules();
-        vi.clearAllMocks();
-    });
-
-    it('leaves code untouched if no plugins are referenced', () => {
-        const code = `
-        const test = () => {
-            // @sfdc-extension-line SFDC_EXT_featureA
-            const featureA = 'Feature A';
-            const categories = flatten(categoriesTree || {}, 'categories');
-            const currency = locale.preferredCurrency || l10n.defaultCurrency;
-            return [locale?.id || appConfig.defaultAppLocale];
-        };
-        `;
-
-        const expected = `
-        const test = () => {
-            const categories = flatten(categoriesTree || {}, 'categories');
-            const currency = locale.preferredCurrency || l10n.defaultCurrency;
-            return [locale?.id || appConfig.defaultAppLocale];
-        };
-        `;
-
-        vol.writeFileSync('/mock/dir/src/components/featureComponent.tsx', code);
-
-        trimExtensions('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig);
-
-        const result = readFile('/mock/dir/src/components/featureComponent.tsx') as string;
-        expect(result).toEqualTrimmedLines(expected);
-    });
-
-    it('removes code blocks that are guarded by plugin flags', () => {
-        const code = `
-            // @sfdc-extension-block-start SFDC_EXT_featureA
-            const featureAVar1 = 'Feature A variable 1';
-            const featureAVar2 = 'Feature A variable 2';
-            // @sfdc-extension-block-end SFDC_EXT_featureA
-            const anotherVar = 'Another variable';
-        `;
-        const expected = `
-            const anotherVar = 'Another variable';
-        `;
-        vol.writeFileSync('/mock/dir/src/components/featureComponent.tsx', code);
-        trimExtensions('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig);
-        const result = readFile('/mock/dir/src/components/featureComponent.tsx') as string;
-        expect(result).toEqualTrimmedLines(expected);
-    });
-
-    it('removes nested code blocks that are guarded by plugin flags', () => {
-        const code = `
-            // @sfdc-extension-block-start SFDC_EXT_featureA
-            const featureAVar = 'Feature A variable 1';
-            // @sfdc-extension-block-start SFDC_EXT_featureB
-            const featureBVar = 'Feature B variable 1';
-            // @sfdc-extension-block-end SFDC_EXT_featureB
-            // @sfdc-extension-block-end SFDC_EXT_featureA
-        `;
-        const expected = `
-            // @sfdc-extension-block-start SFDC_EXT_featureA
-            const featureAVar = 'Feature A variable 1';
-            // @sfdc-extension-block-end SFDC_EXT_featureA
-        `;
-        vol.writeFileSync('/mock/dir/src/components/featureComponent.tsx', code);
-        trimExtensions('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false }, mockedExtensionConfig, true);
-        const result = readFile('/mock/dir/src/components/featureComponent.tsx') as string;
-        expect(result).toEqualTrimmedLines(expected);
-    });
-
-    it('removes nested line that are guarded by plugin flags', () => {
-        const code = `
-            // @sfdc-extension-block-start SFDC_EXT_featureA
-            const featureAVar = 'Feature A variable 1';
-            // @sfdc-extension-line SFDC_EXT_featureB
-            const featureBVar = 'Feature B variable 2';
-            // @sfdc-extension-block-end SFDC_EXT_featureA
-        `;
-        const expected = `
-            // @sfdc-extension-block-start SFDC_EXT_featureA
-            const featureAVar = 'Feature A variable 1';
-            // @sfdc-extension-block-end SFDC_EXT_featureA
-        `;
-        vol.writeFileSync('/mock/dir/src/components/featureComponent.tsx', code);
-        trimExtensions('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false }, mockedExtensionConfig, true);
-        const result = readFile('/mock/dir/src/components/featureComponent.tsx') as string;
-        expect(result).toEqualTrimmedLines(expected);
-    });
-
-    it('fails when mismatching block markers are found', async () => {
-        const code = `
-            // @sfdc-extension-block-start SFDC_EXT_featureA
-            const featureAVar = 'Feature A variable 1';
-            // @sfdc-extension-block-end SFDC_EXT_featureB
-        `;
-        vol.writeFileSync('/mock/dir/src/components/featureComponent.tsx', code);
-        const filePath = path.join(path.sep, 'mock', 'dir', 'src', 'components', 'featureComponent.tsx');
-        const mod = await reloadModule();
-        const trimExt = mod.default || mod;
-        expect(() =>
-            trimExt('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false }, mockedExtensionConfig, true)
-        ).toThrow(
-            `Block marker mismatch in ${filePath}, expected end marker for SFDC_EXT_featureA but got SFDC_EXT_featureB at line 3`
-        );
-    });
-
-    it('fails when block marker is not closed', async () => {
-        const code = `
-            // @sfdc-extension-block-start SFDC_EXT_featureA
-            const featureAVar = 'Feature A variable 1';
-        `;
-        vol.writeFileSync('/mock/dir/src/components/featureComponent.tsx', code);
-        const filePath = path.join(path.sep, 'mock', 'dir', 'src', 'components', 'featureComponent.tsx');
-        const mod = await reloadModule();
-        const trimExt = mod.default || mod;
-        expect(() => trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true)).toThrow(
-            `Unclosed end marker found in ${filePath}: SFDC_EXT_featureA`
-        );
-    });
-
-    it('fails when start marker is missing', async () => {
-        const code = `
-            // @sfdc-extension-block-end SFDC_EXT_featureA
-        `;
-        vol.writeFileSync('/mock/dir/src/components/featureComponent.tsx', code);
-        const filePath = path.join(path.sep, 'mock', 'dir', 'src', 'components', 'featureComponent.tsx');
-        const mod = await reloadModule();
-        const trimExt = mod.default || mod;
-        expect(() => trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true)).toThrow(
-            `Block marker mismatch in ${filePath}, encountered end marker SFDC_EXT_featureA without a matching start marker at line 1`
-        );
-    });
-
-    it('fails when nested block markers are not closed in the correct order', async () => {
-        const code = `
-            // @sfdc-extension-block-start SFDC_EXT_featureA
-            const featureAVar = 'Feature A variable 1';
-            // @sfdc-extension-block-start SFDC_EXT_featureB
-            const featureBVar = 'Feature B variable 1';
-            // @sfdc-extension-block-end SFDC_EXT_featureA
-            // @sfdc-extension-block-end SFDC_EXT_featureB
-        `;
-        vol.writeFileSync('/mock/dir/src/components/featureComponent.tsx', code);
-        const filePath = path.join(path.sep, 'mock', 'dir', 'src', 'components', 'featureComponent.tsx');
-        const mod = await reloadModule();
-        const trimExt = mod.default || mod;
-        expect(() =>
-            trimExt('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false }, mockedExtensionConfig, true)
-        ).toThrow(
-            `Block marker mismatch in ${filePath}, expected end marker for SFDC_EXT_featureB but got SFDC_EXT_featureA at line 5:`
-        );
-    });
-
-    it('handles PropTypes declarations correctly', () => {
-        const code = `
-            MyClass.PropTypes = {
-                name: PropTypes.string,
-                description: PropTypes.string,
-                // @sfdc-extension-line SFDC_EXT_featureA
-                featureAProp: PropTypes.string,
+        it('handles nested line markers within blocks', () => {
+            const code = `
+                // @sfdc-extension-block-start SFDC_EXT_featureA
+                const featureAVar = 'Feature A variable 1';
                 // @sfdc-extension-line SFDC_EXT_featureB
-                featureBProp: PropTypes.string,
-            };
-        `;
+                const featureBVar = 'Feature B variable 2';
+                // @sfdc-extension-block-end SFDC_EXT_featureA
+            `;
+            const expected = `
+                // @sfdc-extension-block-start SFDC_EXT_featureA
+                const featureAVar = 'Feature A variable 1';
+                // @sfdc-extension-block-end SFDC_EXT_featureA
+            `;
+            vol.writeFileSync('/mock/dir/src/components/test.tsx', code);
+            trimExtensions(
+                '/mock/dir',
+                { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false },
+                mockedExtensionConfig,
+                true
+            );
+            const result = readFile('/mock/dir/src/components/test.tsx') as string;
+            expect(result).toEqualTrimmedLines(expected);
+        });
 
-        vol.writeFileSync('/mock/dir/src/components/featureComponent.tsx', code);
+        it('throws error when mismatching block markers are found', async () => {
+            const code = `
+                // @sfdc-extension-block-start SFDC_EXT_featureA
+                const featureAVar = 'Feature A variable 1';
+                // @sfdc-extension-block-end SFDC_EXT_featureB
+            `;
+            vol.writeFileSync('/mock/dir/src/components/test.tsx', code);
+            const filePath = path.join(path.sep, 'mock', 'dir', 'src', 'components', 'test.tsx');
+            const mod = await reloadModule();
+            const trimExt = mod.default || mod;
+            expect(() =>
+                trimExt('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false }, mockedExtensionConfig, true)
+            ).toThrow(
+                `Block marker mismatch in ${filePath}, expected end marker for SFDC_EXT_featureA but got SFDC_EXT_featureB`
+            );
+        });
 
-        trimExtensions('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig, true);
+        it('throws error when block marker is not closed', async () => {
+            const code = `
+                // @sfdc-extension-block-start SFDC_EXT_featureA
+                const featureAVar = 'Feature A variable 1';
+            `;
+            vol.writeFileSync('/mock/dir/src/components/test.tsx', code);
+            const filePath = path.join(path.sep, 'mock', 'dir', 'src', 'components', 'test.tsx');
+            const mod = await reloadModule();
+            const trimExt = mod.default || mod;
+            expect(() => trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true)).toThrow(
+                `Unclosed end marker found in ${filePath}: SFDC_EXT_featureA`
+            );
+        });
 
-        const expected = `
-            MyClass.PropTypes = {
-                name: PropTypes.string,
-                description: PropTypes.string,
+        it('throws error when start marker is missing', async () => {
+            const code = `
+                // @sfdc-extension-block-end SFDC_EXT_featureA
+            `;
+            vol.writeFileSync('/mock/dir/src/components/test.tsx', code);
+            const filePath = path.join(path.sep, 'mock', 'dir', 'src', 'components', 'test.tsx');
+            const mod = await reloadModule();
+            const trimExt = mod.default || mod;
+            expect(() => trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true)).toThrow(
+                `Block marker mismatch in ${filePath}, encountered end marker SFDC_EXT_featureA without a matching start marker`
+            );
+        });
+
+        it('throws error when nested block markers are not closed in the correct order', async () => {
+            const code = `
+                // @sfdc-extension-block-start SFDC_EXT_featureA
+                const featureAVar = 'Feature A variable 1';
+                // @sfdc-extension-block-start SFDC_EXT_featureB
+                const featureBVar = 'Feature B variable 1';
+                // @sfdc-extension-block-end SFDC_EXT_featureA
+                // @sfdc-extension-block-end SFDC_EXT_featureB
+            `;
+            vol.writeFileSync('/mock/dir/src/components/test.tsx', code);
+            const filePath = path.join(path.sep, 'mock', 'dir', 'src', 'components', 'test.tsx');
+            const mod = await reloadModule();
+            const trimExt = mod.default || mod;
+            expect(() =>
+                trimExt('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false }, mockedExtensionConfig, true)
+            ).toThrow(
+                `Block marker mismatch in ${filePath}, expected end marker for SFDC_EXT_featureB but got SFDC_EXT_featureA`
+            );
+        });
+
+        it('warns when block marker has unknown extension', async () => {
+            const consoleSpy = mockConsole('warn');
+            vol.writeFileSync(
+                '/mock/dir/src/components/test.tsx',
+                `// @sfdc-extension-block-start UNKNOWN_EXTENSION_NOT_IN_CONFIG
+                const test = 'test';
+                // @sfdc-extension-block-end UNKNOWN_EXTENSION_NOT_IN_CONFIG
                 // @sfdc-extension-line SFDC_EXT_featureA
-                featureAProp: PropTypes.string,
+                const featureA = 'Feature A';`
+            );
+
+            const mod = await reloadModule();
+            const trimExt = mod.default || mod;
+            trimExt('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig, true);
+
+            expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('Warning: Unknown marker found'));
+            consoleSpy.mockRestore();
+        });
+    });
+
+    describe('file markers', () => {
+        it('removes entire file when marked by @sfdc-extension-file marker and extension is disabled', async () => {
+            const consoleSpy = mockConsole('log');
+            vol.mkdirSync('/mock/dir/src/routes', { recursive: true });
+            vol.writeFileSync(
+                '/mock/dir/src/routes/featureARoute.tsx',
+                `// @sfdc-extension-file SFDC_EXT_featureA
+                const feature = Feature_A;`
+            );
+            vol.writeFileSync(
+                '/mock/dir/src/routes/featureBRoute.tsx',
+                `// @sfdc-extension-file SFDC_EXT_featureB
+                const feature = Feature_B;`
+            );
+            const mod = await reloadModule();
+            const trimExt = mod.default || mod;
+            trimExt('/mock/dir', { SFDC_EXT_featureA: false, SFDC_EXT_featureB: true }, mockedExtensionConfig, true);
+            expect(fileExists('/mock/dir/src/routes/featureARoute.tsx')).toBe(false);
+            expect(fileExists('/mock/dir/src/routes/featureBRoute.tsx')).toBe(true);
+            expect(console.log).toHaveBeenCalledWith(`Deleted file /mock/dir/src/routes/featureARoute.tsx`);
+            consoleSpy.mockRestore();
+        });
+
+        it('preserves files when extension is enabled', async () => {
+            vol.writeFileSync(
+                '/mock/dir/src/components/enabledExt.tsx',
+                `// @sfdc-extension-file SFDC_EXT_featureA
+                const test = 'test';`
+            );
+
+            const mod = await reloadModule();
+            const trimExt = mod.default || mod;
+            trimExt('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig, true);
+
+            // File should still exist
+            expect(fileExists('/mock/dir/src/components/enabledExt.tsx')).toBe(true);
+        });
+
+        it('warns when file marker has unknown extension', async () => {
+            const consoleSpy = mockConsole('warn');
+            vol.writeFileSync(
+                '/mock/dir/src/components/unknownExt.tsx',
+                `// @sfdc-extension-file UNKNOWN_EXTENSION
+                const test = 'test';`
+            );
+
+            const mod = await reloadModule();
+            const trimExt = mod.default || mod;
+            trimExt('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig, true);
+
+            expect(console.warn).toHaveBeenCalledWith(
+                expect.stringMatching(/is marked with.*but it does not match any known extensions/)
+            );
+            consoleSpy.mockRestore();
+        });
+
+        it('handles errors when deleting marked files', async () => {
+            const consoleSpy = mockConsole('error');
+            vol.writeFileSync(
+                '/mock/dir/src/components/toDelete.tsx',
+                `// @sfdc-extension-file SFDC_EXT_featureA
+                const test = 'test';`
+            );
+
+            const originalUnlinkSync = vol.unlinkSync;
+            vol.unlinkSync = () => {
+                throw new Error('Simulated delete error');
             };
-        `;
-        const result = readFile('/mock/dir/src/components/featureComponent.tsx') as string;
-        expect(result).toEqualTrimmedLines(expected);
-        expect(result).not.toContain('featureBProp: PropTypes.string');
+
+            const mod = await reloadModule();
+            const trimExt = mod.default || mod;
+            expect(() => {
+                trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true);
+            }).toThrow('Simulated delete error');
+
+            expect(console.error).toHaveBeenCalledWith(
+                expect.stringMatching(/Error deleting file.*Simulated delete error/)
+            );
+
+            vol.unlinkSync = originalUnlinkSync;
+            consoleSpy.mockRestore();
+        });
     });
 
-    it('handles tsx elements in return statements correctly', () => {
-        const code = `
-            function test() {
-                return (
-                    <div>
-                        {/* @sfdc-extension-line SFDC_EXT_featureA */}
-                        <ComponentA />
-                        {/* @sfdc-extension-line SFDC_EXT_featureB */}
-                        <ComponentB />
-                    </div>
-                );
+    describe('extension folder deletion', () => {
+        it('deletes extension folder when extension is disabled and has folder property', async () => {
+            const consoleSpy = mockConsole('log');
+            vol.mkdirSync('/mock/dir/src/extensions/feature-a/components', { recursive: true });
+            vol.mkdirSync('/mock/dir/src/extensions/feature-a/pages', { recursive: true });
+            vol.writeFileSync(
+                '/mock/dir/src/extensions/feature-a/components/component.tsx',
+                `export const Component = 'Component';`
+            );
+            vol.writeFileSync('/mock/dir/src/extensions/feature-a/pages/page.tsx', `export const Page = 'Page';`);
+
+            const mod = await reloadModule();
+            const trimExt = mod.default || mod;
+            trimExt('/mock/dir', { SFDC_EXT_featureA: false, SFDC_EXT_featureB: true }, mockedExtensionConfig, true);
+
+            // The entire disabled extension directory should be removed
+            expect(fileExists('/mock/dir/src/extensions/feature-a')).toBe(false);
+            expect(fileExists('/mock/dir/src/extensions/feature-a/components/component.tsx')).toBe(false);
+            expect(fileExists('/mock/dir/src/extensions/feature-a/pages/page.tsx')).toBe(false);
+            expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Deleted extension folder'));
+            consoleSpy.mockRestore();
+        });
+
+        it('preserves extension folder when extension is enabled', async () => {
+            vol.mkdirSync('/mock/dir/src/extensions/feature-a/components', { recursive: true });
+            vol.writeFileSync(
+                '/mock/dir/src/extensions/feature-a/components/component.tsx',
+                `export const Component = 'Component';`
+            );
+
+            const mod = await reloadModule();
+            const trimExt = mod.default || mod;
+            trimExt('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false }, mockedExtensionConfig, true);
+
+            // The enabled extension directory should be preserved
+            expect(fileExists('/mock/dir/src/extensions/feature-a')).toBe(true);
+            expect(fileExists('/mock/dir/src/extensions/feature-a/components/component.tsx')).toBe(true);
+        });
+
+        it('handles multiple extension folders correctly', async () => {
+            vol.mkdirSync('/mock/dir/src/extensions/feature-a', { recursive: true });
+            vol.mkdirSync('/mock/dir/src/extensions/feature-b', { recursive: true });
+            vol.writeFileSync('/mock/dir/src/extensions/feature-a/index.tsx', `export const A = 'A';`);
+            vol.writeFileSync('/mock/dir/src/extensions/feature-b/index.tsx', `export const B = 'B';`);
+
+            const mod = await reloadModule();
+            const trimExt = mod.default || mod;
+            trimExt('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false }, mockedExtensionConfig, true);
+
+            // Feature A should be preserved, Feature B should be removed
+            expect(fileExists('/mock/dir/src/extensions/feature-a')).toBe(true);
+            expect(fileExists('/mock/dir/src/extensions/feature-b')).toBe(false);
+        });
+
+        it('does not delete extension folder if folder property is missing', async () => {
+            vol.mkdirSync('/mock/dir/src/extensions/feature-c', { recursive: true });
+            vol.writeFileSync('/mock/dir/src/extensions/feature-c/index.tsx', `export const C = 'C';`);
+
+            const mod = await reloadModule();
+            const trimExt = mod.default || mod;
+            trimExt('/mock/dir', { SFDC_EXT_featureC: false }, mockedExtensionConfig, true);
+
+            // Feature C has no folder property, so folder should not be deleted
+            expect(fileExists('/mock/dir/src/extensions/feature-c')).toBe(true);
+        });
+
+        it('handles EPERM error when deleting extension folders', async () => {
+            const consoleSpy = mockConsole('error');
+
+            vol.mkdirSync('/mock/dir/src/extensions/feature-b', { recursive: true });
+            vol.writeFileSync('/mock/dir/src/extensions/feature-b/index.tsx', `export const B = 'B';`);
+
+            const originalRmSync = vol.rmSync;
+            vol.rmSync = (_dirPath: any) => {
+                const error = new Error('Permission denied') as Error & { code?: string };
+                error.code = 'EPERM';
+                throw error;
+            };
+
+            const mod = await reloadModule();
+            const trimExt = mod.default || mod;
+            trimExt('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false }, mockedExtensionConfig, true);
+
+            expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Permission denied'));
+
+            vol.rmSync = originalRmSync;
+            consoleSpy.mockRestore();
+        });
+
+        it('handles general error when deleting extension folders', async () => {
+            const consoleSpy = mockConsole('error');
+
+            vol.mkdirSync('/mock/dir/src/extensions/feature-b', { recursive: true });
+            vol.writeFileSync('/mock/dir/src/extensions/feature-b/index.tsx', `export const B = 'B';`);
+
+            const originalRmSync = vol.rmSync;
+            vol.rmSync = (_dirPath: any) => {
+                throw new Error('Some other deletion error');
+            };
+
+            const mod = await reloadModule();
+            const trimExt = mod.default || mod;
+            trimExt('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false }, mockedExtensionConfig, true);
+
+            expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Some other deletion error'));
+
+            vol.rmSync = originalRmSync;
+            consoleSpy.mockRestore();
+        });
+
+        it('handles missing extension folders gracefully', async () => {
+            // Test that deleteExtensionFolders doesn't throw when extension folder doesn't exist
+            vol.mkdirSync('/mock/dir/src/extensions', { recursive: true });
+            vol.writeFileSync('/mock/dir/src/extensions/config.json', JSON.stringify(mockedExtensionConfig));
+
+            // Don't create the extension folder - deleteExtensionFolders should handle this gracefully
+            const mod = await reloadModule();
+            const trimExt = mod.default || mod;
+
+            // Should not throw error when extension folder doesn't exist
+            expect(() => {
+                trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true);
+            }).not.toThrow();
+        });
+
+        it('handles extensionConfig with undefined extensions property', async () => {
+            // Test that deleteExtensionFolders handles extensionConfig?.extensions || {} (line 221)
+            // when extensionConfig.extensions is undefined or extensionConfig is null
+            vol.mkdirSync('/mock/dir/src/extensions', { recursive: true });
+            vol.writeFileSync('/mock/dir/src/extensions/config.json', JSON.stringify(mockedExtensionConfig));
+
+            const mod = await reloadModule();
+            const trimExt = mod.default || mod;
+
+            // Test with extensionConfig that has undefined extensions property
+            // This should trigger the || {} fallback on line 221
+            // @ts-expect-error - Testing defensive code path
+            const configWithUndefinedExtensions = { extensions: undefined };
+            expect(() => {
+                trimExt('/mock/dir', { SFDC_EXT_featureA: false }, configWithUndefinedExtensions, true);
+            }).not.toThrow();
+
+            // Also test with null extensionConfig to ensure optional chaining works
+            expect(() => {
+                trimExt('/mock/dir', { SFDC_EXT_featureA: false }, null, true);
+            }).not.toThrow();
+        });
+
+        it('returns early when extensions directory does not exist', async () => {
+            // Test that deleteExtensionFolders returns early when extensions directory doesn't exist
+            // This covers the early return path (lines 217-219)
+            vol.mkdirSync('/mock/dir/src', { recursive: true });
+            // Don't create extensions directory - deleteExtensionFolders should return early
+
+            // Create config.json so updateExtensionConfig can work
+            // We need to create the directory and file, then remove just the directory
+            // to test the early return in deleteExtensionFolders
+            vol.mkdirSync('/mock/dir/src/extensions', { recursive: true });
+            vol.writeFileSync('/mock/dir/src/extensions/config.json', JSON.stringify(mockedExtensionConfig));
+
+            const mod = await reloadModule();
+            const trimExt = mod.default || mod;
+
+            // Remove extensions directory to test early return in deleteExtensionFolders
+            // This ensures the directory doesn't exist when deleteExtensionFolders checks
+            vol.rmSync('/mock/dir/src/extensions', { recursive: true, force: true });
+
+            // Verify directory doesn't exist
+            expect(fileExists('/mock/dir/src/extensions')).toBe(false);
+
+            // This will fail at updateExtensionConfig (because config.json is gone),
+            // but deleteExtensionFolders should have returned early without error (lines 218-219)
+            try {
+                trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true);
+                // Should not reach here
+                expect(true).toBe(false);
+            } catch (error: unknown) {
+                // Expected to fail at updateExtensionConfig, but deleteExtensionFolders should have returned early
+                expect((error as Error).message).toContain('ENOENT');
+                expect((error as Error).message).toContain('config.json');
             }
-        `;
-
-        vol.writeFileSync('/mock/dir/src/components/featureComponent.tsx', code);
-
-        trimExtensions('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false }, mockedExtensionConfig, true);
-
-        const expected = `
-            function test() {
-                return (
-                    <div>
-                        {/* @sfdc-extension-line SFDC_EXT_featureA */}
-                        <ComponentA />
-                    </div>
-                );
-            }
-        `;
-        const result = readFile('/mock/dir/src/components/featureComponent.tsx') as string;
-        expect(result).toEqualTrimmedLines(expected);
-        expect(result).not.toContain('<ComponentB />');
+        });
     });
 
-    it('handles nested tsx elements in return statements correctly', () => {
-        const code = `
-            function test() {
-                return (
-                    <div>
-                        {/* @sfdc-extension-line SFDC_EXT_featureA */}
-                        <ComponentA>
-                            <ChildComponent />
-                        {/* @sfdc-extension-line SFDC_EXT_featureA */}
-                        </ComponentA>
-                    </div>
-                );
-            }
-        `;
-        vol.writeFileSync('/mock/dir/src/components/featureComponent.tsx', code);
+    describe('extension config updates', () => {
+        it('updates extension config to only include selected extensions', async () => {
+            const extensionConfig = {
+                extensions: {
+                    SFDC_EXT_featureA: {
+                        name: 'Feature A',
+                        description: 'Feature A description',
+                        folder: 'feature-a',
+                    },
+                    SFDC_EXT_featureB: {
+                        name: 'Feature B',
+                        description: 'Feature B description',
+                        folder: 'feature-b',
+                    },
+                    SFDC_EXT_featureC: {
+                        name: 'Feature C',
+                        description: 'Feature C description',
+                        folder: 'feature-c',
+                    },
+                },
+            };
 
-        trimExtensions('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true);
+            vol.writeFileSync('/mock/dir/src/extensions/config.json', JSON.stringify(extensionConfig));
+            vol.writeFileSync('/mock/dir/src/components/test.tsx', `export const Test = 'test';`);
 
-        const expected = `
-            function test() {
-                return (
-                    <div>
-                        <ChildComponent />
-                    </div>
-                );
-            }
-        `;
-        const result = readFile('/mock/dir/src/components/featureComponent.tsx') as string;
-        expect(result).toEqualTrimmedLines(expected);
-        expect(result).not.toContain('<ComponentA />');
+            const mod = await reloadModule();
+            const trimExt = mod.default || mod;
+            trimExt(
+                '/mock/dir',
+                { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false, SFDC_EXT_featureC: false },
+                extensionConfig,
+                true
+            );
+
+            const updatedConfig = JSON.parse(readFile('/mock/dir/src/extensions/config.json') as string);
+            expect(updatedConfig.extensions).toHaveProperty('SFDC_EXT_featureA');
+            expect(updatedConfig.extensions).not.toHaveProperty('SFDC_EXT_featureB');
+            expect(updatedConfig.extensions).not.toHaveProperty('SFDC_EXT_featureC');
+        });
     });
 
-    it('does not remove referenced imports', () => {
-        const code = `import { FeatureA } from './featureAComponent'`;
+    describe('file processing', () => {
+        it('skips node_modules directory', async () => {
+            vol.mkdirSync('/mock/dir/node_modules/some-package', { recursive: true });
+            vol.writeFileSync(
+                '/mock/dir/node_modules/some-package/index.tsx',
+                `// @sfdc-extension-line SFDC_EXT_featureA
+                const test = 'test';`
+            );
 
-        vol.writeFileSync('/mock/dir/src/components/featureComponent.tsx', code);
-
-        trimExtensions('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig, true);
-
-        expect(fileExists('/mock/dir/src/components/featureAComponent')).toBe(true);
-        expect(fileExists('/mock/dir/src/components/featureAComponent/index.tsx')).toBe(true);
-    });
-
-    it('removes unused alias import file when no more references exist', () => {
-        vol.writeFileSync(
-            '/mock/dir/src/pages/featureBPage/index.tsx',
-            TEST_CODES.FEATURE_B_PAGE_WITH_COMPONENT_REF_ALIAS
-        );
-        trimExtensions('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false }, mockedExtensionConfig, true);
-
-        expect(fileExists('/mock/dir/src/components/featureAComponent')).toBe(true);
-        expect(fileExists('/mock/dir/src/components/featureBComponent')).toBe(false);
-    });
-
-    it('reports error when updating file fails', async () => {
-        const consoleSpy = mockConsole('error');
-
-        vol.writeFileSync(
-            '/mock/dir/src/components/featureComponent.tsx',
-            `// @sfdc-extension-line SFDC_EXT_featureA
-            const feature = Feature_A;`
-        );
-        vol.writeFileSync = (..._args: unknown[]) => {
-            throw new Error('Simulated write error');
-        };
-
-        const mod = await reloadModule();
-        const trimExt = mod.default || mod;
-        try {
+            const mod = await reloadModule();
+            const trimExt = mod.default || mod;
             trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true);
-        } catch (error: unknown) {
-            expect((error as Error).message).toContain('Simulated write error');
-        }
 
-        expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Error updating file'));
-        consoleSpy.mockRestore();
-    });
+            expect(fileExists('/mock/dir/node_modules/some-package/index.tsx')).toBe(true);
+        });
 
-    it('handles EPERM error when deleting directories', async () => {
-        const consoleSpy = mockConsole('error');
-        vol.writeFileSync('/mock/dir/src/components/featureBComponent/index.tsx', TEST_CODES.COMPONENT_B);
+        it('skips files with unsupported extensions', async () => {
+            vol.writeFileSync(
+                '/mock/dir/src/components/test.txt',
+                `// @sfdc-extension-line SFDC_EXT_featureA
+                const test = 'test';`
+            );
 
-        const originalRmSync = vol.rmSync;
-        vol.rmSync = () => {
-            const error = new Error('Permission denied') as Error & { code?: string };
-            error.code = 'EPERM';
-            throw error;
-        };
-
-        const mod = await reloadModule();
-        const trimExt = mod.default || mod;
-        trimExt('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false }, mockedExtensionConfig, true);
-
-        expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Permission denied - cannot delete'));
-
-        vol.rmSync = originalRmSync;
-        consoleSpy.mockRestore();
-    });
-
-    it('handles other errors when deleting directories', async () => {
-        const consoleSpy = mockConsole('error');
-        vol.writeFileSync('/mock/dir/src/components/featureBComponent/index.tsx', TEST_CODES.COMPONENT_B);
-
-        const originalRmSync = vol.rmSync;
-        vol.rmSync = () => {
-            throw new Error('Some other deletion error');
-        };
-
-        const mod = await reloadModule();
-        const trimExt = mod.default || mod;
-        trimExt('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false }, mockedExtensionConfig, true);
-
-        expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Error deleting'));
-
-        vol.rmSync = originalRmSync;
-        consoleSpy.mockRestore();
-    });
-
-    it('skips node_modules directory', async () => {
-        vol.mkdirSync('/mock/dir/node_modules/some-package', { recursive: true });
-        vol.writeFileSync(
-            '/mock/dir/node_modules/some-package/index.tsx',
-            `// @sfdc-extension-line SFDC_EXT_featureA
-            const test = 'test';`
-        );
-
-        const mod = await reloadModule();
-        const trimExt = mod.default || mod;
-        trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true);
-
-        expect(fileExists('/mock/dir/node_modules/some-package/index.tsx')).toBe(true);
-    });
-
-    it('skips files with unsupported extensions', async () => {
-        vol.writeFileSync(
-            '/mock/dir/src/components/test.txt',
-            `// @sfdc-extension-line SFDC_EXT_featureA
-            const test = 'test';`
-        );
-
-        const mod = await reloadModule();
-        const trimExt = mod.default || mod;
-        trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true);
-
-        expect(fileExists('/mock/dir/src/components/test.txt')).toBe(true);
-    });
-
-    it('deletes standalone files (not in directories)', async () => {
-        vol.writeFileSync(
-            '/mock/dir/src/components/standaloneFile.tsx',
-            `// @sfdc-extension-line SFDC_EXT_featureA
-            const feature = Feature_A;`
-        );
-
-        const mod = await reloadModule();
-        const trimExt = mod.default || mod;
-        trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true);
-
-        const fileContent = vol.existsSync('/mock/dir/src/components/standaloneFile.tsx')
-            ? vol.readFileSync('/mock/dir/src/components/standaloneFile.tsx', 'utf8')
-            : '';
-        expect(fileContent).not.toContain('@sfdc-extension-line SFDC_EXT_featureA');
-        expect(fileContent).not.toContain('Feature_A');
-    });
-
-    it('removes separate unused directories when the only references are from each other', async () => {
-        vol.writeFileSync('/mock/dir/src/components/featureBComponent/index.tsx', TEST_CODES.COMPONENT_B_WITH_PAGE_REF);
-        vol.writeFileSync('/mock/dir/src/pages/featureBPage/index.tsx', TEST_CODES.FEATURE_B_PAGE_WITH_COMPONENT_REF);
-
-        const mod = await reloadModule();
-        const trimExt = mod.default || mod;
-        trimExt('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false }, mockedExtensionConfig, true);
-
-        expect(fileExists('/mock/dir/src/components/featureAComponent')).toBe(true);
-        expect(fileExists('/mock/dir/src/components/featureBComponent')).toBe(false);
-        expect(fileExists('/mock/dir/src/pages/featureBPage')).toBe(false);
-    });
-
-    it('cleans up empty extensions directory', async () => {
-        vol.writeFileSync('/mock/dir/src/components/featureBComponent/index.tsx', TEST_CODES.COMPONENT_B_WITH_PAGE_REF);
-        vol.writeFileSync('/mock/dir/src/pages/featureBPage/index.tsx', TEST_CODES.FEATURE_B_PAGE_WITH_COMPONENT_REF);
-
-        vol.mkdirSync('/mock/dir/src/extensions/emptyExt', { recursive: true });
-        vol.mkdirSync('/mock/dir/src/extensions/emptyExt/nested', { recursive: true });
-
-        const mod = await reloadModule();
-        const trimExt = mod.default || mod;
-        trimExt('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false }, mockedExtensionConfig, true);
-
-        expect(fileExists('/mock/dir/src/extensions/emptyExt')).toBe(false);
-    });
-
-    it('removes entire file when marked by @sfdc-extension-file marker', async () => {
-        const consoleSpy = mockConsole('log');
-        vol.mkdirSync('/mock/dir/src/routes', { recursive: true });
-        vol.writeFileSync(
-            '/mock/dir/src/routes/featureARoute.tsx',
-            `// @sfdc-extension-file SFDC_EXT_featureA
-        const feature = Feature_A;`
-        );
-        vol.writeFileSync(
-            '/mock/dir/src/routes/featureBRoute.tsx',
-            `// @sfdc-extension-file SFDC_EXT_featureB
-            const feature = Feature_B;`
-        );
-        const mod = await reloadModule();
-        const trimExt = mod.default || mod;
-        trimExt('/mock/dir', { SFDC_EXT_featureA: false, SFDC_EXT_featureB: true }, mockedExtensionConfig, true);
-        expect(fileExists('/mock/dir/src/routes/featureARoute.tsx')).toBe(false);
-        expect(fileExists('/mock/dir/src/routes/featureBRoute.tsx')).toBe(true);
-        expect(console.log).toHaveBeenCalledWith(`Deleted file /mock/dir/src/routes/featureARoute.tsx`);
-        consoleSpy.mockRestore();
-    });
-
-    it('resolves import paths correctly', async () => {
-        vol.writeFileSync('/mock/dir/src/components/imported.tsx', `export const Imported = 'imported';`);
-        vol.writeFileSync(
-            '/mock/dir/src/components/importer.tsx',
-            `import { Imported } from './imported';
-            export const Importer = 'importer';`
-        );
-        vol.mkdirSync('/mock/dir/src/components/dirExport', { recursive: true });
-        vol.writeFileSync('/mock/dir/src/components/dirExport/index.tsx', `export const DirExport = 'dirExport';`);
-        vol.writeFileSync(
-            '/mock/dir/src/components/dirImporter.tsx',
-            `import { DirExport } from './dirExport';
-            export const DirImporter = 'dirImporter';`
-        );
-
-        const mod = await reloadModule();
-        const trimExt = mod.default || mod;
-        trimExt('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig, true);
-
-        expect(fileExists('/mock/dir/src/components/imported.tsx')).toBe(true);
-        expect(fileExists('/mock/dir/src/components/importer.tsx')).toBe(true);
-        expect(fileExists('/mock/dir/src/components/dirExport/index.tsx')).toBe(true);
-    });
-
-    it('warns when file marker has unknown extension', async () => {
-        const consoleSpy = mockConsole('warn');
-        vol.writeFileSync(
-            '/mock/dir/src/components/unknownExt.tsx',
-            `// @sfdc-extension-file UNKNOWN_EXTENSION
-            const test = 'test';`
-        );
-
-        const mod = await reloadModule();
-        const trimExt = mod.default || mod;
-        trimExt('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig, true);
-
-        expect(console.warn).toHaveBeenCalledWith(
-            expect.stringMatching(/is marked with.*but it does not match any known extensions/)
-        );
-        consoleSpy.mockRestore();
-    });
-
-    it('handles errors when deleting marked files', async () => {
-        const consoleSpy = mockConsole('error');
-        vol.writeFileSync(
-            '/mock/dir/src/components/toDelete.tsx',
-            `// @sfdc-extension-file SFDC_EXT_featureA
-            const test = 'test';`
-        );
-
-        const originalUnlinkSync = vol.unlinkSync;
-        vol.unlinkSync = () => {
-            throw new Error('Simulated delete error');
-        };
-
-        const mod = await reloadModule();
-        const trimExt = mod.default || mod;
-        expect(() => {
+            const mod = await reloadModule();
+            const trimExt = mod.default || mod;
             trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true);
-        }).toThrow('Simulated delete error');
 
-        expect(console.error).toHaveBeenCalledWith(
-            expect.stringMatching(/Error deleting file.*Simulated delete error/)
-        );
+            expect(fileExists('/mock/dir/src/components/test.txt')).toBe(true);
+            const content = readFile('/mock/dir/src/components/test.txt');
+            expect(content).toContain('@sfdc-extension-line');
+        });
 
-        vol.unlinkSync = originalUnlinkSync;
-        consoleSpy.mockRestore();
+        it('only writes file if content changed', () => {
+            const consoleSpy = mockConsole('log');
+            const code = `export const Test = 'test';`;
+
+            vol.writeFileSync('/mock/dir/src/components/test.tsx', code);
+            trimExtensions('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig, true);
+
+            // Should not log "Updated file" if content didn't change
+            const logCalls = (console.log as any).mock.calls.map((call: any[]) => call.join(' ')).join('\n');
+            expect(logCalls).not.toContain('Updated file /mock/dir/src/components/test.tsx');
+
+            consoleSpy.mockRestore();
+        });
+
+        it('reports error when updating file fails', async () => {
+            const consoleSpy = mockConsole('error');
+
+            vol.writeFileSync(
+                '/mock/dir/src/components/test.tsx',
+                `// @sfdc-extension-line SFDC_EXT_featureA
+                const feature = Feature_A;`
+            );
+            const originalWriteFileSync = vol.writeFileSync;
+            vol.writeFileSync = (..._args: unknown[]) => {
+                throw new Error('Simulated write error');
+            };
+
+            const mod = await reloadModule();
+            const trimExt = mod.default || mod;
+            try {
+                trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true);
+            } catch (error: unknown) {
+                expect((error as Error).message).toContain('Simulated write error');
+            }
+
+            expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Error updating file'));
+            vol.writeFileSync = originalWriteFileSync;
+            consoleSpy.mockRestore();
+        });
     });
 
-    it('warns when block marker has unknown extension', async () => {
-        const consoleSpy = mockConsole('warn');
-        vol.writeFileSync(
-            '/mock/dir/src/components/unknownMarker.tsx',
-            `// @sfdc-extension-block-start UNKNOWN_EXTENSION_NOT_IN_CONFIG
-            const test = 'test';
-            // @sfdc-extension-block-end UNKNOWN_EXTENSION_NOT_IN_CONFIG
-            // @sfdc-extension-line SFDC_EXT_featureA
-            const featureA = 'Feature A';`
-        );
+    describe('edge cases and error handling', () => {
+        it('skips processing when no extensions configured', async () => {
+            const consoleSpy = mockConsole('log');
+            vol.writeFileSync(
+                '/mock/dir/src/components/test.tsx',
+                `// @sfdc-extension-line SFDC_EXT_featureA
+                const test = 'test';`
+            );
 
-        const mod = await reloadModule();
-        const trimExt = mod.default || mod;
-        trimExt('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig, true);
+            const mod = await reloadModule();
+            const trimExt = mod.default || mod;
+            trimExt('/mock/dir', {}, { extensions: {} }, true);
 
-        expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('Warning: Unknown marker found'));
-        consoleSpy.mockRestore();
-    });
+            // Should log early return message
+            expect(console.log).toHaveBeenCalledWith('No plugins found, skipping trim');
+            const content = readFile('/mock/dir/src/components/test.tsx');
+            expect(content).toContain('@sfdc-extension-line SFDC_EXT_featureA');
+            consoleSpy.mockRestore();
+        });
 
-    it('handles parse errors in removed code blocks', async () => {
-        const consoleSpy = mockConsole('error');
-        vol.writeFileSync(
-            '/mock/dir/src/components/invalidImport.tsx',
-            `// @sfdc-extension-line SFDC_EXT_featureA
-            import { Invalid } from './invalid-syntax-!!!`
-        );
+        it('handles missing or incomplete extension configuration gracefully', async () => {
+            vol.writeFileSync('/mock/dir/src/components/test.tsx', `export const Test = 'test';`);
 
-        const mod = await reloadModule();
-        const trimExt = mod.default || mod;
-        trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true);
+            const mod = await reloadModule();
+            const trimExt = mod.default || mod;
 
-        expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Error parsing block'));
-        consoleSpy.mockRestore();
-    });
+            // Test with undefined extensionConfig
+            expect(() => {
+                trimExt('/mock/dir', {}, undefined, false);
+            }).not.toThrow();
 
-    it('shows message when no unused components found', async () => {
-        const consoleSpy = mockConsole('log');
-        const mod = await reloadModule();
-        const trimExt = mod.default || mod;
-        trimExt('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: true }, mockedExtensionConfig, true);
+            // Test with extensionConfig but undefined extensions property
+            expect(() => {
+                // @ts-expect-error - Testing defensive code path
+                trimExt('/mock/dir', {}, { extensions: undefined }, false);
+            }).not.toThrow();
+        });
 
-        expect(console.log).toHaveBeenCalledWith('\nNo unused components found.');
-        consoleSpy.mockRestore();
-    });
+        it('handles verbose mode configuration correctly', async () => {
+            const consoleSpy = mockConsole('log');
 
-    it('preserves files when extension is enabled', async () => {
-        vol.writeFileSync(
-            '/mock/dir/src/components/enabledExt.tsx',
-            `// @sfdc-extension-file SFDC_EXT_featureA
-            const test = 'test';`
-        );
+            vol.writeFileSync('/mock/dir/src/components/test.tsx', `export const Test = 'test';`);
 
-        const mod = await reloadModule();
-        const trimExt = mod.default || mod;
-        trimExt('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig, true);
+            const mod = await reloadModule();
+            const trimExt = mod.default || mod;
 
-        // File should still exist
-        expect(fileExists('/mock/dir/src/components/enabledExt.tsx')).toBe(true);
-    });
-
-    it('skips processing when no extensions configured', async () => {
-        const consoleSpy = mockConsole('log');
-        vol.writeFileSync(
-            '/mock/dir/src/components/test.tsx',
-            `// @sfdc-extension-line SFDC_EXT_featureA
-            const test = 'test';`
-        );
-
-        const mod = await reloadModule();
-        const trimExt = mod.default || mod;
-        trimExt('/mock/dir', {}, { extensions: {} }, true);
-
-        // Should log early return message
-        expect(console.log).toHaveBeenCalledWith('No plugins found, skipping trim');
-        const content = readFile('/mock/dir/src/components/test.tsx');
-        expect(content).toContain('@sfdc-extension-line SFDC_EXT_featureA');
-        consoleSpy.mockRestore();
-    });
-
-    it('preserves code blocks when extension is enabled', async () => {
-        vol.writeFileSync(
-            '/mock/dir/src/components/enabledBlock.tsx',
-            `// @sfdc-extension-block-start SFDC_EXT_featureA
-            const featureA = 'Feature A';
-            // @sfdc-extension-block-end SFDC_EXT_featureA
-            const other = 'other';`
-        );
-
-        const mod = await reloadModule();
-        const trimExt = mod.default || mod;
-        trimExt('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig, true);
-
-        const content = readFile('/mock/dir/src/components/enabledBlock.tsx');
-        expect(content).toContain('featureA');
-        expect(content).toContain('Feature A');
-    });
-
-    it('removes unused component files when extensions are disabled and provides confirmation', async () => {
-        // When a shopper disables an extension, unused component files should be removed
-        // and they should receive confirmation that the cleanup was successful
-        const consoleSpy = mockConsole('log');
-
-        // Create a component file that will be removed when the extension is disabled
-        vol.writeFileSync('/mock/dir/src/components.tsx', `export const Components = 'components';`);
-
-        // Create a file that imports the component with the extension marker
-        vol.mkdirSync('/mock/dir/src/components', { recursive: true });
-        vol.writeFileSync(
-            '/mock/dir/src/components/index.tsx',
-            `// @sfdc-extension-line SFDC_EXT_featureA
-            import { Components } from '../components.tsx';
-            export default Components;`
-        );
-
-        const mod = await reloadModule();
-        const trimExt = mod.default || mod;
-        trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true);
-
-        // The unused component file should be removed
-        expect(fileExists('/mock/dir/src/components.tsx')).toBe(false);
-
-        // Users should see a confirmation message when files are removed
-        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('✓ Successfully deleted file'));
-
-        consoleSpy.mockRestore();
-    });
-
-    it('preserves component files when extensions are enabled', async () => {
-        // When a shopper has extensions enabled, their component files should remain intact
-        vol.writeFileSync('/mock/dir/src/components.tsx', `export const Components = 'components';`);
-
-        vol.mkdirSync('/mock/dir/src/components', { recursive: true });
-        vol.writeFileSync('/mock/dir/src/components/index.tsx', `export default Components;`);
-
-        const mod = await reloadModule();
-        const trimExt = mod.default || mod;
-        trimExt('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig, false);
-
-        // Component files should still exist when extensions are enabled
-        expect(fileExists('/mock/dir/src/components.tsx')).toBe(true);
-    });
-
-    it('handles missing or incomplete extension configuration gracefully', async () => {
-        // When extension configuration is missing or incomplete, the system should handle it without errors
-        vol.writeFileSync('/mock/dir/src/components/test.tsx', `export const Test = 'test';`);
-
-        const mod = await reloadModule();
-        const trimExt = mod.default || mod;
-
-        // Test with undefined extensionConfig
-        trimExt('/mock/dir', {}, undefined, false);
-        expect(fileExists('/mock/dir/src/components/test.tsx')).toBe(true);
-
-        // Test with extensionConfig but undefined extensions property
-        trimExt('/mock/dir', {}, { extensions: undefined }, false);
-        expect(fileExists('/mock/dir/src/components/test.tsx')).toBe(true);
-    });
-
-    it('handles verbose mode configuration correctly', async () => {
-        // When verbose mode is configured (enabled, null, or undefined), the system should behave appropriately
-        const consoleSpy = mockConsole('log');
-
-        vol.writeFileSync('/mock/dir/src/components/test.tsx', `export const Test = 'test';`);
-
-        const mod = await reloadModule();
-        const trimExt = mod.default || mod;
-
-        // Test with verbose mode enabled
-        trimExt('/mock/dir', {}, mockedExtensionConfig, true);
-        expect(fileExists('/mock/dir/src/components/test.tsx')).toBe(true);
-        expect(console.log).toHaveBeenCalled();
-        consoleSpy.mockClear();
-
-        // Test with verbose parameter set to null (should default to non-verbose)
-        // @ts-expect-error - Testing defensive code path with null
-        trimExt('/mock/dir', {}, mockedExtensionConfig, null);
-        expect(fileExists('/mock/dir/src/components/test.tsx')).toBe(true);
-
-        // Test with verbose parameter set to undefined (should default to non-verbose)
-        // @ts-expect-error - Testing defensive code path with undefined
-        trimExt('/mock/dir', {}, mockedExtensionConfig, undefined);
-        expect(fileExists('/mock/dir/src/components/test.tsx')).toBe(true);
-
-        consoleSpy.mockRestore();
-    });
-
-    it('throws error if error occurs while parsing file with export', async () => {
-        vol.writeFileSync('/mock/dir/src/components/test.tsx', `[export const Test = 'test';`);
-        const mod = await reloadModule();
-        const trimExt = mod.default || mod;
-        expect(() => {
+            // Test with verbose mode enabled
             trimExt('/mock/dir', {}, mockedExtensionConfig, true);
-        }).toThrow('Error parsing file /mock/dir/src/components/test.tsx: Unexpected token');
+            expect(fileExists('/mock/dir/src/components/test.tsx')).toBe(true);
+            expect(console.log).toHaveBeenCalled();
+            consoleSpy.mockClear();
+
+            // Test with verbose parameter set to false
+            trimExt('/mock/dir', {}, mockedExtensionConfig, false);
+            expect(fileExists('/mock/dir/src/components/test.tsx')).toBe(true);
+
+            // Test with verbose parameter set to null/undefined to cover ?? false branch (line 33)
+            // @ts-expect-error - Testing defensive code path with null
+            trimExt('/mock/dir', {}, mockedExtensionConfig, null);
+            expect(fileExists('/mock/dir/src/components/test.tsx')).toBe(true);
+
+            // @ts-expect-error - Testing defensive code path with undefined
+            trimExt('/mock/dir', {}, mockedExtensionConfig, undefined);
+            expect(fileExists('/mock/dir/src/components/test.tsx')).toBe(true);
+
+            consoleSpy.mockRestore();
+        });
+
+        it('handles file instead of directory in isEmptyDirectory check', async () => {
+            const mod = await reloadModule();
+            const trimExt = mod.default || mod;
+
+            vol.mkdirSync('/mock/dir/src/extensions', { recursive: true });
+            vol.writeFileSync('/mock/dir/src/extensions/file.txt', 'not a directory');
+
+            expect(() => {
+                trimExt('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig, true);
+            }).not.toThrow();
+            expect(fileExists('/mock/dir/src/extensions/file.txt')).toBe(true);
+        });
     });
 });

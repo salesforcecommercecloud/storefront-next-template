@@ -127,14 +127,21 @@ export function isSiteOutOfStock(
  * @param variant - Optional variant to use for site inventory (takes precedence over product.inventory when isPickup is false)
  * @returns Inventory object if found, or null if not found or if product is undefined
  */
-export function getEffectiveInventory(
-    product: ShopperProducts.schemas['Product'] | undefined,
+export function getEffectiveInventory({
+    product,
     // @sfdc-extension-line SFDC_EXT_BOPIS
-    isPickup: boolean,
+    isPickup,
     // @sfdc-extension-line SFDC_EXT_BOPIS
-    storeInventoryId: string | undefined,
-    variant?: ShopperProducts.schemas['Variant'] | null
-): ShopperProducts.schemas['Inventory'] | null {
+    storeInventoryId,
+    variant,
+}: {
+    product: ShopperProducts.schemas['Product'];
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    isPickup: boolean;
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    storeInventoryId: string | undefined;
+    variant?: ShopperProducts.schemas['Variant'] | null;
+}): ShopperProducts.schemas['Inventory'] | null {
     if (!product) return null;
 
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -170,25 +177,32 @@ export function getEffectiveInventory(
  * @param variant - Optional variant to use for site inventory (takes precedence over product.inventory when isPickup is false)
  * @returns The stock level number (0 if product is undefined, inventory not found, or stock level is unavailable)
  */
-export function getEffectiveStockLevel(
-    product: ShopperProducts.schemas['Product'] | undefined,
+export function getEffectiveStockLevel({
+    product,
     // @sfdc-extension-line SFDC_EXT_BOPIS
-    isPickup: boolean,
+    isPickup,
     // @sfdc-extension-line SFDC_EXT_BOPIS
-    storeInventoryId: string | undefined,
-    variant?: ShopperProducts.schemas['Variant'] | null
-): number {
+    storeInventoryId,
+    variant,
+}: {
+    product: ShopperProducts.schemas['Product'];
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    isPickup: boolean;
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    storeInventoryId: string | undefined;
+    variant?: ShopperProducts.schemas['Variant'] | null;
+}): number {
     if (!product) return 0;
 
     // Use helper function (inventory already calculated for sets/bundles)
-    const inventory = getEffectiveInventory(
+    const inventory = getEffectiveInventory({
         product,
         // @sfdc-extension-line SFDC_EXT_BOPIS
         isPickup,
         // @sfdc-extension-line SFDC_EXT_BOPIS
         storeInventoryId,
-        variant
-    );
+        variant,
+    });
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
     if (isPickup && storeInventoryId) {
         return inventory?.stockLevel ?? 0;
@@ -226,15 +240,23 @@ export function getEffectiveStockLevel(
  * @param variant - Optional variant to use for site inventory (takes precedence over product.inventory when isPickup is false)
  * @returns true if product is orderable and has sufficient stock, false if out of stock or if product is undefined
  */
-export function isInStock(
-    product: ShopperProducts.schemas['Product'] | undefined,
+export function isInStock({
+    product,
     // @sfdc-extension-line SFDC_EXT_BOPIS
-    isPickup: boolean,
+    isPickup,
     // @sfdc-extension-line SFDC_EXT_BOPIS
-    storeInventoryId: string | undefined,
-    quantity: number = 1,
-    variant?: ShopperProducts.schemas['Variant'] | null
-): boolean {
+    storeInventoryId,
+    quantity = 1,
+    variant,
+}: {
+    product?: ShopperProducts.schemas['Product'];
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    isPickup: boolean;
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    storeInventoryId?: string;
+    quantity: number;
+    variant?: ShopperProducts.schemas['Variant'] | null;
+}): boolean {
     if (!product) return false;
 
     // @sfdc-extension-block-start SFDC_EXT_BOPIS

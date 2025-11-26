@@ -11,14 +11,14 @@ import { useState, useCallback, useRef, useMemo } from 'react';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import uiStrings from '@/temp-ui-string';
 import { isProductSet, isProductBundle, isStandardProduct } from '@/lib/product-utils';
-// @sfdc-extension-block-start SFDC_EXT_BOPIS
 import {
     type ChildProductSelection,
+    // @sfdc-extension-line SFDC_EXT_BOPIS
     isStoreOutOfStock as storeOutOfStockFor,
     isSiteOutOfStock as siteOutOfStockFor,
 } from '@/lib/inventory-utils';
+// @sfdc-extension-line SFDC_EXT_BOPIS
 import { usePickup } from '@/extensions/bopis/context/pickup-context';
-// @sfdc-extension-block-end SFDC_EXT_BOPIS
 import { useBulkChildProductInventory } from './use-bulk-child-product-inventory';
 
 interface ChildProductOrderability {

@@ -3,6 +3,7 @@ export type ExtensionMeta = {
     description: string;
     installationInstructions: string;
     uninstallationInstructions: string;
+    folder: string;
     dependencies: string[];
 };
 

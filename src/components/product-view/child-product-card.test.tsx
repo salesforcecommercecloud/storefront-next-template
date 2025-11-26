@@ -43,6 +43,7 @@ vi.mock('@/hooks/product/use-variation-attributes', () => ({
     useVariationAttributes: () => [],
 }));
 
+// @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
 // Mock store locator store creation to prevent cookie/document access in tests
 vi.mock('@/extensions/store-locator/stores/store-locator-store', () => ({
     createStoreLocatorStore: vi.fn(),
@@ -52,6 +53,7 @@ vi.mock('@/extensions/store-locator/utils', () => ({
     getCookieFromDocumentAs: vi.fn(),
     getSelectedStoreInfoCookieName: vi.fn(),
 }));
+// @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
 
 // Mock delivery options hook used by DeliveryOptions component
 vi.mock('@/extensions/bopis/hooks/use-delivery-options', () => ({
@@ -125,6 +127,7 @@ describe('ChildProductCard', () => {
     beforeEach(async () => {
         vi.clearAllMocks();
 
+        // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
         // Setup mocks for store locator
         const { createStoreLocatorStore } = await import('@/extensions/store-locator/stores/store-locator-store');
         const { getCookieFromDocumentAs, getSelectedStoreInfoCookieName } = await import(
@@ -137,6 +140,7 @@ describe('ChildProductCard', () => {
 
         mockCreateStoreLocatorStore.mockReturnValue(mockStore);
         mockGetSelectedStoreInfoFromDocument.mockReturnValue(null);
+        // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
 
         // Set up stable mock state
         mockStore.getState.mockReturnValue({

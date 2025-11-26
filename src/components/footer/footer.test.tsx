@@ -27,6 +27,7 @@ describe('Footer', () => {
         expect(screen.getByText(uiStrings.footer.sections.customerSupport)).toBeInTheDocument();
         expect(screen.getByText(uiStrings.footer.sections.account)).toBeInTheDocument();
         expect(screen.getByText(uiStrings.footer.sections.ourCompany)).toBeInTheDocument();
+        // @sfdc-extension-line SFDC_EXT_INTERNAL_THEME_SWITCHER
         expect(screen.getByText(uiStrings.footer.sections.switchThemes)).toBeInTheDocument();
     });
 
@@ -57,10 +58,12 @@ describe('Footer', () => {
     test('renders Our Company section links', () => {
         renderWithRouter(<Footer />);
 
+        // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
         // Store locator link uses extension UI string
         const storeLocatorLink = screen.getByRole('link', { name: /store locator/i });
         expect(storeLocatorLink).toBeInTheDocument();
         expect(storeLocatorLink).toHaveAttribute('href', '/store-locator');
+        // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
 
         const aboutUsLink = screen.getByRole('link', { name: uiStrings.footer.links.aboutUs });
         expect(aboutUsLink).toBeInTheDocument();
@@ -96,6 +99,7 @@ describe('Footer', () => {
         expect(screen.getByRole('button', { name: 'Subscribe' })).toBeInTheDocument();
     });
 
+    // @sfdc-extension-block-start SFDC_EXT_INTERNAL_THEME_SWITCHER
     test('renders ThemeSwitcher component with theme options', () => {
         renderWithRouter(<Footer />);
 
@@ -106,6 +110,7 @@ describe('Footer', () => {
         expect(screen.getByRole('option', { name: 'Light Theme' })).toBeInTheDocument();
         expect(screen.getByRole('option', { name: 'Dark Theme' })).toBeInTheDocument();
     });
+    // @sfdc-extension-block-end SFDC_EXT_INTERNAL_THEME_SWITCHER
 
     test('renders copyright text with current year', () => {
         renderWithRouter(<Footer />);

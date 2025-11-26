@@ -95,10 +95,10 @@ export default function CheckoutFormPage({ shippingMethods, productMapPromise }:
     // Get navigation state
     const navigation = useNavigation();
     let showAddressAndOptions = true;
-    // @sfdc-extension-start-block SFDC_EXT_BOPIS
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
     const isPickup = isStorePickup(cart);
     showAddressAndOptions = !isPickup;
-    // @sfdc-extension-end-block SFDC_EXT_BOPIS
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     const analytics = useAnalytics();
     const hasTrackedCheckoutStartRef = useRef(false);

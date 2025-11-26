@@ -7,8 +7,10 @@
 
 import { describe, it, expect } from 'vitest';
 import {
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
     getStoreInventoryById,
     isStoreOutOfStock,
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
     isSiteOutOfStock,
     getEffectiveStockLevel,
     isInStock,
@@ -23,6 +25,7 @@ const mockSetProduct = setProductWithInventories;
 const mockBundleProduct = bundleProductWithInventories;
 
 describe('inventory-utils', () => {
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
     describe('getStoreInventoryById', () => {
         it('returns inventory when found', () => {
             const result = getStoreInventoryById(mockProduct, 'inventory_m');
@@ -201,6 +204,7 @@ describe('inventory-utils', () => {
             });
         });
     });
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     describe('isSiteOutOfStock', () => {
         it('returns false when product is undefined', () => {
@@ -359,16 +363,23 @@ describe('inventory-utils', () => {
 
     describe('getEffectiveStockLevel', () => {
         it('returns 0 when product is undefined', () => {
-            expect(getEffectiveStockLevel(undefined, true, 'inventory_m')).toBe(0);
+            expect(
+                getEffectiveStockLevel({ product: undefined as any, isPickup: true, storeInventoryId: 'inventory_m' })
+            ).toBe(0);
         });
 
+        // @sfdc-extension-block-start SFDC_EXT_BOPIS
         describe('with store inventory', () => {
             it('returns store stock level when store is selected', () => {
-                expect(getEffectiveStockLevel(mockProduct, true, 'inventory_m')).toBe(996);
+                expect(
+                    getEffectiveStockLevel({ product: mockProduct, isPickup: true, storeInventoryId: 'inventory_m' })
+                ).toBe(996);
             });
 
             it('returns 0 when store inventory is not found', () => {
-                expect(getEffectiveStockLevel(mockProduct, true, 'non-existent')).toBe(0);
+                expect(
+                    getEffectiveStockLevel({ product: mockProduct, isPickup: true, storeInventoryId: 'non-existent' })
+                ).toBe(0);
             });
 
             it('returns 0 when store inventory has no stockLevel', () => {
@@ -382,9 +393,16 @@ describe('inventory-utils', () => {
                         },
                     ],
                 };
-                expect(getEffectiveStockLevel(productWithUndefinedStock, true, 'inventory_m')).toBe(0);
+                expect(
+                    getEffectiveStockLevel({
+                        product: productWithUndefinedStock,
+                        isPickup: true,
+                        storeInventoryId: 'inventory_m',
+                    })
+                ).toBe(0);
             });
         });
+        // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
         describe('without store inventory (site inventory)', () => {
             it('returns product inventory ats when no variant provided', () => {
@@ -396,11 +414,17 @@ describe('inventory-utils', () => {
                         orderable: true,
                     },
                 };
-                expect(getEffectiveStockLevel(productWithInventory, false, undefined)).toBe(100);
+                expect(
+                    getEffectiveStockLevel({
+                        product: productWithInventory,
+                        isPickup: false,
+                        storeInventoryId: undefined,
+                    })
+                ).toBe(100);
             });
 
             it('returns variant inventory ats when variant is provided', () => {
-                const variant: ShopperProducts.schemas['Variant'] = {
+                const variant = {
                     orderable: true,
                     price: 299.99,
                     productId: '640188016716M',
@@ -409,7 +433,7 @@ describe('inventory-utils', () => {
                         ats: 50,
                         orderable: true,
                     },
-                };
+                } as ShopperProducts.schemas['Variant'] & { inventory?: ShopperProducts.schemas['Inventory'] };
                 const productWithInventory = {
                     ...mockProduct,
                     inventory: {
@@ -418,7 +442,14 @@ describe('inventory-utils', () => {
                         orderable: true,
                     },
                 };
-                expect(getEffectiveStockLevel(productWithInventory, false, undefined, variant)).toBe(50);
+                expect(
+                    getEffectiveStockLevel({
+                        product: productWithInventory,
+                        isPickup: false,
+                        storeInventoryId: undefined,
+                        variant,
+                    })
+                ).toBe(50);
             });
 
             it('returns product inventory ats when variant has no inventory', () => {
@@ -426,7 +457,6 @@ describe('inventory-utils', () => {
                     orderable: true,
                     price: 299.99,
                     productId: '640188016716M',
-                    inventory: undefined,
                 };
                 const productWithInventory = {
                     ...mockProduct,
@@ -436,7 +466,14 @@ describe('inventory-utils', () => {
                         orderable: true,
                     },
                 };
-                expect(getEffectiveStockLevel(productWithInventory, false, undefined, variant)).toBe(100);
+                expect(
+                    getEffectiveStockLevel({
+                        product: productWithInventory,
+                        isPickup: false,
+                        storeInventoryId: undefined,
+                        variant,
+                    })
+                ).toBe(100);
             });
 
             it('returns 0 when neither product nor variant has inventory', () => {
@@ -444,17 +481,24 @@ describe('inventory-utils', () => {
                     orderable: true,
                     price: 299.99,
                     productId: '640188016716M',
-                    inventory: undefined,
                 };
                 const productWithoutInventory = {
                     ...mockProduct,
                     inventory: undefined,
                 };
-                expect(getEffectiveStockLevel(productWithoutInventory, false, undefined, variant)).toBe(0);
+                expect(
+                    getEffectiveStockLevel({
+                        product: productWithoutInventory,
+                        isPickup: false,
+                        storeInventoryId: undefined,
+                        variant,
+                    })
+                ).toBe(0);
             });
         });
 
         describe('for product sets', () => {
+            // @sfdc-extension-block-start SFDC_EXT_BOPIS
             it('returns minimum stock level across all children with store inventory', () => {
                 // For sets, inventory should be pre-calculated on the parent
                 const setWithCalculatedInventory = {
@@ -470,8 +514,15 @@ describe('inventory-utils', () => {
                         },
                     ],
                 };
-                expect(getEffectiveStockLevel(setWithCalculatedInventory, true, 'inventory_m')).toBe(376);
+                expect(
+                    getEffectiveStockLevel({
+                        product: setWithCalculatedInventory,
+                        isPickup: true,
+                        storeInventoryId: 'inventory_m',
+                    })
+                ).toBe(376);
             });
+            // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
             it('returns minimum ats across all children without store inventory', () => {
                 // For sets, inventory should be pre-calculated on the parent
@@ -484,11 +535,23 @@ describe('inventory-utils', () => {
                         stockLevel: 50,
                     },
                 };
-                expect(getEffectiveStockLevel(setWithCalculatedInventory, false, undefined)).toBe(50);
+                expect(
+                    getEffectiveStockLevel({
+                        product: setWithCalculatedInventory,
+                        isPickup: false,
+                        storeInventoryId: undefined,
+                    })
+                ).toBe(50);
             });
 
             it('returns 0 when any child has no inventory with store', () => {
-                expect(getEffectiveStockLevel(mockSetProduct, true, 'non-existent')).toBe(0);
+                expect(
+                    getEffectiveStockLevel({
+                        product: mockSetProduct,
+                        isPickup: true,
+                        storeInventoryId: 'non-existent',
+                    })
+                ).toBe(0);
             });
 
             it('returns 0 when child has no inventory (pre-calculated on parent)', () => {
@@ -501,14 +564,28 @@ describe('inventory-utils', () => {
                         orderable: false,
                     },
                 };
-                expect(getEffectiveStockLevel(setWithNoChildInventory, false, undefined)).toBe(0);
+                expect(
+                    getEffectiveStockLevel({
+                        product: setWithNoChildInventory,
+                        isPickup: false,
+                        storeInventoryId: undefined,
+                    })
+                ).toBe(0);
             });
         });
 
         describe('for bundles', () => {
+            // @sfdc-extension-block-start SFDC_EXT_BOPIS
             it('returns store stock level when store is selected', () => {
-                expect(getEffectiveStockLevel(mockBundleProduct, true, 'inventory_m')).toBe(9966);
+                expect(
+                    getEffectiveStockLevel({
+                        product: mockBundleProduct,
+                        isPickup: true,
+                        storeInventoryId: 'inventory_m',
+                    })
+                ).toBe(9966);
             });
+            // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
             it('returns product inventory ats when no store is selected', () => {
                 const bundleWithInventory = {
@@ -519,35 +596,59 @@ describe('inventory-utils', () => {
                         orderable: true,
                     },
                 };
-                expect(getEffectiveStockLevel(bundleWithInventory, false, undefined)).toBe(100);
+                expect(
+                    getEffectiveStockLevel({
+                        product: bundleWithInventory,
+                        isPickup: false,
+                        storeInventoryId: undefined,
+                    })
+                ).toBe(100);
             });
         });
     });
 
     describe('isInStock', () => {
         it('returns false when product is undefined', () => {
-            expect(isInStock(undefined, true, 'inventory_m', 1)).toBe(false);
+            expect(
+                isInStock({ product: undefined, isPickup: true, storeInventoryId: 'inventory_m', quantity: 1 })
+            ).toBe(false);
         });
 
+        // @sfdc-extension-block-start SFDC_EXT_BOPIS
         describe('with store inventory', () => {
             it('returns true when product is in stock at store', () => {
-                expect(isInStock(mockProduct, true, 'inventory_m', 1)).toBe(true);
+                expect(
+                    isInStock({ product: mockProduct, isPickup: true, storeInventoryId: 'inventory_m', quantity: 1 })
+                ).toBe(true);
             });
 
             it('returns false when product is out of stock at store', () => {
-                expect(isInStock(mockProduct, true, 'inventory_out_of_stock', 1)).toBe(false);
+                expect(
+                    isInStock({
+                        product: mockProduct,
+                        isPickup: true,
+                        storeInventoryId: 'inventory_out_of_stock',
+                        quantity: 1,
+                    })
+                ).toBe(false);
             });
 
             it('returns false when inventory is not found', () => {
-                expect(isInStock(mockProduct, true, 'non-existent', 1)).toBe(false);
+                expect(
+                    isInStock({ product: mockProduct, isPickup: true, storeInventoryId: 'non-existent', quantity: 1 })
+                ).toBe(false);
             });
 
             it('returns false when quantity exceeds stock level', () => {
-                expect(isInStock(mockProduct, true, 'inventory_m', 1000)).toBe(false);
+                expect(
+                    isInStock({ product: mockProduct, isPickup: true, storeInventoryId: 'inventory_m', quantity: 1000 })
+                ).toBe(false);
             });
 
             it('returns true when quantity is within stock level', () => {
-                expect(isInStock(mockProduct, true, 'inventory_m', 100)).toBe(true);
+                expect(
+                    isInStock({ product: mockProduct, isPickup: true, storeInventoryId: 'inventory_m', quantity: 100 })
+                ).toBe(true);
             });
 
             it('returns false when inventory exists but is not orderable', () => {
@@ -561,9 +662,17 @@ describe('inventory-utils', () => {
                         },
                     ],
                 };
-                expect(isInStock(productWithUnorderableInventory, true, 'inventory_m', 1)).toBe(false);
+                expect(
+                    isInStock({
+                        product: productWithUnorderableInventory,
+                        isPickup: true,
+                        storeInventoryId: 'inventory_m',
+                        quantity: 1,
+                    })
+                ).toBe(false);
             });
         });
+        // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
         describe('without store inventory (site inventory)', () => {
             it('returns true when product is in stock', () => {
@@ -575,7 +684,14 @@ describe('inventory-utils', () => {
                         orderable: true,
                     },
                 };
-                expect(isInStock(productWithInventory, false, undefined, 1)).toBe(true);
+                expect(
+                    isInStock({
+                        product: productWithInventory,
+                        isPickup: false,
+                        storeInventoryId: undefined,
+                        quantity: 1,
+                    })
+                ).toBe(true);
             });
 
             it('returns false when product has no inventory', () => {
@@ -583,7 +699,14 @@ describe('inventory-utils', () => {
                     ...mockProduct,
                     inventory: undefined,
                 };
-                expect(isInStock(productWithoutInventory, false, undefined, 1)).toBe(false);
+                expect(
+                    isInStock({
+                        product: productWithoutInventory,
+                        isPickup: false,
+                        storeInventoryId: undefined,
+                        quantity: 1,
+                    })
+                ).toBe(false);
             });
 
             it('returns false when product is out of stock', () => {
@@ -595,7 +718,9 @@ describe('inventory-utils', () => {
                         orderable: false,
                     },
                 };
-                expect(isInStock(productOutOfStock, false, undefined, 1)).toBe(false);
+                expect(
+                    isInStock({ product: productOutOfStock, isPickup: false, storeInventoryId: undefined, quantity: 1 })
+                ).toBe(false);
             });
 
             it('returns false when quantity exceeds ats', () => {
@@ -607,7 +732,9 @@ describe('inventory-utils', () => {
                         orderable: true,
                     },
                 };
-                expect(isInStock(productLowStock, false, undefined, 10)).toBe(false);
+                expect(
+                    isInStock({ product: productLowStock, isPickup: false, storeInventoryId: undefined, quantity: 10 })
+                ).toBe(false);
             });
 
             it('returns true when quantity is within ats', () => {
@@ -619,7 +746,9 @@ describe('inventory-utils', () => {
                         orderable: true,
                     },
                 };
-                expect(isInStock(productWithStock, false, undefined, 10)).toBe(true);
+                expect(
+                    isInStock({ product: productWithStock, isPickup: false, storeInventoryId: undefined, quantity: 10 })
+                ).toBe(true);
             });
 
             it('returns false when product is not orderable', () => {
@@ -631,11 +760,18 @@ describe('inventory-utils', () => {
                         orderable: false,
                     },
                 };
-                expect(isInStock(unorderableProduct, false, undefined, 1)).toBe(false);
+                expect(
+                    isInStock({
+                        product: unorderableProduct,
+                        isPickup: false,
+                        storeInventoryId: undefined,
+                        quantity: 1,
+                    })
+                ).toBe(false);
             });
 
             it('uses variant inventory when variant is provided', () => {
-                const variant: ShopperProducts.schemas['Variant'] = {
+                const variant = {
                     orderable: true,
                     price: 299.99,
                     productId: '640188016716M',
@@ -644,7 +780,7 @@ describe('inventory-utils', () => {
                         ats: 50,
                         orderable: true,
                     },
-                };
+                } as ShopperProducts.schemas['Variant'] & { inventory?: ShopperProducts.schemas['Inventory'] };
                 const productWithInventory = {
                     ...mockProduct,
                     inventory: {
@@ -653,7 +789,15 @@ describe('inventory-utils', () => {
                         orderable: true,
                     },
                 };
-                expect(isInStock(productWithInventory, false, undefined, 1, variant)).toBe(true);
+                expect(
+                    isInStock({
+                        product: productWithInventory,
+                        isPickup: false,
+                        storeInventoryId: undefined,
+                        quantity: 1,
+                        variant,
+                    })
+                ).toBe(true);
             });
 
             it('falls back to product inventory when variant has no inventory', () => {
@@ -661,7 +805,6 @@ describe('inventory-utils', () => {
                     orderable: true,
                     price: 299.99,
                     productId: '640188016716M',
-                    inventory: undefined,
                 };
                 const productWithInventory = {
                     ...mockProduct,
@@ -671,11 +814,19 @@ describe('inventory-utils', () => {
                         orderable: true,
                     },
                 };
-                expect(isInStock(productWithInventory, false, undefined, 1, variant)).toBe(true);
+                expect(
+                    isInStock({
+                        product: productWithInventory,
+                        isPickup: false,
+                        storeInventoryId: undefined,
+                        quantity: 1,
+                        variant,
+                    })
+                ).toBe(true);
             });
 
             it('returns false when variant inventory is out of stock', () => {
-                const variant: ShopperProducts.schemas['Variant'] = {
+                const variant = {
                     orderable: true,
                     price: 299.99,
                     productId: '640188016716M',
@@ -684,7 +835,7 @@ describe('inventory-utils', () => {
                         ats: 0,
                         orderable: false,
                     },
-                };
+                } as ShopperProducts.schemas['Variant'] & { inventory?: ShopperProducts.schemas['Inventory'] };
                 const productWithInventory = {
                     ...mockProduct,
                     inventory: {
@@ -693,11 +844,20 @@ describe('inventory-utils', () => {
                         orderable: true,
                     },
                 };
-                expect(isInStock(productWithInventory, false, undefined, 1, variant)).toBe(false);
+                expect(
+                    isInStock({
+                        product: productWithInventory,
+                        isPickup: false,
+                        storeInventoryId: undefined,
+                        quantity: 1,
+                        variant,
+                    })
+                ).toBe(false);
             });
         });
 
         describe('for product sets', () => {
+            // @sfdc-extension-block-start SFDC_EXT_BOPIS
             it('returns true when all child products are in stock at store', () => {
                 // For sets, inventory should be pre-calculated on the parent
                 const setWithCalculatedInventory = {
@@ -713,20 +873,49 @@ describe('inventory-utils', () => {
                         },
                     ],
                 };
-                expect(isInStock(setWithCalculatedInventory, true, 'inventory_m', 1)).toBe(true);
+                expect(
+                    isInStock({
+                        product: setWithCalculatedInventory,
+                        isPickup: true,
+                        storeInventoryId: 'inventory_m',
+                        quantity: 1,
+                    })
+                ).toBe(true);
             });
 
             it('returns false when any child product is out of stock at store', () => {
-                expect(isInStock(mockSetProduct, true, 'inventory_out_of_stock', 1)).toBe(false);
+                expect(
+                    isInStock({
+                        product: mockSetProduct,
+                        isPickup: true,
+                        storeInventoryId: 'inventory_out_of_stock',
+                        quantity: 1,
+                    })
+                ).toBe(false);
             });
 
             it('returns false when any child product has no inventory at store', () => {
-                expect(isInStock(mockSetProduct, true, 'non-existent', 1)).toBe(false);
+                expect(
+                    isInStock({
+                        product: mockSetProduct,
+                        isPickup: true,
+                        storeInventoryId: 'non-existent',
+                        quantity: 1,
+                    })
+                ).toBe(false);
             });
 
             it('returns false when any child product has insufficient stock at store', () => {
-                expect(isInStock(mockSetProduct, true, 'inventory_m', 500)).toBe(false);
+                expect(
+                    isInStock({
+                        product: mockSetProduct,
+                        isPickup: true,
+                        storeInventoryId: 'inventory_m',
+                        quantity: 500,
+                    })
+                ).toBe(false);
             });
+            // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
             it('returns true when all child products are in stock (site inventory)', () => {
                 // For sets, inventory should be pre-calculated on the parent
@@ -739,7 +928,14 @@ describe('inventory-utils', () => {
                         stockLevel: 100,
                     },
                 };
-                expect(isInStock(setWithCalculatedInventory, false, undefined, 1)).toBe(true);
+                expect(
+                    isInStock({
+                        product: setWithCalculatedInventory,
+                        isPickup: false,
+                        storeInventoryId: undefined,
+                        quantity: 1,
+                    })
+                ).toBe(true);
             });
 
             it('returns false when set is out of stock (pre-calculated reflects child out of stock)', () => {
@@ -752,7 +948,14 @@ describe('inventory-utils', () => {
                         orderable: false,
                     },
                 };
-                expect(isInStock(setWithCalculatedInventory, false, undefined, 1)).toBe(false);
+                expect(
+                    isInStock({
+                        product: setWithCalculatedInventory,
+                        isPickup: false,
+                        storeInventoryId: undefined,
+                        quantity: 1,
+                    })
+                ).toBe(false);
             });
 
             it('returns false when quantity exceeds pre-calculated stock', () => {
@@ -765,7 +968,14 @@ describe('inventory-utils', () => {
                         orderable: true,
                     },
                 };
-                expect(isInStock(setWithLimitedStock, false, undefined, 10)).toBe(false);
+                expect(
+                    isInStock({
+                        product: setWithLimitedStock,
+                        isPickup: false,
+                        storeInventoryId: undefined,
+                        quantity: 10,
+                    })
+                ).toBe(false);
             });
 
             it('returns false when set is not orderable (pre-calculated reflects child not orderable)', () => {
@@ -778,18 +988,41 @@ describe('inventory-utils', () => {
                         orderable: false, // Pre-calculated: one child not orderable
                     },
                 };
-                expect(isInStock(setWithUnorderableChild, false, undefined, 1)).toBe(false);
+                expect(
+                    isInStock({
+                        product: setWithUnorderableChild,
+                        isPickup: false,
+                        storeInventoryId: undefined,
+                        quantity: 1,
+                    })
+                ).toBe(false);
             });
         });
 
         describe('for bundles', () => {
+            // @sfdc-extension-block-start SFDC_EXT_BOPIS
             it('returns true when bundle is in stock at store', () => {
-                expect(isInStock(mockBundleProduct, true, 'inventory_m', 1)).toBe(true);
+                expect(
+                    isInStock({
+                        product: mockBundleProduct,
+                        isPickup: true,
+                        storeInventoryId: 'inventory_m',
+                        quantity: 1,
+                    })
+                ).toBe(true);
             });
 
             it('returns false when bundle is out of stock at store', () => {
-                expect(isInStock(mockBundleProduct, true, 'inventory_out_of_stock', 1)).toBe(false);
+                expect(
+                    isInStock({
+                        product: mockBundleProduct,
+                        isPickup: true,
+                        storeInventoryId: 'inventory_out_of_stock',
+                        quantity: 1,
+                    })
+                ).toBe(false);
             });
+            // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
             it('returns true when bundle is in stock (site inventory)', () => {
                 const bundleWithInventory = {
@@ -800,7 +1033,14 @@ describe('inventory-utils', () => {
                         orderable: true,
                     },
                 };
-                expect(isInStock(bundleWithInventory, false, undefined, 1)).toBe(true);
+                expect(
+                    isInStock({
+                        product: bundleWithInventory,
+                        isPickup: false,
+                        storeInventoryId: undefined,
+                        quantity: 1,
+                    })
+                ).toBe(true);
             });
 
             it('returns false when bundle is out of stock (site inventory)', () => {
@@ -812,7 +1052,9 @@ describe('inventory-utils', () => {
                         orderable: false,
                     },
                 };
-                expect(isInStock(bundleOutOfStock, false, undefined, 1)).toBe(false);
+                expect(
+                    isInStock({ product: bundleOutOfStock, isPickup: false, storeInventoryId: undefined, quantity: 1 })
+                ).toBe(false);
             });
         });
     });

@@ -139,14 +139,14 @@ export function useProductActions({
 
     // Inventory and stock calculations - considers delivery option, store/site inventory, and variant
     const actualStockLevel = useMemo(() => {
-        return getEffectiveStockLevel(
+        return getEffectiveStockLevel({
             product,
             // @sfdc-extension-line SFDC_EXT_BOPIS
-            isPickupSelected,
+            isPickup: isPickupSelected,
             // @sfdc-extension-line SFDC_EXT_BOPIS
             storeInventoryId,
-            currentVariant
-        );
+            variant: currentVariant,
+        });
     }, [
         product,
         currentVariant,
@@ -157,15 +157,15 @@ export function useProductActions({
     ]);
 
     const isInStock = useMemo(() => {
-        return isProductInStock(
+        return isProductInStock({
             product,
             // @sfdc-extension-line SFDC_EXT_BOPIS
-            isPickupSelected,
+            isPickup: isPickupSelected,
             // @sfdc-extension-line SFDC_EXT_BOPIS
             storeInventoryId,
             quantity,
-            currentVariant
-        );
+            variant: currentVariant,
+        });
     }, [
         product,
         // @sfdc-extension-line SFDC_EXT_BOPIS
@@ -199,14 +199,14 @@ export function useProductActions({
     // Get effective inventory (store or site) for orderable/backorderable checks
     // This considers the selected delivery option (pickup vs delivery)
     const effectiveInventory = useMemo(() => {
-        return getEffectiveInventory(
+        return getEffectiveInventory({
             product,
             // @sfdc-extension-line SFDC_EXT_BOPIS
-            isPickupSelected,
+            isPickup: isPickupSelected,
             // @sfdc-extension-line SFDC_EXT_BOPIS
             storeInventoryId,
-            currentVariant
-        );
+            variant: currentVariant,
+        });
     }, [
         product,
         // @sfdc-extension-line SFDC_EXT_BOPIS

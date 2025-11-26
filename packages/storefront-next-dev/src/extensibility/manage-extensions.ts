@@ -195,7 +195,7 @@ const handleInstall = async (
                 extensionConfig[extensionKey] = extension;
                 fs.writeFileSync(
                     getExtensionConfigPath(options.projectDirectory),
-                    JSON.stringify({ extensions: extensionConfig }, null, 2)
+                    JSON.stringify({ extensions: extensionConfig }, null, 4)
                 );
                 consoleLog(`${extension.name} was installed successfully. (${Date.now() - startTime}ms)`, 'success');
             } catch (e) {

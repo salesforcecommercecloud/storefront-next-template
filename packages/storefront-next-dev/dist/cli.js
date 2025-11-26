@@ -24,8 +24,6 @@ import Handlebars from "handlebars";
 import { access, mkdir, readFile, readdir, rm, writeFile } from "fs/promises";
 import { Node, Project } from "ts-morph";
 import prompts from "prompts";
-import { parse } from "/home/runner/work/storefront-next/storefront-next/node_modules/.pnpm/@babel+parser@7.28.4/node_modules/@babel/parser/lib/index.js";
-import traverseModule from "/home/runner/work/storefront-next/storefront-next/node_modules/.pnpm/@babel+traverse@7.28.4/node_modules/@babel/traverse/lib/index.js";
 
 //#region package.json
 var version = "0.0.1";
@@ -1859,87 +1857,11 @@ async function deployCode(instance, codeVersionName, sourceDir, basicAuth) {
 
 //#endregion
 //#region src/extensibility/path-util.ts
-let cachedTsconfigPaths = null;
-let cachedTsconfigRoot = null;
 const FILE_EXTENSIONS = [
 	".tsx",
 	".ts",
 	".d.ts"
 ];
-/**
-* Strip the comments from the JSON string
-* @param jsonString
-* @returns {string}
-*/
-function stripJsonComments(jsonString) {
-	return jsonString.replace(/\/\/.*$/gm, "").replace(/\/\*[\s\S]*?\*\//g, "");
-}
-/**
-* Load the tsconfig.json paths from the project root
-* @param projectRoot
-* @returns {Record<string, string[] | string>}
-*/
-function loadTsconfigPaths(projectRoot) {
-	if (cachedTsconfigPaths && cachedTsconfigRoot === projectRoot) return cachedTsconfigPaths;
-	const tsconfigPath = path.join(projectRoot, "tsconfig.json");
-	if (!fs$1.existsSync(tsconfigPath)) {
-		cachedTsconfigPaths = {};
-		cachedTsconfigRoot = projectRoot;
-		return cachedTsconfigPaths;
-	}
-	try {
-		const tsconfigContent = stripJsonComments(fs$1.readFileSync(tsconfigPath, "utf-8"));
-		const paths = JSON.parse(tsconfigContent)?.compilerOptions?.paths;
-		if (paths && typeof paths === "object") cachedTsconfigPaths = paths;
-		else cachedTsconfigPaths = {};
-		cachedTsconfigRoot = projectRoot;
-		return cachedTsconfigPaths;
-	} catch (error$1) {
-		throw new Error(`Error parsing tsconfig.json for project ${projectRoot}: ${String(error$1)}`);
-	}
-}
-/**
-* Resolve the path from the alias to the real path by consulting tsconfig.json paths configuration
-* @param {string} importPath
-* @param {string} projectRoot
-* @returns {string}
-*/
-function resolvePathFromAlias(importPath, projectRoot) {
-	if (importPath.startsWith(".")) return importPath;
-	const paths = loadTsconfigPaths(projectRoot);
-	if (!paths || typeof paths !== "object" || Object.keys(paths).length === 0) return importPath;
-	for (const [alias, mappings] of Object.entries(paths)) {
-		const aliasPattern = alias.replace(/\+/g, "\\+").replace(/\*/g, "(.*)");
-		const aliasRegex = /* @__PURE__ */ new RegExp(`^${aliasPattern}$`);
-		const match = importPath.match(aliasRegex);
-		if (match) {
-			const mappingArray = Array.isArray(mappings) ? mappings : [mappings];
-			for (const mapping of mappingArray) {
-				let resolvedPath = mapping;
-				for (let i = 1; i < match.length; i++) resolvedPath = resolvedPath.replace("*", match[i]);
-				if (resolvedPath.startsWith("./")) resolvedPath = resolvedPath.substring(2);
-				const fullPath = path.resolve(projectRoot, resolvedPath);
-				for (const ext of FILE_EXTENSIONS) {
-					const pathWithExt = fullPath + ext;
-					if (fs$1.existsSync(pathWithExt)) return pathWithExt;
-				}
-				if (fs$1.existsSync(fullPath) && fs$1.statSync(fullPath).isDirectory()) {
-					for (const indexFile of [
-						"index.ts",
-						"index.tsx",
-						"index.js",
-						"index.jsx"
-					]) {
-						const indexPath = path.join(fullPath, indexFile);
-						if (fs$1.existsSync(indexPath)) return indexPath;
-					}
-					return fullPath;
-				}
-			}
-		}
-	}
-	return importPath;
-}
 function isSupportedFileExtension(fileName) {
 	return FILE_EXTENSIONS.some((ext) => fileName.endsWith(ext));
 }
@@ -1950,10 +1872,6 @@ function isSupportedFileExtension(fileName) {
 * Utility to trim the directory to remove unused components and unused extensions.
 * This is used to reduce the size of the project by removing the code that is not part of the selected extensions.
 */
-const traverse = traverseModule.default || traverseModule;
-const removeComponentCandidates = /* @__PURE__ */ new Set();
-const SEPARATOR = path.sep;
-const COMPONENT_SCAN_PATHS = [path.join(SEPARATOR, "src", SEPARATOR)];
 const SINGLE_LINE_MARKER = "@sfdc-extension-line";
 const BLOCK_MARKER_START = "@sfdc-extension-block-start";
 const BLOCK_MARKER_END = "@sfdc-extension-block-end";
@@ -1961,7 +1879,6 @@ const FILE_MARKER = "@sfdc-extension-file";
 let verbose = false;
 function trimExtensions(directory, selectedExtensions, extensionConfig, verboseOverride = false) {
 	const startTime = Date.now();
-	removeComponentCandidates.clear();
 	verbose = verboseOverride ?? false;
 	const configuredExtensions = extensionConfig?.extensions || {};
 	const extensions = {};
@@ -1978,13 +1895,15 @@ function trimExtensions(directory, selectedExtensions, extensionConfig, verboseO
 			const stats = fs$1.statSync(filePath);
 			if (!filePath.includes("node_modules")) {
 				if (stats.isDirectory()) processDirectory(filePath);
-				else if (isSupportedFileExtension(file)) processFile(directory, filePath, extensions);
+				else if (isSupportedFileExtension(file)) processFile(filePath, extensions);
 			}
 		});
 	};
 	processDirectory(directory);
-	removeUnusedComponents(directory, directory);
-	updateExtensionConfig(directory, extensions);
+	if (extensionConfig?.extensions) {
+		deleteExtensionFolders(directory, extensions, extensionConfig);
+		updateExtensionConfig(directory, extensions);
+	}
 	const endTime = Date.now();
 	if (verbose) console.log(`Trim extensions took ${endTime - startTime}ms`);
 }
@@ -1999,13 +1918,14 @@ function updateExtensionConfig(projectDirectory, extensionSelections) {
 	Object.keys(extensionConfig.extensions).forEach((extensionKey) => {
 		if (!extensionSelections[extensionKey]) delete extensionConfig.extensions[extensionKey];
 	});
-	fs$1.writeFileSync(extensionConfigPath, JSON.stringify({ extensions: extensionConfig.extensions }, null, 2), "utf8");
+	fs$1.writeFileSync(extensionConfigPath, JSON.stringify({ extensions: extensionConfig.extensions }, null, 4), "utf8");
 }
-function processFile(projectRoot, filePath, extensions) {
-	let modified = false;
-	const blockMarkers = [];
-	const removedBlocks = [];
-	let skippingBlock = false;
+/**
+* Process a file to trim extension-specific code based on markers.
+* @param filePath - The file path to process
+* @param extensions - The extension selections
+*/
+function processFile(filePath, extensions) {
 	const source = fs$1.readFileSync(filePath, "utf-8");
 	if (source.includes(FILE_MARKER)) {
 		const markerLine = source.split("\n").find((line) => line.includes(FILE_MARKER));
@@ -2021,7 +1941,6 @@ function processFile(projectRoot, filePath, extensions) {
 				console.error(`Error deleting file ${filePath}: ${error$1.message}`);
 				throw e;
 			}
-			removeComponentCandidates.add(path.resolve(path.dirname(filePath)));
 			return;
 		}
 	}
@@ -2029,15 +1948,15 @@ function processFile(projectRoot, filePath, extensions) {
 	if (new RegExp(extKeys.join("|"), "g").test(source)) {
 		const lines = source.split("\n");
 		const newLines = [];
+		const blockMarkers = [];
+		let skippingBlock = false;
 		let i = 0;
 		while (i < lines.length) {
 			const line = lines[i];
 			if (line.includes(SINGLE_LINE_MARKER)) {
 				const matchingExtension = Object.keys(extensions).find((extension) => line.includes(extension));
 				if (matchingExtension && extensions[matchingExtension] === false) {
-					removedBlocks.push(lines[i + 1]);
 					i += 2;
-					modified = true;
 					continue;
 				}
 			} else if (line.includes(BLOCK_MARKER_START)) {
@@ -2056,9 +1975,6 @@ function processFile(projectRoot, filePath, extensions) {
 					const startMarker = blockMarkers.pop();
 					if (!extension || startMarker.extension !== extension) throw new Error(`Block marker mismatch in ${filePath}, expected end marker for ${startMarker.extension} but got ${extension} at line ${i}:\n${lines[i]}`);
 					if (extensions[extension] === false) {
-						const removedBlock = lines.slice(startMarker.line, i + 1).join("\n");
-						removedBlocks.push(removedBlock);
-						modified = true;
 						skippingBlock = false;
 						i++;
 						continue;
@@ -2069,178 +1985,44 @@ function processFile(projectRoot, filePath, extensions) {
 			i++;
 		}
 		if (blockMarkers.length > 0) throw new Error(`Unclosed end marker found in ${filePath}: ${blockMarkers[blockMarkers.length - 1].extension}`);
-		if (modified) {
-			const newSource = newLines.join("\n");
-			try {
-				fs$1.writeFileSync(filePath, newSource);
-				if (verbose) console.log(`Updated file ${filePath}`);
-			} catch (e) {
-				const error$1 = e;
-				console.error(`Error updating file ${filePath}: ${error$1.message}`);
-				throw e;
-			}
-			const addToRemoveComponentCandidates = (importPath) => {
-				if (importPath.startsWith(".")) removeComponentCandidates.add(path.resolve(path.dirname(filePath), importPath));
-				else {
-					const resolvedPath = resolvePathFromAlias(importPath, projectRoot);
-					removeComponentCandidates.add(path.dirname(resolvedPath));
-				}
-			};
-			removedBlocks.forEach((block) => {
-				if (block.includes("import")) try {
-					const ast = parse(block, {
-						sourceType: "module",
-						plugins: ["jsx", "typescript"]
-					});
-					if (verbose) console.log(`traversing block ${block}`);
-					traverse(ast, {
-						noScope: true,
-						ImportDeclaration(nodePath) {
-							addToRemoveComponentCandidates(nodePath.node.source.value);
-						}
-					});
-				} catch (e) {
-					const error$1 = e;
-					console.error(`Error parsing block ${block}: ${error$1.message}`);
-				}
-			});
+		const newSource = newLines.join("\n");
+		if (newSource !== source) try {
+			fs$1.writeFileSync(filePath, newSource);
+			if (verbose) console.log(`Updated file ${filePath}`);
+		} catch (e) {
+			const error$1 = e;
+			console.error(`Error updating file ${filePath}: ${error$1.message}`);
+			throw e;
 		}
 	}
 }
-function removeUnusedComponents(directory, projectRoot) {
-	const exportedFiles = /* @__PURE__ */ new Set();
-	function collectExportedFiles(dir) {
-		fs$1.readdirSync(dir).forEach((file) => {
-			const filePath = path.join(dir, file);
-			if (fs$1.statSync(filePath).isDirectory() && !filePath.includes("node_modules")) collectExportedFiles(filePath);
-			else if (isSupportedFileExtension(file) && !filePath.includes(".storybook")) {
-				const source = fs$1.readFileSync(filePath, "utf-8");
-				try {
-					const ast = parse(source, {
-						sourceType: "module",
-						plugins: ["jsx", "typescript"]
-					});
-					let hasExports = false;
-					traverse(ast, {
-						noScope: true,
-						ExportNamedDeclaration(astPath) {
-							hasExports = true;
-							astPath.stop();
-						},
-						ExportDefaultDeclaration(astPath) {
-							hasExports = true;
-							astPath.stop();
-						}
-					});
-					if (hasExports) {
-						const absolutePath = path.resolve(filePath);
-						const pathWithoutExt = path.resolve(path.dirname(absolutePath));
-						exportedFiles.add(pathWithoutExt);
-					}
-				} catch (e) {
-					const error$1 = e;
-					throw new Error(`Error parsing file ${filePath}: ${error$1.message}`);
-				}
-			}
-		});
-	}
-	function findImports(dir, projectRoot$1) {
-		fs$1.readdirSync(dir).forEach((file) => {
-			const filePath = path.join(dir, file);
-			if (fs$1.statSync(filePath).isDirectory() && !filePath.includes("node_modules")) findImports(filePath, projectRoot$1);
-			else if (isSupportedFileExtension(file)) traverse(parse(fs$1.readFileSync(filePath, "utf-8"), {
-				sourceType: "module",
-				plugins: ["jsx", "typescript"]
-			}), {
-				noScope: true,
-				ImportDeclaration(astPath) {
-					const importPath = resolvePathFromAlias(astPath.node.source.value, projectRoot$1);
-					if (importPath) {
-						let absoluteImportPath = path.resolve(path.dirname(filePath), importPath);
-						if (!(fs$1.existsSync(absoluteImportPath) && fs$1.statSync(absoluteImportPath).isDirectory())) absoluteImportPath = path.resolve(path.dirname(absoluteImportPath));
-						const isCandidate = Array.from(removeComponentCandidates).find((candidate) => path.resolve(filePath).startsWith(candidate + path.sep));
-						if (exportedFiles.has(absoluteImportPath) && !isCandidate) {
-							exportedFiles.delete(absoluteImportPath);
-							let parentPath = absoluteImportPath;
-							while (parentPath !== path.resolve(directory)) {
-								parentPath = path.dirname(parentPath);
-								exportedFiles.delete(parentPath);
-							}
-						}
-					}
-				}
-			});
-		});
-	}
-	collectExportedFiles(directory);
-	findImports(directory, projectRoot);
-	const unusedFiles = Array.from(exportedFiles).filter((filePath) => {
-		return COMPONENT_SCAN_PATHS.some((p) => filePath.includes(p));
-	}).map((filePath) => {
-		const extensions = [...FILE_EXTENSIONS];
-		for (const ext of extensions) {
-			const fileWithExt = filePath + ext;
-			if (fs$1.existsSync(fileWithExt)) return fileWithExt;
-		}
-		return filePath;
-	});
-	if (verbose) {
-		console.log("\nUnused components:");
-		unusedFiles.forEach((file) => {
-			console.log(`- ${file}`);
-		});
-		console.log("Remove component candidates:");
-		Array.from(removeComponentCandidates).forEach((file) => {
-			console.log(`- ${file}`);
-		});
-	}
-	const filesToRemove = unusedFiles.filter((filePath) => removeComponentCandidates.has(filePath));
-	if (verbose) {
-		console.log("Files to remove:");
-		filesToRemove.forEach((file) => {
-			console.log(`- ${file}`);
-		});
-	}
-	if (filesToRemove.length > 0) {
-		if (verbose) console.log("\nDeleting unused components:");
-		filesToRemove.forEach((file) => {
-			if (verbose) console.log(`- ${file}`);
-			try {
-				if (fs$1.statSync(file).isDirectory()) {
-					fs$1.rmSync(file, {
-						recursive: true,
-						force: true
-					});
-					if (verbose) console.log(`  ✓ Successfully deleted directory`);
-				} else {
-					fs$1.unlinkSync(file);
-					if (verbose) console.log(`  ✓ Successfully deleted file`);
-				}
-			} catch (err) {
-				const error$1 = err;
-				if (error$1.code === "EPERM") console.error(`  ✗ Permission denied - cannot delete. You may need to run with sudo or check permissions.`);
-				else console.error(`  ✗ Error deleting: ${error$1.message}`);
-			}
-		});
-		const isEmptyDirectory = (dir) => {
-			if (!fs$1.statSync(dir).isDirectory()) return false;
-			const files = fs$1.readdirSync(dir);
-			if (files.length === 0) return true;
-			return files.every((file) => isEmptyDirectory(path.join(dir, file)));
-		};
-		const extensionsDir = path.join(projectRoot, "src", "extensions");
-		if (fs$1.existsSync(extensionsDir)) fs$1.readdirSync(extensionsDir).forEach((file) => {
-			const subDirPath = path.join(extensionsDir, file);
-			if (isEmptyDirectory(subDirPath)) {
-				if (verbose) console.log(`  ✓ Successfully deleted empty directory ${subDirPath}`);
-				fs$1.rmSync(subDirPath, {
+/**
+* Delete extension folders for disabled extensions.
+* @param projectRoot - The project root directory
+* @param extensions - The extension selections
+* @param extensionConfig - The extension configuration
+*/
+function deleteExtensionFolders(projectRoot, extensions, extensionConfig) {
+	const extensionsDir = path.join(projectRoot, "src", "extensions");
+	if (!fs$1.existsSync(extensionsDir)) return;
+	const configuredExtensions = extensionConfig.extensions;
+	Object.keys(extensions).filter((ext) => extensions[ext] === false).forEach((extKey) => {
+		const extensionMeta = configuredExtensions[extKey];
+		if (extensionMeta?.folder) {
+			const extensionFolderPath = path.join(extensionsDir, extensionMeta.folder);
+			if (fs$1.existsSync(extensionFolderPath)) try {
+				fs$1.rmSync(extensionFolderPath, {
 					recursive: true,
 					force: true
 				});
+				if (verbose) console.log(`Deleted extension folder: ${extensionFolderPath}`);
+			} catch (err) {
+				const error$1 = err;
+				if (error$1.code === "EPERM") console.error(`Permission denied - cannot delete ${extensionFolderPath}. You may need to run with sudo or check permissions.`);
+				else console.error(`Error deleting ${extensionFolderPath}: ${error$1.message}`);
 			}
-		});
-	} else if (verbose) console.log("\nNo unused components found.");
-	return unusedFiles;
+		}
+	});
 }
 
 //#endregion
@@ -2479,7 +2261,7 @@ const handleInstall = async (extensionConfig, options) => {
 					stdio: "inherit"
 				});
 				extensionConfig[extensionKey] = extension;
-				fs.writeFileSync(getExtensionConfigPath(options.projectDirectory), JSON.stringify({ extensions: extensionConfig }, null, 2));
+				fs.writeFileSync(getExtensionConfigPath(options.projectDirectory), JSON.stringify({ extensions: extensionConfig }, null, 4));
 				consoleLog(`${extension.name} was installed successfully. (${Date.now() - startTime}ms)`, "success");
 			} catch (e) {
 				consoleLog(`Error installing ${extension.name}. ${e.message}`, "error");

@@ -651,6 +651,7 @@ describe('useBulkChildProductInventory', () => {
             await waitFor(() => {
                 const enriched = result.current.enrichedSelections[0];
                 expect(enriched.product.inventory?.ats).toBe(15);
+                // @sfdc-extension-line SFDC_EXT_BOPIS
                 expect(enriched.product.inventories).toHaveLength(1);
                 expect(enriched.quantity).toBe(2);
                 expect(enriched.variant).toEqual(variant);

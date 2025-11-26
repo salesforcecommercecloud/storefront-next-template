@@ -9,21 +9,13 @@
  * Utility to trim the directory to remove unused components and unused extensions.
  * This is used to reduce the size of the project by removing the code that is not part of the selected extensions.
  */
-/* eslint-disable no-console, @typescript-eslint/no-explicit-any, @typescript-eslint/no-shadow */
+/* eslint-disable no-console */
 import fs from 'fs';
 import path from 'path';
-import { parse } from '@babel/parser';
-import traverseModule from '@babel/traverse';
-
-const traverse = (traverseModule as any).default || (traverseModule as any);
 import type ExtensionConfig from './extension-config';
-import { resolvePathFromAlias, isSupportedFileExtension, FILE_EXTENSIONS } from './path-util';
+import { isSupportedFileExtension } from './path-util';
 
 type ExtensionsSelection = Record<string, boolean>;
-
-const removeComponentCandidates: Set<string> = new Set();
-const SEPARATOR = path.sep;
-const COMPONENT_SCAN_PATHS: string[] = [path.join(SEPARATOR, 'src', SEPARATOR)];
 
 const SINGLE_LINE_MARKER = '@sfdc-extension-line';
 const BLOCK_MARKER_START = '@sfdc-extension-block-start';
@@ -38,11 +30,9 @@ export default function trimExtensions(
     verboseOverride: boolean = false
 ): void {
     const startTime = Date.now();
-    removeComponentCandidates.clear();
     verbose = verboseOverride ?? false;
 
     // read available extensions from config file
-
     const configuredExtensions: Record<string, unknown> = extensionConfig?.extensions || {};
     const extensions: ExtensionsSelection = {};
     Object.keys(configuredExtensions).forEach((pluginKey) => {
@@ -66,15 +56,17 @@ export default function trimExtensions(
                 if (stats.isDirectory()) {
                     processDirectory(filePath);
                 } else if (isSupportedFileExtension(file)) {
-                    processFile(directory, filePath, extensions);
+                    processFile(filePath, extensions);
                 }
             }
         });
     };
 
     processDirectory(directory);
-    removeUnusedComponents(directory, directory);
-    updateExtensionConfig(directory, extensions);
+    if (extensionConfig?.extensions) {
+        deleteExtensionFolders(directory, extensions, extensionConfig);
+        updateExtensionConfig(directory, extensions);
+    }
     const endTime = Date.now();
     if (verbose) {
         console.log(`Trim extensions took ${endTime - startTime}ms`);
@@ -94,15 +86,15 @@ function updateExtensionConfig(projectDirectory: string, extensionSelections: Ex
             delete extensionConfig.extensions[extensionKey];
         }
     });
-    fs.writeFileSync(extensionConfigPath, JSON.stringify({ extensions: extensionConfig.extensions }, null, 2), 'utf8');
+    fs.writeFileSync(extensionConfigPath, JSON.stringify({ extensions: extensionConfig.extensions }, null, 4), 'utf8');
 }
 
-function processFile(projectRoot: string, filePath: string, extensions: ExtensionsSelection): void {
-    let modified = false;
-    const blockMarkers: { extension: string; line: number }[] = [];
-    const removedBlocks: string[] = [];
-    let skippingBlock = false;
-
+/**
+ * Process a file to trim extension-specific code based on markers.
+ * @param filePath - The file path to process
+ * @param extensions - The extension selections
+ */
+function processFile(filePath: string, extensions: ExtensionsSelection): void {
     const source = fs.readFileSync(filePath, 'utf-8');
 
     // If the file is guarded by a file-level marker and the extension is disabled, remove the file entirely
@@ -127,8 +119,6 @@ function processFile(projectRoot: string, filePath: string, extensions: Extensio
                 console.error(`Error deleting file ${filePath}: ${error.message}`);
                 throw e;
             }
-            // Track parent directory for potential cleanup
-            removeComponentCandidates.add(path.resolve(path.dirname(filePath)));
             return;
         }
     }
@@ -139,15 +129,17 @@ function processFile(projectRoot: string, filePath: string, extensions: Extensio
     if (extensionRegex.test(source)) {
         const lines = source.split('\n');
         const newLines: string[] = [];
+        const blockMarkers: { extension: string; line: number }[] = [];
+        let skippingBlock = false;
         let i = 0;
+
         while (i < lines.length) {
             const line = lines[i];
             if (line.includes(SINGLE_LINE_MARKER)) {
                 const matchingExtension = Object.keys(extensions).find((extension) => line.includes(extension));
                 if (matchingExtension && extensions[matchingExtension] === false) {
-                    removedBlocks.push(lines[i + 1]);
+                    // Skip the marker line and the next line (the actual code line)
                     i += 2;
-                    modified = true;
                     continue;
                 }
             } else if (line.includes(BLOCK_MARKER_START)) {
@@ -176,9 +168,7 @@ function processFile(projectRoot: string, filePath: string, extensions: Extensio
                         );
                     }
                     if (extensions[extension] === false) {
-                        const removedBlock = lines.slice(startMarker.line, i + 1).join('\n');
-                        removedBlocks.push(removedBlock);
-                        modified = true;
+                        // Skip the entire block (marker lines are already skipped by skippingBlock)
                         skippingBlock = false;
                         i++;
                         continue;
@@ -190,13 +180,16 @@ function processFile(projectRoot: string, filePath: string, extensions: Extensio
             }
             i++;
         }
+
         if (blockMarkers.length > 0) {
             throw new Error(
                 `Unclosed end marker found in ${filePath}: ${blockMarkers[blockMarkers.length - 1].extension}`
             );
         }
-        if (modified) {
-            const newSource = newLines.join('\n');
+
+        // Only write if content changed
+        const newSource = newLines.join('\n');
+        if (newSource !== source) {
             try {
                 fs.writeFileSync(filePath, newSource);
                 if (verbose) {
@@ -207,226 +200,50 @@ function processFile(projectRoot: string, filePath: string, extensions: Extensio
                 console.error(`Error updating file ${filePath}: ${error.message}`);
                 throw e;
             }
-
-            const addToRemoveComponentCandidates = (importPath: string): void => {
-                if (importPath.startsWith('.')) {
-                    removeComponentCandidates.add(path.resolve(path.dirname(filePath), importPath));
-                } else {
-                    // Handle path aliases based on the project's tsconfig.json "paths" configuration
-                    const resolvedPath = resolvePathFromAlias(importPath, projectRoot);
-                    removeComponentCandidates.add(path.dirname(resolvedPath));
-                }
-            };
-
-            removedBlocks.forEach((block) => {
-                if (block.includes('import')) {
-                    try {
-                        const ast = parse(block, {
-                            sourceType: 'module',
-                            plugins: ['jsx', 'typescript'],
-                        });
-                        if (verbose) {
-                            console.log(`traversing block ${block}`);
-                        }
-                        traverse(ast, {
-                            noScope: true,
-                            ImportDeclaration(nodePath: { node: { source: { value: string } } }) {
-                                addToRemoveComponentCandidates(nodePath.node.source.value);
-                            },
-                        });
-                    } catch (e: unknown) {
-                        const error = e as Error;
-                        console.error(`Error parsing block ${block}: ${error.message}`);
-                    }
-                }
-            });
         }
     }
 }
 
-function removeUnusedComponents(directory: string, projectRoot: string): string[] {
-    const exportedFiles: Set<string> = new Set();
+/**
+ * Delete extension folders for disabled extensions.
+ * @param projectRoot - The project root directory
+ * @param extensions - The extension selections
+ * @param extensionConfig - The extension configuration
+ */
+function deleteExtensionFolders(
+    projectRoot: string,
+    extensions: ExtensionsSelection,
+    extensionConfig: typeof ExtensionConfig & { extensions: Record<string, unknown> }
+): void {
+    const extensionsDir = path.join(projectRoot, 'src', 'extensions');
+    if (!fs.existsSync(extensionsDir)) {
+        return;
+    }
 
-    function collectExportedFiles(dir: string) {
-        const files = fs.readdirSync(dir);
-        files.forEach((file) => {
-            const filePath = path.join(dir, file);
-            const stats = fs.statSync(filePath);
+    const configuredExtensions = extensionConfig.extensions;
+    const disabledExtensions = Object.keys(extensions).filter((ext) => extensions[ext] === false);
 
-            if (stats.isDirectory() && !filePath.includes('node_modules')) {
-                collectExportedFiles(filePath);
-            } else if (isSupportedFileExtension(file) && !filePath.includes('.storybook')) {
-                const source = fs.readFileSync(filePath, 'utf-8');
+    disabledExtensions.forEach((extKey) => {
+        const extensionMeta = configuredExtensions[extKey] as { folder?: string } | undefined;
+        if (extensionMeta?.folder) {
+            const extensionFolderPath = path.join(extensionsDir, extensionMeta.folder);
+            if (fs.existsSync(extensionFolderPath)) {
                 try {
-                    const ast = parse(source, {
-                        sourceType: 'module',
-                        plugins: ['jsx', 'typescript'],
-                    });
-                    let hasExports = false;
-                    traverse(ast, {
-                        noScope: true,
-                        ExportNamedDeclaration(astPath: { stop: () => void }) {
-                            hasExports = true;
-                            astPath.stop();
-                        },
-                        ExportDefaultDeclaration(astPath: { stop: () => void }) {
-                            hasExports = true;
-                            astPath.stop();
-                        },
-                    });
-                    if (hasExports) {
-                        const absolutePath = path.resolve(filePath);
-                        const pathWithoutExt = path.resolve(path.dirname(absolutePath));
-                        exportedFiles.add(pathWithoutExt);
-                    }
-                } catch (e: unknown) {
-                    const error = e as Error;
-                    throw new Error(`Error parsing file ${filePath}: ${error.message}`);
-                }
-            }
-        });
-    }
-
-    function findImports(dir: string, projectRoot: string) {
-        const files = fs.readdirSync(dir);
-        files.forEach((file) => {
-            const filePath = path.join(dir, file);
-            const stats = fs.statSync(filePath);
-
-            if (stats.isDirectory() && !filePath.includes('node_modules')) {
-                findImports(filePath, projectRoot);
-            } else if (isSupportedFileExtension(file)) {
-                const source = fs.readFileSync(filePath, 'utf-8');
-                const ast = parse(source, {
-                    sourceType: 'module',
-                    plugins: ['jsx', 'typescript'],
-                });
-
-                traverse(ast, {
-                    noScope: true,
-                    ImportDeclaration(astPath: { node: { source: { value: string } } }) {
-                        const importPath = resolvePathFromAlias(astPath.node.source.value, projectRoot);
-                        if (importPath) {
-                            let absoluteImportPath = path.resolve(path.dirname(filePath), importPath);
-                            const isDirectory =
-                                fs.existsSync(absoluteImportPath) && fs.statSync(absoluteImportPath).isDirectory();
-                            if (!isDirectory) {
-                                absoluteImportPath = path.resolve(path.dirname(absoluteImportPath));
-                            }
-                            const isCandidate = Array.from(removeComponentCandidates).find((candidate) =>
-                                path.resolve(filePath).startsWith(candidate + path.sep)
-                            );
-                            if (exportedFiles.has(absoluteImportPath) && !isCandidate) {
-                                exportedFiles.delete(absoluteImportPath);
-                                let parentPath = absoluteImportPath;
-                                while (parentPath !== path.resolve(directory)) {
-                                    parentPath = path.dirname(parentPath);
-                                    exportedFiles.delete(parentPath);
-                                }
-                            }
-                        }
-                    },
-                });
-            }
-        });
-    }
-
-    collectExportedFiles(directory);
-    findImports(directory, projectRoot);
-
-    const unusedFiles = Array.from(exportedFiles)
-        .filter((filePath) => {
-            return COMPONENT_SCAN_PATHS.some((p) => filePath.includes(p));
-        })
-        .map((filePath) => {
-            const extensions = [...FILE_EXTENSIONS];
-            for (const ext of extensions) {
-                const fileWithExt = filePath + ext;
-                if (fs.existsSync(fileWithExt)) {
-                    return fileWithExt;
-                }
-            }
-            return filePath;
-        });
-
-    if (verbose) {
-        console.log('\nUnused components:');
-        unusedFiles.forEach((file) => {
-            console.log(`- ${file}`);
-        });
-        console.log('Remove component candidates:');
-        Array.from(removeComponentCandidates).forEach((file) => {
-            console.log(`- ${file}`);
-        });
-    }
-    const filesToRemove = unusedFiles.filter((filePath) => removeComponentCandidates.has(filePath));
-    if (verbose) {
-        console.log('Files to remove:');
-        filesToRemove.forEach((file) => {
-            console.log(`- ${file}`);
-        });
-    }
-    if (filesToRemove.length > 0) {
-        if (verbose) {
-            console.log('\nDeleting unused components:');
-        }
-        filesToRemove.forEach((file) => {
-            if (verbose) {
-                console.log(`- ${file}`);
-            }
-            try {
-                const stats = fs.statSync(file);
-                if (stats.isDirectory()) {
-                    fs.rmSync(file, { recursive: true, force: true });
+                    fs.rmSync(extensionFolderPath, { recursive: true, force: true });
                     if (verbose) {
-                        console.log(`  ✓ Successfully deleted directory`);
+                        console.log(`Deleted extension folder: ${extensionFolderPath}`);
                     }
-                } else {
-                    fs.unlinkSync(file);
-                    if (verbose) {
-                        console.log(`  ✓ Successfully deleted file`);
+                } catch (err: unknown) {
+                    const error = err as Error & { code?: string };
+                    if (error.code === 'EPERM') {
+                        console.error(
+                            `Permission denied - cannot delete ${extensionFolderPath}. You may need to run with sudo or check permissions.`
+                        );
+                    } else {
+                        console.error(`Error deleting ${extensionFolderPath}: ${error.message}`);
                     }
                 }
-            } catch (err: unknown) {
-                const error = err as Error & { code?: string };
-                if (error.code === 'EPERM') {
-                    console.error(
-                        `  ✗ Permission denied - cannot delete. You may need to run with sudo or check permissions.`
-                    );
-                } else {
-                    console.error(`  ✗ Error deleting: ${error.message}`);
-                }
             }
-        });
-        // check if a directory is empty or only contains empty directories
-        const isEmptyDirectory = (dir: string): boolean => {
-            if (!fs.statSync(dir).isDirectory()) {
-                return false;
-            }
-            const files = fs.readdirSync(dir);
-            if (files.length === 0) {
-                return true;
-            }
-            return files.every((file) => isEmptyDirectory(path.join(dir, file)));
-        };
-        // traverse the extensions directory and remove any empty directories
-        const extensionsDir = path.join(projectRoot, 'src', 'extensions');
-        if (fs.existsSync(extensionsDir)) {
-            fs.readdirSync(extensionsDir).forEach((file) => {
-                const subDirPath = path.join(extensionsDir, file);
-                if (isEmptyDirectory(subDirPath)) {
-                    if (verbose) {
-                        console.log(`  ✓ Successfully deleted empty directory ${subDirPath}`);
-                    }
-                    fs.rmSync(subDirPath, { recursive: true, force: true });
-                }
-            });
         }
-    } else {
-        if (verbose) {
-            console.log('\nNo unused components found.');
-        }
-    }
-
-    return unusedFiles;
+    });
 }

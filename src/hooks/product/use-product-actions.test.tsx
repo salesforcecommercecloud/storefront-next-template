@@ -8,9 +8,15 @@
 import { renderHook, act } from '@testing-library/react';
 import { describe, expect, test, vi, beforeEach } from 'vitest';
 import { createMemoryRouter, RouterProvider, useFetcher } from 'react-router';
-import type { ShopperProducts, ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type {
+    ShopperProducts,
+    ShopperBasketsV2,
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    ShopperStores,
+} from '@salesforce/storefront-next-runtime/scapi';
 import { useProductActions } from './use-product-actions';
 import BasketProvider from '@/providers/basket';
+// @sfdc-extension-line SFDC_EXT_BOPIS
 import PickupProvider from '@/extensions/bopis/context/pickup-context';
 import { standardProd } from '@/components/__mocks__/standard-product-2';
 
@@ -66,16 +72,25 @@ const mockBasket: ShopperBasketsV2.schemas['Basket'] = {
     ],
 };
 
+const createTestProviders = (
+    children: React.ReactNode,
+    basket?: ShopperBasketsV2.schemas['Basket'],
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    stores?: Map<string, ShopperStores.schemas['Store']>
+) => (
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    <PickupProvider initialPickupStores={stores}>
+        <BasketProvider value={basket}>{children}</BasketProvider>
+        {/* @sfdc-extension-line SFDC_EXT_BOPIS */}
+    </PickupProvider>
+);
+
 const wrapper = ({ children, basket }: { children: React.ReactNode; basket?: ShopperBasketsV2.schemas['Basket'] }) => {
     const router = createMemoryRouter(
         [
             {
                 path: '/',
-                element: (
-                    <PickupProvider>
-                        <BasketProvider value={basket}>{children}</BasketProvider>
-                    </PickupProvider>
-                ),
+                element: createTestProviders(children, basket),
             },
             {
                 path: '/action/cart-item-add',
@@ -400,7 +415,7 @@ describe('useProductActions', () => {
         });
     });
 
-    describe('useProductActions - BOPIS functionality', () => {
+    describe('useProductActions - functionality', () => {
         beforeEach(() => {
             vi.clearAllMocks();
             vi.resetModules();
@@ -927,6 +942,7 @@ describe('useProductActions', () => {
             });
         });
 
+        // @sfdc-extension-block-start SFDC_EXT_BOPIS
         describe('handleAddToCart with inventoryId', () => {
             test('adds item WITHOUT inventoryId when product is NOT in pickup map', async () => {
                 const { result } = renderHook(
@@ -1191,6 +1207,7 @@ describe('useProductActions', () => {
                 });
             });
         });
+        // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
         describe('handleUpdateBundle validation', () => {
             test('returns early when isAddingToOrUpdatingCart is true', async () => {
@@ -1471,6 +1488,7 @@ describe('useProductActions', () => {
             });
         });
 
+        // @sfdc-extension-block-start SFDC_EXT_BOPIS
         describe('pickup item management', () => {
             test('addItem adds product to pickup map', () => {
                 const productWithId = { ...standardProd, id: 'test-product-123' };
@@ -1679,7 +1697,7 @@ describe('useProductActions', () => {
             });
         });
 
-        describe('exported functions', () => {
+        describe('exported BOPIS functions', () => {
             test('exports addItem function', () => {
                 const { result } = renderHook(
                     () => useProductActions({ product: standardProd, currentVariant: null }),
@@ -1751,7 +1769,6 @@ describe('useProductActions', () => {
             });
         });
 
-        // @sfdc-extension-block-start SFDC_EXT_BOPIS
         describe('basketPickupStore', () => {
             test('returns undefined when not editing basket item', () => {
                 const { result } = renderHook(
@@ -1832,11 +1849,7 @@ describe('useProductActions', () => {
                         [
                             {
                                 path: '/',
-                                element: (
-                                    <PickupProvider initialPickupStores={stores}>
-                                        <BasketProvider value={basketWithPickup}>{children}</BasketProvider>
-                                    </PickupProvider>
-                                ),
+                                element: createTestProviders(children, basketWithPickup, stores),
                             },
                         ],
                         {
@@ -1895,11 +1908,7 @@ describe('useProductActions', () => {
                         [
                             {
                                 path: '/',
-                                element: (
-                                    <PickupProvider initialPickupStores={stores}>
-                                        <BasketProvider value={basketWithPickup}>{children}</BasketProvider>
-                                    </PickupProvider>
-                                ),
+                                element: createTestProviders(children, basketWithPickup, stores),
                             },
                         ],
                         {
@@ -1958,11 +1967,7 @@ describe('useProductActions', () => {
                         [
                             {
                                 path: '/',
-                                element: (
-                                    <PickupProvider initialPickupStores={stores}>
-                                        <BasketProvider value={basketWithPickup}>{children}</BasketProvider>
-                                    </PickupProvider>
-                                ),
+                                element: createTestProviders(children, basketWithPickup, stores),
                             },
                         ],
                         {

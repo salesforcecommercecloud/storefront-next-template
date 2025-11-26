@@ -80,6 +80,7 @@ Each `config.json` must adhere to the following schema:
 | `description`                 | string   | yes      | A short description of what the extension does                                |
 | `installationInstructions`    | string   | no       | (Optional) Path to file with installation instructions                        |
 | `uninstallationInstructions`  | string   | no       | (Optional) Path to file with uninstallation instructions                      |
+| `folder`                      | string   | no       | (Optional) Folder containing extension specfic code                           |
 
 ### Example `config.json`
 
@@ -88,7 +89,8 @@ Each `config.json` must adhere to the following schema:
   "name": "Product Review",
   "description": "Product review allows a user to see reviews of a product and create new reviews.",
   "installationInstructions": "instructions/install-product-review.mdc",
-  "uninstallationInstructions": "instructions/uninstall-product-review.mdc"
+  "uninstallationInstructions": "instructions/uninstall-product-review.mdc",
+  "folder": "product-review"
 }
 ```
 

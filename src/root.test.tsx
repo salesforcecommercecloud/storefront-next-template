@@ -67,10 +67,12 @@ vi.mock('@/components/toast', async () => ({
     ToasterTheme: () => <div data-testid="toaster">Toaster</div>,
 }));
 
+// @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
 vi.mock('@/extensions/store-locator/providers/store-locator', async () => ({
     ...(await vi.importActual('@/extensions/store-locator/providers/store-locator')),
     default: ({ children }: PropsWithChildren) => <div data-testid="store-locator-provider">{children}</div>,
 }));
+// @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
 
 vi.mock('@/config', async () => ({
     ...(await vi.importActual('@/config')),
@@ -367,6 +369,7 @@ describe('root.tsx', () => {
                 expect(getByTestId('config-provider')).toBeInTheDocument();
                 expect(getByTestId('auth-provider')).toBeInTheDocument();
                 expect(getByTestId('basket-provider')).toBeInTheDocument();
+                // @sfdc-extension-line SFDC_EXT_STORE_LOCATOR
                 expect(getByTestId('store-locator-provider')).toBeInTheDocument();
             });
         });

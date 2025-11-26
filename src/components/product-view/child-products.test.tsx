@@ -21,9 +21,11 @@ vi.mock('@/hooks/product/use-product-actions', () => ({
     useProductActions: vi.fn(),
 }));
 
+// @sfdc-extension-block-start SFDC_EXT_BOPIS
 vi.mock('@/extensions/store-locator/providers/store-locator', () => ({
     useStoreLocator: vi.fn(),
 }));
+// @sfdc-extension-block-end SFDC_EXT_BOPIS
 
 vi.mock('@/extensions/bopis/components/delivery-options/delivery-options', () => ({
     default: () => <div data-testid="delivery-options">Delivery Options</div>,
@@ -129,9 +131,11 @@ describe('ChildProducts', () => {
 
         const { useProductSetsBundles } = await import('@/hooks/product/use-product-sets-bundles');
         const { useProductActions } = await import('@/hooks/product/use-product-actions');
+        // @sfdc-extension-block-start SFDC_EXT_BOPIS
         const { useStoreLocator } = await import('@/extensions/store-locator/providers/store-locator');
 
         vi.mocked(useStoreLocator).mockReturnValue(null);
+        // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
         vi.mocked(useProductActions).mockReturnValue({
             isAddingToOrUpdatingCart: false,
@@ -933,6 +937,7 @@ describe('ChildProducts', () => {
         });
     });
 
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
     describe('BOPIS integration', () => {
         test('renders delivery options in add mode', () => {
             const setProduct = createSetProduct();
@@ -980,6 +985,7 @@ describe('ChildProducts', () => {
             expect(screen.queryByTestId('delivery-options')).not.toBeInTheDocument();
         });
     });
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     describe('child product interactions', () => {
         test('passes setChildProductSelection to child cards', () => {
@@ -1165,6 +1171,7 @@ describe('ChildProducts', () => {
         });
     });
 
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
     describe('BOPIS store selection', () => {
         test('passes selectedStore inventoryId to useProductSetsBundles', async () => {
             const setProduct = createSetProduct();
@@ -1205,6 +1212,7 @@ describe('ChildProducts', () => {
             expect(screen.getByTestId('child-product-child-1')).toBeInTheDocument();
         });
     });
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     describe('bundle quantity picker integration', () => {
         test('passes correct props to ProductQuantityPicker for bundles', async () => {
