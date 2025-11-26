@@ -12,7 +12,7 @@ import { createApiClients } from '@/lib/api-clients';
 import { getConfig } from '@/config';
 import uiStrings from '@/temp-ui-string';
 // @sfdc-extension-line SFDC_EXT_BOPIS
-import { updateShipmentForPickup } from '@/extensions/bopis/lib/api/shipment';
+import { syncShipmentWithDeliveryOptionChange } from '@/extensions/bopis/lib/basket-utils';
 
 async function addMultipleItemsToCart(
     context: ActionFunctionArgs['context'],
@@ -58,12 +58,11 @@ async function addMultipleItemsToCart(
         let finalBasket = updatedBasket;
 
         // @sfdc-extension-block-start SFDC_EXT_BOPIS
-        // Update shipment with store information when pickup items are added
         // Find the first item with both storeId and inventoryId (pickup item)
         const pickupItem = productItems.find((item) => item.storeId && item.inventoryId);
-        if (pickupItem?.storeId) {
-            finalBasket = await updateShipmentForPickup(context, basketId, 'me', pickupItem.storeId);
-        }
+
+        // Update shipment with store information based on selected delivery option
+        finalBasket = await syncShipmentWithDeliveryOptionChange(context, finalBasket, pickupItem);
         // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
         // Update the basket storage

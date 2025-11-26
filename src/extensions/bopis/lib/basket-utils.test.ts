@@ -17,8 +17,15 @@ import {
     filterPickupProductItems,
     isStorePickup,
     getPickupShipment,
+    isSelectedDeliveryOptionValid,
+    syncShipmentWithDeliveryOptionChange,
 } from './basket-utils';
 import type { PickupItemInfo } from '@/extensions/bopis/context/pickup-context';
+import { createMockBasketWithPickupItems } from '@/extensions/bopis/tests/__mocks__/basket';
+import uiStringsBopis from '@/extensions/bopis/temp-ui-string-bopis';
+import type { RouterContextProvider } from 'react-router';
+import { updateShipmentForPickup, clearPickupFromShipment } from '@/extensions/bopis/lib/api/shipment';
+import uiStrings from '@/temp-ui-string';
 
 vi.mock('@/lib/api-clients', () => ({
     createApiClients: vi.fn(),
@@ -26,6 +33,11 @@ vi.mock('@/lib/api-clients', () => ({
 
 vi.mock('@/config', () => ({
     getConfig: vi.fn(),
+}));
+
+vi.mock('@/extensions/bopis/lib/api/shipment', () => ({
+    updateShipmentForPickup: vi.fn(),
+    clearPickupFromShipment: vi.fn(),
 }));
 
 beforeEach(() => {
@@ -1689,5 +1701,192 @@ describe('getPickupShipment', () => {
         } as ShopperBasketsV2.schemas['Basket'];
 
         expect(getPickupShipment(basket)).toBe(validPickupShipment);
+    });
+});
+
+describe('isSelectedDeliveryOptionValid', () => {
+    let mockAddToast: ReturnType<typeof vi.fn>;
+
+    beforeEach(() => {
+        mockAddToast = vi.fn();
+    });
+
+    it('should return true when basket is undefined', () => {
+        const result = isSelectedDeliveryOptionValid(undefined, 'store-123', mockAddToast);
+        expect(result).toBe(true);
+        expect(mockAddToast).not.toHaveBeenCalled();
+    });
+
+    it('should return true when basket has no product items', () => {
+        const basket = createMockBasketWithPickupItems(undefined, {
+            productItems: undefined,
+        });
+
+        const result = isSelectedDeliveryOptionValid(basket, 'store-123', mockAddToast);
+        expect(result).toBe(true);
+        expect(mockAddToast).not.toHaveBeenCalled();
+    });
+
+    it('should return true when adding delivery item to basket with empty productItems array', () => {
+        const basket = createMockBasketWithPickupItems();
+
+        // Adding delivery item (null) when existingStoreId is undefined should pass
+        const result = isSelectedDeliveryOptionValid(basket, null, mockAddToast);
+        expect(result).toBe(true);
+        expect(mockAddToast).not.toHaveBeenCalled();
+    });
+
+    it('should return true when adding delivery item to empty basket', () => {
+        const basket = createMockBasketWithPickupItems();
+
+        const result = isSelectedDeliveryOptionValid(basket, null, mockAddToast);
+        expect(result).toBe(true);
+        expect(mockAddToast).not.toHaveBeenCalled();
+    });
+
+    it('should return true when adding pickup item from same store to basket with pickup items', () => {
+        const basket = createMockBasketWithPickupItems([
+            { productId: 'product-1', inventoryId: 'inventory-1', storeId: 'store-123' },
+        ]);
+
+        const result = isSelectedDeliveryOptionValid(basket, 'store-123', mockAddToast);
+        expect(result).toBe(true);
+        expect(mockAddToast).not.toHaveBeenCalled();
+    });
+
+    it('should return false and show error when adding pickup item from different store', () => {
+        const basket = createMockBasketWithPickupItems([
+            { productId: 'product-1', inventoryId: 'inventory-1', storeId: 'store-123' },
+        ]);
+
+        const result = isSelectedDeliveryOptionValid(basket, 'store-456', mockAddToast);
+        expect(result).toBe(false);
+        expect(mockAddToast).toHaveBeenCalledWith(uiStringsBopis.cart.addToCartValidation.changeStoreError, 'error');
+    });
+
+    it('should return false and show error when adding delivery item to basket with pickup items', () => {
+        const basket = createMockBasketWithPickupItems([
+            { productId: 'product-1', inventoryId: 'inventory-1', storeId: 'store-123' },
+        ]);
+
+        const result = isSelectedDeliveryOptionValid(basket, null, mockAddToast);
+        expect(result).toBe(false);
+        expect(mockAddToast).toHaveBeenCalledWith(
+            uiStringsBopis.cart.addToCartValidation.changeToDeliveryError,
+            'error'
+        );
+    });
+
+    it('should return false and show error when adding pickup item to basket with delivery items', () => {
+        const basket = createMockBasketWithPickupItems([], {
+            shipments: [
+                {
+                    shipmentId: 'shipment-1',
+                    // No c_fromStoreId - delivery shipment
+                },
+            ],
+            productItems: [
+                {
+                    itemId: 'item-1',
+                    productId: 'product-1',
+                    shipmentId: 'shipment-1',
+                },
+            ],
+        });
+
+        const result = isSelectedDeliveryOptionValid(basket, 'store-123', mockAddToast);
+        expect(result).toBe(false);
+        expect(mockAddToast).toHaveBeenCalledWith(uiStringsBopis.cart.addToCartValidation.changeToPickupError, 'error');
+    });
+});
+
+describe('syncShipmentWithDeliveryOptionChange', () => {
+    const mockContext = {
+        get: vi.fn(),
+        set: vi.fn(),
+    } as unknown as RouterContextProvider;
+
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it('should throw error when basket has no basketId', async () => {
+        const basket = createMockBasketWithPickupItems(undefined, {
+            basketId: undefined,
+        });
+
+        await expect(
+            syncShipmentWithDeliveryOptionChange(mockContext, basket, {
+                inventoryId: 'inventory-1',
+                storeId: 'store-123',
+            })
+        ).rejects.toThrow(uiStrings.errors.noBasketFound);
+    });
+
+    it('should return basket unchanged when productItem is not provided', async () => {
+        const basket = createMockBasketWithPickupItems([
+            { productId: 'product-1', inventoryId: 'inventory-1', storeId: 'store-123' },
+        ]);
+
+        const result = await syncShipmentWithDeliveryOptionChange(mockContext, basket);
+
+        expect(result).toBe(basket);
+        expect(updateShipmentForPickup).not.toHaveBeenCalled();
+        expect(clearPickupFromShipment).not.toHaveBeenCalled();
+    });
+
+    it('should call updateShipmentForPickup when productItem has storeId and inventoryId', async () => {
+        const basket = createMockBasketWithPickupItems([
+            { productId: 'product-1', inventoryId: 'inventory-1', storeId: 'store-123' },
+        ]);
+        const updatedBasket = createMockBasketWithPickupItems([
+            { productId: 'product-2', inventoryId: 'inventory-2', storeId: 'store-456' },
+        ]);
+
+        vi.mocked(updateShipmentForPickup).mockResolvedValue(updatedBasket);
+
+        const result = await syncShipmentWithDeliveryOptionChange(mockContext, basket, {
+            inventoryId: 'inventory-2',
+            storeId: 'store-456',
+        });
+
+        expect(updateShipmentForPickup).toHaveBeenCalledWith(
+            mockContext,
+            basket.basketId,
+            basket.shipments?.[0]?.shipmentId ?? 'me',
+            'store-456'
+        );
+        expect(result).toBe(updatedBasket);
+        expect(clearPickupFromShipment).not.toHaveBeenCalled();
+    });
+
+    it('should return basket unchanged when productItem has no storeId and no pickup shipment exists', async () => {
+        const basket = createMockBasketWithPickupItems([], {
+            basketId: 'basket-1',
+        });
+
+        const result = await syncShipmentWithDeliveryOptionChange(mockContext, basket, {
+            inventoryId: 'inventory-1',
+            storeId: null,
+        });
+
+        expect(result).toBe(basket);
+        expect(updateShipmentForPickup).not.toHaveBeenCalled();
+        expect(clearPickupFromShipment).not.toHaveBeenCalled();
+    });
+
+    it('should return basket unchanged when productItem has inventoryId but no storeId and no pickup shipment', async () => {
+        const basket = createMockBasketWithPickupItems([], {
+            basketId: 'basket-1',
+        });
+
+        const result = await syncShipmentWithDeliveryOptionChange(mockContext, basket, {
+            inventoryId: 'inventory-1',
+            storeId: null,
+        });
+
+        expect(result).toBe(basket);
+        expect(updateShipmentForPickup).not.toHaveBeenCalled();
+        expect(clearPickupFromShipment).not.toHaveBeenCalled();
     });
 });

@@ -12,6 +12,7 @@ import type { ShopperBasketsV2, ShopperStores } from '@salesforce/storefront-nex
 import { createApiClients } from '@/lib/api-clients';
 import { getConfig } from '@/config';
 import uiStrings from '@/temp-ui-string';
+import { getShippingMethodsForShipment } from '@/lib/api/shipping-methods';
 
 /**
  * Update shipment custom attributes for pickup
@@ -104,6 +105,51 @@ export async function setAddressAndMethodForPickup(
             shippingMethod: {
                 id: PICKUP_SHIPPING_METHOD_ID,
             },
+        },
+    });
+
+    return updatedBasket;
+}
+
+/**
+ * Clears pickup-related fields from shipment and sets default shipping method
+ * Removes c_fromStoreId and shippingAddress, sets shippingMethod to default
+ *
+ * @param context - Router context
+ * @param basket - Current basket
+ * @param shipmentId - Shipment ID (defaults to 'me')
+ * @returns Updated basket with cleared pickup fields and default shipping method
+ */
+export async function clearPickupFromShipment(
+    context: Readonly<RouterContextProvider>,
+    basketId: string,
+    shipmentId: string = 'me'
+): Promise<ShopperBasketsV2.schemas['Basket']> {
+    const config = getConfig(context);
+    const clients = createApiClients(context);
+
+    // Fetch shipping methods to get defaultShippingMethodId
+    const shippingMethods = await getShippingMethodsForShipment(context, basketId, shipmentId);
+    const defaultShippingMethodId =
+        shippingMethods?.defaultShippingMethodId ?? shippingMethods?.applicableShippingMethods?.[0]?.id ?? '';
+
+    // Clear c_fromStoreId and shippingAddress, and set default shipping method
+    const { data: updatedBasket } = await clients.shopperBasketsV2.updateShipmentForBasket({
+        params: {
+            path: {
+                organizationId: config.commerce.api.organizationId,
+                basketId,
+                shipmentId,
+            },
+            query: {
+                siteId: config.commerce.api.siteId,
+            },
+        },
+        body: {
+            shipmentId,
+            c_fromStoreId: null,
+            shippingAddress: {},
+            shippingMethod: { id: defaultShippingMethodId },
         },
     });
 

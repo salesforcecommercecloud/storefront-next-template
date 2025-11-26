@@ -46,5 +46,10 @@ export default {
             itemsOutOfStock: 'Some items are out of stock at {storeName}. Please select a different store.',
             missingStoreIdOrInventoryIdError: 'Store ID or inventory ID is missing. Please select a valid store.',
         },
+        addToCartValidation: {
+            changeStoreError: 'You already have an item in your cart from a different store.',
+            changeToDeliveryError: 'You already have an item in your cart marked for pickup.',
+            changeToPickupError: 'You already have an item in your cart marked for delivery.',
+        },
     },
 } as const;

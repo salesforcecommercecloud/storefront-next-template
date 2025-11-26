@@ -11,6 +11,7 @@ import { getConfig } from '@/config';
 import { getShippingMethodsForShipment } from '@/lib/api/shipping-methods';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import { isStorePickup } from '@/extensions/bopis/lib/basket-utils';
+import { isAddressEmpty } from './checkout-addresses';
 
 function hasValidPaymentCard(
     paymentInstrument: ShopperBasketsV2.schemas['OrderPaymentInstrument'] | undefined
@@ -182,7 +183,7 @@ export function shouldPrefillBasket(
     }
 
     const missingEmail = !basket?.customerInfo?.email;
-    const missingShippingAddress = !basket?.shipments?.[0]?.shippingAddress;
+    const missingShippingAddress = isAddressEmpty(basket?.shipments?.[0]?.shippingAddress);
 
     return missingEmail || missingShippingAddress;
 }

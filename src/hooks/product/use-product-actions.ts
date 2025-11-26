@@ -13,7 +13,7 @@ import type { ShopperProducts, ShopperBasketsV2 } from '@salesforce/storefront-n
 import { useToast } from '@/components/toast';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { usePickup } from '@/extensions/bopis/context/pickup-context';
-import { getStoreIdForBasketItem } from '@/extensions/bopis/lib/basket-utils';
+import { getStoreIdForBasketItem, isSelectedDeliveryOptionValid } from '@/extensions/bopis/lib/basket-utils';
 import { getPickupStoreFromMap } from '@/extensions/bopis/lib/store-utils';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 import { useBasket } from '@/providers/basket';
@@ -444,6 +444,14 @@ export function useProductActions({
         const itemProductId = getProductId(productToAdd);
         const price = productToAdd?.price;
 
+        // @sfdc-extension-block-start SFDC_EXT_BOPIS
+        const pickupInfo = pickupContext?.pickupBasketItems?.get(itemProductId);
+        const storeId = pickupInfo?.storeId ?? null;
+
+        // Validate pickup/delivery compatibility with existing basket items
+        if (!isSelectedDeliveryOptionValid(basket, storeId, addToast)) return;
+        // @sfdc-extension-block-end SFDC_EXT_BOPIS
+
         // Validate inputs
         if (!itemProductId || quantity <= 0) {
             addToast(uiStrings.product.failedToAddProductToCart, 'error');
@@ -453,20 +461,17 @@ export function useProductActions({
         setIsAddingToOrUpdatingCart(true);
 
         try {
-            // @sfdc-extension-block-start SFDC_EXT_BOPIS
-            const pickupInfo = pickupContext?.pickupBasketItems?.get(itemProductId);
+            // @sfdc-extension-line SFDC_EXT_BOPIS
             const inventoryId = pickupInfo?.inventoryId ?? null;
-            const storeId = pickupInfo?.storeId ?? null;
-            // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
             const productItem = {
                 productId: itemProductId,
                 quantity,
                 price,
-                // @sfdc-extension-line SFDC_EXT_BOPIS
+                // @sfdc-extension-block-start SFDC_EXT_BOPIS
                 inventoryId,
-                // @sfdc-extension-line SFDC_EXT_BOPIS
                 storeId,
+                // @sfdc-extension-block-end SFDC_EXT_BOPIS
             };
 
             // Use server action to add item to cart
@@ -487,6 +492,7 @@ export function useProductActions({
             addToast(uiStrings.product.failedToAddProductToCart, 'error');
         }
     }, [
+        basket,
         product,
         quantity,
         isMasterOrVariantProduct,

@@ -11,7 +11,7 @@ import { createApiClients } from '@/lib/api-clients';
 import { getConfig } from '@/config';
 import uiStrings from '@/temp-ui-string';
 // @sfdc-extension-line SFDC_EXT_BOPIS
-import { updateShipmentForPickup } from '@/extensions/bopis/lib/api/shipment';
+import { syncShipmentWithDeliveryOptionChange } from '@/extensions/bopis/lib/basket-utils';
 
 /**
  * Product selection values structure matching client-side ProductSelectionValues
@@ -127,10 +127,8 @@ async function addBundleToCart(
         }
 
         // @sfdc-extension-block-start SFDC_EXT_BOPIS
-        // Update shipment with store information when pickup bundle is added
-        if (bundleItem.storeId && bundleItem.inventoryId) {
-            updatedBasket = await updateShipmentForPickup(context, basketId, 'me', bundleItem.storeId);
-        }
+        // Update shipment with store information based on selected delivery option
+        updatedBasket = await syncShipmentWithDeliveryOptionChange(context, updatedBasket, bundleItem);
         // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
         // Update the basket storage

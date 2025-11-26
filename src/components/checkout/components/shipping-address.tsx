@@ -9,6 +9,7 @@ import { useBasket } from '@/providers/basket';
 import { shippingAddressSchema, type ShippingAddressData } from '@/lib/checkout-schemas';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import { getShippingAddressFromCustomer } from '@/lib/customer-profile-utils';
+import { isAddressEmpty } from '@/components/checkout/utils/checkout-addresses';
 import uiStrings from '@/temp-ui-string';
 import type { CheckoutActionData } from '../types';
 import type { ReactNode } from 'react';
@@ -289,7 +290,8 @@ export default function ShippingAddress({
 
             <ToggleCardSummary>
                 <div className="space-y-3">
-                    {shippingAddress ? (
+                    {/* If address is cleared, the addreess object will still exist with an id field, so we additionally check for empty fields */}
+                    {shippingAddress && !isAddressEmpty(shippingAddress) ? (
                         <div className="rounded-lg p-3 space-y-2 bg-muted/50">
                             <Typography variant="p" className="font-medium">
                                 {shippingAddress.firstName} {shippingAddress.lastName}

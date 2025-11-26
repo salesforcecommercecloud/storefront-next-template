@@ -19,17 +19,18 @@ vi.mock('@/lib/api/shipping-methods', () => ({
     getShippingMethodsForShipment: vi.fn(),
 }));
 
-// Mock checkout-utils to prevent actual imports and focus on loader logic
-vi.mock('@/components/checkout/utils/checkout-utils', () => ({
-    shouldPrefillBasket: vi.fn(() => false),
-    initializeBasketForReturningCustomer: vi.fn((context, profile) =>
-        Promise.resolve({
-            basketId: 'prefilled-basket-123',
-            shipments: [{ shippingAddress: { address1: 'Prefilled Address' } }],
-            customerInfo: { email: profile.customer.login },
-        })
-    ),
-}));
+vi.mock('@/components/checkout/utils/checkout-utils', () => {
+    return {
+        shouldPrefillBasket: vi.fn(() => false),
+        initializeBasketForReturningCustomer: vi.fn((_context, profile) =>
+            Promise.resolve({
+                basketId: 'prefilled-basket-123',
+                shipments: [{ shippingAddress: { address1: 'Prefilled Address' } }],
+                customerInfo: { email: profile.customer.login },
+            })
+        ),
+    };
+});
 
 vi.mock('@/lib/checkout-server-utils', () => ({
     fetchProductsInBasket: vi.fn(() => Promise.resolve({})),
