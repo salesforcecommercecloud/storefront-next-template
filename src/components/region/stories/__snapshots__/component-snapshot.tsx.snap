@@ -1,0 +1,7 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Component stories snapshot > Default story renders and matches snapshot 1`] = `
+<div>
+  Fallback
+</div>
+`;

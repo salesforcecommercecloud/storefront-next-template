@@ -1,0 +1,186 @@
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { Swatch } from '../swatch';
+import { expect, within, userEvent } from 'storybook/test';
+import { waitForStorybookReady } from '@storybook/test-utils';
+import { action } from 'storybook/actions';
+
+const meta: Meta<typeof Swatch> = {
+    title: 'SWATCH/Swatch',
+    component: Swatch,
+    parameters: {
+        layout: 'centered',
+        docs: {
+            description: {
+                component:
+                    'Interactive swatch component for selecting options like colors, sizes, or variants. Supports click and hover interaction modes, and can be used for navigation.',
+            },
+        },
+    },
+    tags: ['autodocs', 'interaction'],
+    argTypes: {
+        children: {
+            description: 'Content to render inside the swatch',
+            control: false,
+        },
+        disabled: {
+            description: 'Whether the swatch is disabled',
+            control: 'boolean',
+        },
+        href: {
+            description: 'URL to navigate to when swatch is clicked',
+            control: 'text',
+        },
+        label: {
+            description: 'Accessible label for the swatch',
+            control: 'text',
+        },
+        selected: {
+            description: 'Whether the swatch is currently selected',
+            control: 'boolean',
+        },
+        value: {
+            description: 'Value associated with this swatch',
+            control: 'text',
+        },
+        size: {
+            description: 'Size of the swatch',
+            control: 'select',
+            options: ['sm', 'md', 'lg'],
+        },
+        shape: {
+            description: 'Shape of the swatch',
+            control: 'select',
+            options: ['circle', 'square'],
+        },
+        mode: {
+            description: 'Interaction mode',
+            control: 'select',
+            options: ['click', 'hover'],
+        },
+        handleSelect: {
+            description: 'Callback when swatch is selected',
+            action: 'handleSelect',
+        },
+    },
+};
+
+export default meta;
+type Story = StoryObj<typeof Swatch>;
+
+export const Default: Story = {
+    args: {
+        value: 'red',
+        label: 'Red',
+        // eslint-disable-next-line custom/color-linter
+        children: <div className="w-full h-full bg-red-500 rounded-full" />,
+        handleSelect: action('handleSelect'),
+        mode: 'click',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const swatch = canvas.getByRole('radio', { name: /red/i });
+        await expect(swatch).toBeInTheDocument();
+
+        await userEvent.click(swatch);
+    },
+};
+
+export const Selected: Story = {
+    args: {
+        value: 'blue',
+        label: 'Blue',
+        selected: true,
+        // eslint-disable-next-line custom/color-linter
+        children: <div className="w-full h-full bg-blue-500 rounded-full" />,
+        handleSelect: action('handleSelect'),
+        mode: 'click',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const swatch = canvas.getByRole('radio', { name: /blue/i });
+        await expect(swatch).toBeInTheDocument();
+        await expect(swatch).toHaveAttribute('aria-checked', 'true');
+    },
+};
+
+export const Disabled: Story = {
+    args: {
+        value: 'green',
+        label: 'Green',
+        disabled: true,
+        // eslint-disable-next-line custom/color-linter
+        children: <div className="w-full h-full bg-green-500 rounded-full" />,
+        handleSelect: action('handleSelect'),
+        mode: 'click',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const swatch = canvas.getByRole('radio', { name: /green/i });
+        await expect(swatch).toBeDisabled();
+    },
+};
+
+export const Square: Story = {
+    args: {
+        value: 'large',
+        label: 'Large',
+        shape: 'square',
+        size: 'lg',
+        children: 'L',
+        handleSelect: action('handleSelect'),
+        mode: 'click',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const swatch = canvas.getByRole('radio', { name: /large/i });
+        await expect(swatch).toBeInTheDocument();
+    },
+};
+
+export const WithHref: Story = {
+    args: {
+        value: 'product-1',
+        label: 'Product Variant',
+        href: '/products/1',
+        // eslint-disable-next-line custom/color-linter
+        children: <div className="w-full h-full bg-purple-500 rounded-full" />,
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+
+        // NavLink renders as <a> tag, find it by href attribute
+        const link = canvasElement.querySelector('a[href="/products/1"]');
+        await expect(link).toBeInTheDocument();
+        if (link) {
+            await expect(link).toHaveAttribute('href', '/products/1');
+        }
+    },
+};
+
+export const HoverMode: Story = {
+    args: {
+        value: 'yellow',
+        label: 'Yellow',
+        // eslint-disable-next-line custom/color-linter
+        children: <div className="w-full h-full bg-yellow-500 rounded-full" />,
+        handleSelect: action('handleSelect'),
+        mode: 'hover',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const swatch = canvas.getByRole('radio', { name: /yellow/i });
+        await expect(swatch).toBeInTheDocument();
+
+        await userEvent.hover(swatch);
+    },
+};

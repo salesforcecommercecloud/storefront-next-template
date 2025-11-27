@@ -1,0 +1,194 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`AccountAddressesSkeleton stories snapshot > Default story renders and matches snapshot 1`] = `
+<div
+  class="space-y-6"
+>
+  <div>
+    <h1
+      class="text-2xl font-bold text-foreground"
+      tabindex="0"
+    >
+      Addresses
+    </h1>
+  </div>
+  <div
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+  >
+    <div
+      class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm border-border gap-0 py-4"
+      data-slot="card"
+    >
+      <div
+        class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6"
+        data-slot="card-header"
+      >
+        <div
+          class="leading-none font-semibold"
+          data-slot="card-title"
+        >
+          <div
+            class="animate-pulse rounded-md bg-muted h-5 w-16"
+          />
+        </div>
+        <div
+          class="col-start-2 row-span-2 row-start-1 self-start justify-self-end"
+          data-slot="card-action"
+        >
+          <div
+            class="animate-pulse rounded-md bg-muted h-5 w-20"
+          />
+        </div>
+      </div>
+      <div
+        class="p-4"
+        data-slot="card-content"
+      >
+        <div
+          class="space-y-2"
+        >
+          <div
+            class="animate-pulse rounded-md bg-muted h-4 w-32"
+          />
+          <div
+            class="animate-pulse rounded-md bg-muted h-4 w-40"
+          />
+          <div
+            class="animate-pulse rounded-md bg-muted h-4 w-36"
+          />
+          <div
+            class="animate-pulse rounded-md bg-muted h-4 w-24"
+          />
+        </div>
+      </div>
+      <div
+        class="flex items-center px-6 [.border-t]:pt-6 gap-2"
+        data-slot="card-footer"
+      >
+        <div
+          class="animate-pulse rounded-md bg-muted h-8 w-12"
+        />
+        <div
+          class="animate-pulse rounded-md bg-muted h-8 w-16"
+        />
+      </div>
+    </div>
+    <div
+      class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm border-border gap-0 py-4"
+      data-slot="card"
+    >
+      <div
+        class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6"
+        data-slot="card-header"
+      >
+        <div
+          class="leading-none font-semibold"
+          data-slot="card-title"
+        >
+          <div
+            class="animate-pulse rounded-md bg-muted h-5 w-16"
+          />
+        </div>
+        <div
+          class="col-start-2 row-span-2 row-start-1 self-start justify-self-end"
+          data-slot="card-action"
+        >
+          <div
+            class="animate-pulse rounded-md bg-muted h-5 w-20"
+          />
+        </div>
+      </div>
+      <div
+        class="p-4"
+        data-slot="card-content"
+      >
+        <div
+          class="space-y-2"
+        >
+          <div
+            class="animate-pulse rounded-md bg-muted h-4 w-32"
+          />
+          <div
+            class="animate-pulse rounded-md bg-muted h-4 w-40"
+          />
+          <div
+            class="animate-pulse rounded-md bg-muted h-4 w-36"
+          />
+          <div
+            class="animate-pulse rounded-md bg-muted h-4 w-24"
+          />
+        </div>
+      </div>
+      <div
+        class="flex items-center px-6 [.border-t]:pt-6 gap-2"
+        data-slot="card-footer"
+      >
+        <div
+          class="animate-pulse rounded-md bg-muted h-8 w-12"
+        />
+        <div
+          class="animate-pulse rounded-md bg-muted h-8 w-16"
+        />
+      </div>
+    </div>
+    <div
+      class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm border-border gap-0 py-4"
+      data-slot="card"
+    >
+      <div
+        class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6"
+        data-slot="card-header"
+      >
+        <div
+          class="leading-none font-semibold"
+          data-slot="card-title"
+        >
+          <div
+            class="animate-pulse rounded-md bg-muted h-5 w-16"
+          />
+        </div>
+        <div
+          class="col-start-2 row-span-2 row-start-1 self-start justify-self-end"
+          data-slot="card-action"
+        >
+          <div
+            class="animate-pulse rounded-md bg-muted h-5 w-20"
+          />
+        </div>
+      </div>
+      <div
+        class="p-4"
+        data-slot="card-content"
+      >
+        <div
+          class="space-y-2"
+        >
+          <div
+            class="animate-pulse rounded-md bg-muted h-4 w-32"
+          />
+          <div
+            class="animate-pulse rounded-md bg-muted h-4 w-40"
+          />
+          <div
+            class="animate-pulse rounded-md bg-muted h-4 w-36"
+          />
+          <div
+            class="animate-pulse rounded-md bg-muted h-4 w-24"
+          />
+        </div>
+      </div>
+      <div
+        class="flex items-center px-6 [.border-t]:pt-6 gap-2"
+        data-slot="card-footer"
+      >
+        <div
+          class="animate-pulse rounded-md bg-muted h-8 w-12"
+        />
+        <div
+          class="animate-pulse rounded-md bg-muted h-8 w-16"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;

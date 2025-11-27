@@ -1,0 +1,41 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`RegionWrapper stories snapshot > Default story renders and matches snapshot 1`] = `
+<div
+  class="region"
+  data-region-id="region-1"
+  data-testid="region"
+  id="region-1"
+>
+  <div
+    class="container"
+  >
+    <div>
+      Child Content
+    </div>
+  </div>
+</div>
+`;
+
+exports[`RegionWrapper stories snapshot > WithMultipleChildren story renders and matches snapshot 1`] = `
+<div
+  class="region"
+  data-region-id="region-1"
+  data-testid="region"
+  id="region-1"
+>
+  <div
+    class="container"
+  >
+    <div>
+      Child 1
+    </div>
+    <div>
+      Child 2
+    </div>
+    <div>
+      Child 3
+    </div>
+  </div>
+</div>
+`;

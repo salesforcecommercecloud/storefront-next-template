@@ -79,9 +79,10 @@ function generateCoverage() {
         if (
             file.endsWith('.stories.tsx') ||
             file.endsWith('.test.tsx') ||
-            file.endsWith('.snapshot.tsx') ||
+            file.endsWith('-snapshot.tsx') ||
             file.includes('/stories/') ||
-            file.includes('/__snapshots__/')
+            file.includes('/__snapshots__/') ||
+            file.includes('/__mocks__/')
         ) {
             return;
         }

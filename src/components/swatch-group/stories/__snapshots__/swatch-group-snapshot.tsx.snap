@@ -1,0 +1,384 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SwatchGroup stories snapshot > Default story renders and matches snapshot 1`] = `
+<div
+  class="space-y-3"
+>
+  <div
+    aria-label="Color"
+    class="flex flex-col gap-3"
+    role="radiogroup"
+  >
+    <div
+      class="flex items-center gap-2 text-sm text-foreground"
+    >
+      <span
+        class="font-semibold"
+      >
+        Color
+        :
+      </span>
+    </div>
+    <div
+      class="flex flex-wrap gap-2 focus:outline-none"
+    >
+      <button
+        aria-checked="false"
+        aria-label="Red"
+        class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+        position="relative"
+        role="radio"
+        tabindex="-1"
+        type="button"
+      >
+        <div
+          class="flex items-center justify-center w-full h-full text-sm font-medium"
+        >
+          <div
+            class="w-full h-full bg-red-500 rounded-full"
+          />
+          <span
+            class="ml-1"
+          >
+            Red
+          </span>
+        </div>
+      </button>
+      <button
+        aria-checked="false"
+        aria-label="Blue"
+        class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+        position="relative"
+        role="radio"
+        tabindex="-1"
+        type="button"
+      >
+        <div
+          class="flex items-center justify-center w-full h-full text-sm font-medium"
+        >
+          <div
+            class="w-full h-full bg-blue-500 rounded-full"
+          />
+          <span
+            class="ml-1"
+          >
+            Blue
+          </span>
+        </div>
+      </button>
+      <button
+        aria-checked="false"
+        aria-label="Green"
+        class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+        position="relative"
+        role="radio"
+        tabindex="-1"
+        type="button"
+      >
+        <div
+          class="flex items-center justify-center w-full h-full text-sm font-medium"
+        >
+          <div
+            class="w-full h-full bg-green-500 rounded-full"
+          />
+          <span
+            class="ml-1"
+          >
+            Green
+          </span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SwatchGroup stories snapshot > NoSelection story renders and matches snapshot 1`] = `
+<div
+  class="space-y-3"
+>
+  <div
+    aria-label="Color"
+    class="flex flex-col gap-3"
+    role="radiogroup"
+  >
+    <div
+      class="flex items-center gap-2 text-sm text-foreground"
+    >
+      <span
+        class="font-semibold"
+      >
+        Color
+        :
+      </span>
+    </div>
+    <div
+      class="flex flex-wrap gap-2 focus:outline-none"
+    >
+      <button
+        aria-checked="false"
+        aria-label="Red"
+        class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+        position="relative"
+        role="radio"
+        tabindex="-1"
+        type="button"
+      >
+        <div
+          class="flex items-center justify-center w-full h-full text-sm font-medium"
+        >
+          <div
+            class="w-full h-full bg-red-500 rounded-full"
+          />
+          <span
+            class="ml-1"
+          >
+            Red
+          </span>
+        </div>
+      </button>
+      <button
+        aria-checked="false"
+        aria-label="Blue"
+        class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+        position="relative"
+        role="radio"
+        tabindex="-1"
+        type="button"
+      >
+        <div
+          class="flex items-center justify-center w-full h-full text-sm font-medium"
+        >
+          <div
+            class="w-full h-full bg-blue-500 rounded-full"
+          />
+          <span
+            class="ml-1"
+          >
+            Blue
+          </span>
+        </div>
+      </button>
+      <button
+        aria-checked="false"
+        aria-label="Green"
+        class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+        position="relative"
+        role="radio"
+        tabindex="-1"
+        type="button"
+      >
+        <div
+          class="flex items-center justify-center w-full h-full text-sm font-medium"
+        >
+          <div
+            class="w-full h-full bg-green-500 rounded-full"
+          />
+          <span
+            class="ml-1"
+          >
+            Green
+          </span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SwatchGroup stories snapshot > SquareSwatches story renders and matches snapshot 1`] = `
+<div
+  class="space-y-3"
+>
+  <div
+    aria-label="Size"
+    class="flex flex-col gap-3"
+    role="radiogroup"
+  >
+    <div
+      class="flex items-center gap-2 text-sm text-foreground"
+    >
+      <span
+        class="font-semibold"
+      >
+        Size
+        :
+      </span>
+    </div>
+    <div
+      class="flex flex-wrap gap-2 focus:outline-none"
+    >
+      <button
+        aria-checked="false"
+        aria-label="Small"
+        class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+        position="relative"
+        role="radio"
+        tabindex="-1"
+        type="button"
+      >
+        <div
+          class="flex items-center justify-center w-full h-full text-sm font-medium"
+        >
+          S
+          <span
+            class="ml-1"
+          >
+            Small
+          </span>
+        </div>
+      </button>
+      <button
+        aria-checked="false"
+        aria-label="Medium"
+        class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+        position="relative"
+        role="radio"
+        tabindex="-1"
+        type="button"
+      >
+        <div
+          class="flex items-center justify-center w-full h-full text-sm font-medium"
+        >
+          M
+          <span
+            class="ml-1"
+          >
+            Medium
+          </span>
+        </div>
+      </button>
+      <button
+        aria-checked="false"
+        aria-label="Large"
+        class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+        position="relative"
+        role="radio"
+        tabindex="-1"
+        type="button"
+      >
+        <div
+          class="flex items-center justify-center w-full h-full text-sm font-medium"
+        >
+          L
+          <span
+            class="ml-1"
+          >
+            Large
+          </span>
+        </div>
+      </button>
+      <button
+        aria-checked="false"
+        aria-label="XLarge"
+        class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+        position="relative"
+        role="radio"
+        tabindex="-1"
+        type="button"
+      >
+        <div
+          class="flex items-center justify-center w-full h-full text-sm font-medium"
+        >
+          XL
+          <span
+            class="ml-1"
+          >
+            XLarge
+          </span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SwatchGroup stories snapshot > WithDisplayName story renders and matches snapshot 1`] = `
+<div
+  class="space-y-3"
+>
+  <div
+    aria-label="Material"
+    class="flex flex-col gap-3"
+    role="radiogroup"
+  >
+    <div
+      class="flex items-center gap-2 text-sm text-foreground"
+    >
+      <span
+        class="font-semibold"
+      >
+        Material
+        :
+      </span>
+      <span>
+        Cotton
+      </span>
+    </div>
+    <div
+      class="flex flex-wrap gap-2 focus:outline-none"
+    >
+      <button
+        aria-checked="false"
+        aria-label="Cotton"
+        class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+        position="relative"
+        role="radio"
+        tabindex="-1"
+        type="button"
+      >
+        <div
+          class="flex items-center justify-center w-full h-full text-sm font-medium"
+        >
+          Cotton
+          <span
+            class="ml-1"
+          >
+            Cotton
+          </span>
+        </div>
+      </button>
+      <button
+        aria-checked="false"
+        aria-label="Silk"
+        class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+        position="relative"
+        role="radio"
+        tabindex="-1"
+        type="button"
+      >
+        <div
+          class="flex items-center justify-center w-full h-full text-sm font-medium"
+        >
+          Silk
+          <span
+            class="ml-1"
+          >
+            Silk
+          </span>
+        </div>
+      </button>
+      <button
+        aria-checked="false"
+        aria-label="Wool"
+        class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+        position="relative"
+        role="radio"
+        tabindex="-1"
+        type="button"
+      >
+        <div
+          class="flex items-center justify-center w-full h-full text-sm font-medium"
+        >
+          Wool
+          <span
+            class="ml-1"
+          >
+            Wool
+          </span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+`;
