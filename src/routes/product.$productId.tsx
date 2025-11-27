@@ -1,7 +1,10 @@
-import { use, useEffect, useRef } from 'react';
-import { type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from 'react-router';
-import type { i18n } from 'i18next';
-import { type ShopperProducts, type ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import { use, useEffect, useRef, Suspense } from 'react';
+import { Await, type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from 'react-router';
+import {
+    type ShopperProducts,
+    type ShopperSearch,
+    type ShopperExperience,
+} from '@salesforce/storefront-next-runtime/scapi';
 import { createApiClients } from '@/lib/api-clients';
 import { getConfig } from '@/config';
 import ProductSkeleton from '@/components/product-skeleton';
@@ -15,8 +18,11 @@ import { ProductRecommendationsSkeleton } from '@/components/product/skeletons';
 import withSuspense from '@/components/with-suspense';
 import { ProductCarouselWithSuspense } from '@/components/product-carousel';
 import { useAnalytics } from '@/hooks/use-analytics';
+import { Region } from '@/components/region';
+import { PageType } from '@/lib/decorators/page-type';
+import { getRegionDefinition, RegionDefinition } from '@/lib/decorators/region-definition';
+import { collectComponentDataPromises, fetchPageFromLoader } from '@/lib/util/pageLoader';
 import { getTranslation } from '@/lib/i18next';
-
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import {
     getCookieFromRequestAs,
@@ -27,6 +33,27 @@ import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-
 import PickupProvider from '@/extensions/bopis/context/pickup-context';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
+@PageType({
+    name: 'Product Detail Page',
+    description: 'Product detail page with product information, images, and recommendations',
+    supportedAspectTypes: ['pdp'],
+})
+@RegionDefinition([
+    {
+        id: 'promoContent',
+        name: 'Promo Content Region',
+        description: 'Promotional content region above main product content',
+        maxComponents: 1,
+    },
+    {
+        id: 'engagementContent',
+        name: 'Engagement Content Region',
+        description: 'Engagement content region for recommendations and related products below main content',
+        maxComponents: 1,
+    },
+])
+export class ProductPageMetadata {}
+
 type ProductPageData = {
     product: Promise<ShopperProducts.schemas['Product']>;
     category: Promise<ShopperProducts.schemas['Category'] | undefined>;
@@ -36,6 +63,8 @@ type ProductPageData = {
             promise: Promise<ShopperSearch.schemas['ProductSearchResult']>;
         }>
     >;
+    page: Promise<ShopperExperience.schemas['Page']>;
+    componentData: Promise<Record<string, Promise<unknown>>>;
     pageKey: string;
 };
 
@@ -192,10 +221,44 @@ function getPageData(
         );
     });
 
+    // Fetch page data from Page Designer API
+    // Catch 404 errors (page doesn't exist) and return empty page structure
+    const pagePromise = fetchPageFromLoader(
+        { request, params, context },
+        {
+            pageId: 'pdp',
+        }
+    ).catch((error) => {
+        // If page doesn't exist (404), return empty page structure
+        // This allows the fallback content to render
+        if (error?.status === 404 || error?.message?.includes('404')) {
+            return {
+                id: '',
+                typeId: '',
+                regions: [],
+            } as ShopperExperience.schemas['Page'];
+        }
+        // Re-throw other errors
+        throw error;
+    }) as Promise<ShopperExperience.schemas['Page']>;
+
+    // Collect component data promises for components in regions
+    // Handle errors gracefully - return empty object if page fetch failed
+    const componentDataPromises = pagePromise
+        .then((page) => {
+            return collectComponentDataPromises({ request, params, context }, Promise.resolve(page));
+        })
+        .catch(() => {
+            // Return empty component data if collection fails
+            return Promise.resolve({});
+        });
+
     return {
         product: productPromise,
         category: categoryPromise,
         recommendations: recommendationsPromise,
+        page: pagePromise,
+        componentData: componentDataPromises,
         pageKey: productId,
     };
 }
@@ -282,6 +345,42 @@ export function shouldRevalidate({
     return false;
 }
 
+type PageRegion = NonNullable<ShopperExperience.schemas['Page']['regions']>[number];
+
+/**
+ * Helper function to check if a region exists and has valid components
+ */
+function hasRegionWithComponents(region: PageRegion | undefined): boolean {
+    if (!region || !region.components || region.components.length === 0) {
+        return false;
+    }
+    // Check if components have valid id and typeId (required for rendering)
+    return region.components.some((component: { id?: string; typeId?: string }) => component.id && component.typeId);
+}
+
+/**
+ * Processes page data to extract regions and metadata for rendering
+ */
+function processPageData(page: ShopperExperience.schemas['Page']) {
+    const { regions } = page;
+    const promoContentRegion = regions?.find((region) => region.id === 'promoContent');
+    const engagementContentRegion = regions?.find((region) => region.id === 'engagementContent');
+    const promoContentDesignMetadata = getRegionDefinition(ProductPageMetadata, 'promoContent');
+    const engagementContentDesignMetadata = getRegionDefinition(ProductPageMetadata, 'engagementContent');
+
+    const hasPromoContent = hasRegionWithComponents(promoContentRegion);
+    const hasEngagementContent = hasRegionWithComponents(engagementContentRegion);
+
+    return {
+        promoContentRegion,
+        engagementContentRegion,
+        promoContentDesignMetadata,
+        engagementContentDesignMetadata,
+        hasPromoContent,
+        hasEngagementContent,
+    };
+}
+
 /**
  * Component that handles async loading of recommendations with Suspense
  */
@@ -329,9 +428,8 @@ const Recommendations = withSuspense(RecommendationsContent, {
  * @returns JSX element representing the product page layout
  */
 // eslint-disable-next-line react-refresh/only-export-components
-function ProductDetailView({
-    loaderData: { product, category, recommendations: recommendationsPromise, pageKey: _pageKey },
-}: RouteComponentProps<ProductPageData>) {
+function ProductDetailView({ loaderData }: RouteComponentProps<ProductPageData>) {
+    const { product, category, recommendations: recommendationsPromise } = loaderData;
     const productData = use(product);
     const categoryData = use(category);
     const analytics = useAnalytics();
@@ -351,35 +449,100 @@ function ProductDetailView({
     const isProductASet = isProductSet(productData);
     const isProductABundle = isProductBundle(productData);
 
-    const content = (
-        <div className="min-h-screen bg-background">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="space-y-8">
-                    {/* Mobile Product Title - shown on mobile only */}
-                    <div className="block md:hidden">
-                        <Typography variant="h1" className="text-2xl font-bold text-foreground">
-                            {productData.name}
-                        </Typography>
-                        {productData.shortDescription && (
-                            <Typography variant="p" className="mt-2 text-muted-foreground">
-                                {productData.shortDescription}
-                            </Typography>
-                        )}
+    // Main product content - product view with details and images
+    const mainProductContent = (
+        <div className="space-y-8">
+            {/* Mobile Product Title - shown on mobile only */}
+            <div className="block md:hidden">
+                <Typography variant="h1" className="text-2xl font-bold text-foreground">
+                    {productData.name}
+                </Typography>
+                {productData.shortDescription && (
+                    <Typography variant="p" className="mt-2 text-muted-foreground">
+                        {productData.shortDescription}
+                    </Typography>
+                )}
+            </div>
+            {isProductASet || isProductABundle ? (
+                <>
+                    <ProductView product={productData} category={categoryData} />
+                    <ChildProducts parentProduct={productData} />
+                </>
+            ) : (
+                <ProductView product={productData} category={categoryData} />
+            )}
+        </div>
+    );
+
+    /**
+     * Renders the page content based on Page Designer regions
+     */
+    const renderPageContent = (page: ShopperExperience.schemas['Page']) => {
+        const {
+            promoContentRegion,
+            engagementContentRegion,
+            promoContentDesignMetadata,
+            engagementContentDesignMetadata,
+            hasPromoContent,
+            hasEngagementContent,
+        } = processPageData(page);
+
+        return (
+            <>
+                {/* Promo Content Region - Promotional content above main product */}
+                {hasPromoContent && promoContentRegion && (
+                    <div className="mb-8">
+                        <Region
+                            region={promoContentRegion}
+                            metadata={promoContentDesignMetadata}
+                            key={promoContentRegion.id}
+                            componentData={loaderData.componentData}
+                        />
                     </div>
-                    {isProductASet || isProductABundle ? (
-                        <>
-                            <ProductView product={productData} category={categoryData} />
-                            <ChildProducts parentProduct={productData} />
-                        </>
-                    ) : (
-                        <ProductView product={productData} category={categoryData} />
+                )}
+
+                {/* Mobile Product Title - shown on mobile only, always shown */}
+                <div className="block md:hidden mb-8">
+                    <Typography variant="h1" className="text-2xl font-bold text-foreground">
+                        {productData.name}
+                    </Typography>
+                    {productData.shortDescription && (
+                        <Typography variant="p" className="mt-2 text-muted-foreground">
+                            {productData.shortDescription}
+                        </Typography>
                     )}
                 </div>
 
-                {/* Recommended Products Section */}
-                <div className="mt-16">
-                    <Recommendations resolve={recommendationsPromise} />
-                </div>
+                {/* Main Product Content - Always shown */}
+                {mainProductContent}
+
+                {/* Engagement Content Region - Shows page content or recommendations */}
+                {hasEngagementContent && engagementContentRegion ? (
+                    <div className="mt-16">
+                        <Region
+                            region={engagementContentRegion}
+                            metadata={engagementContentDesignMetadata}
+                            key={engagementContentRegion.id}
+                            componentData={loaderData.componentData}
+                        />
+                    </div>
+                ) : (
+                    <div className="mt-16">
+                        <Recommendations resolve={recommendationsPromise} />
+                    </div>
+                )}
+            </>
+        );
+    };
+
+    const content = (
+        <div className="min-h-screen bg-background">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <Suspense fallback={<div />}>
+                    <Await resolve={loaderData.page} errorElement={<div />}>
+                        {renderPageContent}
+                    </Await>
+                </Suspense>
             </div>
         </div>
     );

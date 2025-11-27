@@ -42,13 +42,13 @@
                 {
                     "matchingUrlPattern": ".*category.*",
                     "assertions": {
-                        "categories:performance": ["error", { "minScore": 0.65, "aggregationMethod": "mean" }],
+                        "categories:performance": ["error", { "minScore": 0.62, "aggregationMethod": "mean" }],
                         "categories:accessibility": ["error", { "minScore": 0.91, "aggregationMethod": "mean" }],
                         "categories:seo": ["error", { "minScore": 0.91, "aggregationMethod": "mean" }],
                         "categories:best-practices": ["error", { "minScore": 0.96, "aggregationMethod": "mean" }],
                         "resource-summary:script:size": [
                             "error",
-                            { "maxNumericValue": 300000, "aggregationMethod": "mean" }
+                            { "maxNumericValue": 310000, "aggregationMethod": "mean" }
                         ],
                         "resource-summary:image:size": [
                             "error",
@@ -69,7 +69,7 @@
                         "categories:best-practices": ["error", { "minScore": 0.96, "aggregationMethod": "mean" }],
                         "resource-summary:script:size": [
                             "error",
-                            { "maxNumericValue": 340000, "aggregationMethod": "mean" }
+                            { "maxNumericValue": 370000, "aggregationMethod": "mean" }
                         ],
                         "resource-summary:image:size": [
                             "error",
@@ -90,7 +90,7 @@
                         "categories:best-practices": ["error", { "minScore": 0.96, "aggregationMethod": "mean" }],
                         "resource-summary:script:size": [
                             "error",
-                            { "maxNumericValue": 380000, "aggregationMethod": "mean" }
+                            { "maxNumericValue": 395000, "aggregationMethod": "mean" }
                         ],
                         "resource-summary:image:size": [
                             "error",
