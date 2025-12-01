@@ -79,7 +79,8 @@ export const Empty: Story = {
     ),
     parameters: {
         docs: {
-            story: `
+            description: {
+                story: `
 Cart badge with empty cart.
 
 ### Features:
@@ -87,6 +88,7 @@ Cart badge with empty cart.
 - Badge showing 0 items
 - Click to open cart sheet
             `,
+            },
         },
     },
     play: async ({ canvasElement }) => {
@@ -116,7 +118,8 @@ export const WithItems: Story = {
     ),
     parameters: {
         docs: {
-            story: `
+            description: {
+                story: `
 Cart badge with items in cart.
 
 ### Features:
@@ -124,6 +127,7 @@ Cart badge with items in cart.
 - Badge showing item count
 - Click to open cart sheet
             `,
+            },
         },
     },
     play: async ({ canvasElement }) => {
@@ -153,13 +157,15 @@ export const Interactive: Story = {
     ),
     parameters: {
         docs: {
-            story: `
+            description: {
+                story: `
 Interactive cart badge for testing user interactions.
 
 ### Features:
 - Click to open cart sheet
 - Lazy loading behavior
             `,
+            },
         },
     },
     play: async ({ canvasElement }) => {

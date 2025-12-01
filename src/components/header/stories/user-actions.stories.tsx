@@ -33,6 +33,7 @@ function UserActionsStoryHarness({ children }: { children: ReactNode }): ReactEl
             const button = target.closest('button');
             if (button) {
                 const label = button.textContent?.trim() || button.getAttribute('aria-label') || '';
+                event.preventDefault();
                 logClick({ label });
             }
         };
@@ -97,13 +98,15 @@ export const Guest: Story = {
     ),
     parameters: {
         docs: {
-            story: `
+            description: {
+                story: `
 User actions for guest users.
 
 ### Features:
 - Sign In link
 - No logout button
             `,
+            },
         },
     },
     play: async ({ canvasElement }) => {
@@ -118,6 +121,9 @@ User actions for guest users.
         // Check that logout button is not present
         const logoutButton = canvas.queryByRole('button', { name: /sign out/i });
         await expect(logoutButton).toBeNull();
+
+        // Click sign in link
+        await userEvent.click(signInLink);
     },
 };
 
@@ -129,13 +135,15 @@ export const Authenticated: Story = {
     ),
     parameters: {
         docs: {
-            story: `
+            description: {
+                story: `
 User actions for authenticated users.
 
 ### Features:
 - Welcome message
 - Logout button
             `,
+            },
         },
     },
     play: async ({ canvasElement }) => {
@@ -153,32 +161,8 @@ User actions for authenticated users.
         // Check that Sign In link is not present
         const signInLink = canvas.queryByRole('link', { name: /sign in/i });
         await expect(signInLink).toBeNull();
-    },
-};
 
-export const Interactive: Story = {
-    render: () => (
-        <AuthProvider value={registeredSession}>
-            <UserActions />
-        </AuthProvider>
-    ),
-    parameters: {
-        docs: {
-            story: `
-Interactive user actions for testing user interactions.
-
-### Features:
-- Link clicks
-- Button interactions
-            `,
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Find and click logout button
-        const logoutButton = await canvas.findByRole('button', { name: /sign out/i }, { timeout: 5000 });
+        // Click logout button
         await userEvent.click(logoutButton);
     },
 };

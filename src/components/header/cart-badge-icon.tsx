@@ -9,7 +9,7 @@ export default function CartBadgeIcon({ numberOfItems }: { numberOfItems: number
         <>
             <ShoppingCart className="size-6" data-testid="shopping-cart-icon" />
             <Badge
-                variant="destructive"
+                variant="default"
                 className="h-4 min-w-4 rounded-full px-1 font-mono tabular-num"
                 data-testid="shopping-cart-badge">
                 {numberOfItems}

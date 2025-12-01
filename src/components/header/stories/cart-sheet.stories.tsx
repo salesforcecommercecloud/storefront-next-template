@@ -18,17 +18,43 @@ function CartSheetStoryHarness({ children }: { children: ReactNode }): ReactElem
         const logClose = action('cart-sheet-close');
         const logCheckout = action('cart-sheet-checkout');
         const logContinueShopping = action('cart-sheet-continue-shopping');
+        const logEditCart = action('cart-sheet-edit-cart');
 
         const handleClick = (event: Event) => {
             const target = event.target as HTMLElement | null;
             if (!target) return;
 
+            // Handle links (checkout and edit cart) - prevent navigation in Storybook
+            const link = target.closest('a');
+            if (link) {
+                const linkText = link.textContent?.toLowerCase() || '';
+                const href = link.getAttribute('href');
+
+                // Prevent navigation for checkout link
+                if (linkText.includes('checkout') || href === '/checkout') {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    logCheckout({});
+                    return;
+                }
+                // Prevent navigation for edit cart link
+                else if (linkText.includes('edit cart') || href === '/cart') {
+                    // Only prevent if it's within the cart sheet dialog
+                    const dialog = link.closest('[role="dialog"]');
+                    if (dialog) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        logEditCart({});
+                        return;
+                    }
+                }
+            }
+
+            // Handle buttons
             const button = target.closest('button');
             if (button) {
                 const buttonText = button.textContent?.toLowerCase() || '';
-                if (buttonText.includes('checkout')) {
-                    logCheckout({});
-                } else if (buttonText.includes('continue') || buttonText.includes('shopping')) {
+                if (buttonText.includes('continue') || buttonText.includes('shopping')) {
                     logContinueShopping({});
                 } else if (button.getAttribute('aria-label')?.includes('close')) {
                     logClose({});
@@ -36,9 +62,13 @@ function CartSheetStoryHarness({ children }: { children: ReactNode }): ReactElem
             }
         };
 
+        // Listen on document.body since the cart sheet is portaled there
+        document.body.addEventListener('click', handleClick, true);
+        // Also listen on root for any non-portaled interactions
         root.addEventListener('click', handleClick, true);
 
         return () => {
+            document.body.removeEventListener('click', handleClick, true);
             root.removeEventListener('click', handleClick, true);
         };
     }, []);

@@ -94,14 +94,16 @@ export const Default: Story = {
     render: () => <SearchBar />,
     parameters: {
         docs: {
-            story: `
+            description: {
+                story: `
 Default search bar component.
 
 ### Features:
 - Search input field
 - Search icon
 - Placeholder text
-            `,
+                `,
+            },
         },
     },
     play: async ({ canvasElement }) => {
@@ -119,7 +121,8 @@ export const Interactive: Story = {
     render: () => <SearchBar />,
     parameters: {
         docs: {
-            story: `
+            description: {
+                story: `
 Interactive search bar for testing user interactions.
 
 ### Features:
@@ -127,6 +130,7 @@ Interactive search bar for testing user interactions.
 - Form submission
 - Suggestions display
             `,
+            },
         },
     },
     play: async ({ canvasElement }) => {
@@ -147,13 +151,15 @@ export const WithQuery: Story = {
     render: () => <SearchBar />,
     parameters: {
         docs: {
-            story: `
+            description: {
+                story: `
 Search bar with a query entered (simulated).
 
 ### Features:
 - Pre-filled search query
 - Suggestions may appear
             `,
+            },
         },
     },
     play: async ({ canvasElement }) => {

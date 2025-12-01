@@ -47,7 +47,7 @@ Cart Badge Icon component that displays a shopping cart icon with item count bad
     decorators: [
         (Story) => (
             <CartBadgeIconStoryHarness>
-                <div className="p-8">
+                <div className="p-8 flex items-center justify-between gap-2">
                     <Story />
                 </div>
             </CartBadgeIconStoryHarness>

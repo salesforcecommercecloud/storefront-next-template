@@ -27,6 +27,7 @@ function LogoutButtonStoryHarness({ children }: { children: ReactNode }): ReactE
             if (!target || !root.contains(target)) return;
             const button = target.closest('button[type="submit"]');
             if (button) {
+                event.preventDefault();
                 logClick({});
             }
         };
@@ -80,13 +81,15 @@ export const Default: Story = {
     render: () => <LogoutButton />,
     parameters: {
         docs: {
-            story: `
+            description: {
+                story: `
 Default logout button.
 
 ### Features:
 - Sign Out button
 - Form submission
             `,
+            },
         },
     },
     play: async ({ canvasElement }) => {
@@ -97,58 +100,8 @@ Default logout button.
         const logoutButton = await canvas.findByRole('button', { name: /sign out/i }, { timeout: 5000 });
         await expect(logoutButton).toBeInTheDocument();
         await expect(logoutButton).not.toBeDisabled();
-    },
-};
 
-export const Submitting: Story = {
-    render: () => <LogoutButton />,
-    parameters: {
-        docs: {
-            story: `
-Logout button in submitting state (simulated).
-
-### Features:
-- Button shows loading state
-- Button is disabled during submission
-            `,
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Check for logout button
-        const logoutButton = await canvas.findByRole('button', { name: /sign out/i }, { timeout: 5000 });
-        await expect(logoutButton).toBeInTheDocument();
-
-        // Click to trigger submission (this will show submitting state if navigation state is submitting)
-        await userEvent.click(logoutButton);
-
-        // Wait a bit for state update
-        await new Promise((resolve) => setTimeout(resolve, 100));
-    },
-};
-
-export const Interactive: Story = {
-    render: () => <LogoutButton />,
-    parameters: {
-        docs: {
-            story: `
-Interactive logout button for testing user interactions.
-
-### Features:
-- Button click
-- Form submission
-            `,
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Find and click logout button
-        const logoutButton = await canvas.findByRole('button', { name: /sign out/i }, { timeout: 5000 });
-        await expect(logoutButton).toBeInTheDocument();
+        // Click logout button
         await userEvent.click(logoutButton);
     },
 };
