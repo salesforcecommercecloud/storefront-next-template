@@ -403,7 +403,7 @@ exports[`ShippingOptions stories snapshot > MobileView story renders and matches
             tabindex="0"
           >
             <div
-              class="flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+              class="group flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
             >
               <button
                 aria-checked="true"
@@ -454,7 +454,7 @@ exports[`ShippingOptions stories snapshot > MobileView story renders and matches
                 value="standard"
               />
               <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer group-has-[:checked]:text-foreground"
                 data-slot="label"
                 for="standard"
               >
@@ -462,12 +462,12 @@ exports[`ShippingOptions stories snapshot > MobileView story renders and matches
                   class="space-y-1"
                 >
                   <p
-                    class="text-left text-muted-foreground font-bold text-base"
+                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
                   >
                     $9.99 | Standard Shipping
                   </p>
                   <p
-                    class="text-left text-muted-foreground font-bold text-base"
+                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
                   >
                     5-7 business days
                   </p>
@@ -475,7 +475,7 @@ exports[`ShippingOptions stories snapshot > MobileView story renders and matches
               </label>
             </div>
             <div
-              class="flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+              class="group flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
             >
               <button
                 aria-checked="false"
@@ -499,7 +499,7 @@ exports[`ShippingOptions stories snapshot > MobileView story renders and matches
                 value="express"
               />
               <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer group-has-[:checked]:text-foreground"
                 data-slot="label"
                 for="express"
               >
@@ -507,12 +507,12 @@ exports[`ShippingOptions stories snapshot > MobileView story renders and matches
                   class="space-y-1"
                 >
                   <p
-                    class="text-left text-muted-foreground font-bold text-base"
+                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
                   >
                     $19.99 | Express Shipping
                   </p>
                   <p
-                    class="text-left text-muted-foreground font-bold text-base"
+                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
                   >
                     2-3 business days
                   </p>
@@ -674,7 +674,7 @@ exports[`ShippingOptions stories snapshot > TabletView story renders and matches
             tabindex="0"
           >
             <div
-              class="flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+              class="group flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
             >
               <button
                 aria-checked="true"
@@ -725,7 +725,7 @@ exports[`ShippingOptions stories snapshot > TabletView story renders and matches
                 value="standard"
               />
               <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer group-has-[:checked]:text-foreground"
                 data-slot="label"
                 for="standard"
               >
@@ -733,12 +733,12 @@ exports[`ShippingOptions stories snapshot > TabletView story renders and matches
                   class="space-y-1"
                 >
                   <p
-                    class="text-left text-muted-foreground font-bold text-base"
+                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
                   >
                     $9.99 | Standard Shipping
                   </p>
                   <p
-                    class="text-left text-muted-foreground font-bold text-base"
+                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
                   >
                     5-7 business days
                   </p>
@@ -746,7 +746,7 @@ exports[`ShippingOptions stories snapshot > TabletView story renders and matches
               </label>
             </div>
             <div
-              class="flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+              class="group flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
             >
               <button
                 aria-checked="false"
@@ -770,7 +770,7 @@ exports[`ShippingOptions stories snapshot > TabletView story renders and matches
                 value="express"
               />
               <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer group-has-[:checked]:text-foreground"
                 data-slot="label"
                 for="express"
               >
@@ -778,12 +778,12 @@ exports[`ShippingOptions stories snapshot > TabletView story renders and matches
                   class="space-y-1"
                 >
                   <p
-                    class="text-left text-muted-foreground font-bold text-base"
+                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
                   >
                     $19.99 | Express Shipping
                   </p>
                   <p
-                    class="text-left text-muted-foreground font-bold text-base"
+                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
                   >
                     2-3 business days
                   </p>
@@ -869,7 +869,7 @@ exports[`ShippingOptions stories snapshot > WithFormError story renders and matc
             tabindex="0"
           >
             <div
-              class="flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+              class="group flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
             >
               <button
                 aria-checked="true"
@@ -920,7 +920,7 @@ exports[`ShippingOptions stories snapshot > WithFormError story renders and matc
                 value="standard"
               />
               <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer group-has-[:checked]:text-foreground"
                 data-slot="label"
                 for="standard"
               >
@@ -928,12 +928,12 @@ exports[`ShippingOptions stories snapshot > WithFormError story renders and matc
                   class="space-y-1"
                 >
                   <p
-                    class="text-left text-muted-foreground font-bold text-base"
+                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
                   >
                     $9.99 | Standard Shipping
                   </p>
                   <p
-                    class="text-left text-muted-foreground font-bold text-base"
+                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
                   >
                     5-7 business days
                   </p>
@@ -1014,7 +1014,7 @@ exports[`ShippingOptions stories snapshot > WithFreeShipping story renders and m
             tabindex="0"
           >
             <div
-              class="flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+              class="group flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
             >
               <button
                 aria-checked="true"
@@ -1065,7 +1065,7 @@ exports[`ShippingOptions stories snapshot > WithFreeShipping story renders and m
                 value="free"
               />
               <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer group-has-[:checked]:text-foreground"
                 data-slot="label"
                 for="free"
               >
@@ -1073,12 +1073,12 @@ exports[`ShippingOptions stories snapshot > WithFreeShipping story renders and m
                   class="space-y-1"
                 >
                   <p
-                    class="text-left text-muted-foreground font-bold text-base"
+                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
                   >
                     Free | Free Standard Shipping
                   </p>
                   <p
-                    class="text-left text-muted-foreground font-bold text-base"
+                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
                   >
                     5-7 business days
                   </p>
@@ -1086,7 +1086,7 @@ exports[`ShippingOptions stories snapshot > WithFreeShipping story renders and m
               </label>
             </div>
             <div
-              class="flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+              class="group flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
             >
               <button
                 aria-checked="false"
@@ -1110,7 +1110,7 @@ exports[`ShippingOptions stories snapshot > WithFreeShipping story renders and m
                 value="express"
               />
               <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer group-has-[:checked]:text-foreground"
                 data-slot="label"
                 for="express"
               >
@@ -1118,12 +1118,12 @@ exports[`ShippingOptions stories snapshot > WithFreeShipping story renders and m
                   class="space-y-1"
                 >
                   <p
-                    class="text-left text-muted-foreground font-bold text-base"
+                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
                   >
                     $19.99 | Express Shipping
                   </p>
                   <p
-                    class="text-left text-muted-foreground font-bold text-base"
+                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
                   >
                     2-3 business days
                   </p>
@@ -1204,7 +1204,7 @@ exports[`ShippingOptions stories snapshot > WithMultipleOptions story renders an
             tabindex="0"
           >
             <div
-              class="flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+              class="group flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
             >
               <button
                 aria-checked="true"
@@ -1255,7 +1255,7 @@ exports[`ShippingOptions stories snapshot > WithMultipleOptions story renders an
                 value="standard"
               />
               <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer group-has-[:checked]:text-foreground"
                 data-slot="label"
                 for="standard"
               >
@@ -1263,12 +1263,12 @@ exports[`ShippingOptions stories snapshot > WithMultipleOptions story renders an
                   class="space-y-1"
                 >
                   <p
-                    class="text-left text-muted-foreground font-bold text-base"
+                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
                   >
                     $9.99 | Standard Shipping
                   </p>
                   <p
-                    class="text-left text-muted-foreground font-bold text-base"
+                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
                   >
                     5-7 business days
                   </p>
@@ -1276,7 +1276,7 @@ exports[`ShippingOptions stories snapshot > WithMultipleOptions story renders an
               </label>
             </div>
             <div
-              class="flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+              class="group flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
             >
               <button
                 aria-checked="false"
@@ -1300,7 +1300,7 @@ exports[`ShippingOptions stories snapshot > WithMultipleOptions story renders an
                 value="express"
               />
               <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer group-has-[:checked]:text-foreground"
                 data-slot="label"
                 for="express"
               >
@@ -1308,12 +1308,12 @@ exports[`ShippingOptions stories snapshot > WithMultipleOptions story renders an
                   class="space-y-1"
                 >
                   <p
-                    class="text-left text-muted-foreground font-bold text-base"
+                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
                   >
                     $19.99 | Express Shipping
                   </p>
                   <p
-                    class="text-left text-muted-foreground font-bold text-base"
+                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
                   >
                     2-3 business days
                   </p>
@@ -1321,7 +1321,7 @@ exports[`ShippingOptions stories snapshot > WithMultipleOptions story renders an
               </label>
             </div>
             <div
-              class="flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+              class="group flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
             >
               <button
                 aria-checked="false"
@@ -1345,7 +1345,7 @@ exports[`ShippingOptions stories snapshot > WithMultipleOptions story renders an
                 value="overnight"
               />
               <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer group-has-[:checked]:text-foreground"
                 data-slot="label"
                 for="overnight"
               >
@@ -1353,12 +1353,12 @@ exports[`ShippingOptions stories snapshot > WithMultipleOptions story renders an
                   class="space-y-1"
                 >
                   <p
-                    class="text-left text-muted-foreground font-bold text-base"
+                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
                   >
                     $29.99 | Overnight Shipping
                   </p>
                   <p
-                    class="text-left text-muted-foreground font-bold text-base"
+                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
                   >
                     Next business day
                   </p>

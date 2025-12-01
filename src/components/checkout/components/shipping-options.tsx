@@ -149,19 +149,21 @@ export default function ShippingOptions({
                                 {availableShippingMethods.map((method) => (
                                     <div
                                         key={method.id}
-                                        className="flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md">
+                                        className="group flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md">
                                         <RadioGroupItem
                                             value={method.id}
                                             id={method.id}
                                             className="w-5 h-5"
                                             autoFocus={isEditing && availableShippingMethods.indexOf(method) === 0}
                                         />
-                                        <Label htmlFor={method.id} className="flex-1 cursor-pointer">
+                                        <Label
+                                            htmlFor={method.id}
+                                            className="flex-1 cursor-pointer group-has-[:checked]:text-foreground">
                                             <div className="space-y-1">
                                                 {method.estimatedArrivalTime && (
                                                     <Typography
                                                         variant="small"
-                                                        className="text-muted-foreground font-bold text-base">
+                                                        className="text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base">
                                                         {t('shippingOptions.arrives', {
                                                             estimatedArrivalTime: method.estimatedArrivalTime,
                                                         })}
@@ -169,7 +171,7 @@ export default function ShippingOptions({
                                                 )}
                                                 <Typography
                                                     variant="small"
-                                                    className="text-muted-foreground font-bold text-base">
+                                                    className="text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base">
                                                     {t('shippingOptions.priceAndMethod', {
                                                         price:
                                                             method.price === 0
@@ -181,7 +183,7 @@ export default function ShippingOptions({
                                                 {method.description && (
                                                     <Typography
                                                         variant="small"
-                                                        className="text-muted-foreground font-bold text-base">
+                                                        className="text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base">
                                                         {method.description}
                                                     </Typography>
                                                 )}
