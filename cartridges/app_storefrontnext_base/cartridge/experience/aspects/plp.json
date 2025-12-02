@@ -1,7 +1,60 @@
 {
     "name": "Product list page",
-    "description": "A product list page.",
+    "description": "A product list page with personalized content regions.",
     "arch_type": "headless",
+    "region_definitions": [
+        {
+            "id": "plp-top-full-width",
+            "name": "Top Full Width Region",
+            "description": "Full screen width region at the top of search results",
+            "max_components": 5,
+            "component_type_inclusions": [
+                {
+                    "type_id": "heroCarousel"
+                },
+                {
+                    "type_id": "productCarousel"
+                },
+                {
+                    "type_id": "hero"
+                }
+            ]
+        },
+        {
+            "id": "plp-top-content",
+            "name": "Top Content Region",
+            "description": "Content width region below sort/filter, above product grid",
+            "max_components": 5,
+            "component_type_inclusions": [
+                {
+                    "type_id": "heroCarousel"
+                },
+                {
+                    "type_id": "productCarousel"
+                },
+                {
+                    "type_id": "hero"
+                }
+            ]
+        },
+        {
+            "id": "plp-bottom",
+            "name": "Bottom Region",
+            "description": "Region at the bottom of search results after product grid",
+            "max_components": 5,
+            "component_type_inclusions": [
+                {
+                    "type_id": "heroCarousel"
+                },
+                {
+                    "type_id": "productCarousel"
+                },
+                {
+                    "type_id": "hero"
+                }
+            ]
+        }
+    ],
     "attribute_definitions": [
         {
             "id": "categoryId",

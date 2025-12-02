@@ -1,6 +1,6 @@
 import { Suspense, useEffect, useRef, useCallback } from 'react';
 import { Await, type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from 'react-router';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch, ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchSearchProducts } from '@/lib/api/search';
 import { getConfig, useConfig } from '@/config';
 import CategorySkeleton, { CategoryHeaderSkeleton, CategoryRefinementsSkeleton } from '@/components/category-skeleton';
@@ -10,22 +10,66 @@ import CategorySorting from '@/components/category-sorting';
 import ProductGrid from '@/components/product-grid';
 import { useTranslation } from 'react-i18next';
 import { useAnalytics } from '@/hooks/use-analytics';
+import { PageType } from '@/lib/decorators/page-type';
+import { getRegionDefinition, RegionDefinition } from '@/lib/decorators/region-definition';
+import { Region } from '@/components/region';
+import { collectComponentDataPromises, fetchPageFromLoader } from '@/lib/util/pageLoader';
+import { isDesignModeActive } from '@salesforce/storefront-next-runtime/design';
+
+@PageType({
+    name: 'Product Listing Page',
+    description: 'Search results page with product listings and personalized content',
+    supportedAspectTypes: [],
+})
+@RegionDefinition([
+    {
+        id: 'plp-top-full-width',
+        name: 'Top Full Width Region',
+        description: 'Full screen width region at the top of search results',
+        maxComponents: 5,
+        componentTypeInclusions: ['heroCarousel', 'productCarousel', 'hero'],
+    },
+    {
+        id: 'plp-top-content',
+        name: 'Top Content Region',
+        description: 'Content width region below sort/filter, above product grid',
+        maxComponents: 5,
+        componentTypeInclusions: ['heroCarousel', 'productCarousel', 'hero'],
+    },
+    {
+        id: 'plp-bottom',
+        name: 'Bottom Region',
+        description: 'Region at the bottom of search results after product grid',
+        maxComponents: 5,
+        componentTypeInclusions: ['heroCarousel', 'productCarousel', 'hero'],
+    },
+])
+export class SearchPageMetadata {}
 
 type SearchPageData = {
     searchTerm: string;
     refinements: Promise<ShopperSearch.schemas['ProductSearchResult']>;
     searchResult: Promise<ShopperSearch.schemas['ProductSearchResult']>;
+    page: Promise<ShopperExperience.schemas['Page']>;
+    componentData: Promise<Record<string, Promise<unknown>>>;
 };
 
-function getPageData({ request, context }: LoaderFunctionArgs, limit: number): SearchPageData {
-    const { searchParams } = new URL(request.url);
+function getPageData(loaderCtx: LoaderFunctionArgs, limit: number): SearchPageData {
+    const { searchParams } = new URL(loaderCtx.request.url);
     const offset = parseInt(searchParams.get('offset') || '0', 10);
     const q = searchParams.get('q') ?? '';
     const sort = searchParams.get('sort') ?? '';
     const refine = searchParams.getAll('refine');
+
+    const pagePromise = fetchPageFromLoader(loaderCtx, {
+        pageId: 'plp',
+    });
+
+    const componentDataPromises = collectComponentDataPromises(loaderCtx, pagePromise);
+
     return {
         searchTerm: q,
-        refinements: fetchSearchProducts(context, {
+        refinements: fetchSearchProducts(loaderCtx.context, {
             q,
             limit: 1,
             offset: 0,
@@ -35,7 +79,7 @@ function getPageData({ request, context }: LoaderFunctionArgs, limit: number): S
             refine: refine as unknown as string,
             expand: ['none'],
         }),
-        searchResult: fetchSearchProducts(context, {
+        searchResult: fetchSearchProducts(loaderCtx.context, {
             q,
             limit,
             offset,
@@ -44,6 +88,8 @@ function getPageData({ request, context }: LoaderFunctionArgs, limit: number): S
             // This is a known type limitation, the API intelligently serializes the refine parameter (array) automatically, but the OAS types refers to string.
             refine: refine as unknown as string,
         }),
+        page: pagePromise,
+        componentData: componentDataPromises,
     };
 }
 
@@ -58,7 +104,7 @@ export function clientLoader(args: ClientLoaderFunctionArgs): SearchPageData {
 }
 
 export default function SearchPage({
-    loaderData: { searchTerm, refinements, searchResult },
+    loaderData: { searchTerm, refinements, searchResult, page, componentData },
 }: {
     loaderData: SearchPageData;
 }) {
@@ -66,6 +112,23 @@ export default function SearchPage({
     const limit = config.global.productListing.productsPerPage;
     const analytics = useAnalytics();
     const lastTrackedSearchRef = useRef<string | null>(null);
+    const isDesignMode = isDesignModeActive();
+
+    const renderRegion = (pageData: ShopperExperience.schemas['Page'], regionId: string, className: string) => {
+        const { regions } = pageData;
+        const region = regions?.find((r) => r.id === regionId);
+        const metadata = getRegionDefinition(SearchPageMetadata, regionId);
+        const hasContent =
+            region?.components &&
+            region.components.length > 0 &&
+            region.components.some((component: { id?: string; typeId?: string }) => component.id && component.typeId);
+
+        return (isDesignMode || hasContent) && region ? (
+            <div className={className}>
+                <Region region={region} metadata={metadata} key={region.id} componentData={componentData} />
+            </div>
+        ) : null;
+    };
 
     const handleProductClick = useCallback(
         (product: ShopperSearch.schemas['ProductSearchHit']) => {
@@ -125,6 +188,13 @@ export default function SearchPage({
                     </Suspense>
                 </div>
 
+                {/* plp-top-full-width */}
+                <Suspense fallback={null}>
+                    <Await resolve={page} errorElement={null}>
+                        {(pageData) => renderRegion(pageData, 'plp-top-full-width', 'mb-8')}
+                    </Await>
+                </Suspense>
+
                 <div className="flex flex-col lg:flex-row gap-8">
                     <div className="hidden lg:block w-64 flex-shrink-0">
                         <Suspense fallback={<CategoryRefinementsSkeleton />}>
@@ -135,6 +205,13 @@ export default function SearchPage({
                     </div>
 
                     <div className="flex-grow">
+                        {/* plp-top-content */}
+                        <Suspense fallback={null}>
+                            <Await resolve={page} errorElement={null}>
+                                {(pageData) => renderRegion(pageData, 'plp-top-content', 'mb-8')}
+                            </Await>
+                        </Suspense>
+
                         <Suspense fallback={<CategorySkeleton />}>
                             <Await resolve={searchResult}>
                                 {(searchResultData) => (
@@ -150,6 +227,13 @@ export default function SearchPage({
                                         )}
                                     </>
                                 )}
+                            </Await>
+                        </Suspense>
+
+                        {/* plp-bottom */}
+                        <Suspense fallback={null}>
+                            <Await resolve={page} errorElement={null}>
+                                {(pageData) => renderRegion(pageData, 'plp-bottom', 'mt-8')}
                             </Await>
                         </Suspense>
                     </div>
