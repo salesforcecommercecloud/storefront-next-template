@@ -3,7 +3,7 @@ import { dirname, resolve, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { readFileSync } from 'node:fs';
 import { defineConfig, perEnvironmentPlugin, loadEnv } from 'vite';
-import { coverageConfigDefaults } from 'vitest/config';
+import { configDefaults, coverageConfigDefaults } from 'vitest/config';
 import coverageConfigThresholds from './vitest.thresholds';
 import { reactRouter } from '@react-router/dev/vite';
 import tailwindcss from '@tailwindcss/vite';
@@ -138,7 +138,10 @@ export default defineConfig(({ mode }) => {
             environment: 'jsdom',
             setupFiles: ['./vitest.setup.ts'],
             include: ['**/*.{test,spec}.{ts,tsx}'],
-            exclude: ['.storybook/tests/generated-stories/**/*'], // Story tests use Storybook config
+            exclude: [
+                ...configDefaults.exclude, // Extend Vitest's default excludes (node_modules, .git, etc.)
+                '.storybook/**/*', // Exclude entire Storybook folder (story tests use Storybook config)
+            ],
             coverage: {
                 reporter: [...new Set([...coverageConfigDefaults.reporter, 'json', 'json-summary'])], // `json-summary` and `json` are required for the CI
                 include: ['src/**/*.{ts,tsx}'],
