@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+import { useTranslation } from 'react-i18next';
 import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
-import uiStringsSL from '@/extensions/store-locator/temp-ui-string-store-locator';
 
 interface StoreAddressProps {
     /** Store object containing address information */
@@ -37,18 +37,19 @@ interface StoreAddressProps {
  * <StoreAddress store={store} includeStoreName={true} />
  */
 export default function StoreAddress({ store, multiline = true, includeStoreName = false }: StoreAddressProps) {
+    const { t } = useTranslation('extStoreLocator');
+
     if (!store) {
         return null;
     }
 
-    const format = multiline
-        ? uiStringsSL.storeLocator.address.multilineFormat
-        : uiStringsSL.storeLocator.address.singleLineFormat;
-    const formattedAddress = format
-        .replace('{address1}', store.address1 || '')
-        .replace('{city}', store.city || '')
-        .replace('{stateCode}', store.stateCode || '')
-        .replace('{postalCode}', store.postalCode || '');
+    const formatKey = multiline ? 'storeLocator.address.multilineFormat' : 'storeLocator.address.singleLineFormat';
+    const formattedAddress = t(formatKey, {
+        address1: store.address1 || '',
+        city: store.city || '',
+        stateCode: store.stateCode || '',
+        postalCode: store.postalCode || '',
+    });
     const lines = multiline ? formattedAddress.split('\n') : [formattedAddress];
 
     return (

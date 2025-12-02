@@ -7,6 +7,7 @@
 'use client';
 
 import { type PropsWithChildren, type ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     Sheet,
     SheetClose,
@@ -18,7 +19,6 @@ import {
 } from '@/components/ui/sheet';
 import StoreLocator from '@/extensions/store-locator/components/store-locator';
 import { StoreLocatorLayoutProvider } from '@/extensions/store-locator/context/layout';
-import uiStringsSL from '@/extensions/store-locator/temp-ui-string-store-locator';
 
 interface StoreLocatorSheetProps extends PropsWithChildren {
     open: boolean;
@@ -44,13 +44,15 @@ interface StoreLocatorSheetProps extends PropsWithChildren {
  * </StoreLocatorSheet>
  */
 export default function StoreLocatorSheet({ children, open, onOpenChange }: StoreLocatorSheetProps): ReactElement {
+    const { t } = useTranslation('extStoreLocator');
+
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetTrigger asChild>{children}</SheetTrigger>
             <SheetContent className="md:w-1/3 md:max-w-1/3 p-0">
                 <SheetHeader>
-                    <SheetTitle>{uiStringsSL.storeLocator.title}</SheetTitle>
-                    <SheetDescription>{uiStringsSL.storeLocator.description}</SheetDescription>
+                    <SheetTitle>{t('storeLocator.title')}</SheetTitle>
+                    <SheetDescription>{t('storeLocator.description')}</SheetDescription>
                 </SheetHeader>
                 <div className="flex-1 overflow-y-auto px-4 pb-4">
                     <StoreLocatorLayoutProvider forceMobile>

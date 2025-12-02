@@ -7,7 +7,6 @@
 
 import type { RouterContextProvider } from 'react-router';
 import { PICKUP_SHIPPING_METHOD_ID } from '@/extensions/bopis/constants';
-import bopisUiStrings from '@/extensions/bopis/temp-ui-string-bopis';
 import type { ShopperBasketsV2, ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
 import { createApiClients } from '@/lib/api-clients';
 import { getConfig } from '@/config';
@@ -69,7 +68,7 @@ export async function setAddressAndMethodForPickup(
     store: ShopperStores.schemas['Store'],
     shipmentId: string = 'me'
 ): Promise<ShopperBasketsV2.schemas['Basket']> {
-    const { t } = getTranslation();
+    const { t } = getTranslation(context);
     const config = getConfig(context);
     const clients = createApiClients(context);
 
@@ -79,7 +78,7 @@ export async function setAddressAndMethodForPickup(
 
     const storeAddress = {
         firstName: store?.name || '',
-        lastName: bopisUiStrings.storePickup.pickupLastName,
+        lastName: t('extBopis:storePickup.pickupLastName'),
         address1: store?.address1 || '',
         address2: store?.address2 || '',
         city: store?.city || '',

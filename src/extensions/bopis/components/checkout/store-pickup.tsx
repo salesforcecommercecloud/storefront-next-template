@@ -1,17 +1,18 @@
 'use client';
 
 import { use } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Typography } from '@/components/typography';
 import { useBasket } from '@/providers/basket';
 import { usePickup } from '@/extensions/bopis/context/pickup-context';
 import { useCheckoutContext } from '@/hooks/use-checkout';
-import bopisUiStrings from '@/extensions/bopis/temp-ui-string-bopis';
 import { getPickupStoreFromMap } from '@/extensions/bopis/lib/store-utils';
 import StoreDetails from '@/extensions/store-locator/components/store-locator/details';
 import { getFirstPickupStoreId } from '@/extensions/bopis/lib/basket-utils';
 
 export default function StorePickup() {
+    const { t } = useTranslation('extBopis');
     const basket = useBasket();
     const pickupContext = usePickup();
     const checkoutContext = useCheckoutContext();
@@ -25,7 +26,7 @@ export default function StorePickup() {
         <Card className="gap-3">
             <CardHeader>
                 <Typography variant="h3" className="text-lg font-semibold">
-                    {bopisUiStrings.storePickup.title}
+                    {t('storePickup.title')}
                 </Typography>
             </CardHeader>
             <CardContent>

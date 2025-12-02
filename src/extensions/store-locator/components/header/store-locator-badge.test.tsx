@@ -1,8 +1,10 @@
 import { describe, test, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import uiStringsSL from '@/extensions/store-locator/temp-ui-string-store-locator';
+import { getTranslation } from '@/lib/i18next';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
+
+const { t } = getTranslation();
 
 // Mock the lazy-loaded store locator sheet
 vi.mock('@/extensions/store-locator/components/header/store-locator-sheet', () => ({
@@ -32,10 +34,12 @@ describe('StoreLocatorBadge', () => {
             </AllProvidersWrapper>
         );
 
-        expect(screen.getByRole('button', { name: uiStringsSL.storeLocator.trigger.ariaLabel })).toBeInTheDocument();
+        expect(
+            screen.getByRole('button', { name: t('extStoreLocator:storeLocator.trigger.ariaLabel') })
+        ).toBeInTheDocument();
 
         expect(
-            screen.queryByRole('button', { name: uiStringsSL.storeLocator.trigger.openAriaLabel })
+            screen.queryByRole('button', { name: t('extStoreLocator:storeLocator.trigger.openAriaLabel') })
         ).not.toBeInTheDocument();
     });
 
@@ -46,10 +50,12 @@ describe('StoreLocatorBadge', () => {
             </AllProvidersWrapper>
         );
 
-        await userEvent.click(screen.getByRole('button', { name: uiStringsSL.storeLocator.trigger.ariaLabel }));
+        await userEvent.click(
+            screen.getByRole('button', { name: t('extStoreLocator:storeLocator.trigger.ariaLabel') })
+        );
 
         const openBtn = await screen.findByRole('button', {
-            name: uiStringsSL.storeLocator.trigger.openAriaLabel,
+            name: t('extStoreLocator:storeLocator.trigger.openAriaLabel'),
         });
 
         expect(openBtn).toBeInTheDocument();

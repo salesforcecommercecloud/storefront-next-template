@@ -9,7 +9,6 @@ import type { RouterContextProvider } from 'react-router';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import type { PickupItemInfo } from '@/extensions/bopis/context/pickup-context';
 import type { ToastType } from '@/components/toast';
-import uiStringsBopis from '@/extensions/bopis/temp-ui-string-bopis';
 import { clearPickupFromShipment, updateShipmentForPickup } from '@/extensions/bopis/lib/api/shipment';
 import { getTranslation } from '@/lib/i18next';
 /**
@@ -394,23 +393,24 @@ export function isSelectedDeliveryOptionValid(
         return true;
     }
 
+    const { t } = getTranslation();
     const existingStoreId = getFirstPickupStoreId(basket);
 
     // Cannot add pickup item from a different store
     if (newStoreId && existingStoreId && newStoreId !== existingStoreId) {
-        addToast(uiStringsBopis.cart.addToCartValidation.changeStoreError, 'error');
+        addToast(t('extBopis:cart.addToCartValidation.changeStoreError'), 'error');
         return false;
     }
 
     // Cannot add delivery item if basket already has pickup items
     if (existingStoreId && !newStoreId) {
-        addToast(uiStringsBopis.cart.addToCartValidation.changeToDeliveryError, 'error');
+        addToast(t('extBopis:cart.addToCartValidation.changeToDeliveryError'), 'error');
         return false;
     }
 
     // Cannot add pickup item if basket already has delivery items
     if (!existingStoreId && newStoreId) {
-        addToast(uiStringsBopis.cart.addToCartValidation.changeToPickupError, 'error');
+        addToast(t('extBopis:cart.addToCartValidation.changeToPickupError'), 'error');
         return false;
     }
 

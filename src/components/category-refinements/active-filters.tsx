@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { X as Close } from 'lucide-react';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { useStoreLocator } from '@/extensions/store-locator/providers/store-locator';
-import uiStringsBopis from '@/extensions/bopis/temp-ui-string-bopis';
+import { useTranslation } from 'react-i18next';
+import { type TFunction } from 'i18next';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
 // Get human-readable label for a specific value
@@ -16,15 +17,17 @@ const getValueLabel = (
     value: string,
     refinements: ShopperSearch.schemas['ProductSearchRefinement'][],
     // @sfdc-extension-line SFDC_EXT_BOPIS
-    selectedStoreInfo: { inventoryId?: string; name?: string } | null
+    selectedStoreInfo: { inventoryId?: string; name?: string } | null,
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    tBopis: TFunction<'extBopis'>
 ): string => {
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
     if (attributeId === 'ilids') {
         // If the filter value matches the selected store's inventory ID and we have a store name
         if (selectedStoreInfo?.name) {
-            return uiStringsBopis.storeInventoryFilter.label.replace('{storeName}', selectedStoreInfo.name);
+            return tBopis('storeInventoryFilter.label', { storeName: selectedStoreInfo.name });
         }
-        return uiStringsBopis.storeInventoryFilter.inStock;
+        return tBopis('storeInventoryFilter.inStock');
     }
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
     const refinement = refinements.find((r) => r.attributeId === attributeId);
@@ -40,8 +43,10 @@ export default function CategoryFilters({
     const navigate = useNavigate();
     const location = useLocation();
     const refinements = useMemo(() => result?.refinements || [], [result]);
-    // @sfdc-extension-line SFDC_EXT_BOPIS
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
     const selectedStoreInfo = useStoreLocator((s) => s.selectedStoreInfo);
+    const { t: tBopis } = useTranslation('extBopis');
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     const activeFilters = useMemo(() => {
         const params = new URLSearchParams(location.search);
@@ -64,7 +69,9 @@ export default function CategoryFilters({
                 value,
                 refinements,
                 // @sfdc-extension-line SFDC_EXT_BOPIS
-                selectedStoreInfo
+                selectedStoreInfo,
+                // @sfdc-extension-line SFDC_EXT_BOPIS
+                tBopis
             );
             filters.push({
                 attributeId,
@@ -76,8 +83,10 @@ export default function CategoryFilters({
     }, [
         location,
         refinements,
-        // @sfdc-extension-line SFDC_EXT_BOPIS
+        // @sfdc-extension-block-start SFDC_EXT_BOPIS
         selectedStoreInfo,
+        tBopis,
+        // @sfdc-extension-block-end SFDC_EXT_BOPIS
     ]);
 
     // Remove a specific filter

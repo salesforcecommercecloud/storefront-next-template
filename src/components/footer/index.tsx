@@ -3,13 +3,13 @@ import { Link } from 'react-router';
 import { SiFacebook, SiInstagram, SiX, SiYoutube } from '@icons-pack/react-simple-icons';
 import Signup from './signup';
 import { useTranslation } from 'react-i18next';
-// @sfdc-extension-line SFDC_EXT_STORE_LOCATOR
-import uiStringsSL from '@/extensions/store-locator/temp-ui-string-store-locator';
 // @sfdc-extension-line SFDC_EXT_INTERNAL_THEME_SWITCHER
 import ThemeSwitcher from '@/extensions/theme-switcher/components/theme-switcher';
 
 export default function Footer(): ReactElement {
     const { t } = useTranslation('footer');
+    // @sfdc-extension-line SFDC_EXT_STORE_LOCATOR
+    const { t: tStoreLocator } = useTranslation('extStoreLocator');
 
     return (
         <footer data-theme="inverse" className="bg-background/90 py-12 mt-auto border-accent ring-secondary/40">
@@ -62,7 +62,7 @@ export default function Footer(): ReactElement {
                             {/* @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR */}
                             <li>
                                 <Link to="/store-locator" className="hover:underline">
-                                    {uiStringsSL.footer.links.storeLocator}
+                                    {tStoreLocator('footer.links.storeLocator')}
                                 </Link>
                             </li>
                             {/* @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR */}

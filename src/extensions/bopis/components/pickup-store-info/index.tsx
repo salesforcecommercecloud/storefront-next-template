@@ -7,6 +7,7 @@
 'use client';
 
 import { type ReactElement, useCallback, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
 import { Store } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -14,7 +15,6 @@ import { Typography } from '@/components/typography';
 import StoreAddress from '@/extensions/store-locator/components/store-locator/address';
 import { useStoreLocator } from '@/extensions/store-locator/providers/store-locator';
 import { useChangePickupStore } from '@/extensions/bopis/hooks/use-change-pickup-store';
-import uiStringsBopis from '@/extensions/bopis/temp-ui-string-bopis';
 
 interface PickupStoreInfoProps {
     /** Store object containing store information */
@@ -35,6 +35,7 @@ interface PickupStoreInfoProps {
  * <PickupStoreInfo store={store} />
  */
 export default function PickupStoreInfo({ store }: PickupStoreInfoProps): ReactElement {
+    const { t } = useTranslation('extBopis');
     const selectedStoreInfo = useStoreLocator((s) => s.selectedStoreInfo);
     const isStoreLocatorOpen = useStoreLocator((s) => s.isOpen);
     const openStoreLocator = useStoreLocator((s) => s.open);
@@ -76,7 +77,7 @@ export default function PickupStoreInfo({ store }: PickupStoreInfoProps): ReactE
                         <Store className="size-4" />
                         <Typography variant="large" as="div" className="font-normal">
                             {(() => {
-                                const template = uiStringsBopis.cart.pickupStoreInfo.pickupInStore;
+                                const template = t('cart.pickupStoreInfo.pickupInStore', { storeName: '{storeName}' });
                                 const [before, after] = template.split('{storeName}');
                                 return (
                                     <>
@@ -99,7 +100,7 @@ export default function PickupStoreInfo({ store }: PickupStoreInfoProps): ReactE
 
                 {/* Change Store Button */}
                 <Button variant="outline" onClick={handleChangeStoreClick}>
-                    {uiStringsBopis.cart.pickupStoreInfo.changeStore}
+                    {t('cart.pickupStoreInfo.changeStore')}
                 </Button>
             </div>
         </div>

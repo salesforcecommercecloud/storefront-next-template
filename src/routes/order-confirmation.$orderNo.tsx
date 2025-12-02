@@ -20,7 +20,6 @@ import { fetchStoresForOrder } from '@/extensions/bopis/lib/api/stores';
 import { getOrderPickupShipment } from '@/extensions/bopis/lib/order-utils';
 import { getPickupStoreFromMap } from '@/extensions/bopis/lib/store-utils';
 import StoreDetails from '@/extensions/store-locator/components/store-locator/details';
-import bopisUiStrings from '@/extensions/bopis/temp-ui-string-bopis';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
 type CheckoutConfirmationLoaderData = {
@@ -146,6 +145,8 @@ function CheckoutConfirmation({
 }: RouteComponentProps<CheckoutConfirmationLoaderData>): ReactElement {
     const order = use(orderPromise);
     const { t } = useTranslation('checkout');
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    const { t: tBopis } = useTranslation('extBopis');
 
     let showShippingDetails = true;
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -219,7 +220,7 @@ function CheckoutConfirmation({
                 {store && (
                     <Card className="mb-8">
                         <CardHeader>
-                            <CardTitle>{bopisUiStrings.storePickup.title}</CardTitle>
+                            <CardTitle>{tBopis('storePickup.title')}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <StoreDetails

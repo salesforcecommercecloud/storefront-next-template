@@ -8,6 +8,7 @@ export default [
     ...baseConfig.default,
     {
         // Ignore Storybook config files from linting (they have their own TS project context)
+        // Also ignore other things to minimize memory issues
         ignores: [
             '.storybook/**/*',
             'build/**/*',

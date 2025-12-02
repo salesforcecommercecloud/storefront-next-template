@@ -7,6 +7,7 @@
 'use client';
 
 import { type ReactElement, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import PickupOrDelivery from './pickup-or-delivery';
 import { useDeliveryOptions } from '@/extensions/bopis/hooks/use-delivery-options';
@@ -14,7 +15,6 @@ import { useStoreLocator } from '@/extensions/store-locator/providers/store-loca
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
 import { getStoreName } from '@/extensions/bopis/lib/store-utils';
 import { Typography } from '@/components/typography';
-import uiStringsBopis from '@/extensions/bopis/temp-ui-string-bopis';
 
 interface DeliveryOptionsProps {
     /** The product to check inventory for */
@@ -48,6 +48,8 @@ export default function DeliveryOptions({
     basketPickupStore,
     className,
 }: DeliveryOptionsProps): ReactElement | null {
+    const { t } = useTranslation('extBopis');
+
     // Get store locator state and actions
     const selectedStore = useStoreLocator((state) => state.selectedStoreInfo);
     const openStoreLocator = useStoreLocator((state) => state.open);
@@ -65,8 +67,8 @@ export default function DeliveryOptions({
     const storeMessage = useMemo(() => {
         if (!pickupStore) {
             return {
-                text: uiStringsBopis.deliveryOptions.storeSelection.pickUpIn,
-                buttonText: uiStringsBopis.deliveryOptions.storeSelection.selectStore,
+                text: t('deliveryOptions.storeSelection.pickUpIn'),
+                buttonText: t('deliveryOptions.storeSelection.selectStore'),
             };
         }
 
@@ -74,16 +76,16 @@ export default function DeliveryOptions({
 
         if (isStoreOutOfStock) {
             return {
-                text: uiStringsBopis.deliveryOptions.storeSelection.outOfStockAt,
+                text: t('deliveryOptions.storeSelection.outOfStockAt'),
                 buttonText: storeName,
             };
         }
 
         return {
-            text: uiStringsBopis.deliveryOptions.storeSelection.inStockAt,
+            text: t('deliveryOptions.storeSelection.inStockAt'),
             buttonText: storeName,
         };
-    }, [pickupStore, isStoreOutOfStock]);
+    }, [pickupStore, isStoreOutOfStock, t]);
 
     return (
         <div className={className}>
@@ -92,7 +94,7 @@ export default function DeliveryOptions({
                 {!isInBasket && (
                     <>
                         <Typography variant="h3" className="text-lg font-semibold">
-                            {uiStringsBopis.deliveryOptions.title}
+                            {t('deliveryOptions.title')}
                         </Typography>
 
                         <PickupOrDelivery

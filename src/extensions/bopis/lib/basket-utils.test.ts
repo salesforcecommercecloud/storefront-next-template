@@ -22,7 +22,6 @@ import {
 } from './basket-utils';
 import type { PickupItemInfo } from '@/extensions/bopis/context/pickup-context';
 import { createMockBasketWithPickupItems } from '@/extensions/bopis/tests/__mocks__/basket';
-import uiStringsBopis from '@/extensions/bopis/temp-ui-string-bopis';
 import type { RouterContextProvider } from 'react-router';
 import { updateShipmentForPickup, clearPickupFromShipment } from '@/extensions/bopis/lib/api/shipment';
 import { getTranslation } from '@/lib/i18next';
@@ -1760,8 +1759,9 @@ describe('isSelectedDeliveryOptionValid', () => {
         ]);
 
         const result = isSelectedDeliveryOptionValid(basket, 'store-456', mockAddToast);
+        const { t } = getTranslation();
         expect(result).toBe(false);
-        expect(mockAddToast).toHaveBeenCalledWith(uiStringsBopis.cart.addToCartValidation.changeStoreError, 'error');
+        expect(mockAddToast).toHaveBeenCalledWith(t('extBopis:cart.addToCartValidation.changeStoreError'), 'error');
     });
 
     it('should return false and show error when adding delivery item to basket with pickup items', () => {
@@ -1770,9 +1770,10 @@ describe('isSelectedDeliveryOptionValid', () => {
         ]);
 
         const result = isSelectedDeliveryOptionValid(basket, null, mockAddToast);
+        const { t } = getTranslation();
         expect(result).toBe(false);
         expect(mockAddToast).toHaveBeenCalledWith(
-            uiStringsBopis.cart.addToCartValidation.changeToDeliveryError,
+            t('extBopis:cart.addToCartValidation.changeToDeliveryError'),
             'error'
         );
     });
@@ -1795,8 +1796,9 @@ describe('isSelectedDeliveryOptionValid', () => {
         });
 
         const result = isSelectedDeliveryOptionValid(basket, 'store-123', mockAddToast);
+        const { t } = getTranslation();
         expect(result).toBe(false);
-        expect(mockAddToast).toHaveBeenCalledWith(uiStringsBopis.cart.addToCartValidation.changeToPickupError, 'error');
+        expect(mockAddToast).toHaveBeenCalledWith(t('extBopis:cart.addToCartValidation.changeToPickupError'), 'error');
     });
 });
 

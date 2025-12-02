@@ -1,9 +1,11 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import uiStringsSL from '@/extensions/store-locator/temp-ui-string-store-locator';
+import { getTranslation } from '@/lib/i18next';
 import StoreLocatorList from './list';
 import { useStoreLocatorList } from '@/extensions/store-locator/hooks/use-store-locator-list';
+
+const { t } = getTranslation();
 
 const baseState = {
     mode: 'input',
@@ -84,16 +86,19 @@ describe('StoreLocatorList', () => {
     test('renders status and items, shows Load More when more results', () => {
         render(<StoreLocatorList />);
 
-        const statusText = uiStringsSL.storeLocator.list.statusInput
-            .replace('{distanceText}', `${baseState.config.radius} ${baseState.config.radiusUnit}`)
-            .replace('{postal}', baseState.searchParams.postalCode)
-            .replace('{countryName}', 'United States');
+        const statusText = t('extStoreLocator:storeLocator.list.statusInput', {
+            distanceText: `${baseState.config.radius} ${baseState.config.radiusUnit}`,
+            postal: baseState.searchParams.postalCode,
+            countryName: 'United States',
+        });
         expect(screen.getByText(statusText)).toBeInTheDocument();
 
         expect(screen.getByText('A')).toBeInTheDocument();
         expect(screen.getByText('B')).toBeInTheDocument();
 
-        expect(screen.getByRole('button', { name: uiStringsSL.storeLocator.list.loadMoreButton })).toBeInTheDocument();
+        expect(
+            screen.getByRole('button', { name: t('extStoreLocator:storeLocator.list.loadMoreButton') })
+        ).toBeInTheDocument();
     });
 
     test('selecting a store updates selectedStoreInfo', async () => {
@@ -112,7 +117,9 @@ describe('StoreLocatorList', () => {
 
     test('clicking Load More requests next page', async () => {
         render(<StoreLocatorList />);
-        await userEvent.click(screen.getByRole('button', { name: uiStringsSL.storeLocator.list.loadMoreButton }));
+        await userEvent.click(
+            screen.getByRole('button', { name: t('extStoreLocator:storeLocator.list.loadMoreButton') })
+        );
         expect(baseState.setPage).toHaveBeenCalled();
     });
 
@@ -138,7 +145,7 @@ describe('StoreLocatorList', () => {
         vi.mocked(useStoreLocatorList).mockReturnValueOnce(state as any);
 
         render(<StoreLocatorList />);
-        expect(screen.getByText(uiStringsSL.storeLocator.list.noResults)).toBeInTheDocument();
+        expect(screen.getByText(t('extStoreLocator:storeLocator.list.noResults'))).toBeInTheDocument();
     });
 
     test('renders geo error message when geoError is true', () => {
@@ -146,7 +153,7 @@ describe('StoreLocatorList', () => {
         vi.mocked(useStoreLocatorList).mockReturnValueOnce(state as any);
 
         render(<StoreLocatorList />);
-        expect(screen.getByText(uiStringsSL.storeLocator.list.geoError)).toBeInTheDocument();
+        expect(screen.getByText(t('extStoreLocator:storeLocator.list.geoError'))).toBeInTheDocument();
     });
 
     test('renders fetch error message when hasError is true', () => {
@@ -154,7 +161,7 @@ describe('StoreLocatorList', () => {
         vi.mocked(useStoreLocatorList).mockReturnValueOnce(state as any);
 
         render(<StoreLocatorList />);
-        expect(screen.getByText(uiStringsSL.storeLocator.list.fetchError)).toBeInTheDocument();
+        expect(screen.getByText(t('extStoreLocator:storeLocator.list.fetchError'))).toBeInTheDocument();
     });
 
     test('renders device mode status message', () => {
@@ -162,6 +169,6 @@ describe('StoreLocatorList', () => {
         vi.mocked(useStoreLocatorList).mockReturnValueOnce(state as any);
 
         render(<StoreLocatorList />);
-        expect(screen.getByText(uiStringsSL.storeLocator.list.statusLocation)).toBeInTheDocument();
+        expect(screen.getByText(t('extStoreLocator:storeLocator.list.statusLocation'))).toBeInTheDocument();
     });
 });

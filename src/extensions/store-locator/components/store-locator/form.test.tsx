@@ -1,8 +1,9 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { getTranslation } from '@/lib/i18next';
 
-import uiStringsSL from '@/extensions/store-locator/temp-ui-string-store-locator';
+const { t } = getTranslation();
 
 // Mock the store provider hook to supply state and actions
 const mockStore = {
@@ -31,13 +32,17 @@ describe('StoreLocatorForm', () => {
     test('renders fields and actions', () => {
         render(<StoreLocatorForm />);
 
-        expect(screen.getByRole('combobox', { name: uiStringsSL.storeLocator.form.countryLabel })).toBeInTheDocument();
         expect(
-            screen.getByRole('textbox', { name: uiStringsSL.storeLocator.form.postalCodeLabel })
+            screen.getByRole('combobox', { name: t('extStoreLocator:storeLocator.form.countryLabel') })
         ).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: uiStringsSL.storeLocator.form.findButton })).toBeInTheDocument();
         expect(
-            screen.getByRole('button', { name: uiStringsSL.storeLocator.form.useMyLocationButton })
+            screen.getByRole('textbox', { name: t('extStoreLocator:storeLocator.form.postalCodeLabel') })
+        ).toBeInTheDocument();
+        expect(
+            screen.getByRole('button', { name: t('extStoreLocator:storeLocator.form.findButton') })
+        ).toBeInTheDocument();
+        expect(
+            screen.getByRole('button', { name: t('extStoreLocator:storeLocator.form.useMyLocationButton') })
         ).toBeInTheDocument();
     });
 
@@ -45,14 +50,14 @@ describe('StoreLocatorForm', () => {
         render(<StoreLocatorForm />);
 
         await userEvent.selectOptions(
-            screen.getByRole('combobox', { name: uiStringsSL.storeLocator.form.countryLabel }),
+            screen.getByRole('combobox', { name: t('extStoreLocator:storeLocator.form.countryLabel') }),
             'US'
         );
         await userEvent.type(
-            screen.getByRole('textbox', { name: uiStringsSL.storeLocator.form.postalCodeLabel }),
+            screen.getByRole('textbox', { name: t('extStoreLocator:storeLocator.form.postalCodeLabel') }),
             '94105'
         );
-        await userEvent.click(screen.getByRole('button', { name: uiStringsSL.storeLocator.form.findButton }));
+        await userEvent.click(screen.getByRole('button', { name: t('extStoreLocator:storeLocator.form.findButton') }));
 
         expect(mockStore.searchByForm).toHaveBeenCalledWith({ countryCode: 'US', postalCode: '94105' });
     });
@@ -66,7 +71,9 @@ describe('StoreLocatorForm', () => {
 
         render(<StoreLocatorForm />);
 
-        await userEvent.click(screen.getByRole('button', { name: uiStringsSL.storeLocator.form.useMyLocationButton }));
+        await userEvent.click(
+            screen.getByRole('button', { name: t('extStoreLocator:storeLocator.form.useMyLocationButton') })
+        );
 
         expect(mockStore.setGeoError).toHaveBeenCalledWith(false);
         expect(mockStore.setDeviceCoordinates).toHaveBeenCalledWith({ latitude: 10, longitude: 20 });

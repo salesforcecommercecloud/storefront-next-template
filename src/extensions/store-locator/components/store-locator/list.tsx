@@ -7,13 +7,13 @@
 'use client';
 
 import { useMemo, useId, type ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useStoreLocatorList } from '@/extensions/store-locator/hooks/use-store-locator-list';
 import { Button } from '@/components/ui/button';
 import { Typography } from '@/components/typography';
 import { Separator } from '@/components/ui/separator';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import StoreDetails from './details';
-import uiStringsSL from '@/extensions/store-locator/temp-ui-string-store-locator';
 import ListSkeleton from './list-skeleton';
 
 /**
@@ -24,6 +24,7 @@ import ListSkeleton from './list-skeleton';
  * @returns ReactElement
  */
 export default function StoreLocatorList(): ReactElement | null {
+    const { t } = useTranslation('extStoreLocator');
     const instanceId = useId(); // Generate unique ID for this component instance
     const {
         mode,
@@ -47,13 +48,14 @@ export default function StoreLocatorList(): ReactElement | null {
             const countryName = match?.countryName || searchParams.countryCode;
             const distanceText = `${config.radius} ${config.radiusUnit}`;
             const postal = searchParams.postalCode;
-            return uiStringsSL.storeLocator.list.statusInput
-                .replace('{distanceText}', distanceText)
-                .replace('{postal}', postal)
-                .replace('{countryName}', countryName);
+            return t('storeLocator.list.statusInput', {
+                distanceText,
+                postal,
+                countryName,
+            });
         }
-        return uiStringsSL.storeLocator.list.statusLocation;
-    }, [hasSearched, mode, searchParams, config.radius, config.radiusUnit, config.supportedCountries]);
+        return t('storeLocator.list.statusLocation');
+    }, [t, hasSearched, mode, searchParams, config.radius, config.radiusUnit, config.supportedCountries]);
 
     const renderMessage = (text: string, variant: 'info' | 'error' = 'info') => (
         <div className="my-6 text-center" role="status">
@@ -66,12 +68,12 @@ export default function StoreLocatorList(): ReactElement | null {
 
     // Show permission error immediately if present
     if (geoError) {
-        return renderMessage(uiStringsSL.storeLocator.list.geoError, 'error');
+        return renderMessage(t('storeLocator.list.geoError'), 'error');
     }
 
     // Show fetch error if present
     if (hasError) {
-        return renderMessage(uiStringsSL.storeLocator.list.fetchError, 'error');
+        return renderMessage(t('storeLocator.list.fetchError'), 'error');
     }
 
     if (!hasSearched) {
@@ -83,7 +85,7 @@ export default function StoreLocatorList(): ReactElement | null {
     }
 
     if (!stores.length) {
-        return renderMessage(uiStringsSL.storeLocator.list.noResults);
+        return renderMessage(t('storeLocator.list.noResults'));
     }
 
     return (
@@ -140,7 +142,7 @@ export default function StoreLocatorList(): ReactElement | null {
                         className="w-full"
                         onClick={() => setPage((p) => p + 1)}
                         id="load-more-button">
-                        {uiStringsSL.storeLocator.list.loadMoreButton}
+                        {t('storeLocator.list.loadMoreButton')}
                     </Button>
                 </div>
             )}

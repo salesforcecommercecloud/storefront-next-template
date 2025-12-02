@@ -7,10 +7,10 @@
 'use client';
 
 import { type ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import uiStringsBopis from '@/extensions/bopis/temp-ui-string-bopis';
 import { DELIVERY_OPTIONS, type DeliveryOption } from '@/extensions/bopis/constants';
 
 interface PickupOrDeliveryProps {
@@ -49,6 +49,8 @@ export default function PickupOrDelivery({
     isDeliveryDisabled = false,
     className,
 }: PickupOrDeliveryProps): ReactElement {
+    const { t } = useTranslation('extBopis');
+
     const handleValueChange = (newValue: string) => {
         if (onChange && (newValue === DELIVERY_OPTIONS.DELIVERY || newValue === DELIVERY_OPTIONS.PICKUP)) {
             onChange(newValue as DeliveryOption);
@@ -74,7 +76,7 @@ export default function PickupOrDelivery({
                             'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
                             isDeliveryDisabled && 'opacity-50 cursor-not-allowed'
                         )}>
-                        {uiStringsBopis.deliveryOptions.pickupOrDelivery.shipToAddress}
+                        {t('deliveryOptions.pickupOrDelivery.shipToAddress')}
                     </Label>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -85,7 +87,7 @@ export default function PickupOrDelivery({
                             'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
                             isPickupDisabled && 'opacity-50 cursor-not-allowed'
                         )}>
-                        {uiStringsBopis.deliveryOptions.pickupOrDelivery.pickUpInStore}
+                        {t('deliveryOptions.pickupOrDelivery.pickUpInStore')}
                     </Label>
                 </div>
             </RadioGroup>

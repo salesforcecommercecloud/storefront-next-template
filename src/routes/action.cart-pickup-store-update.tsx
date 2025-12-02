@@ -26,7 +26,6 @@ import { updateShipmentForPickup } from '@/extensions/bopis/lib/api/shipment';
 import { isStoreOutOfStock } from '@/lib/inventory-utils';
 import { getFirstPickupStoreId, getPickupProductItemsForStore } from '@/extensions/bopis/lib/basket-utils';
 import { pickupStoreUpdateSchema, parsePickupStoreUpdateFromFormData } from '@/lib/basket-schemas';
-import uiStringsBopis from '@/extensions/bopis/temp-ui-string-bopis';
 
 import { getTranslation } from '@/lib/i18next';
 
@@ -84,7 +83,7 @@ export async function clientAction({ request, context }: ClientActionFunctionArg
         if (!validationResult.success) {
             return createBasketErrorResponse(
                 validationResult.error.issues[0]?.message ||
-                    uiStringsBopis.cart.pickupStoreInfo.missingStoreIdOrInventoryIdError
+                    t('extBopis:cart.pickupStoreInfo.missingStoreIdOrInventoryIdError')
             );
         }
 
@@ -160,10 +159,9 @@ export async function clientAction({ request, context }: ClientActionFunctionArg
                 if (outOfStockItems.length > 0) {
                     // Use store name from form data, fall back to storeId if not provided
                     const displayStoreName = storeName || storeId;
-                    const errorMessage = uiStringsBopis.cart.pickupStoreInfo.itemsOutOfStock.replace(
-                        '{storeName}',
-                        displayStoreName
-                    );
+                    const errorMessage = t('extBopis:cart.pickupStoreInfo.itemsOutOfStock', {
+                        storeName: displayStoreName,
+                    });
                     return createBasketErrorResponse(errorMessage);
                 }
             }
@@ -228,7 +226,7 @@ export async function clientAction({ request, context }: ClientActionFunctionArg
         }
 
         const { responseMessage } = await extractResponseError(error as Error);
-        const errorMsg = responseMessage || uiStringsBopis.cart.pickupStoreInfo.changeStoreError;
+        const errorMsg = responseMessage || t('extBopis:cart.pickupStoreInfo.changeStoreError');
         return createBasketErrorResponse(errorMsg);
     }
 }

@@ -6,12 +6,12 @@
  */
 import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MapPin } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Typography } from '@/components/typography';
 import { useStoreLocatorLayout } from '@/extensions/store-locator/context/layout';
 import StoreAddress from './address';
-import uiStringsSL from '@/extensions/store-locator/temp-ui-string-store-locator';
 import { cn } from '@/lib/utils';
 
 interface StoreDetailsProps {
@@ -88,6 +88,7 @@ export default function StoreDetails({
     mobileLayout = false,
     compactAddress = false,
 }: StoreDetailsProps) {
+    const { t } = useTranslation('extStoreLocator');
     const { forceMobile: forceMobileContext } = useStoreLocatorLayout();
     // Use prop if provided, otherwise use context value
     const forceMobile = mobileLayout || forceMobileContext;
@@ -138,9 +139,10 @@ export default function StoreDetails({
                 <div className={cn('col-span-2', !forceMobile && 'md:col-span-1 md:col-start-1 md:mt-2')}>
                     <Typography variant="muted" as="div" className="text-xs flex items-center gap-1">
                         <MapPin className="size-4" />
-                        {uiStringsSL.storeLocator.details.distanceAway
-                            .replace('{distance}', store.distance.toFixed(2))
-                            .replace('{unit}', distanceUnit)}
+                        {t('storeLocator.details.distanceAway', {
+                            distance: store.distance.toFixed(2),
+                            unit: distanceUnit,
+                        })}
                     </Typography>
                 </div>
             )}
@@ -151,15 +153,13 @@ export default function StoreDetails({
                     <Accordion type="single" collapsible className="w-full">
                         <AccordionItem value="store-hours" className="border-none">
                             <AccordionTrigger className="text-sm font-semibold text-primary hover:text-primary/80 py-2 px-0">
-                                {uiStringsSL.storeLocator.details.storeDetailsTitle}
+                                {t('storeLocator.details.storeDetailsTitle')}
                             </AccordionTrigger>
                             <AccordionContent className="px-0 pb-2">
                                 <Typography variant="muted" as="div">
                                     {showPhone && store.phone && (
                                         <div>
-                                            <span className="font-medium">
-                                                {uiStringsSL.storeLocator.details.phoneLabel}
-                                            </span>{' '}
+                                            <span className="font-medium">{t('storeLocator.details.phoneLabel')}</span>{' '}
                                             <a
                                                 href={`tel:${store.phone}`}
                                                 className="underline-offset-2 hover:underline">
@@ -169,9 +169,7 @@ export default function StoreDetails({
                                     )}
                                     {showEmail && store.c_customerServiceEmail && (
                                         <div>
-                                            <span className="font-medium">
-                                                {uiStringsSL.storeLocator.details.emailLabel}
-                                            </span>{' '}
+                                            <span className="font-medium">{t('storeLocator.details.emailLabel')}</span>{' '}
                                             <a
                                                 href={`mailto:${store.c_customerServiceEmail}`}
                                                 className="underline-offset-2 hover:underline">
@@ -183,7 +181,7 @@ export default function StoreDetails({
                                 {hasHours && (
                                     <>
                                         <Typography variant="muted" as="div" className="mt-2 font-semibold">
-                                            {uiStringsSL.storeLocator.details.storeHoursTitle}
+                                            {t('storeLocator.details.storeHoursTitle')}
                                         </Typography>
                                         <Typography
                                             variant="muted"

@@ -7,10 +7,10 @@
 'use client';
 
 import { useCallback, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useFetcher } from 'react-router';
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
 import { useToast } from '@/components/toast';
-import uiStringsBopis from '@/extensions/bopis/temp-ui-string-bopis';
 
 interface ChangePickupStoreResponse {
     success: boolean;
@@ -37,6 +37,7 @@ interface ChangePickupStoreResponse {
  * ```
  */
 export function useChangePickupStore() {
+    const { t } = useTranslation('extBopis');
     const fetcher = useFetcher<ChangePickupStoreResponse>();
     const { addToast } = useToast();
 
@@ -48,19 +49,19 @@ export function useChangePickupStore() {
             const result = fetcher.data;
 
             if (result.success) {
-                addToast(uiStringsBopis.cart.pickupStoreInfo.storeChanged, 'success');
+                addToast(t('cart.pickupStoreInfo.storeChanged'), 'success');
             } else if (result.success === false || result.error) {
-                const errorMessage = result.error || uiStringsBopis.cart.pickupStoreInfo.changeStoreError;
+                const errorMessage = result.error || t('cart.pickupStoreInfo.changeStoreError');
                 addToast(errorMessage, 'error');
             }
         }
-    }, [fetcher.data, fetcher.state, addToast]);
+    }, [fetcher.data, fetcher.state, addToast, t]);
 
     // Change the pickup store
     const changeStore = useCallback(
         async (store: SelectedStoreInfo) => {
             if (!store.id || !store.inventoryId) {
-                addToast(uiStringsBopis.cart.pickupStoreInfo.missingStoreIdOrInventoryIdError, 'error');
+                addToast(t('cart.pickupStoreInfo.missingStoreIdOrInventoryIdError'), 'error');
                 return;
             }
 
@@ -76,7 +77,7 @@ export function useChangePickupStore() {
                 action: '/action/cart-pickup-store-update',
             });
         },
-        [fetcher, addToast]
+        [fetcher, addToast, t]
     );
 
     return {

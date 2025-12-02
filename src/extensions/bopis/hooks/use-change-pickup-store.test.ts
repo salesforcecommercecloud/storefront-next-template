@@ -9,7 +9,7 @@ import { renderHook, act, waitFor } from '@testing-library/react';
 import type { FetcherWithComponents } from 'react-router';
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
 import { useChangePickupStore } from './use-change-pickup-store';
-import uiStringsBopis from '@/extensions/bopis/temp-ui-string-bopis';
+import { getTranslation } from '@/lib/i18next';
 
 // Mock useFetcher from react-router
 const mockSubmit = vi.fn();
@@ -122,8 +122,9 @@ describe('useChangePickupStore', () => {
                 await result.current.changeStore(store);
             });
 
+            const { t } = getTranslation();
             expect(mockAddToast).toHaveBeenCalledWith(
-                uiStringsBopis.cart.pickupStoreInfo.missingStoreIdOrInventoryIdError,
+                t('extBopis:cart.pickupStoreInfo.missingStoreIdOrInventoryIdError'),
                 'error'
             );
             expect(mockSubmit).not.toHaveBeenCalled();
@@ -141,8 +142,9 @@ describe('useChangePickupStore', () => {
                 await result.current.changeStore(store);
             });
 
+            const { t } = getTranslation();
             expect(mockAddToast).toHaveBeenCalledWith(
-                uiStringsBopis.cart.pickupStoreInfo.missingStoreIdOrInventoryIdError,
+                t('extBopis:cart.pickupStoreInfo.missingStoreIdOrInventoryIdError'),
                 'error'
             );
             expect(mockSubmit).not.toHaveBeenCalled();
@@ -159,8 +161,9 @@ describe('useChangePickupStore', () => {
                 await result.current.changeStore(store);
             });
 
+            const { t } = getTranslation();
             expect(mockAddToast).toHaveBeenCalledWith(
-                uiStringsBopis.cart.pickupStoreInfo.missingStoreIdOrInventoryIdError,
+                t('extBopis:cart.pickupStoreInfo.missingStoreIdOrInventoryIdError'),
                 'error'
             );
             expect(mockSubmit).not.toHaveBeenCalled();
@@ -178,7 +181,8 @@ describe('useChangePickupStore', () => {
             rerender();
 
             await waitFor(() => {
-                expect(mockAddToast).toHaveBeenCalledWith(uiStringsBopis.cart.pickupStoreInfo.storeChanged, 'success');
+                const { t } = getTranslation();
+                expect(mockAddToast).toHaveBeenCalledWith(t('extBopis:cart.pickupStoreInfo.storeChanged'), 'success');
             });
         });
 
@@ -192,10 +196,8 @@ describe('useChangePickupStore', () => {
             rerender();
 
             await waitFor(() => {
-                expect(mockAddToast).toHaveBeenCalledWith(
-                    uiStringsBopis.cart.pickupStoreInfo.changeStoreError,
-                    'error'
-                );
+                const { t } = getTranslation();
+                expect(mockAddToast).toHaveBeenCalledWith(t('extBopis:cart.pickupStoreInfo.changeStoreError'), 'error');
             });
         });
 
@@ -222,10 +224,8 @@ describe('useChangePickupStore', () => {
             rerender();
 
             await waitFor(() => {
-                expect(mockAddToast).toHaveBeenCalledWith(
-                    uiStringsBopis.cart.pickupStoreInfo.changeStoreError,
-                    'error'
-                );
+                const { t } = getTranslation();
+                expect(mockAddToast).toHaveBeenCalledWith(t('extBopis:cart.pickupStoreInfo.changeStoreError'), 'error');
             });
         });
 
@@ -286,7 +286,8 @@ describe('useChangePickupStore', () => {
             rerender();
 
             await waitFor(() => {
-                expect(mockAddToast).toHaveBeenCalledWith(uiStringsBopis.cart.pickupStoreInfo.storeChanged, 'success');
+                const { t } = getTranslation();
+                expect(mockAddToast).toHaveBeenCalledWith(t('extBopis:cart.pickupStoreInfo.storeChanged'), 'success');
             });
         });
 

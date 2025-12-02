@@ -13,27 +13,6 @@ vi.mock('@/extensions/store-locator/providers/store-locator', () => ({
     useStoreLocator: vi.fn(),
 }));
 
-// Use the real PickupOrDelivery component - no mock needed
-
-// Mock UI strings
-vi.mock('@/extensions/bopis/temp-ui-string-bopis', () => ({
-    default: {
-        deliveryOptions: {
-            title: 'Delivery Options',
-            storeSelection: {
-                pickUpIn: 'Pick up in',
-                selectStore: 'Select Store',
-                outOfStockAt: 'Out of stock at',
-                inStockAt: 'In stock at',
-            },
-            pickupOrDelivery: {
-                shipToAddress: 'Ship to Address',
-                pickUpInStore: 'Pick up in Store',
-            },
-        },
-    },
-}));
-
 // Use the mock product from __mocks__ directory
 const mockProduct = masterProduct;
 
@@ -85,7 +64,7 @@ describe('DeliveryOptions', () => {
             </BrowserRouter>
         );
 
-        expect(screen.getByText('Delivery Options')).toBeInTheDocument();
+        expect(screen.getByText('Delivery:')).toBeInTheDocument();
         expect(screen.getByTestId('delivery-option-select')).toBeInTheDocument();
         expect(screen.getByText('Pick up in')).toBeInTheDocument();
         expect(screen.getByText('Select Store')).toBeInTheDocument();
@@ -98,7 +77,7 @@ describe('DeliveryOptions', () => {
             </BrowserRouter>
         );
 
-        expect(screen.getByText('Delivery Options')).toBeInTheDocument();
+        expect(screen.getByText('Delivery:')).toBeInTheDocument();
         expect(screen.getByTestId('delivery-option-select')).toBeInTheDocument();
     });
 
@@ -180,7 +159,7 @@ describe('DeliveryOptions', () => {
             </BrowserRouter>
         );
 
-        expect(screen.getByText('Out of stock at')).toBeInTheDocument();
+        expect(screen.getByText('Out of Stock at')).toBeInTheDocument();
         expect(screen.getByText('Test Store')).toBeInTheDocument();
     });
 
@@ -206,7 +185,7 @@ describe('DeliveryOptions', () => {
             </BrowserRouter>
         );
 
-        const pickupRadio = screen.getByLabelText('Pick up in Store');
+        const pickupRadio = screen.getByLabelText('Pick Up in Store');
         fireEvent.click(pickupRadio);
 
         expect(mockHandleDeliveryOptionChange).toHaveBeenCalledWith('pickup');
@@ -262,7 +241,7 @@ describe('DeliveryOptions', () => {
             </BrowserRouter>
         );
 
-        const pickupRadio = screen.getByLabelText('Pick up in Store');
+        const pickupRadio = screen.getByLabelText('Pick Up in Store');
         fireEvent.click(pickupRadio);
 
         expect(mockHandleDeliveryOptionChange).toHaveBeenCalledWith('pickup');
@@ -291,7 +270,7 @@ describe('DeliveryOptions', () => {
             </BrowserRouter>
         );
 
-        const pickupRadio = screen.getByLabelText('Pick up in Store');
+        const pickupRadio = screen.getByLabelText('Pick Up in Store');
         fireEvent.click(pickupRadio);
 
         expect(mockHandleDeliveryOptionChange).toHaveBeenCalledWith('pickup');
@@ -330,7 +309,7 @@ describe('DeliveryOptions', () => {
             </BrowserRouter>
         );
 
-        const pickupRadio = screen.getByLabelText('Pick up in Store');
+        const pickupRadio = screen.getByLabelText('Pick Up in Store');
         expect(pickupRadio).toBeDisabled();
     });
 
@@ -356,7 +335,7 @@ describe('DeliveryOptions', () => {
             );
 
             // Title and radio options should be hidden when basketPickupStore is provided
-            expect(screen.queryByText('Delivery Options')).not.toBeInTheDocument();
+            expect(screen.queryByText('Delivery:')).not.toBeInTheDocument();
             expect(screen.queryByTestId('delivery-option-select')).not.toBeInTheDocument();
 
             // Store message should still be visible
@@ -416,7 +395,7 @@ describe('DeliveryOptions', () => {
                 </BrowserRouter>
             );
 
-            expect(screen.getByText('Out of stock at')).toBeInTheDocument();
+            expect(screen.getByText('Out of Stock at')).toBeInTheDocument();
             expect(screen.getByText('Test Store')).toBeInTheDocument();
         });
 

@@ -7,10 +7,10 @@
 'use client';
 
 import { lazy, Suspense, useState, useEffect, type ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Store } from 'lucide-react';
 import { useStoreLocator } from '../../providers/store-locator';
-import uiStringsSL from '@/extensions/store-locator/temp-ui-string-store-locator';
 
 const StoreLocatorSheet = lazy(() => import('@/extensions/store-locator/components/header/store-locator-sheet'));
 
@@ -38,6 +38,7 @@ const StoreLocatorSheet = lazy(() => import('@/extensions/store-locator/componen
  * }
  */
 export default function StoreLocatorBadge(): ReactElement {
+    const { t } = useTranslation('extStoreLocator');
     const [clicked, setClicked] = useState<boolean>(false);
     const globalIsOpen = useStoreLocator((state) => state.isOpen);
     const closeStoreLocator = useStoreLocator((state) => state.close);
@@ -64,12 +65,12 @@ export default function StoreLocatorBadge(): ReactElement {
                     <Button
                         variant="ghost"
                         className="pointer-events-none"
-                        aria-label={uiStringsSL.storeLocator.trigger.ariaLabel}>
+                        aria-label={t('storeLocator.trigger.ariaLabel')}>
                         <Store className="size-6" />
                     </Button>
                 }>
                 <StoreLocatorSheet open={true} onOpenChange={handleOpenChange}>
-                    <Button variant="ghost" aria-label={uiStringsSL.storeLocator.trigger.openAriaLabel}>
+                    <Button variant="ghost" aria-label={t('storeLocator.trigger.openAriaLabel')}>
                         <Store className="size-6" />
                     </Button>
                 </StoreLocatorSheet>
@@ -78,10 +79,7 @@ export default function StoreLocatorBadge(): ReactElement {
     }
 
     return (
-        <Button
-            variant="ghost"
-            onClick={() => setClicked(true)}
-            aria-label={uiStringsSL.storeLocator.trigger.ariaLabel}>
+        <Button variant="ghost" onClick={() => setClicked(true)} aria-label={t('storeLocator.trigger.ariaLabel')}>
             <Store className="size-6" />
         </Button>
     );

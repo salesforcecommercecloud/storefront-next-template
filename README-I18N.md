@@ -92,12 +92,28 @@ src/locales/
     ├── index.ts            # Exports Spanish translations
     └── translations.json   # All Spanish translations (namespaced)
 
+src/extensions/
+├── my-extension/
+│   └── locales/
+│       ├── en/
+│       │   └── translations.json   # Extension translations (English)
+│       └── es/
+│           └── translations.json   # Extension translations (Spanish)
+└── locales/                # Auto-generated (do not edit manually)
+    ├── en/
+    │   └── index.ts        # Aggregated extension translations
+    └── es/
+        └── index.ts        # Aggregated extension translations
+
 src/lib/
 ├── i18next.ts              # getTranslation() utility for non-components
 └── i18next.client.ts       # Client-side i18next initialization
 
 src/middlewares/
 └── i18next.ts              # Server-side i18next setup and middleware
+
+scripts/
+└── aggregate-extension-locales.js  # Auto-aggregates extension translations
 ```
 
 ## Usage Examples
@@ -111,6 +127,8 @@ import { useTranslation } from 'react-i18next';
 
 function ProductInfo() {
     // Specify the namespace to load
+    // NOTE: without passing in a namespace, the hook would use `translation` namespace by default.
+    // Since we don't have such namespace in our translations, the t() function would not work as expected.
     const { t } = useTranslation('product');
 
     return (
@@ -118,6 +136,25 @@ function ProductInfo() {
             <h1>{t('title')}</h1>
             <p>{t('description')}</p>
             <button>{t('addToCart')}</button>
+        </div>
+    );
+}
+```
+
+**With multiple namespaces:**
+
+```typescript
+import { useTranslation } from 'react-i18next';
+
+function ProductPage() {
+    // Load multiple namespaces at once
+    const { t } = useTranslation(['home', 'product']);
+
+    return (
+        <div>
+            <h1>{t('home:title')}</h1>
+            <p>{t('product:description')}</p>
+            <button>{t('product:addToCart')}</button>
         </div>
     );
 }
@@ -284,6 +321,115 @@ const message = t('myNewFeature:welcome');
 
 // With pluralization
 <p>{t('itemCount', { count: items.length })}</p>
+```
+
+## Extension Translations
+
+Extensions can have their own translation files that are automatically discovered and integrated into the i18n system. This allows extension authors to keep translations co-located with their extension code.
+
+### File Structure for Extensions
+
+Create translation files within your extension directory following this structure:
+
+```
+src/extensions/
+├── my-extension/
+│   ├── components/
+│   ├── locales/
+│   │   ├── en/
+│   │   │   └── translations.json
+│   │   └── es/
+│   │       └── translations.json
+│   └── index.ts
+```
+
+### Namespace Convention
+
+Extension translations automatically use the `extPascalCase` naming convention based on the extension folder name:
+
+- `store-locator` → `extStoreLocator`
+- `bopis` → `extBopis`
+- `my-extension` → `extMyExtension`
+
+This convention prevents namespace collisions between extensions and core application translations.
+
+### Adding Translations to an Extension
+
+**1. Create the translation files:**
+
+Create `locales/{lang}/translations.json` within your extension directory for each supported language.
+
+**Example: `src/extensions/bopis/locales/en/translations.json`**
+```json
+{
+    "deliveryOptions": {
+        "title": "Delivery:",
+        "pickupOrDelivery": {
+            "shipToAddress": "Ship to Address",
+            "pickUpInStore": "Pick Up in Store"
+        }
+    },
+    "storePickup": {
+        "title": "Store Pickup Location",
+        "viewButton": "View",
+        "closeButton": "Close"
+    }
+}
+```
+
+**2. Translations are automatically aggregated:**
+
+When you run `pnpm dev` or `pnpm build`, the system automatically:
+- Discovers all extension translation files
+- Aggregates them with the appropriate namespace
+- Makes them available to your extension code
+
+No manual configuration is required.
+
+### Using Extension Translations
+
+**In React Components:**
+
+```typescript
+import { useTranslation } from 'react-i18next';
+
+export function DeliveryOptions() {
+    // Use your extension's namespace
+    const { t } = useTranslation('extBopis');
+    
+    return (
+        <div>
+            <h3>{t('deliveryOptions.title')}</h3>
+            <button>{t('deliveryOptions.pickupOrDelivery.pickUpInStore')}</button>
+        </div>
+    );
+}
+```
+
+**In Non-Component Code:**
+
+```typescript
+import { getTranslation } from '@/lib/i18next';
+
+export function getDeliveryMessage() {
+    const { t } = getTranslation();
+    // Use namespace prefix with colon
+    return t('extBopis:deliveryOptions.title');
+}
+```
+
+**In Route Loaders/Actions:**
+
+```typescript
+import { getTranslation } from '@/lib/i18next';
+import type { LoaderFunctionArgs } from 'react-router';
+
+export function loader(args: LoaderFunctionArgs) {
+    const { t } = getTranslation(args.context);
+    return {
+        message: t('extBopis:storePickup.title')
+    };
+}
 ```
 
 ## Best Practices

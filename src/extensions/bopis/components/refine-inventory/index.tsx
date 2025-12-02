@@ -8,10 +8,10 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useStoreLocator } from '@/extensions/store-locator/providers/store-locator';
-import uiStringsBopis from '@/extensions/bopis/temp-ui-string-bopis';
 
 interface RefineInventoryProps {
     isFilterSelected: (attributeId: string, value: string) => boolean;
@@ -29,6 +29,8 @@ interface RefineInventoryProps {
  * @returns ReactElement
  */
 export default function RefineInventory({ isFilterSelected, toggleFilter }: RefineInventoryProps) {
+    const { t } = useTranslation('extBopis');
+
     // Get selected store info to display name and use inventoryId for filtering
     const selectedStoreInfo = useStoreLocator((s) => s.selectedStoreInfo);
     const openStoreLocator = useStoreLocator((state) => state.open);
@@ -81,30 +83,27 @@ export default function RefineInventory({ isFilterSelected, toggleFilter }: Refi
         openStoreLocator();
     };
 
-    const storeLinkText = selectedStoreInfo?.name || uiStringsBopis.storeInventoryFilter.selectStore;
+    const storeLinkText = selectedStoreInfo?.name || t('storeInventoryFilter.selectStore');
 
     return (
         <>
             <Accordion type="multiple" defaultValue={['inventory']}>
                 <AccordionItem value="inventory" className="!border-b" data-testid="sf-store-inventory-filter">
-                    <AccordionTrigger>{uiStringsBopis.storeInventoryFilter.heading}</AccordionTrigger>
+                    <AccordionTrigger>{t('storeInventoryFilter.heading')}</AccordionTrigger>
                     <AccordionContent>
                         <div className="flex items-start space-x-2 p-2 rounded-md hover:bg-muted/30">
                             <Checkbox
                                 id="inventory-filter"
                                 checked={isChecked}
                                 onCheckedChange={handleCheckboxChange}
-                                aria-label={uiStringsBopis.storeInventoryFilter.checkboxAriaLabel.replace(
-                                    '{storeName}',
-                                    storeLinkText
-                                )}
+                                aria-label={t('storeInventoryFilter.checkboxAriaLabel', { storeName: storeLinkText })}
                                 data-testid="sf-store-inventory-filter-checkbox"
                                 className="size-4"
                             />
                             <label
                                 htmlFor="inventory-filter"
                                 className="text-sm font-medium leading-none cursor-pointer">
-                                {uiStringsBopis.storeInventoryFilter.label.replace('{storeName}', ' ')}
+                                {t('storeInventoryFilter.label', { storeName: ' ' })}
                                 <span
                                     className="underline cursor-pointer hover:opacity-70"
                                     onClick={handleStoreNameClick}
@@ -117,8 +116,8 @@ export default function RefineInventory({ isFilterSelected, toggleFilter }: Refi
                                     tabIndex={0}
                                     aria-label={
                                         selectedStoreInfo
-                                            ? uiStringsBopis.storeInventoryFilter.changeStore
-                                            : uiStringsBopis.storeInventoryFilter.selectStore
+                                            ? t('storeInventoryFilter.changeStore')
+                                            : t('storeInventoryFilter.selectStore')
                                     }>
                                     {storeLinkText}
                                 </span>

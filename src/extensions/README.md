@@ -55,6 +55,41 @@ src/extensions/
     index.ts
 ```
 
+## Extension Internationalization
+
+Extensions support internationalization (i18n) through the same i18next system used by the core application. Each extension can maintain its own translation files that are discovered and integrated during the build process (when you run `pnpm dev` or `pnpm build`).
+
+### Adding Translations to Your Extension
+
+Create translation files within your extension's `locales` directory:
+
+```
+src/extensions/
+  my-extension/
+    components/
+    locales/
+      en/
+        translations.json
+      es/
+        translations.json
+    index.ts
+```
+
+Your extension's translations will automatically be namespaced as `extMyExtension` (using PascalCase of your extension folder name). This prevents namespace collisions with core application translations and other extensions.
+
+### Usage Example
+
+```typescript
+import { useTranslation } from 'react-i18next';
+
+export function MyExtensionComponent() {
+    const { t } = useTranslation('extMyExtension');
+    return <h1>{t('welcome')}</h1>;
+}
+```
+
+For complete documentation on i18n, including usage patterns, best practices, and examples, see [README-I18N.md](../../README-I18N.md#extension-translations).
+
 ## Generating Installation/Uninstallation Instructions
 If you’re building an extension for customer distribution, you can generate installation and uninstallation instructions that both humans and LLMs can follow to complete the install/uninstall steps.
 ```
