@@ -151,6 +151,23 @@ function generateCoverage() {
         missingComponents: missing.map((m) => m.name),
     };
 
+    // Merge Vitest code coverage metrics if available
+    const vitestSummaryPath = path.join(
+        process.cwd(),
+        '.storybook',
+        'coverage',
+        'coverage-vitest',
+        'coverage-summary.json'
+    );
+    if (fs.existsSync(vitestSummaryPath)) {
+        try {
+            const vitest = JSON.parse(fs.readFileSync(vitestSummaryPath, 'utf8'));
+            jsonSummary.codeCoverage = vitest.total; // {lines:{pct:..}, statements:..., functions:..., branches:...}
+        } catch (e) {
+            console.warn('⚠️  Could not read vitest coverage summary:', e.message);
+        }
+    }
+
     // Format date nicely
     const date = new Date();
     const formattedDate = date.toLocaleDateString('en-US', {
@@ -168,14 +185,19 @@ function generateCoverage() {
 
 # 📚 Storybook Component Coverage Report
 
-![Coverage](https://img.shields.io/badge/coverage-${percent}%25-${badgeColor}?style=for-the-badge&logo=storybook)
-${missing.length === 0 ? '![Status](https://img.shields.io/badge/status-complete-success?style=flat-square)' : `![Status](https://img.shields.io/badge/missing-${missing.length}%20stories-critical?style=flat-square)`}
 
 ---
 
 </div>
 
-## 📈 Summary
+## 📚 Story Coverage
+
+<div align="center">
+
+![Story Coverage](https://img.shields.io/badge/story%20coverage-${percent}%25-${badgeColor}?style=for-the-badge&logo=storybook)
+${missing.length === 0 ? '![Status](https://img.shields.io/badge/status-complete-success?style=flat-square)' : `![Status](https://img.shields.io/badge/missing-${missing.length}%20stories-critical?style=flat-square)`}
+
+</div>
 
 | Metric | Value | Status |
 |:-------|:-----:|:------:|
@@ -189,7 +211,7 @@ ${
         ? `
 <div align="center">
 
-## 🎉 Perfect Coverage!
+### 🎉 Perfect Coverage!
 
 **All \`${totalComponents}\` components have Storybook stories!** 
 
@@ -209,6 +231,54 @@ ${missing.map((m, idx) => `\`${idx + 1}.\` \`${m.name}\``).join('\n')}
 
 </details>
 `
+}
+
+${
+    jsonSummary.codeCoverage
+        ? (() => {
+              const lines = jsonSummary.codeCoverage.lines?.pct || 0;
+              const statements = jsonSummary.codeCoverage.statements?.pct || 0;
+              const functions = jsonSummary.codeCoverage.functions?.pct || 0;
+              const branches = jsonSummary.codeCoverage.branches?.pct || 0;
+              const avgCoverage = (lines + statements + functions + branches) / 4;
+
+              let codeCoverageBadgeColor = 'red';
+              if (avgCoverage >= 90) {
+                  codeCoverageBadgeColor = 'brightgreen';
+              } else if (avgCoverage >= 80) {
+                  codeCoverageBadgeColor = 'green';
+              } else if (avgCoverage >= 70) {
+                  codeCoverageBadgeColor = 'yellowgreen';
+              } else if (avgCoverage >= 50) {
+                  codeCoverageBadgeColor = 'yellow';
+              }
+
+              const getStatusEmoji = (pct) => {
+                  if (pct >= 90) return '🟢';
+                  if (pct >= 80) return '🟡';
+                  if (pct >= 70) return '🟠';
+                  return '🔴';
+              };
+
+              return `
+---
+## 💻 Code Coverage (Story Interaction Tests)
+
+<div align="center">
+
+![Code Coverage](https://img.shields.io/badge/code%20coverage-${avgCoverage.toFixed(2)}%25-${codeCoverageBadgeColor}?style=for-the-badge&logo=vitest)
+
+</div>
+
+| Metric | Coverage | Status |
+|:-------|:--------:|:------:|
+| **📄 Lines** | \`${lines.toFixed(2)}%\` | ${getStatusEmoji(lines)} |
+| **📝 Statements** | \`${statements.toFixed(2)}%\` | ${getStatusEmoji(statements)} |
+| **⚙️ Functions** | \`${functions.toFixed(2)}%\` | ${getStatusEmoji(functions)} |
+| **🌿 Branches** | \`${branches.toFixed(2)}%\` | ${getStatusEmoji(branches)} |
+`;
+          })()
+        : ''
 }
 
 ---

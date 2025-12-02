@@ -1,0 +1,84 @@
+#!/usr/bin/env node
+/**
+ * Generate Vitest tests from Storybook stories using composeStories
+ *
+ * Scans src/components recursively for *.stories.tsx files and generates
+ * corresponding test files that use composeStories to render and run play() functions.
+ */
+import fs from 'fs';
+import path from 'path';
+
+const componentsDir = path.join(process.cwd(), 'src/components');
+const outputDir = path.join(process.cwd(), '.storybook/tests/generated-stories');
+
+function walk(dir, cb) {
+    if (!fs.existsSync(dir)) return;
+    for (const f of fs.readdirSync(dir)) {
+        const full = path.join(dir, f);
+        if (fs.statSync(full).isDirectory()) {
+            walk(full, cb);
+        } else {
+            cb(full);
+        }
+    }
+}
+
+// Ensure output directory exists
+if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
+}
+
+let generatedCount = 0;
+
+walk(componentsDir, (file) => {
+    if (file.endsWith('.stories.tsx')) {
+        const rel = path.relative(componentsDir, file);
+        // Convert path separators to double underscores for flat output structure
+        const outName = rel.replace(/[\\/]/g, '__').replace('.stories.tsx', '.story.test.tsx');
+        const outPath = path.join(outputDir, outName);
+
+        // Use @/ alias for cleaner imports (maps to src/)
+        const importPath = path.relative(path.join(process.cwd(), 'src'), file).replace(/\\/g, '/');
+        // Remove .tsx extension for import
+        const importPathWithoutExt = `@/${importPath.replace(/\.tsx$/, '')}`;
+
+        const content = `import React from 'react';
+import { render } from '@testing-library/react';
+import { describe, test } from 'vitest';
+import { composeStories } from '@storybook/react-vite';
+import { StoryTestWrapper } from '../../test-wrapper';
+import * as stories from '${importPathWithoutExt}';
+
+const all = composeStories(stories);
+
+describe('Story tests for ${rel}', () => {
+  // Skip if no stories are exported (e.g., meta-only files)
+  if (Object.keys(all).length === 0) {
+    test.skip('No stories exported from this file', () => {});
+    return;
+  }
+
+  for (const [name, Story] of Object.entries(all)) {
+    test(\`\${name} runs play()\`, async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const StoryComponent = Story as any;
+      // Wrap with providers to ensure Router, StoreLocatorProvider, and CheckoutProvider are available
+      const { container } = render(
+        <StoryTestWrapper>
+          <StoryComponent />
+        </StoryTestWrapper>
+      );
+      if (StoryComponent.play) {
+        await StoryComponent.play({ canvasElement: container });
+      }
+    }, 20000);
+  }
+});
+`;
+
+        fs.writeFileSync(outPath, content, 'utf8');
+        generatedCount++;
+    }
+});
+
+console.log(`✅ Generated ${generatedCount} story test file(s) in ${outputDir}`);

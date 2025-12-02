@@ -122,8 +122,10 @@ export const CategoriesOnly: Story = {
         const categoriesLabels = await canvas.findAllByText(/categories/i, {}, { timeout: 5000 });
         await expect(categoriesLabels.length).toBeGreaterThan(0);
 
-        const footwearButton = canvas.getByRole('button', { name: /footwear/i });
-        await expect(footwearButton).toBeInTheDocument();
+        // Use getAllByRole since there may be multiple buttons (mobile + desktop views)
+        const footwearButtons = canvas.getAllByRole('button', { name: /footwear/i });
+        await expect(footwearButtons.length).toBeGreaterThan(0);
+        // Just verify at least one exists, don't interact with it to avoid ambiguity
     },
 };
 

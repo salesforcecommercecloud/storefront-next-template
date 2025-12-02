@@ -32,6 +32,7 @@ coverage/
 
 # Storybook
 storybook-static/
+.storybook/tests/generated-stories/
 
 # OS
 .DS_Store

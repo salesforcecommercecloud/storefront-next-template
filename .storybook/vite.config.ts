@@ -47,6 +47,33 @@ export default defineConfig({
         globals: true,
         environment: 'jsdom',
         setupFiles: ['./vitest.setup.ts'],
-        include: ['src/**/*-snapshot.tsx'],
+        include: ['src/**/*-snapshot.tsx', '.storybook/tests/generated-stories/**/*.test.tsx'],
+        // Ignore unhandled errors that don't affect test correctness
+        // These are from third-party libraries (e.g., input-otp) that use browser APIs not available in JSDOM
+        dangerouslyIgnoreUnhandledErrors: true,
+        coverage: {
+            provider: 'v8',
+            reporter: ['text', 'json', 'html', 'lcov', 'json-summary'], // `json-summary` and `json` are required for the CI
+            reportsDirectory: './.storybook/coverage/coverage-vitest',
+            all: true,
+            include: ['src/**/*.{ts,tsx}'],
+            exclude: [
+                'src/**/*.d.ts',
+                'src/components/ui/**/*',
+                'src/**/*.stories.{ts,tsx}',
+                'src/**/*-snapshot.tsx',
+                'src/**/mocks/**/*',
+                'src/**/__mocks__/**/*',
+                'src/**/__snapshots__/**/*',
+                'src/**/*.test.{ts,tsx}',
+                'src/test-utils/*',
+                'src/lib/test-utils/*',
+                'src/**/__tests__/*',
+                '.storybook/tests/generated-stories/**/*',
+            ],
+            reportOnFailure: true,
+            // Disable coverage thresholds for story tests for now
+            thresholds: {},
+        },
     },
 });

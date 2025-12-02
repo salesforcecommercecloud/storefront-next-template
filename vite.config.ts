@@ -138,6 +138,7 @@ export default defineConfig(({ mode }) => {
             environment: 'jsdom',
             setupFiles: ['./vitest.setup.ts'],
             include: ['**/*.{test,spec}.{ts,tsx}'],
+            exclude: ['.storybook/tests/generated-stories/**/*'], // Story tests use Storybook config
             coverage: {
                 reporter: [...new Set([...coverageConfigDefaults.reporter, 'json', 'json-summary'])], // `json-summary` and `json` are required for the CI
                 include: ['src/**/*.{ts,tsx}'],

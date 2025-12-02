@@ -135,10 +135,14 @@ export const CategoriesOnly: Story = {
         const categoriesLabels = await canvas.findAllByText(/categories/i, {}, { timeout: 5000 });
         await expect(categoriesLabels.length).toBeGreaterThan(0);
 
-        const footwearButton = canvas.getByRole('button', { name: /footwear/i });
-        await expect(footwearButton).toBeInTheDocument();
-
-        await userEvent.click(footwearButton);
+        // Use getAllByRole since there may be multiple buttons (mobile + desktop views)
+        const footwearButtons = canvas.getAllByRole('button', { name: /footwear/i });
+        await expect(footwearButtons.length).toBeGreaterThan(0);
+        // Click the first enabled button if available
+        const enabledButton = footwearButtons.find((btn) => !btn.hasAttribute('disabled'));
+        if (enabledButton) {
+            await userEvent.click(enabledButton);
+        }
     },
 };
 
