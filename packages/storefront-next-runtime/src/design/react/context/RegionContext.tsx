@@ -8,7 +8,6 @@ import React from 'react';
 
 export interface RegionContextType {
     regionId: string;
-    regionDirection: 'row' | 'column';
     componentIds: string[];
 }
 

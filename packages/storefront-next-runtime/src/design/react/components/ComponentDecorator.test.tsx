@@ -6,24 +6,9 @@
  */
 /* eslint-disable @typescript-eslint/consistent-type-imports */
 import React from 'react';
-import {
-    render as tlRender,
-    cleanup as tlCleanup,
-    act,
-    fireEvent,
-    waitFor,
-    type RenderResult,
-} from '@testing-library/react';
-import type { HostApi } from '../../messaging-api/api-types';
-import type { HostToClientConfiguration } from '../../messaging-api/domain-types';
-import { createHostApi } from '../../messaging-api/host';
-import { createReactComponentDesignDecorator } from './ComponentDecorator';
-import type { ComponentDecoratorProps, RegionDecoratorProps, RegionDesignMetadata } from './component.types';
-import { PageDesignerProvider } from '../context/PageDesignerProvider';
-import { createTestBed } from '../../test/testBed';
-import { createReactRegionDesignDecorator } from './RegionDecorator';
-import { ComponentContext } from '../context/ComponentContext';
+import { cleanup as tlCleanup, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from 'vitest';
+import { createComponentTestBed } from '../../test/component-test-bed';
 
 // Preload the dynamic context
 import '../context/DesignContext';
@@ -33,136 +18,37 @@ const TestComponent: React.FC<React.PropsWithChildren> = ({ children }) => (
     <div data-testid="test-component">{children}</div>
 );
 
-const TestRegion: React.FC<React.PropsWithChildren> = ({ children }) => <div data-testid="test-region">{children}</div>;
-
-type Result = RenderResult & { element: HTMLElement; host: HostApi };
-
 describe('design/react/ComponentDecorator', () => {
-    const testBed = createTestBed({
-        renderer: async (
-            component: React.FC<React.PropsWithChildren>,
-            {
-                props = {},
-                regionMetadata = {},
-                mode = 'EDIT',
-                waitForHost = true,
-                configFactory,
-            }: {
-                props?: Partial<ComponentDecoratorProps<object>>;
-                regionMetadata?: Partial<RegionDecoratorProps<unknown>['designMetadata']>;
-                mode?: 'EDIT' | 'PREVIEW' | null;
-                waitForHost?: boolean;
-                configFactory?: () => Promise<HostToClientConfiguration>;
-            } = {}
-        ) => {
-            const DecoratedComponent = createReactComponentDesignDecorator(component);
-            const DecoratedRegion = createReactRegionDesignDecorator(TestRegion);
-            const host = testBed.setupHost();
-
-            if (mode) {
-                const originalLocation = window.location;
-
-                Reflect.deleteProperty(window, 'location');
-                window.location = {
-                    ...originalLocation,
-                    search: `?mode=${mode}`,
-                } as string & Location;
-
-                testBed.cleanup(() => {
-                    window.location = originalLocation as string & Location;
-                });
-            }
-
-            const designMetadata =
-                props.designMetadata ??
-                ({
-                    id: 'test-1',
-                } as unknown as ComponentDecoratorProps<object>['designMetadata']);
-
-            Object.assign(props, { designMetadata });
-
-            const defaultConfigFactory = () => Promise.resolve({ components: {}, componentTypes: {}, labels: {} });
-
-            const connectionPromise = new Promise<void>((resolve, reject) => {
-                host.connect({
-                    configFactory: configFactory || defaultConfigFactory,
-                    onClientConnected: () => resolve(),
-                    onError: () => reject(new Error('Host connection failed')),
-                });
-            });
-
-            const result = tlRender(
-                <PageDesignerProvider clientId="test1" targetOrigin="*">
-                    <ComponentContext.Provider value={{ componentId: 'test-parent' }}>
-                        <DecoratedRegion designMetadata={regionMetadata as RegionDesignMetadata}>
-                            <DecoratedComponent {...(props as unknown as ComponentDecoratorProps<object>)}>
-                                Test Content
-                            </DecoratedComponent>
-                        </DecoratedRegion>
-                    </ComponentContext.Provider>
-                </PageDesignerProvider>
-            );
-
-            if (mode !== null && waitForHost) {
-                // Wait for Suspense to resolve by waiting for test content to appear
-                // This indicates the lazy DesignProvider has loaded and rendered
-                await result.findByText('Test Content', {}, { timeout: 5_000 });
-                await act(() => connectionPromise);
-            }
-
-            const finalResult = Object.assign(result, {
-                host,
-                element: result.container.querySelector('.pd-design__decorator:not(.pd-design__region)'),
-            }) as Result;
-
-            return finalResult;
-        },
-        methods: {
-            findBySelector: (element: HTMLElement, selector: string) =>
-                waitFor(() => {
-                    const node = element.querySelector(selector);
-
-                    expect(node).toBeDefined();
-
-                    return node as HTMLElement;
-                }),
-            setupHost: () => {
-                const emitter: Parameters<typeof createHostApi>[0]['emitter'] = {
-                    postMessage: (message: any) => window.postMessage(message, '*'),
-                    addEventListener: (handler) => {
-                        const listener = (event: MessageEvent) => handler(event.data);
-
-                        window.parent.addEventListener('message', listener);
-
-                        return () => window.parent.removeEventListener('message', listener);
-                    },
-                };
-
-                const host = createHostApi({ emitter, id: 'test-host' });
-
-                testBed.cleanup(() => host.disconnect());
-
-                return host;
-            },
-        },
-    });
+    const testBed = createComponentTestBed(() => ({
+        elementsOnPoint: [] as HTMLElement[],
+    }));
 
     beforeEach(() => {
-        vi.clearAllMocks();
-        document.elementsFromPoint = vi.fn(() => []);
+        testBed.defineProperty(document, 'elementsFromPoint', {
+            value: () => testBed.state.elementsOnPoint,
+        });
+        testBed.afterRender(async ({ root, findByTestId }) => {
+            if (testBed.state.mode) {
+                const region = await testBed.findBySelector(root, '.pd-design__region');
+                const component = await findByTestId('design-component-test-3');
+
+                testBed.state.elementsOnPoint = [component, region];
+            }
+        });
     });
 
     afterEach(() => {
+        vi.clearAllMocks();
         testBed.cleanup(() => tlCleanup());
     });
 
     describe('when decorating a component', () => {
         it('should render the original component when not in design mode', async () => {
-            const { element, getByTestId } = await testBed.render(TestComponent, {
-                mode: null,
-            });
+            testBed.state.mode = null;
 
-            expect(getByTestId('test-component')).toBeDefined();
+            const { element, getAllByTestId } = await testBed.render(TestComponent);
+
+            expect(getAllByTestId('test-component')).toHaveLength(3);
             expect(element).toBeNull();
         });
 
@@ -182,7 +68,6 @@ describe('design/react/ComponentDecorator', () => {
                         },
                     },
                     regionMetadata: {
-                        regionDirection: 'row',
                         id: 'test-region',
                     },
                 });
@@ -202,7 +87,6 @@ describe('design/react/ComponentDecorator', () => {
                         },
                     },
                     regionMetadata: {
-                        regionDirection: 'row',
                         id: 'test-region',
                     },
                 });
@@ -327,7 +211,6 @@ describe('design/react/ComponentDecorator', () => {
                         },
                     },
                     regionMetadata: {
-                        regionDirection: 'row',
                         id: 'test-region',
                     },
                 });
@@ -365,7 +248,7 @@ describe('design/react/ComponentDecorator', () => {
         });
 
         describe('when the component name is displayed', () => {
-            it('should use the component typelabel when available', async () => {
+            it('should use the component type label when available', async () => {
                 const { element } = await testBed.render(TestComponent, {
                     props: {
                         designMetadata: {
@@ -401,7 +284,7 @@ describe('design/react/ComponentDecorator', () => {
                 expect(frameLabel.textContent).toBe('Custom Label');
             });
 
-            it('should fall back to name when the component typelabel is not available', async () => {
+            it('should fall back to name when the component type label is not available', async () => {
                 const { element } = await testBed.render(TestComponent, {
                     props: {
                         designMetadata: {
@@ -410,6 +293,19 @@ describe('design/react/ComponentDecorator', () => {
                             isFragment: false,
                         },
                     },
+                    configFactory: () =>
+                        Promise.resolve({
+                            locale: 'en-US',
+                            components: {
+                                'test-1': {
+                                    id: 'test-1',
+                                    name: 'Test 1',
+                                    type: 'commerce.test',
+                                },
+                            },
+                            componentTypes: {},
+                            labels: {},
+                        }),
                 });
 
                 // Select component to show the frame
@@ -427,6 +323,19 @@ describe('design/react/ComponentDecorator', () => {
                             isFragment: false,
                         },
                     },
+                    configFactory: () =>
+                        Promise.resolve({
+                            locale: 'en-US',
+                            components: {
+                                'test-1': {
+                                    id: 'test-1',
+                                    name: 'Test 1',
+                                    type: 'commerce.test',
+                                },
+                            },
+                            componentTypes: {},
+                            labels: {},
+                        }),
                 });
 
                 // Select component to show the frame
@@ -434,6 +343,49 @@ describe('design/react/ComponentDecorator', () => {
 
                 const frameLabel = await testBed.findBySelector(element, '.pd-design__frame__name');
                 expect(frameLabel.textContent).toBe('Component');
+            });
+        });
+    });
+
+    describe('when dragging a component', () => {
+        let mockRect: Partial<DOMRect>;
+
+        beforeEach(() => {
+            mockRect = { x: 0, y: 0, width: 600, height: 600 };
+            testBed.defineProperty(HTMLElement.prototype, 'getBoundingClientRect', { value: () => mockRect });
+            testBed.defineProperty(window, 'scrollX', { value: 0 });
+            testBed.defineProperty(window, 'scrollY', { value: 0 });
+        });
+
+        describe.each`
+            width  | height | x      | y      | axis   | insertType
+            ${600} | ${600} | ${100} | ${300} | ${'x'} | ${'before'}
+            ${600} | ${600} | ${500} | ${300} | ${'x'} | ${'after'}
+            ${600} | ${600} | ${300} | ${100} | ${'y'} | ${'before'}
+            ${600} | ${600} | ${300} | ${500} | ${'y'} | ${'after'}
+            ${600} | ${600} | ${100} | ${100} | ${'y'} | ${'before'}
+            ${600} | ${600} | ${500} | ${500} | ${'y'} | ${'after'}
+            ${600} | ${300} | ${200} | ${50}  | ${'y'} | ${'before'}
+            ${600} | ${300} | ${200} | ${250} | ${'y'} | ${'after'}
+            ${300} | ${600} | ${50}  | ${200} | ${'x'} | ${'before'}
+            ${300} | ${600} | ${250} | ${200} | ${'x'} | ${'after'}
+        `('to ($x, $y $width x $height) position', ({ width, height, x, y, axis, insertType }) => {
+            beforeEach(() => {
+                mockRect = { left: 0, top: 0, width, height };
+                testBed.afterRender(async ({ element }) => {
+                    // Click on move icon
+                    const moveButton = await testBed.findBySelector(element, '.pd-design__frame__toolbox-button');
+
+                    fireEvent.mouseDown(moveButton);
+                    fireEvent(window, Object.assign(new DragEvent('dragover'), { clientX: x, clientY: y }));
+                });
+            });
+
+            it(`should show the drop target on ${axis} axis and with ${insertType} insert type`, async () => {
+                const { findByTestId } = await testBed.render(TestComponent);
+                const component = await findByTestId('design-component-test-3');
+
+                expect(component.classList.contains(`pd-design__drop-target__${axis}-${insertType}`)).toBe(true);
             });
         });
     });

@@ -9,7 +9,7 @@ import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 import { ComponentRegistry, type ComponentModule, type ComponentTypeMetadata } from './component-registry';
 
 // Mock design mode utilities
-vi.mock('@salesforce/storefront-next-runtime/design', () => ({
+vi.mock('@salesforce/storefront-next-runtime/design/mode', () => ({
     isDesignModeActive: vi.fn(() => false),
 }));
 
@@ -154,7 +154,7 @@ describe('ComponentRegistry', () => {
         });
 
         test('applies design decorator in design mode', async () => {
-            const { isDesignModeActive } = await import('@salesforce/storefront-next-runtime/design');
+            const { isDesignModeActive } = await import('@salesforce/storefront-next-runtime/design/mode');
             vi.mocked(isDesignModeActive).mockReturnValue(true);
 
             const TestComponent = () => null;

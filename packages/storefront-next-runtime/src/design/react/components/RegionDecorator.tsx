@@ -7,7 +7,7 @@
 import type React from 'react';
 import type { RegionDecoratorProps } from './component.types';
 import { DesignRegion } from './DesignRegion';
-import { usePageDesignerMode } from '../context/PageDesignerProvider';
+import { usePageDesignerMode } from '../core/PageDesignerProvider';
 
 export function createReactRegionDesignDecorator<TProps>(
     Region: React.ComponentType<TProps>

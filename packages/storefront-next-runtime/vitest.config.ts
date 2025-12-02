@@ -22,6 +22,10 @@ export default defineConfig({
                 'src/scapi-client/generated/**',
                 // Exclude type-safety tests (they don't execute runtime code)
                 'src/**/*-safety.test.{ts,tsx}',
+                // Design specific test utilities
+                'src/design/test/**',
+                // Ignore coverage of public export files in design
+                'src/design/**/index.ts',
             ],
             reporters: ['text', 'lcov', 'json-summary'],
         },

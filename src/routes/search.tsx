@@ -14,7 +14,7 @@ import { PageType } from '@/lib/decorators/page-type';
 import { getRegionDefinition, RegionDefinition } from '@/lib/decorators/region-definition';
 import { Region } from '@/components/region';
 import { collectComponentDataPromises, fetchPageFromLoader } from '@/lib/util/pageLoader';
-import { isDesignModeActive } from '@salesforce/storefront-next-runtime/design';
+import { isDesignModeActive } from '@salesforce/storefront-next-runtime/design/mode';
 
 @PageType({
     name: 'Product Listing Page',

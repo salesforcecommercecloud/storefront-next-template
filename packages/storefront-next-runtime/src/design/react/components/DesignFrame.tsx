@@ -31,6 +31,7 @@ export const DesignFrame = ({
     const { deleteComponent, startComponentMove } = useDesignState();
     const labels = useLabels();
     const nodeRef = React.useRef<HTMLDivElement>(null);
+    const isComponentMoveable = Boolean(componentId && regionId && componentType?.id);
 
     const handleDelete = React.useCallback(
         () =>
@@ -44,10 +45,10 @@ export const DesignFrame = ({
     );
 
     const handleMouseDown = React.useCallback(() => {
-        if (componentId && regionId) {
-            startComponentMove(componentId, regionId);
+        if (componentId && regionId && componentType?.id) {
+            startComponentMove(componentId, regionId, componentType.id);
         }
-    }, [componentId, regionId, startComponentMove]);
+    }, [componentId, regionId, startComponentMove, componentType?.id]);
 
     const classes = `pd-design__frame ${showFrame ? 'pd-design__frame--visible' : ''}`.trim();
 
@@ -71,7 +72,12 @@ export const DesignFrame = ({
             </div>
             {showToolbox && (
                 <div className="pd-design__frame__toolbox">
-                    <MoveToolboxButton title={labels.moveComponent ?? 'Move component'} onMouseDown={handleMouseDown} />
+                    {isComponentMoveable && (
+                        <MoveToolboxButton
+                            title={labels.moveComponent ?? 'Move component'}
+                            onMouseDown={handleMouseDown}
+                        />
+                    )}
                     <DeleteToolboxButton title={labels.deleteComponent ?? 'Delete component'} onClick={handleDelete} />
                 </div>
             )}

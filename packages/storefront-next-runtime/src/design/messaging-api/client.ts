@@ -30,7 +30,6 @@ export function createClientApi({ emitter, id, forwardedKeys = [], logger }: Cli
     });
     const subscriptions: (() => void)[] = [];
 
-    let isReady = false;
     let isConnected = false;
     let connectionTimeoutId: number | null = null;
     let hostConfig: HostToClientConfiguration | null = null;
@@ -40,6 +39,90 @@ export function createClientApi({ emitter, id, forwardedKeys = [], logger }: Cli
             clearTimeout(connectionTimeoutId);
             connectionTimeoutId = null;
         }
+    };
+
+    const disconnect = ({ isReconnecting = false }: { isReconnecting?: boolean } = {}) => {
+        clearConnectionTimeout();
+        isConnected = false;
+        subscriptions.forEach((unsubscribe) => unsubscribe());
+        messenger.disconnect();
+        messenger.emit('ClientDisconnected', { clientId: id, reconnect: isReconnecting });
+    };
+
+    const connect = ({
+        interval = 1_000,
+        timeout = 60_000,
+        prepareClient = () => Promise.resolve(),
+        onHostConnected,
+        onHostDisconnected,
+        onError,
+    }: {
+        interval?: number;
+        timeout?: number;
+        prepareClient?: () => Promise<void>;
+        onHostConnected?: (configuration: HostToClientConfiguration) => void;
+        onHostDisconnected?: (reconnect: () => void) => void;
+        onError?: (error: Error) => void;
+    } = {}) => {
+        if (isConnected) {
+            disconnect({ isReconnecting: true });
+        }
+
+        const expirationTime = Date.now() + timeout;
+        const { markIsReady, emptyQueue } = messenger.connect();
+
+        subscriptions.push(
+            messenger.on('ClientAcknowledged', async (event) => {
+                if (event.meta.hostId === messenger.getRemoteId()) {
+                    // We've already been acknowledged by the host in this case.
+                    return;
+                }
+
+                hostConfig = event;
+                messenger.setRemoteId(event.meta.hostId);
+                clearConnectionTimeout();
+
+                try {
+                    await prepareClient();
+
+                    markIsReady();
+                    messenger.emit('ClientReady', { clientId: id });
+                    onHostConnected?.(hostConfig);
+                    emptyQueue();
+                } catch (error) {
+                    onError?.(error as Error);
+                }
+            }),
+            messenger.on('ClientConfigurationChanged', (event) => {
+                hostConfig = event;
+                onHostConnected?.(hostConfig);
+            }),
+            messenger.on('HostDisconnected', () => {
+                disconnect();
+                onHostDisconnected?.(() =>
+                    connect({
+                        interval,
+                        timeout,
+                        prepareClient,
+                        onHostConnected,
+                        onHostDisconnected,
+                        onError,
+                    })
+                );
+            })
+        );
+
+        const checkInitialization = () => {
+            if (Date.now() > expirationTime) {
+                throw new Error(`Timed out after waiting ${timeout}ms for host connection`);
+            }
+
+            messenger.emit('ClientInitialized', { clientId: id, forwardedKeys }, { requireRemoteId: false });
+            connectionTimeoutId = setTimeout(() => checkInitialization(), interval) as unknown as number;
+        };
+
+        isConnected = true;
+        checkInitialization();
     };
 
     return {
@@ -54,85 +137,19 @@ export function createClientApi({ emitter, id, forwardedKeys = [], logger }: Cli
         notifyWindowScrollChanged: messenger.toEmitter('WindowScrollChanged'),
         notifyClientReady: messenger.toEmitter('ClientReady'),
         notifyError: messenger.toEmitter('Error'),
-        connect: ({
-            interval = 1_000,
-            timeout = 60_000,
-            prepareClient = () => Promise.resolve(),
-            onHostConnected,
-            onError,
-        }: {
-            interval?: number;
-            timeout?: number;
-            prepareClient?: () => Promise<void>;
-            onHostConnected?: (configuration: HostToClientConfiguration) => void;
-            onError?: (error: Error) => void;
-        } = {}) => {
-            if (isConnected) {
-                onHostConnected?.(hostConfig as HostToClientConfiguration);
-
-                return;
-            }
-
-            const expirationTime = Date.now() + timeout;
-
-            messenger.connect();
-
-            subscriptions.push(
-                messenger.on('ClientAcknowledged', async (event) => {
-                    if (event.meta.hostId === messenger.getRemoteId()) {
-                        // We've already been acknowledged by the host in this case.
-                        return;
-                    }
-
-                    hostConfig = event;
-                    messenger.setRemoteId(event.meta.hostId);
-                    clearConnectionTimeout();
-
-                    try {
-                        await prepareClient();
-
-                        isReady = true;
-                        messenger.emit('ClientReady', { clientId: id });
-                        onHostConnected?.(hostConfig);
-                    } catch (error) {
-                        onError?.(error as Error);
-                    }
-                }),
-                messenger.on('ClientConfigurationChanged', (event) => {
-                    hostConfig = event;
-                    onHostConnected?.(hostConfig);
-                })
-            );
-
-            const checkInitialization = () => {
-                if (Date.now() > expirationTime) {
-                    throw new Error(`Timed out after waiting ${timeout}ms for host connection`);
-                }
-
-                messenger.emit('ClientInitialized', { clientId: id, forwardedKeys }, { requireRemoteId: false });
-                connectionTimeoutId = setTimeout(() => checkInitialization(), interval) as unknown as number;
-            };
-
-            isConnected = true;
-            checkInitialization();
-        },
+        notifyClientPageChanged: messenger.toEmitter('ClientPageChanged'),
+        connect,
         on: <TEvent extends keyof ClientEventNameMapping>(
             eventName: TEvent,
             handler: (handlerEvent: Readonly<WithMeta & ClientEventNameMapping[TEvent]>) => void
         ) =>
             messenger.on(eventName, (event) => {
                 // Don't receive any events besides the acknowledged event until the client is ready
-                if (eventName === 'ClientAcknowledged' || isReady) {
+                if (eventName === 'ClientAcknowledged' || messenger.isReady()) {
                     handler(event);
                 }
             }),
-        disconnect: () => {
-            clearConnectionTimeout();
-            messenger.emit('ClientDisconnected', { clientId: id });
-            isConnected = false;
-            subscriptions.forEach((unsubscribe) => unsubscribe());
-            messenger.disconnect();
-        },
+        disconnect,
         getRemoteId: () => messenger.getRemoteId(),
     };
 }

@@ -18,6 +18,9 @@
         "allowImportingTsExtensions": false,
         "jsx": "react-jsx",
         "tsBuildInfoFile": "./node_modules/.cache/storefront-next-runtime.tsbuildinfo",
+        "paths": {
+            "@/*": ["./src/*"]
+        },
     },
     "include": ["src/**/*"],
     "exclude": ["node_modules", "dist"]

@@ -6,8 +6,8 @@
  */
 
 import React from 'react';
-import { isDesignModeActive } from '@salesforce/storefront-next-runtime/design';
-import { type ComponentDesignMetadata } from '@salesforce/storefront-next-runtime/design/react';
+import { isDesignModeActive } from '@salesforce/storefront-next-runtime/design/mode';
+import type { ComponentDesignMetadata } from '@salesforce/storefront-next-runtime/design/react';
 import type { LoaderFunctionArgs } from 'react-router';
 import type { RegionDefinitionConfig } from '@/lib/decorators';
 

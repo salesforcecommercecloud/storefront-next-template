@@ -1,6 +1,7 @@
 import "./modeDetection.js";
-import "./client.js";
-import { a as isComponentTypeAllowedInRegion, c as usePageDesignerMode, i as useDesignState, o as useComponentDiscovery, r as useDesignContext, s as PageDesignerProvider } from "./DesignContext.js";
+import "./messaging-api.js";
+import { a as isComponentTypeAllowedInRegion, i as useDesignState, o as useComponentDiscovery, r as useDesignContext } from "./DesignContext.js";
+import { n as usePageDesignerMode } from "./PageDesignerProvider.js";
 import React, { useCallback, useMemo, useRef } from "react";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 
@@ -13,7 +14,7 @@ function useComponentDecoratorClasses({ componentId, isFragment }) {
 	const isMoving = dragState.isDragging && dragState.sourceComponentId === componentId;
 	const isDropTarget = dragState.currentDropTarget?.componentId === componentId && dragState.sourceComponentId !== componentId;
 	const dropTargetInsertType = dragState.currentDropTarget?.insertType;
-	const dropTargetDirection = dragState.currentDropTarget?.regionDirection;
+	const dropTargetAxis = dropTargetInsertType?.axis;
 	return [
 		"pd-design__decorator",
 		isFragment ? "pd-design__fragment" : "pd-design__component",
@@ -21,7 +22,7 @@ function useComponentDecoratorClasses({ componentId, isFragment }) {
 		isSelected && "pd-design__decorator--selected",
 		isHovered && "pd-design__decorator--hovered",
 		isMoving && "pd-design__decorator--moving",
-		isDropTarget && `pd-design__drop-target__${dropTargetDirection === "row" ? "x" : "y"}-${dropTargetInsertType}`
+		isDropTarget && dropTargetAxis && dropTargetInsertType && `pd-design__drop-target__${dropTargetAxis}-${dropTargetInsertType.type}`
 	].filter(Boolean).join(" ");
 }
 
@@ -46,14 +47,13 @@ function useFocusedComponentHandler(componentId, nodeRef) {
 
 //#endregion
 //#region src/design/react/hooks/useNodeToTargetStore.ts
-function useNodeToTargetStore({ parentId, componentId, regionId, regionDirection, nodeRef, type, componentIds, componentTypeInclusions, componentTypeExclusions }) {
+function useNodeToTargetStore({ parentId, componentId, regionId, nodeRef, type, componentIds, componentTypeInclusions, componentTypeExclusions }) {
 	const { nodeToTargetMap } = useDesignState();
 	React.useEffect(() => {
 		if (nodeRef.current) nodeToTargetMap.set(nodeRef.current, {
 			parentId,
 			componentId,
 			regionId,
-			regionDirection,
 			type,
 			componentIds,
 			componentTypeInclusions,
@@ -68,8 +68,7 @@ function useNodeToTargetStore({ parentId, componentId, regionId, regionDirection
 		componentIds,
 		nodeToTargetMap,
 		componentTypeInclusions,
-		componentTypeExclusions,
-		regionDirection
+		componentTypeExclusions
 	]);
 }
 
@@ -138,6 +137,7 @@ const DesignFrame = ({ componentId, children, name, parentId, regionId, showFram
 	const { deleteComponent, startComponentMove } = useDesignState();
 	const labels = useLabels();
 	const nodeRef = React.useRef(null);
+	const isComponentMoveable = Boolean(componentId && regionId && componentType?.id);
 	const handleDelete = React.useCallback(() => componentId && deleteComponent({
 		componentId,
 		sourceComponentId: parentId ?? "",
@@ -149,11 +149,12 @@ const DesignFrame = ({ componentId, children, name, parentId, regionId, showFram
 		regionId
 	]);
 	const handleMouseDown = React.useCallback(() => {
-		if (componentId && regionId) startComponentMove(componentId, regionId);
+		if (componentId && regionId && componentType?.id) startComponentMove(componentId, regionId, componentType.id);
 	}, [
 		componentId,
 		regionId,
-		startComponentMove
+		startComponentMove,
+		componentType?.id
 	]);
 	return /* @__PURE__ */ jsxs("div", {
 		className: `pd-design__frame ${showFrame ? "pd-design__frame--visible" : ""}`.trim(),
@@ -175,7 +176,7 @@ const DesignFrame = ({ componentId, children, name, parentId, regionId, showFram
 			}),
 			showToolbox && /* @__PURE__ */ jsxs("div", {
 				className: "pd-design__frame__toolbox",
-				children: [/* @__PURE__ */ jsx(MoveToolboxButton, {
+				children: [isComponentMoveable && /* @__PURE__ */ jsx(MoveToolboxButton, {
 					title: labels.moveComponent ?? "Move component",
 					onMouseDown: handleMouseDown
 				}), /* @__PURE__ */ jsx(DeleteToolboxButton, {
@@ -209,11 +210,11 @@ const useComponentContext = () => React.useContext(ComponentContext);
 //#region src/design/react/components/DesignComponent.tsx
 function DesignComponent(props) {
 	const { designMetadata, children } = props;
-	const { id, name, isFragment } = designMetadata;
+	const { id, name, isFragment, isVisible } = designMetadata;
 	const componentId = id;
 	const componentName = useComponentType(componentId)?.label || name || "Component";
 	const dragRef = useRef(null);
-	const { regionId, regionDirection } = useRegionContext() ?? {};
+	const { regionId } = useRegionContext() ?? {};
 	const { componentId: parentComponentId } = useComponentContext() ?? {};
 	const { nodeToTargetMap } = useDesignState();
 	const { selectedComponentId, hoveredComponentId, setSelectedComponent, setHoveredComponent, dragState: { isDragging, sourceComponentId: draggingSourceComponentId } } = useDesignState();
@@ -224,7 +225,6 @@ function DesignComponent(props) {
 		nodeRef: dragRef,
 		parentId: parentComponentId,
 		regionId,
-		regionDirection,
 		componentId
 	});
 	const discoverComponents = useComponentDiscovery({ nodeToTargetMap });
@@ -249,16 +249,19 @@ function DesignComponent(props) {
 		componentId: id,
 		name
 	}), [id, name]);
+	const handleDragOver = React.useCallback((event) => {
+		if (draggingSourceComponentId !== componentId) event.preventDefault();
+	}, [draggingSourceComponentId, componentId]);
+	if (!isVisible) return /* @__PURE__ */ jsx(Fragment, {});
 	return /* @__PURE__ */ jsxs("div", {
 		ref: dragRef,
 		className: classes,
 		draggable: isDraggingComponent,
 		onClick: handleClick,
-		onDragOver: React.useCallback((event) => {
-			if (draggingSourceComponentId !== componentId) event.preventDefault();
-		}, [draggingSourceComponentId, componentId]),
+		onDragOver: handleDragOver,
 		onMouseEnter: handleMouseEnter,
 		onMouseLeave: handleMouseLeave,
+		"data-testid": `design-component-${componentId}`,
 		children: [/* @__PURE__ */ jsx("div", { className: "pd-design__component__drop-target" }), /* @__PURE__ */ jsx(DesignFrame, {
 			showFrame,
 			componentId,
@@ -322,18 +325,17 @@ function useRegionDecoratorClasses({ regionId, componentTypeInclusions, componen
 //#region src/design/react/components/DesignRegion.tsx
 function DesignRegion(props) {
 	const { designMetadata, children } = props;
-	const { name, regionDirection = "column", id, componentIds, componentTypeInclusions, componentTypeExclusions } = designMetadata;
+	const { name, id, componentIds, componentTypeInclusions, componentTypeExclusions } = designMetadata;
 	const nodeRef = React.useRef(null);
 	const classes = useRegionDecoratorClasses({
 		regionId: id,
 		componentTypeInclusions,
 		componentTypeExclusions
 	});
-	const { dragState: { currentDropTarget } } = useDesignState();
-	const labels = useLabels();
-	const showFrame = Boolean(id && currentDropTarget?.regionId === id);
-	const { componentId: parentComponentId } = useComponentContext() ?? {};
 	const { dragState } = useDesignState();
+	const labels = useLabels();
+	const showFrame = Boolean(id && dragState.currentDropTarget?.regionId === id);
+	const { componentId: parentComponentId } = useComponentContext() ?? {};
 	useNodeToTargetStore({
 		type: "region",
 		nodeRef,
@@ -341,19 +343,13 @@ function DesignRegion(props) {
 		componentIds,
 		componentId: parentComponentId ?? "",
 		regionId: id,
-		regionDirection,
 		componentTypeInclusions,
 		componentTypeExclusions
 	});
 	const context = React.useMemo(() => ({
 		regionId: id,
-		regionDirection,
 		componentIds
-	}), [
-		id,
-		regionDirection,
-		componentIds
-	]);
+	}), [id, componentIds]);
 	return /* @__PURE__ */ jsx("div", {
 		className: classes,
 		ref: nodeRef,
@@ -399,5 +395,5 @@ function createReactRegionDesignDecorator(Region) {
 }
 
 //#endregion
-export { PageDesignerProvider, createReactComponentDesignDecorator, createReactRegionDesignDecorator, useDesignContext, usePageDesignerMode };
+export { createReactComponentDesignDecorator, createReactRegionDesignDecorator, useDesignContext };
 //# sourceMappingURL=design-react.js.map

@@ -31,7 +31,10 @@ export class Messenger<TInMapping, TOutMapping> {
 
     private readonly logger: Logger;
 
+    private _isReady = false;
+
     private unsubscribe?: () => void;
+    private queue: { eventType: keyof TOutMapping; data: Omit<TOutMapping[keyof TOutMapping], 'eventType'> }[] = [];
 
     constructor({
         source,
@@ -58,9 +61,10 @@ export class Messenger<TInMapping, TOutMapping> {
      * This method registers a listener for events from the opposite source.
      * It ensures that only events from the opposite source are processed.
      */
-    connect(): void {
+    connect(): { markIsReady: () => void; emptyQueue: () => void } {
         // Unsubscribe if this is called again.
         this.unsubscribe?.();
+        this._isReady = false;
 
         this.unsubscribe = this.emitter.addEventListener((event) => {
             if (event.meta?.pdMessagingApi && event.meta.source !== this.source) {
@@ -73,6 +77,16 @@ export class Messenger<TInMapping, TOutMapping> {
                 });
             }
         });
+
+        return {
+            markIsReady: () => {
+                this._isReady = true;
+            },
+            emptyQueue: () => {
+                this.queue.forEach(({ eventType, data }) => this.emit(eventType, data));
+                this.queue = [];
+            },
+        };
     }
 
     /**
@@ -103,7 +117,9 @@ export class Messenger<TInMapping, TOutMapping> {
         data: Omit<TOutMapping[TEvent], 'eventType'>,
         { requireRemoteId = true }: { requireRemoteId?: boolean } = {}
     ): void {
-        if (requireRemoteId && !this.remoteId) {
+        if (requireRemoteId && !this._isReady) {
+            this.queue.push({ eventType, data });
+
             return;
         }
 
@@ -181,5 +197,14 @@ export class Messenger<TInMapping, TOutMapping> {
         this.handlers.clear();
         this.remoteId = undefined;
         this.unsubscribe = undefined;
+    }
+
+    /**
+     * Returns whether the messenger is ready to emit events.
+     *
+     * @returns Whether the messenger is ready.
+     */
+    isReady(): boolean {
+        return this._isReady;
     }
 }

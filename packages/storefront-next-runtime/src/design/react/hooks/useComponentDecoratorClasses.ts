@@ -24,7 +24,7 @@ export function useComponentDecoratorClasses({
         // We don't want to show the drop target if we are moving a component to itself.
         dragState.sourceComponentId !== componentId;
     const dropTargetInsertType = dragState.currentDropTarget?.insertType;
-    const dropTargetDirection = dragState.currentDropTarget?.regionDirection;
+    const dropTargetAxis = dropTargetInsertType?.axis;
 
     return [
         'pd-design__decorator',
@@ -34,7 +34,9 @@ export function useComponentDecoratorClasses({
         isHovered && 'pd-design__decorator--hovered',
         isMoving && 'pd-design__decorator--moving',
         isDropTarget &&
-            `pd-design__drop-target__${dropTargetDirection === 'row' ? 'x' : 'y'}-${dropTargetInsertType as string}`,
+            dropTargetAxis &&
+            dropTargetInsertType &&
+            `pd-design__drop-target__${dropTargetAxis}-${dropTargetInsertType.type}`,
     ]
         .filter(Boolean)
         .join(' ');

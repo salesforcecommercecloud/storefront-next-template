@@ -12,7 +12,6 @@ export function useNodeToTargetStore({
     parentId,
     componentId,
     regionId,
-    regionDirection,
     nodeRef,
     type,
     componentIds,
@@ -29,7 +28,6 @@ export function useNodeToTargetStore({
                 parentId,
                 componentId,
                 regionId,
-                regionDirection,
                 type,
                 componentIds,
                 componentTypeInclusions,
@@ -46,6 +44,5 @@ export function useNodeToTargetStore({
         nodeToTargetMap,
         componentTypeInclusions,
         componentTypeExclusions,
-        regionDirection,
     ]);
 }

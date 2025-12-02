@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { getConfig } from '@/config';
 import { PageType } from '@/lib/decorators/page-type';
 import { getRegionDefinition, RegionDefinition } from '@/lib/decorators/region-definition';
+import { PageDesignerPage } from '@salesforce/storefront-next-runtime/design/react/core';
 
 import { collectComponentDataPromises, fetchPageFromLoader } from '@/lib/util/pageLoader';
 
@@ -101,7 +102,8 @@ function HomeView({ loaderData }: RouteComponentProps<HomePageData>) {
                         const headerBannerRegion = regions?.find((region) => region.id === 'headerbanner');
                         const headerBannerDesignMetadata = getRegionDefinition(HomePageMetadata, 'headerbanner');
                         return (
-                            <>
+                            <PageDesignerPage page={page}>
+                                {/* TODO: Once we have a universal way of fetching pages, we won't need to do manually wrap with PageDesignerPage. This will move in the future. */}
                                 <div className="py-8">
                                     <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
                                         {headerBannerRegion && (
@@ -114,7 +116,7 @@ function HomeView({ loaderData }: RouteComponentProps<HomePageData>) {
                                         )}
                                     </div>
                                 </div>
-                            </>
+                            </PageDesignerPage>
                         );
                     }}
                 </Await>

@@ -220,6 +220,11 @@ components:
             category: topseller
           type: object
           additionalProperties: false
+        visible:
+          title: Visibility
+          description: Whether the compononent is visible based on the current visiblity rules and context.
+          type: boolean
+          example: true
         custom:
           title: Custom Component Data
           description: Any custom data added by the custom code for this component.

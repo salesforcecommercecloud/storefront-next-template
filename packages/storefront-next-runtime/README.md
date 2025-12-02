@@ -23,9 +23,25 @@ pnpm add @salesforce/storefront-next-runtime
 
 ## Modules
 
-### `/design` Page Designer Integration
+### `/design/messaging` Page Designer Messaging API
 
-TBD.
+Provides a communication layer between the Page Designer host application and client applications. Enables real-time messaging for design-time interactions, component selection, property updates, and synchronization between the visual editor and the running application.
+
+### `/design/mode` Design Mode Detection
+
+Utilities for detecting and managing the current application mode (Design or Preview). Allows components to conditionally render design-time features and optimize bundle size by excluding design-time code during runtime execution.
+
+### `/design/react` Design-Time React Components
+
+React components and utilities for Page Designer integration. Provides design-time components, type definitions, and runtime utilities. Most components are lazy-loaded from `/design/react/core` to minimize bundle size, while types and essential runtime components are available directly from this module.
+
+### `/design/react/core` Core React Components
+
+Entry point for React Page Designer integration. Exports only the minimal set of components required for Page Designer functionality to prevent bundling design-time code during runtime when not in design mode. Components from `/design/react` are dynamically loaded when design mode is active.
+
+### `/design/styles.css` Page Designer Styles
+
+CSS stylesheet containing design layer styles for Page Designer integration. Provides visual overlays, selection indicators, and design-time UI elements. Can be imported and consumed in various ways depending on your bundler configuration and build setup.
 
 ### `/scapi-client` SCAPI Client
 

@@ -1,3 +1,5 @@
+import type { ShopperExperience } from '@/scapi-client/types';
+
 /*
  * Copyright (c) 2025, salesforce.com, inc.
  * All rights reserved.
@@ -182,11 +184,38 @@ export interface ClientDisconnectedEvent extends WithBaseEvent {
      * The id of the client that disconnected.
      */
     clientId: string;
+    /**
+     * Whether the client is attempting to reconnect to the host.
+     * This occurs when the client as a configuration change.
+     */
+    reconnect: boolean;
+}
+
+/**
+ * Emits when the components in the client configuration change.
+ * @target client
+ * @group Events
+ */
+export interface ClientPageChangedEvent extends WithBaseEvent {
+    eventType: 'ClientPageChanged';
+    /**
+     * The page data from the client.
+     */
+    page: ShopperExperience.schemas['Page'];
 }
 
 /// /////////////////////////////////////////////////////////////////
 // Client Events - Events that are subscribed on the client side. //
 /// /////////////////////////////////////////////////////////////////
+
+/**
+ * Emits when the host disconnects from the client.
+ * @target client
+ * @group Events
+ */
+export interface HostDisconnected extends WithBaseEvent {
+    eventType: 'HostDisconnected';
+}
 
 /**
  * Emits from the host to the client to acknowledge that the client has been initialized.

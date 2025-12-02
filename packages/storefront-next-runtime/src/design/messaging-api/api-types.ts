@@ -68,6 +68,7 @@ export interface HostEventNameMapping extends IsomorphicEventNameMapping {
     ClientInitialized: Domain.ClientInitializedEvent;
     ClientReady: Domain.ClientReady;
     ClientDisconnected: Domain.ClientDisconnectedEvent;
+    ClientPageChanged: Domain.ClientPageChangedEvent;
 }
 
 /**
@@ -75,6 +76,7 @@ export interface HostEventNameMapping extends IsomorphicEventNameMapping {
  * @hidden
  */
 export interface ClientEventNameMapping extends IsomorphicEventNameMapping {
+    HostDisconnected: Domain.HostDisconnected;
     PageSettingsChanged: Domain.PageSettingsChangedEvent;
     HostKeyPressed: Domain.HostKeyPressedEvent;
     ClientAcknowledged: Domain.ClientAcknowledgedEvent;
@@ -188,20 +190,6 @@ export interface HostConfiguration extends IsomorphicConfiguration {
  * @hidden
  */
 export interface IsomorphicApi {
-    /**
-     * Disconnects the client or host instance.
-     * This should be called when the client or host is no longer needed.
-     * This will remove all event listeners and clean up any resources.
-     *
-     * @stability development
-     *
-     * @example
-     * ```typescript
-     * api.disconnect();
-     * ```
-     */
-    disconnect(): void;
-
     /**
      * Starts a component drag operation.
      * This method initiates dragging of a specific component, typically in response
@@ -396,6 +384,13 @@ export interface IsomorphicApi {
 
 export interface ClientApi extends IsomorphicApi {
     /**
+     * Disconnects the client from the host.
+     * @param options - Optional configuration for the disconnection process
+     * @param options.isReconnecting - Whether the client is attempting to reconnect to the host.
+     */
+    disconnect(options?: { isReconnecting?: boolean }): void;
+
+    /**
      * Connects the client or host to the messaging api.
      * This should be called when the client or host is initialized.
      * This will start listening for events from the other side.
@@ -421,6 +416,7 @@ export interface ClientApi extends IsomorphicApi {
         prepareClient?: () => Promise<void>;
         timeout?: number;
         onHostConnected?: (event: Domain.HostToClientConfiguration) => void;
+        onHostDisconnected?: (reconnect: () => void) => void;
         onError?: (error: Error) => void;
     }): void;
 
@@ -438,7 +434,18 @@ export interface ClientApi extends IsomorphicApi {
      * @see {Domain.ClientReady}
      */
     notifyClientReady(event: EventPayload<Domain.ClientReady>): void;
-
+    /**
+     * Notifies the host that the client components have changed.
+     *
+     * @param event - The client components change event containing the new components
+     * @stability development
+     *
+     * @example
+     * ```typescript
+     * api.notifyClientComponentsChanged({ components: { ... }});
+     * ```
+     */
+    notifyClientPageChanged(event: EventPayload<Domain.ClientPageChangedEvent>): void;
     /**
      * Registers an event handler for client-side events.
      *
@@ -469,6 +476,19 @@ export interface ClientApi extends IsomorphicApi {
 export type ConfigFactory = () => Promise<EventPayload<Domain.ClientAcknowledgedEvent>>;
 
 export interface HostApi extends IsomorphicApi {
+    /**
+     * Disconnects the host instance.
+     * This will remove all event listeners and clean up any resources.
+     *
+     * @stability development
+     *
+     * @example
+     * ```typescript
+     * api.disconnect();
+     * ```
+     */
+    disconnect(): void;
+
     /**
      * Connects the client or host to the messaging api.
      * This should be called when the client or host is initialized.

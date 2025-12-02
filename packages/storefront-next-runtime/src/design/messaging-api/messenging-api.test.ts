@@ -6,18 +6,31 @@
  */
 /* eslint-disable @typescript-eslint/await-thenable */
 /* eslint-disable @typescript-eslint/unbound-method */
-import type { ClientApi, ClientEventNameMapping, HostApi, HostEventNameMapping, MessageEmitter } from './api-types';
-import type { HostToClientConfiguration } from './domain-types';
+import type {
+    ClientApi,
+    ClientEventNameMapping,
+    ConfigFactory,
+    HostApi,
+    HostEventNameMapping,
+    MessageEmitter,
+    EventPayload,
+} from './api-types';
+import type { HostToClientConfiguration, ClientAcknowledgedEvent } from './domain-types';
 import { createClientApi } from './client';
 import { createHostApi } from './host';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 type AnyFunction = (...args: unknown[]) => unknown;
 
-function makeHostConnectionPromise(host: HostApi): Promise<void> {
+function makeHostConnectionPromise(
+    host: HostApi,
+    {
+        configFactory = () => Promise.resolve({ components: {}, componentTypes: {}, labels: {} }),
+    }: { configFactory?: ConfigFactory } = {}
+): Promise<void> {
     return new Promise<void>((resolve) =>
         host.connect({
-            configFactory: () => Promise.resolve({ components: {}, componentTypes: {}, labels: {} }),
+            configFactory,
             onClientConnected: () => resolve(),
         })
     );
@@ -32,9 +45,16 @@ describe('Messaging API', () => {
     let client: ClientApi;
     let clientConfigs: HostToClientConfiguration[];
 
-    function makeClientConnectionPromise(): Promise<void> {
+    function makeClientConnectionPromise({
+        shouldReconnect = false,
+    }: { shouldReconnect?: boolean } = {}): Promise<void> {
         return new Promise<void>((resolve) =>
             client.connect({
+                onHostDisconnected: (reconnect) => {
+                    if (shouldReconnect) {
+                        reconnect();
+                    }
+                },
                 onHostConnected: (config) => {
                     clientConfigs.push(config);
                     resolve();
@@ -146,25 +166,130 @@ describe('Messaging API', () => {
         });
 
         describe('when connecting multiple times', () => {
-            it('should only maintain a single connection', async () => {
-                vi.useRealTimers();
+            describe('when connecting the client', () => {
+                it('should only maintain a single connection', async () => {
+                    vi.useRealTimers();
 
-                await Promise.all([makeClientConnectionPromise(), makeHostConnectionPromise(host)]);
-                await Promise.all([makeClientConnectionPromise(), makeHostConnectionPromise(host)]);
-                await Promise.all([makeClientConnectionPromise(), makeHostConnectionPromise(host)]);
+                    await Promise.all([makeClientConnectionPromise(), makeHostConnectionPromise(host)]);
+                    // Connected
+                    await makeClientConnectionPromise();
+                    await makeClientConnectionPromise();
 
-                const spy = vi.fn();
+                    const spy = vi.fn();
 
-                host.on('ComponentSelected', spy);
-                client.selectComponent({ componentId: 'test-component' });
-                expect(spy).toHaveBeenCalledTimes(1);
+                    client.on('ComponentSelected', spy);
+                    host.selectComponent({ componentId: 'test-component' });
+                    expect(spy).toHaveBeenCalledTimes(1);
+                });
             });
+
+            describe('when connecting the host', () => {
+                it('should only maintain a single connection', async () => {
+                    vi.useRealTimers();
+
+                    await Promise.all([
+                        makeClientConnectionPromise({ shouldReconnect: true }),
+                        makeHostConnectionPromise(host),
+                    ]);
+                    // Connected
+                    await makeHostConnectionPromise(host);
+                    await makeHostConnectionPromise(host);
+
+                    const spy = vi.fn();
+
+                    host.on('ComponentSelected', spy);
+                    client.selectComponent({ componentId: 'test-component' });
+                    expect(spy).toHaveBeenCalledTimes(1);
+                });
+            });
+        });
+    });
+
+    describe('when sending events during the connection process', () => {
+        beforeEach(() => {
+            vi.useRealTimers();
+        });
+
+        it('should queue the events until the connection is established', async () => {
+            let resolveConfig: (
+                value: EventPayload<ClientAcknowledgedEvent> | PromiseLike<EventPayload<ClientAcknowledgedEvent>>
+            ) => void;
+            const spy = vi.fn();
+            const promise = new Promise<EventPayload<ClientAcknowledgedEvent>>((resolve) => {
+                resolveConfig = resolve;
+            });
+
+            const hostPromise = makeHostConnectionPromise(host, { configFactory: () => promise });
+            const clientPromise = makeClientConnectionPromise();
+
+            client.selectComponent({ componentId: 'test-component' });
+            client.selectComponent({ componentId: 'test-component-2' });
+
+            host.on('ComponentSelected', spy);
+
+            // @ts-expect-error - We are assigning this above in the promise constructor
+            resolveConfig({ components: {}, componentTypes: {}, labels: {} });
+
+            await Promise.all([hostPromise, clientPromise]);
+
+            expect(spy).toHaveBeenCalledTimes(2);
+            expect(spy).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    eventType: 'ComponentSelected',
+                    componentId: 'test-component',
+                })
+            );
+            expect(spy).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    eventType: 'ComponentSelected',
+                    componentId: 'test-component-2',
+                })
+            );
         });
     });
 
     describe('when connected', () => {
         beforeEach(async () => {
-            await Promise.all([makeHostConnectionPromise(host), makeClientConnectionPromise()]);
+            await Promise.all([
+                makeHostConnectionPromise(host),
+                makeClientConnectionPromise({ shouldReconnect: true }),
+            ]);
+        });
+
+        describe('when the client disconnects', () => {
+            beforeEach(() => {
+                vi.useRealTimers();
+            });
+
+            it('should be able to reconnect back to the host', async () => {
+                client.disconnect();
+
+                expect(client.getRemoteId()).toBeUndefined();
+                expect(host.getRemoteId()).toBeUndefined();
+
+                await makeClientConnectionPromise();
+
+                expect(client.getRemoteId()).toBe('test-host');
+                expect(host.getRemoteId()).toBe('test-client');
+            });
+        });
+
+        describe('when the host disconnects', () => {
+            beforeEach(() => {
+                vi.useRealTimers();
+            });
+
+            it('should be able to reconnect back to the client', async () => {
+                host.disconnect();
+
+                expect(client.getRemoteId()).toBeUndefined();
+                expect(host.getRemoteId()).toBeUndefined();
+
+                await makeHostConnectionPromise(host);
+
+                expect(client.getRemoteId()).toBe('test-host');
+                expect(host.getRemoteId()).toBe('test-client');
+            });
         });
 
         describe('when events are received from a different source', () => {

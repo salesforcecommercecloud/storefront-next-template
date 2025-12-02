@@ -7,7 +7,7 @@
 import type React from 'react';
 import type { ComponentDecoratorProps } from './component.types';
 import { DesignComponent } from './DesignComponent';
-import { usePageDesignerMode } from '../context/PageDesignerProvider';
+import { usePageDesignerMode } from '../core/PageDesignerProvider';
 
 /**
  * Creates a higher-order component that wraps React components with design-time functionality.

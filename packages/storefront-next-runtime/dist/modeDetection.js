@@ -10,5 +10,5 @@ const isDesignModeActive = () => getUrlMode() === "EDIT";
 const isPreviewModeActive = () => getUrlMode() === "PREVIEW";
 
 //#endregion
-export { isPreviewModeActive as n, isDesignModeActive as t };
+export { isDesignModeActive as n, isPreviewModeActive as r, getUrlMode as t };
 //# sourceMappingURL=modeDetection.js.map

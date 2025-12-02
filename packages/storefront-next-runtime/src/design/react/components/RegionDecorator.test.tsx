@@ -6,160 +6,46 @@
  */
 /* eslint-disable @typescript-eslint/consistent-type-imports */
 import React from 'react';
-import { render as tlRender, cleanup as tlCleanup, act, waitFor, type RenderResult } from '@testing-library/react';
-import type { HostApi } from '../../messaging-api/api-types';
-import { createHostApi } from '../../messaging-api/host';
-import { createReactRegionDesignDecorator } from './RegionDecorator';
-import type { RegionDecoratorProps } from './component.types';
-import { PageDesignerProvider } from '../context/PageDesignerProvider';
-import { createTestBed } from '../../test/testBed';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { act, waitFor } from '@testing-library/react';
+import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest';
+import { createComponentTestBed } from '../../test/component-test-bed';
 
 // Preload the dynamic context
 import '../context/DesignContext';
 
 // Test component to decorate
-const TestRegion: React.FC<React.PropsWithChildren> = ({ children }) => <div data-testid="test-region">{children}</div>;
-
-type Result = RenderResult & { element: HTMLElement; host: HostApi };
+const TestComponent: React.FC<React.PropsWithChildren> = ({ children }) => <>{children}</>;
 
 describe('design/react/RegionDecorator', () => {
     // Mock document.elementsFromPoint for drag and drop tests
-    const mockElementsFromPoint = vi.fn();
+    let mockElementsFromPoint: Mock;
+
+    const testBed = createComponentTestBed(() => ({
+        elementsOnPoint: [] as HTMLElement[],
+    }));
 
     beforeEach(() => {
-        // Reset the mock before each test
-        mockElementsFromPoint.mockClear();
-
-        // Mock document.elementsFromPoint
-        Object.defineProperty(document, 'elementsFromPoint', {
+        mockElementsFromPoint = vi.fn(() => []);
+        testBed.defineProperty(document, 'elementsFromPoint', {
             value: mockElementsFromPoint,
-            writable: true,
         });
-    });
-
-    const testBed = createTestBed({
-        renderer: async (
-            component: React.FC<React.PropsWithChildren>,
-            props: Partial<RegionDecoratorProps<object>> = {},
-            {
-                mode = 'EDIT',
-                waitForHost = true,
-            }: {
-                mode?: 'EDIT' | 'PREVIEW' | null;
-                waitForHost?: boolean;
-            } = {}
-        ) => {
-            const DecoratedComponent = createReactRegionDesignDecorator(component);
-            const host = testBed.setupHost();
-
-            if (mode) {
-                const originalLocation = window.location;
-
-                Reflect.deleteProperty(window, 'location');
-                window.location = {
-                    ...originalLocation,
-                    search: `?mode=${mode}`,
-                } as string & Location;
-
-                testBed.cleanup(() => {
-                    window.location = originalLocation as string & Location;
-                });
-            }
-
-            const designMetadata =
-                props.designMetadata ??
-                ({
-                    id: 'test-region-1',
-                } as unknown as RegionDecoratorProps<object>['designMetadata']);
-
-            Object.assign(props, { designMetadata });
-
-            const connectionPromise = new Promise<void>((resolve, reject) => {
-                host.connect({
-                    configFactory: () => Promise.resolve({ components: {}, componentTypes: {}, labels: {} }),
-                    onClientConnected: () => resolve(),
-                    onError: () => reject(new Error('Host connection failed')),
-                });
-            });
-
-            const result = tlRender(
-                <PageDesignerProvider clientId="test1" targetOrigin="*">
-                    <DecoratedComponent {...(props as unknown as RegionDecoratorProps<object>)}>
-                        Test Content
-                    </DecoratedComponent>
-                </PageDesignerProvider>
-            );
-
-            if (mode !== null && waitForHost) {
-                // Wait for Suspense to resolve by waiting for test content to appear
-                // This indicates the lazy DesignProvider has loaded and rendered
-                await result.findByText('Test Content', {}, { timeout: 5_000 });
-                // Now wait for the host connection
-                await act(() => connectionPromise);
-            }
-
-            const finalResult = Object.assign(result, {
-                host,
-                element: result.container.querySelector('.pd-design__decorator'),
-            }) as Result;
-
-            return finalResult;
-        },
-        methods: {
-            findBySelector: (element: HTMLElement, selector: string) =>
-                waitFor(() => {
-                    const node = element.querySelector(selector);
-
-                    expect(node).toBeDefined();
-
-                    return node as HTMLElement;
-                }),
-            setupHost: () => {
-                const emitter: Parameters<typeof createHostApi>[0]['emitter'] = {
-                    postMessage: (message: any) => window.postMessage(message, '*'),
-                    addEventListener: (handler) => {
-                        const listener = (event: MessageEvent) => handler(event.data);
-
-                        window.parent.addEventListener('message', listener);
-
-                        return () => window.parent.removeEventListener('message', listener);
-                    },
-                };
-
-                const host = createHostApi({ emitter, id: 'test-host' });
-
-                testBed.cleanup(() => host.disconnect());
-
-                return host;
-            },
-        },
-    });
-
-    afterEach(() => {
-        testBed.cleanup(() => tlCleanup());
     });
 
     describe('when decorating a region', () => {
         it('should render the original region when not in design mode', async () => {
-            const { element, getByTestId } = await testBed.render(TestRegion, {}, { mode: null });
+            testBed.state.mode = null;
+            const { element, getByTestId } = await testBed.render(TestComponent, {});
 
             expect(getByTestId('test-region')).toBeDefined();
             expect(element).toBeNull();
         });
 
         it('should render with design wrapper when in design mode', async () => {
-            const { element } = await testBed.render(TestRegion);
+            const { region } = await testBed.render(TestComponent);
 
-            expect(element).toBeDefined();
-            expect(element.classList.contains('pd-design__decorator')).toBe(true);
-            expect(element.classList.contains('pd-design__region')).toBe(true);
-        });
-
-        it('should render the region component inside the wrapper', async () => {
-            const { getByTestId } = await testBed.render(TestRegion);
-
-            expect(getByTestId('test-region')).toBeDefined();
+            expect(region).toBeDefined();
+            expect(region.classList.contains('pd-design__decorator')).toBe(true);
+            expect(region.classList.contains('pd-design__region')).toBe(true);
         });
 
         describe('when external drag is active', () => {
@@ -168,10 +54,9 @@ describe('design/react/RegionDecorator', () => {
              * Model used: Claude Sonnet 4
              */
             it('should add hovered class when region becomes the current drop target', async () => {
-                const { element, host } = await testBed.render(TestRegion, {
-                    designMetadata: {
+                const { region, host } = await testBed.render(TestComponent, {
+                    regionMetadata: {
                         id: 'test-region-1',
-                        regionDirection: 'row',
                         componentIds: [],
                         componentTypeExclusions: [],
                         componentTypeInclusions: [],
@@ -179,7 +64,7 @@ describe('design/react/RegionDecorator', () => {
                 });
 
                 // Initially, the hovered class should NOT be present
-                expect(element.classList.contains('pd-design__region--hovered')).toBe(false);
+                expect(region.classList.contains('pd-design__region--hovered')).toBe(false);
 
                 // Mock getBoundingClientRect to simulate region position
                 const mockRect = {
@@ -193,7 +78,7 @@ describe('design/react/RegionDecorator', () => {
                     right: 250,
                     toJSON: () => ({}),
                 };
-                Object.defineProperty(element, 'getBoundingClientRect', {
+                Object.defineProperty(region, 'getBoundingClientRect', {
                     value: () => mockRect,
                     writable: true,
                 });
@@ -202,7 +87,7 @@ describe('design/react/RegionDecorator', () => {
                 mockElementsFromPoint.mockImplementation((x: number, y: number) => {
                     // Return the region element when coordinates are within bounds
                     if (x >= 50 && x <= 250 && y >= 50 && y <= 150) {
-                        return [element, document.body];
+                        return [region, document.body];
                     }
                     return [document.body];
                 });
@@ -215,7 +100,7 @@ describe('design/react/RegionDecorator', () => {
                 });
 
                 // After drag starts, hovered class should still NOT be present
-                expect(element.classList.contains('pd-design__region--hovered')).toBe(false);
+                expect(region.classList.contains('pd-design__region--hovered')).toBe(false);
 
                 // Simulate drag moved to coordinates within the region bounds
                 act(() => {
@@ -228,7 +113,7 @@ describe('design/react/RegionDecorator', () => {
 
                 // Now the hovered class should be present
                 await waitFor(() => {
-                    expect(element.classList.contains('pd-design__region--hovered')).toBe(true);
+                    expect(region.classList.contains('pd-design__region--hovered')).toBe(true);
                 });
             });
 
@@ -237,10 +122,9 @@ describe('design/react/RegionDecorator', () => {
              * Model used: Claude Sonnet 4
              */
             it('should remove hovered class when drag moves outside region bounds', async () => {
-                const { element, host } = await testBed.render(TestRegion, {
-                    designMetadata: {
+                const { region, host } = await testBed.render(TestComponent, {
+                    regionMetadata: {
                         id: 'test-region-1',
-                        regionDirection: 'row',
                         componentIds: [],
                         componentTypeExclusions: [],
                         componentTypeInclusions: [],
@@ -259,7 +143,7 @@ describe('design/react/RegionDecorator', () => {
                     right: 250,
                     toJSON: () => ({}),
                 };
-                Object.defineProperty(element, 'getBoundingClientRect', {
+                Object.defineProperty(region, 'getBoundingClientRect', {
                     value: () => mockRect,
                     writable: true,
                 });
@@ -268,7 +152,7 @@ describe('design/react/RegionDecorator', () => {
                 mockElementsFromPoint.mockImplementation((x: number, y: number) => {
                     // Return the region element when coordinates are within bounds
                     if (x >= 50 && x <= 250 && y >= 50 && y <= 150) {
-                        return [element, document.body];
+                        return [region, document.body];
                     }
                     return [document.body];
                 });
@@ -290,7 +174,7 @@ describe('design/react/RegionDecorator', () => {
 
                 // Verify hovered class is present
                 await waitFor(() => {
-                    expect(element.classList.contains('pd-design__region--hovered')).toBe(true);
+                    expect(region.classList.contains('pd-design__region--hovered')).toBe(true);
                 });
 
                 // Move drag outside region bounds
@@ -304,7 +188,7 @@ describe('design/react/RegionDecorator', () => {
 
                 // Hovered class should be removed
                 await waitFor(() => {
-                    expect(element.classList.contains('pd-design__region--hovered')).toBe(false);
+                    expect(region.classList.contains('pd-design__region--hovered')).toBe(false);
                 });
             });
         });
@@ -315,10 +199,10 @@ describe('design/react/RegionDecorator', () => {
              * Model used: Claude Sonnet 4
              */
             it('should include base decorator and region classes', async () => {
-                const { element } = await testBed.render(TestRegion);
+                const { region } = await testBed.render(TestComponent);
 
-                expect(element.classList.contains('pd-design__decorator')).toBe(true);
-                expect(element.classList.contains('pd-design__region')).toBe(true);
+                expect(region.classList.contains('pd-design__decorator')).toBe(true);
+                expect(region.classList.contains('pd-design__region')).toBe(true);
             });
         });
 
@@ -373,20 +257,19 @@ describe('design/react/RegionDecorator', () => {
             ])(
                 'should handle CSS classes when $scenario',
                 async ({ componentType, inclusions, exclusions, expectedHover, expectedPreventDefault }) => {
-                    const { element, host } = await testBed.render(TestRegion, {
-                        designMetadata: {
+                    const { region, host } = await testBed.render(TestComponent, {
+                        regionMetadata: {
                             id: 'test-region-1',
-                            regionDirection: 'row',
                             componentIds: [],
                             componentTypeInclusions: inclusions,
                             componentTypeExclusions: exclusions,
                         },
                     });
 
-                    setupDragTest(element);
+                    setupDragTest(region);
 
                     // Initially, no hover class should be present
-                    expect(element.classList.contains('pd-design__region--hovered')).toBe(false);
+                    expect(region.classList.contains('pd-design__region--hovered')).toBe(false);
 
                     // Start dragging the component
                     act(() => {
@@ -406,7 +289,7 @@ describe('design/react/RegionDecorator', () => {
 
                     // Check hover class based on expected behavior
                     await waitFor(() => {
-                        expect(element.classList.contains('pd-design__region--hovered')).toBe(expectedHover);
+                        expect(region.classList.contains('pd-design__region--hovered')).toBe(expectedHover);
                     });
 
                     // Test dragover preventDefault behavior
@@ -415,7 +298,7 @@ describe('design/react/RegionDecorator', () => {
                         cancelable: true,
                     });
                     const preventDefaultSpy = vi.spyOn(dragOverEvent, 'preventDefault');
-                    element.dispatchEvent(dragOverEvent);
+                    region.dispatchEvent(dragOverEvent);
 
                     if (expectedPreventDefault) {
                         expect(preventDefaultSpy).toHaveBeenCalled();

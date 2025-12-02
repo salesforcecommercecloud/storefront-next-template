@@ -138,6 +138,12 @@ export interface components {
              */
             data?: Record<string, never>;
             /**
+             * Visibility
+             * @description Whether the compononent is visible based on the current visiblity rules and context.
+             * @example true
+             */
+            visible?: boolean;
+            /**
              * Custom Component Data
              * @description Any custom data added by the custom code for this component.
              * @example {

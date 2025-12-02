@@ -9,6 +9,7 @@ import { useSelectInteraction } from '../hooks/useSelectInteraction';
 import { useHoverInteraction } from '../hooks/useHoverInteraction';
 import { useDeleteInteraction } from '../hooks/useDeleteInteraction';
 import { useFocusInteraction } from '../hooks/useFocusInteraction';
+import { useScrollInteraction, type ScrollInteraction } from '../hooks/useScrollInteraction';
 import { useDragInteraction, type DragInteraction } from '../hooks/useDragInteraction';
 import type { ComponentDeletedEvent, EventPayload } from '../../messaging-api';
 
@@ -17,13 +18,12 @@ export interface NodeToTargetMapEntry {
     parentId?: string;
     componentId: string;
     regionId: string;
-    regionDirection: 'row' | 'column';
     componentIds: string[];
     componentTypeInclusions?: string[];
     componentTypeExclusions?: string[];
 }
 
-export interface DesignState extends DragInteraction {
+export interface DesignState extends DragInteraction, ScrollInteraction {
     selectedComponentId: string | null;
     hoveredComponentId: string | null;
     setSelectedComponent: (componentId: string) => void;
@@ -46,7 +46,7 @@ export const DesignStateProvider = ({ children }: { children: React.ReactNode })
     const focusInteraction = useFocusInteraction({
         setSelectedComponent: selectInteraction.setSelectedComponent,
     });
-
+    const scrollInteraction = useScrollInteraction();
     const nodeToTargetMap = React.useMemo(() => new WeakMap(), []);
     const dragInteraction = useDragInteraction({ nodeToTargetMap });
 
@@ -57,9 +57,18 @@ export const DesignStateProvider = ({ children }: { children: React.ReactNode })
             ...hoverInteraction,
             ...focusInteraction,
             ...dragInteraction,
+            ...scrollInteraction,
             nodeToTargetMap,
         }),
-        [deleteInteraction, selectInteraction, hoverInteraction, focusInteraction, dragInteraction, nodeToTargetMap]
+        [
+            deleteInteraction,
+            selectInteraction,
+            hoverInteraction,
+            focusInteraction,
+            dragInteraction,
+            nodeToTargetMap,
+            scrollInteraction,
+        ]
     );
 
     return <DesignStateContext.Provider value={state}>{children}</DesignStateContext.Provider>;

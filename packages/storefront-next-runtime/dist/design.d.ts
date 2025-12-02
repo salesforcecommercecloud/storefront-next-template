@@ -1,7 +1,4 @@
-import { A as ComponentDeletedEvent, B as ComponentType, C as ClientInitializedEvent, D as ClientWindowDragExitedEvent, E as ClientWindowDragEnteredEvent, F as ComponentHoveredOutEvent, G as MediaChangedEvent, H as ErrorEvent, I as ComponentInfo, K as PageSettingsChangedEvent, L as ComponentMovedToRegionEvent, M as ComponentDragStartedEvent, N as ComponentFocusedEvent, O as ClientWindowDragMovedEvent, P as ComponentHoveredInEvent, R as ComponentPropertiesChangedEvent, S as ClientDisconnectedEvent, T as ClientWindowDragDroppedEvent, U as HostKeyPressedEvent, V as DefaultForwardedKeys, W as HostToClientConfiguration, _ as Source, a as ConfigFactory, b as ClientAcknowledgedEvent, c as EventTypeName, d as HostEventNameMapping, f as HostMessage, g as MessageEmitter, h as IsomorphicEventNameMapping, i as ClientMessage, j as ComponentDeselectedEvent, k as ComponentAddedToRegionEvent, l as HostApi, m as IsomorphicConfiguration, n as ClientConfiguration, o as EventHandler, p as IsomorphicApi, q as WindowScrollChangedEvent, r as ClientEventNameMapping, s as EventPayload, t as ClientApi, u as HostConfiguration, v as WithEventType, w as ClientReady, x as ClientConfigurationChangedEvent, y as WithMeta, z as ComponentSelectedEvent } from "./api-types.js";
-
 //#region src/design/componentRegistry.d.ts
-
 /**
  * A generic registry for managing components with support for design-time decoration.
  * This registry allows components to be registered and retrieved in different modes,
@@ -57,38 +54,5 @@ declare class ComponentRegistry<TComponent> {
   getComponent(id: string): TComponent | null;
 }
 //#endregion
-//#region src/design/messaging-api/client.d.ts
-/**
- * Factory function to create a ClientApi instance.
- *
- * @public
- * @param _config - Configuration object for the client API (currently unused).
- * @returns {ClientApi} An instance of the ClientApi interface.
- */
-declare function createClientApi({
-  emitter,
-  id,
-  forwardedKeys,
-  logger
-}: ClientConfiguration): ClientApi;
-//#endregion
-//#region src/design/messaging-api/host.d.ts
-/**
- * Factory function to create a HostApi instance.
- *
- * @public
- * @param {HostConfiguration} config - Configuration object for the host API.
- * @returns {HostApi} An instance of the HostApi interface.
- */
-declare function createHostApi({
-  emitter,
-  id,
-  logger
-}: HostConfiguration): HostApi;
-//#endregion
-//#region src/design/modeDetection.d.ts
-declare const isDesignModeActive: () => boolean;
-declare const isPreviewModeActive: () => boolean;
-//#endregion
-export { ClientAcknowledgedEvent, ClientApi, ClientConfiguration, ClientConfigurationChangedEvent, ClientDisconnectedEvent, ClientEventNameMapping, ClientInitializedEvent, ClientMessage, ClientReady, ClientWindowDragDroppedEvent, ClientWindowDragEnteredEvent, ClientWindowDragExitedEvent, ClientWindowDragMovedEvent, ComponentAddedToRegionEvent, ComponentDeletedEvent, ComponentDeselectedEvent, ComponentDragStartedEvent, ComponentFocusedEvent, ComponentHoveredInEvent, ComponentHoveredOutEvent, ComponentInfo, ComponentMovedToRegionEvent, ComponentPropertiesChangedEvent, ComponentRegistry, ComponentSelectedEvent, ComponentType, ConfigFactory, DefaultForwardedKeys, ErrorEvent, EventHandler, EventPayload, EventTypeName, HostApi, HostConfiguration, HostEventNameMapping, HostKeyPressedEvent, HostMessage, HostToClientConfiguration, IsomorphicApi, IsomorphicConfiguration, IsomorphicEventNameMapping, MediaChangedEvent, MessageEmitter, PageSettingsChangedEvent, Source, WindowScrollChangedEvent, WithEventType, WithMeta, createClientApi, createHostApi, isDesignModeActive, isPreviewModeActive };
+export { ComponentRegistry };
 //# sourceMappingURL=design.d.ts.map

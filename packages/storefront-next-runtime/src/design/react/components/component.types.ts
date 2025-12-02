@@ -12,10 +12,6 @@ export interface RegionDesignMetadata {
      */
     id: string;
     /**
-     * The direction of the region or the region the component belongs to.
-     */
-    regionDirection: 'row' | 'column';
-    /**
      * The name of the component or region.
      */
     name?: string;
@@ -42,6 +38,10 @@ export interface ComponentDesignMetadata {
      * Whether the component is a fragment.
      */
     isFragment: boolean;
+    /**
+     * Whether the component is visible based on the current visiblity rules and context.
+     */
+    isVisible: boolean;
     /**
      * The name of the component or region.
      */

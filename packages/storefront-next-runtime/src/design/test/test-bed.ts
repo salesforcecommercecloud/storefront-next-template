@@ -6,15 +6,22 @@
  */
 import { beforeEach, afterEach } from 'vitest';
 
-export interface TestBed<TResults, TArgs extends unknown[] = []> {
+export interface TestBed<TResults, TState, TArgs extends unknown[] = []> {
+    state: TState;
     afterRender: (fn: (result: TResults, ...args: TArgs) => void | Promise<void>) => void;
     beforeRender: (fn: (...args: TArgs) => void | Promise<void>) => void;
     render: (...args: TArgs) => Promise<TResults>;
     cleanup: (fn: (...args: TArgs) => void | Promise<void>) => void;
+    defineProperty: <TObj extends object, TKey extends keyof TObj>(
+        obj: TObj,
+        property: TKey,
+        descriptor: PropertyDescriptor
+    ) => void;
 }
 
-export interface TestBedConfig<TResults, TMethods, TArgs extends unknown[] = []> {
+export interface TestBedConfig<TResults, TMethods, TState, TArgs extends unknown[] = []> {
     renderer: (...args: TArgs) => TResults | Promise<TResults>;
+    state?: () => TState;
     methods?: TMethods;
 }
 
@@ -38,15 +45,17 @@ export interface TestBedConfig<TResults, TMethods, TArgs extends unknown[] = []>
  *   }
  * });
  */
-export function createTestBed<TResults, TMethods, TArgs extends unknown[] = []>(
-    config: TestBedConfig<TResults, TMethods, TArgs>
-): TestBed<TResults, TArgs> & TMethods {
+export function createTestBed<TResults, TMethods, TState, TArgs extends unknown[] = []>(
+    config: TestBedConfig<TResults, TMethods, TState, TArgs>
+): TestBed<TResults, TState, TArgs> & TMethods {
     let beforeRenderFns: ((...args: TArgs) => void | Promise<void>)[] = [];
     let afterRenderFns: ((result: TResults, ...args: TArgs) => void | Promise<void>)[] = [];
     let cleanupFns: ((...args: TArgs) => void | Promise<void>)[] = [];
     let currentArgs: TArgs;
+    let state: TState;
 
     beforeEach(() => {
+        state = config.state?.() ?? ({} as TState);
         currentArgs = undefined as unknown as TArgs;
         beforeRenderFns = [];
         afterRenderFns = [];
@@ -59,6 +68,28 @@ export function createTestBed<TResults, TMethods, TArgs extends unknown[] = []>(
 
     return {
         ...config.methods,
+        get state() {
+            return state;
+        },
+        defineProperty: <TObj extends object, TKey extends keyof TObj>(
+            obj: TObj,
+            property: TKey,
+            descriptor: PropertyDescriptor
+        ) => {
+            const originalDescriptor = Object.getOwnPropertyDescriptor(obj, property);
+
+            Object.defineProperty(obj, property, {
+                configurable: true,
+                writable: true,
+                ...descriptor,
+            });
+
+            cleanupFns.push(() => {
+                if (originalDescriptor) {
+                    Object.defineProperty(obj, property, originalDescriptor);
+                }
+            });
+        },
         beforeRender: (fn: (...args: TArgs) => void | Promise<void>) => {
             beforeRenderFns.push(fn);
         },
@@ -79,5 +110,5 @@ export function createTestBed<TResults, TMethods, TArgs extends unknown[] = []>(
 
             return results;
         },
-    } as unknown as TestBed<TResults, TArgs> & TMethods;
+    } as unknown as TestBed<TResults, TState, TArgs> & TMethods;
 }

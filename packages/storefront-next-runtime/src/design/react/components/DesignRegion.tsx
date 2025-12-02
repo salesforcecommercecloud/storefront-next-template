@@ -17,27 +17,17 @@ import { isComponentTypeAllowedInRegion } from '../utils/regionUtils';
 
 export function DesignRegion(props: RegionDecoratorProps<unknown>): React.JSX.Element {
     const { designMetadata, children } = props;
-    const {
-        name,
-        regionDirection = 'column',
-        id,
-        componentIds,
-        componentTypeInclusions,
-        componentTypeExclusions,
-    } = designMetadata;
+    const { name, id, componentIds, componentTypeInclusions, componentTypeExclusions } = designMetadata;
     const nodeRef = React.useRef<HTMLDivElement>(null);
     const classes = useRegionDecoratorClasses({
         regionId: id,
         componentTypeInclusions,
         componentTypeExclusions,
     });
-    const {
-        dragState: { currentDropTarget },
-    } = useDesignState();
-    const labels = useLabels();
-    const showFrame = Boolean(id && currentDropTarget?.regionId === id);
-    const { componentId: parentComponentId } = useComponentContext() ?? {};
     const { dragState } = useDesignState();
+    const labels = useLabels();
+    const showFrame = Boolean(id && dragState.currentDropTarget?.regionId === id);
+    const { componentId: parentComponentId } = useComponentContext() ?? {};
 
     useNodeToTargetStore({
         type: 'region',
@@ -46,15 +36,11 @@ export function DesignRegion(props: RegionDecoratorProps<unknown>): React.JSX.El
         componentIds,
         componentId: parentComponentId ?? '',
         regionId: id,
-        regionDirection,
         componentTypeInclusions,
         componentTypeExclusions,
     });
 
-    const context = React.useMemo<RegionContextType>(
-        () => ({ regionId: id, regionDirection, componentIds }),
-        [id, regionDirection, componentIds]
-    );
+    const context = React.useMemo<RegionContextType>(() => ({ regionId: id, componentIds }), [id, componentIds]);
 
     const handleDragOver = useCallback(
         (event: React.DragEvent<HTMLDivElement>) => {

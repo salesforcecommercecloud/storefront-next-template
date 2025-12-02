@@ -12,6 +12,7 @@ import type {
     WithMeta,
     ConfigFactory,
 } from './api-types';
+import type { ClientInitializedEvent } from './domain-types';
 import { Messenger } from './messenger';
 
 const defaultConfigFactory: ConfigFactory = () => Promise.resolve({ components: {}, componentTypes: {}, labels: {} });
@@ -31,6 +32,12 @@ export function createHostApi({ emitter, id, logger }: HostConfiguration): HostA
     });
     const subscriptions: (() => void)[] = [];
     let isConnected = false;
+    const disconnect = () => {
+        isConnected = false;
+        messenger.disconnect();
+        subscriptions.forEach((unsubscribe) => unsubscribe());
+        messenger.emit('HostDisconnected', {});
+    };
 
     return {
         addComponentToRegion: messenger.toEmitter('ComponentAddedToRegion'),
@@ -60,17 +67,15 @@ export function createHostApi({ emitter, id, logger }: HostConfiguration): HostA
             onError,
         }: {
             configFactory: ConfigFactory;
-            onClientConnected?: (clientId: string) => void;
+            onClientConnected?: (clientId: string, config: ClientInitializedEvent) => void;
             onClientDisconnected?: (clientId: string) => void;
             onError?: (error: Error) => void;
         }) => {
             if (isConnected) {
-                onClientConnected?.(messenger.getRemoteId() ?? '');
-
-                return;
+                disconnect();
             }
 
-            messenger.connect();
+            const { markIsReady, emptyQueue } = messenger.connect();
 
             subscriptions.push(
                 messenger.on('ClientDisconnected', (event) => {
@@ -94,7 +99,7 @@ export function createHostApi({ emitter, id, logger }: HostConfiguration): HostA
                         try {
                             const config = await configFactory();
 
-                            messenger.emit('ClientAcknowledged', config);
+                            messenger.emit('ClientAcknowledged', config, { requireRemoteId: false });
 
                             const { clientId } = await messenger.toPromise('ClientReady');
 
@@ -102,7 +107,9 @@ export function createHostApi({ emitter, id, logger }: HostConfiguration): HostA
                                 throw new Error('Client id mismatch');
                             }
 
-                            onClientConnected?.(clientId);
+                            markIsReady();
+                            onClientConnected?.(clientId, event);
+                            emptyQueue();
                         } catch (error) {
                             onError?.(error as Error);
                         }
@@ -117,11 +124,7 @@ export function createHostApi({ emitter, id, logger }: HostConfiguration): HostA
             handler: (handlerEvent: Readonly<WithMeta & HostEventNameMapping[TEvent]>) => void
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ) => messenger.on(event as any, handler as any),
-        disconnect: () => {
-            isConnected = false;
-            messenger.disconnect();
-            subscriptions.forEach((unsubscribe) => unsubscribe());
-        },
+        disconnect,
         getRemoteId: () => messenger.getRemoteId(),
     };
 }

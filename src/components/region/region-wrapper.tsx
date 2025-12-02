@@ -6,28 +6,21 @@
  */
 
 import { type ReactNode } from 'react';
-import type { ShopperExperienceTypes } from 'commerce-sdk-isomorphic';
-import { isDesignModeActive } from '@salesforce/storefront-next-runtime/design';
-import { createReactRegionDesignDecorator } from '@salesforce/storefront-next-runtime/design/react';
+import { isDesignModeActive } from '@salesforce/storefront-next-runtime/design/mode';
+import {
+    createReactRegionDesignDecorator,
+    type RegionDesignMetadata,
+} from '@salesforce/storefront-next-runtime/design/react';
+import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import { cn } from '@/lib/utils';
-
-/**
- * Design metadata for a region in Page Designer
- */
-export interface RegionDesignMetadata {
-    id: string;
-    parentId?: string;
-    componentTypeExclusions?: string[];
-    componentTypeInclusions?: string[];
-}
 
 /**
  * Props for the base region renderer
  */
 export interface RegionRendererProps extends React.HTMLAttributes<HTMLDivElement> {
-    region: ShopperExperienceTypes.Page['Region'];
+    region: ShopperExperience.schemas['Region'];
     children: ReactNode;
-    designMetadata?: RegionDesignMetadata;
+    designMetadata?: Omit<RegionDesignMetadata, 'componentIds'>;
 }
 
 /**
@@ -85,8 +78,6 @@ export function RegionWrapper({ region, children, className, designMetadata, ...
                 region={region}
                 designMetadata={{
                     id: region.id,
-                    // TODO: We need to know this information via metadata
-                    regionDirection: 'column',
                     componentIds: region?.components?.map((cmp) => cmp.id) || [],
                     componentTypeExclusions: designMetadata?.componentTypeExclusions || [],
                     componentTypeInclusions: designMetadata?.componentTypeInclusions || [],

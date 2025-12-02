@@ -129,7 +129,7 @@ vi.mock('@/config', async (importOriginal) => {
 });
 
 // Mock Page Designer mode
-vi.mock('@salesforce/storefront-next-runtime/design', () => ({
+vi.mock('@salesforce/storefront-next-runtime/design/mode', () => ({
     isDesignModeActive: vi.fn(() => false),
 }));
 
@@ -383,7 +383,7 @@ describe('SearchPage', () => {
         });
 
         test('should render empty regions in design mode', async () => {
-            const { isDesignModeActive } = await import('@salesforce/storefront-next-runtime/design');
+            const { isDesignModeActive } = await import('@salesforce/storefront-next-runtime/design/mode');
             vi.mocked(isDesignModeActive).mockReturnValue(true);
 
             const mockRegion = {
@@ -411,7 +411,7 @@ describe('SearchPage', () => {
         });
 
         test('should not render empty regions in normal mode', async () => {
-            const { isDesignModeActive } = await import('@salesforce/storefront-next-runtime/design');
+            const { isDesignModeActive } = await import('@salesforce/storefront-next-runtime/design/mode');
             vi.mocked(isDesignModeActive).mockReturnValue(false);
 
             const mockRegion = {

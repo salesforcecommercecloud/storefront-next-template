@@ -1,10 +1,10 @@
 import { Component } from './component';
 import { RegionWrapper } from './region-wrapper';
 import type { RegionDefinitionConfig } from '@/lib/decorators';
-import type { ShopperExperienceTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 
 interface RegionProps extends React.HTMLAttributes<HTMLDivElement> {
-    region: ShopperExperienceTypes.Page['Region'];
+    region: ShopperExperience.schemas['Region'];
     componentData?: Promise<Record<string, Promise<unknown>>>;
     metadata?: RegionDefinitionConfig;
 }
@@ -37,8 +37,8 @@ export function Region(props: RegionProps) {
                 className={className}
                 designMetadata={{
                     id: region.id,
-                    componentTypeExclusions: metadata?.componentTypeExclusions,
-                    componentTypeInclusions: metadata?.componentTypeInclusions,
+                    componentTypeExclusions: metadata?.componentTypeExclusions ?? [],
+                    componentTypeInclusions: metadata?.componentTypeInclusions ?? [],
                 }}
                 {...rest}>
                 {region.components?.map(

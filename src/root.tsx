@@ -44,7 +44,8 @@ import { ConfigProvider, getConfig, type AppConfig } from '@/config';
 import { useExecutePendingAction } from '@/hooks/use-execute-pending-action';
 import './app.css';
 import { initI18next } from '@/lib/i18next.client';
-import { PageDesignerProvider } from '@salesforce/storefront-next-runtime/design/react';
+import { PageDesignerProvider } from '@salesforce/storefront-next-runtime/design/react/core';
+import { PageDesignerStyles } from './page-designer-styles';
 import { PageViewTracker } from '@/lib/analytics/page-view-tracker';
 
 // On the client side, initialize i18next.
@@ -288,6 +289,7 @@ export default function App({ loaderData: { root, subs, auth, basket, getI18next
                 <CategoryNavigationMenuMega resolve={refRoot.current} defer={refSubs.current} />
             </Header>
             <PageDesignerProvider clientId="odyssey" targetOrigin="*">
+                <PageDesignerStyles />
                 <main className="flex-grow pt-8">
                     {/* Outlet-level `<Suspense/>` boundary to contain pending promises. */}
                     {/* This at least prevents suspended components without a suggested local `<Suspense/>` boundary from further affecting global layout sections. */}

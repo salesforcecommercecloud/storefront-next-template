@@ -5,13 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import type React from 'react';
-import { useGlobalDragListener } from '../hooks/useGlobalDragListener';
+import { useGlobalListeners } from '../hooks/useGlobalListeners';
 
 /**
  * Containes any global setup logic for the design layer.
  */
 export const DesignApp = ({ children }: React.PropsWithChildren<unknown>): React.JSX.Element => {
-    useGlobalDragListener();
+    useGlobalListeners();
 
     return <>{children}</>;
 };

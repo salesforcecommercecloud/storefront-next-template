@@ -139,8 +139,8 @@ describe('Region', () => {
                 metadata: undefined,
                 expectedDesignMetadata: {
                     id: 'test-region',
-                    componentTypeInclusions: undefined,
-                    componentTypeExclusions: undefined,
+                    componentTypeInclusions: [],
+                    componentTypeExclusions: [],
                 },
             },
             {
@@ -151,8 +151,8 @@ describe('Region', () => {
                 } as RegionDefinitionConfig,
                 expectedDesignMetadata: {
                     id: 'test-region',
-                    componentTypeInclusions: undefined,
-                    componentTypeExclusions: undefined,
+                    componentTypeInclusions: [],
+                    componentTypeExclusions: [],
                 },
             },
             {

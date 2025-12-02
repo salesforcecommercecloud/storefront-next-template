@@ -1,54 +1,8 @@
-import { n as isPreviewModeActive, t as isDesignModeActive } from "./modeDetection.js";
-import { t as createClientApi } from "./client.js";
-import React, { Suspense, createContext, lazy, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { n as createClientApi } from "./messaging-api.js";
+import { n as usePageDesignerMode } from "./PageDesignerProvider.js";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Fragment, jsx } from "react/jsx-runtime";
 
-//#region src/design/react/context/PageDesignerProvider.tsx
-const LazyDesignProvider = lazy(() => import("./DesignContext2.js").then((module) => ({ default: module.DesignProvider })));
-const LazyPreviewProvider = lazy(() => import("./PreviewContext.js").then((module) => ({ default: module.PreviewProvider })));
-const LoadingFallback = () => null;
-const PageDesignerContext = createContext({
-	isDesignMode: false,
-	isPreviewMode: false
-});
-const usePageDesignerMode = () => useContext(PageDesignerContext);
-const PageDesignerProvider = ({ children, targetOrigin, clientId, clientLogger, clientConnectionTimeout, clientConnectionInterval, mode }) => {
-	const contextValue = useMemo(() => ({
-		isDesignMode: mode === "design" || isDesignModeActive(),
-		isPreviewMode: mode === "preview" || isPreviewModeActive()
-	}), [mode]);
-	const { isDesignMode, isPreviewMode } = contextValue;
-	if (isDesignMode && !targetOrigin) throw new Error("PageDesignerProvider: targetOrigin is required when in design mode for security reasons. This should be the origin of the host application that contains this iframe ");
-	if (!isDesignMode && !isPreviewMode) return /* @__PURE__ */ jsx(Fragment, { children });
-	let content = children;
-	if (isPreviewMode) content = /* @__PURE__ */ jsx(Suspense, {
-		fallback: /* @__PURE__ */ jsx(LoadingFallback, {}),
-		children: /* @__PURE__ */ jsx(LazyPreviewProvider, { children: content })
-	});
-	if (isDesignMode) content = /* @__PURE__ */ jsx(Suspense, {
-		fallback: /* @__PURE__ */ jsx(LoadingFallback, {}),
-		children: /* @__PURE__ */ jsx(LazyDesignProvider, {
-			targetOrigin,
-			clientId,
-			clientLogger,
-			clientConnectionTimeout,
-			clientConnectionInterval,
-			children: content
-		})
-	});
-	return /* @__PURE__ */ jsx(PageDesignerContext.Provider, {
-		value: contextValue,
-		children: content
-	});
-};
-PageDesignerProvider.defaultProps = {
-	clientConnectionTimeout: 6e4,
-	clientConnectionInterval: 1e3,
-	mode: void 0,
-	clientLogger: () => {}
-};
-
-//#endregion
 //#region src/design/react/hooks/useInteraction.ts
 /**
 * Base hook that provides common interaction patterns for design-time functionality.
@@ -171,6 +125,33 @@ function useFocusInteraction({ setSelectedComponent }) {
 }
 
 //#endregion
+//#region src/design/react/hooks/useScrollInteraction.ts
+/**
+* Custom hook that manages component hover state and handles
+* client-host communication for hover events.
+*
+* @returns Hover state and interaction methods
+*/
+function useScrollInteraction() {
+	const { notifyWindowScrollChange } = useInteraction({
+		initialState: null,
+		eventHandlers: { WindowScrollChanged: { handler: (event) => {
+			if (event.scrollY != null) window.scrollTo({
+				behavior: "instant",
+				top: event.scrollY
+			});
+		} } },
+		actions: (_state, _setState, clientApi) => ({ notifyWindowScrollChange: (x, y) => {
+			clientApi?.notifyWindowScrollChanged({
+				scrollX: x,
+				scrollY: y
+			});
+		} })
+	});
+	return { notifyWindowScrollChange };
+}
+
+//#endregion
 //#region src/design/react/hooks/useComponentDiscovery.ts
 /**
 * Returns a utility for discovering components and regions at a given
@@ -216,14 +197,36 @@ const SCROLL_BUFFER_HEIGHT_PERCENTAGE = 15;
 const SCROLL_BUFFER_MIN_HEIGHT_IN_PIXELS = 50;
 const SCROLL_INTERVAL_IN_MS = 1e3 / 60;
 const SCROLL_BASE_AMOUNT_IN_PIXELS = 50;
-function getInsertionType({ cache, node, x, y, direction }) {
-	const rect = cache.get(node) ?? node.getBoundingClientRect();
-	cache.set(node, rect);
-	if (direction === "row") return x < rect.left + rect.width / 2 ? "before" : "after";
-	return y < rect.top + rect.height / 2 ? "before" : "after";
+function getInsertionType({ cache, node, x, y }) {
+	if (!cache.has(node)) {
+		const rect$1 = node.getBoundingClientRect();
+		const screenLeft = rect$1.left - window.scrollX;
+		const screenTop = rect$1.top + window.scrollY;
+		cache.set(node, new DOMRect(screenLeft, screenTop, rect$1.width, rect$1.height));
+	}
+	const rect = cache.get(node);
+	const screenX = x + window.scrollX;
+	const screenY = y + window.scrollY;
+	const midX = rect.left + rect.width / 2;
+	const midY = rect.top + rect.height / 2;
+	const deltaX = screenX - midX;
+	const deltaY = screenY - midY;
+	const relativeDeltaX = deltaX / (rect.width / 2);
+	const relativeDeltaY = deltaY / (rect.height / 2);
+	if (Math.abs(relativeDeltaX) > Math.abs(relativeDeltaY)) return {
+		axis: "x",
+		type: relativeDeltaX < 0 ? "before" : "after"
+	};
+	return {
+		axis: "y",
+		type: relativeDeltaY < 0 ? "before" : "after"
+	};
 }
 function isOnSelfDropTarget({ sourceComponentId, beforeComponentId, afterComponentId, insertType, componentId }) {
-	return sourceComponentId && componentId === sourceComponentId || sourceComponentId && insertType === "before" && beforeComponentId === sourceComponentId || sourceComponentId && insertType === "after" && afterComponentId === sourceComponentId;
+	const isOnSource = sourceComponentId && componentId === sourceComponentId;
+	const isOnSameRegionBefore = sourceComponentId && insertType.type === "before" && beforeComponentId === sourceComponentId;
+	const isOnSameRegionAfter = sourceComponentId && insertType.type === "after" && afterComponentId === sourceComponentId;
+	return isOnSource || isOnSameRegionBefore || isOnSameRegionAfter;
 }
 function useDragInteraction({ nodeToTargetMap }) {
 	const discoverComponents = useComponentDiscovery({ nodeToTargetMap });
@@ -236,7 +239,7 @@ function useDragInteraction({ nodeToTargetMap }) {
 		let region = null;
 		for (let i = 0; i < stack.length; i += 1) {
 			const entry = stack[i];
-			if (entry.regionId && entry.regionDirection) {
+			if (entry.regionId) {
 				if (entry.type === "component") component = entry;
 				else if (entry.type === "region") {
 					region = entry;
@@ -253,7 +256,7 @@ function useDragInteraction({ nodeToTargetMap }) {
 		const componentIndex = region.componentIds.indexOf(componentId);
 		return [region.componentIds[componentIndex - 1], region.componentIds[componentIndex + 1]];
 	};
-	const getCurrentDropTarget = useCallback(({ x, y, rectCache, componentType, sourceComponentId }) => {
+	const getCurrentDropTarget = useCallback(({ x, y, rectCache, componentType }) => {
 		const { component, region } = getNearestComponentAndRegion(x, y);
 		if (region) {
 			if (!isComponentTypeAllowedInRegion(componentType, region.componentTypeInclusions || [], region.componentTypeExclusions || [])) return null;
@@ -261,21 +264,15 @@ function useDragInteraction({ nodeToTargetMap }) {
 				cache: rectCache,
 				node: component.node,
 				x,
-				y,
-				direction: region.regionDirection
-			}) : "after";
+				y
+			}) : {
+				axis: "y",
+				type: "after"
+			};
 			const [beforeComponentId, afterComponentId] = component ? getInsertionComponentIds(component.componentId, region) : [];
-			if (isOnSelfDropTarget({
-				sourceComponentId,
-				beforeComponentId,
-				afterComponentId,
-				insertType,
-				componentId: component?.componentId ?? ""
-			})) return null;
 			return {
 				type: component ? "component" : "region",
 				regionId: region.regionId,
-				regionDirection: region.regionDirection,
 				componentIds: region.componentIds,
 				componentId: component?.componentId ?? "",
 				parentId: region.parentId,
@@ -359,8 +356,7 @@ function useDragInteraction({ nodeToTargetMap }) {
 						x: event.x,
 						y: event.y,
 						rectCache: dragState.rectCache,
-						componentType: prevState.componentType,
-						sourceComponentId: dragState.sourceComponentId
+						componentType: prevState.componentType
 					})
 				}));
 			} },
@@ -397,8 +393,7 @@ function useDragInteraction({ nodeToTargetMap }) {
 						x,
 						y,
 						rectCache: state.rectCache,
-						componentType: state.componentType,
-						sourceComponentId: state.sourceComponentId
+						componentType: state.componentType
 					})
 				}));
 			},
@@ -409,12 +404,13 @@ function useDragInteraction({ nodeToTargetMap }) {
 					pendingTargetCommit: true
 				}));
 			},
-			startComponentMove: (componentId, regionId) => {
+			startComponentMove: (componentId, regionId, componentType) => {
 				scrollFactorRef.current = 0;
 				setState((prevState) => ({
 					...prevState,
 					x: 0,
 					y: 0,
+					componentType,
 					sourceComponentId: componentId,
 					sourceRegionId: regionId,
 					isDragging: true,
@@ -425,10 +421,16 @@ function useDragInteraction({ nodeToTargetMap }) {
 			commitCurrentDropTarget: () => {
 				if (state.currentDropTarget) {
 					if (state.sourceComponentId) {
-						if (state.currentDropTarget.componentId !== state.sourceComponentId) clientApi?.moveComponentToRegion({
+						if (!isOnSelfDropTarget({
+							sourceComponentId: state.sourceComponentId,
+							beforeComponentId: state.currentDropTarget.beforeComponentId,
+							afterComponentId: state.currentDropTarget.afterComponentId,
+							insertType: state.currentDropTarget.insertType,
+							componentId: state.currentDropTarget.componentId
+						})) clientApi?.moveComponentToRegion({
 							componentId: state.sourceComponentId,
 							sourceRegionId: state.sourceRegionId ?? "",
-							insertType: state.currentDropTarget.insertType,
+							insertType: state.currentDropTarget.insertType?.type,
 							insertComponentId: state.currentDropTarget.insertComponentId,
 							beforeComponentId: state.currentDropTarget.beforeComponentId,
 							afterComponentId: state.currentDropTarget.afterComponentId,
@@ -436,7 +438,7 @@ function useDragInteraction({ nodeToTargetMap }) {
 							targetComponentId: state.currentDropTarget.parentId ?? ""
 						});
 					} else if (state.componentType) clientApi?.addComponentToRegion({
-						insertType: state.currentDropTarget.insertType,
+						insertType: state.currentDropTarget.insertType?.type,
 						insertComponentId: state.currentDropTarget.insertComponentId,
 						componentProperties: {},
 						componentType: state.componentType,
@@ -494,6 +496,7 @@ const DesignStateProvider = ({ children }) => {
 		setSelectedComponent: selectInteraction.setSelectedComponent
 	});
 	const focusInteraction = useFocusInteraction({ setSelectedComponent: selectInteraction.setSelectedComponent });
+	const scrollInteraction = useScrollInteraction();
 	const nodeToTargetMap = React.useMemo(() => /* @__PURE__ */ new WeakMap(), []);
 	const dragInteraction = useDragInteraction({ nodeToTargetMap });
 	const state = React.useMemo(() => ({
@@ -502,6 +505,7 @@ const DesignStateProvider = ({ children }) => {
 		...hoverInteraction,
 		...focusInteraction,
 		...dragInteraction,
+		...scrollInteraction,
 		nodeToTargetMap
 	}), [
 		deleteInteraction,
@@ -509,7 +513,8 @@ const DesignStateProvider = ({ children }) => {
 		hoverInteraction,
 		focusInteraction,
 		dragInteraction,
-		nodeToTargetMap
+		nodeToTargetMap,
+		scrollInteraction
 	]);
 	return /* @__PURE__ */ jsx(DesignStateContext.Provider, {
 		value: state,
@@ -549,29 +554,53 @@ function useThrottledCallback(callback, interval, deps = []) {
 }
 
 //#endregion
-//#region src/design/react/hooks/useGlobalDragListener.ts
+//#region src/design/react/hooks/useDebouncedCallback.ts
+function useDebouncedCallback(callback, interval, deps = []) {
+	const timeoutRef = useRef(null);
+	return useCallback((...args) => {
+		if (timeoutRef.current) {
+			clearTimeout(timeoutRef.current);
+			timeoutRef.current = null;
+		}
+		timeoutRef.current = setTimeout(() => {
+			callback(...args);
+			timeoutRef.current = null;
+		}, interval);
+	}, [
+		callback,
+		interval,
+		...deps
+	]);
+}
+
+//#endregion
+//#region src/design/react/hooks/useGlobalListeners.ts
 const FPS_60 = 1e3 / 60;
-function useGlobalDragListener() {
-	const { dropComponent, updateComponentMove, cancelDrag } = useDesignState();
+function useGlobalListeners() {
+	const { dropComponent, updateComponentMove, cancelDrag, notifyWindowScrollChange } = useDesignState();
 	const dragListener = useThrottledCallback((event) => updateComponentMove({
 		x: event.clientX,
 		y: event.clientY
 	}), FPS_60, [updateComponentMove]);
+	const scrollListener = useDebouncedCallback(() => notifyWindowScrollChange(window.scrollX, window.scrollY), 100, [notifyWindowScrollChange]);
 	useEffect(() => {
 		const dragEndListener = () => dropComponent();
 		const mouseUpListener = () => cancelDrag();
 		window.addEventListener("dragover", dragListener);
 		window.addEventListener("dragend", dragEndListener);
+		window.addEventListener("scroll", scrollListener);
 		window.addEventListener("mouseup", mouseUpListener);
 		return () => {
 			window.removeEventListener("dragover", dragListener);
 			window.removeEventListener("dragend", dragEndListener);
 			window.removeEventListener("mouseup", mouseUpListener);
+			window.removeEventListener("scroll", scrollListener);
 		};
 	}, [
 		dropComponent,
 		cancelDrag,
-		dragListener
+		dragListener,
+		scrollListener
 	]);
 }
 
@@ -581,7 +610,7 @@ function useGlobalDragListener() {
 * Containes any global setup logic for the design layer.
 */
 const DesignApp = ({ children }) => {
-	useGlobalDragListener();
+	useGlobalListeners();
 	return /* @__PURE__ */ jsx(Fragment, { children });
 };
 
@@ -591,7 +620,9 @@ const noop = () => {};
 const DesignContext = React.createContext({
 	isDesignMode: false,
 	isConnected: false,
-	pageDesignerConfig: null
+	pageDesignerConfig: null,
+	clientPage: null,
+	setClientPage: noop
 });
 /**
 * Provider component that enables design-time functionality for child components.
@@ -606,6 +637,7 @@ const DesignProvider = ({ children, targetOrigin, clientId, clientConnectionTime
 	const { isDesignMode } = usePageDesignerMode();
 	const [isConnected, setIsConnected] = React.useState(false);
 	const [pageDesignerConfig, setPageDesignerConfig] = React.useState(null);
+	const [clientPage, setClientPage] = React.useState(null);
 	const clientApi = React.useMemo(() => createClientApi({
 		logger: clientLogger,
 		emitter: {
@@ -630,6 +662,11 @@ const DesignProvider = ({ children, targetOrigin, clientId, clientConnectionTime
 				setPageDesignerConfig(event);
 				setIsConnected(true);
 			},
+			onHostDisconnected: (reconnect) => {
+				setPageDesignerConfig(null);
+				setIsConnected(false);
+				reconnect();
+			},
 			onError: () => {}
 		});
 		return () => {
@@ -640,19 +677,22 @@ const DesignProvider = ({ children, targetOrigin, clientId, clientConnectionTime
 	}, [
 		clientApi,
 		clientConnectionTimeout,
-		clientConnectionInterval,
-		clientLogger
+		clientConnectionInterval
 	]);
 	const contextValue = React.useMemo(() => ({
 		isDesignMode,
 		clientApi,
 		isConnected,
-		pageDesignerConfig
+		pageDesignerConfig,
+		clientPage,
+		setClientPage: (page) => setClientPage(page)
 	}), [
 		isDesignMode,
 		clientApi,
 		isConnected,
-		pageDesignerConfig
+		pageDesignerConfig,
+		clientPage,
+		setClientPage
 	]);
 	return /* @__PURE__ */ jsx(DesignContext.Provider, {
 		value: contextValue,
@@ -673,5 +713,5 @@ DesignProvider.defaultProps = {
 const useDesignContext = () => React.useContext(DesignContext);
 
 //#endregion
-export { isComponentTypeAllowedInRegion as a, usePageDesignerMode as c, useDesignState as i, DesignProvider as n, useComponentDiscovery as o, useDesignContext as r, PageDesignerProvider as s, DesignContext as t };
+export { isComponentTypeAllowedInRegion as a, useDesignState as i, DesignProvider as n, useComponentDiscovery as o, useDesignContext as r, DesignContext as t };
 //# sourceMappingURL=DesignContext.js.map

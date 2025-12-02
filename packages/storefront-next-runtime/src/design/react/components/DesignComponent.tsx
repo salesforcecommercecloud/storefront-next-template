@@ -18,12 +18,12 @@ import { useComponentType } from '../hooks/useComponentType';
 
 export function DesignComponent(props: ComponentDecoratorProps<unknown>): React.JSX.Element {
     const { designMetadata, children } = props;
-    const { id, name, isFragment } = designMetadata;
+    const { id, name, isFragment, isVisible } = designMetadata;
     const componentId = id;
     const componentType = useComponentType(componentId);
     const componentName = componentType?.label || name || 'Component';
     const dragRef = useRef<HTMLDivElement>(null);
-    const { regionId, regionDirection } = useRegionContext() ?? {};
+    const { regionId } = useRegionContext() ?? {};
     const { componentId: parentComponentId } = useComponentContext() ?? {};
     const { nodeToTargetMap } = useDesignState();
 
@@ -43,7 +43,6 @@ export function DesignComponent(props: ComponentDecoratorProps<unknown>): React.
         nodeRef: dragRef,
         parentId: parentComponentId,
         regionId,
-        regionDirection,
         componentId,
     });
 
@@ -99,6 +98,13 @@ export function DesignComponent(props: ComponentDecoratorProps<unknown>): React.
         [draggingSourceComponentId, componentId]
     );
 
+    // Don't render anything if the components is hidden via visibility rules.
+    // We still want the component to be reactive in case the use changes the
+    // visibility rules or the render context.
+    if (!isVisible) {
+        return <></>;
+    }
+
     return (
         <div
             ref={dragRef}
@@ -107,7 +113,8 @@ export function DesignComponent(props: ComponentDecoratorProps<unknown>): React.
             onClick={handleClick}
             onDragOver={handleDragOver}
             onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}>
+            onMouseLeave={handleMouseLeave}
+            data-testid={`design-component-${componentId}`}>
             <div className="pd-design__component__drop-target" />
             <DesignFrame
                 showFrame={showFrame}

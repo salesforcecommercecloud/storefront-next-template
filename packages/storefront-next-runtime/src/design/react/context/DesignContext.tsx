@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import React from 'react';
-import '../../styles/base.css';
 import {
     createClientApi,
     type ClientApi,
@@ -14,9 +13,10 @@ import {
     type EventPayload,
     type HostToClientConfiguration,
 } from '../../messaging-api';
+import type { ShopperExperience } from '@/scapi-client/types';
 import { DesignStateProvider } from './DesignStateContext';
 import { DesignApp } from '../components/DesignApp';
-import { usePageDesignerMode } from './PageDesignerProvider';
+import { usePageDesignerMode } from '../core/PageDesignerProvider';
 
 const noop = () => {
     /* noop */
@@ -35,12 +35,18 @@ export interface DesignContextType {
     isConnected: boolean;
     /** The page designer config */
     pageDesignerConfig: EventPayload<ClientAcknowledgedEvent> | null;
+    /** Page data that the client has retrieved */
+    clientPage: ShopperExperience.schemas['Page'] | null;
+    /** Sets the client page data */
+    setClientPage: (page: ShopperExperience.schemas['Page'] | null) => void;
 }
 
 export const DesignContext = React.createContext<DesignContextType>({
     isDesignMode: false,
     isConnected: false,
     pageDesignerConfig: null,
+    clientPage: null,
+    setClientPage: noop,
 });
 
 /**
@@ -69,6 +75,7 @@ export const DesignProvider = ({
     const { isDesignMode } = usePageDesignerMode();
     const [isConnected, setIsConnected] = React.useState(false);
     const [pageDesignerConfig, setPageDesignerConfig] = React.useState<HostToClientConfiguration | null>(null);
+    const [clientPage, setClientPage] = React.useState<ShopperExperience.schemas['Page'] | null>(null);
 
     const clientApi = React.useMemo(
         () =>
@@ -98,6 +105,11 @@ export const DesignProvider = ({
                 setPageDesignerConfig(event);
                 setIsConnected(true);
             },
+            onHostDisconnected: (reconnect) => {
+                setPageDesignerConfig(null);
+                setIsConnected(false);
+                reconnect();
+            },
             onError: () => {
                 // TODO: Figure out how to handle this.
             },
@@ -108,7 +120,7 @@ export const DesignProvider = ({
             setPageDesignerConfig(null);
             setIsConnected(false);
         };
-    }, [clientApi, clientConnectionTimeout, clientConnectionInterval, clientLogger]);
+    }, [clientApi, clientConnectionTimeout, clientConnectionInterval]);
 
     // Use the extracted state management hook
     const contextValue = React.useMemo<DesignContextType>(
@@ -117,8 +129,10 @@ export const DesignProvider = ({
             clientApi,
             isConnected,
             pageDesignerConfig,
+            clientPage,
+            setClientPage: (page: ShopperExperience.schemas['Page'] | null) => setClientPage(page),
         }),
-        [isDesignMode, clientApi, isConnected, pageDesignerConfig]
+        [isDesignMode, clientApi, isConnected, pageDesignerConfig, clientPage, setClientPage]
     );
 
     return (

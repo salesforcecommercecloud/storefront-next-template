@@ -1,6 +1,7 @@
 import { type FC, Suspense } from 'react';
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
+import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import { Component } from './component';
 
 vi.mock('@/lib/registry', () => ({
@@ -14,12 +15,6 @@ vi.mock('@/lib/registry', () => ({
 
 import { registry } from '@/lib/registry';
 
-type RegionComponent = {
-    id: string;
-    typeId: string;
-    name: string;
-    data?: Record<string, unknown>;
-};
 type DataMap = Record<string, Promise<unknown>>;
 
 const deferred = <T,>() => {
@@ -49,7 +44,11 @@ describe('Component', () => {
         };
         (registry.getComponent as any).mockReturnValue(Dynamic);
 
-        const component: RegionComponent = { id: 'c1', typeId: 'hero', name: 'Hero', data: { foo: 1 } };
+        const component: ShopperExperience.schemas['Component'] = {
+            id: 'c1',
+            typeId: 'hero',
+            data: { foo: 1 } as any,
+        };
         const d = deferred<unknown>();
         const map: DataMap = { c1: d.promise };
 
@@ -77,11 +76,9 @@ describe('Component', () => {
         expect(lastProps?.data).toEqual(resolved);
         expect(lastProps?.designMetadata).toEqual({
             id: component.id,
-            typeId: component.typeId,
-            name: component.name,
             isFragment: false,
-            data: component.data,
-            regionId: 'main-region',
+            isVisible: false,
+            name: 'Hero',
         });
     });
 
@@ -96,7 +93,7 @@ describe('Component', () => {
         };
         (registry.getComponent as any).mockReturnValue(Dynamic);
 
-        const component: RegionComponent = { id: 'c2', typeId: 'hero', name: 'H2' };
+        const component: ShopperExperience.schemas['Component'] = { id: 'c2', typeId: 'hero' };
 
         render(<Component component={component} regionId="main-region" />);
 
@@ -104,10 +101,9 @@ describe('Component', () => {
         expect(lastProps?.data).toBeUndefined();
         expect(lastProps?.designMetadata).toEqual({
             id: component.id,
-            typeId: component.typeId,
-            name: component.name,
             isFragment: false,
-            regionId: 'main-region',
+            isVisible: false,
+            name: 'H2',
         });
     });
 
@@ -118,7 +114,7 @@ describe('Component', () => {
         const Dynamic: FC = () => <div data-testid="dyn-default" />;
         (registry.getComponent as any).mockReturnValue(Dynamic);
 
-        const component: RegionComponent = { id: 'c3', typeId: 'hero', name: 'H3' };
+        const component: ShopperExperience.schemas['Component'] = { id: 'c3', typeId: 'hero' };
         const d = deferred<unknown>();
         const map: DataMap = { c3: d.promise };
 
@@ -142,7 +138,7 @@ describe('Component', () => {
 
         const DynamicAfter: FC<any> = () => <div data-testid="dyn-after-preload" />;
 
-        const component: RegionComponent = { id: 'cp', typeId: 'hero', name: 'HP' };
+        const component: ShopperExperience.schemas['Component'] = { id: 'cp', typeId: 'hero' };
 
         render(
             <Suspense fallback={<div data-testid="outer-fallback" />}>
@@ -172,7 +168,7 @@ describe('Component', () => {
         };
         (registry.getComponent as any).mockReturnValue(Dynamic);
 
-        const compB: RegionComponent = { id: 'B', typeId: 'hero', name: 'HA' };
+        const compB: ShopperExperience.schemas['Component'] = { id: 'B', typeId: 'hero' };
         const dA = deferred<unknown>();
         const dB = deferred<unknown>();
         const map: DataMap = { A: dA.promise, B: dB.promise };

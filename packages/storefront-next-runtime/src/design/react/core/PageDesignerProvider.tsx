@@ -10,13 +10,13 @@ import type { IsomorphicConfiguration } from '../../messaging-api';
 
 // Lazy load the context providers so that they are only loaded when needed and don't impact runtime performance
 const LazyDesignProvider = lazy(() =>
-    import('./DesignContext').then((module) => ({
+    import('../context/DesignContext').then((module) => ({
         default: module.DesignProvider,
     }))
 );
 
 const LazyPreviewProvider = lazy(() =>
-    import('./PreviewContext').then((module) => ({
+    import('../context/PreviewContext').then((module) => ({
         default: module.PreviewProvider,
     }))
 );

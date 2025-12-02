@@ -11,11 +11,33 @@
         "default": "./dist/design.js"
       }
     },
+    "./design/messaging": {
+      "import": {
+        "types": "./dist/design-messaging.d.ts",
+        "default": "./dist/design-messaging.js"
+      }
+    },
     "./design/react": {
       "import": {
         "types": "./dist/design-react.d.ts",
         "default": "./dist/design-react.js"
       }
+    },
+    "./design/react/core": {
+      "import": {
+        "types": "./dist/design-react-core.d.ts",
+        "default": "./dist/design-react-core.js"
+      }
+    },
+    "./design/mode": {
+      "import": {
+        "types": "./dist/design-mode.d.ts",
+        "default": "./dist/design-mode.js"
+      }
+    },
+    "./design/styles.css": {
+      "import": "./dist/design-styles.css",
+      "require": "./dist/design-styles.css"
     },
     "./events": {
       "import": {
@@ -34,7 +56,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsdown",
+    "build": "tsdown && cp src/design/styles/base.css dist/design-styles.css",
     "dev": "tsdown --watch",
     "typecheck": "tsc --noEmit",
     "test": "pnpm typecheck && pnpm test:unit",

@@ -1,5 +1,4 @@
-import { n as isPreviewModeActive, t as isDesignModeActive } from "./modeDetection.js";
-import { n as Messenger, t as createClientApi } from "./client.js";
+import { n as isDesignModeActive } from "./modeDetection.js";
 
 //#region src/design/componentRegistry.ts
 /**
@@ -61,86 +60,5 @@ var ComponentRegistry = class {
 };
 
 //#endregion
-//#region src/design/messaging-api/host.ts
-const defaultConfigFactory = () => Promise.resolve({
-	components: {},
-	componentTypes: {},
-	labels: {}
-});
-/**
-* Factory function to create a HostApi instance.
-*
-* @public
-* @param {HostConfiguration} config - Configuration object for the host API.
-* @returns {HostApi} An instance of the HostApi interface.
-*/
-function createHostApi({ emitter, id, logger }) {
-	const messenger = new Messenger({
-		source: "host",
-		id,
-		emitter,
-		logger
-	});
-	const subscriptions = [];
-	let isConnected = false;
-	return {
-		addComponentToRegion: messenger.toEmitter("ComponentAddedToRegion"),
-		moveComponentToRegion: messenger.toEmitter("ComponentMovedToRegion"),
-		startComponentDrag: messenger.toEmitter("ComponentDragStarted"),
-		hoverInToComponent: messenger.toEmitter("ComponentHoveredIn"),
-		hoverOutOfComponent: messenger.toEmitter("ComponentHoveredOut"),
-		selectComponent: messenger.toEmitter("ComponentSelected"),
-		deselectComponent: messenger.toEmitter("ComponentDeselected"),
-		deleteComponent: messenger.toEmitter("ComponentDeleted"),
-		forwardKeyPress: messenger.toEmitter("HostKeyPressed"),
-		notifyClientWindowDragDropped: messenger.toEmitter("ClientWindowDragDropped"),
-		notifyClientWindowDragEntered: messenger.toEmitter("ClientWindowDragEntered"),
-		notifyClientWindowDragMoved: messenger.toEmitter("ClientWindowDragMoved"),
-		notifyClientWindowDragExited: messenger.toEmitter("ClientWindowDragExited"),
-		setComponentProperties: messenger.toEmitter("ComponentPropertiesChanged"),
-		notifyWindowScrollChanged: messenger.toEmitter("WindowScrollChanged"),
-		notifyPageSettingsChanged: messenger.toEmitter("PageSettingsChanged"),
-		notifyMediaChanged: () => messenger.emit("MediaChangedEvent", {}),
-		notifyError: messenger.toEmitter("Error"),
-		focusComponent: messenger.toEmitter("ComponentFocused"),
-		setClientConfiguration: messenger.toEmitter("ClientConfigurationChanged"),
-		connect: ({ configFactory = defaultConfigFactory, onClientConnected, onClientDisconnected, onError }) => {
-			if (isConnected) {
-				onClientConnected?.(messenger.getRemoteId() ?? "");
-				return;
-			}
-			messenger.connect();
-			subscriptions.push(messenger.on("ClientDisconnected", (event) => {
-				if (event.meta.clientId === messenger.getRemoteId()) messenger.setRemoteId(void 0);
-				onClientDisconnected?.(event.meta.clientId ?? "");
-			}));
-			subscriptions.push(messenger.on("ClientInitialized", async (event) => {
-				const remoteId = messenger.getRemoteId();
-				if (remoteId && event.meta.clientId === remoteId || !remoteId) {
-					messenger.setRemoteId(event.meta.clientId);
-					try {
-						const config = await configFactory();
-						messenger.emit("ClientAcknowledged", config);
-						const { clientId } = await messenger.toPromise("ClientReady");
-						if (clientId !== messenger.getRemoteId()) throw new Error("Client id mismatch");
-						onClientConnected?.(clientId);
-					} catch (error) {
-						onError?.(error);
-					}
-				}
-			}));
-			isConnected = true;
-		},
-		on: (event, handler) => messenger.on(event, handler),
-		disconnect: () => {
-			isConnected = false;
-			messenger.disconnect();
-			subscriptions.forEach((unsubscribe) => unsubscribe());
-		},
-		getRemoteId: () => messenger.getRemoteId()
-	};
-}
-
-//#endregion
-export { ComponentRegistry, createClientApi, createHostApi, isDesignModeActive, isPreviewModeActive };
+export { ComponentRegistry };
 //# sourceMappingURL=design.js.map

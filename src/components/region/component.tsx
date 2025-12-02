@@ -1,16 +1,10 @@
 import { type ReactElement, memo, Suspense } from 'react';
 import { registry } from '@/lib/registry';
 import { Await } from 'react-router';
-
-interface RegionComponent {
-    id: string;
-    typeId: string;
-    name: string;
-    data?: Record<string, unknown>;
-}
+import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 
 export interface ComponentProps {
-    component: RegionComponent;
+    component: ShopperExperience.schemas['Component'];
     className?: string;
     componentData?: Promise<Record<string, Promise<unknown>>>;
     regionId: string;
@@ -20,7 +14,6 @@ export const Component = memo(function Component({
     component,
     componentData,
     className,
-    regionId,
 }: ComponentProps): ReactElement {
     const FallbackComponent = registry.getFallback(component.typeId);
     const metadata = registry.getMetadata(component.typeId);
@@ -41,7 +34,12 @@ export const Component = memo(function Component({
                 {(data) => (
                     <DynamicComponent
                         {...component.data}
-                        designMetadata={{ ...component, name: metadata?.name, isFragment: false, regionId }}
+                        designMetadata={{
+                            name: metadata?.name,
+                            isFragment: false,
+                            isVisible: Boolean(component.visible),
+                            id: component.id,
+                        }}
                         data={data}
                         className={className}
                     />

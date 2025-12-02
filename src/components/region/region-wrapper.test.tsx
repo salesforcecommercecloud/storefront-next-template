@@ -1,14 +1,15 @@
-import { describe, test, expect, vi, beforeEach } from 'vitest';
+import { describe, test, expect, vi, beforeEach, type Mock } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { RegionWrapper, type RegionDesignMetadata } from './region-wrapper';
-import type { ShopperExperienceTypes } from 'commerce-sdk-isomorphic';
+import { RegionWrapper } from './region-wrapper';
+import type { RegionDesignMetadata } from '@salesforce/storefront-next-runtime/design/react';
+import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 
-vi.mock('@salesforce/storefront-next-runtime/design', () => ({
+vi.mock('@salesforce/storefront-next-runtime/design/mode', () => ({
     isDesignModeActive: vi.fn(),
 }));
 
 type DecoratedProps = {
-    region: ShopperExperienceTypes.Page['Region'];
+    region: ShopperExperience.schemas['Region'];
     className?: string;
     designMetadata?: RegionDesignMetadata & {
         regionDirection: string;
@@ -29,11 +30,11 @@ vi.mock('@salesforce/storefront-next-runtime/design/react', () => ({
     },
 }));
 
-import { isDesignModeActive } from '@salesforce/storefront-next-runtime/design';
+import { isDesignModeActive } from '@salesforce/storefront-next-runtime/design/mode';
 
-const makeRegion = (id: string | undefined, compIds: string[]): ShopperExperienceTypes.Page['region'] => ({
-    id,
-    components: compIds.map((c) => ({ id: c })),
+const makeRegion = (id: string | undefined, compIds: string[]): ShopperExperience.schemas['Region'] => ({
+    id: id as string,
+    components: compIds.map((c) => ({ id: c, typeId: 'commerce_assets.productTile' })),
 });
 
 describe('RegionWrapper', () => {
@@ -43,7 +44,7 @@ describe('RegionWrapper', () => {
     });
 
     test('(runtime) renders plain RegionRenderer', () => {
-        (isDesignModeActive as unknown as jest.Mock).mockReturnValue(false);
+        (isDesignModeActive as unknown as Mock).mockReturnValue(false);
         const region = makeRegion('r1', ['a', 'b']);
 
         const { container } = render(
@@ -61,7 +62,7 @@ describe('RegionWrapper', () => {
     });
 
     test('(design mode) decorated renderer gets metadata', () => {
-        (isDesignModeActive as unknown as jest.Mock).mockReturnValue(true);
+        (isDesignModeActive as unknown as Mock).mockReturnValue(true);
         const region = makeRegion('r2', ['x1', 'x2']);
 
         render(<RegionWrapper region={region}>child</RegionWrapper>);
@@ -72,19 +73,19 @@ describe('RegionWrapper', () => {
         const last = decoratedCalls[decoratedCalls.length - 1];
         expect(last.region.id).toEqual('r2');
         expect(last.designMetadata?.componentIds).toEqual(['x1', 'x2']);
-        expect(last.designMetadata?.regionDirection).toEqual('column');
         expect(last.designMetadata?.componentTypeInclusions).toEqual([]);
         expect(last.designMetadata?.componentTypeExclusions).toEqual([]);
     });
 
     test('passes through custom inclusion/exclusion lists', () => {
-        (isDesignModeActive as unknown as jest.Mock).mockReturnValue(true);
+        (isDesignModeActive as unknown as Mock).mockReturnValue(true);
         const region = makeRegion('rM', ['cZ']);
 
         render(
             <RegionWrapper
                 region={region}
                 designMetadata={{
+                    id: 'rM',
                     componentTypeExclusions: ['e1'],
                     componentTypeInclusions: ['i1'],
                 }}>
@@ -98,7 +99,7 @@ describe('RegionWrapper', () => {
     });
 
     test('(design mode but no region id) falls back to plain renderer', () => {
-        (isDesignModeActive as unknown as jest.Mock).mockReturnValue(true);
+        (isDesignModeActive as unknown as Mock).mockReturnValue(true);
         const region = makeRegion(undefined, ['cx']);
 
         render(<RegionWrapper region={region}>y</RegionWrapper>);

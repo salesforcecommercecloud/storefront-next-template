@@ -23,13 +23,17 @@ const SCROLL_INTERVAL_IN_MS = 1000 / 60; // 60fps
 // This value will be the maximum amount of pixels that will be scrolled in a single frame.
 const SCROLL_BASE_AMOUNT_IN_PIXELS = 50;
 
+interface InsertionType {
+    axis: 'x' | 'y';
+    type: 'before' | 'after';
+}
+
 export interface DropTarget extends NodeToTargetMapEntry {
     beforeComponentId?: string;
     afterComponentId?: string;
-    insertType?: 'before' | 'after';
+    insertType: InsertionType;
     insertComponentId?: string;
     regionId: string;
-    regionDirection: 'row' | 'column';
 }
 
 export interface DragInteraction {
@@ -46,7 +50,7 @@ export interface DragInteraction {
         scrollDirection: 0 | 1 | -1;
     };
     commitCurrentDropTarget: () => void;
-    startComponentMove: (componentId: string, regionId: string) => void;
+    startComponentMove: (componentId: string, regionId: string, componentType: string) => void;
     updateComponentMove: (params: { x: number; y: number }) => void;
     dropComponent: () => void;
     cancelDrag: () => void;
@@ -57,27 +61,38 @@ function getInsertionType({
     node,
     x,
     y,
-    direction,
 }: {
     cache: WeakMap<Element, DOMRect>;
     node: Element;
     x: number;
     y: number;
-    direction: 'row' | 'column';
-}): 'before' | 'after' {
-    const rect = cache.get(node) ?? node.getBoundingClientRect();
+}): InsertionType {
+    if (!cache.has(node)) {
+        const rect = node.getBoundingClientRect();
+        const screenLeft = rect.left - window.scrollX;
+        const screenTop = rect.top + window.scrollY;
 
-    cache.set(node, rect);
-
-    if (direction === 'row') {
-        const midX = rect.left + rect.width / 2;
-
-        return x < midX ? 'before' : 'after';
+        // A bounding box is relative to the viewport.
+        // We need to know the absolute position, taking into account the scroll position.
+        cache.set(node, new DOMRect(screenLeft, screenTop, rect.width, rect.height));
     }
 
+    const rect = cache.get(node) as DOMRect;
+    const screenX = x + window.scrollX;
+    const screenY = y + window.scrollY;
+    const midX = rect.left + rect.width / 2;
     const midY = rect.top + rect.height / 2;
+    const deltaX = screenX - midX;
+    const deltaY = screenY - midY;
+    // Use the relative delta for boxes that are not square.
+    const relativeDeltaX = deltaX / (rect.width / 2);
+    const relativeDeltaY = deltaY / (rect.height / 2);
 
-    return y < midY ? 'before' : 'after';
+    if (Math.abs(relativeDeltaX) > Math.abs(relativeDeltaY)) {
+        return { axis: 'x', type: relativeDeltaX < 0 ? 'before' : 'after' };
+    }
+
+    return { axis: 'y', type: relativeDeltaY < 0 ? 'before' : 'after' };
 }
 
 // Determines whether a source component is being dropped on itself.
@@ -91,13 +106,14 @@ function isOnSelfDropTarget({
     sourceComponentId: string | undefined;
     beforeComponentId: string | undefined;
     afterComponentId: string | undefined;
-    insertType: 'before' | 'after';
+    insertType: InsertionType;
     componentId: string;
 }) {
     const isOnSource = sourceComponentId && componentId === sourceComponentId;
     const isOnSameRegionBefore =
-        sourceComponentId && insertType === 'before' && beforeComponentId === sourceComponentId;
-    const isOnSameRegionAfter = sourceComponentId && insertType === 'after' && afterComponentId === sourceComponentId;
+        sourceComponentId && insertType.type === 'before' && beforeComponentId === sourceComponentId;
+    const isOnSameRegionAfter =
+        sourceComponentId && insertType.type === 'after' && afterComponentId === sourceComponentId;
 
     return isOnSource || isOnSameRegionBefore || isOnSameRegionAfter;
 }
@@ -126,7 +142,7 @@ export function useDragInteraction({
                 const entry = stack[i];
 
                 // We need a region id and direction for this to be a target.
-                if (entry.regionId && entry.regionDirection) {
+                if (entry.regionId) {
                     if (entry.type === 'component') {
                         component = entry;
                     } else if (entry.type === 'region') {
@@ -157,13 +173,11 @@ export function useDragInteraction({
             y,
             rectCache,
             componentType,
-            sourceComponentId,
         }: {
             x: number;
             y: number;
             rectCache: WeakMap<Element, DOMRect>;
             componentType?: string;
-            sourceComponentId?: string;
         }): DropTarget | null => {
             const { component, region } = getNearestComponentAndRegion(x, y);
 
@@ -179,40 +193,24 @@ export function useDragInteraction({
                     return null;
                 }
 
-                const insertType = component
+                const insertType: InsertionType = component
                     ? getInsertionType({
                           cache: rectCache,
                           node: component.node,
                           x,
                           y,
-                          direction: region.regionDirection,
                       })
-                    : 'after';
+                    : { axis: 'y', type: 'after' };
 
                 const [beforeComponentId, afterComponentId] = component
                     ? getInsertionComponentIds(component.componentId, region)
                     : [];
-
-                // If we are dropping onto another component but would be dropping in the same insert
-                // position, then don't allow it as a drop target.
-                if (
-                    isOnSelfDropTarget({
-                        sourceComponentId,
-                        beforeComponentId,
-                        afterComponentId,
-                        insertType,
-                        componentId: component?.componentId ?? '',
-                    })
-                ) {
-                    return null;
-                }
 
                 // If we find a component before a region, it means we are dropping over a component.
                 // If no component is found before a region, it means we are dropping over an empty region.
                 return {
                     type: component ? 'component' : 'region',
                     regionId: region.regionId,
-                    regionDirection: region.regionDirection,
                     componentIds: region.componentIds,
                     componentId: component?.componentId ?? '',
                     parentId: region.parentId,
@@ -335,7 +333,6 @@ export function useDragInteraction({
                             y: event.y,
                             rectCache: dragState.rectCache,
                             componentType: prevState.componentType,
-                            sourceComponentId: dragState.sourceComponentId,
                         }),
                     }));
                 },
@@ -378,7 +375,6 @@ export function useDragInteraction({
                         y,
                         rectCache: state.rectCache,
                         componentType: state.componentType,
-                        sourceComponentId: state.sourceComponentId,
                     }),
                 }));
             },
@@ -389,13 +385,14 @@ export function useDragInteraction({
                     pendingTargetCommit: true,
                 }));
             },
-            startComponentMove: (componentId: string, regionId: string) => {
+            startComponentMove: (componentId: string, regionId: string, componentType: string) => {
                 scrollFactorRef.current = 0;
 
                 setState((prevState) => ({
                     ...prevState,
                     x: 0,
                     y: 0,
+                    componentType,
                     sourceComponentId: componentId,
                     sourceRegionId: regionId,
                     isDragging: true,
@@ -408,12 +405,19 @@ export function useDragInteraction({
                 if (state.currentDropTarget) {
                     // If we have a source component id, then we are moving a component to a different region.
                     if (state.sourceComponentId) {
-                        // If we aren't dropping on the same component we are moving.
-                        if (state.currentDropTarget.componentId !== state.sourceComponentId) {
+                        if (
+                            !isOnSelfDropTarget({
+                                sourceComponentId: state.sourceComponentId,
+                                beforeComponentId: state.currentDropTarget.beforeComponentId,
+                                afterComponentId: state.currentDropTarget.afterComponentId,
+                                insertType: state.currentDropTarget.insertType,
+                                componentId: state.currentDropTarget.componentId,
+                            })
+                        ) {
                             clientApi?.moveComponentToRegion({
                                 componentId: state.sourceComponentId,
                                 sourceRegionId: state.sourceRegionId ?? '',
-                                insertType: state.currentDropTarget.insertType,
+                                insertType: state.currentDropTarget.insertType?.type,
                                 insertComponentId: state.currentDropTarget.insertComponentId,
                                 beforeComponentId: state.currentDropTarget.beforeComponentId,
                                 afterComponentId: state.currentDropTarget.afterComponentId,
@@ -424,7 +428,7 @@ export function useDragInteraction({
                         // If we don't have a source component id, then we are adding a new component to a region.
                     } else if (state.componentType) {
                         clientApi?.addComponentToRegion({
-                            insertType: state.currentDropTarget.insertType,
+                            insertType: state.currentDropTarget.insertType?.type,
                             insertComponentId: state.currentDropTarget.insertComponentId,
                             componentProperties: {},
                             componentType: state.componentType,

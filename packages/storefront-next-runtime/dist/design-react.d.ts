@@ -1,40 +1,8 @@
-import { b as ClientAcknowledgedEvent, m as IsomorphicConfiguration, s as EventPayload, t as ClientApi } from "./api-types.js";
-import React$1 from "react";
+import { Q as ShopperExperience, S as ClientAcknowledgedEvent, l as EventPayload, r as ClientApi } from "./index.js";
+import React from "react";
 
-//#region src/design/react/context/PageDesignerProvider.d.ts
-type PageDesignerContextType = {
-  isDesignMode: boolean;
-  isPreviewMode: boolean;
-};
-declare const usePageDesignerMode: () => PageDesignerContextType;
-type PageDesignerProviderProps = {
-  children: React.ReactNode;
-  clientId: string;
-  targetOrigin: string;
-  clientLogger?: IsomorphicConfiguration['logger'];
-  clientConnectionTimeout?: number;
-  clientConnectionInterval?: number;
-  mode?: 'design' | 'preview';
-};
-declare const PageDesignerProvider: {
-  ({
-    children,
-    targetOrigin,
-    clientId,
-    clientLogger,
-    clientConnectionTimeout,
-    clientConnectionInterval,
-    mode
-  }: PageDesignerProviderProps): React.JSX.Element;
-  defaultProps: {
-    clientConnectionTimeout: number;
-    clientConnectionInterval: number;
-    mode: undefined;
-    clientLogger: () => void;
-  };
-};
-//#endregion
 //#region src/design/react/context/DesignContext.d.ts
+
 /**
  * Type definition for the Design Context
  * Extends DesignState with additional design-time properties
@@ -48,6 +16,10 @@ interface DesignContextType {
   isConnected: boolean;
   /** The page designer config */
   pageDesignerConfig: EventPayload<ClientAcknowledgedEvent> | null;
+  /** Page data that the client has retrieved */
+  clientPage: ShopperExperience.schemas['Page'] | null;
+  /** Sets the client page data */
+  setClientPage: (page: ShopperExperience.schemas['Page'] | null) => void;
 }
 /**
  * Custom hook to access the design context
@@ -63,10 +35,6 @@ interface RegionDesignMetadata {
    * The id of the component or region.
    */
   id: string;
-  /**
-   * The direction of the region or the region the component belongs to.
-   */
-  regionDirection: 'row' | 'column';
   /**
    * The name of the component or region.
    */
@@ -94,14 +62,18 @@ interface ComponentDesignMetadata {
    */
   isFragment: boolean;
   /**
+   * Whether the component is visible based on the current visiblity rules and context.
+   */
+  isVisible: boolean;
+  /**
    * The name of the component or region.
    */
   name?: string;
 }
-type ComponentDecoratorProps<TProps> = React$1.PropsWithChildren<{
+type ComponentDecoratorProps<TProps> = React.PropsWithChildren<{
   designMetadata: ComponentDesignMetadata;
 } & TProps>;
-type RegionDecoratorProps<TProps> = React$1.PropsWithChildren<{
+type RegionDecoratorProps<TProps> = React.PropsWithChildren<{
   designMetadata: RegionDesignMetadata;
 } & TProps>;
 //#endregion
@@ -115,10 +87,10 @@ type RegionDecoratorProps<TProps> = React$1.PropsWithChildren<{
  * @param Component - The React component to wrap with design functionality
  * @returns A new component with design-time capabilities
  */
-declare function createReactComponentDesignDecorator<TProps>(Component: React$1.ComponentType<TProps>): (props: ComponentDecoratorProps<TProps>) => React$1.JSX.Element;
+declare function createReactComponentDesignDecorator<TProps>(Component: React.ComponentType<TProps>): (props: ComponentDecoratorProps<TProps>) => React.JSX.Element;
 //#endregion
 //#region src/design/react/components/RegionDecorator.d.ts
-declare function createReactRegionDesignDecorator<TProps>(Region: React$1.ComponentType<TProps>): (props: RegionDecoratorProps<TProps>) => React$1.JSX.Element;
+declare function createReactRegionDesignDecorator<TProps>(Region: React.ComponentType<TProps>): (props: RegionDecoratorProps<TProps>) => React.JSX.Element;
 //#endregion
-export { type ComponentDecoratorProps, type ComponentDesignMetadata, type DesignContextType, PageDesignerProvider, type RegionDecoratorProps, type RegionDesignMetadata, createReactComponentDesignDecorator, createReactRegionDesignDecorator, useDesignContext, usePageDesignerMode };
+export { type ComponentDecoratorProps, type ComponentDesignMetadata, type DesignContextType, type RegionDecoratorProps, type RegionDesignMetadata, createReactComponentDesignDecorator, createReactRegionDesignDecorator, useDesignContext };
 //# sourceMappingURL=design-react.d.ts.map

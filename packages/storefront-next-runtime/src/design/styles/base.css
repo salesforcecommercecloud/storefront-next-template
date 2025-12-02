@@ -154,9 +154,6 @@
 
 .pd-design__component__drop-target {
   background-color: var(--pd-design-drop-target-color);
-  /* border-color: var(--pd-design-drop-target-color); */
-  /* border-style: solid; */
-  /* border-width: 0; */
   height: 0;
   left: 0;
   position: absolute;
