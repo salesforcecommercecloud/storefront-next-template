@@ -45,7 +45,7 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
         customerLookupResult = {
             isRegistered: false,
             recommendation: 'guest' as const,
-            message: 'Continuing as guest. You can login later if you have an account.',
+            message: t('checkout.contactInfo.lookupFallbackMessage'),
         };
     }
 
@@ -81,7 +81,7 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
         updateBasket(context, updatedBasket);
     } catch (error) {
         // Try to extract a more specific error message
-        let errorMessage = 'Failed to save contact information. Please try again.';
+        let errorMessage = t('checkout.contactInfo.saveError');
 
         if (error instanceof ApiError) {
             try {
@@ -92,7 +92,7 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
                     // If the error is about invalid customer, clear the session and retry as guest
                     if (responseMessage.toLowerCase().includes('customer is invalid')) {
                         // TODO: Need to evaluate if we have to clear the auth session here
-                        errorMessage = 'Session expired. Please refresh the page and try again.';
+                        errorMessage = t('checkout.contactInfo.sessionExpired');
                     }
                 }
             } catch {

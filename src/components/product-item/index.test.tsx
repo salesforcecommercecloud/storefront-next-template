@@ -297,7 +297,7 @@ describe('ProductItem', () => {
             renderWithRouter(<ProductItem productItem={mockProduct} displayVariant="summary" />);
 
             const imageContainer = screen.getByRole('img').parentElement;
-            expect(imageContainer).toHaveClass('w-20');
+            expect(imageContainer).toHaveClass('w-16');
         });
     });
 

@@ -43,6 +43,8 @@ function computeFinalStepForReturningCustomer(
     const hasCustomerAddresses = customerProfile.addresses && customerProfile.addresses.length > 0;
     const hasCustomerPaymentMethods =
         customerProfile.paymentInstruments && customerProfile.paymentInstruments.length > 0;
+    const hasBasketShippingAddress =
+        !!basket.shipments?.[0]?.shippingAddress && !isAddressEmpty(basket.shipments?.[0]?.shippingAddress);
 
     // If customer has complete profile (email, addresses, payment methods), go straight to review/place order
     if (hasCustomerEmail && hasCustomerAddresses && hasCustomerPaymentMethods) {
@@ -54,9 +56,9 @@ function computeFinalStepForReturningCustomer(
         return CHECKOUT_STEPS.PAYMENT;
     }
 
-    // If customer has email but no addresses, go to shipping address
+    // If customer has email but no addresses, go to shipping address (unless basket already has one)
     if (hasCustomerEmail && !hasCustomerAddresses) {
-        return CHECKOUT_STEPS.SHIPPING_ADDRESS;
+        return hasBasketShippingAddress ? null : CHECKOUT_STEPS.SHIPPING_ADDRESS;
     }
 
     // If customer has no email (shouldn't happen for registered users), go to contact info
@@ -99,7 +101,7 @@ export function computeStepFromBasket(
         // For auto-advance mode (returning customers), skip shipping options if they have a valid method
         if (autoAdvanceMode && hasShippingMethod) {
             // Skip shipping options step for returning customers with valid shipping method
-        } else if (!hasUserSelectedShippingOptions) {
+        } else if (!hasUserSelectedShippingOptions && !hasShippingMethod?.id) {
             return CHECKOUT_STEPS.SHIPPING_OPTIONS;
         }
     }

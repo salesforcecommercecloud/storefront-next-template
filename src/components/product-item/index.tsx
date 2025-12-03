@@ -69,12 +69,16 @@ function ProductItemVariantImage({
     const image = imageGroup?.images?.[0];
 
     return (
-        <div className={cn('bg-muted rounded flex-shrink-0', className)}>
+        <div
+            className={cn(
+                'bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden',
+                className
+            )}>
             {image ? (
                 <img
                     src={`${image.disBaseLink || image.link}?sw=160&q=60`}
                     alt={image.alt || productItem?.productName || productItem?.name || 'Product image'}
-                    className="w-full h-full object-cover rounded"
+                    className="h-full w-full object-contain"
                 />
             ) : (
                 <div className="w-full h-full bg-muted rounded" />
@@ -102,16 +106,16 @@ function ProductItemVariantName({ productItem }: { productItem: Item }): ReactEl
 
     const isBonusProduct = Boolean(productItem?.bonusProductLineItem);
     return (
-        <div className="mb-4 flex items-center gap-2 min-w-0">
+        <div className="mb-4 flex items-start gap-2 min-w-0">
             {isBonusProduct && (
                 <Badge variant="default" role="status" aria-label={tProduct('bonusProductAriaLabel')}>
                     {tProduct('bonusProduct')}
                 </Badge>
             )}
-            <Typography variant="h2" className="text-xl min-w-0 flex-1">
+            <Typography variant="h2" className="text-xl min-w-0 flex-1 leading-tight">
                 <Link
                     to={createProductUrl(productId)}
-                    className="text-foreground hover:text-primary block truncate"
+                    className="text-foreground hover:text-primary block break-words"
                     title={productName}>
                     {productName}
                 </Link>
@@ -266,7 +270,7 @@ function ProductItemVariantPrice({
     // Regular product pricing
     if (baseDirection === 'row') {
         return (
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between pr-4">
                 <div className="text-xl font-medium">{formatCurrency(price)}</div>
                 {pricePerUnit && pricePerUnit !== price && (
                     <div className="text-md text-muted-foreground">{formatCurrency(pricePerUnit)} each</div>
@@ -275,7 +279,7 @@ function ProductItemVariantPrice({
         );
     }
     return (
-        <div className="space-y-1">
+        <div className="space-y-1 text-right pr-2">
             <div className="text-xl font-medium">{formatCurrency(price)}</div>
             {pricePerUnit && pricePerUnit !== price && (
                 <div className="text-md text-muted-foreground">{formatCurrency(pricePerUnit)} each</div>
@@ -341,12 +345,12 @@ function ProductItem({
     if (displayVariant === 'summary') {
         return (
             <div
-                className="grid md:grid-cols-[160px_1fr] grid-cols-[80px_1fr] gap-5"
+                className="grid md:grid-cols-[112px_1fr] grid-cols-[72px_1fr] gap-4"
                 data-testid={`sf-product-item-summary-${productItem?.productId || productItem?.id}`}>
-                <div>
-                    <ProductItemVariantImage productItem={productItem} className="w-20" />
+                <div className="flex items-center justify-center">
+                    <ProductItemVariantImage productItem={productItem} className="w-16" />
                 </div>
-                <div className="flex-1 space-y-1">
+                <div className="flex-1 space-y-1 min-w-0">
                     <ProductItemVariantName productItem={productItem} />
                     {productItem.bundledProducts && productItem.bundledProducts.length > 0 && (
                         <BundledProductItems bundledProducts={productItem.bundledProducts} />
@@ -367,10 +371,10 @@ function ProductItem({
         <div className="relative" data-testid={`sf-product-item-${productItem?.productId || productItem?.id}`}>
             <Card className="p-0 border border-none shadow-none">
                 <CardContent className="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden">
-                    <div className="grid md:grid-cols-[160px_1fr] grid-cols-[80px_1fr] gap-5 min-w-0">
-                        <div className="flex-shrink-0">
+                    <div className="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0">
+                        <div className="flex-shrink-0 flex items-center justify-center">
                             {/* Product Image */}
-                            <ProductItemVariantImage productItem={productItem} className="md:w-40 w-20" />
+                            <ProductItemVariantImage productItem={productItem} className="md:w-32 w-16" />
                         </div>
 
                         {/* Product Details */}

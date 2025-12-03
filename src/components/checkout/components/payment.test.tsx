@@ -384,6 +384,47 @@ describe('Payment Integration Tests', () => {
             expect(screen.getByText(/choose a saved payment method or add a new one/i)).toBeInTheDocument();
             expect(screen.getByText('Mastercard')).toBeInTheDocument();
         });
+
+        test('defaults to new payment method when saved methods are missing ids', async () => {
+            const mockProfile = {
+                customer: { email: 'ghost@example.com' },
+                addresses: [],
+                paymentInstruments: [
+                    {
+                        // Intentionally omit paymentInstrumentId so helper would normally generate one.
+                        paymentMethodId: 'CREDIT_CARD',
+                        paymentCard: {
+                            holder: 'Ghost User',
+                            cardType: 'Visa',
+                        },
+                        preferred: true,
+                    },
+                ],
+            };
+
+            useCustomerProfile.mockReturnValue(mockProfile);
+            const customerProfileUtils = await import('@/lib/customer-profile-utils');
+            const spy = vi.spyOn(customerProfileUtils, 'getPaymentMethodsFromCustomer').mockReturnValue([
+                {
+                    id: '', // Simulate corrupted data with missing id
+                    type: 'CREDIT_CARD',
+                    cardType: 'Visa',
+                    maskedNumber: '**** 9999',
+                    preferred: true,
+                },
+            ]);
+
+            try {
+                render(<Payment {...createDefaultProps()} />);
+
+                await waitFor(() => {
+                    const addNewRadio = screen.getByLabelText(/add new payment method/i);
+                    expect(addNewRadio).toHaveAttribute('aria-checked', 'true');
+                });
+            } finally {
+                spy.mockRestore();
+            }
+        });
     });
 
     describe('Edge Cases - Field Errors', () => {

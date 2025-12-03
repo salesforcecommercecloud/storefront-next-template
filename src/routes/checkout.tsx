@@ -75,6 +75,14 @@ export function clientLoader(args: ClientLoaderFunctionArgs): CheckoutPageData {
 }
 
 /**
+ * Force client loader to run on every page load. Basket + shipping data live only
+ * in client middleware (localStorage), so SSR can’t hydrate them. Without hydrate=true
+ * we reuse empty server data, leading to stale prices/NaN totals and missing shipping
+ * methods on hard page refresh. The small perf cost ensures checkout always has fresh basket state.
+ */
+clientLoader.hydrate = true as const;
+
+/**
  * Skeleton loader for checkout sections
  * Uses the project's standardized Skeleton component for consistent styling
  */

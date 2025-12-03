@@ -8,7 +8,6 @@ import { ShoppingCart } from 'lucide-react';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 // Components
-import { Card, CardContent } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import ProductItemsList from '@/components/product-items-list';
 import { useTranslation } from 'react-i18next';
@@ -47,30 +46,27 @@ export default function MyCart({ basket, productMap = {}, itemsExpanded = false 
     const totalItems = basket?.productItems?.reduce((acc, item) => acc + (item.quantity ?? 0), 0) || 0;
 
     return (
-        <Card>
-            <CardContent>
-                <Accordion
-                    type="single"
-                    collapsible
-                    className="w-full"
-                    defaultValue={itemsExpanded ? 'my-cart-items' : undefined}>
-                    <AccordionItem value="my-cart-items" className="border-none">
-                        <AccordionTrigger className="text-left hover:no-underline py-6">
-                            <span className="flex-1 text-left text-lg font-bold text-primary">
-                                <ShoppingCart className="inline mr-2 w-5 h-5" />
-                                {t('myCart.title')} ({totalItems})
-                            </span>
-                        </AccordionTrigger>
-                        <AccordionContent className="px-0 pb-6">
-                            <ProductItemsList
-                                productItems={basket.productItems}
-                                productsByItemId={productMap}
-                                variant="summary"
-                            />
-                        </AccordionContent>
-                    </AccordionItem>
-                </Accordion>
-            </CardContent>
-        </Card>
+        <Accordion
+            type="single"
+            collapsible
+            className="w-full"
+            defaultValue={itemsExpanded ? 'my-cart-items' : undefined}>
+            <AccordionItem value="my-cart-items" className="border-none">
+                <AccordionTrigger className="text-left hover:no-underline py-6">
+                    <span className="flex-1 text-left text-lg font-bold text-primary">
+                        <ShoppingCart className="inline mr-2 w-5 h-5" />
+                        {t('myCart.title')} ({totalItems})
+                    </span>
+                </AccordionTrigger>
+                <AccordionContent className="px-0 pb-6">
+                    <ProductItemsList
+                        productItems={basket.productItems}
+                        productsByItemId={productMap}
+                        variant="summary"
+                        separateCards={true}
+                    />
+                </AccordionContent>
+            </AccordionItem>
+        </Accordion>
     );
 }

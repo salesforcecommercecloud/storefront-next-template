@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SelectNative } from '@/components/ui/select-native';
 import { Typography } from '@/components/typography';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { useBasket } from '@/providers/basket';
 import { createContactInfoSchema, type ContactInfoData } from '@/lib/checkout-schemas';
 import { useLoginSuggestion } from '@/hooks/use-customer-lookup';
@@ -85,9 +85,6 @@ export default function ContactInfo({
                             name="email"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold">
-                                        {t('contactInfo.emailPlaceholder')}
-                                    </FormLabel>
                                     <FormControl>
                                         <Input
                                             type="email"
@@ -111,9 +108,6 @@ export default function ContactInfo({
                                     name="countryCode"
                                     render={({ field }) => (
                                         <FormItem className="w-24">
-                                            <FormLabel className="text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold">
-                                                {t('contactInfo.countryCodeLabel')}
-                                            </FormLabel>
                                             <FormControl>
                                                 <SelectNative
                                                     aria-label={t('contactInfo.countryCodeLabel')}
@@ -141,9 +135,6 @@ export default function ContactInfo({
                                     name="phone"
                                     render={({ field }) => (
                                         <FormItem className="flex-1">
-                                            <FormLabel className="text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold">
-                                                {t('contactInfo.phonePlaceholder')}
-                                            </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     type="tel"
@@ -175,7 +166,7 @@ export default function ContactInfo({
 
             <ToggleCardSummary>
                 <div className="space-y-2">
-                    <Typography variant="p" className="font-medium">
+                    <Typography variant="small" className="text-muted-foreground">
                         {cart?.customerInfo?.email ||
                             (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('checkoutEmail')) ||
                             t('contactInfo.notProvided')}

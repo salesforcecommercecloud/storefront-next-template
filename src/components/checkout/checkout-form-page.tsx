@@ -7,6 +7,7 @@ import { useBasket } from '@/providers/basket';
 import { useCheckoutActions } from '@/hooks/use-checkout-actions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Typography } from '@/components/typography';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
@@ -258,6 +259,41 @@ export default function CheckoutFormPage({ shippingMethods, productMapPromise }:
     return (
         <div className="min-h-screen bg-background">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                {/* Mobile Order Summary + My Cart */}
+                <div className="lg:hidden mb-6">
+                    <Accordion type="single" collapsible defaultValue="order-summary">
+                        <AccordionItem
+                            value="order-summary"
+                            className="border rounded-2xl bg-card shadow-sm overflow-hidden">
+                            <AccordionTrigger className="px-4 py-4 text-lg font-semibold">
+                                {t('orderSummary.toggleLabel')}
+                            </AccordionTrigger>
+                            <AccordionContent className="px-0">
+                                <div className="px-4 pb-4 space-y-6">
+                                    <Card className="shadow-none border border-border">
+                                        <CardContent className="p-4">
+                                            <Suspense
+                                                fallback={<div className="h-56 bg-muted animate-pulse rounded" />}>
+                                                <OrderSummary
+                                                    basket={cart}
+                                                    showCartItems={false}
+                                                    showHeading={false}
+                                                    showPromoCodeForm={true}
+                                                    productsByItemId={{}}
+                                                />
+                                            </Suspense>
+                                        </CardContent>
+                                    </Card>
+
+                                    <Suspense fallback={<div className="h-48 bg-muted animate-pulse rounded" />}>
+                                        <MyCartWithData basket={cart} productMapPromise={productMapPromise} />
+                                    </Suspense>
+                                </div>
+                            </AccordionContent>
+                        </AccordionItem>
+                    </Accordion>
+                </div>
+
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Main Checkout Content - Single Page Layout */}
                     <div className="lg:col-span-2 space-y-8">
@@ -332,39 +368,28 @@ export default function CheckoutFormPage({ shippingMethods, productMapPromise }:
 
                         {/* Place Order Section */}
                         {step === STEPS.REVIEW_ORDER && (
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>
-                                        <Typography variant="h4" as="h2">
-                                            Review & Place Order
-                                        </Typography>
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="flex justify-center">
-                                        <Form method="post" action="/action/place-order">
-                                            {/* Hidden field to pass create account preference to server */}
-                                            <input
-                                                type="hidden"
-                                                name="shouldCreateAccount"
-                                                value={shouldCreateAccount ? 'true' : 'false'}
-                                            />
-                                            <Button
-                                                type="submit"
-                                                disabled={isPlacingOrder}
-                                                className="w-full max-w-sm"
-                                                size="lg">
-                                                {isPlacingOrder ? t('placeOrder.processing') : t('placeOrder.button')}
-                                            </Button>
-                                        </Form>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                            <div className="flex justify-end">
+                                <Form method="post" action="/action/place-order" className="w-full lg:w-auto">
+                                    {/* Hidden field to pass create account preference to server */}
+                                    <input
+                                        type="hidden"
+                                        name="shouldCreateAccount"
+                                        value={shouldCreateAccount ? 'true' : 'false'}
+                                    />
+                                    <Button
+                                        type="submit"
+                                        disabled={isPlacingOrder}
+                                        className="w-full lg:max-w-sm"
+                                        size="lg">
+                                        {isPlacingOrder ? t('placeOrder.processing') : t('placeOrder.button')}
+                                    </Button>
+                                </Form>
+                            </div>
                         )}
                     </div>
 
                     {/* Order Summary Sidebar */}
-                    <div className="lg:col-span-1">
+                    <div className="hidden lg:block lg:col-span-1">
                         <div className="sticky top-8 space-y-6">
                             {/* Order Summary */}
                             <Card>
@@ -381,7 +406,8 @@ export default function CheckoutFormPage({ shippingMethods, productMapPromise }:
                                             basket={cart}
                                             showCartItems={false}
                                             showHeading={false}
-                                            productMap={{}} // Not used when showCartItems=false
+                                            showPromoCodeForm={true}
+                                            productMap={{}}
                                         />
                                     </Suspense>
                                 </CardContent>

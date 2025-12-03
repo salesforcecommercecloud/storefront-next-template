@@ -43,26 +43,25 @@ exports[`Payment stories snapshot > CompletedState story renders and matches sna
       <div
         class="space-y-4"
       >
-        <div>
+        <div
+          class="space-y-2"
+        >
           <p
             class="text-sm font-medium leading-none text-left text-muted-foreground"
-          >
-            Payment Method
-          </p>
-          <p
-            class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground"
           >
             No payment method saved
           </p>
         </div>
-        <div>
-          <p
-            class="text-sm font-medium leading-none text-left text-muted-foreground"
+        <div
+          class="space-y-2"
+        >
+          <h6
+            class="text-base tracking-tight text-left text-foreground font-semibold"
           >
             Billing Address
-          </p>
+          </h6>
           <p
-            class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground"
+            class="text-sm font-medium leading-none text-left text-muted-foreground"
           >
             Same as shipping address
           </p>
@@ -376,26 +375,25 @@ exports[`Payment stories snapshot > DesktopView story renders and matches snapsh
       <div
         class="space-y-4"
       >
-        <div>
+        <div
+          class="space-y-2"
+        >
           <p
             class="text-sm font-medium leading-none text-left text-muted-foreground"
-          >
-            Payment Method
-          </p>
-          <p
-            class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground"
           >
             No payment method saved
           </p>
         </div>
-        <div>
-          <p
-            class="text-sm font-medium leading-none text-left text-muted-foreground"
+        <div
+          class="space-y-2"
+        >
+          <h6
+            class="text-base tracking-tight text-left text-foreground font-semibold"
           >
             Billing Address
-          </p>
+          </h6>
           <p
-            class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground"
+            class="text-sm font-medium leading-none text-left text-muted-foreground"
           >
             Same as shipping address
           </p>
@@ -449,26 +447,25 @@ exports[`Payment stories snapshot > DisabledState story renders and matches snap
       <div
         class="space-y-4"
       >
-        <div>
+        <div
+          class="space-y-2"
+        >
           <p
             class="text-sm font-medium leading-none text-left text-muted-foreground"
-          >
-            Payment Method
-          </p>
-          <p
-            class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground"
           >
             No payment method saved
           </p>
         </div>
-        <div>
-          <p
-            class="text-sm font-medium leading-none text-left text-muted-foreground"
+        <div
+          class="space-y-2"
+        >
+          <h6
+            class="text-base tracking-tight text-left text-foreground font-semibold"
           >
             Billing Address
-          </p>
+          </h6>
           <p
-            class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground"
+            class="text-sm font-medium leading-none text-left text-muted-foreground"
           >
             Same as shipping address
           </p>

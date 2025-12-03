@@ -281,6 +281,11 @@ describe('Checkout Route Components', () => {
             expect(typeof checkoutRoute.clientLoader).toBe('function');
         });
 
+        it('sets clientLoader.hydrate to true for fresh basket state', async () => {
+            const checkoutRoute = await import('./checkout');
+            expect(checkoutRoute.clientLoader.hydrate).toBe(true);
+        });
+
         it('should export HydrateFallback component', async () => {
             const checkoutRoute = await import('./checkout');
             expect(checkoutRoute.HydrateFallback).toBeDefined();

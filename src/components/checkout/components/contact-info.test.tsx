@@ -1,5 +1,5 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ContactInfo from './contact-info';
 
@@ -11,6 +11,19 @@ vi.mock('@/hooks/use-customer-lookup', () => ({
 }));
 vi.mock('@/hooks/checkout/use-customer-profile', () => ({
     useCustomerProfile: vi.fn(() => null),
+}));
+
+const mockGetContactInfoFromCustomer = vi.fn((_customerProfile?: unknown) => ({}));
+vi.mock('@/lib/customer-profile-utils', () => ({
+    getContactInfoFromCustomer: (customerProfile?: unknown) => mockGetContactInfoFromCustomer(customerProfile),
+}));
+
+const mockGetCommonPhoneCountryCodes = vi.fn(() => [
+    { dialingCode: '+1', countryName: 'United States' },
+    { dialingCode: '+44', countryName: 'United Kingdom' },
+]);
+vi.mock('@/lib/country-codes', () => ({
+    getCommonPhoneCountryCodes: () => mockGetCommonPhoneCountryCodes(),
 }));
 
 const createMockBasket = (overrides = {}) => ({
@@ -40,6 +53,11 @@ describe('ContactInfo Integration Tests', () => {
 
     beforeEach(async () => {
         vi.clearAllMocks();
+        mockGetContactInfoFromCustomer.mockReturnValue({});
+        mockGetCommonPhoneCountryCodes.mockReturnValue([
+            { dialingCode: '+1', countryName: 'United States' },
+            { dialingCode: '+44', countryName: 'United Kingdom' },
+        ]);
         const basketModule = await import('@/providers/basket');
         const profileModule = await import('@/hooks/checkout/use-customer-profile');
         const lookupModule = await import('@/hooks/use-customer-lookup');
@@ -97,6 +115,45 @@ describe('ContactInfo Integration Tests', () => {
                 const emailInput = screen.getByPlaceholderText(/enter your email address/i);
                 expect(emailInput).toHaveValue('basket@example.com');
             });
+        });
+    });
+
+    describe('Prefill Behavior', () => {
+        test('prefills email from customer profile when basket email is missing', async () => {
+            mockGetContactInfoFromCustomer.mockReturnValue({
+                email: 'profile@example.com',
+                phone: '5550001111',
+            });
+            useCustomerProfile.mockReturnValue({
+                customer: {
+                    customerId: 'cust-123',
+                    email: 'profile@example.com',
+                },
+            });
+            useBasket.mockReturnValue(
+                createMockBasket({
+                    customerInfo: { email: '', customerId: 'cust-123' },
+                })
+            );
+
+            render(<ContactInfo {...createDefaultProps()} />);
+
+            const emailInput = await screen.findByPlaceholderText(/enter your email address/i);
+            expect(emailInput).toHaveValue('profile@example.com');
+        });
+
+        test('renders country code options from helper utility', async () => {
+            mockGetCommonPhoneCountryCodes.mockReturnValue([
+                { dialingCode: '+1', countryName: 'United States' },
+                { dialingCode: '+81', countryName: 'Japan' },
+            ]);
+            useCustomerProfile.mockReturnValue(null);
+
+            render(<ContactInfo {...createDefaultProps()} />);
+
+            const select = await screen.findByLabelText(/country code/i);
+            expect(select).toBeInTheDocument();
+            expect(within(select).getByText('+81')).toBeInTheDocument();
         });
     });
 
@@ -227,6 +284,45 @@ describe('ContactInfo Integration Tests', () => {
                 const submitButton = screen.getByRole('button', { name: /saving/i });
                 expect(submitButton).toBeDisabled();
                 expect(submitButton).toHaveTextContent(/saving/i);
+            });
+        });
+    });
+
+    describe('Form Submission', () => {
+        test('submits contact info data when form is valid', async () => {
+            const user = userEvent.setup();
+            const handleSubmit = vi.fn();
+            useBasket.mockReturnValue(
+                createMockBasket({
+                    customerInfo: { email: '', customerId: null },
+                })
+            );
+
+            const { container } = render(<ContactInfo {...createDefaultProps({ onSubmit: handleSubmit })} />);
+
+            const emailInput = await screen.findByPlaceholderText(/enter your email address/i);
+            await user.clear(emailInput);
+            await user.type(emailInput, 'valid.email@example.com');
+
+            const phoneInput = screen.getByPlaceholderText(/phone number/i);
+            await user.clear(phoneInput);
+            await user.type(phoneInput, '5551234567');
+
+            const formElement = container.querySelector('form');
+            expect(formElement).not.toBeNull();
+
+            if (!formElement) {
+                throw new Error('Form element not found');
+            }
+
+            fireEvent.submit(formElement);
+
+            await waitFor(() => {
+                expect(handleSubmit).toHaveBeenCalledWith({
+                    email: 'valid.email@example.com',
+                    countryCode: '',
+                    phone: '5551234567',
+                });
             });
         });
     });

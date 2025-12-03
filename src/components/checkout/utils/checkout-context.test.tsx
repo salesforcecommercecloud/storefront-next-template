@@ -82,6 +82,18 @@ const mockCustomerProfile = {
     ],
 };
 
+const mockBasketWithoutShippingAddress = {
+    customerInfo: {
+        email: 'test@example.com',
+    },
+    shipments: [
+        {
+            shippingAddress: undefined,
+        },
+    ],
+    paymentInstruments: [],
+};
+
 describe('Checkout Context Functions', () => {
     describe('computeStepFromBasket', () => {
         it('should return CONTACT_INFO when no customer info', () => {
@@ -203,25 +215,28 @@ describe('Checkout Context Functions', () => {
             expect(result).toBe(CHECKOUT_STEPS.PAYMENT);
         });
 
-        it('should return SHIPPING_ADDRESS when addresses are missing from profile', () => {
+        it('should return SHIPPING_ADDRESS when addresses are missing from profile and basket needs address', () => {
             // Customer profile has email but no saved addresses
             const profileWithoutAddresses = {
                 ...mockCustomerProfile,
                 addresses: [],
             };
             // Note: Basket state doesn't matter, only profile matters for returning customers
-            const result = computeFinalStepForReturningCustomer(mockBasketWithAllInfo, profileWithoutAddresses);
+            const result = computeFinalStepForReturningCustomer(
+                mockBasketWithoutShippingAddress,
+                profileWithoutAddresses
+            );
             expect(result).toBe(CHECKOUT_STEPS.SHIPPING_ADDRESS);
         });
 
-        it('should return SHIPPING_ADDRESS when shipping address is missing from profile', () => {
+        it('should return null when profile is missing addresses but basket already has one', () => {
             // Customer profile has no addresses
             const profileWithoutAddress = {
                 ...mockCustomerProfile,
                 addresses: [],
             };
             const result = computeFinalStepForReturningCustomer(mockBasketWithAllInfo, profileWithoutAddress);
-            expect(result).toBe(CHECKOUT_STEPS.SHIPPING_ADDRESS);
+            expect(result).toBeNull();
         });
 
         it('should return CONTACT_INFO when customer email is missing from profile', () => {
@@ -234,7 +249,7 @@ describe('Checkout Context Functions', () => {
             expect(result).toBe(CHECKOUT_STEPS.CONTACT_INFO);
         });
 
-        it('should return SHIPPING_ADDRESS for customer profile with minimal data', () => {
+        it('should return SHIPPING_ADDRESS for customer profile with minimal data when basket lacks address', () => {
             // Customer has email but no addresses or payment instruments
             const minimalProfile = {
                 customer: { login: 'test@example.com' },
@@ -242,7 +257,7 @@ describe('Checkout Context Functions', () => {
                 paymentInstruments: [],
             };
             // Should go to SHIPPING_ADDRESS because profile has no addresses
-            const result = computeFinalStepForReturningCustomer(mockBasketWithAllInfo, minimalProfile);
+            const result = computeFinalStepForReturningCustomer(mockBasketWithoutShippingAddress, minimalProfile);
             expect(result).toBe(CHECKOUT_STEPS.SHIPPING_ADDRESS);
         });
     });

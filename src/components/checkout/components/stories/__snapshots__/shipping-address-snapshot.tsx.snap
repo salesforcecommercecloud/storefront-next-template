@@ -41,13 +41,13 @@ exports[`ShippingAddress stories snapshot > CompletedState story renders and mat
       data-testid="sf-toggle-card-shipping-address-content"
     >
       <div
-        class="space-y-3"
+        class="space-y-2"
       >
         <div
-          class="rounded-lg p-3 space-y-2 bg-muted/50"
+          class="space-y-2"
         >
           <p
-            class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground"
+            class="text-sm font-medium leading-none text-left text-muted-foreground"
           >
             Shipping address not provided yet
           </p>
@@ -352,13 +352,13 @@ exports[`ShippingAddress stories snapshot > DesktopView story renders and matche
       data-testid="sf-toggle-card-shipping-address-content"
     >
       <div
-        class="space-y-3"
+        class="space-y-2"
       >
         <div
-          class="rounded-lg p-3 space-y-2 bg-muted/50"
+          class="space-y-2"
         >
           <p
-            class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground"
+            class="text-sm font-medium leading-none text-left text-muted-foreground"
           >
             Shipping address not provided yet
           </p>
@@ -410,13 +410,13 @@ exports[`ShippingAddress stories snapshot > DisabledState story renders and matc
       data-testid="sf-toggle-card-shipping-address-content"
     >
       <div
-        class="space-y-3"
+        class="space-y-2"
       >
         <div
-          class="rounded-lg p-3 space-y-2 bg-muted/50"
+          class="space-y-2"
         >
           <p
-            class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground"
+            class="text-sm font-medium leading-none text-left text-muted-foreground"
           >
             Shipping address not provided yet
           </p>

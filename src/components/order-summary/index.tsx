@@ -98,6 +98,7 @@ function CartItemsSummary({
                 </AccordionTrigger>
                 <AccordionContent className="px-0 py-4">
                     <div className="space-y-5">
+                        {/* Cart summary sidebar */}
                         <ProductItemsList
                             productItems={basket.productItems}
                             productsByItemId={productsByItemId}
@@ -200,7 +201,7 @@ export default function OrderSummary({
                             {basket.orderPriceAdjustments?.map((adjustment) => (
                                 <div key={adjustment.priceAdjustmentId} className="flex justify-between items-center">
                                     <span>{adjustment.itemText}</span>
-                                    <span className="text-success text-xl font-bold">
+                                    <span className="text-success text-sm font-semibold">
                                         {formatCurrency(adjustment.price ?? 0)}
                                     </span>
                                 </div>

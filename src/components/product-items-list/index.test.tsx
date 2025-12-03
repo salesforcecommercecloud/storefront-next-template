@@ -1,6 +1,6 @@
 // Testing libraries
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 
 // React Router
 import { createMemoryRouter, RouterProvider } from 'react-router';
@@ -181,6 +181,32 @@ describe('ProductItemsList', () => {
 
             // Product name should still be rendered
             expect(screen.getByText('Test Product')).toBeInTheDocument();
+        });
+
+        test('wraps summary items in individual cards when separateCards is true', () => {
+            const productItems = [mockProductItem, { ...mockProductItem, itemId: 'item-2', productId: 'product-2' }];
+            const productsByItemId = {
+                'item-1': mockProduct,
+                'item-2': { ...mockProduct, id: 'product-2' },
+            };
+
+            const { container } = renderWithRouter(
+                <ProductItemsList
+                    productItems={productItems}
+                    productsByItemId={productsByItemId}
+                    variant="summary"
+                    separateCards
+                />
+            );
+
+            const cardWrappers = container.querySelectorAll('[data-slot="card"]');
+            expect(cardWrappers).toHaveLength(productItems.length);
+
+            productItems.forEach((item, index) => {
+                expect(
+                    within(cardWrappers[index] as HTMLElement).getByTestId(`sf-product-item-summary-${item.productId}`)
+                ).toBeInTheDocument();
+            });
         });
     });
 

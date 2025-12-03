@@ -44,6 +44,11 @@ export default function ShippingAddress({
     // Get phone from contact info (prioritize this for auto-population)
     const contactInfoPhone = cart?.customerInfo?.phone;
 
+    // Phone priority: saved shipping phone > contact info phone > customer profile phone
+    const prioritizedPhoneNumber = (shippingAddress?.phone ||
+        contactInfoPhone ||
+        customerShippingAddress.phone ||
+        '') as string;
     const schema = useMemo(() => createShippingAddressSchema(t), [t]);
 
     const form = useForm<ShippingAddressData>({
@@ -56,8 +61,7 @@ export default function ShippingAddress({
             city: shippingAddress?.city || customerShippingAddress.city || '',
             stateCode: shippingAddress?.stateCode || customerShippingAddress.stateCode || '',
             postalCode: shippingAddress?.postalCode || customerShippingAddress.postalCode || '',
-            // Phone priority: saved shipping phone > contact info phone > customer profile phone
-            phone: shippingAddress?.phone || contactInfoPhone || customerShippingAddress.phone || '',
+            phone: prioritizedPhoneNumber,
         },
     });
 
@@ -290,36 +294,35 @@ export default function ShippingAddress({
             </ToggleCardEdit>
 
             <ToggleCardSummary>
-                <div className="space-y-3">
+                <div className="space-y-2">
                     {/* If address is cleared, the addreess object will still exist with an id field, so we additionally check for empty fields */}
                     {shippingAddress && !isAddressEmpty(shippingAddress) ? (
-                        <div className="rounded-lg p-3 space-y-2 bg-muted/50">
-                            <Typography variant="p" className="font-medium">
+                        <div className="space-y-2">
+                            <Typography variant="small" className="text-muted-foreground">
                                 {shippingAddress.firstName} {shippingAddress.lastName}
                             </Typography>
-                            <Typography variant="p" className="text-muted-foreground">
+                            <Typography variant="small" className="text-muted-foreground">
                                 {shippingAddress.address1}
-                                {shippingAddress.address2 && (
-                                    <>
-                                        <br />
-                                        {shippingAddress.address2}
-                                    </>
-                                )}
-                                <br />
+                            </Typography>
+                            {shippingAddress.address2 && (
+                                <Typography variant="small" className="text-muted-foreground">
+                                    {shippingAddress.address2}
+                                </Typography>
+                            )}
+                            <Typography variant="small" className="text-muted-foreground">
                                 {shippingAddress.city}
                                 {shippingAddress.stateCode && `, ${shippingAddress.stateCode}`}{' '}
                                 {shippingAddress.postalCode}
-                                {shippingAddress.phone && (
-                                    <>
-                                        <br />
-                                        {shippingAddress.phone}
-                                    </>
-                                )}
                             </Typography>
+                            {prioritizedPhoneNumber && (
+                                <Typography variant="small" className="text-muted-foreground">
+                                    {prioritizedPhoneNumber}
+                                </Typography>
+                            )}
                         </div>
                     ) : (
-                        <div className="rounded-lg p-3 space-y-2 bg-muted/50">
-                            <Typography variant="p" className="text-muted-foreground">
+                        <div className="space-y-2">
+                            <Typography variant="small" className="text-muted-foreground">
                                 {t('shippingAddress.notProvided')}
                             </Typography>
                         </div>

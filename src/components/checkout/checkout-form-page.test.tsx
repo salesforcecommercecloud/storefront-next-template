@@ -1,6 +1,8 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import type { ReactNode, ComponentProps } from 'react';
+import { render, screen, within, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { act, type ReactNode, type ComponentProps } from 'react';
+import i18next from 'i18next';
 import CheckoutFormPage from './checkout-form-page';
 
 // Type definitions for mock components
@@ -86,21 +88,83 @@ vi.mock('@/components/toast', () => ({
     }),
 }));
 
+const mockAnalytics = {
+    trackCheckoutStart: vi.fn(),
+    trackCheckoutStep: vi.fn(),
+};
+const mockUseAnalytics = vi.fn(() => mockAnalytics);
+vi.mock('@/hooks/use-analytics', () => ({
+    useAnalytics: () => mockUseAnalytics(),
+}));
+
+const ExpressPaymentsMock = ({
+    onApplePayClick,
+    onGooglePayClick,
+    onAmazonPayClick,
+    onVenmoClick,
+    onPayPalClick,
+}: {
+    onApplePayClick: () => void;
+    onGooglePayClick: () => void;
+    onAmazonPayClick: () => void;
+    onVenmoClick: () => void;
+    onPayPalClick: () => void;
+}) => (
+    <div data-testid="express-payments">
+        <button type="button" onClick={onApplePayClick}>
+            Apple Pay
+        </button>
+        <button type="button" onClick={onGooglePayClick}>
+            Google Pay
+        </button>
+        <button type="button" onClick={onAmazonPayClick}>
+            Amazon Pay
+        </button>
+        <button type="button" onClick={onVenmoClick}>
+            Venmo
+        </button>
+        <button type="button" onClick={onPayPalClick}>
+            PayPal
+        </button>
+    </div>
+);
+vi.mock('./components/express-payments', () => ({
+    default: ExpressPaymentsMock,
+}));
+
+const mockIsStorePickup = vi.fn<(cart: unknown) => boolean>(() => false);
+
+vi.mock('@/extensions/bopis/lib/basket-utils', () => ({
+    isStorePickup: (cart: unknown) => mockIsStorePickup(cart),
+}));
+
+vi.mock('@/extensions/bopis/components/checkout/store-pickup', () => ({
+    default: () => <div data-testid="store-pickup">Store Pickup</div>,
+}));
+
 // Mock the checkout context
+const mockUseCheckoutContext = vi.fn();
+
+const defaultSteps = {
+    CONTACT_INFO: 0,
+    PICKUP_ADDRESS: 1,
+    SHIPPING_ADDRESS: 2,
+    SHIPPING_OPTIONS: 3,
+    PAYMENT: 4,
+    REVIEW_ORDER: 5,
+} as const;
+
+const buildCheckoutContext = (overrides?: Record<string, unknown>) => ({
+    step: 0,
+    editingStep: null,
+    STEPS: defaultSteps,
+    goToNextStep: vi.fn(),
+    goToStep: vi.fn(),
+    ...(overrides || {}),
+});
+
 vi.mock('@/hooks/use-checkout', () => ({
-    useCheckoutContext: () => ({
-        step: 0,
-        STEPS: {
-            CONTACT_INFO: 0,
-            PICKUP_ADDRESS: 1,
-            SHIPPING_ADDRESS: 2,
-            SHIPPING_OPTIONS: 3,
-            PAYMENT: 4,
-            REVIEW_ORDER: 5,
-        },
-        goToNextStep: vi.fn(),
-        goToStep: vi.fn(),
-    }),
+    useCheckoutContext: () => mockUseCheckoutContext(),
 }));
 
 // Mock the checkout context utilities
@@ -115,6 +179,9 @@ vi.mock('@/hooks/checkout/use-completed-steps', () => ({
 }));
 
 // Mock the checkout actions hook
+const mockIsSubmitting = vi.fn(() => false);
+let mockShouldCreateAccount = false;
+
 vi.mock('@/hooks/use-checkout-actions', () => ({
     useCheckoutActions: () => ({
         submitContactInfo: vi.fn(),
@@ -125,7 +192,11 @@ vi.mock('@/hooks/use-checkout-actions', () => ({
         shippingAddressFetcher: { data: null, state: 'idle' },
         shippingOptionsFetcher: { data: null, state: 'idle' },
         paymentFetcher: { data: null, state: 'idle' },
-        isSubmitting: vi.fn(() => false),
+        isSubmitting: mockIsSubmitting,
+        handleCreateAccountPreferenceChange: vi.fn(),
+        get shouldCreateAccount() {
+            return mockShouldCreateAccount;
+        },
     }),
 }));
 
@@ -202,21 +273,45 @@ describe('CheckoutFormPage', () => {
         productMapPromise: Promise.resolve({}),
     };
 
+    const renderCheckoutPage = async (
+        props: Partial<ComponentProps<typeof CheckoutFormPage>> = {}
+    ): Promise<ReturnType<typeof render>> => {
+        let view: ReturnType<typeof render> | undefined;
+        await act(async () => {
+            view = render(<CheckoutFormPage {...defaultProps} {...props} />);
+            await Promise.resolve();
+        });
+        if (!view) {
+            throw new Error('CheckoutFormPage failed to render');
+        }
+        return view;
+    };
+
     beforeEach(() => {
         vi.clearAllMocks();
+        mockAnalytics.trackCheckoutStart.mockReset();
+        mockAnalytics.trackCheckoutStep.mockReset();
+        mockUseAnalytics.mockReturnValue(mockAnalytics);
+        Object.defineProperty(window, 'scrollTo', {
+            writable: true,
+            value: vi.fn(),
+        });
 
         mockUseActionData.mockReturnValue(undefined);
-        mockUseNavigation.mockReturnValue({ state: 'idle' });
+        mockUseNavigation.mockReturnValue({ state: 'idle', formAction: '' });
         mockUseBasket.mockReturnValue({
             basketId: 'test-basket',
             productItems: [{ itemId: 'item1', productId: 'product1', quantity: 1 }],
         });
+        mockUseCheckoutContext.mockReturnValue(buildCheckoutContext());
         mockUseCartStore.mockReturnValue({
             basketId: 'test-basket',
             productItems: [{ itemId: '1', productName: 'Test Product', price: 99.99, quantity: 1 }],
             productTotal: 99.99,
             orderTotal: 99.99,
         });
+        mockIsStorePickup.mockReturnValue(false);
+        mockShouldCreateAccount = false;
 
         // Setup checkout context mocks
         mockUseCustomerProfile.mockReturnValue(null); // Default to guest user
@@ -224,20 +319,20 @@ describe('CheckoutFormPage', () => {
     });
 
     describe('Basic Rendering', () => {
-        test('renders without crashing', () => {
-            expect(() => render(<CheckoutFormPage {...defaultProps} />)).not.toThrow();
+        test('renders without crashing', async () => {
+            await renderCheckoutPage();
         });
 
-        test('displays main checkout content', () => {
-            render(<CheckoutFormPage {...defaultProps} />);
+        test('displays main checkout content', async () => {
+            await renderCheckoutPage();
 
             // Should render all forms (they are all displayed)
             expect(screen.getByText('Contact Info Form')).toBeInTheDocument();
-            expect(screen.getByTestId('order-summary')).toBeInTheDocument();
+            expect(screen.getAllByTestId('order-summary').length).toBeGreaterThan(0);
         });
 
-        test('displays all checkout forms', () => {
-            render(<CheckoutFormPage {...defaultProps} />);
+        test('displays all checkout forms', async () => {
+            await renderCheckoutPage();
 
             expect(screen.getByText('Contact Info Form')).toBeInTheDocument();
             expect(screen.getByText('Shipping Address Form')).toBeInTheDocument();
@@ -246,24 +341,74 @@ describe('CheckoutFormPage', () => {
         });
     });
 
+    describe('Analytics tracking', () => {
+        test('tracks the initial checkout step when a basket is present', async () => {
+            await renderCheckoutPage();
+
+            await waitFor(() => {
+                expect(mockAnalytics.trackCheckoutStep).toHaveBeenCalledWith({
+                    stepName: 'CONTACT_INFO',
+                    stepNumber: defaultSteps.CONTACT_INFO,
+                    basket: expect.objectContaining({ basketId: 'test-basket' }),
+                });
+            });
+        });
+    });
+
+    describe('Express payment handlers', () => {
+        test('triggers alerts for each express payment CTA', async () => {
+            window.alert = window.alert || (() => undefined);
+            const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => undefined);
+            const user = userEvent.setup();
+
+            await renderCheckoutPage();
+
+            await screen.findByTestId('express-payments');
+
+            await user.click(screen.getByRole('button', { name: /apple pay/i }));
+            await user.click(screen.getByRole('button', { name: /google pay/i }));
+            await user.click(screen.getByRole('button', { name: /amazon pay/i }));
+            await user.click(screen.getByRole('button', { name: /venmo/i }));
+            await user.click(screen.getByRole('button', { name: /paypal/i }));
+
+            expect(alertSpy).toHaveBeenCalledWith(
+                expect.stringContaining('Apple Pay express checkout would be processed here')
+            );
+            expect(alertSpy).toHaveBeenCalledWith(
+                expect.stringContaining('Google Pay express checkout would be processed here')
+            );
+            expect(alertSpy).toHaveBeenCalledWith(
+                expect.stringContaining('Amazon Pay express checkout would be processed here')
+            );
+            expect(alertSpy).toHaveBeenCalledWith(
+                expect.stringContaining('Venmo express checkout would be processed here')
+            );
+            expect(alertSpy).toHaveBeenCalledWith(
+                expect.stringContaining('PayPal express checkout would be processed here')
+            );
+
+            alertSpy.mockRestore();
+        });
+    });
+
     describe('Error Handling', () => {
-        test('displays form errors from server', () => {
+        test('displays form errors from server', async () => {
             mockUseActionData.mockReturnValue({
                 success: false,
                 formError: 'Please enter your email address',
                 step: 'contactInfo',
             });
 
-            render(<CheckoutFormPage {...defaultProps} />);
+            await renderCheckoutPage();
 
             // Component should handle error state
             expect(screen.getByText('Contact Info Form')).toBeInTheDocument();
         });
 
-        test('handles loading state', () => {
+        test('handles loading state', async () => {
             mockUseNavigation.mockReturnValue({ state: 'submitting' });
 
-            render(<CheckoutFormPage {...defaultProps} />);
+            await renderCheckoutPage();
 
             // Component should render in loading state
             expect(screen.getByText('Contact Info Form')).toBeInTheDocument();
@@ -285,8 +430,7 @@ describe('CheckoutFormPage', () => {
             });
         });
 
-        test('hides create account checkbox for registered users', () => {
-            // Mock a registered user with customer profile
+        test('hides create account checkbox for registered users', async () => {
             mockUseCustomerProfile.mockReturnValue({
                 customer: {
                     customerId: 'registered-customer-123',
@@ -298,17 +442,13 @@ describe('CheckoutFormPage', () => {
                 paymentInstruments: [],
             });
 
-            render(<CheckoutFormPage {...defaultProps} />);
-
-            // Checkbox should NOT be present for registered users
+            await renderCheckoutPage();
             expect(screen.queryByTestId('register-customer-checkbox')).not.toBeInTheDocument();
         });
 
-        test('shows create account checkbox for guest users with guest recommendation', () => {
-            // Mock a guest user (no customer profile)
+        test('shows create account checkbox for guest users with guest recommendation', async () => {
             mockUseCustomerProfile.mockReturnValue(null);
 
-            // Mock session storage to return guest recommendation
             const mockGetItem = vi.fn((key: string) => {
                 if (key === 'customerLookupResult') {
                     return JSON.stringify({ recommendation: 'guest' });
@@ -317,38 +457,28 @@ describe('CheckoutFormPage', () => {
             });
             window.sessionStorage.getItem = mockGetItem;
 
-            render(<CheckoutFormPage {...defaultProps} />);
-
-            // Checkbox should be present for guest users
+            await renderCheckoutPage();
             expect(screen.getByTestId('register-customer-checkbox')).toBeInTheDocument();
         });
 
-        test('shows create account checkbox for guest users without basket customer ID', () => {
-            // Mock a guest user (no customer profile)
+        test('shows create account checkbox when no customer ID or lookup data', async () => {
             mockUseCustomerProfile.mockReturnValue(null);
-
-            // Mock basket without customer ID
             mockUseBasket.mockReturnValue({
                 basketId: 'test-basket',
                 productItems: [{ itemId: 'item1', productId: 'product1', quantity: 1 }],
-                customerInfo: null, // No customer info
+                customerInfo: null,
             });
 
-            // Mock session storage to return null (no customer lookup result)
             const mockGetItem = vi.fn(() => null);
             window.sessionStorage.getItem = mockGetItem;
 
-            render(<CheckoutFormPage {...defaultProps} />);
-
-            // Checkbox should be present for guest users
+            await renderCheckoutPage();
             expect(screen.getByTestId('register-customer-checkbox')).toBeInTheDocument();
         });
 
-        test('hides create account checkbox for guest users with returning customer recommendation', () => {
-            // Mock a guest user (no customer profile)
+        test('hides create account checkbox for guest users with returning recommendation', async () => {
             mockUseCustomerProfile.mockReturnValue(null);
 
-            // Mock session storage to return returning customer recommendation
             const mockGetItem = vi.fn((key: string) => {
                 if (key === 'customerLookupResult') {
                     return JSON.stringify({ recommendation: 'returning' });
@@ -357,24 +487,19 @@ describe('CheckoutFormPage', () => {
             });
             window.sessionStorage.getItem = mockGetItem;
 
-            // Mock basket with customer ID
             mockUseBasket.mockReturnValue({
                 basketId: 'test-basket',
                 productItems: [{ itemId: 'item1', productId: 'product1', quantity: 1 }],
                 customerInfo: { customerId: 'customer-123' },
             });
 
-            render(<CheckoutFormPage {...defaultProps} />);
-
-            // Checkbox should NOT be present for returning customers
+            await renderCheckoutPage();
             expect(screen.queryByTestId('register-customer-checkbox')).not.toBeInTheDocument();
         });
 
-        test('handles malformed customer lookup data gracefully', () => {
-            // Mock a guest user (no customer profile)
+        test('handles malformed customer lookup data gracefully', async () => {
             mockUseCustomerProfile.mockReturnValue(null);
 
-            // Mock session storage to return malformed JSON
             const mockGetItem = vi.fn((key: string) => {
                 if (key === 'customerLookupResult') {
                     return 'invalid-json';
@@ -383,21 +508,17 @@ describe('CheckoutFormPage', () => {
             });
             window.sessionStorage.getItem = mockGetItem;
 
-            // Mock basket without customer ID
             mockUseBasket.mockReturnValue({
                 basketId: 'test-basket',
                 productItems: [{ itemId: 'item1', productId: 'product1', quantity: 1 }],
                 customerInfo: null,
             });
 
-            render(<CheckoutFormPage {...defaultProps} />);
-
-            // Should still show checkbox for guest users even with malformed data
+            await renderCheckoutPage();
             expect(screen.getByTestId('register-customer-checkbox')).toBeInTheDocument();
         });
 
-        test('prioritizes customer profile over session storage', () => {
-            // Mock a registered user with customer profile
+        test('prioritizes customer profile over session storage recommendation', async () => {
             mockUseCustomerProfile.mockReturnValue({
                 customer: {
                     customerId: 'registered-customer-123',
@@ -407,7 +528,6 @@ describe('CheckoutFormPage', () => {
                 paymentInstruments: [],
             });
 
-            // Mock session storage to return guest recommendation (should be ignored)
             const mockGetItem = vi.fn((key: string) => {
                 if (key === 'customerLookupResult') {
                     return JSON.stringify({ recommendation: 'guest' });
@@ -416,10 +536,97 @@ describe('CheckoutFormPage', () => {
             });
             window.sessionStorage.getItem = mockGetItem;
 
-            render(<CheckoutFormPage {...defaultProps} />);
-
-            // Customer profile should take precedence - checkbox should NOT be present
+            await renderCheckoutPage();
             expect(screen.queryByTestId('register-customer-checkbox')).not.toBeInTheDocument();
+        });
+    });
+
+    describe('Mobile order summary accordion', () => {
+        test('renders accordion with order summary and cart content', async () => {
+            await renderCheckoutPage();
+
+            const toggle = screen.getByText('Show Order Summary');
+            expect(toggle).toBeInTheDocument();
+
+            const accordion = toggle.closest('[data-slot="accordion"]');
+            expect(accordion).not.toBeNull();
+
+            const scoped = within(accordion as HTMLElement);
+            expect(scoped.getByTestId('order-summary')).toBeInTheDocument();
+            expect(scoped.getByTestId('my-cart')).toBeInTheDocument();
+        });
+    });
+
+    describe('Conditional rendering', () => {
+        test('renders empty cart state when basket has no items', async () => {
+            mockUseBasket.mockReturnValueOnce({
+                basketId: 'empty-basket',
+                productItems: [],
+            });
+
+            await renderCheckoutPage();
+
+            expect(screen.getByText(i18next.t('checkout:common.emptyCart'))).toBeInTheDocument();
+        });
+
+        test('shows store pickup section and hides shipping steps when pickup order', async () => {
+            mockIsStorePickup.mockReturnValueOnce(true);
+
+            await renderCheckoutPage();
+
+            expect(await screen.findByTestId('store-pickup')).toBeInTheDocument();
+            await waitFor(() => {
+                expect(screen.queryByTestId('shipping-address')).not.toBeInTheDocument();
+                expect(screen.queryByTestId('shipping-options')).not.toBeInTheDocument();
+            });
+        });
+    });
+
+    describe('Place order section', () => {
+        test('renders place order button when step is review order', async () => {
+            mockUseCheckoutContext.mockReturnValue(
+                buildCheckoutContext({
+                    step: defaultSteps.REVIEW_ORDER,
+                })
+            );
+
+            const { container } = await renderCheckoutPage();
+
+            expect(
+                screen.getByRole('button', {
+                    name: i18next.t('checkout:placeOrder.button'),
+                })
+            ).toBeInTheDocument();
+
+            const hiddenInput = container.querySelector<HTMLInputElement>('input[name="shouldCreateAccount"]');
+            expect(hiddenInput?.value).toBe('false');
+        });
+
+        test('sets hidden input when user chooses to create an account', async () => {
+            mockShouldCreateAccount = true;
+            mockUseCheckoutContext.mockReturnValue(
+                buildCheckoutContext({
+                    step: defaultSteps.REVIEW_ORDER,
+                })
+            );
+
+            const { container } = await renderCheckoutPage();
+            const hiddenInput = container.querySelector<HTMLInputElement>('input[name="shouldCreateAccount"]');
+            expect(hiddenInput?.value).toBe('true');
+        });
+
+        test('disables place order button and shows processing text while submitting', async () => {
+            mockUseCheckoutContext.mockReturnValue(
+                buildCheckoutContext({
+                    step: defaultSteps.REVIEW_ORDER,
+                })
+            );
+            mockUseNavigation.mockReturnValue({ state: 'submitting', formAction: '/action/place-order' });
+
+            await renderCheckoutPage();
+
+            const button = screen.getByRole('button', { name: i18next.t('checkout:placeOrder.processing') });
+            expect(button).toBeDisabled();
         });
     });
 });

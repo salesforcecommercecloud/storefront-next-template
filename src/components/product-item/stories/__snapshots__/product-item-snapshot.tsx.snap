@@ -18,17 +18,17 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
           data-slot="card-content"
         >
           <div
-            class="grid md:grid-cols-[160px_1fr] grid-cols-[80px_1fr] gap-5 min-w-0"
+            class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
           >
             <div
-              class="flex-shrink-0"
+              class="flex-shrink-0 flex items-center justify-center"
             >
               <div
-                class="bg-muted rounded flex-shrink-0 md:w-40 w-20"
+                class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
               >
                 <img
                   alt="Men's Classic Deer Gloves, , small"
-                  class="w-full h-full object-cover rounded"
+                  class="h-full w-full object-contain"
                   src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd4659c06/images/small/TG508_206.jpg?sw=160&q=60"
                 />
               </div>
@@ -43,13 +43,13 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                   class="min-w-0"
                 >
                   <div
-                    class="mb-4 flex items-center gap-2 min-w-0"
+                    class="mb-4 flex items-start gap-2 min-w-0"
                   >
                     <h2
-                      class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1"
+                      class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
                     >
                       <a
-                        class="text-foreground hover:text-primary block truncate"
+                        class="text-foreground hover:text-primary block break-words"
                         href="/product/TG508M"
                         title="Men's Classic Deer Gloves"
                         to="/product/TG508M"
@@ -83,7 +83,7 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                   data-testid="mobile-product-price"
                 >
                   <div
-                    class="space-y-1"
+                    class="space-y-1 text-right pr-2"
                   >
                     <div
                       class="text-xl font-medium"
@@ -150,7 +150,7 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                       data-testid="desktop-product-price"
                     >
                       <div
-                        class="space-y-1"
+                        class="space-y-1 text-right pr-2"
                       >
                         <div
                           class="text-xl font-medium"
@@ -177,31 +177,33 @@ exports[`ProductItem stories snapshot > SummaryVariant story renders and matches
     class="max-w-2xl mx-auto"
   >
     <div
-      class="grid md:grid-cols-[160px_1fr] grid-cols-[80px_1fr] gap-5"
+      class="grid md:grid-cols-[112px_1fr] grid-cols-[72px_1fr] gap-4"
       data-testid="sf-product-item-summary-061492183589M"
     >
-      <div>
+      <div
+        class="flex items-center justify-center"
+      >
         <div
-          class="bg-muted rounded flex-shrink-0 w-20"
+          class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden w-16"
         >
           <img
             alt="Men's Classic Deer Gloves, , small"
-            class="w-full h-full object-cover rounded"
+            class="h-full w-full object-contain"
             src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd4659c06/images/small/TG508_206.jpg?sw=160&q=60"
           />
         </div>
       </div>
       <div
-        class="flex-1 space-y-1"
+        class="flex-1 space-y-1 min-w-0"
       >
         <div
-          class="mb-4 flex items-center gap-2 min-w-0"
+          class="mb-4 flex items-start gap-2 min-w-0"
         >
           <h2
-            class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1"
+            class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
           >
             <a
-              class="text-foreground hover:text-primary block truncate"
+              class="text-foreground hover:text-primary block break-words"
               href="/product/TG508M"
               title="Men's Classic Deer Gloves"
               to="/product/TG508M"
@@ -229,7 +231,7 @@ exports[`ProductItem stories snapshot > SummaryVariant story renders and matches
           </div>
         </div>
         <div
-          class="flex items-center justify-between"
+          class="flex items-center justify-between pr-4"
         >
           <div
             class="text-xl font-medium"
@@ -261,17 +263,17 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
           data-slot="card-content"
         >
           <div
-            class="grid md:grid-cols-[160px_1fr] grid-cols-[80px_1fr] gap-5 min-w-0"
+            class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
           >
             <div
-              class="flex-shrink-0"
+              class="flex-shrink-0 flex items-center justify-center"
             >
               <div
-                class="bg-muted rounded flex-shrink-0 md:w-40 w-20"
+                class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
               >
                 <img
                   alt="Men's Classic Deer Gloves, , small"
-                  class="w-full h-full object-cover rounded"
+                  class="h-full w-full object-contain"
                   src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd4659c06/images/small/TG508_206.jpg?sw=160&q=60"
                 />
               </div>
@@ -286,13 +288,13 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                   class="min-w-0"
                 >
                   <div
-                    class="mb-4 flex items-center gap-2 min-w-0"
+                    class="mb-4 flex items-start gap-2 min-w-0"
                   >
                     <h2
-                      class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1"
+                      class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
                     >
                       <a
-                        class="text-foreground hover:text-primary block truncate"
+                        class="text-foreground hover:text-primary block break-words"
                         href="/product/TG508M"
                         title="Men's Classic Deer Gloves"
                         to="/product/TG508M"
@@ -341,7 +343,7 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                   data-testid="mobile-product-price"
                 >
                   <div
-                    class="space-y-1"
+                    class="space-y-1 text-right pr-2"
                   >
                     <div
                       class="text-xl font-medium"
@@ -408,7 +410,7 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                       data-testid="desktop-product-price"
                     >
                       <div
-                        class="space-y-1"
+                        class="space-y-1 text-right pr-2"
                       >
                         <div
                           class="text-xl font-medium"

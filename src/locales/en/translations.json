@@ -454,7 +454,10 @@
             "loginSuggestionLink": "sign in for faster checkout",
             "usingRegisteredAccount": "✓ Using your registered account",
             "continue": "Continue to Shipping",
-            "saving": "Saving..."
+            "saving": "Saving...",
+            "lookupFallbackMessage": "Customer lookup failed. Continuing as guest.",
+            "saveError": "Failed to save contact information",
+            "sessionExpired": "Session expired. Please sign in again."
         },
         "shippingAddress": {
             "title": "Shipping Address",
@@ -493,10 +496,16 @@
             "enterAddressFirst": "Enter your shipping address to view available shipping methods.",
             "arrives": "Arrives: {{estimatedArrivalTime}}",
             "priceAndMethod": "{{price}} | {{methodName}}",
-            "free": "Free"
+            "free": "Free",
+            "noMethodsAvailable": "No shipping methods available",
+            "noMethodsAvailableHelp": "Please ensure your shipping address is complete and try again."
         },
         "payment": {
             "title": "Payment Information",
+            "methodTitle": "Payment Method",
+            "savedMethodDescription": "Choose a saved payment method or add a new one",
+            "addNewPaymentMethod": "Add new payment method",
+            "newPaymentMethodTitle": "New Payment Method",
             "cardholderLabel": "Cardholder Name",
             "cardholderPlaceholder": "Name on card",
             "cardholderRequired": "Cardholder name is required",
@@ -524,7 +533,15 @@
             "saved": "Payment information saved",
             "failed": "Failed to save payment information",
             "createAccountForFasterCheckout": "Create an account for a faster checkout next time",
-            "saveForFutureUse": "Save for Future Use"
+            "saveForFutureUse": "Save for Future Use",
+            "unknownCardType": "Unknown",
+            "defaultCardLabel": "Card",
+            "preferredBadge": "Preferred",
+            "expiresLabel": "Expires {{expiry}}",
+            "summaryLabel": "{{methodLabel}} ending in {{lastDigits}}",
+            "summarySavedLabel": "Saved payment method: {{methodLabel}} ending in {{lastDigits}}",
+            "noPaymentMethodSaved": "No payment method saved",
+            "billingSummaryTitle": "Billing Address"
         },
         "common": {
             "edit": "Edit",
@@ -541,7 +558,8 @@
             }
         },
         "orderSummary": {
-            "title": "Order Summary"
+            "title": "Order Summary",
+            "toggleLabel": "Show Order Summary"
         },
         "myCart": {
             "title": "My Cart"
@@ -573,7 +591,8 @@
                 "billingAddress": "Billing Address",
                 "paymentMethod": "Payment Method",
                 "defaultShippingMethod": "Standard Shipping",
-                "defaultPaymentMethod": "Credit Card"
+                "defaultPaymentMethod": "Credit Card",
+                "savedMethodDescription": "Choose a saved payment method or add a new one"
             },
             "actions": {
                 "continueShopping": "Continue Shopping",

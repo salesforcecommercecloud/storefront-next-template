@@ -44,11 +44,6 @@ exports[`ShippingOptions stories snapshot > CompletedState story renders and mat
         class="space-y-2"
       >
         <p
-          class="text-sm font-medium leading-none text-left text-muted-foreground"
-        >
-          Shipping Method
-        </p>
-        <p
           class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground"
         >
           Enter your shipping address to view available shipping methods.
@@ -183,11 +178,6 @@ exports[`ShippingOptions stories snapshot > DesktopView story renders and matche
       class="space-y-2"
     >
       <p
-        class="text-sm font-medium leading-none text-left text-muted-foreground"
-      >
-        Shipping Method
-      </p>
-      <p
         class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground"
       >
         Enter your shipping address to view available shipping methods.
@@ -240,11 +230,6 @@ exports[`ShippingOptions stories snapshot > DisabledState story renders and matc
       <div
         class="space-y-2"
       >
-        <p
-          class="text-sm font-medium leading-none text-left text-muted-foreground"
-        >
-          Shipping Method
-        </p>
         <p
           class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground"
         >

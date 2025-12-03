@@ -6,6 +6,7 @@ import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@sale
 
 // Components
 import ProductItem from '@/components/product-item';
+import { Card } from '../ui/card';
 
 // Hooks
 
@@ -56,6 +57,11 @@ interface ProductItemsListProps {
     secondaryActions?: (
         product: ShopperBasketsV2.schemas['ProductItem'] & Partial<ShopperProducts.schemas['Product']>
     ) => ReactElement | undefined;
+    /**
+     * If true, each product item is wrapped in its own Card, creating
+     * individual tiles instead of a single stacked list.
+     */
+    separateCards?: boolean;
 }
 
 /**
@@ -118,6 +124,7 @@ export default function ProductItemsList({
     variant = 'default',
     primaryAction,
     secondaryActions,
+    separateCards = false,
 }: ProductItemsListProps): ReactElement {
     /**
      * Memoized list of ProductItem components with combined data
@@ -144,7 +151,7 @@ export default function ProductItemsList({
                 quantity: productItem.quantity ?? 1,
             };
 
-            return (
+            const currentProductItem = (
                 <ProductItem
                     key={productItem.itemId || `item-${index}`}
                     productItem={enrichedProductItem}
@@ -154,6 +161,12 @@ export default function ProductItemsList({
                     promotions={promotions}
                 />
             );
+
+            if (separateCards) {
+                return <Card key={productItem.itemId || `item-${index}`}>{currentProductItem}</Card>;
+            }
+
+            return currentProductItem;
         });
         // Intentionally exclude primaryAction and secondaryActions from dependencies
         // to prevent re-computation when parent components re-render with new function references

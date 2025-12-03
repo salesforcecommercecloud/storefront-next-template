@@ -103,17 +103,17 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                     data-slot="card-content"
                   >
                     <div
-                      class="grid md:grid-cols-[160px_1fr] grid-cols-[80px_1fr] gap-5 min-w-0"
+                      class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
                     >
                       <div
-                        class="flex-shrink-0"
+                        class="flex-shrink-0 flex items-center justify-center"
                       >
                         <div
-                          class="bg-muted rounded flex-shrink-0 md:w-40 w-20"
+                          class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
                         >
                           <img
                             alt="Button Front Jacket, Aqua Haze, small"
-                            class="w-full h-full object-cover rounded"
+                            class="h-full w-full object-contain"
                             src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw99c77d53/images/small/PG.10212871.JJ8OLXX.PZ.jpg?sw=160&q=60"
                           />
                         </div>
@@ -128,13 +128,13 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                             class="min-w-0"
                           >
                             <div
-                              class="mb-4 flex items-center gap-2 min-w-0"
+                              class="mb-4 flex items-start gap-2 min-w-0"
                             >
                               <h2
-                                class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1"
+                                class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
                               >
                                 <a
-                                  class="text-foreground hover:text-primary block truncate"
+                                  class="text-foreground hover:text-primary block break-words"
                                   href="/product/25518795M"
                                   title="Button Front Jacket"
                                 >
@@ -194,7 +194,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                             data-testid="mobile-product-price"
                           >
                             <div
-                              class="space-y-1"
+                              class="space-y-1 text-right pr-2"
                             >
                               <div
                                 class="text-xl font-medium"
@@ -267,7 +267,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                                 data-testid="desktop-product-price"
                               >
                                 <div
-                                  class="space-y-1"
+                                  class="space-y-1 text-right pr-2"
                                 >
                                   <div
                                     class="text-xl font-medium"
@@ -795,17 +795,17 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                     data-slot="card-content"
                   >
                     <div
-                      class="grid md:grid-cols-[160px_1fr] grid-cols-[80px_1fr] gap-5 min-w-0"
+                      class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
                     >
                       <div
-                        class="flex-shrink-0"
+                        class="flex-shrink-0 flex items-center justify-center"
                       >
                         <div
-                          class="bg-muted rounded flex-shrink-0 md:w-40 w-20"
+                          class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
                         >
                           <img
                             alt="Solid Silk Tie, Navy, small"
-                            class="w-full h-full object-cover rounded"
+                            class="h-full w-full object-contain"
                             src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7832203a/images/small/PG.949432114S.NAVYSI.PZ.jpg?sw=160&q=60"
                           />
                         </div>
@@ -820,13 +820,13 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                             class="min-w-0"
                           >
                             <div
-                              class="mb-4 flex items-center gap-2 min-w-0"
+                              class="mb-4 flex items-start gap-2 min-w-0"
                             >
                               <h2
-                                class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1"
+                                class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
                               >
                                 <a
-                                  class="text-foreground hover:text-primary block truncate"
+                                  class="text-foreground hover:text-primary block break-words"
                                   href="/product/25752218M"
                                   title="Solid Silk Tie"
                                 >
@@ -881,7 +881,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                             data-testid="mobile-product-price"
                           >
                             <div
-                              class="space-y-1"
+                              class="space-y-1 text-right pr-2"
                             >
                               <div
                                 class="text-xl font-medium"
@@ -953,7 +953,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                 data-testid="desktop-product-price"
                               >
                                 <div
-                                  class="space-y-1"
+                                  class="space-y-1 text-right pr-2"
                                 >
                                   <div
                                     class="text-xl font-medium"
@@ -989,17 +989,17 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                     data-slot="card-content"
                   >
                     <div
-                      class="grid md:grid-cols-[160px_1fr] grid-cols-[80px_1fr] gap-5 min-w-0"
+                      class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
                     >
                       <div
-                        class="flex-shrink-0"
+                        class="flex-shrink-0 flex items-center justify-center"
                       >
                         <div
-                          class="bg-muted rounded flex-shrink-0 md:w-40 w-20"
+                          class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
                         >
                           <img
                             alt="Floral Ruffle Top, Cardinal Red Multi, small"
-                            class="w-full h-full object-cover rounded"
+                            class="h-full w-full object-contain"
                             src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw42fb2bdf/images/small/PG.10240939.JJ9DFXX.PZ.jpg?sw=160&q=60"
                           />
                         </div>
@@ -1014,13 +1014,13 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                             class="min-w-0"
                           >
                             <div
-                              class="mb-4 flex items-center gap-2 min-w-0"
+                              class="mb-4 flex items-start gap-2 min-w-0"
                             >
                               <h2
-                                class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1"
+                                class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
                               >
                                 <a
-                                  class="text-foreground hover:text-primary block truncate"
+                                  class="text-foreground hover:text-primary block break-words"
                                   href="/product/25591227M"
                                   title="Floral Ruffle Top"
                                 >
@@ -1080,7 +1080,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                             data-testid="mobile-product-price"
                           >
                             <div
-                              class="space-y-1"
+                              class="space-y-1 text-right pr-2"
                             >
                               <div
                                 class="text-xl font-medium"
@@ -1153,7 +1153,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                 data-testid="desktop-product-price"
                               >
                                 <div
-                                  class="space-y-1"
+                                  class="space-y-1 text-right pr-2"
                                 >
                                   <div
                                     class="text-xl font-medium"
@@ -1681,17 +1681,17 @@ exports[`CartContent stories snapshot > DesktopLayout story renders and matches 
                     data-slot="card-content"
                   >
                     <div
-                      class="grid md:grid-cols-[160px_1fr] grid-cols-[80px_1fr] gap-5 min-w-0"
+                      class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
                     >
                       <div
-                        class="flex-shrink-0"
+                        class="flex-shrink-0 flex items-center justify-center"
                       >
                         <div
-                          class="bg-muted rounded flex-shrink-0 md:w-40 w-20"
+                          class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
                         >
                           <img
                             alt="Solid Silk Tie, Navy, small"
-                            class="w-full h-full object-cover rounded"
+                            class="h-full w-full object-contain"
                             src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7832203a/images/small/PG.949432114S.NAVYSI.PZ.jpg?sw=160&q=60"
                           />
                         </div>
@@ -1706,13 +1706,13 @@ exports[`CartContent stories snapshot > DesktopLayout story renders and matches 
                             class="min-w-0"
                           >
                             <div
-                              class="mb-4 flex items-center gap-2 min-w-0"
+                              class="mb-4 flex items-start gap-2 min-w-0"
                             >
                               <h2
-                                class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1"
+                                class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
                               >
                                 <a
-                                  class="text-foreground hover:text-primary block truncate"
+                                  class="text-foreground hover:text-primary block break-words"
                                   href="/product/25752218M"
                                   title="Solid Silk Tie"
                                 >
@@ -1767,7 +1767,7 @@ exports[`CartContent stories snapshot > DesktopLayout story renders and matches 
                             data-testid="mobile-product-price"
                           >
                             <div
-                              class="space-y-1"
+                              class="space-y-1 text-right pr-2"
                             >
                               <div
                                 class="text-xl font-medium"
@@ -1839,7 +1839,7 @@ exports[`CartContent stories snapshot > DesktopLayout story renders and matches 
                                 data-testid="desktop-product-price"
                               >
                                 <div
-                                  class="space-y-1"
+                                  class="space-y-1 text-right pr-2"
                                 >
                                   <div
                                     class="text-xl font-medium"
@@ -1875,17 +1875,17 @@ exports[`CartContent stories snapshot > DesktopLayout story renders and matches 
                     data-slot="card-content"
                   >
                     <div
-                      class="grid md:grid-cols-[160px_1fr] grid-cols-[80px_1fr] gap-5 min-w-0"
+                      class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
                     >
                       <div
-                        class="flex-shrink-0"
+                        class="flex-shrink-0 flex items-center justify-center"
                       >
                         <div
-                          class="bg-muted rounded flex-shrink-0 md:w-40 w-20"
+                          class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
                         >
                           <img
                             alt="Floral Ruffle Top, Cardinal Red Multi, small"
-                            class="w-full h-full object-cover rounded"
+                            class="h-full w-full object-contain"
                             src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw42fb2bdf/images/small/PG.10240939.JJ9DFXX.PZ.jpg?sw=160&q=60"
                           />
                         </div>
@@ -1900,13 +1900,13 @@ exports[`CartContent stories snapshot > DesktopLayout story renders and matches 
                             class="min-w-0"
                           >
                             <div
-                              class="mb-4 flex items-center gap-2 min-w-0"
+                              class="mb-4 flex items-start gap-2 min-w-0"
                             >
                               <h2
-                                class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1"
+                                class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
                               >
                                 <a
-                                  class="text-foreground hover:text-primary block truncate"
+                                  class="text-foreground hover:text-primary block break-words"
                                   href="/product/25591227M"
                                   title="Floral Ruffle Top"
                                 >
@@ -1966,7 +1966,7 @@ exports[`CartContent stories snapshot > DesktopLayout story renders and matches 
                             data-testid="mobile-product-price"
                           >
                             <div
-                              class="space-y-1"
+                              class="space-y-1 text-right pr-2"
                             >
                               <div
                                 class="text-xl font-medium"
@@ -2039,7 +2039,7 @@ exports[`CartContent stories snapshot > DesktopLayout story renders and matches 
                                 data-testid="desktop-product-price"
                               >
                                 <div
-                                  class="space-y-1"
+                                  class="space-y-1 text-right pr-2"
                                 >
                                   <div
                                     class="text-xl font-medium"
@@ -2680,17 +2680,17 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                     data-slot="card-content"
                   >
                     <div
-                      class="grid md:grid-cols-[160px_1fr] grid-cols-[80px_1fr] gap-5 min-w-0"
+                      class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
                     >
                       <div
-                        class="flex-shrink-0"
+                        class="flex-shrink-0 flex items-center justify-center"
                       >
                         <div
-                          class="bg-muted rounded flex-shrink-0 md:w-40 w-20"
+                          class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
                         >
                           <img
                             alt="Button Front Jacket, Aqua Haze, small"
-                            class="w-full h-full object-cover rounded"
+                            class="h-full w-full object-contain"
                             src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw99c77d53/images/small/PG.10212871.JJ8OLXX.PZ.jpg?sw=160&q=60"
                           />
                         </div>
@@ -2705,13 +2705,13 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                             class="min-w-0"
                           >
                             <div
-                              class="mb-4 flex items-center gap-2 min-w-0"
+                              class="mb-4 flex items-start gap-2 min-w-0"
                             >
                               <h2
-                                class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1"
+                                class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
                               >
                                 <a
-                                  class="text-foreground hover:text-primary block truncate"
+                                  class="text-foreground hover:text-primary block break-words"
                                   href="/product/25518795M"
                                   title="Button Front Jacket"
                                 >
@@ -2771,7 +2771,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                             data-testid="mobile-product-price"
                           >
                             <div
-                              class="space-y-1"
+                              class="space-y-1 text-right pr-2"
                             >
                               <div
                                 class="text-xl font-medium"
@@ -2843,7 +2843,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                                 data-testid="desktop-product-price"
                               >
                                 <div
-                                  class="space-y-1"
+                                  class="space-y-1 text-right pr-2"
                                 >
                                   <div
                                     class="text-xl font-medium"
@@ -3371,17 +3371,17 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                     data-slot="card-content"
                   >
                     <div
-                      class="grid md:grid-cols-[160px_1fr] grid-cols-[80px_1fr] gap-5 min-w-0"
+                      class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
                     >
                       <div
-                        class="flex-shrink-0"
+                        class="flex-shrink-0 flex items-center justify-center"
                       >
                         <div
-                          class="bg-muted rounded flex-shrink-0 md:w-40 w-20"
+                          class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
                         >
                           <img
                             alt="Solid Silk Tie, Navy, small"
-                            class="w-full h-full object-cover rounded"
+                            class="h-full w-full object-contain"
                             src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7832203a/images/small/PG.949432114S.NAVYSI.PZ.jpg?sw=160&q=60"
                           />
                         </div>
@@ -3396,13 +3396,13 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                             class="min-w-0"
                           >
                             <div
-                              class="mb-4 flex items-center gap-2 min-w-0"
+                              class="mb-4 flex items-start gap-2 min-w-0"
                             >
                               <h2
-                                class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1"
+                                class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
                               >
                                 <a
-                                  class="text-foreground hover:text-primary block truncate"
+                                  class="text-foreground hover:text-primary block break-words"
                                   href="/product/25752218M"
                                   title="Solid Silk Tie"
                                 >
@@ -3457,7 +3457,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                             data-testid="mobile-product-price"
                           >
                             <div
-                              class="space-y-1"
+                              class="space-y-1 text-right pr-2"
                             >
                               <div
                                 class="text-xl font-medium"
@@ -3529,7 +3529,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                 data-testid="desktop-product-price"
                               >
                                 <div
-                                  class="space-y-1"
+                                  class="space-y-1 text-right pr-2"
                                 >
                                   <div
                                     class="text-xl font-medium"
@@ -3565,17 +3565,17 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                     data-slot="card-content"
                   >
                     <div
-                      class="grid md:grid-cols-[160px_1fr] grid-cols-[80px_1fr] gap-5 min-w-0"
+                      class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
                     >
                       <div
-                        class="flex-shrink-0"
+                        class="flex-shrink-0 flex items-center justify-center"
                       >
                         <div
-                          class="bg-muted rounded flex-shrink-0 md:w-40 w-20"
+                          class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
                         >
                           <img
                             alt="Floral Ruffle Top, Cardinal Red Multi, small"
-                            class="w-full h-full object-cover rounded"
+                            class="h-full w-full object-contain"
                             src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw42fb2bdf/images/small/PG.10240939.JJ9DFXX.PZ.jpg?sw=160&q=60"
                           />
                         </div>
@@ -3590,13 +3590,13 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                             class="min-w-0"
                           >
                             <div
-                              class="mb-4 flex items-center gap-2 min-w-0"
+                              class="mb-4 flex items-start gap-2 min-w-0"
                             >
                               <h2
-                                class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1"
+                                class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
                               >
                                 <a
-                                  class="text-foreground hover:text-primary block truncate"
+                                  class="text-foreground hover:text-primary block break-words"
                                   href="/product/25591227M"
                                   title="Floral Ruffle Top"
                                 >
@@ -3656,7 +3656,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                             data-testid="mobile-product-price"
                           >
                             <div
-                              class="space-y-1"
+                              class="space-y-1 text-right pr-2"
                             >
                               <div
                                 class="text-xl font-medium"
@@ -3729,7 +3729,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                 data-testid="desktop-product-price"
                               >
                                 <div
-                                  class="space-y-1"
+                                  class="space-y-1 text-right pr-2"
                                 >
                                   <div
                                     class="text-xl font-medium"
@@ -4257,17 +4257,17 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                     data-slot="card-content"
                   >
                     <div
-                      class="grid md:grid-cols-[160px_1fr] grid-cols-[80px_1fr] gap-5 min-w-0"
+                      class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
                     >
                       <div
-                        class="flex-shrink-0"
+                        class="flex-shrink-0 flex items-center justify-center"
                       >
                         <div
-                          class="bg-muted rounded flex-shrink-0 md:w-40 w-20"
+                          class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
                         >
                           <img
                             alt="Button Front Jacket, Aqua Haze, small"
-                            class="w-full h-full object-cover rounded"
+                            class="h-full w-full object-contain"
                             src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw99c77d53/images/small/PG.10212871.JJ8OLXX.PZ.jpg?sw=160&q=60"
                           />
                         </div>
@@ -4282,13 +4282,13 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                             class="min-w-0"
                           >
                             <div
-                              class="mb-4 flex items-center gap-2 min-w-0"
+                              class="mb-4 flex items-start gap-2 min-w-0"
                             >
                               <h2
-                                class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1"
+                                class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
                               >
                                 <a
-                                  class="text-foreground hover:text-primary block truncate"
+                                  class="text-foreground hover:text-primary block break-words"
                                   href="/product/25518795M"
                                   title="Very Long Product Name That Should Wrap Properly In The Cart Display Area"
                                 >
@@ -4348,7 +4348,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                             data-testid="mobile-product-price"
                           >
                             <div
-                              class="space-y-1"
+                              class="space-y-1 text-right pr-2"
                             >
                               <div
                                 class="text-xl font-medium"
@@ -4421,7 +4421,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                                 data-testid="desktop-product-price"
                               >
                                 <div
-                                  class="space-y-1"
+                                  class="space-y-1 text-right pr-2"
                                 >
                                   <div
                                     class="text-xl font-medium"
@@ -4949,13 +4949,13 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                     data-slot="card-content"
                   >
                     <div
-                      class="grid md:grid-cols-[160px_1fr] grid-cols-[80px_1fr] gap-5 min-w-0"
+                      class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
                     >
                       <div
-                        class="flex-shrink-0"
+                        class="flex-shrink-0 flex items-center justify-center"
                       >
                         <div
-                          class="bg-muted rounded flex-shrink-0 md:w-40 w-20"
+                          class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
                         >
                           <div
                             class="w-full h-full bg-muted rounded"
@@ -4972,13 +4972,13 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                             class="min-w-0"
                           >
                             <div
-                              class="mb-4 flex items-center gap-2 min-w-0"
+                              class="mb-4 flex items-start gap-2 min-w-0"
                             >
                               <h2
-                                class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1"
+                                class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
                               >
                                 <a
-                                  class="text-foreground hover:text-primary block truncate"
+                                  class="text-foreground hover:text-primary block break-words"
                                   href="#"
                                   title="Button Front Jacket"
                                 >
@@ -5021,7 +5021,7 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                             data-testid="mobile-product-price"
                           >
                             <div
-                              class="space-y-1"
+                              class="space-y-1 text-right pr-2"
                             >
                               <div
                                 class="text-xl font-medium"
@@ -5089,7 +5089,7 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                                 data-testid="desktop-product-price"
                               >
                                 <div
-                                  class="space-y-1"
+                                  class="space-y-1 text-right pr-2"
                                 >
                                   <div
                                     class="text-xl font-medium"
@@ -5612,17 +5612,17 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                     data-slot="card-content"
                   >
                     <div
-                      class="grid md:grid-cols-[160px_1fr] grid-cols-[80px_1fr] gap-5 min-w-0"
+                      class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
                     >
                       <div
-                        class="flex-shrink-0"
+                        class="flex-shrink-0 flex items-center justify-center"
                       >
                         <div
-                          class="bg-muted rounded flex-shrink-0 md:w-40 w-20"
+                          class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
                         >
                           <img
                             alt="Button Front Jacket, Aqua Haze, small"
-                            class="w-full h-full object-cover rounded"
+                            class="h-full w-full object-contain"
                             src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw99c77d53/images/small/PG.10212871.JJ8OLXX.PZ.jpg?sw=160&q=60"
                           />
                         </div>
@@ -5637,13 +5637,13 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                             class="min-w-0"
                           >
                             <div
-                              class="mb-4 flex items-center gap-2 min-w-0"
+                              class="mb-4 flex items-start gap-2 min-w-0"
                             >
                               <h2
-                                class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1"
+                                class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
                               >
                                 <a
-                                  class="text-foreground hover:text-primary block truncate"
+                                  class="text-foreground hover:text-primary block break-words"
                                   href="/product/25518795M"
                                   title="Button Front Jacket"
                                 >
@@ -5703,7 +5703,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                             data-testid="mobile-product-price"
                           >
                             <div
-                              class="space-y-1"
+                              class="space-y-1 text-right pr-2"
                             >
                               <div
                                 class="text-xl font-medium"
@@ -5776,7 +5776,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                                 data-testid="desktop-product-price"
                               >
                                 <div
-                                  class="space-y-1"
+                                  class="space-y-1 text-right pr-2"
                                 >
                                   <div
                                     class="text-xl font-medium"

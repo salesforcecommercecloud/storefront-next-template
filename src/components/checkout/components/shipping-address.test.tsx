@@ -101,6 +101,59 @@ describe('ShippingAddress Integration Tests', () => {
             expect(phoneInput).toHaveValue('5551234567');
         });
 
+        test('falls back to customer profile phone when basket has none', () => {
+            useBasket.mockReturnValue(
+                createMockBasket({
+                    customerInfo: { email: 'test@example.com', phone: '' },
+                    shipments: [
+                        {
+                            shipmentId: 'shipment-1',
+                            shippingAddress: {
+                                firstName: 'Jane',
+                                lastName: 'Doe',
+                                address1: '123 Main St',
+                                city: 'New York',
+                                stateCode: 'NY',
+                                postalCode: '10001',
+                                phone: '',
+                            },
+                        },
+                    ],
+                })
+            );
+
+            useCustomerProfile.mockReturnValue({
+                customer: { email: 'test@example.com' },
+                addresses: [
+                    {
+                        addressId: 'addr-1',
+                        firstName: 'Jane',
+                        lastName: 'Doe',
+                        address1: '123 Main St',
+                        city: 'New York',
+                        stateCode: 'NY',
+                        postalCode: '10001',
+                        phone: '9998887777',
+                    },
+                ],
+                preferredShippingAddress: {
+                    addressId: 'addr-1',
+                    firstName: 'Jane',
+                    lastName: 'Doe',
+                    address1: '123 Main St',
+                    city: 'New York',
+                    stateCode: 'NY',
+                    postalCode: '10001',
+                    phone: '9998887777',
+                },
+            });
+
+            render(<ShippingAddress {...createDefaultProps()} />);
+
+            const phoneInput = screen.getByPlaceholderText('(555) 123-4567');
+            expect(phoneInput).toHaveValue('9998887777');
+        });
+
         test('pre-fills address from saved basket shipping address', () => {
             useBasket.mockReturnValue(
                 createMockBasket({
@@ -311,6 +364,31 @@ describe('ShippingAddress Integration Tests', () => {
             render(<ShippingAddress {...createDefaultProps({ isEditing: false, isCompleted: true })} />);
 
             expect(screen.getByText(/555/)).toBeInTheDocument();
+        });
+
+        test('summary falls back to contact info phone when shipping address phone missing', () => {
+            const basketWithoutPhone = {
+                basketId: 'test-basket',
+                customerInfo: { email: 'test@example.com', phone: '3332221111' },
+                shipments: [
+                    {
+                        shippingAddress: {
+                            firstName: 'John',
+                            lastName: 'Doe',
+                            address1: '123 Main St',
+                            city: 'New York',
+                            stateCode: 'NY',
+                            postalCode: '10001',
+                            phone: '',
+                        },
+                    },
+                ],
+            };
+            useBasket.mockReturnValue(basketWithoutPhone);
+
+            render(<ShippingAddress {...createDefaultProps({ isEditing: false, isCompleted: true })} />);
+
+            expect(screen.getByText(/3332221111/)).toBeInTheDocument();
         });
     });
 });

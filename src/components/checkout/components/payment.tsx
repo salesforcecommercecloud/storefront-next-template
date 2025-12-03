@@ -13,7 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useBasket } from '@/providers/basket';
 import { createPaymentSchema, getPaymentDefaultValues, type PaymentData } from '@/lib/checkout-schemas';
 import { formatCardNumber, formatExpiryDate } from '@/lib/form-utils';
-import { getFormattedMaskedCardNumber, getCardTypeDisplay, detectCardType } from '@/lib/payment-utils';
+import { getCardTypeDisplay, detectCardType, getLastFourDigits } from '@/lib/payment-utils';
 import { getCardIcon } from '@/lib/card-icon-utils';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import { getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';
@@ -51,17 +51,20 @@ export default function Payment({
 
     // Get customer's saved payment methods
     const savedPaymentMethods = getPaymentMethodsFromCustomer(customerProfile);
+    const selectedSavedMethod = savedPaymentMethods.find((method) => method.id === selectedPaymentMethod);
 
     // Set default payment method selection - prefer the customer's preferred payment method
     useEffect(() => {
-        if (savedPaymentMethods.length > 0) {
-            const preferredMethod = savedPaymentMethods.find((method) => method.preferred);
-            if (preferredMethod) {
-                setSelectedPaymentMethod(preferredMethod.id);
-            } else {
-                setSelectedPaymentMethod(savedPaymentMethods[0].id);
-            }
+        // No saved payment methods, default to new payment method
+        if (savedPaymentMethods.length === 0) {
+            setSelectedPaymentMethod('new');
+            return;
         }
+
+        const preferredWithId = savedPaymentMethods.find((method) => method.preferred && method.id);
+        const firstWithId = savedPaymentMethods.find((method) => method.id);
+
+        setSelectedPaymentMethod(preferredWithId?.id ?? firstWithId?.id ?? 'new');
     }, [savedPaymentMethods]);
 
     const shippingAddress = cart?.shipments?.[0]?.shippingAddress;
@@ -207,21 +210,23 @@ export default function Payment({
                         {/* Payment Method Section */}
                         <div className="space-y-4">
                             <Typography variant="h4" as="h3">
-                                Payment Method
+                                {t('confirmation.fields.paymentMethod')}
                             </Typography>
 
                             {/* Saved Payment Methods */}
                             {savedPaymentMethods.length > 0 && (
                                 <div className="space-y-4">
                                     <Typography variant="p" className="text-muted-foreground">
-                                        Choose a saved payment method or add a new one
+                                        {t('confirmation.fields.savedMethodDescription')}
                                     </Typography>
                                     <RadioGroup
                                         value={selectedPaymentMethod}
                                         onValueChange={setSelectedPaymentMethod}
                                         className="space-y-3">
                                         {savedPaymentMethods.map((method) => {
-                                            const CardIcon = getCardIcon(method.cardType || 'Unknown');
+                                            const CardIcon = getCardIcon(
+                                                method.cardType || t('payment.unknownCardType')
+                                            );
                                             return (
                                                 <div
                                                     key={method.id}
@@ -233,14 +238,15 @@ export default function Payment({
                                                             <div className="flex-1 min-w-0">
                                                                 <div className="flex items-center gap-2">
                                                                     <span className="font-medium">
-                                                                        {method.cardType || 'Unknown'}
+                                                                        {method.cardType ||
+                                                                            t('payment.unknownCardType')}
                                                                     </span>
                                                                     <span className="text-muted-foreground">
-                                                                        •••• {method.maskedNumber?.slice(-4) || '****'}
+                                                                        •••• {getLastFourDigits(method.maskedNumber)}
                                                                     </span>
                                                                     {method.preferred && (
                                                                         <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
-                                                                            Preferred
+                                                                            {t('payment.preferredBadge')}
                                                                         </span>
                                                                     )}
                                                                 </div>
@@ -249,14 +255,13 @@ export default function Payment({
                                                                     {method.expirationMonth &&
                                                                         method.expirationYear && (
                                                                             <span className="ml-2">
-                                                                                Expires{' '}
-                                                                                {String(
-                                                                                    method.expirationMonth
-                                                                                ).padStart(2, '0')}
-                                                                                /
-                                                                                {String(method.expirationYear).slice(
-                                                                                    -2
-                                                                                )}
+                                                                                {t('payment.expiresLabel', {
+                                                                                    expiry: `${String(
+                                                                                        method.expirationMonth
+                                                                                    ).padStart(2, '0')}/${String(
+                                                                                        method.expirationYear
+                                                                                    ).slice(-2)}`,
+                                                                                })}
                                                                             </span>
                                                                         )}
                                                                 </div>
@@ -275,7 +280,9 @@ export default function Payment({
                                                             +
                                                         </span>
                                                     </div>
-                                                    <span className="font-medium">Add new payment method</span>
+                                                    <span className="font-medium">
+                                                        {t('payment.addNewPaymentMethod')}
+                                                    </span>
                                                 </div>
                                             </Label>
                                         </div>
@@ -289,7 +296,7 @@ export default function Payment({
                                 <div className="space-y-4">
                                     {savedPaymentMethods.length > 0 && (
                                         <Typography variant="h5" as="h4">
-                                            New Payment Method
+                                            {t('payment.newPaymentMethodTitle')}
                                         </Typography>
                                     )}
 
@@ -297,7 +304,9 @@ export default function Payment({
                                         control={form.control}
                                         name="cardNumber"
                                         render={({ field }) => {
-                                            const CardIcon = getCardIcon(detectedCardType);
+                                            const CardIcon = getCardIcon(
+                                                detectedCardType || t('payment.unknownCardType')
+                                            );
                                             return (
                                                 <FormItem>
                                                     <FormLabel className="data-[error=true]:text-xl data-[error=true]:font-bold">
@@ -325,14 +334,15 @@ export default function Payment({
                                                                     }}
                                                                 />
                                                             </div>
-                                                            {detectedCardType && detectedCardType !== 'Unknown' && (
-                                                                <div className="flex items-center gap-2 text-sm text-muted-foreground min-w-0">
-                                                                    <CardIcon className="w-8 h-5 flex-shrink-0" />
-                                                                    <span className="font-medium">
-                                                                        {detectedCardType}
-                                                                    </span>
-                                                                </div>
-                                                            )}
+                                                            {detectedCardType &&
+                                                                detectedCardType !== t('payment.unknownCardType') && (
+                                                                    <div className="flex items-center gap-2 text-sm text-muted-foreground min-w-0">
+                                                                        <CardIcon className="w-8 h-5 flex-shrink-0" />
+                                                                        <span className="font-medium">
+                                                                            {detectedCardType}
+                                                                        </span>
+                                                                    </div>
+                                                                )}
                                                         </div>
                                                     </FormControl>
                                                     <FormMessage className="text-xl font-bold" />
@@ -457,7 +467,7 @@ export default function Payment({
                             {!billingSameAsShipping && (
                                 <div className="space-y-4">
                                     <Typography variant="h4" as="h3">
-                                        Billing Address
+                                        {t('confirmation.fields.billingAddress')}
                                     </Typography>
 
                                     <div className="grid grid-cols-2 gap-4">
@@ -628,69 +638,58 @@ export default function Payment({
 
             <ToggleCardSummary>
                 <div className="space-y-4">
-                    <div>
-                        <Typography variant="small" className="text-muted-foreground">
-                            Payment Method
-                        </Typography>
+                    {/* Payment Method */}
+                    <div className="space-y-2">
                         {paymentMethod ? (
-                            <div>
-                                <Typography variant="p" className="font-medium">
-                                    {getCardTypeDisplay(paymentMethod)}
-                                </Typography>
-                                <Typography variant="p" className="text-muted-foreground">
-                                    {getFormattedMaskedCardNumber(paymentMethod)}
-                                </Typography>
-                            </div>
+                            <Typography variant="small" className="text-muted-foreground">
+                                {t('payment.summaryLabel', {
+                                    methodLabel: getCardTypeDisplay(paymentMethod),
+                                    lastDigits: getLastFourDigits(
+                                        paymentMethod.paymentCard?.numberLastDigits ||
+                                            paymentMethod.paymentCard?.maskedNumber
+                                    ),
+                                })}
+                            </Typography>
                         ) : savedPaymentMethods.length > 0 ? (
-                            <div>
-                                <Typography variant="p" className="font-medium">
-                                    {savedPaymentMethods.find((method) => method.id === selectedPaymentMethod)
-                                        ?.maskedNumber || savedPaymentMethods[0]?.maskedNumber}
-                                </Typography>
-                                <Typography variant="p" className="text-muted-foreground text-sm">
-                                    Saved payment method
-                                </Typography>
-                            </div>
+                            <Typography variant="small" className="text-muted-foreground">
+                                {t('payment.summarySavedLabel', {
+                                    methodLabel: selectedSavedMethod?.cardType || t('payment.defaultCardLabel'),
+                                    lastDigits: getLastFourDigits(selectedSavedMethod?.maskedNumber),
+                                })}
+                            </Typography>
                         ) : (
-                            <Typography variant="p" className="text-muted-foreground">
-                                No payment method saved
+                            <Typography variant="small" className="text-muted-foreground">
+                                {t('payment.noPaymentMethodSaved')}
                             </Typography>
                         )}
                     </div>
 
-                    <div>
-                        <Typography variant="small" className="text-muted-foreground">
-                            Billing Address
+                    {/* Billing Address */}
+                    <div className="space-y-2">
+                        <Typography variant="h6" className="text-foreground font-semibold">
+                            {t('payment.billingSummaryTitle')}
                         </Typography>
                         {billingAddress && !isBillingSameAsShipping(billingAddress, shippingAddress) ? (
-                            <div className="space-y-1">
-                                <div>
-                                    <Typography variant="p" as="span" className="font-medium">
-                                        {billingAddress.firstName} {billingAddress.lastName}
+                            <div className="space-y-2">
+                                <Typography variant="small" className="text-muted-foreground">
+                                    {billingAddress.firstName} {billingAddress.lastName}
+                                </Typography>
+                                <Typography variant="small" className="text-muted-foreground">
+                                    {billingAddress.address1}
+                                </Typography>
+                                {billingAddress.address2 && (
+                                    <Typography variant="small" className="text-muted-foreground">
+                                        {billingAddress.address2}
                                     </Typography>
-                                </div>
-                                <div>
-                                    <Typography variant="p" as="span" className="text-muted-foreground">
-                                        {billingAddress.address1}
-                                    </Typography>
-                                    {billingAddress.address2 && (
-                                        <div>
-                                            <Typography variant="p" as="span" className="text-muted-foreground">
-                                                {billingAddress.address2}
-                                            </Typography>
-                                        </div>
-                                    )}
-                                    <div>
-                                        <Typography variant="p" as="span" className="text-muted-foreground">
-                                            {billingAddress.city}
-                                            {billingAddress.stateCode && `, ${billingAddress.stateCode}`}{' '}
-                                            {billingAddress.postalCode}
-                                        </Typography>
-                                    </div>
-                                </div>
+                                )}
+                                <Typography variant="small" className="text-muted-foreground">
+                                    {billingAddress.city}
+                                    {billingAddress.stateCode && `, ${billingAddress.stateCode}`}{' '}
+                                    {billingAddress.postalCode}
+                                </Typography>
                             </div>
                         ) : (
-                            <Typography variant="p" className="text-muted-foreground">
+                            <Typography variant="small" className="text-muted-foreground">
                                 {showBillingSameAsShipping
                                     ? t('payment.sameAsShippingAddress')
                                     : t('payment.noBillingAddressSaved')}

@@ -173,6 +173,36 @@ describe('ShippingOptions Integration Tests', () => {
             expect(screen.getByText('Arrives: 2-3 days')).toBeInTheDocument();
         });
 
+        test('falls back to c_estimatedArrivalTime in summary when standard field missing', () => {
+            const basketWithCustomArrival = createMockBasket({
+                shipments: [
+                    {
+                        shipmentId: 'shipment-1',
+                        shippingAddress: {
+                            firstName: 'Alex',
+                            lastName: 'Doe',
+                            address1: '555 Custom St',
+                            city: 'Austin',
+                            stateCode: 'TX',
+                            postalCode: '73301',
+                        },
+                        shippingMethod: {
+                            id: 'express',
+                            name: 'Express Shipping',
+                            price: 15.99,
+                            c_estimatedArrivalTime: 'Tomorrow',
+                        } as any,
+                    },
+                ],
+            });
+
+            useBasket.mockReturnValue(basketWithCustomArrival);
+
+            render(<ShippingOptions {...createDefaultProps({ isEditing: false, isCompleted: true })} />);
+
+            expect(screen.getByText('Arrives: Tomorrow')).toBeInTheDocument();
+        });
+
         test('handles missing estimated arrival time gracefully', () => {
             const methodsWithoutArrival: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
                 applicableShippingMethods: [

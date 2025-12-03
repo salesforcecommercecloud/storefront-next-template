@@ -47,7 +47,7 @@ exports[`ContactInfo stories snapshot > CompletedState story renders and matches
           class="space-y-2"
         >
           <p
-            class="leading-7 [&:not(:first-child)]:mt-6 text-left font-medium"
+            class="text-sm font-medium leading-none text-left text-muted-foreground"
           >
             Not provided yet
           </p>
@@ -100,14 +100,6 @@ exports[`ContactInfo stories snapshot > Default story renders and matches snapsh
             class="grid gap-2"
             data-slot="form-item"
           >
-            <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
-              data-error="false"
-              data-slot="form-label"
-              for="«r0»-form-item"
-            >
-              Enter your email address
-            </label>
             <input
               aria-describedby="«r0»-form-item-description"
               aria-invalid="false"
@@ -187,7 +179,7 @@ exports[`ContactInfo stories snapshot > DesktopView story renders and matches sn
           class="space-y-2"
         >
           <p
-            class="leading-7 [&:not(:first-child)]:mt-6 text-left font-medium"
+            class="text-sm font-medium leading-none text-left text-muted-foreground"
           >
             Not provided yet
           </p>
@@ -245,7 +237,7 @@ exports[`ContactInfo stories snapshot > DisabledState story renders and matches 
           class="space-y-2"
         >
           <p
-            class="leading-7 [&:not(:first-child)]:mt-6 text-left font-medium"
+            class="text-sm font-medium leading-none text-left text-muted-foreground"
           >
             Not provided yet
           </p>
@@ -298,14 +290,6 @@ exports[`ContactInfo stories snapshot > LoadingState story renders and matches s
             class="grid gap-2"
             data-slot="form-item"
           >
-            <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
-              data-error="false"
-              data-slot="form-label"
-              for="«r2»-form-item"
-            >
-              Enter your email address
-            </label>
             <input
               aria-describedby="«r2»-form-item-description"
               aria-invalid="false"
@@ -391,14 +375,6 @@ exports[`ContactInfo stories snapshot > MobileView story renders and matches sna
             class="grid gap-2"
             data-slot="form-item"
           >
-            <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
-              data-error="false"
-              data-slot="form-label"
-              for="«r5»-form-item"
-            >
-              Enter your email address
-            </label>
             <input
               aria-describedby="«r5»-form-item-description"
               aria-invalid="false"
@@ -473,14 +449,6 @@ exports[`ContactInfo stories snapshot > TabletView story renders and matches sna
             class="grid gap-2"
             data-slot="form-item"
           >
-            <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
-              data-error="false"
-              data-slot="form-label"
-              for="«r6»-form-item"
-            >
-              Enter your email address
-            </label>
             <input
               aria-describedby="«r6»-form-item-description"
               aria-invalid="false"
@@ -555,14 +523,6 @@ exports[`ContactInfo stories snapshot > WithExistingEmail story renders and matc
             class="grid gap-2"
             data-slot="form-item"
           >
-            <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
-              data-error="false"
-              data-slot="form-label"
-              for="«r1»-form-item"
-            >
-              Enter your email address
-            </label>
             <input
               aria-describedby="«r1»-form-item-description"
               aria-invalid="false"
@@ -642,14 +602,6 @@ exports[`ContactInfo stories snapshot > WithFormError story renders and matches 
             class="grid gap-2"
             data-slot="form-item"
           >
-            <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
-              data-error="false"
-              data-slot="form-label"
-              for="«r3»-form-item"
-            >
-              Enter your email address
-            </label>
             <input
               aria-describedby="«r3»-form-item-description"
               aria-invalid="false"
@@ -724,14 +676,6 @@ exports[`ContactInfo stories snapshot > WithValidationError story renders and ma
             class="grid gap-2"
             data-slot="form-item"
           >
-            <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
-              data-error="false"
-              data-slot="form-label"
-              for="«r4»-form-item"
-            >
-              Enter your email address
-            </label>
             <input
               aria-describedby="«r4»-form-item-description"
               aria-invalid="false"

@@ -60,6 +60,9 @@ export default function ShippingOptions({
     const { t } = useTranslation('checkout');
 
     const selectedMethod = cart?.shipments?.[0]?.shippingMethod;
+    const summaryArrivalTime = (selectedMethod?.estimatedArrivalTime ?? selectedMethod?.c_estimatedArrivalTime) as
+        | string
+        | undefined;
 
     const defaultShippingMethodId = getDefaultShippingMethod(
         availableShippingMethods,
@@ -127,7 +130,7 @@ export default function ShippingOptions({
             title={stepTitle as React.ReactNode}
             editing={isEditing}
             onEdit={onEdit}
-            editLabel="Edit"
+            editLabel={t('common.edit')}
             isLoading={isLoading}>
             <ToggleCardEdit>
                 <form method="post" className="space-y-6" onSubmit={handleSubmit}>
@@ -196,10 +199,10 @@ export default function ShippingOptions({
                             <div className="flex items-center justify-center p-8 border-2 border-dashed border-muted rounded-lg">
                                 <div className="text-center space-y-2">
                                     <Typography variant="p" className="text-muted-foreground">
-                                        No shipping methods available
+                                        {t('shippingOptions.noMethodsAvailable')}
                                     </Typography>
                                     <Typography variant="small" className="text-muted-foreground">
-                                        Please ensure your shipping address is complete and try again.
+                                        {t('shippingOptions.noMethodsAvailableHelp')}
                                     </Typography>
                                 </div>
                             </div>
@@ -215,7 +218,7 @@ export default function ShippingOptions({
                             {isLoading
                                 ? t('shippingOptions.saving')
                                 : availableShippingMethods.length === 0
-                                  ? 'No shipping methods available'
+                                  ? t('shippingOptions.noMethodsAvailable')
                                   : t('shippingOptions.continue')}
                         </Button>
                     </div>
@@ -224,15 +227,12 @@ export default function ShippingOptions({
 
             <ToggleCardSummary>
                 <div className="space-y-2">
-                    <Typography variant="small" className="text-muted-foreground">
-                        Shipping Method
-                    </Typography>
                     {selectedMethod ? (
-                        <div className="space-y-1">
-                            {selectedMethod.estimatedArrivalTime && (
+                        <div className="space-y-2">
+                            {summaryArrivalTime && (
                                 <Typography variant="small" className="text-muted-foreground">
                                     {t('shippingOptions.arrives', {
-                                        estimatedArrivalTime: selectedMethod.estimatedArrivalTime,
+                                        estimatedArrivalTime: summaryArrivalTime,
                                     })}
                                 </Typography>
                             )}

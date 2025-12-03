@@ -181,10 +181,7 @@ describe('Checkout Utils', () => {
                             postalCode: '12345',
                             countryCode: 'US',
                         },
-                        shippingMethod: {
-                            id: 'standard',
-                            name: 'Standard Shipping',
-                        },
+                        shippingMethod: undefined,
                     },
                 ],
             } as ShopperBasketsV2.schemas['Basket'];
