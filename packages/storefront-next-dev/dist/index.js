@@ -1,6 +1,6 @@
 import path, { resolve } from "node:path";
 import fs from "fs-extra";
-import path$1 from "path";
+import path$1, { basename, extname, join, posix, resolve as resolve$1 } from "path";
 import { URL as URL$1, fileURLToPath } from "url";
 import os from "os";
 import archiver from "archiver";
@@ -16,6 +16,8 @@ import compression from "compression";
 import zlib from "node:zlib";
 import morgan from "morgan";
 import fs$1 from "fs";
+import { access, mkdir, readFile, readdir, rm, writeFile } from "fs/promises";
+import { Node, Project } from "ts-morph";
 
 //#region src/plugins/fixReactRouterManifestUrls.ts
 function patchAssetsPaths(dir) {
@@ -431,7 +433,7 @@ const createBundle = async (options) => {
 	const destination = path$1.join(tmpDir, "build.tar");
 	const filesInArchive = [];
 	if (!ssr_only || ssr_only.length === 0 || !ssr_shared || ssr_shared.length === 0) throw new Error("no ssrOnly or ssrShared files are defined");
-	return new Promise((resolve$1, reject) => {
+	return new Promise((resolve$2, reject) => {
 		const output = fs.createWriteStream(destination);
 		const archive = archiver("tar");
 		archive.pipe(output);
@@ -478,7 +480,7 @@ const createBundle = async (options) => {
 						return false;
 					};
 				};
-				resolve$1({
+				resolve$2({
 					message,
 					encoding,
 					data: data.toString(encoding),
@@ -548,7 +550,7 @@ var CloudAPIClient = class {
 	* Wait for deployment to complete
 	*/
 	async waitForDeploy(project, environment) {
-		return new Promise((resolve$1, reject) => {
+		return new Promise((resolve$2, reject) => {
 			const delay = 3e4;
 			const check = async () => {
 				const url = new URL$1(`/api/projects/${project}/target/${environment}`, this.origin);
@@ -574,7 +576,7 @@ var CloudAPIClient = class {
 						return;
 					case "CREATE_FAILED":
 					case "PUBLISH_FAILED": return reject(/* @__PURE__ */ new Error("Deployment failed."));
-					case "ACTIVE": return resolve$1();
+					case "ACTIVE": return resolve$2();
 					default: return reject(/* @__PURE__ */ new Error(`Unknown deployment state "${data.state}".`));
 				}
 			};
@@ -1171,5 +1173,456 @@ function deleteExtensionFolders(projectRoot, extensions, extensionConfig) {
 }
 
 //#endregion
-export { createServer, storefrontNextPlugins as default, loadConfigFromEnv, loadProjectConfig, push, trimExtensions };
+//#region src/cartridge-services/generate-cartridge.ts
+const SKIP_DIRECTORIES = [
+	"build",
+	"dist",
+	"node_modules",
+	".git",
+	".next",
+	"coverage"
+];
+const DEFAULT_COMPONENT_GROUP = "odyssey_base";
+const ARCH_TYPE_HEADLESS = "headless";
+const VALID_ATTRIBUTE_TYPES = [
+	"string",
+	"text",
+	"markup",
+	"integer",
+	"boolean",
+	"product",
+	"category",
+	"file",
+	"page",
+	"image",
+	"url",
+	"enum",
+	"custom",
+	"cms_record"
+];
+const TYPE_MAPPING = {
+	String: "string",
+	string: "string",
+	Number: "integer",
+	number: "integer",
+	Boolean: "boolean",
+	boolean: "boolean",
+	Date: "string",
+	URL: "url",
+	CMSRecord: "cms_record"
+};
+function resolveAttributeType(decoratorType, tsMorphType, fieldName) {
+	if (decoratorType) {
+		if (!VALID_ATTRIBUTE_TYPES.includes(decoratorType)) {
+			console.error(`Error: Invalid attribute type '${decoratorType}' for field '${fieldName || "unknown"}'. Valid types are: ${VALID_ATTRIBUTE_TYPES.join(", ")}`);
+			process.exit(1);
+		}
+		return decoratorType;
+	}
+	if (tsMorphType && TYPE_MAPPING[tsMorphType]) return TYPE_MAPPING[tsMorphType];
+	return "string";
+}
+function toHumanReadableName(fieldName) {
+	return fieldName.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase()).trim();
+}
+function toCamelCaseFileName(name) {
+	if (!/[\s-]/.test(name)) return name;
+	return name.split(/[\s-]+/).map((word, index) => {
+		if (index === 0) return word.toLowerCase();
+		return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+	}).join("");
+}
+function getTypeFromTsMorph(property, _sourceFile) {
+	try {
+		const typeNode = property.getTypeNode();
+		if (typeNode) return typeNode.getText().split("|")[0].split("&")[0].trim();
+	} catch {}
+	return "string";
+}
+function parseExpression(expression) {
+	if (Node.isStringLiteral(expression)) return expression.getLiteralValue();
+	else if (Node.isNumericLiteral(expression)) return expression.getLiteralValue();
+	else if (Node.isTrueLiteral(expression)) return true;
+	else if (Node.isFalseLiteral(expression)) return false;
+	else if (Node.isObjectLiteralExpression(expression)) return parseNestedObject(expression);
+	else if (Node.isArrayLiteralExpression(expression)) return parseArrayLiteral(expression);
+	else return expression.getText();
+}
+function parseNestedObject(objectLiteral) {
+	const result = {};
+	try {
+		const properties = objectLiteral.getProperties();
+		for (const property of properties) if (Node.isPropertyAssignment(property)) {
+			const name = property.getName();
+			const initializer = property.getInitializer();
+			if (initializer) result[name] = parseExpression(initializer);
+		}
+	} catch (error$1) {
+		console.warn(`Warning: Could not parse nested object: ${error$1.message}`);
+		return result;
+	}
+	return result;
+}
+function filePathToRoute(filePath, projectRoot) {
+	const filePathPosix = filePath.replace(/\\/g, "/");
+	const projectRootPosix = projectRoot.replace(/\\/g, "/");
+	const routesRoot = posix.join(projectRootPosix, "src/routes");
+	const marker = "/src/routes/";
+	let routePath = (filePathPosix.includes(marker) ? filePathPosix.slice(filePathPosix.indexOf(marker) + 12) : posix.relative(routesRoot, filePathPosix)).replace(/\.(tsx|ts|jsx|js)$/i, "");
+	routePath = routePath.replace(/^_index$/i, "").replace(/^index$/i, "").replace(/\/_index$/i, "").replace(/\/index$/i, "").replace(/\$([^/]+)/g, ":$1");
+	return routePath.startsWith("/") ? routePath : `/${routePath}`;
+}
+function parseArrayLiteral(arrayLiteral) {
+	const result = [];
+	try {
+		const elements = arrayLiteral.getElements();
+		for (const element of elements) result.push(parseExpression(element));
+	} catch (error$1) {
+		console.warn(`Warning: Could not parse array literal: ${error$1.message}`);
+	}
+	return result;
+}
+function parseDecoratorArgs(decorator) {
+	const result = {};
+	try {
+		const args = decorator.getArguments();
+		if (args.length === 0) return result;
+		const firstArg = args[0];
+		if (Node.isObjectLiteralExpression(firstArg)) {
+			const properties = firstArg.getProperties();
+			for (const property of properties) if (Node.isPropertyAssignment(property)) {
+				const name = property.getName();
+				const initializer = property.getInitializer();
+				if (initializer) result[name] = parseExpression(initializer);
+			}
+		} else if (Node.isStringLiteral(firstArg)) result.id = parseExpression(firstArg);
+		return result;
+	} catch {
+		console.warn(`Warning: Could not parse decorator arguments`);
+		return result;
+	}
+}
+function extractAttributesFromSource(sourceFile, className) {
+	const attributes = [];
+	try {
+		const classDeclaration = sourceFile.getClass(className);
+		if (!classDeclaration) return attributes;
+		const properties = classDeclaration.getProperties();
+		for (const property of properties) {
+			const attributeDecorator = property.getDecorator("AttributeDefinition");
+			if (!attributeDecorator) continue;
+			const fieldName = property.getName();
+			const config = parseDecoratorArgs(attributeDecorator);
+			const isRequired = !property.hasQuestionToken();
+			const inferredType = config.type || getTypeFromTsMorph(property, sourceFile);
+			const attribute = {
+				id: config.id || fieldName,
+				name: config.name || toHumanReadableName(fieldName),
+				type: resolveAttributeType(config.type, inferredType, fieldName),
+				required: config.required !== void 0 ? config.required : isRequired,
+				description: config.description || `Field: ${fieldName}`
+			};
+			if (config.values) attribute.values = config.values;
+			if (config.defaultValue !== void 0) attribute.defaultValue = config.defaultValue;
+			attributes.push(attribute);
+		}
+	} catch (error$1) {
+		console.warn(`Warning: Could not extract attributes from class ${className}: ${error$1.message}`);
+	}
+	return attributes;
+}
+function extractRegionDefinitionsFromSource(sourceFile, className) {
+	const regionDefinitions = [];
+	try {
+		const classDeclaration = sourceFile.getClass(className);
+		if (!classDeclaration) return regionDefinitions;
+		const classRegionDecorator = classDeclaration.getDecorator("RegionDefinition");
+		if (classRegionDecorator) {
+			const args = classRegionDecorator.getArguments();
+			if (args.length > 0) {
+				const firstArg = args[0];
+				if (Node.isArrayLiteralExpression(firstArg)) {
+					const elements = firstArg.getElements();
+					for (const element of elements) if (Node.isObjectLiteralExpression(element)) {
+						const regionConfig = parseDecoratorArgs({ getArguments: () => [element] });
+						const regionDefinition = {
+							id: regionConfig.id || "region",
+							name: regionConfig.name || "Region"
+						};
+						if (regionConfig.componentTypes) regionDefinition.component_types = regionConfig.componentTypes;
+						if (Array.isArray(regionConfig.componentTypeInclusions)) regionDefinition.component_type_inclusions = regionConfig.componentTypeInclusions.map((incl) => ({ type_id: incl }));
+						if (Array.isArray(regionConfig.componentTypeExclusions)) regionDefinition.component_type_exclusions = regionConfig.componentTypeExclusions.map((excl) => ({ type_id: excl }));
+						if (regionConfig.maxComponents !== void 0) regionDefinition.max_components = regionConfig.maxComponents;
+						if (regionConfig.minComponents !== void 0) regionDefinition.min_components = regionConfig.minComponents;
+						if (regionConfig.allowMultiple !== void 0) regionDefinition.allow_multiple = regionConfig.allowMultiple;
+						if (regionConfig.defaultComponentConstructors) regionDefinition.default_component_constructors = regionConfig.defaultComponentConstructors;
+						regionDefinitions.push(regionDefinition);
+					}
+				}
+			}
+		}
+	} catch (error$1) {
+		console.warn(`Warning: Could not extract region definitions from class ${className}: ${error$1.message}`);
+	}
+	return regionDefinitions;
+}
+async function processComponentFile(filePath, _projectRoot) {
+	try {
+		const content = await readFile(filePath, "utf-8");
+		const components = [];
+		if (!content.includes("@Component")) return components;
+		try {
+			const sourceFile = new Project({
+				useInMemoryFileSystem: true,
+				skipAddingFilesFromTsConfig: true
+			}).createSourceFile(filePath, content);
+			const classes = sourceFile.getClasses();
+			for (const classDeclaration of classes) {
+				const componentDecorator = classDeclaration.getDecorator("Component");
+				if (!componentDecorator) continue;
+				const className = classDeclaration.getName();
+				if (!className) continue;
+				const componentConfig = parseDecoratorArgs(componentDecorator);
+				const attributes = extractAttributesFromSource(sourceFile, className);
+				const regionDefinitions = extractRegionDefinitionsFromSource(sourceFile, className);
+				const componentMetadata = {
+					typeId: componentConfig.id || className.toLowerCase(),
+					name: componentConfig.name || toHumanReadableName(className),
+					group: componentConfig.group || DEFAULT_COMPONENT_GROUP,
+					description: componentConfig.description || `Custom component: ${className}`,
+					regionDefinitions,
+					attributes
+				};
+				components.push(componentMetadata);
+			}
+		} catch (error$1) {
+			console.warn(`Warning: Could not process file ${filePath}:`, error$1.message);
+		}
+		return components;
+	} catch (error$1) {
+		console.warn(`Warning: Could not read file ${filePath}:`, error$1.message);
+		return [];
+	}
+}
+async function processPageTypeFile(filePath, projectRoot) {
+	try {
+		const content = await readFile(filePath, "utf-8");
+		const pageTypes = [];
+		if (!content.includes("@PageType")) return pageTypes;
+		try {
+			const sourceFile = new Project({
+				useInMemoryFileSystem: true,
+				skipAddingFilesFromTsConfig: true
+			}).createSourceFile(filePath, content);
+			const classes = sourceFile.getClasses();
+			for (const classDeclaration of classes) {
+				const pageTypeDecorator = classDeclaration.getDecorator("PageType");
+				if (!pageTypeDecorator) continue;
+				const className = classDeclaration.getName();
+				if (!className) continue;
+				const pageTypeConfig = parseDecoratorArgs(pageTypeDecorator);
+				const attributes = extractAttributesFromSource(sourceFile, className);
+				const regionDefinitions = extractRegionDefinitionsFromSource(sourceFile, className);
+				const route = filePathToRoute(filePath, projectRoot);
+				const pageTypeMetadata = {
+					typeId: pageTypeConfig.id || className.toLowerCase(),
+					name: pageTypeConfig.name || toHumanReadableName(className),
+					description: pageTypeConfig.description || `Custom page type: ${className}`,
+					regionDefinitions,
+					supportedAspectTypes: pageTypeConfig.supportedAspectTypes || [],
+					attributes,
+					route
+				};
+				pageTypes.push(pageTypeMetadata);
+			}
+		} catch (error$1) {
+			console.warn(`Warning: Could not process file ${filePath}:`, error$1.message);
+		}
+		return pageTypes;
+	} catch (error$1) {
+		console.warn(`Warning: Could not read file ${filePath}:`, error$1.message);
+		return [];
+	}
+}
+async function processAspectFile(filePath, _projectRoot) {
+	try {
+		const content = await readFile(filePath, "utf-8");
+		const aspects = [];
+		if (!filePath.endsWith(".json") || !content.trim().startsWith("{")) return aspects;
+		if (!filePath.includes("/aspects/") && !filePath.includes("\\aspects\\")) return aspects;
+		try {
+			const aspectData = JSON.parse(content);
+			const fileName = basename(filePath, ".json");
+			if (!aspectData.name || !aspectData.attribute_definitions) return aspects;
+			const aspectMetadata = {
+				id: fileName,
+				name: aspectData.name,
+				description: aspectData.description || `Aspect type: ${aspectData.name}`,
+				attributeDefinitions: aspectData.attribute_definitions || [],
+				supportedObjectTypes: aspectData.supported_object_types || []
+			};
+			aspects.push(aspectMetadata);
+		} catch (parseError) {
+			console.warn(`Warning: Could not parse JSON in file ${filePath}:`, parseError.message);
+		}
+		return aspects;
+	} catch (error$1) {
+		console.warn(`Warning: Could not read file ${filePath}:`, error$1.message);
+		return [];
+	}
+}
+async function generateComponentCartridge(component, outputDir) {
+	const fileName = toCamelCaseFileName(component.typeId);
+	const groupDir = join(outputDir, component.group);
+	const outputPath = join(groupDir, `${fileName}.json`);
+	try {
+		await mkdir(groupDir, { recursive: true });
+	} catch {}
+	const attributeDefinitionGroups = [{
+		id: component.typeId,
+		name: component.name,
+		description: component.description,
+		attribute_definitions: component.attributes
+	}];
+	const cartridgeData = {
+		name: component.name,
+		description: component.description,
+		group: component.group,
+		arch_type: ARCH_TYPE_HEADLESS,
+		region_definitions: component.regionDefinitions || [],
+		attribute_definition_groups: attributeDefinitionGroups
+	};
+	await writeFile(outputPath, JSON.stringify(cartridgeData, null, 2));
+	console.log(`   - ${String(component.typeId)}: ${String(component.name)} (${String(component.attributes.length)} attributes) → ${fileName}.json`);
+}
+async function generatePageTypeCartridge(pageType, outputDir) {
+	const fileName = toCamelCaseFileName(pageType.name);
+	const outputPath = join(outputDir, `${fileName}.json`);
+	const cartridgeData = {
+		name: pageType.name,
+		description: pageType.description,
+		arch_type: ARCH_TYPE_HEADLESS,
+		region_definitions: pageType.regionDefinitions || []
+	};
+	if (pageType.attributes && pageType.attributes.length > 0) cartridgeData.attribute_definition_groups = [{
+		id: pageType.typeId || fileName,
+		name: pageType.name,
+		description: pageType.description,
+		attribute_definitions: pageType.attributes
+	}];
+	if (pageType.supportedAspectTypes) cartridgeData.supported_aspect_types = pageType.supportedAspectTypes;
+	if (pageType.route) cartridgeData.route = pageType.route;
+	await writeFile(outputPath, JSON.stringify(cartridgeData, null, 2));
+	console.log(`   - ${String(pageType.name)}: ${String(pageType.description)} (${String(pageType.attributes.length)} attributes) → ${fileName}.json`);
+}
+async function generateAspectCartridge(aspect, outputDir) {
+	const fileName = toCamelCaseFileName(aspect.id);
+	const outputPath = join(outputDir, `${fileName}.json`);
+	const cartridgeData = {
+		name: aspect.name,
+		description: aspect.description,
+		arch_type: ARCH_TYPE_HEADLESS,
+		attribute_definitions: aspect.attributeDefinitions || []
+	};
+	if (aspect.supportedObjectTypes) cartridgeData.supported_object_types = aspect.supportedObjectTypes;
+	await writeFile(outputPath, JSON.stringify(cartridgeData, null, 2));
+	console.log(`   - ${String(aspect.name)}: ${String(aspect.description)} (${String(aspect.attributeDefinitions.length)} attributes) → ${fileName}.json`);
+}
+async function generateMetadata(projectDirectory, metadataDirectory, options) {
+	try {
+		const filePaths = options?.filePaths;
+		const isIncrementalMode = filePaths && filePaths.length > 0;
+		if (isIncrementalMode) console.log(`🔍 Generating metadata for ${filePaths.length} specified file(s)...`);
+		else console.log("🔍 Generating metadata for decorated components and page types...");
+		const projectRoot = resolve$1(projectDirectory);
+		const srcDir = join(projectRoot, "src");
+		const metadataDir = resolve$1(metadataDirectory);
+		const componentsOutputDir = join(metadataDir, "components");
+		const pagesOutputDir = join(metadataDir, "pages");
+		const aspectsOutputDir = join(metadataDir, "aspects");
+		if (!isIncrementalMode) {
+			console.log("🗑️  Cleaning existing output directories...");
+			for (const outputDir of [
+				componentsOutputDir,
+				pagesOutputDir,
+				aspectsOutputDir
+			]) try {
+				await rm(outputDir, {
+					recursive: true,
+					force: true
+				});
+				console.log(`   - Deleted: ${outputDir}`);
+			} catch {
+				console.log(`   - Directory not found (skipping): ${outputDir}`);
+			}
+		} else console.log("📝 Incremental mode: existing cartridge files will be preserved/overwritten");
+		console.log("📁 Creating output directories...");
+		for (const outputDir of [
+			componentsOutputDir,
+			pagesOutputDir,
+			aspectsOutputDir
+		]) try {
+			await mkdir(outputDir, { recursive: true });
+		} catch (error$1) {
+			try {
+				await access(outputDir);
+			} catch {
+				console.error(`❌ Error: Failed to create output directory ${outputDir}: ${error$1.message}`);
+				process.exit(1);
+			}
+		}
+		let files = [];
+		if (isIncrementalMode && filePaths) {
+			files = filePaths.map((fp) => resolve$1(projectRoot, fp));
+			console.log(`📂 Processing ${files.length} specified file(s)...`);
+		} else {
+			const scanDirectory = async (dir) => {
+				const entries = await readdir(dir, { withFileTypes: true });
+				for (const entry of entries) {
+					const fullPath = join(dir, entry.name);
+					if (entry.isDirectory()) {
+						if (!SKIP_DIRECTORIES.includes(entry.name)) await scanDirectory(fullPath);
+					} else if (entry.isFile() && (extname(entry.name) === ".ts" || extname(entry.name) === ".tsx" || extname(entry.name) === ".json")) files.push(fullPath);
+				}
+			};
+			await scanDirectory(srcDir);
+		}
+		const allComponents = [];
+		const allPageTypes = [];
+		const allAspects = [];
+		for (const file of files) {
+			const components = await processComponentFile(file, projectRoot);
+			allComponents.push(...components);
+			const pageTypes = await processPageTypeFile(file, projectRoot);
+			allPageTypes.push(...pageTypes);
+			const aspects = await processAspectFile(file, projectRoot);
+			allAspects.push(...aspects);
+		}
+		if (allComponents.length === 0 && allPageTypes.length === 0 && allAspects.length === 0) {
+			console.log("⚠️  No decorated components, page types, or aspect files found.");
+			return;
+		}
+		if (allComponents.length > 0) {
+			console.log(`✅ Found ${allComponents.length} decorated component(s):`);
+			for (const component of allComponents) await generateComponentCartridge(component, componentsOutputDir);
+			console.log(`📄 Generated ${allComponents.length} component metadata file(s) in: ${componentsOutputDir}`);
+		}
+		if (allPageTypes.length > 0) {
+			console.log(`✅ Found ${allPageTypes.length} decorated page type(s):`);
+			for (const pageType of allPageTypes) await generatePageTypeCartridge(pageType, pagesOutputDir);
+			console.log(`📄 Generated ${allPageTypes.length} page type metadata file(s) in: ${pagesOutputDir}`);
+		}
+		if (allAspects.length > 0) {
+			console.log(`✅ Found ${allAspects.length} decorated aspect(s):`);
+			for (const aspect of allAspects) await generateAspectCartridge(aspect, aspectsOutputDir);
+			console.log(`📄 Generated ${allAspects.length} aspect metadata file(s) in: ${aspectsOutputDir}`);
+		}
+	} catch (error$1) {
+		console.error("❌ Error:", error$1.message);
+		process.exit(1);
+	}
+}
+
+//#endregion
+export { createServer, storefrontNextPlugins as default, generateMetadata, loadConfigFromEnv, loadProjectConfig, push, trimExtensions };
 //# sourceMappingURL=index.js.map

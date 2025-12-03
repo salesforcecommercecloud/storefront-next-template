@@ -1428,29 +1428,34 @@ async function generateAspectCartridge(aspect, outputDir) {
 	await writeFile(outputPath, JSON.stringify(cartridgeData, null, 2));
 	console.log(`   - ${String(aspect.name)}: ${String(aspect.description)} (${String(aspect.attributeDefinitions.length)} attributes) → ${fileName}.json`);
 }
-async function generateMetadata(projectDirectory, metadataDirectory) {
+async function generateMetadata(projectDirectory, metadataDirectory, options) {
 	try {
-		console.log("🔍 Generating metadata for decorated components and page types...");
+		const filePaths = options?.filePaths;
+		const isIncrementalMode = filePaths && filePaths.length > 0;
+		if (isIncrementalMode) console.log(`🔍 Generating metadata for ${filePaths.length} specified file(s)...`);
+		else console.log("🔍 Generating metadata for decorated components and page types...");
 		const projectRoot = resolve(projectDirectory);
 		const srcDir = join(projectRoot, "src");
 		const metadataDir = resolve(metadataDirectory);
 		const componentsOutputDir = join(metadataDir, "components");
 		const pagesOutputDir = join(metadataDir, "pages");
 		const aspectsOutputDir = join(metadataDir, "aspects");
-		console.log("🗑️  Cleaning existing output directories...");
-		for (const outputDir of [
-			componentsOutputDir,
-			pagesOutputDir,
-			aspectsOutputDir
-		]) try {
-			await rm(outputDir, {
-				recursive: true,
-				force: true
-			});
-			console.log(`   - Deleted: ${outputDir}`);
-		} catch {
-			console.log(`   - Directory not found (skipping): ${outputDir}`);
-		}
+		if (!isIncrementalMode) {
+			console.log("🗑️  Cleaning existing output directories...");
+			for (const outputDir of [
+				componentsOutputDir,
+				pagesOutputDir,
+				aspectsOutputDir
+			]) try {
+				await rm(outputDir, {
+					recursive: true,
+					force: true
+				});
+				console.log(`   - Deleted: ${outputDir}`);
+			} catch {
+				console.log(`   - Directory not found (skipping): ${outputDir}`);
+			}
+		} else console.log("📝 Incremental mode: existing cartridge files will be preserved/overwritten");
 		console.log("📁 Creating output directories...");
 		for (const outputDir of [
 			componentsOutputDir,
@@ -1466,17 +1471,22 @@ async function generateMetadata(projectDirectory, metadataDirectory) {
 				process.exit(1);
 			}
 		}
-		const files = [];
-		const scanDirectory = async (dir) => {
-			const entries = await readdir(dir, { withFileTypes: true });
-			for (const entry of entries) {
-				const fullPath = join(dir, entry.name);
-				if (entry.isDirectory()) {
-					if (!SKIP_DIRECTORIES.includes(entry.name)) await scanDirectory(fullPath);
-				} else if (entry.isFile() && (extname(entry.name) === ".ts" || extname(entry.name) === ".tsx" || extname(entry.name) === ".json")) files.push(fullPath);
-			}
-		};
-		await scanDirectory(srcDir);
+		let files = [];
+		if (isIncrementalMode && filePaths) {
+			files = filePaths.map((fp) => resolve(projectRoot, fp));
+			console.log(`📂 Processing ${files.length} specified file(s)...`);
+		} else {
+			const scanDirectory = async (dir) => {
+				const entries = await readdir(dir, { withFileTypes: true });
+				for (const entry of entries) {
+					const fullPath = join(dir, entry.name);
+					if (entry.isDirectory()) {
+						if (!SKIP_DIRECTORIES.includes(entry.name)) await scanDirectory(fullPath);
+					} else if (entry.isFile() && (extname(entry.name) === ".ts" || extname(entry.name) === ".tsx" || extname(entry.name) === ".json")) files.push(fullPath);
+				}
+			};
+			await scanDirectory(srcDir);
+		}
 		const allComponents = [];
 		const allPageTypes = [];
 		const allAspects = [];

@@ -659,10 +659,33 @@ async function generateAspectCartridge(aspect: Record<string, unknown>, outputDi
     );
 }
 
+/**
+ * Options for generateMetadata function
+ */
+export interface GenerateMetadataOptions {
+    /**
+     * Optional array of specific file paths to process.
+     * If provided, only these files will be processed and existing cartridge files will NOT be deleted.
+     * If omitted, the entire src/ directory will be scanned and all existing cartridge files will be deleted first.
+     */
+    filePaths?: string[];
+}
+
 // Main function
-export async function generateMetadata(projectDirectory: string, metadataDirectory: string): Promise<void> {
+export async function generateMetadata(
+    projectDirectory: string,
+    metadataDirectory: string,
+    options?: GenerateMetadataOptions
+): Promise<void> {
     try {
-        console.log('🔍 Generating metadata for decorated components and page types...');
+        const filePaths = options?.filePaths;
+        const isIncrementalMode = filePaths && filePaths.length > 0;
+
+        if (isIncrementalMode) {
+            console.log(`🔍 Generating metadata for ${filePaths.length} specified file(s)...`);
+        } else {
+            console.log('🔍 Generating metadata for decorated components and page types...');
+        }
 
         const projectRoot = resolve(projectDirectory);
         const srcDir = join(projectRoot, 'src');
@@ -671,16 +694,20 @@ export async function generateMetadata(projectDirectory: string, metadataDirecto
         const pagesOutputDir = join(metadataDir, 'pages');
         const aspectsOutputDir = join(metadataDir, 'aspects');
 
-        // Delete existing output directories to ensure clean generation
-        console.log('🗑️  Cleaning existing output directories...');
-        for (const outputDir of [componentsOutputDir, pagesOutputDir, aspectsOutputDir]) {
-            try {
-                await rm(outputDir, { recursive: true, force: true });
-                console.log(`   - Deleted: ${outputDir}`);
-            } catch {
-                // Directory might not exist, which is fine
-                console.log(`   - Directory not found (skipping): ${outputDir}`);
+        // Only delete existing directories in full scan mode (not incremental)
+        if (!isIncrementalMode) {
+            console.log('🗑️  Cleaning existing output directories...');
+            for (const outputDir of [componentsOutputDir, pagesOutputDir, aspectsOutputDir]) {
+                try {
+                    await rm(outputDir, { recursive: true, force: true });
+                    console.log(`   - Deleted: ${outputDir}`);
+                } catch {
+                    // Directory might not exist, which is fine
+                    console.log(`   - Directory not found (skipping): ${outputDir}`);
+                }
             }
+        } else {
+            console.log('📝 Incremental mode: existing cartridge files will be preserved/overwritten');
         }
 
         // Create output directories if they don't exist
@@ -701,27 +728,37 @@ export async function generateMetadata(projectDirectory: string, metadataDirecto
             }
         }
 
-        const files: string[] = [];
-        const scanDirectory = async (dir: string): Promise<void> => {
-            const entries = await readdir(dir, { withFileTypes: true });
+        let files: string[] = [];
 
-            for (const entry of entries) {
-                const fullPath = join(dir, entry.name);
+        if (isIncrementalMode && filePaths) {
+            // Use the specified file paths (resolve them relative to project root)
+            files = filePaths.map((fp) => resolve(projectRoot, fp));
+            console.log(`📂 Processing ${files.length} specified file(s)...`);
+        } else {
+            // Full scan mode: scan entire src directory
+            const scanDirectory = async (dir: string): Promise<void> => {
+                const entries = await readdir(dir, { withFileTypes: true });
 
-                if (entry.isDirectory()) {
-                    if (!SKIP_DIRECTORIES.includes(entry.name)) {
-                        await scanDirectory(fullPath);
+                for (const entry of entries) {
+                    const fullPath = join(dir, entry.name);
+
+                    if (entry.isDirectory()) {
+                        if (!SKIP_DIRECTORIES.includes(entry.name)) {
+                            await scanDirectory(fullPath);
+                        }
+                    } else if (
+                        entry.isFile() &&
+                        (extname(entry.name) === '.ts' ||
+                            extname(entry.name) === '.tsx' ||
+                            extname(entry.name) === '.json')
+                    ) {
+                        files.push(fullPath);
                     }
-                } else if (
-                    entry.isFile() &&
-                    (extname(entry.name) === '.ts' || extname(entry.name) === '.tsx' || extname(entry.name) === '.json')
-                ) {
-                    files.push(fullPath);
                 }
-            }
-        };
+            };
 
-        await scanDirectory(srcDir);
+            await scanDirectory(srcDir);
+        }
 
         // Process each file for both components and page types
         const allComponents: unknown[] = [];

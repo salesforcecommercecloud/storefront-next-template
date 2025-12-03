@@ -162,5 +162,19 @@ declare const ExtensionConfig: {
 type ExtensionsSelection = Record<string, boolean>;
 declare function trimExtensions(directory: string, selectedExtensions?: Partial<ExtensionsSelection>, extensionConfig?: typeof ExtensionConfig, verboseOverride?: boolean): void;
 //#endregion
-export { type PushOptions, type StorefrontNextPluginsConfig, createServer, storefrontNextPlugins as default, loadConfigFromEnv, loadProjectConfig, push, trimExtensions };
+//#region src/cartridge-services/generate-cartridge.d.ts
+/**
+ * Options for generateMetadata function
+ */
+interface GenerateMetadataOptions {
+  /**
+   * Optional array of specific file paths to process.
+   * If provided, only these files will be processed and existing cartridge files will NOT be deleted.
+   * If omitted, the entire src/ directory will be scanned and all existing cartridge files will be deleted first.
+   */
+  filePaths?: string[];
+}
+declare function generateMetadata(projectDirectory: string, metadataDirectory: string, options?: GenerateMetadataOptions): Promise<void>;
+//#endregion
+export { type GenerateMetadataOptions, type PushOptions, type StorefrontNextPluginsConfig, createServer, storefrontNextPlugins as default, generateMetadata, loadConfigFromEnv, loadProjectConfig, push, trimExtensions };
 //# sourceMappingURL=index.d.ts.map

@@ -12,3 +12,6 @@ export { createServer, loadProjectConfig, loadConfigFromEnv } from './server/ind
 // Named export: Trim extensions function
 import trimExtensions from './extensibility/trim-extensions';
 export { trimExtensions };
+
+// Named export: Generate cartridge metadata for programmatic usage
+export { generateMetadata, type GenerateMetadataOptions } from './cartridge-services/generate-cartridge';
