@@ -1,0 +1,71 @@
+name: build-bundle
+description: Build the storefront bundle for deployment
+inputs:
+  node-version:
+    description: 'Node.js version to use'
+    required: false
+    default: '22'
+  pnpm-version:
+    description: 'pnpm version to use'
+    required: false
+    default: '10.16.1'
+  working-directory:
+    description: 'Working directory for the build'
+    required: false
+    default: ${{ github.workspace }}
+runs:
+  using: composite
+  steps:
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: ${{ inputs.pnpm-version }}
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Install Dependencies
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        # Install all dependencies
+        # Use --frozen-lockfile if lock file exists, otherwise generate it
+        if [ -f "pnpm-lock.yaml" ]; then
+          pnpm install --frozen-lockfile
+        else
+          echo "⚠️  No lock file found, generating one..."
+          pnpm install
+        fi
+        echo "✅ Dependencies installed"
+      shell: bash
+
+    - name: Build Workspace Packages (if any)
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        # Check if this is a workspace setup with packages
+        if [ -f "pnpm-workspace.yaml" ] && [ -d "packages" ]; then
+          echo "📦 Building workspace packages first..."
+          # Build all workspace packages that have a build script
+          pnpm --recursive --filter './packages/*' build || echo "⚠️  Some packages may not have build scripts, continuing..."
+        else
+          echo "ℹ️  No workspace packages to build"
+        fi
+      shell: bash
+      continue-on-error: true
+
+    - name: Build Project
+      working-directory: ${{ inputs.working-directory }}
+      run: pnpm build
+      shell: bash
+
+    - name: Verify Build Output
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        if [ ! -d "build" ]; then
+          echo "❌ Build directory not found!"
+          exit 1
+        fi
+        echo "✅ Build completed successfully"
+        echo "📦 Build directory exists: build/"
+      shell: bash

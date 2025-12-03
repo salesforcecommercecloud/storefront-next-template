@@ -1,0 +1,40 @@
+name: set_mrt_credentials
+inputs:
+  MRT_USER:
+    description: "Mobify user email"
+  MRT_API_KEY:
+    description: "Mobify user API key"
+  CREDENTIALS_FILE_PATH:
+    description: 'Path to the credentials file'
+    default: '~/.mobify'
+  CWD:
+    required: false
+    default: ${{ github.workspace }}
+runs:
+  using: composite
+  steps:
+    - name: Create MRT credentials file
+      working-directory: ${{ inputs.CWD }}
+      run: |-
+        # Add credentials file at ~/.mobify so we can upload to Mobify Cloud
+        # Expand ~ to home directory if present
+        CREDENTIALS_PATH="${{ inputs.CREDENTIALS_FILE_PATH }}"
+        if [[ "$CREDENTIALS_PATH" == ~* ]]; then
+          CREDENTIALS_PATH="${CREDENTIALS_PATH/#\~/$HOME}"
+        fi
+        # Create directory if it doesn't exist
+        mkdir -p "$(dirname "$CREDENTIALS_PATH")"
+        # Use Node.js to properly create JSON file with proper escaping
+        # Pass expanded path and credentials via environment variables
+        export CREDENTIALS_PATH_EXPANDED="$CREDENTIALS_PATH"
+        export MRT_USER_VALUE="${{ inputs.MRT_USER }}"
+        export MRT_API_KEY_VALUE="${{ inputs.MRT_API_KEY }}"
+        node -e "
+          const fs = require('fs');
+          const credentials = {
+            username: process.env.MRT_USER_VALUE,
+            api_key: process.env.MRT_API_KEY_VALUE
+          };
+          fs.writeFileSync(process.env.CREDENTIALS_PATH_EXPANDED, JSON.stringify(credentials, null, 2) + '\n');
+        "
+      shell: bash

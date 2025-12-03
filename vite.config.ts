@@ -1,7 +1,7 @@
 /// <reference types="vitest" />
 import { dirname, resolve, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { defineConfig, perEnvironmentPlugin, loadEnv } from 'vite';
 import { configDefaults, coverageConfigDefaults } from 'vitest/config';
 import coverageConfigThresholds from './vitest.thresholds';
@@ -99,10 +99,27 @@ export default defineConfig(({ mode }) => {
                 '@/config/server': resolve(__dirname, './config.server.ts'),
                 '@': resolve(__dirname, './src'),
                 // Resolve workspace package subpath exports
-                '@salesforce/storefront-next-runtime/events': resolve(
-                    __dirname,
-                    '../storefront-next-runtime/dist/events.js'
-                ),
+                // In test mode, skip file existence check to avoid conflicts with test mocks
+                // In monorepo (test mode), parent path always exists; in standalone, template path exists
+                '@salesforce/storefront-next-runtime/events': (() => {
+                    const templateWithPackagesPath = resolve(
+                        __dirname,
+                        './packages/storefront-next-runtime/dist/events.js'
+                    );
+                    const parentDirPackagePath = resolve(__dirname, '../storefront-next-runtime/dist/events.js');
+
+                    // Skip file existence check in test mode to avoid conflicts with test mocks
+                    if (mode === 'test') {
+                        // In test mode (monorepo), parent path always exists
+                        return parentDirPackagePath;
+                    }
+
+                    // In dev/build mode, check which path exists
+                    if (existsSync(templateWithPackagesPath)) {
+                        return templateWithPackagesPath;
+                    }
+                    return parentDirPackagePath;
+                })(),
             },
         },
         optimizeDeps: {

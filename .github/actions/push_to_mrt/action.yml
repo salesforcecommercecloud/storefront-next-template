@@ -1,0 +1,59 @@
+name: push_to_mrt
+inputs:
+    CWD:
+        description: Project directory
+        default: ${{ github.workspace }}
+    TARGET:
+        description: MRT target environment
+        default: 'production'
+    FLAGS:
+        description: The rest of the flags for the push command
+    PROJECT:
+        description: MRT target project
+    MESSAGE:
+        description: Bundle message / name
+        default: 'build ${{ github.run_id }} on ${{ github.ref }} (${{ github.sha }})'
+    CLOUD_ORIGIN:
+        description: MRT Cloud origin
+        default: 'https://cloud.mobify.com'
+    CREDENTIALS_FILE_PATH:
+        description: 'Path to the credentials file'
+        default: '~/.mobify'
+runs:
+    using: composite
+    steps:
+        - name: Push Bundle to MRT
+          working-directory: ${{ inputs.CWD }}
+          run: |-
+              if [[ "${{ inputs.TARGET }}" ]]; then
+                # Expand ~ in credentials file path if present
+                CREDENTIALS_PATH="${{ inputs.CREDENTIALS_FILE_PATH }}"
+                if [[ "$CREDENTIALS_PATH" == ~* ]]; then
+                  CREDENTIALS_PATH="${CREDENTIALS_PATH/#\~/$HOME}"
+                fi
+                
+                # Build command arguments array to avoid quoting issues
+                PUSH_CMD_ARGS=(
+                  --project-directory .
+                  --target "${{ inputs.TARGET }}"
+                  --cloud-origin "${{ inputs.CLOUD_ORIGIN }}"
+                  --credentials-file "$CREDENTIALS_PATH"
+                )
+                
+                if [[ -n "${{ inputs.PROJECT }}" ]]; then
+                  PUSH_CMD_ARGS+=(--project-slug "${{ inputs.PROJECT }}")
+                fi
+                
+                if [[ -n "${{ inputs.MESSAGE }}" ]]; then
+                  PUSH_CMD_ARGS+=(--message "${{ inputs.MESSAGE }}")
+                fi
+                
+                if [[ -n "${{ inputs.FLAGS }}" ]]; then
+                  # Split FLAGS into separate arguments
+                  read -ra FLAG_ARGS <<< "${{ inputs.FLAGS }}"
+                  PUSH_CMD_ARGS+=("${FLAG_ARGS[@]}")
+                fi
+                
+                pnpm push "${PUSH_CMD_ARGS[@]}"
+              fi
+          shell: bash

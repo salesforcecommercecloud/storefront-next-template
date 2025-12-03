@@ -1,0 +1,76 @@
+name: Deploy to MRT
+
+# This workflow automatically deploys your storefront to Managed Runtime (MRT)
+# when changes are pushed to the main branch or when manually triggered.
+#
+# ⚠️ FOR TESTING: Make sure to set up GitHub secrets:
+# - MRT_CLIENT_USER
+# - MRT_CLIENT_API_KEY
+# Optional variables: MRT_TARGET, MRT_PROJECT, MRT_ORIGIN
+
+on:
+  push:
+    branches:
+      - 'main'
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: environment
+        description: Select the environment to deploy to
+        required: false
+      target:
+        type: string
+        description: MRT target environment (overrides MRT_TARGET variable)
+        required: false
+      message:
+        type: string
+        description: The message to set for the deployed bundle
+        required: false
+
+env:
+  CREDENTIALS_FILE_PATH: '~/.mobify'
+  DEFAULT_MESSAGE: 'build ${{ github.run_id }} on ${{ github.ref }} - ${{ github.sha }}'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'Production' }}
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Bundle
+        uses: './.github/actions/build-bundle'
+
+      - name: Create MRT credentials file
+        id: create_mrt_credentials
+        uses: './.github/actions/set_mrt_credentials'
+        with:
+          MRT_USER: ${{ secrets.MRT_CLIENT_USER }}
+          MRT_API_KEY: ${{ secrets.MRT_CLIENT_API_KEY }}
+          CREDENTIALS_FILE_PATH: ${{ env.CREDENTIALS_FILE_PATH }}
+
+      - name: Push to MRT
+        uses: './.github/actions/push_to_mrt'
+        with:
+          TARGET: ${{ github.event.inputs.target || vars.MRT_TARGET || 'production' }}
+          CLOUD_ORIGIN: ${{ vars.MRT_ORIGIN || 'https://cloud.mobify.com' }}
+          FLAGS: '--wait'
+          PROJECT: ${{ vars.MRT_PROJECT || '' }}
+          MESSAGE: ${{ github.event.inputs.message || github.event.head_commit.message || env.DEFAULT_MESSAGE }}
+          CREDENTIALS_FILE_PATH: ${{ env.CREDENTIALS_FILE_PATH }}
+
+      - name: Cleanup MRT credentials file
+        run: |
+          CREDENTIALS_PATH="${{ env.CREDENTIALS_FILE_PATH }}"
+          if [[ "$CREDENTIALS_PATH" == ~* ]]; then
+            CREDENTIALS_PATH="${CREDENTIALS_PATH/#\~/$HOME}"
+          fi
+          if [ -f "$CREDENTIALS_PATH" ]; then
+            rm -f "$CREDENTIALS_PATH"
+            echo "🧹 Cleaned up credentials file: $CREDENTIALS_PATH"
+          fi
+        shell: bash
+        if: always()
