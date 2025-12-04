@@ -1,5 +1,6 @@
 import { deepMerge, mergeEnvConfig } from './utils';
 import type { EngagementAdapterConfig } from '@/lib/adapters';
+import type { TrackingConsent } from '@/types/tracking-consent';
 
 // Badge configuration
 export type BadgeDetail = {
@@ -162,6 +163,11 @@ export type Config = {
         engagement: {
             adapters: Record<string, EngagementAdapterConfig>;
             analytics: {
+                trackingConsent?: {
+                    enabled: boolean;
+                    defaultTrackingConsent: TrackingConsent;
+                    position?: 'bottom-left' | 'bottom-right' | 'bottom-center';
+                };
                 pageViewsBlocklist: string[];
             };
         };

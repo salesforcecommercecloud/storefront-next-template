@@ -1,5 +1,6 @@
 import { getConfig } from '@/config/get-config';
 import type { RouterContextProvider } from 'react-router';
+import { COOKIE_TRACKING_CONSENT, COOKIE_DWSID } from '@/middlewares/auth.utils';
 
 /**
  * List of cookie names that should NOT be namespaced.
@@ -9,11 +10,12 @@ import type { RouterContextProvider } from 'react-router';
  * that are used by external systems that don't support namespacing.
  *
  * @example
- * const COOKIE_NAMESPACE_EXCLUSIONS = ['dwsid', 'external-analytics-id'];
+ * const COOKIE_NAMESPACE_EXCLUSIONS = [COOKIE_DWSID, 'external-analytics-id'];
  */
 export const COOKIE_NAMESPACE_EXCLUSIONS: readonly string[] = [
     // Add cookie names that should not be namespaced here
-    'dwsid',
+    COOKIE_DWSID,
+    COOKIE_TRACKING_CONSENT,
 ];
 
 /**
@@ -50,7 +52,7 @@ export interface CookieConfig {
  *
  * @example
  * // Returns "dwsid" (if in exclusions array)
- * getCookieNameWithSiteId('dwsid');
+ * getCookieNameWithSiteId(COOKIE_DWSID);
  */
 export const getCookieNameWithSiteId = (name: string, context?: Readonly<RouterContextProvider>): string => {
     // Check if this cookie should be excluded from namespacing

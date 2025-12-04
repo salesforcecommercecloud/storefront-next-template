@@ -67,6 +67,11 @@ vi.mock('@/components/toast', async () => ({
     ToasterTheme: () => <div data-testid="toaster">Toaster</div>,
 }));
 
+vi.mock('@/components/tracking-consent-banner', async () => ({
+    ...(await vi.importActual('@/components/tracking-consent-banner')),
+    TrackingConsentBanner: () => <div data-testid="tracking-consent-banner">Tracking Consent Banner</div>,
+}));
+
 // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
 vi.mock('@/extensions/store-locator/providers/store-locator', async () => ({
     ...(await vi.importActual('@/extensions/store-locator/providers/store-locator')),
@@ -351,6 +356,9 @@ describe('root.tsx', () => {
 
             vi.mocked(fetchCategory).mockResolvedValue(mockCategory);
 
+            const { getInstance } = await import('@/middlewares/i18next');
+            const i18nextInstance = getInstance(createTestContext());
+
             const Stub = createRoutesStub([
                 {
                     id: 'root',
@@ -366,6 +374,8 @@ describe('root.tsx', () => {
                         }),
                         basket: { basketId: 'test-basket', productItems: [] },
                         appConfig: mockConfig,
+                        locale: 'en',
+                        getI18next: () => i18nextInstance,
                     }),
                 },
             ]);
@@ -444,6 +454,9 @@ describe('root.tsx', () => {
             // Set window.__APP_CONFIG__ as fallback
             (window as any).__APP_CONFIG__ = mockConfig;
 
+            const { getInstance } = await import('@/middlewares/i18next');
+            const i18nextInstance = getInstance(createTestContext());
+
             const Stub = createRoutesStub([
                 {
                     id: 'root',
@@ -458,6 +471,8 @@ describe('root.tsx', () => {
                             userType: 'registered',
                         }),
                         basket: { basketId: 'test-basket', productItems: [] },
+                        locale: 'en',
+                        getI18next: () => i18nextInstance,
                         // appConfig not in loader data
                     }),
                 },
@@ -496,7 +511,12 @@ describe('root.tsx', () => {
             expect(result).toHaveProperty('root');
             expect(result).toHaveProperty('subs');
             expect(result).toHaveProperty('auth');
+            expect(result).toHaveProperty('appConfig');
+            expect(result).toHaveProperty('locale');
+            expect(result).toHaveProperty('getI18next');
             expect(typeof result.auth).toBe('function');
+            expect(typeof result.getI18next).toBe('function');
+            expect(result.locale).toBe('en');
 
             // Verify fetchCategory was called correctly
             expect(fetchCategory).toHaveBeenCalledWith(context, 'root', 1);
@@ -553,6 +573,9 @@ describe('root.tsx', () => {
 
             expect(getAuth).toHaveBeenCalledWith(context);
             expect(result.auth()).toEqual(mockSession);
+            expect(result.appConfig).toBeDefined();
+            expect(result.locale).toBe('en');
+            expect(typeof result.getI18next).toBe('function');
         });
     });
 

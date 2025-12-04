@@ -13,7 +13,8 @@ import {
     createAuthPromise,
     updateAuthStorageData,
     updateStorageAndCache,
-    getSLASAccessTokenExpiry,
+    getSLASAccessTokenClaims,
+    isTrackingConsentEnabled,
     COOKIE_REFRESH_TOKEN_GUEST,
     COOKIE_REFRESH_TOKEN_REGISTERED,
     COOKIE_ACCESS_TOKEN,
@@ -21,6 +22,7 @@ import {
     COOKIE_CUSTOMER_ID,
     COOKIE_IDP_ACCESS_TOKEN,
     COOKIE_CODE_VERIFIER,
+    COOKIE_TRACKING_CONSENT,
 } from '@/middlewares/auth.utils';
 import { getAppOrigin, isAbsoluteURL, stringToBase64 } from '@/lib/utils';
 import createClient from '@/lib/scapi';
@@ -29,6 +31,7 @@ import { getConfig } from '@/config';
 import { getCookieConfig, getCookieNameWithSiteId } from '@/lib/cookie-utils';
 import { createCookie, parseAllCookies } from '@/lib/cookies.server';
 import { getTranslation } from '@/lib/i18next';
+import { TrackingConsent, trackingConsentToBoolean } from '@/types/tracking-consent';
 
 /**
  * Utility to get the SLAS client secret with proper validation
@@ -47,7 +50,8 @@ const getSlasClientSecret = (): string => {
  */
 export async function refreshAccessToken(
     context: Readonly<RouterContextProvider>,
-    refreshToken: string
+    refreshToken: string,
+    options?: { trackingConsent?: TrackingConsent }
 ): Promise<ShopperLoginTypes.TokenResponse> {
     const { refreshAccessToken: refreshAccessTokenHelper } = await import('commerce-sdk-isomorphic/helpers');
     const slasClient = await createClient(context).ShopperLogin.getInstance();
@@ -56,10 +60,24 @@ export async function refreshAccessToken(
     const isSlasPrivate = appConfig.commerce.api.privateKeyEnabled;
     performanceTimer?.mark(PERFORMANCE_MARKS.authRefreshAccessToken, 'start');
 
+    // Get tracking consent from options if provided, otherwise read from auth context (populated from cookies by middleware)
+    // Only process tracking consent if the feature is enabled in config
+    let trackingConsent: TrackingConsent | undefined = options?.trackingConsent;
+    if (trackingConsent === undefined && isTrackingConsentEnabled(context)) {
+        try {
+            const authData = getAuth(context);
+            trackingConsent = authData.trackingConsent;
+        } catch {
+            // If getAuth fails (e.g., middleware not initialized), trackingConsent remains undefined
+        }
+    }
+
     return refreshAccessTokenHelper({
         slasClient,
         parameters: {
             refreshToken,
+            // Convert TrackingConsent enum to boolean for SLAS API
+            ...(trackingConsent !== undefined && { dnt: trackingConsentToBoolean(trackingConsent) }),
         },
         credentials: {
             ...(isSlasPrivate && {
@@ -129,6 +147,19 @@ export async function loginRegisteredUser(
     const isSlasPrivate = appConfig.commerce.api.privateKeyEnabled;
     const { usid } = getAuth(context);
 
+    // Get tracking consent from auth context (populated from cookies by middleware)
+    // This ensures existing tracking consent preference from guest session propagates to registered user session
+    // Only process tracking consent if the feature is enabled in config
+    let trackingConsent: TrackingConsent | undefined;
+    if (isTrackingConsentEnabled(context)) {
+        try {
+            const authData = getAuth(context);
+            trackingConsent = authData.trackingConsent;
+        } catch {
+            // If getAuth fails (e.g., middleware not initialized), trackingConsent remains undefined
+        }
+    }
+
     performanceTimer?.mark(PERFORMANCE_MARKS.authLoginRegisteredUser, 'start');
 
     return loginRegisteredUserB2C({
@@ -143,6 +174,8 @@ export async function loginRegisteredUser(
         parameters: {
             redirectURI,
             ...(usid && { usid: String(usid) }),
+            // Convert TrackingConsent enum to boolean for SLAS API
+            ...(trackingConsent !== undefined && { dnt: trackingConsentToBoolean(trackingConsent) }),
             // Include custom parameters if any
             ...(options?.customParameters &&
                 Object.keys(options.customParameters).length > 0 && {
@@ -317,6 +350,22 @@ export async function getPasswordLessAccessToken(
     const usid = session.usid;
     performanceTimer?.mark(PERFORMANCE_MARKS.authGetPasswordLessAccessToken, 'start');
 
+    // Get tracking consent from auth context (populated from cookies by middleware)
+    // This ensures existing tracking consent preference from guest session propagates to registered user session
+    // Only process tracking consent if the feature is enabled in config
+    // Note: This helper expects a string dnt parameter (SDK inconsistency)
+    let dntString: string | undefined;
+    if (isTrackingConsentEnabled(context)) {
+        try {
+            const authData = getAuth(context);
+            // Convert TrackingConsent enum directly to string for this helper
+            // TrackingConsent.Accepted = '0', TrackingConsent.Declined = '1'
+            dntString = authData.trackingConsent;
+        } catch {
+            // If getAuth fails (e.g., middleware not initialized), dntString remains undefined
+        }
+    }
+
     return getPasswordLessAccessTokenHelper({
         slasClient,
         credentials: {
@@ -325,6 +374,7 @@ export async function getPasswordLessAccessToken(
         parameters: {
             pwdlessLoginToken,
             ...(usid && { usid: String(usid) }),
+            ...(dntString !== undefined && { dnt: dntString }),
         },
     }).finally(() => {
         performanceTimer?.mark(PERFORMANCE_MARKS.authGetPasswordLessAccessToken, 'end');
@@ -454,6 +504,13 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
     const customerId = getAuthCookie(COOKIE_CUSTOMER_ID);
     const idpAccessToken = getAuthCookie(COOKIE_IDP_ACCESS_TOKEN);
     const codeVerifier = getAuthCookie(COOKIE_CODE_VERIFIER);
+    // Read tracking consent cookie directly as TrackingConsent enum (values match)
+    const trackingConsentCookieValue = allCookies[COOKIE_TRACKING_CONSENT] || null;
+    let trackingConsent: TrackingConsent | undefined =
+        trackingConsentCookieValue === TrackingConsent.Accepted ||
+        trackingConsentCookieValue === TrackingConsent.Declined
+            ? trackingConsentCookieValue
+            : undefined;
 
     // Create cookie instances for serialization (Set-Cookie headers)
     const refreshTokenGuestCookie = createCookie<string>(COOKIE_REFRESH_TOKEN_GUEST, cookieConfig, context);
@@ -468,6 +525,7 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         getCookieConfig({ httpOnly: true }, context),
         context
     );
+    const trackingConsentCookie = createCookie<string>(COOKIE_TRACKING_CONSENT, cookieConfig, context);
 
     // Determine user type and refresh token from which cookie exists
     // Only one should exist at a time (guest and registered are mutually exclusive)
@@ -504,9 +562,19 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
     if (refreshToken) authData.refresh_token = refreshToken;
     if (accessToken) {
         authData.access_token = accessToken;
-        // Inject access_token_expiry from JWT (source of truth) for fast runtime checks
-        const expiry = getSLASAccessTokenExpiry(accessToken);
-        if (expiry) authData.access_token_expiry = expiry;
+        // Extract claims from JWT (source of truth) - decode once for efficiency
+        const claims = getSLASAccessTokenClaims(accessToken);
+        if (claims.expiry) authData.access_token_expiry = claims.expiry;
+
+        // Validate tracking consent value from token matches cookie - if they differ, mark cookie for deletion
+        // Only validate if tracking consent feature is enabled
+        if (isTrackingConsentEnabled(context) && claims.trackingConsent !== null && trackingConsent !== undefined) {
+            if (claims.trackingConsent !== trackingConsent) {
+                // Tracking consent values differ - mark for deletion by not including trackingConsent in authData
+                // This will cause the cookie to be deleted in the response section
+                trackingConsent = undefined;
+            }
+        }
     }
     if (usid) authData.usid = usid;
     if (customerId) authData.customer_id = customerId;
@@ -514,6 +582,9 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
     if (idpAccessToken) authData.idp_access_token = idpAccessToken;
     // Add code verifier for OAuth2 PKCE flow (if present)
     if (codeVerifier) authData.codeVerifier = codeVerifier;
+    // Add tracking consent value from cookie (if present and valid)
+    // Note: trackingConsent may be undefined if it doesn't match token, which will cause cookie deletion
+    if (trackingConsent !== undefined) authData.trackingConsent = trackingConsent;
     // Add userType to in-memory storage (NOT written to cookies)
     authData.userType = userType;
 
@@ -576,6 +647,7 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         response.headers.append('Set-Cookie', await customerIdCookie.serialize('', deleteCookieConfig));
         response.headers.append('Set-Cookie', await idpAccessTokenCookie.serialize('', deleteCookieConfig));
         response.headers.append('Set-Cookie', await codeVerifierCookie.serialize('', deleteHttpOnlyCookieConfig));
+        response.headers.append('Set-Cookie', await trackingConsentCookie.serialize('', deleteCookieConfig));
     } else if (authStorage.has('isUpdated')) {
         // Clean up storage container metadata
         authStorage.delete('isUpdated');
@@ -734,6 +806,42 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
                     )
                 )
             );
+        }
+
+        // Set or delete tracking consent cookie (only if tracking consent feature is enabled)
+        // TrackingConsent enum values match cookie format directly ('0' or '1')
+        if (isTrackingConsentEnabled(context)) {
+            const trackingConsentValue = authStorage.get('trackingConsent');
+            if (
+                trackingConsentValue === TrackingConsent.Accepted ||
+                trackingConsentValue === TrackingConsent.Declined
+            ) {
+                // Set tracking consent cookie as session cookie (no expiry)
+                // Enum value is already in correct format ('0' or '1')
+                response.headers.append(
+                    'Set-Cookie',
+                    await trackingConsentCookie.serialize(trackingConsentValue, getCookieConfig({}, context))
+                );
+            } else {
+                // Delete tracking consent cookie if it was invalidated (e.g., didn't match token)
+                // Check if cookie exists in request to avoid unnecessary deletion
+                const requestTrackingConsent = allCookies[COOKIE_TRACKING_CONSENT];
+                if (requestTrackingConsent) {
+                    response.headers.append(
+                        'Set-Cookie',
+                        await trackingConsentCookie.serialize(
+                            '',
+                            getCookieConfig(
+                                {
+                                    maxAge: undefined,
+                                    expires: new Date(0),
+                                },
+                                context
+                            )
+                        )
+                    );
+                }
+            }
         }
     }
 

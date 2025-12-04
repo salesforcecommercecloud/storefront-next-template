@@ -7,10 +7,12 @@ import {
 } from 'commerce-sdk-isomorphic/helpers';
 import createClient from '@/lib/scapi';
 import { flashAuth, getAuth, updateAuth } from '@/middlewares/auth.server';
+import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
 import { getConfig } from '@/config';
 import { extractResponseError } from '@/lib/utils';
 import { mergeBasket } from '@/lib/api/basket';
 import { getTranslation } from '@/lib/i18next';
+import { TrackingConsent } from '@/types/tracking-consent';
 
 const { t } = getTranslation();
 
@@ -41,6 +43,10 @@ vi.mock('@/middlewares/auth.server', () => ({
     updateAuth: vi.fn(),
 }));
 
+vi.mock('@/middlewares/auth.utils', () => ({
+    isTrackingConsentEnabled: vi.fn(() => false),
+}));
+
 vi.mock('@/config', () => ({
     getConfig: vi.fn(() => ({
         commerce: {
@@ -60,6 +66,8 @@ const mockedHelpers = {
     loginIDPUser: vi.mocked(loginIDPUserHelper),
 };
 
+const mockIsTrackingConsentEnabled = vi.mocked(isTrackingConsentEnabled);
+
 describe('Social Login', () => {
     const mockContext = {} as unknown as ActionFunctionArgs['context'];
     const scapi = vi.mocked(createClient);
@@ -77,6 +85,8 @@ describe('Social Login', () => {
         cfg.getConfig.mockReturnValue({ commerce: { api: { privateKeyEnabled: false } } } as any);
         // default auth session
         auth.getAuth.mockReturnValue({ usid: 'session-usid', codeVerifier: 'stored-code-verifier' } as any);
+        // default tracking consent disabled
+        mockIsTrackingConsentEnabled.mockReturnValue(false);
         // default scapi redirectURI already set in mock
     });
 
@@ -197,6 +207,118 @@ describe('Social Login', () => {
                     redirectURI: 'https://app.example/social-callback',
                     code: 'auth-code',
                     usid: 'explicit-usid',
+                },
+            });
+        });
+
+        it('includes DNT value when feature is enabled and trackingConsent exists in auth context', async () => {
+            auth.getAuth.mockReturnValue({
+                usid: 'session-usid',
+                codeVerifier: 'stored-code-verifier',
+                trackingConsent: TrackingConsent.Declined, // Enum value representing 'do not track'
+            } as any);
+            mockIsTrackingConsentEnabled.mockReturnValue(true);
+            mockedHelpers.loginIDPUser.mockResolvedValue({ accessToken: 'at' } as any);
+
+            await loginIDPUser(mockContext, {
+                code: 'auth-code',
+                redirectURI: 'https://app.example/social-callback',
+            });
+
+            expect(mockedHelpers.loginIDPUser).toHaveBeenCalledWith({
+                slasClient: expect.any(Object),
+                credentials: {
+                    codeVerifier: 'stored-code-verifier',
+                },
+                parameters: {
+                    redirectURI: 'https://app.example/social-callback',
+                    code: 'auth-code',
+                    usid: 'session-usid',
+                    dnt: true, // Converted from TrackingConsent.Declined to boolean
+                },
+            });
+        });
+
+        it('does not include DNT when feature is disabled', async () => {
+            auth.getAuth.mockReturnValue({
+                usid: 'session-usid',
+                codeVerifier: 'stored-code-verifier',
+                trackingConsent: TrackingConsent.Declined, // Enum value
+            } as any);
+            mockIsTrackingConsentEnabled.mockReturnValue(false);
+            mockedHelpers.loginIDPUser.mockResolvedValue({ accessToken: 'at' } as any);
+
+            await loginIDPUser(mockContext, {
+                code: 'auth-code',
+                redirectURI: 'https://app.example/social-callback',
+            });
+
+            expect(mockedHelpers.loginIDPUser).toHaveBeenCalledWith({
+                slasClient: expect.any(Object),
+                credentials: {
+                    codeVerifier: 'stored-code-verifier',
+                },
+                parameters: {
+                    redirectURI: 'https://app.example/social-callback',
+                    code: 'auth-code',
+                    usid: 'session-usid',
+                    // No dnt parameter
+                },
+            });
+        });
+
+        it('does not include DNT when it does not exist in auth context', async () => {
+            auth.getAuth.mockReturnValue({
+                usid: 'session-usid',
+                codeVerifier: 'stored-code-verifier',
+                // No trackingConsent property
+            } as any);
+            mockIsTrackingConsentEnabled.mockReturnValue(true);
+            mockedHelpers.loginIDPUser.mockResolvedValue({ accessToken: 'at' } as any);
+
+            await loginIDPUser(mockContext, {
+                code: 'auth-code',
+                redirectURI: 'https://app.example/social-callback',
+            });
+
+            expect(mockedHelpers.loginIDPUser).toHaveBeenCalledWith({
+                slasClient: expect.any(Object),
+                credentials: {
+                    codeVerifier: 'stored-code-verifier',
+                },
+                parameters: {
+                    redirectURI: 'https://app.example/social-callback',
+                    code: 'auth-code',
+                    usid: 'session-usid',
+                    // No dnt parameter
+                },
+            });
+        });
+
+        it('uses DNT value false when trackingConsent is Accepted', async () => {
+            auth.getAuth.mockReturnValue({
+                usid: 'session-usid',
+                codeVerifier: 'stored-code-verifier',
+                trackingConsent: TrackingConsent.Accepted, // Enum value representing tracking accepted
+            } as any);
+            mockIsTrackingConsentEnabled.mockReturnValue(true);
+            mockedHelpers.loginIDPUser.mockResolvedValue({ accessToken: 'at' } as any);
+
+            await loginIDPUser(mockContext, {
+                code: 'auth-code',
+                redirectURI: 'https://app.example/social-callback',
+            });
+
+            expect(mockedHelpers.loginIDPUser).toHaveBeenCalledWith({
+                slasClient: expect.any(Object),
+                credentials: {
+                    codeVerifier: 'stored-code-verifier',
+                },
+                parameters: {
+                    redirectURI: 'https://app.example/social-callback',
+                    code: 'auth-code',
+                    usid: 'session-usid',
+                    dnt: false, // Converted from TrackingConsent.Accepted to boolean
                 },
             });
         });

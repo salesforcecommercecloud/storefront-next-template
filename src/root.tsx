@@ -40,6 +40,7 @@ import Header from '@/components/header';
 import CategoryNavigationMenuMega from '@/components/navigation-menu-mega';
 import Footer from '@/components/footer';
 import { ToasterTheme } from '@/components/toast';
+import { TrackingConsentBanner } from '@/components/tracking-consent-banner';
 import { ConfigProvider, getConfig, type AppConfig } from '@/config';
 import { useExecutePendingAction } from '@/hooks/use-execute-pending-action';
 import './app.css';
@@ -299,6 +300,7 @@ export default function App({ loaderData: { root, subs, auth, basket, getI18next
                 </main>
             </PageDesignerProvider>
             <Footer />
+            <TrackingConsentBanner />
             {/* Track page views asynchronously */}
             {typeof window !== 'undefined' && <PageViewTracker />}
         </ComposeProviders>

@@ -9,6 +9,7 @@ import {
     updateStorageObject,
 } from '@/lib/middleware';
 import { getConfig, type AppConfig } from '@/config';
+import { TrackingConsent, booleanToTrackingConsent } from '@/types/tracking-consent';
 
 // Maximum allowed refresh token expiry times (in seconds) per Salesforce Commerce Cloud limits
 export const MAX_GUEST_REFRESH_TOKEN_EXPIRY = 30 * 24 * 60 * 60; // 30 days
@@ -23,6 +24,32 @@ export const COOKIE_USID = 'usid'; // User session ID
 export const COOKIE_CUSTOMER_ID = 'customerId'; // Customer ID
 export const COOKIE_IDP_ACCESS_TOKEN = 'cc-idp-at'; // IDP access token (for social login)
 export const COOKIE_CODE_VERIFIER = 'cc-cv'; // OAuth2 PKCE code verifier (server-only, short-lived)
+export const COOKIE_TRACKING_CONSENT = 'dw_dnt'; // Tracking consent preference (cookie value matches TrackingConsent enum)
+export const COOKIE_DWSID = 'dwsid'; // Hybrid storefront session ID (for session bridge)
+
+/**
+ * Check if tracking consent feature is enabled in the app configuration.
+ * Reads config from context (server-side) or uses getConfig() (client-side).
+ *
+ * @param context - Optional router context (server loaders/actions only, omit for client-side)
+ * @returns true if tracking consent is enabled, false otherwise
+ *
+ * @example
+ * // Server-side with context
+ * if (isTrackingConsentEnabled(context)) {
+ *   // Handle tracking consent logic
+ * }
+ *
+ * @example
+ * // Client-side without context
+ * if (isTrackingConsentEnabled()) {
+ *   // Handle tracking consent logic
+ * }
+ */
+export function isTrackingConsentEnabled(context?: Readonly<RouterContextProvider>): boolean {
+    const appConfig = getConfig(context);
+    return appConfig.engagement?.analytics?.trackingConsent?.enabled ?? false;
+}
 
 /**
  * Get refresh token expiry configuration for a specific user type.
@@ -105,7 +132,9 @@ export const updateAuthStorageDataByTokenResponse = (
 
     // Get expiry from JWT token itself (source of truth) rather than calculating from expires_in
     // This decodes once during storage and allows fast numeric comparison at runtime
-    const accessTokenExpiry = tokenResponse?.access_token ? getSLASAccessTokenExpiry(tokenResponse.access_token) : null;
+    const accessTokenExpiry = tokenResponse?.access_token
+        ? getSLASAccessTokenClaims(tokenResponse.access_token).expiry
+        : null;
     storage.set('access_token_expiry', accessTokenExpiry ?? now + Number(tokenResponse?.expires_in) * 1_000);
 
     // Get final refresh token expiry (with environment override if configured)
@@ -149,6 +178,10 @@ export const updateAuthStorageData = (
     // Extract/store current storage data
     const publicData = unpackStorage(storage);
 
+    // Preserve tracking consent from cookie (source of truth) before clearing storage
+    // Tracking consent cookie must be preserved across token updates to maintain user preference
+    const existingTrackingConsent = storage.get('trackingConsent');
+
     // Unset storage data
     clearStorage(storage, false);
 
@@ -163,6 +196,12 @@ export const updateAuthStorageData = (
     } else {
         // Update storage data using a `TokenResponse`
         updateAuthStorageDataByTokenResponse(storage, updater, undefined, appConfig);
+    }
+
+    // Restore tracking consent from cookie if it existed (cookie is source of truth, not token)
+    // This ensures tracking consent cookie persists across token refreshes and login flows
+    if (existingTrackingConsent === TrackingConsent.Accepted || existingTrackingConsent === TrackingConsent.Declined) {
+        storage.set('trackingConsent', existingTrackingConsent);
     }
 
     // Mark storage as updated
@@ -275,16 +314,41 @@ export function decodeSLASAccessToken(token: string): SLASAccessTokenPayload {
 }
 
 /**
- * Get the expiry timestamp from a SLAS access token
+ * Extracted claims from a SLAS access token payload
+ */
+export interface SLASAccessTokenClaims {
+    /** Expiry timestamp in milliseconds, or null if token has no exp claim */
+    expiry: number | null;
+    /** Tracking consent value as TrackingConsent enum, or null if token has no dnt claim */
+    trackingConsent: TrackingConsent | null;
+}
+
+/**
+ * Extract claims from a SLAS access token payload.
+ * Decodes the token once and returns multiple claims for efficiency.
+ *
+ * We're only reading dnt (as trackingConsent) and exp claims for now, but we can add more claims here if needed.
  *
  * @param token - SLAS access token string
- * @returns Expiry timestamp in milliseconds, or null if token is invalid or has no exp claim
+ * @returns Object containing extracted claims (expiry, trackingConsent, etc.)
  */
-export function getSLASAccessTokenExpiry(token: string): number | null {
+export function getSLASAccessTokenClaims(token: string): SLASAccessTokenClaims {
     try {
-        const payload = decodeSLASAccessToken(token);
-        return payload.exp !== undefined ? payload.exp * 1000 : null;
+        const payload: SLASAccessTokenPayload = decodeSLASAccessToken(token);
+        const expiry = payload.exp !== undefined ? payload.exp * 1000 : null;
+
+        let trackingConsent: TrackingConsent | null = null;
+        const dntValue = payload.dnt;
+        if (typeof dntValue === 'boolean') {
+            trackingConsent = booleanToTrackingConsent(dntValue);
+        } else if (typeof dntValue === 'string') {
+            // Handle string 'true'/'1' or 'false'/'0' from token
+            const boolValue = dntValue === 'true' || dntValue === '1';
+            trackingConsent = booleanToTrackingConsent(boolValue);
+        }
+
+        return { expiry, trackingConsent };
     } catch {
-        return null;
+        return { expiry: null, trackingConsent: null };
     }
 }

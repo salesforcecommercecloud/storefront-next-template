@@ -1,17 +1,29 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { type ActionFunctionArgs, RouterContextProvider } from 'react-router';
 import { action } from './resource.auth.$operation';
-import { refreshAccessToken, loginGuestUser, loginRegisteredUser } from '@/middlewares/auth.server';
+import {
+    refreshAccessToken,
+    loginGuestUser,
+    loginRegisteredUser,
+    updateAuth,
+    getAuth,
+} from '@/middlewares/auth.server';
 import { extractResponseError } from '@/lib/utils';
+import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
+import { TrackingConsent } from '@/types/tracking-consent';
 
 // Mock dependencies
 vi.mock('@/middlewares/auth.server');
 vi.mock('@/lib/utils');
+vi.mock('@/middlewares/auth.utils');
 
 const mockRefreshAccessToken = vi.mocked(refreshAccessToken);
 const mockLoginGuestUser = vi.mocked(loginGuestUser);
 const mockLoginRegisteredUser = vi.mocked(loginRegisteredUser);
+const mockUpdateAuth = vi.mocked(updateAuth);
+const mockGetAuth = vi.mocked(getAuth);
 const mockExtractResponseError = vi.mocked(extractResponseError);
+const mockIsTrackingConsentEnabled = vi.mocked(isTrackingConsentEnabled);
 
 describe('resource.auth.$operation action', () => {
     let mockContextProvider: RouterContextProvider;
@@ -31,6 +43,9 @@ describe('resource.auth.$operation action', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         mockContextProvider = new RouterContextProvider();
+        // Default mocks
+        mockGetAuth.mockReturnValue({ userType: 'guest' } as never);
+        mockIsTrackingConsentEnabled.mockReturnValue(false);
     });
 
     afterEach(() => {
@@ -47,14 +62,71 @@ describe('resource.auth.$operation action', () => {
         context: mockContextProvider,
     });
 
+    const parseResponse = async (response: Response) => {
+        return response.json();
+    };
+
     describe('refresh-token operation', () => {
-        it('should handle successful refresh token', async () => {
+        it('should handle successful refresh token without tracking consent', async () => {
             const requestBody = { refreshToken: 'test-refresh-token' };
             mockRefreshAccessToken.mockResolvedValue(mockTokenResponse);
+            mockGetAuth.mockReturnValue({ userType: 'guest' } as never);
 
-            const result = await action(createActionArgs('refresh-token', requestBody));
+            const response = await action(createActionArgs('refresh-token', requestBody));
+            const result = await parseResponse(response);
 
-            expect(mockRefreshAccessToken).toHaveBeenCalledWith(mockContextProvider, requestBody.refreshToken);
+            expect(mockRefreshAccessToken).toHaveBeenCalledWith(mockContextProvider, requestBody.refreshToken, {});
+            expect(mockGetAuth).toHaveBeenCalledWith(mockContextProvider);
+            expect(mockUpdateAuth).toHaveBeenCalledTimes(2);
+            expect(mockUpdateAuth).toHaveBeenNthCalledWith(1, mockContextProvider, mockTokenResponse);
+            expect(mockUpdateAuth).toHaveBeenNthCalledWith(2, mockContextProvider, expect.any(Function));
+            expect(result).toEqual({
+                success: true,
+                data: mockTokenResponse,
+            });
+        });
+
+        it('should handle successful refresh token with tracking consent when feature is enabled', async () => {
+            const requestBody = { refreshToken: 'test-refresh-token', trackingConsent: TrackingConsent.Declined };
+            mockRefreshAccessToken.mockResolvedValue(mockTokenResponse);
+            mockGetAuth.mockReturnValue({ userType: 'registered' } as never);
+            mockIsTrackingConsentEnabled.mockReturnValue(true);
+
+            const response = await action(createActionArgs('refresh-token', requestBody));
+            const result = await parseResponse(response);
+
+            expect(mockRefreshAccessToken).toHaveBeenCalledWith(mockContextProvider, requestBody.refreshToken, {
+                trackingConsent: TrackingConsent.Declined,
+            });
+            expect(mockGetAuth).toHaveBeenCalledWith(mockContextProvider);
+            expect(mockIsTrackingConsentEnabled).toHaveBeenCalledWith(mockContextProvider);
+            expect(mockUpdateAuth).toHaveBeenCalledTimes(2);
+            expect(mockUpdateAuth).toHaveBeenNthCalledWith(2, mockContextProvider, expect.any(Function));
+            // Verify tracking consent is passed to updater
+            const updaterFn = mockUpdateAuth.mock.calls[1][1] as (session: unknown) => unknown;
+            const updatedSession = updaterFn({});
+            expect(updatedSession).toEqual({ userType: 'registered', trackingConsent: TrackingConsent.Declined });
+            expect(result).toEqual({
+                success: true,
+                data: mockTokenResponse,
+            });
+        });
+
+        it('should ignore tracking consent when feature is disabled', async () => {
+            const requestBody = { refreshToken: 'test-refresh-token', trackingConsent: TrackingConsent.Declined };
+            mockRefreshAccessToken.mockResolvedValue(mockTokenResponse);
+            mockGetAuth.mockReturnValue({ userType: 'guest' } as never);
+            mockIsTrackingConsentEnabled.mockReturnValue(false);
+
+            const response = await action(createActionArgs('refresh-token', requestBody));
+            const result = await parseResponse(response);
+
+            expect(mockRefreshAccessToken).toHaveBeenCalledWith(mockContextProvider, requestBody.refreshToken, {});
+            expect(mockIsTrackingConsentEnabled).toHaveBeenCalledWith(mockContextProvider);
+            // Verify tracking consent is not included in updater when feature is disabled
+            const updaterFn = mockUpdateAuth.mock.calls[1][1] as (session: unknown) => unknown;
+            const updatedSession = updaterFn({});
+            expect(updatedSession).toEqual({ userType: 'guest' }); // No trackingConsent property
             expect(result).toEqual({
                 success: true,
                 data: mockTokenResponse,
@@ -69,9 +141,11 @@ describe('resource.auth.$operation action', () => {
             mockRefreshAccessToken.mockRejectedValue(mockError);
             mockExtractResponseError.mockResolvedValue(extractedError);
 
-            const result = await action(createActionArgs('refresh-token', requestBody));
+            const response = await action(createActionArgs('refresh-token', requestBody));
+            const result = await parseResponse(response);
 
             expect(mockExtractResponseError).toHaveBeenCalledWith(mockError);
+            expect(mockUpdateAuth).not.toHaveBeenCalled();
             expect(result).toEqual({
                 success: false,
                 error: extractedError.responseMessage,
@@ -80,30 +154,36 @@ describe('resource.auth.$operation action', () => {
     });
 
     describe('login-guest operation', () => {
-        it('should handle successful guest login without usid', async () => {
-            const requestBody = {};
+        it('should handle successful guest login', async () => {
+            const requestBody = { usid: 'test-usid' };
             mockLoginGuestUser.mockResolvedValue(mockTokenResponse);
 
-            const result = await action(createActionArgs('login-guest', requestBody));
+            const response = await action(createActionArgs('login-guest', requestBody));
+            const result = await parseResponse(response);
 
             expect(mockLoginGuestUser).toHaveBeenCalledWith(mockContextProvider, {
-                usid: undefined,
+                usid: requestBody.usid,
             });
+            expect(mockUpdateAuth).toHaveBeenCalledTimes(2);
+            expect(mockUpdateAuth).toHaveBeenNthCalledWith(1, mockContextProvider, mockTokenResponse);
+            expect(mockUpdateAuth).toHaveBeenNthCalledWith(2, mockContextProvider, expect.any(Function));
             expect(result).toEqual({
                 success: true,
                 data: mockTokenResponse,
             });
         });
 
-        it('should handle successful guest login with usid', async () => {
-            const requestBody = { usid: 'test-usid' };
+        it('should handle successful guest login without usid', async () => {
+            const requestBody = {};
             mockLoginGuestUser.mockResolvedValue(mockTokenResponse);
 
-            const result = await action(createActionArgs('login-guest', requestBody));
+            const response = await action(createActionArgs('login-guest', requestBody));
+            const result = await parseResponse(response);
 
             expect(mockLoginGuestUser).toHaveBeenCalledWith(mockContextProvider, {
-                usid: requestBody.usid,
+                usid: undefined,
             });
+            expect(mockUpdateAuth).toHaveBeenCalledTimes(2);
             expect(result).toEqual({
                 success: true,
                 data: mockTokenResponse,
@@ -118,9 +198,11 @@ describe('resource.auth.$operation action', () => {
             mockLoginGuestUser.mockRejectedValue(mockError);
             mockExtractResponseError.mockResolvedValue(extractedError);
 
-            const result = await action(createActionArgs('login-guest', requestBody));
+            const response = await action(createActionArgs('login-guest', requestBody));
+            const result = await parseResponse(response);
 
             expect(mockExtractResponseError).toHaveBeenCalledWith(mockError);
+            expect(mockUpdateAuth).not.toHaveBeenCalled();
             expect(result).toEqual({
                 success: false,
                 error: extractedError.responseMessage,
@@ -129,30 +211,7 @@ describe('resource.auth.$operation action', () => {
     });
 
     describe('login-registered operation', () => {
-        it('should handle successful registered user login without custom parameters', async () => {
-            const requestBody = {
-                email: 'test@example.com',
-                password: 'password123',
-            };
-            mockLoginRegisteredUser.mockResolvedValue(mockTokenResponse);
-
-            const result = await action(createActionArgs('login-registered', requestBody));
-
-            expect(mockLoginRegisteredUser).toHaveBeenCalledWith(
-                mockContextProvider,
-                requestBody.email,
-                requestBody.password,
-                {
-                    customParameters: undefined,
-                }
-            );
-            expect(result).toEqual({
-                success: true,
-                data: mockTokenResponse,
-            });
-        });
-
-        it('should handle successful registered user login with custom parameters', async () => {
+        it('should handle successful registered user login', async () => {
             const requestBody = {
                 email: 'test@example.com',
                 password: 'password123',
@@ -160,7 +219,8 @@ describe('resource.auth.$operation action', () => {
             };
             mockLoginRegisteredUser.mockResolvedValue(mockTokenResponse);
 
-            const result = await action(createActionArgs('login-registered', requestBody));
+            const response = await action(createActionArgs('login-registered', requestBody));
+            const result = await parseResponse(response);
 
             expect(mockLoginRegisteredUser).toHaveBeenCalledWith(
                 mockContextProvider,
@@ -170,6 +230,34 @@ describe('resource.auth.$operation action', () => {
                     customParameters: requestBody.customParameters,
                 }
             );
+            expect(mockUpdateAuth).toHaveBeenCalledTimes(2);
+            expect(mockUpdateAuth).toHaveBeenNthCalledWith(1, mockContextProvider, mockTokenResponse);
+            expect(mockUpdateAuth).toHaveBeenNthCalledWith(2, mockContextProvider, expect.any(Function));
+            expect(result).toEqual({
+                success: true,
+                data: mockTokenResponse,
+            });
+        });
+
+        it('should handle successful registered user login without custom parameters', async () => {
+            const requestBody = {
+                email: 'test@example.com',
+                password: 'password123',
+            };
+            mockLoginRegisteredUser.mockResolvedValue(mockTokenResponse);
+
+            const response = await action(createActionArgs('login-registered', requestBody));
+            const result = await parseResponse(response);
+
+            expect(mockLoginRegisteredUser).toHaveBeenCalledWith(
+                mockContextProvider,
+                requestBody.email,
+                requestBody.password,
+                {
+                    customParameters: undefined,
+                }
+            );
+            expect(mockUpdateAuth).toHaveBeenCalledTimes(2);
             expect(result).toEqual({
                 success: true,
                 data: mockTokenResponse,
@@ -187,9 +275,11 @@ describe('resource.auth.$operation action', () => {
             mockLoginRegisteredUser.mockRejectedValue(mockError);
             mockExtractResponseError.mockResolvedValue(extractedError);
 
-            const result = await action(createActionArgs('login-registered', requestBody));
+            const response = await action(createActionArgs('login-registered', requestBody));
+            const result = await parseResponse(response);
 
             expect(mockExtractResponseError).toHaveBeenCalledWith(mockError);
+            expect(mockUpdateAuth).not.toHaveBeenCalled();
             expect(result).toEqual({
                 success: false,
                 error: extractedError.responseMessage,
@@ -199,7 +289,8 @@ describe('resource.auth.$operation action', () => {
 
     describe('unknown operation', () => {
         it('should return error for unknown operation', async () => {
-            const result = await action(createActionArgs('unknown-operation', {}));
+            const response = await action(createActionArgs('unknown-operation', {}));
+            const result = await parseResponse(response);
 
             expect(result).toEqual({
                 success: false,
@@ -225,7 +316,8 @@ describe('resource.auth.$operation action', () => {
             const extractedError = { responseMessage: 'Invalid JSON format', status_code: '400' };
             mockExtractResponseError.mockResolvedValue(extractedError);
 
-            const result = await action(args);
+            const response = await action(args);
+            const result = await parseResponse(response);
 
             expect(mockExtractResponseError).toHaveBeenCalledWith(expect.any(SyntaxError));
             expect(result).toEqual({
@@ -242,9 +334,11 @@ describe('resource.auth.$operation action', () => {
             mockRefreshAccessToken.mockRejectedValue(networkError);
             mockExtractResponseError.mockResolvedValue(extractedError);
 
-            const result = await action(createActionArgs('refresh-token', requestBody));
+            const response = await action(createActionArgs('refresh-token', requestBody));
+            const result = await parseResponse(response);
 
             expect(mockExtractResponseError).toHaveBeenCalledWith(networkError);
+            expect(mockUpdateAuth).not.toHaveBeenCalled();
             expect(result).toEqual({
                 success: false,
                 error: extractedError.responseMessage,
@@ -271,8 +365,10 @@ describe('resource.auth.$operation action', () => {
             mockRefreshAccessToken.mockRejectedValue(mockError);
             mockExtractResponseError.mockResolvedValue(extractedError);
 
-            const result = await action(createActionArgs('refresh-token', requestBody));
+            const response = await action(createActionArgs('refresh-token', requestBody));
+            const result = await parseResponse(response);
 
+            expect(mockUpdateAuth).not.toHaveBeenCalled();
             expect(result).toEqual({
                 success: false,
                 error: extractedError.responseMessage,
@@ -287,8 +383,10 @@ describe('resource.auth.$operation action', () => {
             mockLoginRegisteredUser.mockRejectedValue(mockError);
             mockExtractResponseError.mockResolvedValue(extractedError);
 
-            const result = await action(createActionArgs('login-registered', requestBody));
+            const response = await action(createActionArgs('login-registered', requestBody));
+            const result = await parseResponse(response);
 
+            expect(mockUpdateAuth).not.toHaveBeenCalled();
             expect(result).toEqual({
                 success: false,
                 error: extractedError.responseMessage,

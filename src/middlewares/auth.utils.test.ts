@@ -1,12 +1,16 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
     getRefreshTokenExpiry,
     MAX_GUEST_REFRESH_TOKEN_EXPIRY,
     MAX_REGISTERED_REFRESH_TOKEN_EXPIRY,
     decodeSLASAccessToken,
-    getSLASAccessTokenExpiry,
+    getSLASAccessTokenClaims,
+    isTrackingConsentEnabled,
 } from './auth.utils';
 import type { AppConfig } from '@/config';
+import { createTestContext } from '@/lib/test-utils';
+import { mockBuildConfig } from '@/test-utils/config';
+import { TrackingConsent } from '@/types/tracking-consent';
 
 describe('auth.utils', () => {
     let mockConfig: AppConfig;
@@ -225,8 +229,12 @@ describe('auth.utils', () => {
             });
 
             it('should throw error for token with wrong number of parts', () => {
-                expect(() => decodeSLASAccessToken('invalid.token')).toThrow('Invalid JWT: must have 3 parts');
-                expect(() => decodeSLASAccessToken('too.many.parts.here')).toThrow('Invalid JWT: must have 3 parts');
+                expect(() => decodeSLASAccessToken('invalid.token')).toThrow(
+                    'Invalid JWT: must have 3 parts (header.payload.signature)'
+                );
+                expect(() => decodeSLASAccessToken('too.many.parts.here')).toThrow(
+                    'Invalid JWT: must have 3 parts (header.payload.signature)'
+                );
             });
 
             it('should throw error for token with empty payload', () => {
@@ -255,35 +263,42 @@ describe('auth.utils', () => {
             });
         });
 
-        describe('getSLASAccessTokenExpiry', () => {
-            it('should return expiry timestamp in milliseconds', () => {
+        describe('getSLASAccessTokenClaims', () => {
+            it('should return expiry timestamp in milliseconds and trackingConsent claim', () => {
                 const expSeconds = 1234567890;
-                const token = createTestToken({ exp: expSeconds });
+                const token = createTestToken({ exp: expSeconds, dnt: true });
 
-                const expiry = getSLASAccessTokenExpiry(token);
+                const claims = getSLASAccessTokenClaims(token);
 
-                expect(expiry).toBe(expSeconds * 1000);
+                expect(claims.expiry).toBe(expSeconds * 1000);
+                expect(claims.trackingConsent).toBe(TrackingConsent.Declined);
             });
 
-            it('should return null for token without exp claim', () => {
+            it('should return null expiry for token without exp claim', () => {
                 const token = createTestToken({ sub: 'user123' });
 
-                const expiry = getSLASAccessTokenExpiry(token);
+                const claims = getSLASAccessTokenClaims(token);
 
-                expect(expiry).toBeNull();
+                expect(claims.expiry).toBeNull();
+                expect(claims.trackingConsent).toBeNull();
             });
 
             it('should return null for invalid token', () => {
-                expect(getSLASAccessTokenExpiry('invalid.token')).toBeNull();
-                expect(getSLASAccessTokenExpiry('')).toBeNull();
+                const claims1 = getSLASAccessTokenClaims('invalid.token');
+                const claims2 = getSLASAccessTokenClaims('');
+
+                expect(claims1.expiry).toBeNull();
+                expect(claims1.trackingConsent).toBeNull();
+                expect(claims2.expiry).toBeNull();
+                expect(claims2.trackingConsent).toBeNull();
             });
 
             it('should handle exp as 0', () => {
                 const token = createTestToken({ exp: 0 });
 
-                const expiry = getSLASAccessTokenExpiry(token);
+                const claims = getSLASAccessTokenClaims(token);
 
-                expect(expiry).toBe(0);
+                expect(claims.expiry).toBe(0);
             });
 
             it('should handle realistic SLAS token', () => {
@@ -291,10 +306,150 @@ describe('auth.utils', () => {
                 const expSeconds = Math.floor(now / 1000) + 1800; // 30 minutes
                 const token = createTestToken({ exp: expSeconds });
 
-                const expiry = getSLASAccessTokenExpiry(token);
+                const claims = getSLASAccessTokenClaims(token);
 
-                expect(expiry).toBe(expSeconds * 1000);
-                expect(expiry).toBeGreaterThan(now);
+                expect(claims.expiry).toBe(expSeconds * 1000);
+                expect(claims.expiry).toBeGreaterThan(now);
+            });
+
+            it('should handle dnt as boolean true (Declined)', () => {
+                const token = createTestToken({ exp: 1234567890, dnt: true });
+
+                const claims = getSLASAccessTokenClaims(token);
+
+                expect(claims.trackingConsent).toBe(TrackingConsent.Declined);
+            });
+
+            it('should handle dnt as boolean false (Accepted)', () => {
+                const token = createTestToken({ exp: 1234567890, dnt: false });
+
+                const claims = getSLASAccessTokenClaims(token);
+
+                expect(claims.trackingConsent).toBe(TrackingConsent.Accepted);
+            });
+
+            it('should handle dnt as string "true" (Declined)', () => {
+                const token = createTestToken({ exp: 1234567890, dnt: 'true' });
+
+                const claims = getSLASAccessTokenClaims(token);
+
+                expect(claims.trackingConsent).toBe(TrackingConsent.Declined);
+            });
+
+            it('should handle dnt as string "1" (Declined)', () => {
+                const token = createTestToken({ exp: 1234567890, dnt: '1' });
+
+                const claims = getSLASAccessTokenClaims(token);
+
+                expect(claims.trackingConsent).toBe(TrackingConsent.Declined);
+            });
+
+            it('should handle dnt as string "false" (Accepted)', () => {
+                const token = createTestToken({ exp: 1234567890, dnt: 'false' });
+
+                const claims = getSLASAccessTokenClaims(token);
+
+                expect(claims.trackingConsent).toBe(TrackingConsent.Accepted);
+            });
+
+            it('should handle dnt as string "0" (Accepted)', () => {
+                const token = createTestToken({ exp: 1234567890, dnt: '0' });
+
+                const claims = getSLASAccessTokenClaims(token);
+
+                expect(claims.trackingConsent).toBe(TrackingConsent.Accepted);
+            });
+
+            it('should return null trackingConsent when dnt claim is missing', () => {
+                const token = createTestToken({ exp: 1234567890 });
+
+                const claims = getSLASAccessTokenClaims(token);
+
+                expect(claims.trackingConsent).toBeNull();
+            });
+        });
+    });
+
+    describe('Tracking Consent utilities', () => {
+        describe('isTrackingConsentEnabled', () => {
+            beforeEach(() => {
+                vi.resetModules();
+            });
+
+            it('should return true when tracking consent is enabled in config', () => {
+                const testConfig = {
+                    ...mockBuildConfig.app,
+                    engagement: {
+                        ...mockBuildConfig.app.engagement,
+                        analytics: {
+                            ...mockBuildConfig.app.engagement.analytics,
+                            trackingConsent: {
+                                enabled: true,
+                                defaultTrackingConsent: TrackingConsent.Declined,
+                            },
+                        },
+                    },
+                };
+                const context = createTestContext({ appConfig: testConfig });
+
+                const result = isTrackingConsentEnabled(context);
+
+                expect(result).toBe(true);
+            });
+
+            it('should return false when tracking consent is disabled in config', () => {
+                const testConfig = {
+                    ...mockBuildConfig.app,
+                    engagement: {
+                        ...mockBuildConfig.app.engagement,
+                        analytics: {
+                            ...mockBuildConfig.app.engagement.analytics,
+                            trackingConsent: {
+                                enabled: false,
+                                defaultTrackingConsent: TrackingConsent.Declined,
+                            },
+                        },
+                    },
+                };
+                const context = createTestContext({ appConfig: testConfig });
+
+                const result = isTrackingConsentEnabled(context);
+
+                expect(result).toBe(false);
+            });
+
+            it('should return false when tracking consent config is missing', () => {
+                const testConfig = {
+                    ...mockBuildConfig.app,
+                    engagement: {
+                        ...mockBuildConfig.app.engagement,
+                        analytics: {
+                            ...mockBuildConfig.app.engagement.analytics,
+                            trackingConsent: undefined,
+                        },
+                    },
+                };
+                const context = createTestContext({ appConfig: testConfig });
+
+                const result = isTrackingConsentEnabled(context);
+
+                expect(result).toBe(false);
+            });
+
+            it('should return false when engagement config is missing', () => {
+                // Override engagement to remove analytics config
+                const testConfig = {
+                    ...mockBuildConfig.app,
+                    engagement: {
+                        ...mockBuildConfig.app.engagement,
+                        analytics: {} as any,
+                    },
+                };
+                const context = createTestContext({ appConfig: testConfig });
+
+                const result = isTrackingConsentEnabled(context);
+
+                expect(result).toBe(false);
             });
         });
     });

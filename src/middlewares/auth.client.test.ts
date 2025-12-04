@@ -10,10 +10,13 @@ import authMiddleware, {
     refreshAuthFromCookie,
     getAuthDataFromCookies,
     clearInvalidSessionAndRestoreGuest,
+    populateAuthStorage,
+    handleRefreshToken,
 } from '@/middlewares/auth.client';
 import { getAllCookies } from '@/lib/cookies.client';
 import { appConfigContext } from '@/config/context';
 import { mockConfig } from '@/test-utils/config';
+import { TrackingConsent } from '@/types/tracking-consent';
 
 function expectStorage(data: AuthStorageData = {}): {
     provider: RouterContextProvider;
@@ -80,7 +83,7 @@ function getAuthData(): AuthData {
         dwsid: 'dwsid',
         idp_access_token: 'idp_access_token',
         idp_access_token_expiry: Date.now() + 1_000,
-        dnt: 'true',
+        trackingConsent: TrackingConsent.Declined,
     };
 }
 
@@ -233,10 +236,12 @@ describe('auth middleware (client)', () => {
 
             expect(mockUpdater).toBeCalledTimes(1);
             expect(mockUpdater).toBeCalledWith(data);
-            expect(storage.size).toBe(3);
+            // trackingConsent is preserved from existing storage (updateAuthStorageData preserves trackingConsent)
+            expect(storage.size).toBe(4);
             expect(Object.fromEntries(storage)).toStrictEqual({
                 access_token: 'updated_access_token',
                 refresh_token: 'updated_refresh_token',
+                trackingConsent: TrackingConsent.Declined, // Preserved from original data
                 isUpdated: true,
             });
         });
@@ -249,8 +254,10 @@ describe('auth middleware (client)', () => {
 
             expect(mockUpdater).toBeCalledTimes(1);
             expect(mockUpdater).toBeCalledWith(data);
-            expect(storage.size).toBe(1);
+            // trackingConsent is preserved from existing storage even when updater returns void
+            expect(storage.size).toBe(2);
             expect(storage.get('isUpdated')).toBe(true);
+            expect(storage.get('trackingConsent')).toBe(TrackingConsent.Declined); // Preserved from original data
         });
     });
 
@@ -541,40 +548,42 @@ describe('auth middleware (client)', () => {
             expect(result?.userType).toBe('guest');
         });
 
-        test('should return auth data with only refresh token (guest)', () => {
-            vi.mocked(getAllCookies).mockReturnValue({
-                'cc-nx-g_test-site': 'guest_refresh_only',
-                'cc-nx_test-site': '',
-                'cc-at_test-site': '',
-                'usid_test-site': '',
-                'customerId_test-site': '',
-                'cc-idp-at_test-site': '',
-            });
+        test.each([
+            {
+                name: 'guest',
+                cookies: {
+                    'cc-nx-g_test-site': 'guest_refresh_only',
+                    'cc-nx_test-site': '',
+                    'cc-at_test-site': '',
+                    'usid_test-site': '',
+                    'customerId_test-site': '',
+                    'cc-idp-at_test-site': '',
+                },
+                expectedUserType: 'guest' as const,
+            },
+            {
+                name: 'registered',
+                cookies: {
+                    'cc-nx-g_test-site': '',
+                    'cc-nx_test-site': 'registered_refresh_only',
+                    'cc-at_test-site': '',
+                    'usid_test-site': '',
+                    'customerId_test-site': '',
+                    'cc-idp-at_test-site': '',
+                },
+                expectedUserType: 'registered' as const,
+            },
+        ])('should return auth data with only refresh token ($name)', ({ cookies, expectedUserType }) => {
+            vi.mocked(getAllCookies).mockReturnValue(cookies);
 
             const result = getAuthDataFromCookies();
 
             expect(result).toBeDefined();
             expect(result?.access_token).toBeUndefined();
-            expect(result?.refresh_token).toBe('guest_refresh_only');
-            expect(result?.userType).toBe('guest');
-        });
-
-        test('should return auth data with only refresh token (registered)', () => {
-            vi.mocked(getAllCookies).mockReturnValue({
-                'cc-nx-g_test-site': '',
-                'cc-nx_test-site': 'registered_refresh_only',
-                'cc-at_test-site': '',
-                'usid_test-site': '',
-                'customerId_test-site': '',
-                'cc-idp-at_test-site': '',
-            });
-
-            const result = getAuthDataFromCookies();
-
-            expect(result).toBeDefined();
-            expect(result?.access_token).toBeUndefined();
-            expect(result?.refresh_token).toBe('registered_refresh_only');
-            expect(result?.userType).toBe('registered');
+            expect(result?.refresh_token).toBe(
+                expectedUserType === 'guest' ? 'guest_refresh_only' : 'registered_refresh_only'
+            );
+            expect(result?.userType).toBe(expectedUserType);
         });
 
         test('should handle partial cookie data with usid but no customerId', () => {
@@ -667,6 +676,207 @@ describe('auth middleware (client)', () => {
             expect(result).toBeDefined();
             expect(result?.idp_access_token).toBe('idp_access_token_value');
         });
+
+        test('should handle tracking consent cookie value', () => {
+            vi.mocked(getAllCookies).mockReturnValue({
+                'cc-nx-g_test-site': 'guest_refresh_token',
+                'cc-nx_test-site': '',
+                'cc-at_test-site': 'access_token',
+                'usid_test-site': 'test_usid',
+                'customerId_test-site': '',
+                'cc-idp-at_test-site': '',
+                'dw_dnt_test-site': TrackingConsent.Declined,
+            });
+
+            const result = getAuthDataFromCookies();
+
+            expect(result).toBeDefined();
+            // TrackingConsent is stored as enum directly
+            expect(result?.trackingConsent).toBe(TrackingConsent.Declined);
+        });
+
+        test('should handle missing tracking consent cookie', () => {
+            vi.mocked(getAllCookies).mockReturnValue({
+                'cc-nx-g_test-site': 'guest_refresh_token',
+                'cc-nx_test-site': '',
+                'cc-at_test-site': 'access_token',
+                'usid_test-site': 'test_usid',
+                'customerId_test-site': '',
+                'cc-idp-at_test-site': '',
+            });
+
+            const result = getAuthDataFromCookies();
+
+            expect(result).toBeDefined();
+            expect(result?.trackingConsent).toBeUndefined();
+        });
+    });
+
+    describe('populateAuthStorage()', () => {
+        test('should populate storage with all auth data fields', () => {
+            const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
+            const authData: Partial<AuthStorageData> = {
+                access_token: 'test_token',
+                refresh_token: 'test_refresh',
+                access_token_expiry: Date.now() + 1000,
+                usid: 'test_usid',
+                customer_id: 'test_customer',
+                idp_access_token: 'test_idp',
+                userType: 'guest',
+                trackingConsent: TrackingConsent.Declined,
+            };
+
+            populateAuthStorage(storage, authData);
+
+            expect(storage.get('access_token')).toBe('test_token');
+            expect(storage.get('refresh_token')).toBe('test_refresh');
+            expect(storage.get('access_token_expiry')).toBe(authData.access_token_expiry);
+            expect(storage.get('usid')).toBe('test_usid');
+            expect(storage.get('customer_id')).toBe('test_customer');
+            expect(storage.get('idp_access_token')).toBe('test_idp');
+            expect(storage.get('userType')).toBe('guest');
+            expect(storage.get('trackingConsent')).toBe(TrackingConsent.Declined);
+        });
+
+        test('should only populate defined fields', () => {
+            const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
+            const authData: Partial<AuthStorageData> = {
+                access_token: 'test_token',
+                userType: 'registered',
+            };
+
+            populateAuthStorage(storage, authData);
+
+            expect(storage.get('access_token')).toBe('test_token');
+            expect(storage.get('userType')).toBe('registered');
+            expect(storage.get('refresh_token')).toBeUndefined();
+            expect(storage.get('usid')).toBeUndefined();
+        });
+
+        test('should delete trackingConsent when undefined', () => {
+            const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
+            storage.set('trackingConsent', TrackingConsent.Declined);
+            const authData: Partial<AuthStorageData> = {
+                access_token: 'test_token',
+                trackingConsent: undefined,
+            };
+
+            populateAuthStorage(storage, authData);
+
+            expect(storage.has('trackingConsent')).toBe(false);
+        });
+
+        test('should set trackingConsent when provided', () => {
+            const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
+            const authData: Partial<AuthStorageData> = {
+                access_token: 'test_token',
+                trackingConsent: TrackingConsent.Accepted,
+            };
+
+            populateAuthStorage(storage, authData);
+
+            expect(storage.get('trackingConsent')).toBe(TrackingConsent.Accepted);
+        });
+    });
+
+    describe('handleRefreshToken()', () => {
+        test('should successfully refresh token', async () => {
+            const mockTokenResponse = {
+                access_token: 'new_access_token',
+                refresh_token: 'new_refresh_token',
+                token_type: 'Bearer',
+                expires_in: 1800,
+                refresh_token_expires_in: 2592000,
+            };
+
+            vi.mocked(fetch).mockResolvedValueOnce({
+                ok: true,
+                json: () =>
+                    Promise.resolve({
+                        success: true,
+                        data: mockTokenResponse,
+                    }),
+            } as Response);
+
+            const result = await handleRefreshToken('refresh_token');
+
+            expect(fetch).toHaveBeenCalledWith('/resource/auth/refresh-token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    refreshToken: 'refresh_token',
+                }),
+            });
+            expect(result).toEqual(mockTokenResponse);
+        });
+
+        test('should include trackingConsent when provided', async () => {
+            const mockTokenResponse = {
+                access_token: 'new_access_token',
+                refresh_token: 'new_refresh_token',
+                token_type: 'Bearer',
+                expires_in: 1800,
+            };
+
+            vi.mocked(fetch).mockResolvedValueOnce({
+                ok: true,
+                json: () =>
+                    Promise.resolve({
+                        success: true,
+                        data: mockTokenResponse,
+                    }),
+            } as Response);
+
+            await handleRefreshToken('refresh_token', TrackingConsent.Declined);
+
+            expect(fetch).toHaveBeenCalledWith('/resource/auth/refresh-token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    refreshToken: 'refresh_token',
+                    trackingConsent: TrackingConsent.Declined,
+                }),
+            });
+        });
+
+        test('should throw error when response is not ok', async () => {
+            vi.mocked(fetch).mockResolvedValueOnce({
+                ok: false,
+                status: 401,
+                statusText: 'Unauthorized',
+            } as Response);
+
+            await expect(handleRefreshToken('invalid_token')).rejects.toThrow('HTTP 401: Unauthorized');
+        });
+
+        test('should throw error when response indicates failure', async () => {
+            vi.mocked(fetch).mockResolvedValueOnce({
+                ok: true,
+                json: () =>
+                    Promise.resolve({
+                        success: false,
+                        error: 'Invalid refresh token',
+                    }),
+            } as Response);
+
+            await expect(handleRefreshToken('invalid_token')).rejects.toThrow('Invalid refresh token');
+        });
+
+        test('should throw error when response data is missing', async () => {
+            vi.mocked(fetch).mockResolvedValueOnce({
+                ok: true,
+                json: () =>
+                    Promise.resolve({
+                        success: true,
+                    }),
+            } as Response);
+
+            await expect(handleRefreshToken('token')).rejects.toThrow('Failed to refresh token');
+        });
     });
 
     describe('clearInvalidSessionAndRestoreGuest()', () => {
@@ -741,14 +951,15 @@ describe('auth middleware (client)', () => {
 
             await clearInvalidSessionAndRestoreGuest(provider);
 
-            // Verify all auth cookies were removed
+            // Verify all auth cookies were removed (including tracking consent)
             expect(removeCookie).toHaveBeenCalledWith('cc-nx-g');
             expect(removeCookie).toHaveBeenCalledWith('cc-nx');
             expect(removeCookie).toHaveBeenCalledWith('cc-at');
             expect(removeCookie).toHaveBeenCalledWith('usid');
             expect(removeCookie).toHaveBeenCalledWith('customerId');
             expect(removeCookie).toHaveBeenCalledWith('cc-idp-at');
-            expect(removeCookie).toHaveBeenCalledTimes(6);
+            expect(removeCookie).toHaveBeenCalledWith('dw_dnt');
+            expect(removeCookie).toHaveBeenCalledTimes(7);
 
             // Verify guest login API was called correctly
             expect(fetch).toHaveBeenCalledWith('/resource/auth/login-guest', {

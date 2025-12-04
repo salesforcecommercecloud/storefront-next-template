@@ -5,6 +5,7 @@ import type { AuthStorageData } from '@/middlewares/auth.utils';
 import { performanceTimerContext } from '@/middlewares/performance-metrics';
 import { appConfigContext, type AppConfig } from '@/config';
 import { mockConfig } from '@/test-utils/config';
+import { TrackingConsent } from '@/types/tracking-consent';
 import authMiddleware, {
     refreshAccessToken,
     loginGuestUser,
@@ -172,7 +173,7 @@ function getMockAuthData(): AuthData {
         codeVerifier: 'codeVerifier',
         dwsid: 'dwsid',
         idp_access_token: 'idp_access_token',
-        dnt: 'true',
+        trackingConsent: TrackingConsent.Declined,
     };
 }
 
@@ -188,7 +189,7 @@ function getMockRegisteredAuthData(): AuthData {
         codeVerifier: 'codeVerifier',
         dwsid: 'dwsid',
         idp_access_token: 'idp_access_token',
-        dnt: 'true',
+        trackingConsent: TrackingConsent.Declined,
     };
 }
 
@@ -327,6 +328,130 @@ describe('auth middleware (server)', () => {
 
             await expect(refreshAccessToken(provider, refreshToken)).rejects.toThrow('Invalid refresh token');
         });
+
+        it('should include DNT value when provided in options', async () => {
+            const { provider } = mockContext();
+            const mockTokenResponse = getMockTokenResponse();
+            const refreshToken = 'refresh-token-456';
+
+            mockHelpers.refreshAccessToken.mockResolvedValue(mockTokenResponse);
+
+            const result = await refreshAccessToken(provider, refreshToken, {
+                trackingConsent: TrackingConsent.Declined,
+            });
+
+            expect(mockHelpers.refreshAccessToken).toHaveBeenCalledWith({
+                slasClient: expect.anything(),
+                parameters: {
+                    refreshToken,
+                    dnt: true, // TrackingConsent.Declined converts to true
+                },
+                credentials: {},
+            });
+            expect(result).toEqual(mockTokenResponse);
+        });
+
+        it('should include DNT value from auth context when feature is enabled and not provided in options', async () => {
+            const authData = getMockAuthData();
+            authData.trackingConsent = TrackingConsent.Declined; // DNT enabled (TrackingConsent enum)
+            const { provider, appConfig } = mockContext(authData);
+            // Enable tracking consent feature
+            appConfig.engagement = {
+                ...appConfig.engagement,
+                analytics: {
+                    ...appConfig.engagement.analytics,
+                    trackingConsent: {
+                        enabled: true,
+                        defaultTrackingConsent: TrackingConsent.Accepted,
+                    },
+                },
+            };
+
+            const mockTokenResponse = getMockTokenResponse();
+            const refreshToken = 'refresh-token-456';
+
+            mockHelpers.refreshAccessToken.mockResolvedValue(mockTokenResponse);
+
+            const result = await refreshAccessToken(provider, refreshToken);
+
+            expect(mockHelpers.refreshAccessToken).toHaveBeenCalledWith({
+                slasClient: expect.anything(),
+                parameters: {
+                    refreshToken,
+                    dnt: true, // TrackingConsent.Declined converts to true
+                },
+                credentials: {},
+            });
+            expect(result).toEqual(mockTokenResponse);
+        });
+
+        it('should prioritize DNT from options over auth context', async () => {
+            const authData = getMockAuthData();
+            authData.trackingConsent = TrackingConsent.Declined; // DNT enabled in context
+            const { provider, appConfig } = mockContext(authData);
+            // Enable tracking consent feature
+            appConfig.engagement = {
+                ...appConfig.engagement,
+                analytics: {
+                    ...appConfig.engagement.analytics,
+                    trackingConsent: {
+                        enabled: true,
+                        defaultTrackingConsent: TrackingConsent.Accepted,
+                    },
+                },
+            };
+
+            const mockTokenResponse = getMockTokenResponse();
+            const refreshToken = 'refresh-token-456';
+
+            mockHelpers.refreshAccessToken.mockResolvedValue(mockTokenResponse);
+
+            // Pass Accepted in options, should override context value
+            const result = await refreshAccessToken(provider, refreshToken, {
+                trackingConsent: TrackingConsent.Accepted,
+            });
+
+            expect(mockHelpers.refreshAccessToken).toHaveBeenCalledWith({
+                slasClient: expect.anything(),
+                parameters: {
+                    refreshToken,
+                    dnt: false, // TrackingConsent.Accepted converts to false
+                },
+                credentials: {},
+            });
+            expect(result).toEqual(mockTokenResponse);
+        });
+
+        it('should not include DNT when feature is disabled', async () => {
+            const authData = getMockAuthData();
+            authData.trackingConsent = TrackingConsent.Declined;
+            const { provider, appConfig } = mockContext(authData);
+            // Ensure tracking consent is disabled
+            appConfig.engagement = {
+                ...appConfig.engagement,
+                analytics: {
+                    ...appConfig.engagement.analytics,
+                    trackingConsent: undefined,
+                },
+            };
+
+            const mockTokenResponse = getMockTokenResponse();
+            const refreshToken = 'refresh-token-456';
+
+            mockHelpers.refreshAccessToken.mockResolvedValue(mockTokenResponse);
+
+            const result = await refreshAccessToken(provider, refreshToken);
+
+            expect(mockHelpers.refreshAccessToken).toHaveBeenCalledWith({
+                slasClient: expect.anything(),
+                parameters: {
+                    refreshToken,
+                    // No dnt parameter
+                },
+                credentials: {},
+            });
+            expect(result).toEqual(mockTokenResponse);
+        });
     });
 
     describe('loginGuestUser', () => {
@@ -396,7 +521,10 @@ describe('auth middleware (server)', () => {
 
     describe('loginRegisteredUser', () => {
         it('should login registered user successfully', async () => {
-            const { provider } = mockContext(getMockRegisteredAuthData());
+            const authData = getMockRegisteredAuthData();
+            // Remove trackingConsent so dnt is not included by default
+            delete authData.trackingConsent;
+            const { provider } = mockContext(authData);
             const mockTokenResponse = getMockTokenResponse();
             const email = 'test@example.com';
             const password = 'password123';
@@ -420,7 +548,10 @@ describe('auth middleware (server)', () => {
         });
 
         it('should login registered user with custom parameters', async () => {
-            const { provider } = mockContext(getMockRegisteredAuthData());
+            const authData = getMockRegisteredAuthData();
+            // Remove trackingConsent so dnt is not included by default
+            delete authData.trackingConsent;
+            const { provider } = mockContext(authData);
             const mockTokenResponse = getMockTokenResponse();
             const email = 'test@example.com';
             const password = 'password123';
@@ -446,7 +577,10 @@ describe('auth middleware (server)', () => {
         });
 
         it('should include client secret when SLAS is private', async () => {
-            const { provider } = mockContext(getMockRegisteredAuthData(), true);
+            const authData = getMockRegisteredAuthData();
+            // Remove trackingConsent so dnt is not included by default
+            delete authData.trackingConsent;
+            const { provider } = mockContext(authData, true);
             const mockTokenResponse = getMockTokenResponse();
             const email = 'test@example.com';
             const password = 'password123';
@@ -479,6 +613,120 @@ describe('auth middleware (server)', () => {
             mockHelpers.loginRegisteredUserB2C.mockRejectedValue(mockError);
 
             await expect(loginRegisteredUser(provider, email, password)).rejects.toThrow('Invalid credentials');
+        });
+
+        it('should include DNT value when feature is enabled and DNT exists in auth context', async () => {
+            const authData = getMockRegisteredAuthData();
+            authData.trackingConsent = TrackingConsent.Declined; // DNT enabled (TrackingConsent enum)
+            const { provider, appConfig } = mockContext(authData);
+            // Enable tracking consent feature
+            appConfig.engagement = {
+                ...appConfig.engagement,
+                analytics: {
+                    ...appConfig.engagement.analytics,
+                    trackingConsent: {
+                        enabled: true,
+                        defaultTrackingConsent: TrackingConsent.Accepted,
+                    },
+                },
+            };
+
+            const mockTokenResponse = getMockTokenResponse();
+            const email = 'test@example.com';
+            const password = 'password123';
+
+            mockHelpers.loginRegisteredUserB2C.mockResolvedValue(mockTokenResponse);
+
+            const result = await loginRegisteredUser(provider, email, password);
+
+            expect(mockHelpers.loginRegisteredUserB2C).toHaveBeenCalledWith({
+                slasClient: expect.anything(),
+                credentials: {
+                    username: email,
+                    password,
+                },
+                parameters: {
+                    redirectURI: 'https://example.com/callback',
+                    usid: 'usid',
+                    dnt: true, // TrackingConsent.Declined converts to true
+                },
+            });
+            expect(result).toEqual(mockTokenResponse);
+        });
+
+        it('should not include DNT when feature is disabled', async () => {
+            const authData = getMockRegisteredAuthData();
+            authData.trackingConsent = TrackingConsent.Declined;
+            const { provider, appConfig } = mockContext(authData);
+            // Ensure tracking consent is disabled
+            appConfig.engagement = {
+                ...appConfig.engagement,
+                analytics: {
+                    ...appConfig.engagement.analytics,
+                    trackingConsent: undefined,
+                },
+            };
+
+            const mockTokenResponse = getMockTokenResponse();
+            const email = 'test@example.com';
+            const password = 'password123';
+
+            mockHelpers.loginRegisteredUserB2C.mockResolvedValue(mockTokenResponse);
+
+            const result = await loginRegisteredUser(provider, email, password);
+
+            expect(mockHelpers.loginRegisteredUserB2C).toHaveBeenCalledWith({
+                slasClient: expect.anything(),
+                credentials: {
+                    username: email,
+                    password,
+                },
+                parameters: {
+                    redirectURI: 'https://example.com/callback',
+                    usid: 'usid',
+                    // No dnt parameter
+                },
+            });
+            expect(result).toEqual(mockTokenResponse);
+        });
+
+        it('should use DNT value false when provided', async () => {
+            const authData = getMockRegisteredAuthData();
+            authData.trackingConsent = TrackingConsent.Accepted; // DNT set to false (tracking accepted)
+            const { provider, appConfig } = mockContext(authData);
+            // Enable tracking consent feature
+            appConfig.engagement = {
+                ...appConfig.engagement,
+                analytics: {
+                    ...appConfig.engagement.analytics,
+                    trackingConsent: {
+                        enabled: true,
+                        defaultTrackingConsent: TrackingConsent.Accepted,
+                    },
+                },
+            };
+
+            const mockTokenResponse = getMockTokenResponse();
+            const email = 'test@example.com';
+            const password = 'password123';
+
+            mockHelpers.loginRegisteredUserB2C.mockResolvedValue(mockTokenResponse);
+
+            const result = await loginRegisteredUser(provider, email, password);
+
+            expect(mockHelpers.loginRegisteredUserB2C).toHaveBeenCalledWith({
+                slasClient: expect.anything(),
+                credentials: {
+                    username: email,
+                    password,
+                },
+                parameters: {
+                    redirectURI: 'https://example.com/callback',
+                    usid: 'usid',
+                    dnt: false, // TrackingConsent.Accepted converts to false
+                },
+            });
+            expect(result).toEqual(mockTokenResponse);
         });
     });
 
@@ -569,7 +817,10 @@ describe('auth middleware (server)', () => {
 
     describe('getPasswordLessAccessToken', () => {
         it('should get passwordless access token successfully', async () => {
-            const { provider } = mockContext(getMockAuthData());
+            const authData = getMockAuthData();
+            // Remove trackingConsent so dnt is not included by default
+            delete authData.trackingConsent;
+            const { provider } = mockContext(authData);
             const mockTokenResponse = getMockTokenResponse();
             const token = 'passwordless-token-123';
 
@@ -583,6 +834,143 @@ describe('auth middleware (server)', () => {
                 parameters: {
                     pwdlessLoginToken: token,
                     usid: 'usid',
+                },
+            });
+            expect(result).toEqual(mockTokenResponse);
+        });
+
+        it('should include DNT value when feature is enabled and DNT exists in auth context', async () => {
+            const authData = getMockAuthData();
+            authData.trackingConsent = TrackingConsent.Declined; // DNT enabled (TrackingConsent enum)
+            const { provider, appConfig } = mockContext(authData);
+            // Enable tracking consent feature
+            appConfig.engagement = {
+                ...appConfig.engagement,
+                analytics: {
+                    ...appConfig.engagement.analytics,
+                    trackingConsent: {
+                        enabled: true,
+                        defaultTrackingConsent: TrackingConsent.Accepted,
+                    },
+                },
+            };
+
+            const mockTokenResponse = getMockTokenResponse();
+            const token = 'passwordless-token-123';
+
+            mockHelpers.getPasswordLessAccessToken.mockResolvedValue(mockTokenResponse);
+
+            const result = await getPasswordLessAccessToken(provider, token);
+
+            expect(mockHelpers.getPasswordLessAccessToken).toHaveBeenCalledWith({
+                slasClient: expect.anything(),
+                credentials: expect.any(Object),
+                parameters: {
+                    pwdlessLoginToken: token,
+                    usid: 'usid',
+                    dnt: '1', // TrackingConsent.Declined = '1' (SDK inconsistency: this helper expects string)
+                },
+            });
+            expect(result).toEqual(mockTokenResponse);
+        });
+
+        it('should not include DNT when feature is disabled', async () => {
+            const authData = getMockAuthData();
+            authData.trackingConsent = TrackingConsent.Declined;
+            const { provider, appConfig } = mockContext(authData);
+            // Ensure tracking consent is disabled
+            appConfig.engagement = {
+                ...appConfig.engagement,
+                analytics: {
+                    ...appConfig.engagement.analytics,
+                    trackingConsent: undefined,
+                },
+            };
+
+            const mockTokenResponse = getMockTokenResponse();
+            const token = 'passwordless-token-123';
+
+            mockHelpers.getPasswordLessAccessToken.mockResolvedValue(mockTokenResponse);
+
+            const result = await getPasswordLessAccessToken(provider, token);
+
+            expect(mockHelpers.getPasswordLessAccessToken).toHaveBeenCalledWith({
+                slasClient: expect.anything(),
+                credentials: expect.any(Object),
+                parameters: {
+                    pwdlessLoginToken: token,
+                    usid: 'usid',
+                    // No dnt parameter
+                },
+            });
+            expect(result).toEqual(mockTokenResponse);
+        });
+
+        it('should not include DNT when it does not exist in auth context', async () => {
+            const authData = getMockAuthData();
+            delete authData.trackingConsent; // No tracking consent value
+            const { provider, appConfig } = mockContext(authData);
+            // Enable tracking consent feature
+            appConfig.engagement = {
+                ...appConfig.engagement,
+                analytics: {
+                    ...appConfig.engagement.analytics,
+                    trackingConsent: {
+                        enabled: true,
+                        defaultTrackingConsent: TrackingConsent.Accepted,
+                    },
+                },
+            };
+
+            const mockTokenResponse = getMockTokenResponse();
+            const token = 'passwordless-token-123';
+
+            mockHelpers.getPasswordLessAccessToken.mockResolvedValue(mockTokenResponse);
+
+            const result = await getPasswordLessAccessToken(provider, token);
+
+            expect(mockHelpers.getPasswordLessAccessToken).toHaveBeenCalledWith({
+                slasClient: expect.anything(),
+                credentials: expect.any(Object),
+                parameters: {
+                    pwdlessLoginToken: token,
+                    usid: 'usid',
+                    // No dnt parameter
+                },
+            });
+            expect(result).toEqual(mockTokenResponse);
+        });
+
+        it('should serialize DNT value false to "0"', async () => {
+            const authData = getMockAuthData();
+            authData.trackingConsent = TrackingConsent.Accepted; // DNT disabled (tracking accepted)
+            const { provider, appConfig } = mockContext(authData);
+            // Enable tracking consent feature
+            appConfig.engagement = {
+                ...appConfig.engagement,
+                analytics: {
+                    ...appConfig.engagement.analytics,
+                    trackingConsent: {
+                        enabled: true,
+                        defaultTrackingConsent: TrackingConsent.Accepted,
+                    },
+                },
+            };
+
+            const mockTokenResponse = getMockTokenResponse();
+            const token = 'passwordless-token-123';
+
+            mockHelpers.getPasswordLessAccessToken.mockResolvedValue(mockTokenResponse);
+
+            const result = await getPasswordLessAccessToken(provider, token);
+
+            expect(mockHelpers.getPasswordLessAccessToken).toHaveBeenCalledWith({
+                slasClient: expect.anything(),
+                credentials: expect.any(Object),
+                parameters: {
+                    pwdlessLoginToken: token,
+                    usid: 'usid',
+                    dnt: '0', // TrackingConsent.Accepted = '0' (SDK inconsistency: this helper expects string)
                 },
             });
             expect(result).toEqual(mockTokenResponse);

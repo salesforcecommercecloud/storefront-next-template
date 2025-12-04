@@ -207,6 +207,11 @@ export const mockBuildConfig: Config = {
             },
             analytics: {
                 pageViewsBlocklist: [],
+                trackingConsent: {
+                    enabled: true,
+                    position: 'bottom-center',
+                    defaultTrackingConsent: '1', // TrackingConsent.Declined
+                },
             },
         },
         development: {

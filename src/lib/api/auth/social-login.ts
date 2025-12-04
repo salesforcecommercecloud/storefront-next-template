@@ -4,11 +4,13 @@ import {
     loginIDPUser as loginIDPUserHelper,
 } from 'commerce-sdk-isomorphic/helpers';
 import { flashAuth, getAuth, updateAuth } from '@/middlewares/auth.server';
+import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
 import { extractResponseError } from '@/lib/utils';
 import createClient from '@/lib/scapi';
 import { getConfig } from '@/config';
 import { mergeBasket } from '@/lib/api/basket';
 import { getTranslation } from '@/lib/i18next';
+import { trackingConsentToBoolean } from '@/types/tracking-consent';
 
 export interface AuthorizeIDPParams {
     hint: string;
@@ -93,6 +95,22 @@ export const loginIDPUser = async (
             throw new Error(t('errors:codeVerifierMissing'));
         }
 
+        // Get tracking consent from auth context (populated from cookies by middleware)
+        // This ensures existing tracking preference from guest session propagates to registered user session
+        // Only process tracking consent if the feature is enabled in config
+        // SessionData.trackingConsent uses the TrackingConsent enum, convert to boolean for SLAS API
+        let dnt: boolean | undefined;
+        if (isTrackingConsentEnabled(context)) {
+            try {
+                const authData = getAuth(context);
+                if (authData.trackingConsent) {
+                    dnt = trackingConsentToBoolean(authData.trackingConsent);
+                }
+            } catch {
+                // If getAuth fails (e.g., middleware not initialized), dnt remains undefined
+            }
+        }
+
         const res = await loginIDPUserHelper({
             slasClient,
             credentials: {
@@ -105,6 +123,7 @@ export const loginIDPUser = async (
                 redirectURI: parameters.redirectURI,
                 code,
                 ...(usid && { usid: String(usid) }),
+                ...(dnt !== undefined && { dnt }),
             },
         });
 

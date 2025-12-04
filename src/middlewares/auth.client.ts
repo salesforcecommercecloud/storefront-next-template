@@ -16,17 +16,19 @@ import {
     createAuthPromise,
     updateAuthStorageData,
     updateStorageAndCache,
-    getSLASAccessTokenExpiry,
+    getSLASAccessTokenClaims,
     COOKIE_REFRESH_TOKEN_GUEST,
     COOKIE_REFRESH_TOKEN_REGISTERED,
     COOKIE_ACCESS_TOKEN,
     COOKIE_USID,
     COOKIE_CUSTOMER_ID,
     COOKIE_IDP_ACCESS_TOKEN,
+    COOKIE_TRACKING_CONSENT,
     // Note: COOKIE_CODE_VERIFIER is NOT imported - it's httpOnly and server-only
 } from '@/middlewares/auth.utils';
 import { PERFORMANCE_MARKS, performanceTimerContext } from '@/middlewares/performance-metrics';
 import { getConfig } from '@/config';
+import { TrackingConsent } from '@/types/tracking-consent';
 
 type AuthData = SessionData;
 
@@ -79,6 +81,13 @@ export function getAuthDataFromCookies(): Partial<AuthStorageData> | undefined {
     const usid = allCookies[getCookieNameWithSiteId(COOKIE_USID)] || '';
     const customerId = allCookies[getCookieNameWithSiteId(COOKIE_CUSTOMER_ID)] || '';
     const idpAccessToken = allCookies[getCookieNameWithSiteId(COOKIE_IDP_ACCESS_TOKEN)] || '';
+    // Read tracking consent cookie directly as TrackingConsent enum (values match)
+    const trackingConsentCookieValue = allCookies[getCookieNameWithSiteId(COOKIE_TRACKING_CONSENT)] || null;
+    const trackingConsent: TrackingConsent | undefined =
+        trackingConsentCookieValue === TrackingConsent.Accepted ||
+        trackingConsentCookieValue === TrackingConsent.Declined
+            ? trackingConsentCookieValue
+            : undefined;
 
     // Return early if no auth tokens exist
     if (!accessToken && !refreshTokenGuest && !refreshTokenRegistered) {
@@ -114,9 +123,16 @@ export function getAuthDataFromCookies(): Partial<AuthStorageData> | undefined {
 
     // Inject access_token_expiry from JWT (source of truth) for fast runtime checks
     if (accessToken) {
-        const expiry = getSLASAccessTokenExpiry(accessToken);
-        if (expiry) authData.access_token_expiry = expiry;
+        const claims = getSLASAccessTokenClaims(accessToken);
+        if (claims.expiry) authData.access_token_expiry = claims.expiry;
     }
+
+    // Always set tracking consent value from cookie (even if undefined) to reflect cookie state
+    // Server validates tracking consent cookie against token and updates/deletes cookies accordingly
+    // Client uses cookies as source of truth, so changes from server propagate automatically
+    // This ensures that when tracking consent cookie is deleted (e.g., after login), authData reflects the deletion
+    // and the banner can be shown again if needed
+    authData.trackingConsent = trackingConsent;
 
     return authData;
 }
@@ -125,13 +141,19 @@ export function getAuthDataFromCookies(): Partial<AuthStorageData> | undefined {
  * Client-side helper for refresh token operations
  * Uses fetch calls to server resource endpoints
  */
-async function handleRefreshToken(refreshToken: string): Promise<ShopperLoginTypes.TokenResponse> {
+export async function handleRefreshToken(
+    refreshToken: string,
+    trackingConsent?: TrackingConsent
+): Promise<ShopperLoginTypes.TokenResponse> {
     const response = await fetch('/resource/auth/refresh-token', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ refreshToken }),
+        body: JSON.stringify({
+            refreshToken,
+            ...(trackingConsent !== undefined && { trackingConsent }),
+        }),
     });
 
     if (!response.ok) {
@@ -269,6 +291,13 @@ export const populateAuthStorage = (
     if (authData.customer_id) storage.set('customer_id', authData.customer_id);
     if (authData.idp_access_token) storage.set('idp_access_token', authData.idp_access_token);
     if (authData.userType) storage.set('userType', authData.userType);
+    // Always set tracking consent value (even if undefined) to reflect cookie state
+    // This ensures deleted cookies are reflected in storage
+    if (authData.trackingConsent !== undefined) {
+        storage.set('trackingConsent', authData.trackingConsent);
+    } else {
+        storage.delete('trackingConsent');
+    }
 };
 
 /**
@@ -335,13 +364,11 @@ const authMiddleware: MiddlewareFunction<Record<string, DataStrategyResult>> = a
     // This ensures the client has access to tokens set by the server
     readClientAuthCookies(authStorage);
 
-    // Ensure auth contexts are created before calling the session/auth retrieval. This is important for the `fetch`
-    // client to work correctly, as the fetch client may start loading and streaming data before the middleware is
-    // actually finished.
-    if (!authCache.ref) {
-        authCache.ref = unpackStorage<AuthData>(authStorage);
-        authPromiseCache.ref = Promise.resolve(authCache.ref);
-    }
+    // Always sync cache with storage after reading cookies to reflect any cookie changes
+    // This ensures that when cookies are updated/deleted by the server (e.g., DNT cookie deleted after login),
+    // the cache reflects those changes immediately without requiring a page refresh
+    authCache.ref = unpackStorage<AuthData>(authStorage);
+    authPromiseCache.ref = Promise.resolve(authCache.ref);
 
     // Write Commerce API data to request `context` to make it available to other client middlewares, client loaders,
     // or client actions
@@ -508,6 +535,7 @@ export const clearInvalidSessionAndRestoreGuest = async (context: Readonly<Route
     removeCookie(COOKIE_USID);
     removeCookie(COOKIE_CUSTOMER_ID);
     removeCookie(COOKIE_IDP_ACCESS_TOKEN);
+    removeCookie(COOKIE_TRACKING_CONSENT);
 
     // Clear react-router auth storage context and cache
     clearStorage(storage);

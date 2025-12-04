@@ -1,4 +1,5 @@
 import { defineConfig } from '@/config/schema';
+import { TrackingConsent } from '@/types/tracking-consent';
 
 /**
  * Application Configuration
@@ -252,6 +253,11 @@ export default defineConfig({
                 },
             },
             analytics: {
+                trackingConsent: {
+                    enabled: true,
+                    defaultTrackingConsent: TrackingConsent.Declined,
+                    position: 'bottom-right',
+                },
                 // Do not send viewPage events for the following paths
                 // We omit /action because we don't want to trigger viewPage events for actions
                 // like modifying the quanity of an item in the cart
