@@ -24,7 +24,6 @@ exports[`CustomerAddressForm stories snapshot > Default story renders and matche
         </label>
         <input
           aria-describedby="«r0»-form-item-description"
-          aria-invalid="false"
           autocomplete="off"
           class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
           data-slot="form-control"
@@ -51,7 +50,6 @@ exports[`CustomerAddressForm stories snapshot > Default story renders and matche
           </label>
           <input
             aria-describedby="«r1»-form-item-description"
-            aria-invalid="false"
             autocomplete="given-name"
             class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
             data-slot="form-control"
@@ -75,7 +73,6 @@ exports[`CustomerAddressForm stories snapshot > Default story renders and matche
           </label>
           <input
             aria-describedby="«r2»-form-item-description"
-            aria-invalid="false"
             autocomplete="family-name"
             class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
             data-slot="form-control"
@@ -100,7 +97,6 @@ exports[`CustomerAddressForm stories snapshot > Default story renders and matche
         </label>
         <input
           aria-describedby="«r3»-form-item-description"
-          aria-invalid="false"
           autocomplete="tel"
           class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
           data-slot="form-control"
@@ -128,7 +124,6 @@ exports[`CustomerAddressForm stories snapshot > Default story renders and matche
         >
           <select
             aria-describedby="«r4»-form-item-description"
-            aria-invalid="false"
             class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8 rounded-md"
             data-slot="form-control"
             id="«r4»-form-item"
@@ -182,7 +177,6 @@ exports[`CustomerAddressForm stories snapshot > Default story renders and matche
         </label>
         <input
           aria-describedby="«r5»-form-item-description"
-          aria-invalid="false"
           autocomplete="address-line1"
           class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
           data-slot="form-control"
@@ -206,7 +200,6 @@ exports[`CustomerAddressForm stories snapshot > Default story renders and matche
         </label>
         <input
           aria-describedby="«r6»-form-item-description"
-          aria-invalid="false"
           autocomplete="address-line2"
           class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
           data-slot="form-control"
@@ -231,7 +224,6 @@ exports[`CustomerAddressForm stories snapshot > Default story renders and matche
         </label>
         <input
           aria-describedby="«r7»-form-item-description"
-          aria-invalid="false"
           autocomplete="address-level2"
           class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
           data-slot="form-control"
@@ -261,7 +253,6 @@ exports[`CustomerAddressForm stories snapshot > Default story renders and matche
           >
             <select
               aria-describedby="«r8»-form-item-description"
-              aria-invalid="false"
               class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8 rounded-md"
               data-slot="form-control"
               id="«r8»-form-item"
@@ -565,7 +556,6 @@ exports[`CustomerAddressForm stories snapshot > Default story renders and matche
           </label>
           <input
             aria-describedby="«r9»-form-item-description"
-            aria-invalid="false"
             autocomplete="postal-code"
             class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
             data-slot="form-control"
@@ -583,7 +573,6 @@ exports[`CustomerAddressForm stories snapshot > Default story renders and matche
         <button
           aria-checked="false"
           aria-describedby="«ra»-form-item-description"
-          aria-invalid="false"
           class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
           data-slot="form-control"
           data-state="unchecked"
@@ -659,7 +648,6 @@ exports[`CustomerAddressForm stories snapshot > Loading story renders and matche
         </label>
         <input
           aria-describedby="«rm»-form-item-description"
-          aria-invalid="false"
           autocomplete="off"
           class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
           data-slot="form-control"
@@ -686,7 +674,6 @@ exports[`CustomerAddressForm stories snapshot > Loading story renders and matche
           </label>
           <input
             aria-describedby="«rn»-form-item-description"
-            aria-invalid="false"
             autocomplete="given-name"
             class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
             data-slot="form-control"
@@ -710,7 +697,6 @@ exports[`CustomerAddressForm stories snapshot > Loading story renders and matche
           </label>
           <input
             aria-describedby="«ro»-form-item-description"
-            aria-invalid="false"
             autocomplete="family-name"
             class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
             data-slot="form-control"
@@ -735,7 +721,6 @@ exports[`CustomerAddressForm stories snapshot > Loading story renders and matche
         </label>
         <input
           aria-describedby="«rp»-form-item-description"
-          aria-invalid="false"
           autocomplete="tel"
           class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
           data-slot="form-control"
@@ -763,7 +748,6 @@ exports[`CustomerAddressForm stories snapshot > Loading story renders and matche
         >
           <select
             aria-describedby="«rq»-form-item-description"
-            aria-invalid="false"
             class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8 rounded-md"
             data-slot="form-control"
             id="«rq»-form-item"
@@ -817,7 +801,6 @@ exports[`CustomerAddressForm stories snapshot > Loading story renders and matche
         </label>
         <input
           aria-describedby="«rr»-form-item-description"
-          aria-invalid="false"
           autocomplete="address-line1"
           class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
           data-slot="form-control"
@@ -841,7 +824,6 @@ exports[`CustomerAddressForm stories snapshot > Loading story renders and matche
         </label>
         <input
           aria-describedby="«rs»-form-item-description"
-          aria-invalid="false"
           autocomplete="address-line2"
           class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
           data-slot="form-control"
@@ -866,7 +848,6 @@ exports[`CustomerAddressForm stories snapshot > Loading story renders and matche
         </label>
         <input
           aria-describedby="«rt»-form-item-description"
-          aria-invalid="false"
           autocomplete="address-level2"
           class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
           data-slot="form-control"
@@ -896,7 +877,6 @@ exports[`CustomerAddressForm stories snapshot > Loading story renders and matche
           >
             <select
               aria-describedby="«ru»-form-item-description"
-              aria-invalid="false"
               class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8 rounded-md"
               data-slot="form-control"
               id="«ru»-form-item"
@@ -1200,7 +1180,6 @@ exports[`CustomerAddressForm stories snapshot > Loading story renders and matche
           </label>
           <input
             aria-describedby="«rv»-form-item-description"
-            aria-invalid="false"
             autocomplete="postal-code"
             class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
             data-slot="form-control"
@@ -1218,7 +1197,6 @@ exports[`CustomerAddressForm stories snapshot > Loading story renders and matche
         <button
           aria-checked="false"
           aria-describedby="«r10»-form-item-description"
-          aria-invalid="false"
           class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
           data-slot="form-control"
           data-state="unchecked"
@@ -1304,7 +1282,6 @@ exports[`CustomerAddressForm stories snapshot > WithInitialData story renders an
         </label>
         <input
           aria-describedby="«rb»-form-item-description"
-          aria-invalid="false"
           autocomplete="off"
           class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
           data-slot="form-control"
@@ -1331,7 +1308,6 @@ exports[`CustomerAddressForm stories snapshot > WithInitialData story renders an
           </label>
           <input
             aria-describedby="«rc»-form-item-description"
-            aria-invalid="false"
             autocomplete="given-name"
             class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
             data-slot="form-control"
@@ -1355,7 +1331,6 @@ exports[`CustomerAddressForm stories snapshot > WithInitialData story renders an
           </label>
           <input
             aria-describedby="«rd»-form-item-description"
-            aria-invalid="false"
             autocomplete="family-name"
             class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
             data-slot="form-control"
@@ -1380,7 +1355,6 @@ exports[`CustomerAddressForm stories snapshot > WithInitialData story renders an
         </label>
         <input
           aria-describedby="«re»-form-item-description"
-          aria-invalid="false"
           autocomplete="tel"
           class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
           data-slot="form-control"
@@ -1408,7 +1382,6 @@ exports[`CustomerAddressForm stories snapshot > WithInitialData story renders an
         >
           <select
             aria-describedby="«rf»-form-item-description"
-            aria-invalid="false"
             class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8 rounded-md"
             data-slot="form-control"
             id="«rf»-form-item"
@@ -1462,7 +1435,6 @@ exports[`CustomerAddressForm stories snapshot > WithInitialData story renders an
         </label>
         <input
           aria-describedby="«rg»-form-item-description"
-          aria-invalid="false"
           autocomplete="address-line1"
           class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
           data-slot="form-control"
@@ -1486,7 +1458,6 @@ exports[`CustomerAddressForm stories snapshot > WithInitialData story renders an
         </label>
         <input
           aria-describedby="«rh»-form-item-description"
-          aria-invalid="false"
           autocomplete="address-line2"
           class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
           data-slot="form-control"
@@ -1511,7 +1482,6 @@ exports[`CustomerAddressForm stories snapshot > WithInitialData story renders an
         </label>
         <input
           aria-describedby="«ri»-form-item-description"
-          aria-invalid="false"
           autocomplete="address-level2"
           class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
           data-slot="form-control"
@@ -1541,7 +1511,6 @@ exports[`CustomerAddressForm stories snapshot > WithInitialData story renders an
           >
             <select
               aria-describedby="«rj»-form-item-description"
-              aria-invalid="false"
               class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8 rounded-md"
               data-slot="form-control"
               id="«rj»-form-item"
@@ -1845,7 +1814,6 @@ exports[`CustomerAddressForm stories snapshot > WithInitialData story renders an
           </label>
           <input
             aria-describedby="«rk»-form-item-description"
-            aria-invalid="false"
             autocomplete="postal-code"
             class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
             data-slot="form-control"
@@ -1863,7 +1831,6 @@ exports[`CustomerAddressForm stories snapshot > WithInitialData story renders an
         <button
           aria-checked="true"
           aria-describedby="«rl»-form-item-description"
-          aria-invalid="false"
           class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
           data-slot="form-control"
           data-state="checked"

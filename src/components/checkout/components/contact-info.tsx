@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SelectNative } from '@/components/ui/select-native';
 import { Typography } from '@/components/typography';
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useBasket } from '@/providers/basket';
 import { createContactInfoSchema, type ContactInfoData } from '@/lib/checkout-schemas';
 import { useLoginSuggestion } from '@/hooks/use-customer-lookup';
@@ -85,13 +85,16 @@ export default function ContactInfo({
                             name="email"
                             render={({ field }) => (
                                 <FormItem>
+                                    <FormLabel className="text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold">
+                                        {t('contactInfo.emailLabel')}
+                                    </FormLabel>
                                     <FormControl>
                                         <Input
                                             type="email"
                                             placeholder={t('contactInfo.emailPlaceholder')}
                                             autoComplete="email"
                                             autoFocus={isEditing}
-                                            className="h-12 text-base border-2 focus:border-primary transition-colors"
+                                            className="h-12 text-base border-2 border-[#9ca3af] dark:border-input focus:border-primary transition-colors text-foreground bg-background"
                                             {...field}
                                         />
                                     </FormControl>
@@ -113,7 +116,7 @@ export default function ContactInfo({
                                                     aria-label={t('contactInfo.countryCodeLabel')}
                                                     value={field.value}
                                                     onChange={(e) => field.onChange(e.target.value)}
-                                                    className="h-12 text-base border-2 focus:border-primary transition-colors">
+                                                    className="h-12 text-base border-2 border-[#9ca3af] dark:border-input focus:border-primary transition-colors text-foreground bg-background">
                                                     <option value="" disabled>
                                                         +1
                                                     </option>
@@ -135,12 +138,15 @@ export default function ContactInfo({
                                     name="phone"
                                     render={({ field }) => (
                                         <FormItem className="flex-1">
+                                            <FormLabel className="text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold">
+                                                {t('contactInfo.phoneLabel')}
+                                            </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     type="tel"
                                                     placeholder={t('contactInfo.phonePlaceholder')}
                                                     autoComplete="tel-national"
-                                                    className="h-12 text-base border-2 focus:border-primary transition-colors"
+                                                    className="h-12 text-base border-2 border-[#9ca3af] dark:border-input focus:border-primary transition-colors text-foreground bg-background"
                                                     {...field}
                                                 />
                                             </FormControl>
