@@ -675,3 +675,102 @@ export const ContactForm: Story = {
         await userEvent.tab();
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test form field interactions
+        const usernameInput = canvas.getByLabelText('Username');
+        const emailInput = canvas.getByLabelText('Email');
+        const passwordInput = canvas.getByLabelText('Password');
+        const confirmPasswordInput = canvas.getByLabelText('Confirm Password');
+        const termsCheckbox = canvas.getByLabelText('Accept terms and conditions');
+        const submitButton = canvas.getByRole('button', { name: /submit/i });
+
+        // Fill out the registration form
+        await userEvent.type(usernameInput, 'testuser');
+        await userEvent.type(emailInput, 'test@example.com');
+        await userEvent.type(passwordInput, 'password123');
+        await userEvent.type(confirmPasswordInput, 'password123');
+        await userEvent.click(termsCheckbox);
+
+        // Test form submission
+        await userEvent.click(submitButton);
+
+        // Test keyboard navigation
+        await userEvent.tab();
+        await userEvent.keyboard('{enter}');
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test form field interactions
+        const usernameInput = canvas.getByLabelText('Username');
+        const emailInput = canvas.getByLabelText('Email');
+        const passwordInput = canvas.getByLabelText('Password');
+        const confirmPasswordInput = canvas.getByLabelText('Confirm Password');
+        const termsCheckbox = canvas.getByLabelText('Accept terms and conditions');
+        const submitButton = canvas.getByRole('button', { name: /submit/i });
+
+        // Fill out the registration form
+        await userEvent.type(usernameInput, 'testuser');
+        await userEvent.type(emailInput, 'test@example.com');
+        await userEvent.type(passwordInput, 'password123');
+        await userEvent.type(confirmPasswordInput, 'password123');
+        await userEvent.click(termsCheckbox);
+
+        // Test form submission
+        await userEvent.click(submitButton);
+
+        // Test keyboard navigation
+        await userEvent.tab();
+        await userEvent.keyboard('{enter}');
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test form field interactions
+        const usernameInput = canvas.getByLabelText('Username');
+        const emailInput = canvas.getByLabelText('Email');
+        const passwordInput = canvas.getByLabelText('Password');
+        const confirmPasswordInput = canvas.getByLabelText('Confirm Password');
+        const termsCheckbox = canvas.getByLabelText('Accept terms and conditions');
+        const submitButton = canvas.getByRole('button', { name: /submit/i });
+
+        // Fill out the registration form
+        await userEvent.type(usernameInput, 'testuser');
+        await userEvent.type(emailInput, 'test@example.com');
+        await userEvent.type(passwordInput, 'password123');
+        await userEvent.type(confirmPasswordInput, 'password123');
+        await userEvent.click(termsCheckbox);
+
+        // Test form submission
+        await userEvent.click(submitButton);
+
+        // Test keyboard navigation
+        await userEvent.tab();
+        await userEvent.keyboard('{enter}');
+    },
+};

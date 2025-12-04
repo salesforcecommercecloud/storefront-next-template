@@ -269,3 +269,60 @@ Checkout context with navigation interactions.
         await expect(contactButton).toBeInTheDocument();
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for context display
+        const currentStep = await canvas.findByText(/current step/i, {}, { timeout: 5000 });
+        await expect(currentStep).toBeInTheDocument();
+
+        // Check for navigation buttons
+        const nextButton = await canvas.findByRole('button', { name: /go to next step/i }, { timeout: 5000 });
+        await expect(nextButton).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for context display
+        const currentStep = await canvas.findByText(/current step/i, {}, { timeout: 5000 });
+        await expect(currentStep).toBeInTheDocument();
+
+        // Check for navigation buttons
+        const nextButton = await canvas.findByRole('button', { name: /go to next step/i }, { timeout: 5000 });
+        await expect(nextButton).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for context display
+        const currentStep = await canvas.findByText(/current step/i, {}, { timeout: 5000 });
+        await expect(currentStep).toBeInTheDocument();
+
+        // Check for navigation buttons
+        const nextButton = await canvas.findByRole('button', { name: /go to next step/i }, { timeout: 5000 });
+        await expect(nextButton).toBeInTheDocument();
+    },
+};

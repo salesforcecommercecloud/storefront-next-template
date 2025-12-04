@@ -366,3 +366,57 @@ export const AsChildLink: Story = {
         await userEvent.click(linkButton);
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const button = canvas.getByRole('button', { name: /button/i });
+
+        await expect(button).toBeInTheDocument();
+        await expect(button).not.toBeDisabled();
+
+        void expect(button).toHaveTextContent('Button');
+        void expect(canvasElement.firstChild).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const button = canvas.getByRole('button', { name: /button/i });
+
+        await expect(button).toBeInTheDocument();
+        await expect(button).not.toBeDisabled();
+
+        void expect(button).toHaveTextContent('Button');
+        void expect(canvasElement.firstChild).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const button = canvas.getByRole('button', { name: /button/i });
+
+        await expect(button).toBeInTheDocument();
+        await expect(button).not.toBeDisabled();
+
+        void expect(button).toHaveTextContent('Button');
+        void expect(canvasElement.firstChild).toBeInTheDocument();
+    },
+};

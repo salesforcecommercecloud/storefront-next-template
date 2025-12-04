@@ -88,6 +88,20 @@ exports[`Typography stories snapshot > CustomStyling story renders and matches s
 </div>
 `;
 
+exports[`Typography stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
+  <div
+    data-typography="root"
+  >
+    <h1
+      class="text-4xl font-bold tracking-tight text-left"
+    >
+      Heading 1 - Main Title
+    </h1>
+  </div>
+</div>
+`;
+
 exports[`Typography stories snapshot > Heading1 story renders and matches snapshot 1`] = `
 <div>
   <div
@@ -214,6 +228,20 @@ exports[`Typography stories snapshot > Lead story renders and matches snapshot 1
 </div>
 `;
 
+exports[`Typography stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div>
+  <div
+    data-typography="root"
+  >
+    <h1
+      class="text-4xl font-bold tracking-tight text-left"
+    >
+      Heading 1 - Main Title
+    </h1>
+  </div>
+</div>
+`;
+
 exports[`Typography stories snapshot > Muted story renders and matches snapshot 1`] = `
 <div>
   <div
@@ -308,6 +336,20 @@ exports[`Typography stories snapshot > Small story renders and matches snapshot 
     >
       Small text for captions and labels
     </p>
+  </div>
+</div>
+`;
+
+exports[`Typography stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div>
+  <div
+    data-typography="root"
+  >
+    <h1
+      class="text-4xl font-bold tracking-tight text-left"
+    >
+      Heading 1 - Main Title
+    </h1>
   </div>
 </div>
 `;

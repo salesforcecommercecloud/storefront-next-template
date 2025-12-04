@@ -3,6 +3,22 @@ import { Region } from '../index';
 import { expect } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { registry } from '@/lib/registry';
+import { action } from 'storybook/actions';
+import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
+
+function ActionLogger({ children }: { children: ReactNode }): ReactElement {
+    const containerRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        const root = containerRef.current;
+        if (!root) return;
+
+        const logRender = action('region-render');
+        logRender({});
+    }, []);
+
+    return <div ref={containerRef}>{children}</div>;
+}
 
 // Register a test component in the registry so the Region component can find it
 const TestComponent = ({
@@ -26,6 +42,13 @@ const meta: Meta<typeof Region> = {
         },
     },
     tags: ['autodocs', 'interaction'],
+    decorators: [
+        (Story) => (
+            <ActionLogger>
+                <Story />
+            </ActionLogger>
+        ),
+    ],
     argTypes: {
         page: {
             description: 'Promise of Page object from Page Designer API',
@@ -121,6 +144,42 @@ export const Empty: Story = {
             ],
         }),
         regionId: 'region-3',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const container = canvasElement.firstChild;
+        await expect(container).toBeInTheDocument();
+    },
+};
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const container = canvasElement.firstChild;
+        await expect(container).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const container = canvasElement.firstChild;
+        await expect(container).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);

@@ -548,3 +548,102 @@ This configuration is useful when:
         await expect(submitButton).not.toBeDisabled();
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test form renders with required elements
+        const emailInput = canvas.getByLabelText(/email/i);
+        const submitButton = canvas.getByRole('button', { name: 'Send Login Link' });
+        await expect(emailInput).toBeInTheDocument();
+        await expect(submitButton).toBeInTheDocument();
+
+        // Test password toggle link exists
+        const passwordToggleLink = canvas.getByRole('link', { name: 'Login with password' });
+        await expect(passwordToggleLink).toBeInTheDocument();
+
+        // Test forgot password link exists
+        const forgotPasswordLink = canvas.getByRole('link', { name: 'Forgot your password?' });
+        await expect(forgotPasswordLink).toBeInTheDocument();
+
+        // Test no password field (passwordless)
+        const passwordField = canvas.queryByLabelText(/password/i);
+        await expect(passwordField).toBeNull();
+
+        // Test email input has proper attributes
+        await expect(emailInput).toHaveAttribute('type', 'email');
+        await expect(emailInput).toHaveAttribute('autocomplete', 'email');
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test form renders with required elements
+        const emailInput = canvas.getByLabelText(/email/i);
+        const submitButton = canvas.getByRole('button', { name: 'Send Login Link' });
+        await expect(emailInput).toBeInTheDocument();
+        await expect(submitButton).toBeInTheDocument();
+
+        // Test password toggle link exists
+        const passwordToggleLink = canvas.getByRole('link', { name: 'Login with password' });
+        await expect(passwordToggleLink).toBeInTheDocument();
+
+        // Test forgot password link exists
+        const forgotPasswordLink = canvas.getByRole('link', { name: 'Forgot your password?' });
+        await expect(forgotPasswordLink).toBeInTheDocument();
+
+        // Test no password field (passwordless)
+        const passwordField = canvas.queryByLabelText(/password/i);
+        await expect(passwordField).toBeNull();
+
+        // Test email input has proper attributes
+        await expect(emailInput).toHaveAttribute('type', 'email');
+        await expect(emailInput).toHaveAttribute('autocomplete', 'email');
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test form renders with required elements
+        const emailInput = canvas.getByLabelText(/email/i);
+        const submitButton = canvas.getByRole('button', { name: 'Send Login Link' });
+        await expect(emailInput).toBeInTheDocument();
+        await expect(submitButton).toBeInTheDocument();
+
+        // Test password toggle link exists
+        const passwordToggleLink = canvas.getByRole('link', { name: 'Login with password' });
+        await expect(passwordToggleLink).toBeInTheDocument();
+
+        // Test forgot password link exists
+        const forgotPasswordLink = canvas.getByRole('link', { name: 'Forgot your password?' });
+        await expect(forgotPasswordLink).toBeInTheDocument();
+
+        // Test no password field (passwordless)
+        const passwordField = canvas.queryByLabelText(/password/i);
+        await expect(passwordField).toBeNull();
+
+        // Test email input has proper attributes
+        await expect(emailInput).toHaveAttribute('type', 'email');
+        await expect(emailInput).toHaveAttribute('autocomplete', 'email');
+    },
+};

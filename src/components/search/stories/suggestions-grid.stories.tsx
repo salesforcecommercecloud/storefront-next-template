@@ -3,6 +3,35 @@ import SuggestionsGrid from '../suggestions-grid';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { action } from 'storybook/actions';
+import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
+
+function ActionLogger({ children }: { children: ReactNode }): ReactElement {
+    const containerRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        const root = containerRef.current;
+        if (!root) return;
+
+        const logClick = action('suggestion-click');
+
+        const handleClick = (event: MouseEvent) => {
+            const target = event.target as HTMLElement | null;
+            if (!target) return;
+            const link = target.closest('a');
+            if (link && root.contains(link)) {
+                event.preventDefault(); // Prevent navigation in storybook
+                logClick({ href: link.getAttribute('href'), text: link.textContent?.trim() });
+            }
+        };
+
+        root.addEventListener('click', handleClick);
+        return () => {
+            root.removeEventListener('click', handleClick);
+        };
+    }, []);
+
+    return <div ref={containerRef}>{children}</div>;
+}
 
 const meta: Meta<typeof SuggestionsGrid> = {
     title: 'Search/SuggestionsGrid',
@@ -17,6 +46,13 @@ const meta: Meta<typeof SuggestionsGrid> = {
         },
     },
     tags: ['autodocs', 'interaction'],
+    decorators: [
+        (Story) => (
+            <ActionLogger>
+                <Story />
+            </ActionLogger>
+        ),
+    ],
     argTypes: {
         suggestions: {
             description: 'Array of product suggestions to display',
@@ -158,5 +194,53 @@ export const WithoutPrices: Story = {
 
         const productLink = canvas.getByRole('link', { name: /product without price/i });
         await expect(productLink).toBeInTheDocument();
+    },
+};
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const runningShoesLink = await canvas.findByRole('link', { name: /running shoes/i });
+        await expect(runningShoesLink).toBeInTheDocument();
+
+        await userEvent.click(runningShoesLink);
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const runningShoesLink = await canvas.findByRole('link', { name: /running shoes/i });
+        await expect(runningShoesLink).toBeInTheDocument();
+
+        await userEvent.click(runningShoesLink);
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const runningShoesLink = await canvas.findByRole('link', { name: /running shoes/i });
+        await expect(runningShoesLink).toBeInTheDocument();
+
+        await userEvent.click(runningShoesLink);
     },
 };

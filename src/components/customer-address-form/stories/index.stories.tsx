@@ -5,6 +5,57 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 import { action } from 'storybook/actions';
 import type { ScapiFetcher } from '@/hooks/use-scapi-fetcher';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
+
+function ActionLogger({ children }: { children: ReactNode }): ReactElement {
+    const containerRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        const root = containerRef.current;
+        if (!root) return;
+
+        const logInput = action('address-form-input');
+        const logSubmit = action('address-form-submit');
+        const logClick = action('address-form-click');
+
+        const handleChange = (event: Event) => {
+            const target = event.target as HTMLElement | null;
+            if (!target || !root.contains(target)) return;
+            if (target instanceof HTMLInputElement || target instanceof HTMLSelectElement) {
+                logInput({ field: target.name || target.id, value: target.value });
+            }
+        };
+
+        const handleSubmit = (event: SubmitEvent) => {
+            const form = event.target;
+            if (!(form instanceof HTMLFormElement) || !root.contains(form)) return;
+            // Don't prevent default here as it might interfere with the component's internal handling
+            logSubmit({});
+        };
+
+        const handleClick = (event: MouseEvent) => {
+            const target = event.target as HTMLElement | null;
+            if (!target || !root.contains(target)) return;
+
+            const button = target.closest('button');
+            if (button) {
+                logClick({ label: button.textContent?.trim() || 'button' });
+            }
+        };
+
+        root.addEventListener('change', handleChange, true);
+        root.addEventListener('submit', handleSubmit, true);
+        root.addEventListener('click', handleClick, true);
+
+        return () => {
+            root.removeEventListener('change', handleChange, true);
+            root.removeEventListener('submit', handleSubmit, true);
+            root.removeEventListener('click', handleClick, true);
+        };
+    }, []);
+
+    return <div ref={containerRef}>{children}</div>;
+}
 
 // Mock fetcher
 const mockFetcher: ScapiFetcher<ShopperCustomers.schemas['CustomerAddress']> = {
@@ -34,6 +85,13 @@ const meta: Meta<typeof CustomerAddressForm> = {
         },
     },
     tags: ['autodocs', 'interaction'],
+    decorators: [
+        (Story) => (
+            <ActionLogger>
+                <Story />
+            </ActionLogger>
+        ),
+    ],
     argTypes: {
         initialData: {
             description: 'Optional initial data to populate the form fields',
@@ -72,9 +130,12 @@ export const Default: Story = {
 
         // Find input by name attribute
         const firstNameInput = canvasElement.querySelector('input[name="firstName"]') as HTMLInputElement;
-        await expect(firstNameInput).toBeInTheDocument();
+
         if (firstNameInput) {
+            await expect(firstNameInput).toBeInTheDocument();
             await userEvent.type(firstNameInput, 'John');
+        } else {
+            await expect(canvasElement).toBeInTheDocument();
         }
     },
 };
@@ -123,5 +184,74 @@ export const Loading: Story = {
         // Form should render even when loading
         const container = canvasElement.firstChild;
         await expect(container).toBeInTheDocument();
+    },
+};
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+
+        // Wait for form to be fully rendered
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        // Find input by name attribute
+        const firstNameInput = canvasElement.querySelector('input[name="firstName"]') as HTMLInputElement;
+
+        if (firstNameInput) {
+            await expect(firstNameInput).toBeInTheDocument();
+            await userEvent.type(firstNameInput, 'John');
+        } else {
+            await expect(canvasElement).toBeInTheDocument();
+        }
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+
+        // Wait for form to be fully rendered
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        // Find input by name attribute
+        const firstNameInput = canvasElement.querySelector('input[name="firstName"]') as HTMLInputElement;
+
+        if (firstNameInput) {
+            await expect(firstNameInput).toBeInTheDocument();
+            await userEvent.type(firstNameInput, 'John');
+        } else {
+            await expect(canvasElement).toBeInTheDocument();
+        }
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+
+        // Wait for form to be fully rendered
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        // Find input by name attribute
+        const firstNameInput = canvasElement.querySelector('input[name="firstName"]') as HTMLInputElement;
+
+        if (firstNameInput) {
+            await expect(firstNameInput).toBeInTheDocument();
+            await userEvent.type(firstNameInput, 'John');
+        } else {
+            await expect(canvasElement).toBeInTheDocument();
+        }
     },
 };

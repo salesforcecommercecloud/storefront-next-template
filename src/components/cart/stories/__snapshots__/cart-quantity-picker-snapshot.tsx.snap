@@ -2,11 +2,17 @@
 
 exports[`CartQuantityPicker stories snapshot > Default story renders and matches snapshot 1`] = `null`;
 
+exports[`CartQuantityPicker stories snapshot > Desktop story renders and matches snapshot 1`] = `null`;
+
 exports[`CartQuantityPicker stories snapshot > Disabled story renders and matches snapshot 1`] = `null`;
 
 exports[`CartQuantityPicker stories snapshot > HighQuantity story renders and matches snapshot 1`] = `null`;
 
 exports[`CartQuantityPicker stories snapshot > InCartItem story renders and matches snapshot 1`] = `null`;
+
+exports[`CartQuantityPicker stories snapshot > Mobile story renders and matches snapshot 1`] = `null`;
+
+exports[`CartQuantityPicker stories snapshot > Tablet story renders and matches snapshot 1`] = `null`;
 
 exports[`CartQuantityPicker stories snapshot > WithCustomDebounce story renders and matches snapshot 1`] = `null`;
 

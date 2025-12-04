@@ -38,6 +38,44 @@ exports[`AddressDisplay stories snapshot > Default story renders and matches sna
 </div>
 `;
 
+exports[`AddressDisplay stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="space-y-1"
+  >
+    <p
+      class="leading-7 [&:not(:first-child)]:mt-6 text-left"
+    >
+      Gurpreet
+       
+      Saini
+    </p>
+    <p
+      class="text-sm font-medium leading-none text-left text-muted-foreground"
+    >
+      123 Main St
+    </p>
+    <p
+      class="text-sm font-medium leading-none text-left text-muted-foreground"
+    >
+      South Jordan
+      , UT
+       84095
+    </p>
+    <p
+      class="text-sm font-medium leading-none text-left text-muted-foreground"
+    >
+      US
+    </p>
+    <p
+      class="text-sm font-medium leading-none text-left text-muted-foreground"
+    >
+      1233211234
+    </p>
+  </div>
+</div>
+`;
+
 exports[`AddressDisplay stories snapshot > Minimal story renders and matches snapshot 1`] = `
 <div>
   <div
@@ -71,6 +109,44 @@ exports[`AddressDisplay stories snapshot > Minimal story renders and matches sna
 </div>
 `;
 
+exports[`AddressDisplay stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="space-y-1"
+  >
+    <p
+      class="leading-7 [&:not(:first-child)]:mt-6 text-left"
+    >
+      Gurpreet
+       
+      Saini
+    </p>
+    <p
+      class="text-sm font-medium leading-none text-left text-muted-foreground"
+    >
+      123 Main St
+    </p>
+    <p
+      class="text-sm font-medium leading-none text-left text-muted-foreground"
+    >
+      South Jordan
+      , UT
+       84095
+    </p>
+    <p
+      class="text-sm font-medium leading-none text-left text-muted-foreground"
+    >
+      US
+    </p>
+    <p
+      class="text-sm font-medium leading-none text-left text-muted-foreground"
+    >
+      1233211234
+    </p>
+  </div>
+</div>
+`;
+
 exports[`AddressDisplay stories snapshot > NoAddress story renders and matches snapshot 1`] = `
 <div>
   <p
@@ -78,6 +154,44 @@ exports[`AddressDisplay stories snapshot > NoAddress story renders and matches s
   >
     No address provided
   </p>
+</div>
+`;
+
+exports[`AddressDisplay stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="space-y-1"
+  >
+    <p
+      class="leading-7 [&:not(:first-child)]:mt-6 text-left"
+    >
+      Gurpreet
+       
+      Saini
+    </p>
+    <p
+      class="text-sm font-medium leading-none text-left text-muted-foreground"
+    >
+      123 Main St
+    </p>
+    <p
+      class="text-sm font-medium leading-none text-left text-muted-foreground"
+    >
+      South Jordan
+      , UT
+       84095
+    </p>
+    <p
+      class="text-sm font-medium leading-none text-left text-muted-foreground"
+    >
+      US
+    </p>
+    <p
+      class="text-sm font-medium leading-none text-left text-muted-foreground"
+    >
+      1233211234
+    </p>
+  </div>
 </div>
 `;
 

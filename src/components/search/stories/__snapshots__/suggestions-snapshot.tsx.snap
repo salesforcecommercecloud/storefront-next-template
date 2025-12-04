@@ -2,56 +2,12 @@
 
 exports[`Suggestions stories snapshot > CategoriesOnly story renders and matches snapshot 1`] = `
 <div>
-  <div
-    class="p-6 space-y-0"
-  >
+  <div>
     <div
-      class="block md:hidden"
+      class="p-6 space-y-0"
     >
       <div
-        class="mb-2"
-      >
-        <div
-          class="text-sm text-muted-foreground font-light mb-1 pl-12 "
-        >
-          Categories
-        </div>
-        <div
-          class="space-y-0"
-          data-testid="sf-suggestion"
-        >
-          <div
-            class="-mx-4"
-          >
-            <button
-              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
-            >
-              <div
-                class="flex items-center"
-              >
-                <div
-                  class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
-                />
-                <div
-                  class="text-left"
-                >
-                  <span
-                    class="text-base font-medium text-foreground"
-                  >
-                    Footwear
-                  </span>
-                </div>
-              </div>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div
-      class="hidden md:flex gap-5"
-    >
-      <div
-        class="flex-1"
+        class="block md:hidden"
       >
         <div
           class="mb-2"
@@ -93,11 +49,57 @@ exports[`Suggestions stories snapshot > CategoriesOnly story renders and matches
         </div>
       </div>
       <div
-        class="flex-[3] min-w-0 overflow-hidden"
-      />
-      <div
-        class="flex-1 flex items-center"
-      />
+        class="hidden md:flex gap-5"
+      >
+        <div
+          class="flex-1"
+        >
+          <div
+            class="mb-2"
+          >
+            <div
+              class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+            >
+              Categories
+            </div>
+            <div
+              class="space-y-0"
+              data-testid="sf-suggestion"
+            >
+              <div
+                class="-mx-4"
+              >
+                <button
+                  class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+                >
+                  <div
+                    class="flex items-center"
+                  >
+                    <div
+                      class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+                    />
+                    <div
+                      class="text-left"
+                    >
+                      <span
+                        class="text-base font-medium text-foreground"
+                      >
+                        Footwear
+                      </span>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex-[3] min-w-0 overflow-hidden"
+        />
+        <div
+          class="flex-1 flex items-center"
+        />
+      </div>
     </div>
   </div>
 </div>
@@ -105,145 +107,12 @@ exports[`Suggestions stories snapshot > CategoriesOnly story renders and matches
 
 exports[`Suggestions stories snapshot > Default story renders and matches snapshot 1`] = `
 <div>
-  <div
-    class="p-6 space-y-0"
-  >
+  <div>
     <div
-      class="block md:hidden"
+      class="p-6 space-y-0"
     >
       <div
-        class="mb-2"
-      >
-        <div
-          class="text-sm text-muted-foreground font-light mb-1 pl-12 "
-        >
-          Categories
-        </div>
-        <div
-          class="space-y-0"
-          data-testid="sf-suggestion"
-        >
-          <div
-            class="-mx-4"
-          >
-            <button
-              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
-            >
-              <div
-                class="flex items-center"
-              >
-                <div
-                  class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
-                />
-                <div
-                  class="text-left"
-                >
-                  <span
-                    class="text-base font-medium text-foreground"
-                  >
-                    Footwear
-                  </span>
-                </div>
-              </div>
-            </button>
-          </div>
-        </div>
-      </div>
-      <div
-        class="mb-2"
-      >
-        <div
-          class="text-sm text-muted-foreground font-light mb-1 pl-12 "
-        >
-          Products
-        </div>
-        <div
-          class="space-y-0"
-          data-testid="sf-suggestion"
-        >
-          <div
-            class="-mx-4"
-          >
-            <button
-              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
-            >
-              <div
-                class="flex items-center"
-              >
-                <div
-                  class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
-                >
-                  <div
-                    class="w-full h-full"
-                  >
-                    <img
-                      alt=""
-                      aria-hidden="true"
-                      class="w-full h-full object-cover rounded-full"
-                      fetchpriority="low"
-                      loading="eager"
-                      src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop"
-                    />
-                  </div>
-                </div>
-                <div
-                  class="text-left"
-                >
-                  <span
-                    class="text-base font-medium text-foreground"
-                  >
-                    Running Shoes
-                  </span>
-                </div>
-              </div>
-            </button>
-          </div>
-        </div>
-      </div>
-      <div
-        class="mb-2"
-      >
-        <div
-          class="text-sm text-muted-foreground font-light mb-1 pl-12 "
-        >
-          Popular Searches
-        </div>
-        <div
-          class="space-y-0"
-          data-testid="sf-suggestion"
-        >
-          <div
-            class="-mx-4"
-          >
-            <button
-              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
-            >
-              <div
-                class="flex items-center"
-              >
-                <div
-                  class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
-                />
-                <div
-                  class="text-left"
-                >
-                  <span
-                    class="text-base font-medium text-foreground"
-                  >
-                    Shoes
-                  </span>
-                </div>
-              </div>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div
-      class="hidden md:flex gap-5"
-    >
-      <div
-        class="flex-1"
+        class="block md:hidden"
       >
         <div
           class="mb-2"
@@ -276,6 +145,57 @@ exports[`Suggestions stories snapshot > Default story renders and matches snapsh
                       class="text-base font-medium text-foreground"
                     >
                       Footwear
+                    </span>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div
+          class="mb-2"
+        >
+          <div
+            class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+          >
+            Products
+          </div>
+          <div
+            class="space-y-0"
+            data-testid="sf-suggestion"
+          >
+            <div
+              class="-mx-4"
+            >
+              <button
+                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              >
+                <div
+                  class="flex items-center"
+                >
+                  <div
+                    class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+                  >
+                    <div
+                      class="w-full h-full"
+                    >
+                      <img
+                        alt=""
+                        aria-hidden="true"
+                        class="w-full h-full object-cover rounded-full"
+                        fetchpriority="low"
+                        loading="eager"
+                        src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop"
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class="text-left"
+                  >
+                    <span
+                      class="text-base font-medium text-foreground"
+                    >
+                      Running Shoes
                     </span>
                   </div>
                 </div>
@@ -323,71 +243,449 @@ exports[`Suggestions stories snapshot > Default story renders and matches snapsh
         </div>
       </div>
       <div
-        class="flex-[3] min-w-0 overflow-hidden"
+        class="hidden md:flex gap-5"
       >
         <div
-          class="overflow-hidden"
-          data-testid="sf-horizontal-product-suggestions"
+          class="flex-1"
         >
           <div
-            class="flex gap-4 overflow-x-hidden pb-2"
+            class="mb-2"
           >
-            <a
-              class="block hover:underline flex-1 max-w-[20%]"
-              data-testid="product-tile"
-              href="/products/running-shoes"
+            <div
+              class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+            >
+              Categories
+            </div>
+            <div
+              class="space-y-0"
+              data-testid="sf-suggestion"
             >
               <div
-                class="w-full"
+                class="-mx-4"
               >
-                <div
-                  class="mb-2"
+                <button
+                  class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
                 >
                   <div
-                    class="w-full relative aspect-[4/3]"
+                    class="flex items-center"
                   >
                     <div
-                      class=""
+                      class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+                    />
+                    <div
+                      class="text-left"
+                    >
+                      <span
+                        class="text-base font-medium text-foreground"
+                      >
+                        Footwear
+                      </span>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div
+            class="mb-2"
+          >
+            <div
+              class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+            >
+              Popular Searches
+            </div>
+            <div
+              class="space-y-0"
+              data-testid="sf-suggestion"
+            >
+              <div
+                class="-mx-4"
+              >
+                <button
+                  class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+                >
+                  <div
+                    class="flex items-center"
+                  >
+                    <div
+                      class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+                    />
+                    <div
+                      class="text-left"
+                    >
+                      <span
+                        class="text-base font-medium text-foreground"
+                      >
+                        Shoes
+                      </span>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex-[3] min-w-0 overflow-hidden"
+        >
+          <div
+            class="overflow-hidden"
+            data-testid="sf-horizontal-product-suggestions"
+          >
+            <div
+              class="flex gap-4 overflow-x-hidden pb-2"
+            >
+              <a
+                class="block hover:underline flex-1 max-w-[20%]"
+                data-testid="product-tile"
+                href="/products/running-shoes"
+              >
+                <div
+                  class="w-full"
+                >
+                  <div
+                    class="mb-2"
+                  >
+                    <div
+                      class="w-full relative aspect-[4/3]"
+                    >
+                      <div
+                        class=""
+                      >
+                        <img
+                          alt=""
+                          aria-hidden="true"
+                          class="absolute inset-0 w-full h-full object-cover block"
+                          fetchpriority="low"
+                          loading="eager"
+                          src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <p
+                    class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+                  >
+                    Running Shoes
+                  </p>
+                  <p
+                    class="text-sm font-semibold text-foreground"
+                  >
+                    £
+                    99.99
+                  </p>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex-1 flex items-center"
+        >
+          <div
+            class="text-center w-full"
+          >
+            <a
+              class="text-foreground hover:text-foreground/80 font-medium text-base"
+              href="/search?q="
+            >
+              View All
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Suggestions stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
+  <div>
+    <div
+      class="p-6 space-y-0"
+    >
+      <div
+        class="block md:hidden"
+      >
+        <div
+          class="mb-2"
+        >
+          <div
+            class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+          >
+            Categories
+          </div>
+          <div
+            class="space-y-0"
+            data-testid="sf-suggestion"
+          >
+            <div
+              class="-mx-4"
+            >
+              <button
+                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              >
+                <div
+                  class="flex items-center"
+                >
+                  <div
+                    class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+                  />
+                  <div
+                    class="text-left"
+                  >
+                    <span
+                      class="text-base font-medium text-foreground"
+                    >
+                      Footwear
+                    </span>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div
+          class="mb-2"
+        >
+          <div
+            class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+          >
+            Products
+          </div>
+          <div
+            class="space-y-0"
+            data-testid="sf-suggestion"
+          >
+            <div
+              class="-mx-4"
+            >
+              <button
+                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              >
+                <div
+                  class="flex items-center"
+                >
+                  <div
+                    class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+                  >
+                    <div
+                      class="w-full h-full"
                     >
                       <img
                         alt=""
                         aria-hidden="true"
-                        class="absolute inset-0 w-full h-full object-cover block"
+                        class="w-full h-full object-cover rounded-full"
                         fetchpriority="low"
                         loading="eager"
                         src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop"
                       />
                     </div>
                   </div>
+                  <div
+                    class="text-left"
+                  >
+                    <span
+                      class="text-base font-medium text-foreground"
+                    >
+                      Running Shoes
+                    </span>
+                  </div>
                 </div>
-                <p
-                  class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+              </button>
+            </div>
+          </div>
+        </div>
+        <div
+          class="mb-2"
+        >
+          <div
+            class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+          >
+            Popular Searches
+          </div>
+          <div
+            class="space-y-0"
+            data-testid="sf-suggestion"
+          >
+            <div
+              class="-mx-4"
+            >
+              <button
+                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              >
+                <div
+                  class="flex items-center"
                 >
-                  Running Shoes
-                </p>
-                <p
-                  class="text-sm font-semibold text-foreground"
-                >
-                  £
-                  99.99
-                </p>
-              </div>
-            </a>
+                  <div
+                    class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+                  />
+                  <div
+                    class="text-left"
+                  >
+                    <span
+                      class="text-base font-medium text-foreground"
+                    >
+                      Shoes
+                    </span>
+                  </div>
+                </div>
+              </button>
+            </div>
           </div>
         </div>
       </div>
       <div
-        class="flex-1 flex items-center"
+        class="hidden md:flex gap-5"
       >
         <div
-          class="text-center w-full"
+          class="flex-1"
         >
-          <a
-            class="text-foreground hover:text-foreground/80 font-medium text-base"
-            href="/search?q="
+          <div
+            class="mb-2"
           >
-            View All
-          </a>
+            <div
+              class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+            >
+              Categories
+            </div>
+            <div
+              class="space-y-0"
+              data-testid="sf-suggestion"
+            >
+              <div
+                class="-mx-4"
+              >
+                <button
+                  class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+                >
+                  <div
+                    class="flex items-center"
+                  >
+                    <div
+                      class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+                    />
+                    <div
+                      class="text-left"
+                    >
+                      <span
+                        class="text-base font-medium text-foreground"
+                      >
+                        Footwear
+                      </span>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div
+            class="mb-2"
+          >
+            <div
+              class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+            >
+              Popular Searches
+            </div>
+            <div
+              class="space-y-0"
+              data-testid="sf-suggestion"
+            >
+              <div
+                class="-mx-4"
+              >
+                <button
+                  class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+                >
+                  <div
+                    class="flex items-center"
+                  >
+                    <div
+                      class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+                    />
+                    <div
+                      class="text-left"
+                    >
+                      <span
+                        class="text-base font-medium text-foreground"
+                      >
+                        Shoes
+                      </span>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex-[3] min-w-0 overflow-hidden"
+        >
+          <div
+            class="overflow-hidden"
+            data-testid="sf-horizontal-product-suggestions"
+          >
+            <div
+              class="flex gap-4 overflow-x-hidden pb-2"
+            >
+              <a
+                class="block hover:underline flex-1 max-w-[20%]"
+                data-testid="product-tile"
+                href="/products/running-shoes"
+              >
+                <div
+                  class="w-full"
+                >
+                  <div
+                    class="mb-2"
+                  >
+                    <div
+                      class="w-full relative aspect-[4/3]"
+                    >
+                      <div
+                        class=""
+                      >
+                        <img
+                          alt=""
+                          aria-hidden="true"
+                          class="absolute inset-0 w-full h-full object-cover block"
+                          fetchpriority="low"
+                          loading="eager"
+                          src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <p
+                    class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+                  >
+                    Running Shoes
+                  </p>
+                  <p
+                    class="text-sm font-semibold text-foreground"
+                  >
+                    £
+                    99.99
+                  </p>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex-1 flex items-center"
+        >
+          <div
+            class="text-center w-full"
+          >
+            <a
+              class="text-foreground hover:text-foreground/80 font-medium text-base"
+              href="/search?q="
+            >
+              View All
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -397,144 +695,736 @@ exports[`Suggestions stories snapshot > Default story renders and matches snapsh
 
 exports[`Suggestions stories snapshot > Empty story renders and matches snapshot 1`] = `
 <div>
-  <div
-    class="p-6"
-  />
+  <div>
+    <div
+      class="p-6"
+    />
+  </div>
 </div>
 `;
 
-exports[`Suggestions stories snapshot > ProductsOnly story renders and matches snapshot 1`] = `
+exports[`Suggestions stories snapshot > Mobile story renders and matches snapshot 1`] = `
 <div>
-  <div
-    class="p-6 space-y-0"
-  >
+  <div>
     <div
-      class="block md:hidden"
+      class="p-6 space-y-0"
     >
       <div
-        class="mb-2"
+        class="block md:hidden"
       >
         <div
-          class="text-sm text-muted-foreground font-light mb-1 pl-12 "
-        >
-          Products
-        </div>
-        <div
-          class="space-y-0"
-          data-testid="sf-suggestion"
+          class="mb-2"
         >
           <div
-            class="-mx-4"
+            class="text-sm text-muted-foreground font-light mb-1 pl-12 "
           >
-            <button
-              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+            Categories
+          </div>
+          <div
+            class="space-y-0"
+            data-testid="sf-suggestion"
+          >
+            <div
+              class="-mx-4"
             >
-              <div
-                class="flex items-center"
+              <button
+                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
               >
                 <div
-                  class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+                  class="flex items-center"
                 >
                   <div
-                    class="w-full h-full"
+                    class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+                  />
+                  <div
+                    class="text-left"
                   >
-                    <img
-                      alt=""
-                      aria-hidden="true"
-                      class="w-full h-full object-cover rounded-full"
-                      fetchpriority="low"
-                      loading="eager"
-                      src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop"
-                    />
+                    <span
+                      class="text-base font-medium text-foreground"
+                    >
+                      Footwear
+                    </span>
                   </div>
                 </div>
-                <div
-                  class="text-left"
-                >
-                  <span
-                    class="text-base font-medium text-foreground"
-                  >
-                    Running Shoes
-                  </span>
-                </div>
-              </div>
-            </button>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-    <div
-      class="hidden md:flex gap-5"
-    >
-      <div
-        class="flex-1"
-      />
-      <div
-        class="flex-[3] min-w-0 overflow-hidden"
-      >
         <div
-          class="overflow-hidden"
-          data-testid="sf-horizontal-product-suggestions"
+          class="mb-2"
         >
           <div
-            class="flex gap-4 overflow-x-hidden pb-2"
+            class="text-sm text-muted-foreground font-light mb-1 pl-12 "
           >
-            <a
-              class="block hover:underline flex-1 max-w-[20%]"
-              data-testid="product-tile"
-              href="/products/running-shoes"
+            Products
+          </div>
+          <div
+            class="space-y-0"
+            data-testid="sf-suggestion"
+          >
+            <div
+              class="-mx-4"
             >
-              <div
-                class="w-full"
+              <button
+                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
               >
                 <div
-                  class="mb-2"
+                  class="flex items-center"
                 >
                   <div
-                    class="w-full relative aspect-[4/3]"
+                    class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
                   >
                     <div
-                      class=""
+                      class="w-full h-full"
                     >
                       <img
                         alt=""
                         aria-hidden="true"
-                        class="absolute inset-0 w-full h-full object-cover block"
+                        class="w-full h-full object-cover rounded-full"
                         fetchpriority="low"
                         loading="eager"
                         src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop"
                       />
                     </div>
                   </div>
+                  <div
+                    class="text-left"
+                  >
+                    <span
+                      class="text-base font-medium text-foreground"
+                    >
+                      Running Shoes
+                    </span>
+                  </div>
                 </div>
-                <p
-                  class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+              </button>
+            </div>
+          </div>
+        </div>
+        <div
+          class="mb-2"
+        >
+          <div
+            class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+          >
+            Popular Searches
+          </div>
+          <div
+            class="space-y-0"
+            data-testid="sf-suggestion"
+          >
+            <div
+              class="-mx-4"
+            >
+              <button
+                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              >
+                <div
+                  class="flex items-center"
                 >
-                  Running Shoes
-                </p>
-                <p
-                  class="text-sm font-semibold text-foreground"
-                >
-                  £
-                  99.99
-                </p>
-              </div>
-            </a>
+                  <div
+                    class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+                  />
+                  <div
+                    class="text-left"
+                  >
+                    <span
+                      class="text-base font-medium text-foreground"
+                    >
+                      Shoes
+                    </span>
+                  </div>
+                </div>
+              </button>
+            </div>
           </div>
         </div>
       </div>
       <div
-        class="flex-1 flex items-center"
+        class="hidden md:flex gap-5"
       >
         <div
-          class="text-center w-full"
+          class="flex-1"
         >
-          <a
-            class="text-foreground hover:text-foreground/80 font-medium text-base"
-            href="/search?q="
+          <div
+            class="mb-2"
           >
-            View All
-          </a>
+            <div
+              class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+            >
+              Categories
+            </div>
+            <div
+              class="space-y-0"
+              data-testid="sf-suggestion"
+            >
+              <div
+                class="-mx-4"
+              >
+                <button
+                  class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+                >
+                  <div
+                    class="flex items-center"
+                  >
+                    <div
+                      class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+                    />
+                    <div
+                      class="text-left"
+                    >
+                      <span
+                        class="text-base font-medium text-foreground"
+                      >
+                        Footwear
+                      </span>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div
+            class="mb-2"
+          >
+            <div
+              class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+            >
+              Popular Searches
+            </div>
+            <div
+              class="space-y-0"
+              data-testid="sf-suggestion"
+            >
+              <div
+                class="-mx-4"
+              >
+                <button
+                  class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+                >
+                  <div
+                    class="flex items-center"
+                  >
+                    <div
+                      class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+                    />
+                    <div
+                      class="text-left"
+                    >
+                      <span
+                        class="text-base font-medium text-foreground"
+                      >
+                        Shoes
+                      </span>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex-[3] min-w-0 overflow-hidden"
+        >
+          <div
+            class="overflow-hidden"
+            data-testid="sf-horizontal-product-suggestions"
+          >
+            <div
+              class="flex gap-4 overflow-x-hidden pb-2"
+            >
+              <a
+                class="block hover:underline flex-1 max-w-[20%]"
+                data-testid="product-tile"
+                href="/products/running-shoes"
+              >
+                <div
+                  class="w-full"
+                >
+                  <div
+                    class="mb-2"
+                  >
+                    <div
+                      class="w-full relative aspect-[4/3]"
+                    >
+                      <div
+                        class=""
+                      >
+                        <img
+                          alt=""
+                          aria-hidden="true"
+                          class="absolute inset-0 w-full h-full object-cover block"
+                          fetchpriority="low"
+                          loading="eager"
+                          src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <p
+                    class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+                  >
+                    Running Shoes
+                  </p>
+                  <p
+                    class="text-sm font-semibold text-foreground"
+                  >
+                    £
+                    99.99
+                  </p>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex-1 flex items-center"
+        >
+          <div
+            class="text-center w-full"
+          >
+            <a
+              class="text-foreground hover:text-foreground/80 font-medium text-base"
+              href="/search?q="
+            >
+              View All
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Suggestions stories snapshot > ProductsOnly story renders and matches snapshot 1`] = `
+<div>
+  <div>
+    <div
+      class="p-6 space-y-0"
+    >
+      <div
+        class="block md:hidden"
+      >
+        <div
+          class="mb-2"
+        >
+          <div
+            class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+          >
+            Products
+          </div>
+          <div
+            class="space-y-0"
+            data-testid="sf-suggestion"
+          >
+            <div
+              class="-mx-4"
+            >
+              <button
+                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              >
+                <div
+                  class="flex items-center"
+                >
+                  <div
+                    class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+                  >
+                    <div
+                      class="w-full h-full"
+                    >
+                      <img
+                        alt=""
+                        aria-hidden="true"
+                        class="w-full h-full object-cover rounded-full"
+                        fetchpriority="low"
+                        loading="eager"
+                        src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop"
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class="text-left"
+                  >
+                    <span
+                      class="text-base font-medium text-foreground"
+                    >
+                      Running Shoes
+                    </span>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="hidden md:flex gap-5"
+      >
+        <div
+          class="flex-1"
+        />
+        <div
+          class="flex-[3] min-w-0 overflow-hidden"
+        >
+          <div
+            class="overflow-hidden"
+            data-testid="sf-horizontal-product-suggestions"
+          >
+            <div
+              class="flex gap-4 overflow-x-hidden pb-2"
+            >
+              <a
+                class="block hover:underline flex-1 max-w-[20%]"
+                data-testid="product-tile"
+                href="/products/running-shoes"
+              >
+                <div
+                  class="w-full"
+                >
+                  <div
+                    class="mb-2"
+                  >
+                    <div
+                      class="w-full relative aspect-[4/3]"
+                    >
+                      <div
+                        class=""
+                      >
+                        <img
+                          alt=""
+                          aria-hidden="true"
+                          class="absolute inset-0 w-full h-full object-cover block"
+                          fetchpriority="low"
+                          loading="eager"
+                          src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <p
+                    class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+                  >
+                    Running Shoes
+                  </p>
+                  <p
+                    class="text-sm font-semibold text-foreground"
+                  >
+                    £
+                    99.99
+                  </p>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex-1 flex items-center"
+        >
+          <div
+            class="text-center w-full"
+          >
+            <a
+              class="text-foreground hover:text-foreground/80 font-medium text-base"
+              href="/search?q="
+            >
+              View All
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Suggestions stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div>
+  <div>
+    <div
+      class="p-6 space-y-0"
+    >
+      <div
+        class="block md:hidden"
+      >
+        <div
+          class="mb-2"
+        >
+          <div
+            class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+          >
+            Categories
+          </div>
+          <div
+            class="space-y-0"
+            data-testid="sf-suggestion"
+          >
+            <div
+              class="-mx-4"
+            >
+              <button
+                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              >
+                <div
+                  class="flex items-center"
+                >
+                  <div
+                    class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+                  />
+                  <div
+                    class="text-left"
+                  >
+                    <span
+                      class="text-base font-medium text-foreground"
+                    >
+                      Footwear
+                    </span>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div
+          class="mb-2"
+        >
+          <div
+            class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+          >
+            Products
+          </div>
+          <div
+            class="space-y-0"
+            data-testid="sf-suggestion"
+          >
+            <div
+              class="-mx-4"
+            >
+              <button
+                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              >
+                <div
+                  class="flex items-center"
+                >
+                  <div
+                    class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+                  >
+                    <div
+                      class="w-full h-full"
+                    >
+                      <img
+                        alt=""
+                        aria-hidden="true"
+                        class="w-full h-full object-cover rounded-full"
+                        fetchpriority="low"
+                        loading="eager"
+                        src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop"
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class="text-left"
+                  >
+                    <span
+                      class="text-base font-medium text-foreground"
+                    >
+                      Running Shoes
+                    </span>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div
+          class="mb-2"
+        >
+          <div
+            class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+          >
+            Popular Searches
+          </div>
+          <div
+            class="space-y-0"
+            data-testid="sf-suggestion"
+          >
+            <div
+              class="-mx-4"
+            >
+              <button
+                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              >
+                <div
+                  class="flex items-center"
+                >
+                  <div
+                    class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+                  />
+                  <div
+                    class="text-left"
+                  >
+                    <span
+                      class="text-base font-medium text-foreground"
+                    >
+                      Shoes
+                    </span>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="hidden md:flex gap-5"
+      >
+        <div
+          class="flex-1"
+        >
+          <div
+            class="mb-2"
+          >
+            <div
+              class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+            >
+              Categories
+            </div>
+            <div
+              class="space-y-0"
+              data-testid="sf-suggestion"
+            >
+              <div
+                class="-mx-4"
+              >
+                <button
+                  class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+                >
+                  <div
+                    class="flex items-center"
+                  >
+                    <div
+                      class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+                    />
+                    <div
+                      class="text-left"
+                    >
+                      <span
+                        class="text-base font-medium text-foreground"
+                      >
+                        Footwear
+                      </span>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div
+            class="mb-2"
+          >
+            <div
+              class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+            >
+              Popular Searches
+            </div>
+            <div
+              class="space-y-0"
+              data-testid="sf-suggestion"
+            >
+              <div
+                class="-mx-4"
+              >
+                <button
+                  class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+                >
+                  <div
+                    class="flex items-center"
+                  >
+                    <div
+                      class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+                    />
+                    <div
+                      class="text-left"
+                    >
+                      <span
+                        class="text-base font-medium text-foreground"
+                      >
+                        Shoes
+                      </span>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex-[3] min-w-0 overflow-hidden"
+        >
+          <div
+            class="overflow-hidden"
+            data-testid="sf-horizontal-product-suggestions"
+          >
+            <div
+              class="flex gap-4 overflow-x-hidden pb-2"
+            >
+              <a
+                class="block hover:underline flex-1 max-w-[20%]"
+                data-testid="product-tile"
+                href="/products/running-shoes"
+              >
+                <div
+                  class="w-full"
+                >
+                  <div
+                    class="mb-2"
+                  >
+                    <div
+                      class="w-full relative aspect-[4/3]"
+                    >
+                      <div
+                        class=""
+                      >
+                        <img
+                          alt=""
+                          aria-hidden="true"
+                          class="absolute inset-0 w-full h-full object-cover block"
+                          fetchpriority="low"
+                          loading="eager"
+                          src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <p
+                    class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+                  >
+                    Running Shoes
+                  </p>
+                  <p
+                    class="text-sm font-semibold text-foreground"
+                  >
+                    £
+                    99.99
+                  </p>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex-1 flex items-center"
+        >
+          <div
+            class="text-center w-full"
+          >
+            <a
+              class="text-foreground hover:text-foreground/80 font-medium text-base"
+              href="/search?q="
+            >
+              View All
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -544,42 +1434,44 @@ exports[`Suggestions stories snapshot > ProductsOnly story renders and matches s
 
 exports[`Suggestions stories snapshot > WithRecentSearches story renders and matches snapshot 1`] = `
 <div>
-  <div
-    class="p-6"
-  >
-    <div>
-      <div
-        class="text-sm font-semibold text-foreground mb-2"
-      >
-        Recent Searches
-      </div>
-      <div
-        class="-mx-6"
-      >
-        <button
-          class="w-full text-left px-12 py-2 hover:bg-accent text-base font-normal"
-          type="button"
+  <div>
+    <div
+      class="p-6"
+    >
+      <div>
+        <div
+          class="text-sm font-semibold text-foreground mb-2"
         >
-          shoes
-        </button>
-        <button
-          class="w-full text-left px-12 py-2 hover:bg-accent text-base font-normal"
-          type="button"
+          Recent Searches
+        </div>
+        <div
+          class="-mx-6"
         >
-          boots
-        </button>
-        <button
-          class="w-full text-left px-12 py-2 hover:bg-accent text-base font-normal"
-          type="button"
-        >
-          sneakers
-        </button>
-        <button
-          class="w-full text-left px-12 py-2 hover:bg-accent text-primary text-base font-normal"
-          type="button"
-        >
-          Clear recent searches
-        </button>
+          <button
+            class="w-full text-left px-12 py-2 hover:bg-accent text-base font-normal"
+            type="button"
+          >
+            shoes
+          </button>
+          <button
+            class="w-full text-left px-12 py-2 hover:bg-accent text-base font-normal"
+            type="button"
+          >
+            boots
+          </button>
+          <button
+            class="w-full text-left px-12 py-2 hover:bg-accent text-base font-normal"
+            type="button"
+          >
+            sneakers
+          </button>
+          <button
+            class="w-full text-left px-12 py-2 hover:bg-accent text-primary text-base font-normal"
+            type="button"
+          >
+            Clear recent searches
+          </button>
+        </div>
       </div>
     </div>
   </div>

@@ -394,3 +394,54 @@ export const EmptyBasket: Story = {
         }
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        // Test that component renders without errors
+        void expect(canvasElement).toBeInTheDocument();
+        void expect(canvasElement.children.length).toBeGreaterThan(0);
+
+        // Test that heading is present
+        const heading = canvasElement.querySelector('h1, h2, h3, [role="heading"]');
+        void expect(heading).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        // Test that component renders without errors
+        void expect(canvasElement).toBeInTheDocument();
+        void expect(canvasElement.children.length).toBeGreaterThan(0);
+
+        // Test that heading is present
+        const heading = canvasElement.querySelector('h1, h2, h3, [role="heading"]');
+        void expect(heading).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        // Test that component renders without errors
+        void expect(canvasElement).toBeInTheDocument();
+        void expect(canvasElement.children.length).toBeGreaterThan(0);
+
+        // Test that heading is present
+        const heading = canvasElement.querySelector('h1, h2, h3, [role="heading"]');
+        void expect(heading).toBeInTheDocument();
+    },
+};

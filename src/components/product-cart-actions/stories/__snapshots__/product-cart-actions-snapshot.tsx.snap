@@ -41,6 +41,47 @@ exports[`ProductCartActions stories snapshot > Default story renders and matches
 </div>
 `;
 
+exports[`ProductCartActions stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="mt-6"
+  >
+    <div
+      class="flex flex-col gap-3"
+    >
+      <button
+        class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-10 rounded-md px-6 has-[>svg]:px-4 w-full"
+        data-slot="button"
+      >
+        Add to Cart
+      </button>
+      <div
+        class="grid grid-cols-2 gap-3"
+      >
+        <button
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4 w-full"
+          data-slot="button"
+        >
+          Add to Wishlist
+        </button>
+        <button
+          aria-expanded="false"
+          aria-haspopup="menu"
+          aria-label="Share"
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4 w-full"
+          data-slot="dropdown-menu-trigger"
+          data-state="closed"
+          id="radix-«r6»"
+          type="button"
+        >
+          Share
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`ProductCartActions stories snapshot > EditMode story renders and matches snapshot 1`] = `
 <div>
   <div>
@@ -55,6 +96,88 @@ exports[`ProductCartActions stories snapshot > EditMode story renders and matche
           data-slot="button"
         >
           Update
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ProductCartActions stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="mt-6"
+  >
+    <div
+      class="flex flex-col gap-3"
+    >
+      <button
+        class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-10 rounded-md px-6 has-[>svg]:px-4 w-full"
+        data-slot="button"
+      >
+        Add to Cart
+      </button>
+      <div
+        class="grid grid-cols-2 gap-3"
+      >
+        <button
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4 w-full"
+          data-slot="button"
+        >
+          Add to Wishlist
+        </button>
+        <button
+          aria-expanded="false"
+          aria-haspopup="menu"
+          aria-label="Share"
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4 w-full"
+          data-slot="dropdown-menu-trigger"
+          data-state="closed"
+          id="radix-«r2»"
+          type="button"
+        >
+          Share
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ProductCartActions stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="mt-6"
+  >
+    <div
+      class="flex flex-col gap-3"
+    >
+      <button
+        class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-10 rounded-md px-6 has-[>svg]:px-4 w-full"
+        data-slot="button"
+      >
+        Add to Cart
+      </button>
+      <div
+        class="grid grid-cols-2 gap-3"
+      >
+        <button
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4 w-full"
+          data-slot="button"
+        >
+          Add to Wishlist
+        </button>
+        <button
+          aria-expanded="false"
+          aria-haspopup="menu"
+          aria-label="Share"
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4 w-full"
+          data-slot="dropdown-menu-trigger"
+          data-state="closed"
+          id="radix-«r4»"
+          type="button"
+        >
+          Share
         </button>
       </div>
     </div>

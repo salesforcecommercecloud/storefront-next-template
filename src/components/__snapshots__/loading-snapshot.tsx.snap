@@ -29,3 +29,27 @@ exports[`Loading stories snapshot > DesignPreview story renders and matches snap
   </div>
 </div>
 `;
+
+exports[`Loading stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="min-h-screen bg-background"
+  />
+</div>
+`;
+
+exports[`Loading stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="min-h-screen bg-background"
+  />
+</div>
+`;
+
+exports[`Loading stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="min-h-screen bg-background"
+  />
+</div>
+`;

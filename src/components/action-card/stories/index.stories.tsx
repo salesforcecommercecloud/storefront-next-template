@@ -595,3 +595,78 @@ This story demonstrates the loading state when onRemove returns a promise:
         await expect(removeButton).not.toBeDisabled();
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test card content is displayed
+        const nameElement = canvas.getByText('John Doe');
+        await expect(nameElement).toBeInTheDocument();
+
+        // Test edit button is present and enabled
+        const editButton = canvas.getByRole('button', { name: /edit|change/i });
+        await expect(editButton).toBeInTheDocument();
+        await expect(editButton).not.toBeDisabled();
+
+        // Test remove button is present and enabled
+        const removeButton = canvas.getByRole('button', { name: /remove|delete/i });
+        await expect(removeButton).toBeInTheDocument();
+        await expect(removeButton).not.toBeDisabled();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test card content is displayed
+        const nameElement = canvas.getByText('John Doe');
+        await expect(nameElement).toBeInTheDocument();
+
+        // Test edit button is present and enabled
+        const editButton = canvas.getByRole('button', { name: /edit|change/i });
+        await expect(editButton).toBeInTheDocument();
+        await expect(editButton).not.toBeDisabled();
+
+        // Test remove button is present and enabled
+        const removeButton = canvas.getByRole('button', { name: /remove|delete/i });
+        await expect(removeButton).toBeInTheDocument();
+        await expect(removeButton).not.toBeDisabled();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test card content is displayed
+        const nameElement = canvas.getByText('John Doe');
+        await expect(nameElement).toBeInTheDocument();
+
+        // Test edit button is present and enabled
+        const editButton = canvas.getByRole('button', { name: /edit|change/i });
+        await expect(editButton).toBeInTheDocument();
+        await expect(editButton).not.toBeDisabled();
+
+        // Test remove button is present and enabled
+        const removeButton = canvas.getByRole('button', { name: /remove|delete/i });
+        await expect(removeButton).toBeInTheDocument();
+        await expect(removeButton).not.toBeDisabled();
+    },
+};

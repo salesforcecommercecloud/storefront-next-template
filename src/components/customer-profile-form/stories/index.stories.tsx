@@ -388,3 +388,84 @@ Interactive customer profile form for testing user interactions.
         await expect(emailInput).toHaveValue('jane.smith@example.com');
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const { t } = getTranslation();
+
+        // Check for form fields
+        const firstNameInput = await canvas.findByPlaceholderText(
+            t('account:profile.firstNamePlaceholder'),
+            {},
+            { timeout: 5000 }
+        );
+        await expect(firstNameInput).toBeInTheDocument();
+
+        const emailInput = await canvas.findByPlaceholderText(
+            t('account:profile.emailPlaceholder'),
+            {},
+            { timeout: 5000 }
+        );
+        await expect(emailInput).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const { t } = getTranslation();
+
+        // Check for form fields
+        const firstNameInput = await canvas.findByPlaceholderText(
+            t('account:profile.firstNamePlaceholder'),
+            {},
+            { timeout: 5000 }
+        );
+        await expect(firstNameInput).toBeInTheDocument();
+
+        const emailInput = await canvas.findByPlaceholderText(
+            t('account:profile.emailPlaceholder'),
+            {},
+            { timeout: 5000 }
+        );
+        await expect(emailInput).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const { t } = getTranslation();
+
+        // Check for form fields
+        const firstNameInput = await canvas.findByPlaceholderText(
+            t('account:profile.firstNamePlaceholder'),
+            {},
+            { timeout: 5000 }
+        );
+        await expect(firstNameInput).toBeInTheDocument();
+
+        const emailInput = await canvas.findByPlaceholderText(
+            t('account:profile.emailPlaceholder'),
+            {},
+            { timeout: 5000 }
+        );
+        await expect(emailInput).toBeInTheDocument();
+    },
+};

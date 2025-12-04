@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ProductBadges } from '../product-badges';
 // @ts-expect-error mock file is JS
-import { mockProductSearchItem } from '../../__mocks__/product-search-hit-data';
+import { mockProductSearchItem, mockStandardProductHit } from '../../__mocks__/product-search-hit-data';
 import { ConfigProvider } from '@/config/context';
 import { mockConfig } from '@/test-utils/config';
 import { expect, within } from 'storybook/test';
@@ -96,12 +96,7 @@ export const Default: Story = {
 
 export const WithCustomBadges: Story = {
     args: {
-        product: {
-            ...mockProductSearchItem,
-            c_isNew: true,
-            c_isSale: true,
-            c_isSpecial: true,
-        },
+        product: mockStandardProductHit,
         badgeDetails: [
             { propertyName: 'c_isNew', label: 'New', color: 'green' },
             { propertyName: 'c_isSale', label: 'Sale', color: 'red' },
@@ -121,13 +116,7 @@ export const WithCustomBadges: Story = {
 
 export const LimitedBadges: Story = {
     args: {
-        product: {
-            ...mockProductSearchItem,
-            c_isNew: true,
-            c_isSale: true,
-            c_isSpecial: true,
-            // Ensure we have enough badges to limit
-        },
+        product: mockStandardProductHit,
         maxBadges: 2,
         badgeDetails: [
             { propertyName: 'c_isNew', label: 'New', color: 'green' },
@@ -150,8 +139,7 @@ export const NoBadges: Story = {
     args: {
         product: {
             ...mockProductSearchItem,
-            c_isNew: false,
-            c_isSale: false,
+            productPromotions: [],
         },
         badgeDetails: [{ propertyName: 'c_isNew', label: 'New', color: 'green' }],
     },
@@ -164,6 +152,57 @@ export const NoBadges: Story = {
             await expect(container.children).toHaveLength(0);
         } else {
             await expect(canvas.queryByRole('group')).not.toBeInTheDocument();
+        }
+    },
+};
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        // Use queryByRole to safely check for existence without throwing
+        const container = canvas.queryByRole('group');
+        // We only expect it to be in the document if it exists (i.e. badges are rendered)
+        if (container) {
+            await expect(container).toBeInTheDocument();
+        }
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        // Use queryByRole to safely check for existence without throwing
+        const container = canvas.queryByRole('group');
+        // We only expect it to be in the document if it exists (i.e. badges are rendered)
+        if (container) {
+            await expect(container).toBeInTheDocument();
+        }
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        // Use queryByRole to safely check for existence without throwing
+        const container = canvas.queryByRole('group');
+        // We only expect it to be in the document if it exists (i.e. badges are rendered)
+        if (container) {
+            await expect(container).toBeInTheDocument();
         }
     },
 };

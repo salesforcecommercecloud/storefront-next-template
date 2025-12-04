@@ -93,10 +93,289 @@ exports[`CategorySorting stories snapshot > Default story renders and matches sn
 </div>
 `;
 
+exports[`CategorySorting stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div
+  data-sorting-harness="true"
+>
+  <div
+    class="flex items-center space-x-2"
+  >
+    <label
+      class="text-sm text-muted-foreground"
+      for="«r5»"
+    >
+      Sort by:
+    </label>
+    <div
+      class="relative flex"
+    >
+      <select
+        class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center rounded-md border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8"
+        data-slot="select-native"
+        id="«r5»"
+      >
+        <option
+          value="best-matches"
+        >
+          Best Matches
+        </option>
+        <option
+          value="price-low-to-high"
+        >
+          Price Low To High
+        </option>
+        <option
+          value="price-high-to-low"
+        >
+          Price High to Low
+        </option>
+        <option
+          value="product-name-ascending"
+        >
+          Product Name A - Z
+        </option>
+        <option
+          value="product-name-descending"
+        >
+          Product Name Z - A
+        </option>
+        <option
+          value="brand"
+        >
+          Brand
+        </option>
+        <option
+          value="most-popular"
+        >
+          Most Popular
+        </option>
+        <option
+          value="top-sellers"
+        >
+          Top Sellers
+        </option>
+        <option
+          value="Z Rule"
+        >
+          Our Picks
+        </option>
+      </select>
+      <span
+        class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-chevron-down"
+          fill="none"
+          height="16"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="16"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m6 9 6 6 6-6"
+          />
+        </svg>
+      </span>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`CategorySorting stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div
+  data-sorting-harness="true"
+>
+  <div
+    class="flex items-center space-x-2"
+  >
+    <label
+      class="text-sm text-muted-foreground"
+      for="«r3»"
+    >
+      Sort by:
+    </label>
+    <div
+      class="relative flex"
+    >
+      <select
+        class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center rounded-md border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8"
+        data-slot="select-native"
+        id="«r3»"
+      >
+        <option
+          value="best-matches"
+        >
+          Best Matches
+        </option>
+        <option
+          value="price-low-to-high"
+        >
+          Price Low To High
+        </option>
+        <option
+          value="price-high-to-low"
+        >
+          Price High to Low
+        </option>
+        <option
+          value="product-name-ascending"
+        >
+          Product Name A - Z
+        </option>
+        <option
+          value="product-name-descending"
+        >
+          Product Name Z - A
+        </option>
+        <option
+          value="brand"
+        >
+          Brand
+        </option>
+        <option
+          value="most-popular"
+        >
+          Most Popular
+        </option>
+        <option
+          value="top-sellers"
+        >
+          Top Sellers
+        </option>
+        <option
+          value="Z Rule"
+        >
+          Our Picks
+        </option>
+      </select>
+      <span
+        class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-chevron-down"
+          fill="none"
+          height="16"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="16"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m6 9 6 6 6-6"
+          />
+        </svg>
+      </span>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`CategorySorting stories snapshot > NoSortingOptions story renders and matches snapshot 1`] = `
 <div
   data-sorting-harness="true"
 />
+`;
+
+exports[`CategorySorting stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div
+  data-sorting-harness="true"
+>
+  <div
+    class="flex items-center space-x-2"
+  >
+    <label
+      class="text-sm text-muted-foreground"
+      for="«r4»"
+    >
+      Sort by:
+    </label>
+    <div
+      class="relative flex"
+    >
+      <select
+        class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center rounded-md border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8"
+        data-slot="select-native"
+        id="«r4»"
+      >
+        <option
+          value="best-matches"
+        >
+          Best Matches
+        </option>
+        <option
+          value="price-low-to-high"
+        >
+          Price Low To High
+        </option>
+        <option
+          value="price-high-to-low"
+        >
+          Price High to Low
+        </option>
+        <option
+          value="product-name-ascending"
+        >
+          Product Name A - Z
+        </option>
+        <option
+          value="product-name-descending"
+        >
+          Product Name Z - A
+        </option>
+        <option
+          value="brand"
+        >
+          Brand
+        </option>
+        <option
+          value="most-popular"
+        >
+          Most Popular
+        </option>
+        <option
+          value="top-sellers"
+        >
+          Top Sellers
+        </option>
+        <option
+          value="Z Rule"
+        >
+          Our Picks
+        </option>
+      </select>
+      <span
+        class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-chevron-down"
+          fill="none"
+          height="16"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="16"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m6 9 6 6 6-6"
+          />
+        </svg>
+      </span>
+    </div>
+  </div>
+</div>
 `;
 
 exports[`CategorySorting stories snapshot > WithSelectedOption story renders and matches snapshot 1`] = `

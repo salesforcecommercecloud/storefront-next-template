@@ -34,6 +34,40 @@ exports[`ImageGallery stories snapshot > Default story renders and matches snaps
 </div>
 `;
 
+exports[`ImageGallery stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="space-y-4"
+  >
+    <div
+      class="aspect-square overflow-hidden rounded-lg bg-muted"
+    >
+      <div
+        class="w-full h-full object-cover object-center"
+      >
+        <picture>
+          <source
+            media="(min-width: 640px)"
+            sizes="680px"
+            srcset="https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwbeefee44/images/large/P0048_001.jpg?sw=680&q=60 680w, https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwbeefee44/images/large/P0048_001.jpg?sw=1360&q=60 1360w"
+          />
+          <source
+            sizes="100vw"
+            srcset="https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwbeefee44/images/large/P0048_001.jpg?sw=640&q=60 640w, https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwbeefee44/images/large/P0048_001.jpg?sw=1280&q=60 1280w"
+          />
+          <img
+            alt="Laptop Briefcase with wheels (37L), , large"
+            fetchpriority="low"
+            loading="lazy"
+            src="https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwbeefee44/images/large/P0048_001.jpg"
+          />
+        </picture>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`ImageGallery stories snapshot > EagerLoading story renders and matches snapshot 1`] = `
 <div>
   <div
@@ -89,7 +123,75 @@ exports[`ImageGallery stories snapshot > Empty story renders and matches snapsho
 </div>
 `;
 
+exports[`ImageGallery stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="space-y-4"
+  >
+    <div
+      class="aspect-square overflow-hidden rounded-lg bg-muted"
+    >
+      <div
+        class="w-full h-full object-cover object-center"
+      >
+        <picture>
+          <source
+            media="(min-width: 640px)"
+            sizes="680px"
+            srcset="https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwbeefee44/images/large/P0048_001.jpg?sw=680&q=60 680w, https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwbeefee44/images/large/P0048_001.jpg?sw=1360&q=60 1360w"
+          />
+          <source
+            sizes="100vw"
+            srcset="https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwbeefee44/images/large/P0048_001.jpg?sw=640&q=60 640w, https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwbeefee44/images/large/P0048_001.jpg?sw=1280&q=60 1280w"
+          />
+          <img
+            alt="Laptop Briefcase with wheels (37L), , large"
+            fetchpriority="low"
+            loading="lazy"
+            src="https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwbeefee44/images/large/P0048_001.jpg"
+          />
+        </picture>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`ImageGallery stories snapshot > SingleImage story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="space-y-4"
+  >
+    <div
+      class="aspect-square overflow-hidden rounded-lg bg-muted"
+    >
+      <div
+        class="w-full h-full object-cover object-center"
+      >
+        <picture>
+          <source
+            media="(min-width: 640px)"
+            sizes="680px"
+            srcset="https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwbeefee44/images/large/P0048_001.jpg?sw=680&q=60 680w, https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwbeefee44/images/large/P0048_001.jpg?sw=1360&q=60 1360w"
+          />
+          <source
+            sizes="100vw"
+            srcset="https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwbeefee44/images/large/P0048_001.jpg?sw=640&q=60 640w, https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwbeefee44/images/large/P0048_001.jpg?sw=1280&q=60 1280w"
+          />
+          <img
+            alt="Laptop Briefcase with wheels (37L), , large"
+            fetchpriority="low"
+            loading="lazy"
+            src="https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwbeefee44/images/large/P0048_001.jpg"
+          />
+        </picture>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ImageGallery stories snapshot > Tablet story renders and matches snapshot 1`] = `
 <div>
   <div
     class="space-y-4"

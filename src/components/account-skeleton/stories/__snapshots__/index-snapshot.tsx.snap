@@ -244,7 +244,739 @@ exports[`AccountSkeleton stories snapshot > Default story renders and matches sn
 </div>
 `;
 
+exports[`AccountSkeleton stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="min-h-screen bg-background"
+  >
+    <div
+      class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+    >
+      <div
+        class="grid grid-cols-1 lg:grid-cols-4 gap-8"
+      >
+        <div
+          class="lg:hidden"
+        >
+          <div
+            class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-muted/30"
+            data-slot="card"
+          >
+            <div
+              class="p-4"
+              data-slot="card-content"
+            >
+              <div
+                class="animate-pulse rounded-md bg-muted h-6 w-24 mb-4"
+              />
+              <div
+                class="space-y-1"
+              >
+                <div
+                  class="w-full px-3 py-2 rounded-md flex items-center gap-2"
+                >
+                  <div
+                    class="animate-pulse bg-muted h-5 w-5 rounded"
+                  />
+                  <div
+                    class="animate-pulse rounded-md bg-muted h-4 flex-1"
+                  />
+                </div>
+                <div
+                  class="w-full px-3 py-2 rounded-md flex items-center gap-2"
+                >
+                  <div
+                    class="animate-pulse bg-muted h-5 w-5 rounded"
+                  />
+                  <div
+                    class="animate-pulse rounded-md bg-muted h-4 flex-1"
+                  />
+                </div>
+                <div
+                  class="w-full px-3 py-2 rounded-md flex items-center gap-2"
+                >
+                  <div
+                    class="animate-pulse bg-muted h-5 w-5 rounded"
+                  />
+                  <div
+                    class="animate-pulse rounded-md bg-muted h-4 flex-1"
+                  />
+                </div>
+                <div
+                  class="w-full px-3 py-2 rounded-md flex items-center gap-2"
+                >
+                  <div
+                    class="animate-pulse bg-muted h-5 w-5 rounded"
+                  />
+                  <div
+                    class="animate-pulse rounded-md bg-muted h-4 flex-1"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="hidden lg:block lg:col-span-1"
+        >
+          <div
+            class="space-y-4"
+          >
+            <div
+              class="animate-pulse rounded-md bg-muted h-6 w-24"
+            />
+            <div
+              class="space-y-1"
+            >
+              <div
+                class="w-full px-3 py-2 rounded-md flex items-center gap-2"
+              >
+                <div
+                  class="animate-pulse bg-muted h-5 w-5 rounded"
+                />
+                <div
+                  class="animate-pulse rounded-md bg-muted h-4 flex-1"
+                />
+              </div>
+              <div
+                class="w-full px-3 py-2 rounded-md flex items-center gap-2"
+              >
+                <div
+                  class="animate-pulse bg-muted h-5 w-5 rounded"
+                />
+                <div
+                  class="animate-pulse rounded-md bg-muted h-4 flex-1"
+                />
+              </div>
+              <div
+                class="w-full px-3 py-2 rounded-md flex items-center gap-2"
+              >
+                <div
+                  class="animate-pulse bg-muted h-5 w-5 rounded"
+                />
+                <div
+                  class="animate-pulse rounded-md bg-muted h-4 flex-1"
+                />
+              </div>
+              <div
+                class="w-full px-3 py-2 rounded-md flex items-center gap-2"
+              >
+                <div
+                  class="animate-pulse bg-muted h-5 w-5 rounded"
+                />
+                <div
+                  class="animate-pulse rounded-md bg-muted h-4 flex-1"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="lg:col-span-3"
+        >
+          <div
+            class="space-y-6"
+          >
+            <div>
+              <div
+                class="animate-pulse rounded-md bg-muted h-8 w-40"
+              />
+            </div>
+            <div
+              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+              data-slot="card"
+            >
+              <div
+                class="p-6"
+                data-slot="card-content"
+              >
+                <div
+                  class="mb-6"
+                >
+                  <div
+                    class="animate-pulse rounded-md bg-muted h-6 w-24"
+                  />
+                </div>
+                <div
+                  class="grid grid-cols-1 lg:grid-cols-3 gap-4"
+                >
+                  <div>
+                    <div
+                      class="mb-2"
+                    >
+                      <div
+                        class="animate-pulse rounded-md bg-muted h-4 w-20"
+                      />
+                    </div>
+                    <div>
+                      <div
+                        class="animate-pulse rounded-md bg-muted h-4 w-32"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <div
+                      class="mb-2"
+                    >
+                      <div
+                        class="animate-pulse rounded-md bg-muted h-4 w-20"
+                      />
+                    </div>
+                    <div>
+                      <div
+                        class="animate-pulse rounded-md bg-muted h-4 w-32"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <div
+                      class="mb-2"
+                    >
+                      <div
+                        class="animate-pulse rounded-md bg-muted h-4 w-20"
+                      />
+                    </div>
+                    <div>
+                      <div
+                        class="animate-pulse rounded-md bg-muted h-4 w-32"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+              data-slot="card"
+            >
+              <div
+                class="p-6"
+                data-slot="card-content"
+              >
+                <div
+                  class="mb-6"
+                >
+                  <div
+                    class="animate-pulse rounded-md bg-muted h-6 w-20"
+                  />
+                </div>
+                <div
+                  class="grid grid-cols-1 lg:grid-cols-3 gap-4"
+                >
+                  <div>
+                    <div
+                      class="mb-2"
+                    >
+                      <div
+                        class="animate-pulse rounded-md bg-muted h-4 w-16"
+                      />
+                    </div>
+                    <div>
+                      <div
+                        class="animate-pulse rounded-md bg-muted h-4 w-24"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`AccountSkeleton stories snapshot > LoadingState story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="min-h-screen bg-background"
+  >
+    <div
+      class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+    >
+      <div
+        class="grid grid-cols-1 lg:grid-cols-4 gap-8"
+      >
+        <div
+          class="lg:hidden"
+        >
+          <div
+            class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-muted/30"
+            data-slot="card"
+          >
+            <div
+              class="p-4"
+              data-slot="card-content"
+            >
+              <div
+                class="animate-pulse rounded-md bg-muted h-6 w-24 mb-4"
+              />
+              <div
+                class="space-y-1"
+              >
+                <div
+                  class="w-full px-3 py-2 rounded-md flex items-center gap-2"
+                >
+                  <div
+                    class="animate-pulse bg-muted h-5 w-5 rounded"
+                  />
+                  <div
+                    class="animate-pulse rounded-md bg-muted h-4 flex-1"
+                  />
+                </div>
+                <div
+                  class="w-full px-3 py-2 rounded-md flex items-center gap-2"
+                >
+                  <div
+                    class="animate-pulse bg-muted h-5 w-5 rounded"
+                  />
+                  <div
+                    class="animate-pulse rounded-md bg-muted h-4 flex-1"
+                  />
+                </div>
+                <div
+                  class="w-full px-3 py-2 rounded-md flex items-center gap-2"
+                >
+                  <div
+                    class="animate-pulse bg-muted h-5 w-5 rounded"
+                  />
+                  <div
+                    class="animate-pulse rounded-md bg-muted h-4 flex-1"
+                  />
+                </div>
+                <div
+                  class="w-full px-3 py-2 rounded-md flex items-center gap-2"
+                >
+                  <div
+                    class="animate-pulse bg-muted h-5 w-5 rounded"
+                  />
+                  <div
+                    class="animate-pulse rounded-md bg-muted h-4 flex-1"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="hidden lg:block lg:col-span-1"
+        >
+          <div
+            class="space-y-4"
+          >
+            <div
+              class="animate-pulse rounded-md bg-muted h-6 w-24"
+            />
+            <div
+              class="space-y-1"
+            >
+              <div
+                class="w-full px-3 py-2 rounded-md flex items-center gap-2"
+              >
+                <div
+                  class="animate-pulse bg-muted h-5 w-5 rounded"
+                />
+                <div
+                  class="animate-pulse rounded-md bg-muted h-4 flex-1"
+                />
+              </div>
+              <div
+                class="w-full px-3 py-2 rounded-md flex items-center gap-2"
+              >
+                <div
+                  class="animate-pulse bg-muted h-5 w-5 rounded"
+                />
+                <div
+                  class="animate-pulse rounded-md bg-muted h-4 flex-1"
+                />
+              </div>
+              <div
+                class="w-full px-3 py-2 rounded-md flex items-center gap-2"
+              >
+                <div
+                  class="animate-pulse bg-muted h-5 w-5 rounded"
+                />
+                <div
+                  class="animate-pulse rounded-md bg-muted h-4 flex-1"
+                />
+              </div>
+              <div
+                class="w-full px-3 py-2 rounded-md flex items-center gap-2"
+              >
+                <div
+                  class="animate-pulse bg-muted h-5 w-5 rounded"
+                />
+                <div
+                  class="animate-pulse rounded-md bg-muted h-4 flex-1"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="lg:col-span-3"
+        >
+          <div
+            class="space-y-6"
+          >
+            <div>
+              <div
+                class="animate-pulse rounded-md bg-muted h-8 w-40"
+              />
+            </div>
+            <div
+              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+              data-slot="card"
+            >
+              <div
+                class="p-6"
+                data-slot="card-content"
+              >
+                <div
+                  class="mb-6"
+                >
+                  <div
+                    class="animate-pulse rounded-md bg-muted h-6 w-24"
+                  />
+                </div>
+                <div
+                  class="grid grid-cols-1 lg:grid-cols-3 gap-4"
+                >
+                  <div>
+                    <div
+                      class="mb-2"
+                    >
+                      <div
+                        class="animate-pulse rounded-md bg-muted h-4 w-20"
+                      />
+                    </div>
+                    <div>
+                      <div
+                        class="animate-pulse rounded-md bg-muted h-4 w-32"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <div
+                      class="mb-2"
+                    >
+                      <div
+                        class="animate-pulse rounded-md bg-muted h-4 w-20"
+                      />
+                    </div>
+                    <div>
+                      <div
+                        class="animate-pulse rounded-md bg-muted h-4 w-32"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <div
+                      class="mb-2"
+                    >
+                      <div
+                        class="animate-pulse rounded-md bg-muted h-4 w-20"
+                      />
+                    </div>
+                    <div>
+                      <div
+                        class="animate-pulse rounded-md bg-muted h-4 w-32"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+              data-slot="card"
+            >
+              <div
+                class="p-6"
+                data-slot="card-content"
+              >
+                <div
+                  class="mb-6"
+                >
+                  <div
+                    class="animate-pulse rounded-md bg-muted h-6 w-20"
+                  />
+                </div>
+                <div
+                  class="grid grid-cols-1 lg:grid-cols-3 gap-4"
+                >
+                  <div>
+                    <div
+                      class="mb-2"
+                    >
+                      <div
+                        class="animate-pulse rounded-md bg-muted h-4 w-16"
+                      />
+                    </div>
+                    <div>
+                      <div
+                        class="animate-pulse rounded-md bg-muted h-4 w-24"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`AccountSkeleton stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="min-h-screen bg-background"
+  >
+    <div
+      class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+    >
+      <div
+        class="grid grid-cols-1 lg:grid-cols-4 gap-8"
+      >
+        <div
+          class="lg:hidden"
+        >
+          <div
+            class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-muted/30"
+            data-slot="card"
+          >
+            <div
+              class="p-4"
+              data-slot="card-content"
+            >
+              <div
+                class="animate-pulse rounded-md bg-muted h-6 w-24 mb-4"
+              />
+              <div
+                class="space-y-1"
+              >
+                <div
+                  class="w-full px-3 py-2 rounded-md flex items-center gap-2"
+                >
+                  <div
+                    class="animate-pulse bg-muted h-5 w-5 rounded"
+                  />
+                  <div
+                    class="animate-pulse rounded-md bg-muted h-4 flex-1"
+                  />
+                </div>
+                <div
+                  class="w-full px-3 py-2 rounded-md flex items-center gap-2"
+                >
+                  <div
+                    class="animate-pulse bg-muted h-5 w-5 rounded"
+                  />
+                  <div
+                    class="animate-pulse rounded-md bg-muted h-4 flex-1"
+                  />
+                </div>
+                <div
+                  class="w-full px-3 py-2 rounded-md flex items-center gap-2"
+                >
+                  <div
+                    class="animate-pulse bg-muted h-5 w-5 rounded"
+                  />
+                  <div
+                    class="animate-pulse rounded-md bg-muted h-4 flex-1"
+                  />
+                </div>
+                <div
+                  class="w-full px-3 py-2 rounded-md flex items-center gap-2"
+                >
+                  <div
+                    class="animate-pulse bg-muted h-5 w-5 rounded"
+                  />
+                  <div
+                    class="animate-pulse rounded-md bg-muted h-4 flex-1"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="hidden lg:block lg:col-span-1"
+        >
+          <div
+            class="space-y-4"
+          >
+            <div
+              class="animate-pulse rounded-md bg-muted h-6 w-24"
+            />
+            <div
+              class="space-y-1"
+            >
+              <div
+                class="w-full px-3 py-2 rounded-md flex items-center gap-2"
+              >
+                <div
+                  class="animate-pulse bg-muted h-5 w-5 rounded"
+                />
+                <div
+                  class="animate-pulse rounded-md bg-muted h-4 flex-1"
+                />
+              </div>
+              <div
+                class="w-full px-3 py-2 rounded-md flex items-center gap-2"
+              >
+                <div
+                  class="animate-pulse bg-muted h-5 w-5 rounded"
+                />
+                <div
+                  class="animate-pulse rounded-md bg-muted h-4 flex-1"
+                />
+              </div>
+              <div
+                class="w-full px-3 py-2 rounded-md flex items-center gap-2"
+              >
+                <div
+                  class="animate-pulse bg-muted h-5 w-5 rounded"
+                />
+                <div
+                  class="animate-pulse rounded-md bg-muted h-4 flex-1"
+                />
+              </div>
+              <div
+                class="w-full px-3 py-2 rounded-md flex items-center gap-2"
+              >
+                <div
+                  class="animate-pulse bg-muted h-5 w-5 rounded"
+                />
+                <div
+                  class="animate-pulse rounded-md bg-muted h-4 flex-1"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="lg:col-span-3"
+        >
+          <div
+            class="space-y-6"
+          >
+            <div>
+              <div
+                class="animate-pulse rounded-md bg-muted h-8 w-40"
+              />
+            </div>
+            <div
+              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+              data-slot="card"
+            >
+              <div
+                class="p-6"
+                data-slot="card-content"
+              >
+                <div
+                  class="mb-6"
+                >
+                  <div
+                    class="animate-pulse rounded-md bg-muted h-6 w-24"
+                  />
+                </div>
+                <div
+                  class="grid grid-cols-1 lg:grid-cols-3 gap-4"
+                >
+                  <div>
+                    <div
+                      class="mb-2"
+                    >
+                      <div
+                        class="animate-pulse rounded-md bg-muted h-4 w-20"
+                      />
+                    </div>
+                    <div>
+                      <div
+                        class="animate-pulse rounded-md bg-muted h-4 w-32"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <div
+                      class="mb-2"
+                    >
+                      <div
+                        class="animate-pulse rounded-md bg-muted h-4 w-20"
+                      />
+                    </div>
+                    <div>
+                      <div
+                        class="animate-pulse rounded-md bg-muted h-4 w-32"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <div
+                      class="mb-2"
+                    >
+                      <div
+                        class="animate-pulse rounded-md bg-muted h-4 w-20"
+                      />
+                    </div>
+                    <div>
+                      <div
+                        class="animate-pulse rounded-md bg-muted h-4 w-32"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+              data-slot="card"
+            >
+              <div
+                class="p-6"
+                data-slot="card-content"
+              >
+                <div
+                  class="mb-6"
+                >
+                  <div
+                    class="animate-pulse rounded-md bg-muted h-6 w-20"
+                  />
+                </div>
+                <div
+                  class="grid grid-cols-1 lg:grid-cols-3 gap-4"
+                >
+                  <div>
+                    <div
+                      class="mb-2"
+                    >
+                      <div
+                        class="animate-pulse rounded-md bg-muted h-4 w-16"
+                      />
+                    </div>
+                    <div>
+                      <div
+                        class="animate-pulse rounded-md bg-muted h-4 w-24"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`AccountSkeleton stories snapshot > Tablet story renders and matches snapshot 1`] = `
 <div>
   <div
     class="min-h-screen bg-background"

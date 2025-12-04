@@ -2,7 +2,13 @@
 
 exports[`NavigationMenu stories snapshot > Default story renders and matches snapshot 1`] = `null`;
 
+exports[`NavigationMenu stories snapshot > Desktop story renders and matches snapshot 1`] = `null`;
+
 exports[`NavigationMenu stories snapshot > Interactive story renders and matches snapshot 1`] = `null`;
+
+exports[`NavigationMenu stories snapshot > Mobile story renders and matches snapshot 1`] = `null`;
+
+exports[`NavigationMenu stories snapshot > Tablet story renders and matches snapshot 1`] = `null`;
 
 exports[`NavigationMenu stories snapshot > UsingWithCategoryNavigationMenu story renders and matches snapshot 1`] = `null`;
 

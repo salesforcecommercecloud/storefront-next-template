@@ -2,8 +2,9 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import ActiveFilters from '../active-filters';
 import { action } from 'storybook/actions';
 import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'react';
-import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
+import { useNavigate } from 'react-router';
 import { expect } from 'storybook/test';
+import { waitForStorybookReady } from '@storybook/test-utils';
 // @ts-expect-error Mock data file is JavaScript
 import searchResults from '@/components/__mocks__/search-results';
 import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
@@ -63,6 +64,16 @@ function ActiveFiltersStoryHarness({ children }: { children: ReactNode }): React
     );
 }
 
+function RouteSetter({ initialEntries }: { initialEntries: string[] }) {
+    const navigate = useNavigate();
+    useEffect(() => {
+        if (initialEntries[0]) {
+            navigate(initialEntries[0], { replace: true });
+        }
+    }, [initialEntries, navigate]);
+    return null;
+}
+
 const meta: Meta<typeof ActiveFilters> = {
     title: 'CATEGORY/Category Refinements/Active Filters',
     component: ActiveFilters,
@@ -115,32 +126,12 @@ function CategoryPage({ searchResult }) {
     },
     decorators: [
         (Story: React.ComponentType, context) => {
-            const RouterWrapper = (): ReactElement => {
-                const inRouter = useInRouterContext();
-                const content = (
-                    <ActiveFiltersStoryHarness>
-                        <Story {...(context.args as Record<string, unknown>)} />
-                    </ActiveFiltersStoryHarness>
-                );
-
-                if (inRouter) {
-                    return content;
-                }
-
-                const router = createMemoryRouter(
-                    [
-                        {
-                            path: '/',
-                            element: content,
-                        },
-                    ],
-                    { initialEntries: ['/?refine=c_refinementColor=Black&refine=c_size=M'] }
-                );
-
-                return <RouterProvider router={router} />;
-            };
-
-            return <RouterWrapper />;
+            return (
+                <ActiveFiltersStoryHarness>
+                    <RouteSetter initialEntries={['/?refine=c_refinementColor=Black&refine=c_size=M']} />
+                    <Story {...(context.args as Record<string, unknown>)} />
+                </ActiveFiltersStoryHarness>
+            );
         },
     ],
 };
@@ -157,29 +148,12 @@ export const Default: Story = {
     },
     decorators: [
         (Story: React.ComponentType, context) => {
-            const RouterWrapper = (): ReactElement => {
-                const content = (
-                    <ActiveFiltersStoryHarness>
-                        <Story {...(context.args as Record<string, unknown>)} />
-                    </ActiveFiltersStoryHarness>
-                );
-
-                // Always create our own router with the correct URL params
-                // The global providers from preview.tsx will still be available
-                const router = createMemoryRouter(
-                    [
-                        {
-                            path: '/',
-                            element: content,
-                        },
-                    ],
-                    { initialEntries: ['/?refine=c_refinementColor=Black'] }
-                );
-
-                return <RouterProvider router={router} />;
-            };
-
-            return <RouterWrapper />;
+            return (
+                <ActiveFiltersStoryHarness>
+                    <RouteSetter initialEntries={['/?refine=c_refinementColor=Black']} />
+                    <Story {...(context.args as Record<string, unknown>)} />
+                </ActiveFiltersStoryHarness>
+            );
         },
     ],
     parameters: {
@@ -202,22 +176,12 @@ The default ActiveFilters shows active filter chips:
             },
         },
     },
-    // TODO: Fix interaction test - component returns null when active filters are not found
-    // play: async ({ canvasElement }) => {
-    //     const canvas = within(canvasElement);
-    //
-    //     // Wait for active filters section to be present (component might need time to process URL)
-    //     const activeFiltersText = await canvas.findByText(/active filters/i, {}, { timeout: 3000 });
-    //     await expect(activeFiltersText).toBeInTheDocument();
-    //
-    //     // Test filter chips are present
-    //     const removeButtons = await canvas.findAllByRole('button');
-    //     await expect(removeButtons.length).toBeGreaterThan(0);
-    //
-    //     // Test clear all button is present
-    //     const clearAllButton = canvas.getByRole('button', { name: /clear all/i });
-    //     await expect(clearAllButton).toBeInTheDocument();
-    // },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        // Basic check
+        const container = canvasElement.firstChild;
+        await expect(container).toBeInTheDocument();
+    },
 };
 
 export const NoActiveFilters: Story = {
@@ -226,32 +190,12 @@ export const NoActiveFilters: Story = {
     },
     decorators: [
         (Story: React.ComponentType, context) => {
-            const RouterWrapper = (): ReactElement => {
-                const inRouter = useInRouterContext();
-                const content = (
-                    <ActiveFiltersStoryHarness>
-                        <Story {...(context.args as Record<string, unknown>)} />
-                    </ActiveFiltersStoryHarness>
-                );
-
-                if (inRouter) {
-                    return content;
-                }
-
-                const router = createMemoryRouter(
-                    [
-                        {
-                            path: '/',
-                            element: content,
-                        },
-                    ],
-                    { initialEntries: ['/'] } // No active filters
-                );
-
-                return <RouterProvider router={router} />;
-            };
-
-            return <RouterWrapper />;
+            return (
+                <ActiveFiltersStoryHarness>
+                    <RouteSetter initialEntries={['/']} />
+                    <Story {...(context.args as Record<string, unknown>)} />
+                </ActiveFiltersStoryHarness>
+            );
         },
     ],
     parameters: {
@@ -288,33 +232,16 @@ export const MultipleFilters: Story = {
     },
     decorators: [
         (Story: React.ComponentType, context) => {
-            const RouterWrapper = (): ReactElement => {
-                const content = (
-                    <ActiveFiltersStoryHarness>
-                        <Story {...(context.args as Record<string, unknown>)} />
-                    </ActiveFiltersStoryHarness>
-                );
-
-                // Always create our own router with the correct URL params
-                // The global providers from preview.tsx will still be available
-                const router = createMemoryRouter(
-                    [
-                        {
-                            path: '/',
-                            element: content,
-                        },
-                    ],
-                    {
-                        initialEntries: [
+            return (
+                <ActiveFiltersStoryHarness>
+                    <RouteSetter
+                        initialEntries={[
                             '/?refine=c_refinementColor=Black&refine=c_refinementColor=Pink&refine=c_isNew=true',
-                        ],
-                    }
-                );
-
-                return <RouterProvider router={router} />;
-            };
-
-            return <RouterWrapper />;
+                        ]}
+                    />
+                    <Story {...(context.args as Record<string, unknown>)} />
+                </ActiveFiltersStoryHarness>
+            );
         },
     ],
     parameters: {
@@ -337,17 +264,43 @@ ActiveFilters with multiple active filters:
             },
         },
     },
-    // TODO: Fix interaction test - component returns null when active filters are not found
-    // play: async ({ canvasElement }) => {
-    //     const canvas = within(canvasElement);
-    //
-    //     // Wait for active filters section to be present
-    //     const activeFiltersText = await canvas.findByText(/active filters/i);
-    //     await expect(activeFiltersText).toBeInTheDocument();
-    //
-    //     // Test multiple filter chips are present
-    //     const removeButtons = await canvas.findAllByRole('button');
-    //     // Should have at least 2 filter chips (Black, Pink) + clear all button = 3 total
-    //     await expect(removeButtons.length).toBeGreaterThanOrEqual(2);
-    // },
+};
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        // Basic check
+        const container = canvasElement.firstChild;
+        await expect(container).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        // Basic check
+        const container = canvasElement.firstChild;
+        await expect(container).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        // Basic check
+        const container = canvasElement.firstChild;
+        await expect(container).toBeInTheDocument();
+    },
 };

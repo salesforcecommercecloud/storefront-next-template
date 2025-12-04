@@ -1,11 +1,49 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`ToasterTheme stories snapshot > Default story renders and matches snapshot 1`] = `
-<section
-  aria-atomic="false"
-  aria-label="Notifications alt+T"
-  aria-live="polite"
-  aria-relevant="additions text"
-  tabindex="-1"
-/>
+<div>
+  <section
+    aria-atomic="false"
+    aria-label="Notifications alt+T"
+    aria-live="polite"
+    aria-relevant="additions text"
+    tabindex="-1"
+  />
+</div>
+`;
+
+exports[`ToasterTheme stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
+  <section
+    aria-atomic="false"
+    aria-label="Notifications alt+T"
+    aria-live="polite"
+    aria-relevant="additions text"
+    tabindex="-1"
+  />
+</div>
+`;
+
+exports[`ToasterTheme stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div>
+  <section
+    aria-atomic="false"
+    aria-label="Notifications alt+T"
+    aria-live="polite"
+    aria-relevant="additions text"
+    tabindex="-1"
+  />
+</div>
+`;
+
+exports[`ToasterTheme stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div>
+  <section
+    aria-atomic="false"
+    aria-label="Notifications alt+T"
+    aria-live="polite"
+    aria-relevant="additions text"
+    tabindex="-1"
+  />
+</div>
 `;

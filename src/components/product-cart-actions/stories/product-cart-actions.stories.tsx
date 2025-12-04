@@ -29,6 +29,8 @@ function ActionLogger({ children }: { children: ReactNode }): ReactElement {
 
             const interactiveElement = target.closest('button, a, [role="button"]');
             if (interactiveElement) {
+                event.preventDefault();
+                event.stopPropagation();
                 const label = interactiveElement.textContent?.trim().substring(0, 50) || 'unlabeled';
                 const tag = interactiveElement.tagName.toLowerCase();
 
@@ -117,5 +119,56 @@ export const EditMode: Story = {
         // Wishlist button should not be present in edit mode
         const wishlistButton = canvas.queryByRole('button', { name: /add to wishlist/i });
         await expect(wishlistButton).not.toBeInTheDocument();
+    },
+};
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const addToCartButton = canvas.getByRole('button', { name: /add to cart/i });
+        await expect(addToCartButton).toBeInTheDocument();
+        await expect(addToCartButton).toBeEnabled();
+
+        const wishlistButton = canvas.getByRole('button', { name: /add to wishlist/i });
+        await expect(wishlistButton).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const addToCartButton = canvas.getByRole('button', { name: /add to cart/i });
+        await expect(addToCartButton).toBeInTheDocument();
+        await expect(addToCartButton).toBeEnabled();
+
+        const wishlistButton = canvas.getByRole('button', { name: /add to wishlist/i });
+        await expect(wishlistButton).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const addToCartButton = canvas.getByRole('button', { name: /add to cart/i });
+        await expect(addToCartButton).toBeInTheDocument();
+        await expect(addToCartButton).toBeEnabled();
+
+        const wishlistButton = canvas.getByRole('button', { name: /add to wishlist/i });
+        await expect(wishlistButton).toBeInTheDocument();
     },
 };

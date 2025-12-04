@@ -76,3 +76,63 @@ export const Default: Story = {
         await expect(quantityElements.length).toBeGreaterThan(0);
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        // Check for bundled product names
+        const firstProduct = bundleProd.bundledProducts![0].product;
+        await expect(canvas.getByText(firstProduct.name || '')).toBeInTheDocument();
+        // Check for quantity - using regex to match "Quantity 1" or just checking if element with quantity text exists
+        // The rendered text might be "Quantity 1" (if t returns key or default) or localized
+        // If translations are missing it might render key
+        // We can look for the number 1 which is the quantity in mock
+        const quantityElements = canvas.getAllByText(/1/);
+        await expect(quantityElements.length).toBeGreaterThan(0);
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        // Check for bundled product names
+        const firstProduct = bundleProd.bundledProducts![0].product;
+        await expect(canvas.getByText(firstProduct.name || '')).toBeInTheDocument();
+        // Check for quantity - using regex to match "Quantity 1" or just checking if element with quantity text exists
+        // The rendered text might be "Quantity 1" (if t returns key or default) or localized
+        // If translations are missing it might render key
+        // We can look for the number 1 which is the quantity in mock
+        const quantityElements = canvas.getAllByText(/1/);
+        await expect(quantityElements.length).toBeGreaterThan(0);
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        // Check for bundled product names
+        const firstProduct = bundleProd.bundledProducts![0].product;
+        await expect(canvas.getByText(firstProduct.name || '')).toBeInTheDocument();
+        // Check for quantity - using regex to match "Quantity 1" or just checking if element with quantity text exists
+        // The rendered text might be "Quantity 1" (if t returns key or default) or localized
+        // If translations are missing it might render key
+        // We can look for the number 1 which is the quantity in mock
+        const quantityElements = canvas.getAllByText(/1/);
+        await expect(quantityElements.length).toBeGreaterThan(0);
+    },
+};

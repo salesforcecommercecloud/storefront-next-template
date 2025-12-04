@@ -3,6 +3,39 @@ import RecentSearches from '../recent-searches';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { action } from 'storybook/actions';
+import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
+
+function ActionLogger({ children }: { children: ReactNode }): ReactElement {
+    const containerRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        const root = containerRef.current;
+        if (!root) return;
+
+        const logClick = action('recent-search-click');
+        const logClear = action('clear-recent-searches-click');
+
+        const handleClick = (event: MouseEvent) => {
+            const target = event.target as HTMLElement | null;
+            if (!target) return;
+            const button = target.closest('button');
+            if (button && root.contains(button)) {
+                if (button.textContent?.toLowerCase().includes('clear')) {
+                    logClear({});
+                } else {
+                    logClick({ text: button.textContent?.trim() });
+                }
+            }
+        };
+
+        root.addEventListener('click', handleClick);
+        return () => {
+            root.removeEventListener('click', handleClick);
+        };
+    }, []);
+
+    return <div ref={containerRef}>{children}</div>;
+}
 
 const meta: Meta<typeof RecentSearches> = {
     title: 'Search/RecentSearches',
@@ -17,6 +50,13 @@ const meta: Meta<typeof RecentSearches> = {
         },
     },
     tags: ['autodocs', 'interaction'],
+    decorators: [
+        (Story) => (
+            <ActionLogger>
+                <Story />
+            </ActionLogger>
+        ),
+    ],
     argTypes: {
         recentSearches: {
             description: 'Array of recent search query strings',
@@ -119,5 +159,71 @@ export const ManySearches: Story = {
 
         const clearButton = buttons.find((btn) => btn.textContent?.toLowerCase().includes('clear'));
         await expect(clearButton).toBeInTheDocument();
+    },
+};
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const recentSearchesTitles = await canvas.findAllByText(/recent searches/i, {}, { timeout: 5000 });
+        await expect(recentSearchesTitles.length).toBeGreaterThan(0);
+
+        const buttons = canvas.getAllByRole('button');
+        const shoesButton = buttons.find((btn) => btn.textContent?.trim() === 'shoes');
+        await expect(shoesButton).toBeInTheDocument();
+
+        if (shoesButton) {
+            await userEvent.click(shoesButton);
+        }
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const recentSearchesTitles = await canvas.findAllByText(/recent searches/i, {}, { timeout: 5000 });
+        await expect(recentSearchesTitles.length).toBeGreaterThan(0);
+
+        const buttons = canvas.getAllByRole('button');
+        const shoesButton = buttons.find((btn) => btn.textContent?.trim() === 'shoes');
+        await expect(shoesButton).toBeInTheDocument();
+
+        if (shoesButton) {
+            await userEvent.click(shoesButton);
+        }
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const recentSearchesTitles = await canvas.findAllByText(/recent searches/i, {}, { timeout: 5000 });
+        await expect(recentSearchesTitles.length).toBeGreaterThan(0);
+
+        const buttons = canvas.getAllByRole('button');
+        const shoesButton = buttons.find((btn) => btn.textContent?.trim() === 'shoes');
+        await expect(shoesButton).toBeInTheDocument();
+
+        if (shoesButton) {
+            await userEvent.click(shoesButton);
+        }
     },
 };

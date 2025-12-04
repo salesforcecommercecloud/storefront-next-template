@@ -14,7 +14,35 @@ exports[`InventoryMessage stories snapshot > BackOrder story renders and matches
 </div>
 `;
 
+exports[`InventoryMessage stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="p-8"
+  >
+    <div
+      class="inline-flex items-center px-3 py-1.5 rounded-md border text-sm font-medium text-success bg-success/10 border-success/20"
+    >
+      In stock
+    </div>
+  </div>
+</div>
+`;
+
 exports[`InventoryMessage stories snapshot > InStock story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="p-8"
+  >
+    <div
+      class="inline-flex items-center px-3 py-1.5 rounded-md border text-sm font-medium text-success bg-success/10 border-success/20"
+    >
+      In stock
+    </div>
+  </div>
+</div>
+`;
+
+exports[`InventoryMessage stories snapshot > Mobile story renders and matches snapshot 1`] = `
 <div>
   <div
     class="p-8"
@@ -51,6 +79,20 @@ exports[`InventoryMessage stories snapshot > PreOrder story renders and matches 
       class="inline-flex items-center px-3 py-1.5 rounded-md border text-sm font-medium text-info bg-info/10 border-info/20"
     >
       Available for pre-order
+    </div>
+  </div>
+</div>
+`;
+
+exports[`InventoryMessage stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="p-8"
+  >
+    <div
+      class="inline-flex items-center px-3 py-1.5 rounded-md border text-sm font-medium text-success bg-success/10 border-success/20"
+    >
+      In stock
     </div>
   </div>
 </div>

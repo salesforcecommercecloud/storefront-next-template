@@ -481,6 +481,1449 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
 </div>
 `;
 
+exports[`ProductView stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="max-w-7xl mx-auto p-4"
+  >
+    <div
+      class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 space-y-6"
+    >
+      <div
+        class="order-1"
+      >
+        <div
+          class="space-y-4"
+        >
+          <div
+            class="aspect-square overflow-hidden rounded-lg bg-muted"
+          >
+            <div
+              class="w-full h-full object-cover object-center"
+            >
+              <picture>
+                <source
+                  media="(min-width: 640px)"
+                  sizes="680px"
+                  srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5f194ed3/images/large/TG508_206.jpg?sw=680&q=60 680w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5f194ed3/images/large/TG508_206.jpg?sw=1360&q=60 1360w"
+                />
+                <source
+                  sizes="100vw"
+                  srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5f194ed3/images/large/TG508_206.jpg?sw=640&q=60 640w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5f194ed3/images/large/TG508_206.jpg?sw=1280&q=60 1280w"
+                />
+                <img
+                  alt="Men's Classic Deer Gloves, , large"
+                  fetchpriority="low"
+                  loading="eager"
+                  src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5f194ed3/images/large/TG508_206.jpg"
+                />
+              </picture>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="order-2"
+      >
+        <div
+          class="hidden md:block"
+        >
+          <nav
+            aria-label="Breadcrumb"
+            class="mb-6"
+          >
+            <ol
+              class="flex flex-wrap items-center text-sm"
+            >
+              <li
+                class="flex items-center"
+              >
+                <a
+                  class="text-primary-600 hover:underline"
+                  href="/category/mens"
+                >
+                  Mens
+                </a>
+              </li>
+              <li
+                class="flex items-center"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-chevron-right mx-1 size-3"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="m9 18 6-6-6-6"
+                  />
+                </svg>
+                <a
+                  class="text-primary-600 hover:underline"
+                  href="/category/mens-clothing"
+                >
+                  Clothing
+                </a>
+              </li>
+            </ol>
+          </nav>
+        </div>
+        <div
+          class="grid gap-4"
+        >
+          <div
+            class="hidden md:block"
+          >
+            <h1
+              class="text-3xl font-bold text-foreground"
+            >
+              Men's Classic Deer Gloves
+            </h1>
+            <p
+              class="mt-2 text-lg text-muted-foreground"
+            >
+              These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
+            </p>
+          </div>
+          <div>
+            <div
+              class="items-center gap-2"
+            >
+              <span
+                aria-label="Current price: $99.99"
+                aria-live="polite"
+                class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
+              >
+                $99.99
+              </span>
+              <span
+                aria-atomic="true"
+                aria-live="polite"
+                class="sr-only"
+              >
+                Men's Classic Deer Gloves
+                Current price: $99.99
+              </span>
+               
+            </div>
+          </div>
+          <div
+            class="inline-flex items-center px-3 py-1.5 rounded-md border text-sm font-medium text-success bg-success/10 border-success/20"
+          >
+            In stock
+          </div>
+          <div
+            class="space-y-3"
+          >
+            <div
+              aria-label="Size"
+              class="inline-flex flex-col gap-3"
+              role="radiogroup"
+            >
+              <div
+                class="flex items-center gap-2 text-sm text-foreground"
+              >
+                <span
+                  class="font-semibold"
+                >
+                  Size
+                  :
+                </span>
+                <span>
+                  L
+                </span>
+              </div>
+              <div
+                class="inline-flex flex-wrap gap-2 focus:outline-none bg-gray-100 dark:bg-muted rounded-lg p-1"
+              >
+                <a
+                  aria-checked="false"
+                  aria-label="M"
+                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  href="/?accessorySize=050"
+                  position="relative"
+                  role="radio"
+                  tabindex="-1"
+                >
+                  <div
+                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                  >
+                    <span
+                      class="text-xs font-medium"
+                    >
+                      M
+                    </span>
+                  </div>
+                </a>
+                <a
+                  aria-checked="true"
+                  aria-label="L"
+                  class="text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-white dark:bg-muted border border-gray-300 dark:border-2 dark:border-input shadow-sm dark:shadow-none"
+                  href="/?accessorySize=060"
+                  position="relative"
+                  role="radio"
+                  tabindex="0"
+                >
+                  <div
+                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                  >
+                    <span
+                      class="text-xs font-medium"
+                    >
+                      L
+                    </span>
+                  </div>
+                </a>
+                <a
+                  aria-checked="false"
+                  aria-label="XL"
+                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  href="/?accessorySize=080"
+                  position="relative"
+                  role="radio"
+                  tabindex="-1"
+                >
+                  <div
+                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                  >
+                    <span
+                      class="text-xs font-medium"
+                    >
+                      XL
+                    </span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div
+            class="space-y-2"
+          >
+            <label
+              class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground"
+              data-slot="label"
+              for="quantity"
+            >
+              Quantity:
+            </label>
+            <div
+              class="flex items-center space-x-1"
+            >
+              <button
+                aria-label="Decrement Quantity for Men's Classic Deer Gloves"
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
+                data-slot="button"
+                data-testid="quantity-decrement"
+                disabled=""
+              >
+                <span
+                  class="text-sm"
+                >
+                  −
+                </span>
+              </button>
+              <input
+                aria-label="Quantity:"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                data-slot="input"
+                min="1"
+                step="1"
+                type="number"
+                value="1"
+              />
+              <button
+                aria-label="Increment Quantity for Men's Classic Deer Gloves"
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
+                data-slot="button"
+                data-testid="quantity-increment"
+              >
+                <span
+                  class="text-sm"
+                >
+                  +
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="mt-6"
+          >
+            <div
+              class="space-y-4"
+            >
+              <p
+                aria-level="3"
+                class="tracking-tight text-left text-lg font-semibold"
+                role="heading"
+              >
+                Delivery:
+              </p>
+              <div
+                class="space-y-3"
+              >
+                <div
+                  aria-required="false"
+                  class="grid gap-3 space-y-3"
+                  data-slot="radio-group"
+                  data-testid="delivery-option-select"
+                  dir="ltr"
+                  role="radiogroup"
+                  style="outline: none;"
+                  tabindex="0"
+                >
+                  <div
+                    class="flex items-center space-x-2"
+                  >
+                    <button
+                      aria-checked="true"
+                      class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                      data-radix-collection-item=""
+                      data-slot="radio-group-item"
+                      data-state="checked"
+                      id="delivery-option"
+                      role="radio"
+                      tabindex="-1"
+                      type="button"
+                      value="delivery"
+                    >
+                      <span
+                        class="relative flex items-center justify-center"
+                        data-slot="radio-group-indicator"
+                        data-state="checked"
+                      >
+                        <svg
+                          aria-hidden="true"
+                          class="lucide lucide-circle fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2"
+                          fill="none"
+                          height="24"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="10"
+                          />
+                        </svg>
+                      </span>
+                    </button>
+                    <label
+                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      data-slot="label"
+                      for="delivery-option"
+                    >
+                      Ship to Address
+                    </label>
+                  </div>
+                  <div
+                    class="flex items-center space-x-2"
+                  >
+                    <button
+                      aria-checked="false"
+                      class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                      data-radix-collection-item=""
+                      data-slot="radio-group-item"
+                      data-state="unchecked"
+                      id="pickup-option"
+                      role="radio"
+                      tabindex="-1"
+                      type="button"
+                      value="pickup"
+                    />
+                    <label
+                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      data-slot="label"
+                      for="pickup-option"
+                    >
+                      Pick Up in Store
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="text-sm text-muted-foreground"
+              >
+                <p>
+                  <strong>
+                    In stock at
+                  </strong>
+                   
+                  <button
+                    class="text-primary underline hover:text-primary/80 cursor-pointer"
+                    type="button"
+                  />
+                </p>
+              </div>
+            </div>
+          </div>
+          <div
+            class="flex flex-col gap-3"
+          >
+            <div
+              class="flex items-center gap-2 text-sm text-foreground"
+            >
+              <span
+                class="font-semibold"
+              >
+                Features
+                :
+              </span>
+            </div>
+            <ul
+              class="flex flex-col gap-1.5 list-none m-0 p-0 text-sm text-foreground"
+            >
+              <li
+                class="flex items-center gap-2"
+              >
+                <span
+                  aria-hidden="true"
+                  class="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-primary"
+                />
+                <span>
+                  Grain deerskin leather
+                </span>
+              </li>
+              <li
+                class="flex items-center gap-2"
+              >
+                <span
+                  aria-hidden="true"
+                  class="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-primary"
+                />
+                <span>
+                  Water resistant and durable
+                </span>
+              </li>
+              <li
+                class="flex items-center gap-2"
+              >
+                <span
+                  aria-hidden="true"
+                  class="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-primary"
+                />
+                <span>
+                  Outseam machine sewn
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div
+          class="mt-6"
+        >
+          <div
+            class="flex flex-col gap-3"
+          >
+            <button
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-10 rounded-md px-6 has-[>svg]:px-4 w-full"
+              data-slot="button"
+            >
+              Add to Cart
+            </button>
+            <div
+              class="grid grid-cols-2 gap-3"
+            >
+              <button
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4 w-full"
+                data-slot="button"
+              >
+                Add to Wishlist
+              </button>
+              <button
+                aria-expanded="false"
+                aria-haspopup="menu"
+                aria-label="Share"
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4 w-full"
+                data-slot="dropdown-menu-trigger"
+                data-state="closed"
+                id="radix-«ri»"
+                type="button"
+              >
+                Share
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ProductView stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="max-w-7xl mx-auto p-4"
+  >
+    <div
+      class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 space-y-6"
+    >
+      <div
+        class="order-1"
+      >
+        <div
+          class="space-y-4"
+        >
+          <div
+            class="aspect-square overflow-hidden rounded-lg bg-muted"
+          >
+            <div
+              class="w-full h-full object-cover object-center"
+            >
+              <picture>
+                <source
+                  media="(min-width: 640px)"
+                  sizes="680px"
+                  srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5f194ed3/images/large/TG508_206.jpg?sw=680&q=60 680w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5f194ed3/images/large/TG508_206.jpg?sw=1360&q=60 1360w"
+                />
+                <source
+                  sizes="100vw"
+                  srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5f194ed3/images/large/TG508_206.jpg?sw=640&q=60 640w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5f194ed3/images/large/TG508_206.jpg?sw=1280&q=60 1280w"
+                />
+                <img
+                  alt="Men's Classic Deer Gloves, , large"
+                  fetchpriority="low"
+                  loading="eager"
+                  src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5f194ed3/images/large/TG508_206.jpg"
+                />
+              </picture>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="order-2"
+      >
+        <div
+          class="hidden md:block"
+        >
+          <nav
+            aria-label="Breadcrumb"
+            class="mb-6"
+          >
+            <ol
+              class="flex flex-wrap items-center text-sm"
+            >
+              <li
+                class="flex items-center"
+              >
+                <a
+                  class="text-primary-600 hover:underline"
+                  href="/category/mens"
+                >
+                  Mens
+                </a>
+              </li>
+              <li
+                class="flex items-center"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-chevron-right mx-1 size-3"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="m9 18 6-6-6-6"
+                  />
+                </svg>
+                <a
+                  class="text-primary-600 hover:underline"
+                  href="/category/mens-clothing"
+                >
+                  Clothing
+                </a>
+              </li>
+            </ol>
+          </nav>
+        </div>
+        <div
+          class="grid gap-4"
+        >
+          <div
+            class="hidden md:block"
+          >
+            <h1
+              class="text-3xl font-bold text-foreground"
+            >
+              Men's Classic Deer Gloves
+            </h1>
+            <p
+              class="mt-2 text-lg text-muted-foreground"
+            >
+              These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
+            </p>
+          </div>
+          <div>
+            <div
+              class="items-center gap-2"
+            >
+              <span
+                aria-label="Current price: $99.99"
+                aria-live="polite"
+                class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
+              >
+                $99.99
+              </span>
+              <span
+                aria-atomic="true"
+                aria-live="polite"
+                class="sr-only"
+              >
+                Men's Classic Deer Gloves
+                Current price: $99.99
+              </span>
+               
+            </div>
+          </div>
+          <div
+            class="inline-flex items-center px-3 py-1.5 rounded-md border text-sm font-medium text-success bg-success/10 border-success/20"
+          >
+            In stock
+          </div>
+          <div
+            class="space-y-3"
+          >
+            <div
+              aria-label="Size"
+              class="inline-flex flex-col gap-3"
+              role="radiogroup"
+            >
+              <div
+                class="flex items-center gap-2 text-sm text-foreground"
+              >
+                <span
+                  class="font-semibold"
+                >
+                  Size
+                  :
+                </span>
+                <span>
+                  L
+                </span>
+              </div>
+              <div
+                class="inline-flex flex-wrap gap-2 focus:outline-none bg-gray-100 dark:bg-muted rounded-lg p-1"
+              >
+                <a
+                  aria-checked="false"
+                  aria-label="M"
+                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  href="/?accessorySize=050"
+                  position="relative"
+                  role="radio"
+                  tabindex="-1"
+                >
+                  <div
+                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                  >
+                    <span
+                      class="text-xs font-medium"
+                    >
+                      M
+                    </span>
+                  </div>
+                </a>
+                <a
+                  aria-checked="true"
+                  aria-label="L"
+                  class="text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-white dark:bg-muted border border-gray-300 dark:border-2 dark:border-input shadow-sm dark:shadow-none"
+                  href="/?accessorySize=060"
+                  position="relative"
+                  role="radio"
+                  tabindex="0"
+                >
+                  <div
+                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                  >
+                    <span
+                      class="text-xs font-medium"
+                    >
+                      L
+                    </span>
+                  </div>
+                </a>
+                <a
+                  aria-checked="false"
+                  aria-label="XL"
+                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  href="/?accessorySize=080"
+                  position="relative"
+                  role="radio"
+                  tabindex="-1"
+                >
+                  <div
+                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                  >
+                    <span
+                      class="text-xs font-medium"
+                    >
+                      XL
+                    </span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div
+            class="space-y-2"
+          >
+            <label
+              class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground"
+              data-slot="label"
+              for="quantity"
+            >
+              Quantity:
+            </label>
+            <div
+              class="flex items-center space-x-1"
+            >
+              <button
+                aria-label="Decrement Quantity for Men's Classic Deer Gloves"
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
+                data-slot="button"
+                data-testid="quantity-decrement"
+                disabled=""
+              >
+                <span
+                  class="text-sm"
+                >
+                  −
+                </span>
+              </button>
+              <input
+                aria-label="Quantity:"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                data-slot="input"
+                min="1"
+                step="1"
+                type="number"
+                value="1"
+              />
+              <button
+                aria-label="Increment Quantity for Men's Classic Deer Gloves"
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
+                data-slot="button"
+                data-testid="quantity-increment"
+              >
+                <span
+                  class="text-sm"
+                >
+                  +
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="mt-6"
+          >
+            <div
+              class="space-y-4"
+            >
+              <p
+                aria-level="3"
+                class="tracking-tight text-left text-lg font-semibold"
+                role="heading"
+              >
+                Delivery:
+              </p>
+              <div
+                class="space-y-3"
+              >
+                <div
+                  aria-required="false"
+                  class="grid gap-3 space-y-3"
+                  data-slot="radio-group"
+                  data-testid="delivery-option-select"
+                  dir="ltr"
+                  role="radiogroup"
+                  style="outline: none;"
+                  tabindex="0"
+                >
+                  <div
+                    class="flex items-center space-x-2"
+                  >
+                    <button
+                      aria-checked="true"
+                      class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                      data-radix-collection-item=""
+                      data-slot="radio-group-item"
+                      data-state="checked"
+                      id="delivery-option"
+                      role="radio"
+                      tabindex="-1"
+                      type="button"
+                      value="delivery"
+                    >
+                      <span
+                        class="relative flex items-center justify-center"
+                        data-slot="radio-group-indicator"
+                        data-state="checked"
+                      >
+                        <svg
+                          aria-hidden="true"
+                          class="lucide lucide-circle fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2"
+                          fill="none"
+                          height="24"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="10"
+                          />
+                        </svg>
+                      </span>
+                    </button>
+                    <label
+                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      data-slot="label"
+                      for="delivery-option"
+                    >
+                      Ship to Address
+                    </label>
+                  </div>
+                  <div
+                    class="flex items-center space-x-2"
+                  >
+                    <button
+                      aria-checked="false"
+                      class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                      data-radix-collection-item=""
+                      data-slot="radio-group-item"
+                      data-state="unchecked"
+                      id="pickup-option"
+                      role="radio"
+                      tabindex="-1"
+                      type="button"
+                      value="pickup"
+                    />
+                    <label
+                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      data-slot="label"
+                      for="pickup-option"
+                    >
+                      Pick Up in Store
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="text-sm text-muted-foreground"
+              >
+                <p>
+                  <strong>
+                    In stock at
+                  </strong>
+                   
+                  <button
+                    class="text-primary underline hover:text-primary/80 cursor-pointer"
+                    type="button"
+                  />
+                </p>
+              </div>
+            </div>
+          </div>
+          <div
+            class="flex flex-col gap-3"
+          >
+            <div
+              class="flex items-center gap-2 text-sm text-foreground"
+            >
+              <span
+                class="font-semibold"
+              >
+                Features
+                :
+              </span>
+            </div>
+            <ul
+              class="flex flex-col gap-1.5 list-none m-0 p-0 text-sm text-foreground"
+            >
+              <li
+                class="flex items-center gap-2"
+              >
+                <span
+                  aria-hidden="true"
+                  class="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-primary"
+                />
+                <span>
+                  Grain deerskin leather
+                </span>
+              </li>
+              <li
+                class="flex items-center gap-2"
+              >
+                <span
+                  aria-hidden="true"
+                  class="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-primary"
+                />
+                <span>
+                  Water resistant and durable
+                </span>
+              </li>
+              <li
+                class="flex items-center gap-2"
+              >
+                <span
+                  aria-hidden="true"
+                  class="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-primary"
+                />
+                <span>
+                  Outseam machine sewn
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div
+          class="mt-6"
+        >
+          <div
+            class="flex flex-col gap-3"
+          >
+            <button
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-10 rounded-md px-6 has-[>svg]:px-4 w-full"
+              data-slot="button"
+            >
+              Add to Cart
+            </button>
+            <div
+              class="grid grid-cols-2 gap-3"
+            >
+              <button
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4 w-full"
+                data-slot="button"
+              >
+                Add to Wishlist
+              </button>
+              <button
+                aria-expanded="false"
+                aria-haspopup="menu"
+                aria-label="Share"
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4 w-full"
+                data-slot="dropdown-menu-trigger"
+                data-state="closed"
+                id="radix-«ra»"
+                type="button"
+              >
+                Share
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ProductView stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="max-w-7xl mx-auto p-4"
+  >
+    <div
+      class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 space-y-6"
+    >
+      <div
+        class="order-1"
+      >
+        <div
+          class="space-y-4"
+        >
+          <div
+            class="aspect-square overflow-hidden rounded-lg bg-muted"
+          >
+            <div
+              class="w-full h-full object-cover object-center"
+            >
+              <picture>
+                <source
+                  media="(min-width: 640px)"
+                  sizes="680px"
+                  srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5f194ed3/images/large/TG508_206.jpg?sw=680&q=60 680w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5f194ed3/images/large/TG508_206.jpg?sw=1360&q=60 1360w"
+                />
+                <source
+                  sizes="100vw"
+                  srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5f194ed3/images/large/TG508_206.jpg?sw=640&q=60 640w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5f194ed3/images/large/TG508_206.jpg?sw=1280&q=60 1280w"
+                />
+                <img
+                  alt="Men's Classic Deer Gloves, , large"
+                  fetchpriority="low"
+                  loading="eager"
+                  src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5f194ed3/images/large/TG508_206.jpg"
+                />
+              </picture>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="order-2"
+      >
+        <div
+          class="hidden md:block"
+        >
+          <nav
+            aria-label="Breadcrumb"
+            class="mb-6"
+          >
+            <ol
+              class="flex flex-wrap items-center text-sm"
+            >
+              <li
+                class="flex items-center"
+              >
+                <a
+                  class="text-primary-600 hover:underline"
+                  href="/category/mens"
+                >
+                  Mens
+                </a>
+              </li>
+              <li
+                class="flex items-center"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-chevron-right mx-1 size-3"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="m9 18 6-6-6-6"
+                  />
+                </svg>
+                <a
+                  class="text-primary-600 hover:underline"
+                  href="/category/mens-clothing"
+                >
+                  Clothing
+                </a>
+              </li>
+            </ol>
+          </nav>
+        </div>
+        <div
+          class="grid gap-4"
+        >
+          <div
+            class="hidden md:block"
+          >
+            <h1
+              class="text-3xl font-bold text-foreground"
+            >
+              Men's Classic Deer Gloves
+            </h1>
+            <p
+              class="mt-2 text-lg text-muted-foreground"
+            >
+              These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
+            </p>
+          </div>
+          <div>
+            <div
+              class="items-center gap-2"
+            >
+              <span
+                aria-label="Current price: $99.99"
+                aria-live="polite"
+                class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
+              >
+                $99.99
+              </span>
+              <span
+                aria-atomic="true"
+                aria-live="polite"
+                class="sr-only"
+              >
+                Men's Classic Deer Gloves
+                Current price: $99.99
+              </span>
+               
+            </div>
+          </div>
+          <div
+            class="inline-flex items-center px-3 py-1.5 rounded-md border text-sm font-medium text-success bg-success/10 border-success/20"
+          >
+            In stock
+          </div>
+          <div
+            class="space-y-3"
+          >
+            <div
+              aria-label="Size"
+              class="inline-flex flex-col gap-3"
+              role="radiogroup"
+            >
+              <div
+                class="flex items-center gap-2 text-sm text-foreground"
+              >
+                <span
+                  class="font-semibold"
+                >
+                  Size
+                  :
+                </span>
+                <span>
+                  L
+                </span>
+              </div>
+              <div
+                class="inline-flex flex-wrap gap-2 focus:outline-none bg-gray-100 dark:bg-muted rounded-lg p-1"
+              >
+                <a
+                  aria-checked="false"
+                  aria-label="M"
+                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  href="/?accessorySize=050"
+                  position="relative"
+                  role="radio"
+                  tabindex="-1"
+                >
+                  <div
+                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                  >
+                    <span
+                      class="text-xs font-medium"
+                    >
+                      M
+                    </span>
+                  </div>
+                </a>
+                <a
+                  aria-checked="true"
+                  aria-label="L"
+                  class="text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-white dark:bg-muted border border-gray-300 dark:border-2 dark:border-input shadow-sm dark:shadow-none"
+                  href="/?accessorySize=060"
+                  position="relative"
+                  role="radio"
+                  tabindex="0"
+                >
+                  <div
+                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                  >
+                    <span
+                      class="text-xs font-medium"
+                    >
+                      L
+                    </span>
+                  </div>
+                </a>
+                <a
+                  aria-checked="false"
+                  aria-label="XL"
+                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  href="/?accessorySize=080"
+                  position="relative"
+                  role="radio"
+                  tabindex="-1"
+                >
+                  <div
+                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                  >
+                    <span
+                      class="text-xs font-medium"
+                    >
+                      XL
+                    </span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div
+            class="space-y-2"
+          >
+            <label
+              class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground"
+              data-slot="label"
+              for="quantity"
+            >
+              Quantity:
+            </label>
+            <div
+              class="flex items-center space-x-1"
+            >
+              <button
+                aria-label="Decrement Quantity for Men's Classic Deer Gloves"
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
+                data-slot="button"
+                data-testid="quantity-decrement"
+                disabled=""
+              >
+                <span
+                  class="text-sm"
+                >
+                  −
+                </span>
+              </button>
+              <input
+                aria-label="Quantity:"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                data-slot="input"
+                min="1"
+                step="1"
+                type="number"
+                value="1"
+              />
+              <button
+                aria-label="Increment Quantity for Men's Classic Deer Gloves"
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
+                data-slot="button"
+                data-testid="quantity-increment"
+              >
+                <span
+                  class="text-sm"
+                >
+                  +
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="mt-6"
+          >
+            <div
+              class="space-y-4"
+            >
+              <p
+                aria-level="3"
+                class="tracking-tight text-left text-lg font-semibold"
+                role="heading"
+              >
+                Delivery:
+              </p>
+              <div
+                class="space-y-3"
+              >
+                <div
+                  aria-required="false"
+                  class="grid gap-3 space-y-3"
+                  data-slot="radio-group"
+                  data-testid="delivery-option-select"
+                  dir="ltr"
+                  role="radiogroup"
+                  style="outline: none;"
+                  tabindex="0"
+                >
+                  <div
+                    class="flex items-center space-x-2"
+                  >
+                    <button
+                      aria-checked="true"
+                      class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                      data-radix-collection-item=""
+                      data-slot="radio-group-item"
+                      data-state="checked"
+                      id="delivery-option"
+                      role="radio"
+                      tabindex="-1"
+                      type="button"
+                      value="delivery"
+                    >
+                      <span
+                        class="relative flex items-center justify-center"
+                        data-slot="radio-group-indicator"
+                        data-state="checked"
+                      >
+                        <svg
+                          aria-hidden="true"
+                          class="lucide lucide-circle fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2"
+                          fill="none"
+                          height="24"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="10"
+                          />
+                        </svg>
+                      </span>
+                    </button>
+                    <label
+                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      data-slot="label"
+                      for="delivery-option"
+                    >
+                      Ship to Address
+                    </label>
+                  </div>
+                  <div
+                    class="flex items-center space-x-2"
+                  >
+                    <button
+                      aria-checked="false"
+                      class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                      data-radix-collection-item=""
+                      data-slot="radio-group-item"
+                      data-state="unchecked"
+                      id="pickup-option"
+                      role="radio"
+                      tabindex="-1"
+                      type="button"
+                      value="pickup"
+                    />
+                    <label
+                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      data-slot="label"
+                      for="pickup-option"
+                    >
+                      Pick Up in Store
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="text-sm text-muted-foreground"
+              >
+                <p>
+                  <strong>
+                    In stock at
+                  </strong>
+                   
+                  <button
+                    class="text-primary underline hover:text-primary/80 cursor-pointer"
+                    type="button"
+                  />
+                </p>
+              </div>
+            </div>
+          </div>
+          <div
+            class="flex flex-col gap-3"
+          >
+            <div
+              class="flex items-center gap-2 text-sm text-foreground"
+            >
+              <span
+                class="font-semibold"
+              >
+                Features
+                :
+              </span>
+            </div>
+            <ul
+              class="flex flex-col gap-1.5 list-none m-0 p-0 text-sm text-foreground"
+            >
+              <li
+                class="flex items-center gap-2"
+              >
+                <span
+                  aria-hidden="true"
+                  class="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-primary"
+                />
+                <span>
+                  Grain deerskin leather
+                </span>
+              </li>
+              <li
+                class="flex items-center gap-2"
+              >
+                <span
+                  aria-hidden="true"
+                  class="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-primary"
+                />
+                <span>
+                  Water resistant and durable
+                </span>
+              </li>
+              <li
+                class="flex items-center gap-2"
+              >
+                <span
+                  aria-hidden="true"
+                  class="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-primary"
+                />
+                <span>
+                  Outseam machine sewn
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div
+          class="mt-6"
+        >
+          <div
+            class="flex flex-col gap-3"
+          >
+            <button
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-10 rounded-md px-6 has-[>svg]:px-4 w-full"
+              data-slot="button"
+            >
+              Add to Cart
+            </button>
+            <div
+              class="grid grid-cols-2 gap-3"
+            >
+              <button
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4 w-full"
+                data-slot="button"
+              >
+                Add to Wishlist
+              </button>
+              <button
+                aria-expanded="false"
+                aria-haspopup="menu"
+                aria-label="Share"
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4 w-full"
+                data-slot="dropdown-menu-trigger"
+                data-state="closed"
+                id="radix-«re»"
+                type="button"
+              >
+                Share
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and matches snapshot 1`] = `
 <div>
   <div

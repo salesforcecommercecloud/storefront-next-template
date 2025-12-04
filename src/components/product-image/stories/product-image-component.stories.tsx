@@ -15,6 +15,9 @@ function ActionLogger({ children }: { children: ReactNode }): ReactElement {
         const logAction = action('interaction');
 
         const handleClick = (event: Event) => {
+            event.preventDefault();
+            event.stopPropagation();
+
             const target = event.target as HTMLElement | null;
             if (!target) return;
 
@@ -95,5 +98,47 @@ export const ErrorFallback: Story = {
 
         // Note: In real browser test, we might need to wait.
         // For visual test we can check if the fallback div is present.
+    },
+};
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const img = canvas.getByRole('img');
+        await expect(img).toBeInTheDocument();
+        await expect(img).toHaveAttribute('src');
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const img = canvas.getByRole('img');
+        await expect(img).toBeInTheDocument();
+        await expect(img).toHaveAttribute('src');
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const img = canvas.getByRole('img');
+        await expect(img).toBeInTheDocument();
+        await expect(img).toHaveAttribute('src');
     },
 };

@@ -24,6 +24,8 @@ function ActionLogger({ children }: { children: ReactNode }): ReactElement {
 
             const interactiveElement = target.closest('button, a, [role="button"]');
             if (interactiveElement) {
+                event.preventDefault();
+                event.stopPropagation();
                 const label = interactiveElement.textContent?.trim().substring(0, 50) || 'unlabeled';
                 const tag = interactiveElement.tagName.toLowerCase();
 
@@ -122,5 +124,50 @@ export const WithSuspenseWrapper: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
         await expect(canvas.getByText('Suspense Wrapper')).toBeInTheDocument();
+    },
+};
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText('Featured Products')).toBeInTheDocument();
+        // Use getAllByRole('link') to find product tiles
+        const items = canvas.getAllByRole('link');
+        await expect(items.length).toBeGreaterThan(0);
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText('Featured Products')).toBeInTheDocument();
+        // Use getAllByRole('link') to find product tiles
+        const items = canvas.getAllByRole('link');
+        await expect(items.length).toBeGreaterThan(0);
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText('Featured Products')).toBeInTheDocument();
+        // Use getAllByRole('link') to find product tiles
+        const items = canvas.getAllByRole('link');
+        await expect(items.length).toBeGreaterThan(0);
     },
 };

@@ -161,3 +161,51 @@ Promo popover with custom formatted content.
         await expect(infoButton).toBeInTheDocument();
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Check for info button
+        const infoButton = await canvas.findByRole('button', { name: /info/i }, { timeout: 5000 });
+        await expect(infoButton).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Check for info button
+        const infoButton = await canvas.findByRole('button', { name: /info/i }, { timeout: 5000 });
+        await expect(infoButton).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Check for info button
+        const infoButton = await canvas.findByRole('button', { name: /info/i }, { timeout: 5000 });
+        await expect(infoButton).toBeInTheDocument();
+    },
+};

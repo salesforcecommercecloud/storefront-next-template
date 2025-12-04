@@ -168,3 +168,51 @@ Component wrapped with Suspense that resolves a promise and passes data as prop.
         await expect(canvasElement.firstChild).toBeInTheDocument();
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Check for loaded content
+        const content = await canvas.findByText(/default component/i, {}, { timeout: 5000 });
+        await expect(content).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Check for loaded content
+        const content = await canvas.findByText(/default component/i, {}, { timeout: 5000 });
+        await expect(content).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Check for loaded content
+        const content = await canvas.findByText(/default component/i, {}, { timeout: 5000 });
+        await expect(content).toBeInTheDocument();
+    },
+};

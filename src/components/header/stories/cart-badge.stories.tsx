@@ -189,3 +189,75 @@ Interactive cart badge for testing user interactions.
         }
     },
 };
+
+export const Mobile: Story = {
+    ...Empty,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for cart button
+        const cartButton = await canvas.findByRole('button', { name: /cart/i }, { timeout: 5000 });
+        await expect(cartButton).toBeInTheDocument();
+
+        // Check for shopping cart icon
+        const cartIcon = await canvas.findByTestId('shopping-cart-icon', {}, { timeout: 5000 });
+        await expect(cartIcon).toBeInTheDocument();
+
+        // Check for badge showing 0
+        const badge = await canvas.findByTestId('shopping-cart-badge', {}, { timeout: 5000 });
+        await expect(badge).toBeInTheDocument();
+        await expect(badge).toHaveTextContent('0');
+    },
+};
+
+export const Tablet: Story = {
+    ...Empty,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for cart button
+        const cartButton = await canvas.findByRole('button', { name: /cart/i }, { timeout: 5000 });
+        await expect(cartButton).toBeInTheDocument();
+
+        // Check for shopping cart icon
+        const cartIcon = await canvas.findByTestId('shopping-cart-icon', {}, { timeout: 5000 });
+        await expect(cartIcon).toBeInTheDocument();
+
+        // Check for badge showing 0
+        const badge = await canvas.findByTestId('shopping-cart-badge', {}, { timeout: 5000 });
+        await expect(badge).toBeInTheDocument();
+        await expect(badge).toHaveTextContent('0');
+    },
+};
+
+export const Desktop: Story = {
+    ...Empty,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for cart button
+        const cartButton = await canvas.findByRole('button', { name: /cart/i }, { timeout: 5000 });
+        await expect(cartButton).toBeInTheDocument();
+
+        // Check for shopping cart icon
+        const cartIcon = await canvas.findByTestId('shopping-cart-icon', {}, { timeout: 5000 });
+        await expect(cartIcon).toBeInTheDocument();
+
+        // Check for badge showing 0
+        const badge = await canvas.findByTestId('shopping-cart-badge', {}, { timeout: 5000 });
+        await expect(badge).toBeInTheDocument();
+        await expect(badge).toHaveTextContent('0');
+    },
+};

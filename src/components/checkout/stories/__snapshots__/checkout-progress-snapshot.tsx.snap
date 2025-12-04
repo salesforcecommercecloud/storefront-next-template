@@ -333,6 +333,672 @@ exports[`CheckoutProgress stories snapshot > ContactInfo story renders and match
 </div>
 `;
 
+exports[`CheckoutProgress stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div
+  class="w-full max-w-4xl mx-auto p-6"
+  data-progress-harness="true"
+>
+  <div
+    class="w-full"
+  >
+    <div
+      class="block md:hidden"
+    >
+      <div
+        class="flex items-center justify-between mb-4"
+      >
+        <div
+          class="flex items-center flex-1"
+        >
+          <div
+            class="flex flex-col items-center"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-primary/90 text-primary-foreground animate-pulse"
+            >
+              <span>
+                1
+              </span>
+            </div>
+            <div
+              class="text-xs text-center mt-1 max-w-16"
+            >
+              <div
+                class="font-medium truncate text-primary"
+              >
+                Contact Info
+              </div>
+            </div>
+          </div>
+          <div
+            class="flex-1 mx-2"
+          >
+            <div
+              class="h-0.5 transition-colors bg-border"
+            />
+          </div>
+        </div>
+        <div
+          class="flex items-center flex-1"
+        >
+          <div
+            class="flex flex-col items-center"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-muted text-muted-foreground"
+            >
+              <span>
+                2
+              </span>
+            </div>
+            <div
+              class="text-xs text-center mt-1 max-w-16"
+            >
+              <div
+                class="font-medium truncate text-muted-foreground"
+              >
+                Shipping
+              </div>
+            </div>
+          </div>
+          <div
+            class="flex-1 mx-2"
+          >
+            <div
+              class="h-0.5 transition-colors bg-border"
+            />
+          </div>
+        </div>
+        <div
+          class="flex items-center flex-1"
+        >
+          <div
+            class="flex flex-col items-center"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-muted text-muted-foreground"
+            >
+              <span>
+                3
+              </span>
+            </div>
+            <div
+              class="text-xs text-center mt-1 max-w-16"
+            >
+              <div
+                class="font-medium truncate text-muted-foreground"
+              >
+                Delivery
+              </div>
+            </div>
+          </div>
+          <div
+            class="flex-1 mx-2"
+          >
+            <div
+              class="h-0.5 transition-colors bg-border"
+            />
+          </div>
+        </div>
+        <div
+          class="flex items-center flex-1"
+        >
+          <div
+            class="flex flex-col items-center"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-muted text-muted-foreground"
+            >
+              <span>
+                4
+              </span>
+            </div>
+            <div
+              class="text-xs text-center mt-1 max-w-16"
+            >
+              <div
+                class="font-medium truncate text-muted-foreground"
+              >
+                Payment
+              </div>
+            </div>
+          </div>
+          <div
+            class="flex-1 mx-2"
+          >
+            <div
+              class="h-0.5 transition-colors bg-border"
+            />
+          </div>
+        </div>
+        <div
+          class="flex items-center flex-1"
+        >
+          <div
+            class="flex flex-col items-center"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-muted text-muted-foreground"
+            >
+              <span>
+                5
+              </span>
+            </div>
+            <div
+              class="text-xs text-center mt-1 max-w-16"
+            >
+              <div
+                class="font-medium truncate text-muted-foreground"
+              >
+                Review
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="hidden md:block"
+    >
+      <div
+        class="space-y-6"
+      >
+        <div
+          class="relative flex items-start"
+        >
+          <div
+            class="absolute left-4 top-10 w-0.5 h-6 bg-border"
+          />
+          <div
+            class="mr-4"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-primary/90 text-primary-foreground animate-pulse"
+            >
+              <span>
+                1
+              </span>
+            </div>
+          </div>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <div
+              class="text-sm font-medium text-primary"
+            >
+              Contact Info
+            </div>
+            <div
+              class="text-xs mt-1 text-primary"
+            >
+              Email address
+            </div>
+          </div>
+        </div>
+        <div
+          class="relative flex items-start"
+        >
+          <div
+            class="absolute left-4 top-10 w-0.5 h-6 bg-border"
+          />
+          <div
+            class="mr-4"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-muted text-muted-foreground"
+            >
+              <span>
+                2
+              </span>
+            </div>
+          </div>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <div
+              class="text-sm font-medium text-foreground"
+            >
+              Shipping
+            </div>
+            <div
+              class="text-xs mt-1 text-muted-foreground"
+            >
+              Delivery address
+            </div>
+          </div>
+        </div>
+        <div
+          class="relative flex items-start"
+        >
+          <div
+            class="absolute left-4 top-10 w-0.5 h-6 bg-border"
+          />
+          <div
+            class="mr-4"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-muted text-muted-foreground"
+            >
+              <span>
+                3
+              </span>
+            </div>
+          </div>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <div
+              class="text-sm font-medium text-foreground"
+            >
+              Delivery
+            </div>
+            <div
+              class="text-xs mt-1 text-muted-foreground"
+            >
+              Shipping method
+            </div>
+          </div>
+        </div>
+        <div
+          class="relative flex items-start"
+        >
+          <div
+            class="absolute left-4 top-10 w-0.5 h-6 bg-border"
+          />
+          <div
+            class="mr-4"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-muted text-muted-foreground"
+            >
+              <span>
+                4
+              </span>
+            </div>
+          </div>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <div
+              class="text-sm font-medium text-foreground"
+            >
+              Payment
+            </div>
+            <div
+              class="text-xs mt-1 text-muted-foreground"
+            >
+              Payment method
+            </div>
+          </div>
+        </div>
+        <div
+          class="relative flex items-start"
+        >
+          <div
+            class="mr-4"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-muted text-muted-foreground"
+            >
+              <span>
+                5
+              </span>
+            </div>
+          </div>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <div
+              class="text-sm font-medium text-foreground"
+            >
+              Review
+            </div>
+            <div
+              class="text-xs mt-1 text-muted-foreground"
+            >
+              Confirm order
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`CheckoutProgress stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div
+  class="w-full max-w-4xl mx-auto p-6"
+  data-progress-harness="true"
+>
+  <div
+    class="w-full"
+  >
+    <div
+      class="block md:hidden"
+    >
+      <div
+        class="flex items-center justify-between mb-4"
+      >
+        <div
+          class="flex items-center flex-1"
+        >
+          <div
+            class="flex flex-col items-center"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-primary/90 text-primary-foreground animate-pulse"
+            >
+              <span>
+                1
+              </span>
+            </div>
+            <div
+              class="text-xs text-center mt-1 max-w-16"
+            >
+              <div
+                class="font-medium truncate text-primary"
+              >
+                Contact Info
+              </div>
+            </div>
+          </div>
+          <div
+            class="flex-1 mx-2"
+          >
+            <div
+              class="h-0.5 transition-colors bg-border"
+            />
+          </div>
+        </div>
+        <div
+          class="flex items-center flex-1"
+        >
+          <div
+            class="flex flex-col items-center"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-muted text-muted-foreground"
+            >
+              <span>
+                2
+              </span>
+            </div>
+            <div
+              class="text-xs text-center mt-1 max-w-16"
+            >
+              <div
+                class="font-medium truncate text-muted-foreground"
+              >
+                Shipping
+              </div>
+            </div>
+          </div>
+          <div
+            class="flex-1 mx-2"
+          >
+            <div
+              class="h-0.5 transition-colors bg-border"
+            />
+          </div>
+        </div>
+        <div
+          class="flex items-center flex-1"
+        >
+          <div
+            class="flex flex-col items-center"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-muted text-muted-foreground"
+            >
+              <span>
+                3
+              </span>
+            </div>
+            <div
+              class="text-xs text-center mt-1 max-w-16"
+            >
+              <div
+                class="font-medium truncate text-muted-foreground"
+              >
+                Delivery
+              </div>
+            </div>
+          </div>
+          <div
+            class="flex-1 mx-2"
+          >
+            <div
+              class="h-0.5 transition-colors bg-border"
+            />
+          </div>
+        </div>
+        <div
+          class="flex items-center flex-1"
+        >
+          <div
+            class="flex flex-col items-center"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-muted text-muted-foreground"
+            >
+              <span>
+                4
+              </span>
+            </div>
+            <div
+              class="text-xs text-center mt-1 max-w-16"
+            >
+              <div
+                class="font-medium truncate text-muted-foreground"
+              >
+                Payment
+              </div>
+            </div>
+          </div>
+          <div
+            class="flex-1 mx-2"
+          >
+            <div
+              class="h-0.5 transition-colors bg-border"
+            />
+          </div>
+        </div>
+        <div
+          class="flex items-center flex-1"
+        >
+          <div
+            class="flex flex-col items-center"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-muted text-muted-foreground"
+            >
+              <span>
+                5
+              </span>
+            </div>
+            <div
+              class="text-xs text-center mt-1 max-w-16"
+            >
+              <div
+                class="font-medium truncate text-muted-foreground"
+              >
+                Review
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="hidden md:block"
+    >
+      <div
+        class="space-y-6"
+      >
+        <div
+          class="relative flex items-start"
+        >
+          <div
+            class="absolute left-4 top-10 w-0.5 h-6 bg-border"
+          />
+          <div
+            class="mr-4"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-primary/90 text-primary-foreground animate-pulse"
+            >
+              <span>
+                1
+              </span>
+            </div>
+          </div>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <div
+              class="text-sm font-medium text-primary"
+            >
+              Contact Info
+            </div>
+            <div
+              class="text-xs mt-1 text-primary"
+            >
+              Email address
+            </div>
+          </div>
+        </div>
+        <div
+          class="relative flex items-start"
+        >
+          <div
+            class="absolute left-4 top-10 w-0.5 h-6 bg-border"
+          />
+          <div
+            class="mr-4"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-muted text-muted-foreground"
+            >
+              <span>
+                2
+              </span>
+            </div>
+          </div>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <div
+              class="text-sm font-medium text-foreground"
+            >
+              Shipping
+            </div>
+            <div
+              class="text-xs mt-1 text-muted-foreground"
+            >
+              Delivery address
+            </div>
+          </div>
+        </div>
+        <div
+          class="relative flex items-start"
+        >
+          <div
+            class="absolute left-4 top-10 w-0.5 h-6 bg-border"
+          />
+          <div
+            class="mr-4"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-muted text-muted-foreground"
+            >
+              <span>
+                3
+              </span>
+            </div>
+          </div>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <div
+              class="text-sm font-medium text-foreground"
+            >
+              Delivery
+            </div>
+            <div
+              class="text-xs mt-1 text-muted-foreground"
+            >
+              Shipping method
+            </div>
+          </div>
+        </div>
+        <div
+          class="relative flex items-start"
+        >
+          <div
+            class="absolute left-4 top-10 w-0.5 h-6 bg-border"
+          />
+          <div
+            class="mr-4"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-muted text-muted-foreground"
+            >
+              <span>
+                4
+              </span>
+            </div>
+          </div>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <div
+              class="text-sm font-medium text-foreground"
+            >
+              Payment
+            </div>
+            <div
+              class="text-xs mt-1 text-muted-foreground"
+            >
+              Payment method
+            </div>
+          </div>
+        </div>
+        <div
+          class="relative flex items-start"
+        >
+          <div
+            class="mr-4"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-muted text-muted-foreground"
+            >
+              <span>
+                5
+              </span>
+            </div>
+          </div>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <div
+              class="text-sm font-medium text-foreground"
+            >
+              Review
+            </div>
+            <div
+              class="text-xs mt-1 text-muted-foreground"
+            >
+              Confirm order
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`CheckoutProgress stories snapshot > Payment story renders and matches snapshot 1`] = `
 <div
   class="w-full max-w-4xl mx-auto p-6"
@@ -1873,6 +2539,339 @@ exports[`CheckoutProgress stories snapshot > ShippingOptions story renders and m
             </div>
             <div
               class="text-xs mt-1 text-primary"
+            >
+              Shipping method
+            </div>
+          </div>
+        </div>
+        <div
+          class="relative flex items-start"
+        >
+          <div
+            class="absolute left-4 top-10 w-0.5 h-6 bg-border"
+          />
+          <div
+            class="mr-4"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-muted text-muted-foreground"
+            >
+              <span>
+                4
+              </span>
+            </div>
+          </div>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <div
+              class="text-sm font-medium text-foreground"
+            >
+              Payment
+            </div>
+            <div
+              class="text-xs mt-1 text-muted-foreground"
+            >
+              Payment method
+            </div>
+          </div>
+        </div>
+        <div
+          class="relative flex items-start"
+        >
+          <div
+            class="mr-4"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-muted text-muted-foreground"
+            >
+              <span>
+                5
+              </span>
+            </div>
+          </div>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <div
+              class="text-sm font-medium text-foreground"
+            >
+              Review
+            </div>
+            <div
+              class="text-xs mt-1 text-muted-foreground"
+            >
+              Confirm order
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`CheckoutProgress stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div
+  class="w-full max-w-4xl mx-auto p-6"
+  data-progress-harness="true"
+>
+  <div
+    class="w-full"
+  >
+    <div
+      class="block md:hidden"
+    >
+      <div
+        class="flex items-center justify-between mb-4"
+      >
+        <div
+          class="flex items-center flex-1"
+        >
+          <div
+            class="flex flex-col items-center"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-primary/90 text-primary-foreground animate-pulse"
+            >
+              <span>
+                1
+              </span>
+            </div>
+            <div
+              class="text-xs text-center mt-1 max-w-16"
+            >
+              <div
+                class="font-medium truncate text-primary"
+              >
+                Contact Info
+              </div>
+            </div>
+          </div>
+          <div
+            class="flex-1 mx-2"
+          >
+            <div
+              class="h-0.5 transition-colors bg-border"
+            />
+          </div>
+        </div>
+        <div
+          class="flex items-center flex-1"
+        >
+          <div
+            class="flex flex-col items-center"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-muted text-muted-foreground"
+            >
+              <span>
+                2
+              </span>
+            </div>
+            <div
+              class="text-xs text-center mt-1 max-w-16"
+            >
+              <div
+                class="font-medium truncate text-muted-foreground"
+              >
+                Shipping
+              </div>
+            </div>
+          </div>
+          <div
+            class="flex-1 mx-2"
+          >
+            <div
+              class="h-0.5 transition-colors bg-border"
+            />
+          </div>
+        </div>
+        <div
+          class="flex items-center flex-1"
+        >
+          <div
+            class="flex flex-col items-center"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-muted text-muted-foreground"
+            >
+              <span>
+                3
+              </span>
+            </div>
+            <div
+              class="text-xs text-center mt-1 max-w-16"
+            >
+              <div
+                class="font-medium truncate text-muted-foreground"
+              >
+                Delivery
+              </div>
+            </div>
+          </div>
+          <div
+            class="flex-1 mx-2"
+          >
+            <div
+              class="h-0.5 transition-colors bg-border"
+            />
+          </div>
+        </div>
+        <div
+          class="flex items-center flex-1"
+        >
+          <div
+            class="flex flex-col items-center"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-muted text-muted-foreground"
+            >
+              <span>
+                4
+              </span>
+            </div>
+            <div
+              class="text-xs text-center mt-1 max-w-16"
+            >
+              <div
+                class="font-medium truncate text-muted-foreground"
+              >
+                Payment
+              </div>
+            </div>
+          </div>
+          <div
+            class="flex-1 mx-2"
+          >
+            <div
+              class="h-0.5 transition-colors bg-border"
+            />
+          </div>
+        </div>
+        <div
+          class="flex items-center flex-1"
+        >
+          <div
+            class="flex flex-col items-center"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-muted text-muted-foreground"
+            >
+              <span>
+                5
+              </span>
+            </div>
+            <div
+              class="text-xs text-center mt-1 max-w-16"
+            >
+              <div
+                class="font-medium truncate text-muted-foreground"
+              >
+                Review
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="hidden md:block"
+    >
+      <div
+        class="space-y-6"
+      >
+        <div
+          class="relative flex items-start"
+        >
+          <div
+            class="absolute left-4 top-10 w-0.5 h-6 bg-border"
+          />
+          <div
+            class="mr-4"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-primary/90 text-primary-foreground animate-pulse"
+            >
+              <span>
+                1
+              </span>
+            </div>
+          </div>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <div
+              class="text-sm font-medium text-primary"
+            >
+              Contact Info
+            </div>
+            <div
+              class="text-xs mt-1 text-primary"
+            >
+              Email address
+            </div>
+          </div>
+        </div>
+        <div
+          class="relative flex items-start"
+        >
+          <div
+            class="absolute left-4 top-10 w-0.5 h-6 bg-border"
+          />
+          <div
+            class="mr-4"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-muted text-muted-foreground"
+            >
+              <span>
+                2
+              </span>
+            </div>
+          </div>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <div
+              class="text-sm font-medium text-foreground"
+            >
+              Shipping
+            </div>
+            <div
+              class="text-xs mt-1 text-muted-foreground"
+            >
+              Delivery address
+            </div>
+          </div>
+        </div>
+        <div
+          class="relative flex items-start"
+        >
+          <div
+            class="absolute left-4 top-10 w-0.5 h-6 bg-border"
+          />
+          <div
+            class="mr-4"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors bg-muted text-muted-foreground"
+            >
+              <span>
+                3
+              </span>
+            </div>
+          </div>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <div
+              class="text-sm font-medium text-foreground"
+            >
+              Delivery
+            </div>
+            <div
+              class="text-xs mt-1 text-muted-foreground"
             >
               Shipping method
             </div>

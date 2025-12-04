@@ -25,6 +25,7 @@ function FormSubmitStoryHarness({ children }: { children: ReactNode }): ReactEle
             if (!label) {
                 return;
             }
+            event.preventDefault();
             logSubmit({ label, disabled: button.disabled });
         };
 
@@ -545,5 +546,68 @@ This story shows the FormSubmitButton integrated into a complete registration fo
         await expect(passwordInput).toBeInTheDocument();
         await expect(submitButton).toBeInTheDocument();
         await expect(submitButton).not.toBeDisabled();
+    },
+};
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test button is present and properly rendered
+        const submitButton = canvas.getByRole('button', { name: /submit/i });
+        await expect(submitButton).toBeInTheDocument();
+        await expect(submitButton).toHaveAttribute('type', 'submit');
+        await expect(submitButton).not.toBeDisabled();
+
+        // Test form input is present
+        const emailInput = canvas.getByPlaceholderText(/email/i);
+        await expect(emailInput).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test button is present and properly rendered
+        const submitButton = canvas.getByRole('button', { name: /submit/i });
+        await expect(submitButton).toBeInTheDocument();
+        await expect(submitButton).toHaveAttribute('type', 'submit');
+        await expect(submitButton).not.toBeDisabled();
+
+        // Test form input is present
+        const emailInput = canvas.getByPlaceholderText(/email/i);
+        await expect(emailInput).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test button is present and properly rendered
+        const submitButton = canvas.getByRole('button', { name: /submit/i });
+        await expect(submitButton).toBeInTheDocument();
+        await expect(submitButton).toHaveAttribute('type', 'submit');
+        await expect(submitButton).not.toBeDisabled();
+
+        // Test form input is present
+        const emailInput = canvas.getByPlaceholderText(/email/i);
+        await expect(emailInput).toBeInTheDocument();
     },
 };

@@ -4,6 +4,12 @@ exports[`CartItemEditModal stories snapshot > Closed story renders and matches s
 
 exports[`CartItemEditModal stories snapshot > Default story renders and matches snapshot 1`] = `null`;
 
+exports[`CartItemEditModal stories snapshot > Desktop story renders and matches snapshot 1`] = `null`;
+
+exports[`CartItemEditModal stories snapshot > Mobile story renders and matches snapshot 1`] = `null`;
+
+exports[`CartItemEditModal stories snapshot > Tablet story renders and matches snapshot 1`] = `null`;
+
 exports[`CartItemEditModal stories snapshot > WithHighQuantity story renders and matches snapshot 1`] = `null`;
 
 exports[`CartItemEditModal stories snapshot > WithVariants story renders and matches snapshot 1`] = `null`;

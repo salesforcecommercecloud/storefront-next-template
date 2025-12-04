@@ -1,97 +1,99 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Carousel stories snapshot > Default story renders and matches snapshot 1`] = `
-<div
-  aria-roledescription="carousel"
-  class="relative w-full max-w-xs"
-  data-slot="carousel"
-  role="region"
->
+<div>
   <div
-    class="overflow-hidden"
-    data-slot="carousel-content"
+    aria-roledescription="carousel"
+    class="relative w-full max-w-xs"
+    data-slot="carousel"
+    role="region"
   >
     <div
-      class="flex justify-center"
+      class="overflow-hidden"
+      data-slot="carousel-content"
     >
       <div
-        aria-roledescription="slide"
-        class="min-w-0 shrink-0 grow-0 basis-full pl-4"
-        data-slot="carousel-item"
-        role="group"
+        class="flex justify-center"
       >
         <div
-          class="flex aspect-square items-center justify-center bg-muted rounded-lg"
+          aria-roledescription="slide"
+          class="min-w-0 shrink-0 grow-0 basis-full pl-4"
+          data-slot="carousel-item"
+          role="group"
         >
-          <span
-            class="text-4xl font-semibold"
+          <div
+            class="flex aspect-square items-center justify-center bg-muted rounded-lg"
           >
-            1
-          </span>
+            <span
+              class="text-4xl font-semibold"
+            >
+              1
+            </span>
+          </div>
         </div>
-      </div>
-      <div
-        aria-roledescription="slide"
-        class="min-w-0 shrink-0 grow-0 basis-full pl-4"
-        data-slot="carousel-item"
-        role="group"
-      >
         <div
-          class="flex aspect-square items-center justify-center bg-muted rounded-lg"
+          aria-roledescription="slide"
+          class="min-w-0 shrink-0 grow-0 basis-full pl-4"
+          data-slot="carousel-item"
+          role="group"
         >
-          <span
-            class="text-4xl font-semibold"
+          <div
+            class="flex aspect-square items-center justify-center bg-muted rounded-lg"
           >
-            2
-          </span>
+            <span
+              class="text-4xl font-semibold"
+            >
+              2
+            </span>
+          </div>
         </div>
-      </div>
-      <div
-        aria-roledescription="slide"
-        class="min-w-0 shrink-0 grow-0 basis-full pl-4"
-        data-slot="carousel-item"
-        role="group"
-      >
         <div
-          class="flex aspect-square items-center justify-center bg-muted rounded-lg"
+          aria-roledescription="slide"
+          class="min-w-0 shrink-0 grow-0 basis-full pl-4"
+          data-slot="carousel-item"
+          role="group"
         >
-          <span
-            class="text-4xl font-semibold"
+          <div
+            class="flex aspect-square items-center justify-center bg-muted rounded-lg"
           >
-            3
-          </span>
+            <span
+              class="text-4xl font-semibold"
+            >
+              3
+            </span>
+          </div>
         </div>
-      </div>
-      <div
-        aria-roledescription="slide"
-        class="min-w-0 shrink-0 grow-0 basis-full pl-4"
-        data-slot="carousel-item"
-        role="group"
-      >
         <div
-          class="flex aspect-square items-center justify-center bg-muted rounded-lg"
+          aria-roledescription="slide"
+          class="min-w-0 shrink-0 grow-0 basis-full pl-4"
+          data-slot="carousel-item"
+          role="group"
         >
-          <span
-            class="text-4xl font-semibold"
+          <div
+            class="flex aspect-square items-center justify-center bg-muted rounded-lg"
           >
-            4
-          </span>
+            <span
+              class="text-4xl font-semibold"
+            >
+              4
+            </span>
+          </div>
         </div>
-      </div>
-      <div
-        aria-roledescription="slide"
-        class="min-w-0 shrink-0 grow-0 basis-full pl-4"
-        data-slot="carousel-item"
-        role="group"
-      >
         <div
-          class="flex aspect-square items-center justify-center bg-muted rounded-lg"
+          aria-roledescription="slide"
+          class="min-w-0 shrink-0 grow-0 basis-full pl-4"
+          data-slot="carousel-item"
+          role="group"
         >
-          <span
-            class="text-4xl font-semibold"
+          <div
+            class="flex aspect-square items-center justify-center bg-muted rounded-lg"
           >
-            5
-          </span>
+            <span
+              class="text-4xl font-semibold"
+            >
+              5
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -100,97 +102,99 @@ exports[`Carousel stories snapshot > Default story renders and matches snapshot 
 `;
 
 exports[`Carousel stories snapshot > Vertical story renders and matches snapshot 1`] = `
-<div
-  aria-roledescription="carousel"
-  class="relative w-full max-w-xs"
-  data-slot="carousel"
-  role="region"
->
+<div>
   <div
-    class="overflow-hidden"
-    data-slot="carousel-content"
+    aria-roledescription="carousel"
+    class="relative w-full max-w-xs"
+    data-slot="carousel"
+    role="region"
   >
     <div
-      class="flex flex-col items-center -mt-1 h-[200px]"
+      class="overflow-hidden"
+      data-slot="carousel-content"
     >
       <div
-        aria-roledescription="slide"
-        class="min-w-0 shrink-0 grow-0 basis-full pt-1 md:basis-1/2"
-        data-slot="carousel-item"
-        role="group"
+        class="flex flex-col items-center -mt-1 h-[200px]"
       >
         <div
-          class="flex aspect-square items-center justify-center bg-muted rounded-lg"
+          aria-roledescription="slide"
+          class="min-w-0 shrink-0 grow-0 basis-full pt-1 md:basis-1/2"
+          data-slot="carousel-item"
+          role="group"
         >
-          <span
-            class="text-4xl font-semibold"
+          <div
+            class="flex aspect-square items-center justify-center bg-muted rounded-lg"
           >
-            1
-          </span>
+            <span
+              class="text-4xl font-semibold"
+            >
+              1
+            </span>
+          </div>
         </div>
-      </div>
-      <div
-        aria-roledescription="slide"
-        class="min-w-0 shrink-0 grow-0 basis-full pt-1 md:basis-1/2"
-        data-slot="carousel-item"
-        role="group"
-      >
         <div
-          class="flex aspect-square items-center justify-center bg-muted rounded-lg"
+          aria-roledescription="slide"
+          class="min-w-0 shrink-0 grow-0 basis-full pt-1 md:basis-1/2"
+          data-slot="carousel-item"
+          role="group"
         >
-          <span
-            class="text-4xl font-semibold"
+          <div
+            class="flex aspect-square items-center justify-center bg-muted rounded-lg"
           >
-            2
-          </span>
+            <span
+              class="text-4xl font-semibold"
+            >
+              2
+            </span>
+          </div>
         </div>
-      </div>
-      <div
-        aria-roledescription="slide"
-        class="min-w-0 shrink-0 grow-0 basis-full pt-1 md:basis-1/2"
-        data-slot="carousel-item"
-        role="group"
-      >
         <div
-          class="flex aspect-square items-center justify-center bg-muted rounded-lg"
+          aria-roledescription="slide"
+          class="min-w-0 shrink-0 grow-0 basis-full pt-1 md:basis-1/2"
+          data-slot="carousel-item"
+          role="group"
         >
-          <span
-            class="text-4xl font-semibold"
+          <div
+            class="flex aspect-square items-center justify-center bg-muted rounded-lg"
           >
-            3
-          </span>
+            <span
+              class="text-4xl font-semibold"
+            >
+              3
+            </span>
+          </div>
         </div>
-      </div>
-      <div
-        aria-roledescription="slide"
-        class="min-w-0 shrink-0 grow-0 basis-full pt-1 md:basis-1/2"
-        data-slot="carousel-item"
-        role="group"
-      >
         <div
-          class="flex aspect-square items-center justify-center bg-muted rounded-lg"
+          aria-roledescription="slide"
+          class="min-w-0 shrink-0 grow-0 basis-full pt-1 md:basis-1/2"
+          data-slot="carousel-item"
+          role="group"
         >
-          <span
-            class="text-4xl font-semibold"
+          <div
+            class="flex aspect-square items-center justify-center bg-muted rounded-lg"
           >
-            4
-          </span>
+            <span
+              class="text-4xl font-semibold"
+            >
+              4
+            </span>
+          </div>
         </div>
-      </div>
-      <div
-        aria-roledescription="slide"
-        class="min-w-0 shrink-0 grow-0 basis-full pt-1 md:basis-1/2"
-        data-slot="carousel-item"
-        role="group"
-      >
         <div
-          class="flex aspect-square items-center justify-center bg-muted rounded-lg"
+          aria-roledescription="slide"
+          class="min-w-0 shrink-0 grow-0 basis-full pt-1 md:basis-1/2"
+          data-slot="carousel-item"
+          role="group"
         >
-          <span
-            class="text-4xl font-semibold"
+          <div
+            class="flex aspect-square items-center justify-center bg-muted rounded-lg"
           >
-            5
-          </span>
+            <span
+              class="text-4xl font-semibold"
+            >
+              5
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -199,65 +203,67 @@ exports[`Carousel stories snapshot > Vertical story renders and matches snapshot
 `;
 
 exports[`Carousel stories snapshot > WithImages story renders and matches snapshot 1`] = `
-<div
-  aria-roledescription="carousel"
-  class="relative w-full max-w-xs"
-  data-slot="carousel"
-  role="region"
->
+<div>
   <div
-    class="overflow-hidden"
-    data-slot="carousel-content"
+    aria-roledescription="carousel"
+    class="relative w-full max-w-xs"
+    data-slot="carousel"
+    role="region"
   >
     <div
-      class="flex justify-center"
+      class="overflow-hidden"
+      data-slot="carousel-content"
     >
       <div
-        aria-roledescription="slide"
-        class="min-w-0 shrink-0 grow-0 basis-full pl-4"
-        data-slot="carousel-item"
-        role="group"
+        class="flex justify-center"
       >
         <div
-          class="flex aspect-square items-center justify-center bg-muted rounded-lg overflow-hidden"
+          aria-roledescription="slide"
+          class="min-w-0 shrink-0 grow-0 basis-full pl-4"
+          data-slot="carousel-item"
+          role="group"
         >
-          <img
-            alt="Slide 1"
-            class="w-full h-full object-cover"
-            src="https://images.unsplash.com/photo-1588345921523?w=400&h=400&fit=crop"
-          />
+          <div
+            class="flex aspect-square items-center justify-center bg-muted rounded-lg overflow-hidden"
+          >
+            <img
+              alt="Slide 1"
+              class="w-full h-full object-cover"
+              src="https://images.unsplash.com/photo-1588345921523?w=400&h=400&fit=crop"
+            />
+          </div>
         </div>
-      </div>
-      <div
-        aria-roledescription="slide"
-        class="min-w-0 shrink-0 grow-0 basis-full pl-4"
-        data-slot="carousel-item"
-        role="group"
-      >
         <div
-          class="flex aspect-square items-center justify-center bg-muted rounded-lg overflow-hidden"
+          aria-roledescription="slide"
+          class="min-w-0 shrink-0 grow-0 basis-full pl-4"
+          data-slot="carousel-item"
+          role="group"
         >
-          <img
-            alt="Slide 2"
-            class="w-full h-full object-cover"
-            src="https://images.unsplash.com/photo-1588345921524?w=400&h=400&fit=crop"
-          />
+          <div
+            class="flex aspect-square items-center justify-center bg-muted rounded-lg overflow-hidden"
+          >
+            <img
+              alt="Slide 2"
+              class="w-full h-full object-cover"
+              src="https://images.unsplash.com/photo-1588345921524?w=400&h=400&fit=crop"
+            />
+          </div>
         </div>
-      </div>
-      <div
-        aria-roledescription="slide"
-        class="min-w-0 shrink-0 grow-0 basis-full pl-4"
-        data-slot="carousel-item"
-        role="group"
-      >
         <div
-          class="flex aspect-square items-center justify-center bg-muted rounded-lg overflow-hidden"
+          aria-roledescription="slide"
+          class="min-w-0 shrink-0 grow-0 basis-full pl-4"
+          data-slot="carousel-item"
+          role="group"
         >
-          <img
-            alt="Slide 3"
-            class="w-full h-full object-cover"
-            src="https://images.unsplash.com/photo-1588345921525?w=400&h=400&fit=crop"
-          />
+          <div
+            class="flex aspect-square items-center justify-center bg-muted rounded-lg overflow-hidden"
+          >
+            <img
+              alt="Slide 3"
+              class="w-full h-full object-cover"
+              src="https://images.unsplash.com/photo-1588345921525?w=400&h=400&fit=crop"
+            />
+          </div>
         </div>
       </div>
     </div>

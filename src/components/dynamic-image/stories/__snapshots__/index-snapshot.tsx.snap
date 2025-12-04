@@ -31,6 +31,37 @@ exports[`DynamicImage stories snapshot > Default story renders and matches snaps
 </div>
 `;
 
+exports[`DynamicImage stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class=""
+  >
+    <picture>
+      <source
+        media="(min-width: 768px)"
+        sizes="1200px"
+        srcset="https://via.placeholder.com/800?sw=1200&q=60 1200w, https://via.placeholder.com/800?sw=2400&q=60 2400w"
+      />
+      <source
+        media="(min-width: 640px)"
+        sizes="800px"
+        srcset="https://via.placeholder.com/800?sw=800&q=60 800w, https://via.placeholder.com/800?sw=1600&q=60 1600w"
+      />
+      <source
+        sizes="400px"
+        srcset="https://via.placeholder.com/800?sw=400&q=60 400w, https://via.placeholder.com/800?sw=800&q=60 800w"
+      />
+      <img
+        alt="Example image"
+        fetchpriority="low"
+        loading="lazy"
+        src="https://via.placeholder.com/800"
+      />
+    </picture>
+  </div>
+</div>
+`;
+
 exports[`DynamicImage stories snapshot > HighPriority story renders and matches snapshot 1`] = `
 <div>
   <div
@@ -55,6 +86,68 @@ exports[`DynamicImage stories snapshot > HighPriority story renders and matches 
         alt="High priority image"
         fetchpriority="high"
         loading="eager"
+        src="https://via.placeholder.com/800"
+      />
+    </picture>
+  </div>
+</div>
+`;
+
+exports[`DynamicImage stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class=""
+  >
+    <picture>
+      <source
+        media="(min-width: 768px)"
+        sizes="1200px"
+        srcset="https://via.placeholder.com/800?sw=1200&q=60 1200w, https://via.placeholder.com/800?sw=2400&q=60 2400w"
+      />
+      <source
+        media="(min-width: 640px)"
+        sizes="800px"
+        srcset="https://via.placeholder.com/800?sw=800&q=60 800w, https://via.placeholder.com/800?sw=1600&q=60 1600w"
+      />
+      <source
+        sizes="400px"
+        srcset="https://via.placeholder.com/800?sw=400&q=60 400w, https://via.placeholder.com/800?sw=800&q=60 800w"
+      />
+      <img
+        alt="Example image"
+        fetchpriority="low"
+        loading="lazy"
+        src="https://via.placeholder.com/800"
+      />
+    </picture>
+  </div>
+</div>
+`;
+
+exports[`DynamicImage stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class=""
+  >
+    <picture>
+      <source
+        media="(min-width: 768px)"
+        sizes="1200px"
+        srcset="https://via.placeholder.com/800?sw=1200&q=60 1200w, https://via.placeholder.com/800?sw=2400&q=60 2400w"
+      />
+      <source
+        media="(min-width: 640px)"
+        sizes="800px"
+        srcset="https://via.placeholder.com/800?sw=800&q=60 800w, https://via.placeholder.com/800?sw=1600&q=60 1600w"
+      />
+      <source
+        sizes="400px"
+        srcset="https://via.placeholder.com/800?sw=400&q=60 400w, https://via.placeholder.com/800?sw=800&q=60 800w"
+      />
+      <img
+        alt="Example image"
+        fetchpriority="low"
+        loading="lazy"
         src="https://via.placeholder.com/800"
       />
     </picture>

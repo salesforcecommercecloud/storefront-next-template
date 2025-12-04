@@ -166,3 +166,72 @@ User actions for authenticated users.
         await userEvent.click(logoutButton);
     },
 };
+
+export const Mobile: Story = {
+    ...Guest,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for Sign In link
+        const signInLink = await canvas.findByRole('link', { name: /sign in/i }, { timeout: 5000 });
+        await expect(signInLink).toBeInTheDocument();
+        await expect(signInLink).toHaveAttribute('href', '/login');
+
+        // Check that logout button is not present
+        const logoutButton = canvas.queryByRole('button', { name: /sign out/i });
+        await expect(logoutButton).toBeNull();
+
+        // Click sign in link
+        await userEvent.click(signInLink);
+    },
+};
+
+export const Tablet: Story = {
+    ...Guest,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for Sign In link
+        const signInLink = await canvas.findByRole('link', { name: /sign in/i }, { timeout: 5000 });
+        await expect(signInLink).toBeInTheDocument();
+        await expect(signInLink).toHaveAttribute('href', '/login');
+
+        // Check that logout button is not present
+        const logoutButton = canvas.queryByRole('button', { name: /sign out/i });
+        await expect(logoutButton).toBeNull();
+
+        // Click sign in link
+        await userEvent.click(signInLink);
+    },
+};
+
+export const Desktop: Story = {
+    ...Guest,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for Sign In link
+        const signInLink = await canvas.findByRole('link', { name: /sign in/i }, { timeout: 5000 });
+        await expect(signInLink).toBeInTheDocument();
+        await expect(signInLink).toHaveAttribute('href', '/login');
+
+        // Check that logout button is not present
+        const logoutButton = canvas.queryByRole('button', { name: /sign out/i });
+        await expect(logoutButton).toBeNull();
+
+        // Click sign in link
+        await userEvent.click(signInLink);
+    },
+};

@@ -51,6 +51,57 @@ exports[`ContentCard stories snapshot > Default story renders and matches snapsh
 </div>
 `;
 
+exports[`ContentCard stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm h-full overflow-hidden ring-secondary/40 bg-muted/50"
+    data-slot="card"
+  >
+    <div
+      class="p-0"
+      data-slot="card-content"
+    >
+      <div
+        class="relative aspect-[4/3] overflow-hidden rounded-lg bg-secondary/20"
+      >
+        <img
+          alt="Featured Product"
+          class="w-full h-full object-cover"
+          loading="lazy"
+          src="https://via.placeholder.com/400x300"
+        />
+      </div>
+    </div>
+    <div
+      class="flex [.border-t]:pt-6 flex-col items-start gap-4 p-6 flex-1"
+      data-slot="card-footer"
+    >
+      <div
+        class="flex-1"
+      >
+        <h3
+          class="text-2xl font-bold text-foreground mb-3"
+        >
+          Featured Product
+        </h3>
+        <p
+          class="text-sm text-muted-foreground"
+        >
+          Discover our latest collection of premium products designed for modern living.
+        </p>
+      </div>
+      <a
+        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+        data-slot="button"
+        href="/category/featured"
+      >
+        Shop Now
+      </a>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`ContentCard stories snapshot > Minimal story renders and matches snapshot 1`] = `
 <div>
   <div
@@ -75,6 +126,57 @@ exports[`ContentCard stories snapshot > Minimal story renders and matches snapsh
           A simple card with just title and description, no button.
         </p>
       </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ContentCard stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm h-full overflow-hidden ring-secondary/40 bg-muted/50"
+    data-slot="card"
+  >
+    <div
+      class="p-0"
+      data-slot="card-content"
+    >
+      <div
+        class="relative aspect-[4/3] overflow-hidden rounded-lg bg-secondary/20"
+      >
+        <img
+          alt="Featured Product"
+          class="w-full h-full object-cover"
+          loading="lazy"
+          src="https://via.placeholder.com/400x300"
+        />
+      </div>
+    </div>
+    <div
+      class="flex [.border-t]:pt-6 flex-col items-start gap-4 p-6 flex-1"
+      data-slot="card-footer"
+    >
+      <div
+        class="flex-1"
+      >
+        <h3
+          class="text-2xl font-bold text-foreground mb-3"
+        >
+          Featured Product
+        </h3>
+        <p
+          class="text-sm text-muted-foreground"
+        >
+          Discover our latest collection of premium products designed for modern living.
+        </p>
+      </div>
+      <a
+        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+        data-slot="button"
+        href="/category/featured"
+      >
+        Shop Now
+      </a>
     </div>
   </div>
 </div>
@@ -110,6 +212,57 @@ exports[`ContentCard stories snapshot > NoBackground story renders and matches s
         href="/explore"
       >
         Explore
+      </a>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ContentCard stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm h-full overflow-hidden ring-secondary/40 bg-muted/50"
+    data-slot="card"
+  >
+    <div
+      class="p-0"
+      data-slot="card-content"
+    >
+      <div
+        class="relative aspect-[4/3] overflow-hidden rounded-lg bg-secondary/20"
+      >
+        <img
+          alt="Featured Product"
+          class="w-full h-full object-cover"
+          loading="lazy"
+          src="https://via.placeholder.com/400x300"
+        />
+      </div>
+    </div>
+    <div
+      class="flex [.border-t]:pt-6 flex-col items-start gap-4 p-6 flex-1"
+      data-slot="card-footer"
+    >
+      <div
+        class="flex-1"
+      >
+        <h3
+          class="text-2xl font-bold text-foreground mb-3"
+        >
+          Featured Product
+        </h3>
+        <p
+          class="text-sm text-muted-foreground"
+        >
+          Discover our latest collection of premium products designed for modern living.
+        </p>
+      </div>
+      <a
+        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+        data-slot="button"
+        href="/category/featured"
+      >
+        Shop Now
       </a>
     </div>
   </div>

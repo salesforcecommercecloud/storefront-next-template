@@ -211,3 +211,51 @@ Radio card group with a disabled option.
         await expect(option2).toBeInTheDocument();
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Check for option 1
+        const option1 = await canvas.findByText(/option 1/i, {}, { timeout: 5000 });
+        await expect(option1).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Check for option 1
+        const option1 = await canvas.findByText(/option 1/i, {}, { timeout: 5000 });
+        await expect(option1).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Check for option 1
+        const option1 = await canvas.findByText(/option 1/i, {}, { timeout: 5000 });
+        await expect(option1).toBeInTheDocument();
+    },
+};

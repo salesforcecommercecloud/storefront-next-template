@@ -3,6 +3,34 @@ import ExpressPayments from '../express-payments';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { action } from 'storybook/actions';
+import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
+
+function ActionLogger({ children }: { children: ReactNode }): ReactElement {
+    const containerRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        const root = containerRef.current;
+        if (!root) return;
+
+        const logClick = action('express-payment-click');
+
+        const handleClick = (event: MouseEvent) => {
+            const target = event.target as HTMLElement | null;
+            if (!target) return;
+            const button = target.closest('button');
+            if (button && root.contains(button)) {
+                logClick({ text: button.textContent || button.getAttribute('aria-label') || 'Payment Button' });
+            }
+        };
+
+        root.addEventListener('click', handleClick);
+        return () => {
+            root.removeEventListener('click', handleClick);
+        };
+    }, []);
+
+    return <div ref={containerRef}>{children}</div>;
+}
 
 const meta: Meta<typeof ExpressPayments> = {
     title: 'CHECKOUT/ExpressPayments',
@@ -17,6 +45,13 @@ const meta: Meta<typeof ExpressPayments> = {
         },
     },
     tags: ['autodocs', 'interaction'],
+    decorators: [
+        (Story) => (
+            <ActionLogger>
+                <Story />
+            </ActionLogger>
+        ),
+    ],
     argTypes: {
         onApplePayClick: {
             description: 'Callback when Apple Pay button is clicked',
@@ -124,5 +159,65 @@ export const WithPayPalSDKError: Story = {
         // Component should render even when PayPal SDK has errors
         const container = canvasElement.firstChild;
         await expect(container).toBeInTheDocument();
+    },
+};
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for Apple Pay button (first button with "Pay" text)
+        const buttons = canvas.getAllByRole('button');
+        const applePayButton = buttons.find((btn) => btn.textContent?.includes('Pay'));
+        await expect(applePayButton).toBeInTheDocument();
+
+        // Check for "Or" divider
+        const orDivider = await canvas.findByText(/or/i);
+        await expect(orDivider).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for Apple Pay button (first button with "Pay" text)
+        const buttons = canvas.getAllByRole('button');
+        const applePayButton = buttons.find((btn) => btn.textContent?.includes('Pay'));
+        await expect(applePayButton).toBeInTheDocument();
+
+        // Check for "Or" divider
+        const orDivider = await canvas.findByText(/or/i);
+        await expect(orDivider).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for Apple Pay button (first button with "Pay" text)
+        const buttons = canvas.getAllByRole('button');
+        const applePayButton = buttons.find((btn) => btn.textContent?.includes('Pay'));
+        await expect(applePayButton).toBeInTheDocument();
+
+        // Check for "Or" divider
+        const orDivider = await canvas.findByText(/or/i);
+        await expect(orDivider).toBeInTheDocument();
     },
 };

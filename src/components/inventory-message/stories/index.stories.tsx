@@ -300,3 +300,69 @@ export const UnknownVisible: Story = {
         await expect(unknownText).toBeInTheDocument();
     },
 };
+
+export const Mobile: Story = {
+    ...InStock,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test that inventory message displays "In Stock" text
+        const inStockText = canvas.getByText(/in stock/i);
+        await expect(inStockText).toBeInTheDocument();
+
+        // Test that appropriate styling/color is applied (green for in stock)
+        const messageElement = inStockText.closest('[class*="text-"], [class*="bg-"]');
+        void expect(messageElement).toBeInTheDocument();
+
+        // Verify component renders correctly
+        void expect(canvasElement.firstChild).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...InStock,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test that inventory message displays "In Stock" text
+        const inStockText = canvas.getByText(/in stock/i);
+        await expect(inStockText).toBeInTheDocument();
+
+        // Test that appropriate styling/color is applied (green for in stock)
+        const messageElement = inStockText.closest('[class*="text-"], [class*="bg-"]');
+        void expect(messageElement).toBeInTheDocument();
+
+        // Verify component renders correctly
+        void expect(canvasElement.firstChild).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...InStock,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test that inventory message displays "In Stock" text
+        const inStockText = canvas.getByText(/in stock/i);
+        await expect(inStockText).toBeInTheDocument();
+
+        // Test that appropriate styling/color is applied (green for in stock)
+        const messageElement = inStockText.closest('[class*="text-"], [class*="bg-"]');
+        void expect(messageElement).toBeInTheDocument();
+
+        // Verify component renders correctly
+        void expect(canvasElement.firstChild).toBeInTheDocument();
+    },
+};

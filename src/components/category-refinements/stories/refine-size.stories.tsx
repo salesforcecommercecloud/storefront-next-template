@@ -235,3 +235,69 @@ RefineSize with no selected sizes:
         await expect(buttons.length).toBeGreaterThan(0);
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Test size buttons are present
+        const buttons = canvas.getAllByRole('button');
+        await expect(buttons.length).toBeGreaterThan(0);
+
+        // Test clicking a size button
+        const mButton = buttons.find((btn) => btn.textContent?.includes('M'));
+        if (mButton) {
+            await userEvent.click(mButton);
+        }
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Test size buttons are present
+        const buttons = canvas.getAllByRole('button');
+        await expect(buttons.length).toBeGreaterThan(0);
+
+        // Test clicking a size button
+        const mButton = buttons.find((btn) => btn.textContent?.includes('M'));
+        if (mButton) {
+            await userEvent.click(mButton);
+        }
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Test size buttons are present
+        const buttons = canvas.getAllByRole('button');
+        await expect(buttons.length).toBeGreaterThan(0);
+
+        // Test clicking a size button
+        const mButton = buttons.find((btn) => btn.textContent?.includes('M'));
+        if (mButton) {
+            await userEvent.click(mButton);
+        }
+    },
+};

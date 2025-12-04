@@ -546,3 +546,78 @@ This story shows the ShareButton integrated into a product card:
         await expect(productName).toBeInTheDocument();
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test share button is present
+        const shareButton = canvas.getByRole('button', { name: /share/i });
+        await expect(shareButton).toBeInTheDocument();
+        await expect(shareButton).not.toBeDisabled();
+
+        // Test dropdown opens on click
+        await userEvent.click(shareButton);
+
+        // Wait for dropdown menu to be visible and find the copy link option
+        // Note: Dropdown content may be in a portal, so we query from document
+        const documentBody = within(document.body);
+        const copyLinkOption = await documentBody.findByRole('menuitem', { name: /copy link/i });
+        await expect(copyLinkOption).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test share button is present
+        const shareButton = canvas.getByRole('button', { name: /share/i });
+        await expect(shareButton).toBeInTheDocument();
+        await expect(shareButton).not.toBeDisabled();
+
+        // Test dropdown opens on click
+        await userEvent.click(shareButton);
+
+        // Wait for dropdown menu to be visible and find the copy link option
+        // Note: Dropdown content may be in a portal, so we query from document
+        const documentBody = within(document.body);
+        const copyLinkOption = await documentBody.findByRole('menuitem', { name: /copy link/i });
+        await expect(copyLinkOption).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test share button is present
+        const shareButton = canvas.getByRole('button', { name: /share/i });
+        await expect(shareButton).toBeInTheDocument();
+        await expect(shareButton).not.toBeDisabled();
+
+        // Test dropdown opens on click
+        await userEvent.click(shareButton);
+
+        // Wait for dropdown menu to be visible and find the copy link option
+        // Note: Dropdown content may be in a portal, so we query from document
+        const documentBody = within(document.body);
+        const copyLinkOption = await documentBody.findByRole('menuitem', { name: /copy link/i });
+        await expect(copyLinkOption).toBeInTheDocument();
+    },
+};

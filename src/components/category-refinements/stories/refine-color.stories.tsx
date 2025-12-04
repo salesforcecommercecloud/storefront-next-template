@@ -276,3 +276,69 @@ RefineColor with many color options:
         await expect(buttons.length).toBeGreaterThan(6);
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Test color buttons are present
+        const buttons = canvas.getAllByRole('button');
+        await expect(buttons.length).toBeGreaterThan(0);
+
+        // Test clicking a color button
+        const blackButton = buttons.find((btn) => btn.textContent?.includes('Black'));
+        if (blackButton) {
+            await userEvent.click(blackButton);
+        }
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Test color buttons are present
+        const buttons = canvas.getAllByRole('button');
+        await expect(buttons.length).toBeGreaterThan(0);
+
+        // Test clicking a color button
+        const blackButton = buttons.find((btn) => btn.textContent?.includes('Black'));
+        if (blackButton) {
+            await userEvent.click(blackButton);
+        }
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Test color buttons are present
+        const buttons = canvas.getAllByRole('button');
+        await expect(buttons.length).toBeGreaterThan(0);
+
+        // Test clicking a color button
+        const blackButton = buttons.find((btn) => btn.textContent?.includes('Black'));
+        if (blackButton) {
+            await userEvent.click(blackButton);
+        }
+    },
+};

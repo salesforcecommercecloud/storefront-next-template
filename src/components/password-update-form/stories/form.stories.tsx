@@ -334,3 +334,39 @@ export const Interactive: Story = {
         await expect(confirmPasswordInput).toHaveValue('NewPassword123!');
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const form = canvasElement.querySelector('form');
+        await expect(form).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const form = canvasElement.querySelector('form');
+        await expect(form).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const form = canvasElement.querySelector('form');
+        await expect(form).toBeInTheDocument();
+    },
+};

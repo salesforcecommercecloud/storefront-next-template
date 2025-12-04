@@ -111,3 +111,45 @@ export const CustomAspectRatio: Story = {
         // Aspect ratio is handled by CSS classes, we can check if image is present.
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const image = canvas.getByRole('img');
+        await expect(image).toBeInTheDocument();
+        await expect(image).toHaveAttribute('src');
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const image = canvas.getByRole('img');
+        await expect(image).toBeInTheDocument();
+        await expect(image).toHaveAttribute('src');
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const image = canvas.getByRole('img');
+        await expect(image).toBeInTheDocument();
+        await expect(image).toHaveAttribute('src');
+    },
+};

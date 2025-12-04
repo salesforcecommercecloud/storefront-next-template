@@ -25,6 +25,31 @@ exports[`Grid stories snapshot > Default story renders and matches snapshot 1`] 
 </div>
 `;
 
+exports[`Grid stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="grid grid-cols-3 gap-4"
+    data-slot="grid"
+  >
+    <div
+      class="bg-muted p-4 rounded"
+    >
+      Item 1
+    </div>
+    <div
+      class="bg-muted p-4 rounded"
+    >
+      Item 2
+    </div>
+    <div
+      class="bg-muted p-4 rounded"
+    >
+      Item 3
+    </div>
+  </div>
+</div>
+`;
+
 exports[`Grid stories snapshot > InlineGrid story renders and matches snapshot 1`] = `
 <div>
   <div
@@ -40,6 +65,56 @@ exports[`Grid stories snapshot > InlineGrid story renders and matches snapshot 1
       class="bg-muted p-2 rounded"
     >
       B
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Grid stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="grid grid-cols-3 gap-4"
+    data-slot="grid"
+  >
+    <div
+      class="bg-muted p-4 rounded"
+    >
+      Item 1
+    </div>
+    <div
+      class="bg-muted p-4 rounded"
+    >
+      Item 2
+    </div>
+    <div
+      class="bg-muted p-4 rounded"
+    >
+      Item 3
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Grid stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="grid grid-cols-3 gap-4"
+    data-slot="grid"
+  >
+    <div
+      class="bg-muted p-4 rounded"
+    >
+      Item 1
+    </div>
+    <div
+      class="bg-muted p-4 rounded"
+    >
+      Item 2
+    </div>
+    <div
+      class="bg-muted p-4 rounded"
+    >
+      Item 3
     </div>
   </div>
 </div>

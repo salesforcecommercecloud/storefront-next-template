@@ -1,256 +1,1032 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`CartSkeleton stories snapshot > Default story renders and matches snapshot 1`] = `
-<div
-  class="bg-muted flex-1"
-  data-testid="sf-cart-container"
->
+<div>
   <div
-    class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-14"
+    class="bg-muted flex-1"
+    data-testid="sf-cart-container"
   >
     <div
-      class="space-y-24"
+      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-14"
     >
       <div
-        class="space-y-4"
+        class="space-y-24"
       >
         <div
-          class="animate-pulse rounded-md bg-muted h-7 lg:h-8 w-48"
-          data-testid="cart-title-skeleton"
-        />
-        <div
-          class="grid grid-cols-1 lg:grid-cols-[66%_1fr] gap-10 xl:gap-20"
+          class="space-y-4"
         >
           <div
-            class="space-y-4"
+            class="animate-pulse rounded-md bg-muted h-7 lg:h-8 w-48"
+            data-testid="cart-title-skeleton"
+          />
+          <div
+            class="grid grid-cols-1 lg:grid-cols-[66%_1fr] gap-10 xl:gap-20"
           >
             <div
-              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl py-6 border border-border shadow-sm"
-              data-slot="card"
-              data-testid="cart-product-item"
+              class="space-y-4"
             >
               <div
-                class="p-4"
-                data-slot="card-content"
+                class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl py-6 border border-border shadow-sm"
+                data-slot="card"
+                data-testid="cart-product-item"
               >
                 <div
-                  class=""
+                  class="p-4"
+                  data-slot="card-content"
                 >
                   <div
-                    class="flex items-start"
+                    class=""
                   >
                     <div
-                      class="animate-pulse bg-muted flex-shrink-0 w-16 sm:w-20 h-16 sm:h-20 mr-4 sm:mr-6 rounded"
-                    />
-                    <div
-                      class="flex-1 space-y-3"
+                      class="flex items-start"
                     >
                       <div
-                        class="space-y-1"
+                        class="animate-pulse bg-muted flex-shrink-0 w-16 sm:w-20 h-16 sm:h-20 mr-4 sm:mr-6 rounded"
+                      />
+                      <div
+                        class="flex-1 space-y-3"
                       >
-                        <div
-                          class="animate-pulse rounded-md bg-muted h-6 w-3/4"
-                        />
                         <div
                           class="space-y-1"
                         >
                           <div
-                            class="animate-pulse rounded-md bg-muted h-4 w-1/2"
+                            class="animate-pulse rounded-md bg-muted h-6 w-3/4"
                           />
                           <div
-                            class="animate-pulse rounded-md bg-muted h-4 w-1/3"
-                          />
+                            class="space-y-1"
+                          >
+                            <div
+                              class="animate-pulse rounded-md bg-muted h-4 w-1/2"
+                            />
+                            <div
+                              class="animate-pulse rounded-md bg-muted h-4 w-1/3"
+                            />
+                          </div>
+                          <div
+                            class="sm:hidden mt-2"
+                          >
+                            <div
+                              class="animate-pulse rounded-md bg-muted h-4 w-20"
+                            />
+                          </div>
+                          <div
+                            class="space-y-2"
+                          >
+                            <div
+                              class="animate-pulse rounded-md bg-muted h-8 w-24"
+                            />
+                            <div
+                              class="animate-pulse rounded-md bg-muted h-6 w-16"
+                            />
+                          </div>
                         </div>
+                      </div>
+                      <div
+                        class="hidden sm:block ml-4"
+                      >
                         <div
-                          class="sm:hidden mt-2"
+                          class="space-y-2"
                         >
                           <div
                             class="animate-pulse rounded-md bg-muted h-4 w-20"
                           />
                         </div>
-                        <div
-                          class="space-y-2"
-                        >
-                          <div
-                            class="animate-pulse rounded-md bg-muted h-8 w-24"
-                          />
-                          <div
-                            class="animate-pulse rounded-md bg-muted h-6 w-16"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      class="hidden sm:block ml-4"
-                    >
-                      <div
-                        class="space-y-2"
-                      >
-                        <div
-                          class="animate-pulse rounded-md bg-muted h-4 w-20"
-                        />
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div
-            class="space-y-4"
-          >
             <div
-              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
-              data-slot="card"
-              data-testid="cart-order-summary"
+              class="space-y-4"
             >
               <div
-                class="p-6"
-                data-slot="card-content"
+                class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+                data-slot="card"
+                data-testid="cart-order-summary"
               >
                 <div
-                  class="space-y-5"
+                  class="p-6"
+                  data-slot="card-content"
                 >
                   <div
-                    class="animate-pulse rounded-md bg-muted h-6 w-32"
-                  />
-                  <div
-                    class="space-y-4"
+                    class="space-y-5"
                   >
                     <div
-                      class="border border-border rounded"
-                    >
-                      <div
-                        class="p-4 flex items-center justify-between"
-                      >
-                        <div
-                          class="animate-pulse rounded-md bg-muted h-4 w-24"
-                        />
-                        <div
-                          class="animate-pulse rounded-md bg-muted h-4 w-4"
-                        />
-                      </div>
-                    </div>
+                      class="animate-pulse rounded-md bg-muted h-6 w-32"
+                    />
                     <div
                       class="space-y-4"
                     >
                       <div
-                        class="flex justify-between items-center"
+                        class="border border-border rounded"
                       >
                         <div
-                          class="animate-pulse rounded-md bg-muted h-4 w-16"
+                          class="p-4 flex items-center justify-between"
+                        >
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-24"
+                          />
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-4"
+                          />
+                        </div>
+                      </div>
+                      <div
+                        class="space-y-4"
+                      >
+                        <div
+                          class="flex justify-between items-center"
+                        >
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-16"
+                          />
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-20"
+                          />
+                        </div>
+                        <div
+                          class="flex justify-between items-center"
+                        >
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-20"
+                          />
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-16"
+                          />
+                        </div>
+                        <div
+                          class="flex justify-between items-center"
+                        >
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-12"
+                          />
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-16"
+                          />
+                        </div>
+                      </div>
+                      <div
+                        class="space-y-2"
+                      >
+                        <div
+                          class="animate-pulse rounded-md bg-muted h-10 w-full"
                         />
                         <div
-                          class="animate-pulse rounded-md bg-muted h-4 w-20"
+                          class="animate-pulse rounded-md bg-muted h-8 w-20"
                         />
                       </div>
                       <div
-                        class="flex justify-between items-center"
-                      >
-                        <div
-                          class="animate-pulse rounded-md bg-muted h-4 w-20"
-                        />
-                        <div
-                          class="animate-pulse rounded-md bg-muted h-4 w-16"
-                        />
-                      </div>
+                        class="shrink-0 bg-border h-[1px] w-full"
+                      />
                       <div
                         class="flex justify-between items-center"
                       >
                         <div
-                          class="animate-pulse rounded-md bg-muted h-4 w-12"
+                          class="animate-pulse rounded-md bg-muted h-5 w-28"
                         />
                         <div
-                          class="animate-pulse rounded-md bg-muted h-4 w-16"
+                          class="animate-pulse rounded-md bg-muted h-5 w-24"
                         />
                       </div>
-                    </div>
-                    <div
-                      class="space-y-2"
-                    >
-                      <div
-                        class="animate-pulse rounded-md bg-muted h-10 w-full"
-                      />
-                      <div
-                        class="animate-pulse rounded-md bg-muted h-8 w-20"
-                      />
-                    </div>
-                    <div
-                      class="shrink-0 bg-border h-[1px] w-full"
-                    />
-                    <div
-                      class="flex justify-between items-center"
-                    >
-                      <div
-                        class="animate-pulse rounded-md bg-muted h-5 w-28"
-                      />
-                      <div
-                        class="animate-pulse rounded-md bg-muted h-5 w-24"
-                      />
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div
-              class="hidden lg:block"
-              data-testid="cart-cta-desktop"
-            >
               <div
-                class="w-full sm:w-[95%] lg:w-full mt-6 sm:mt-6 lg:mt-2 mb-4"
+                class="hidden lg:block"
+                data-testid="cart-cta-desktop"
               >
                 <div
-                  class="animate-pulse bg-muted h-10 w-full rounded-md lg:bg-background"
-                />
-              </div>
-              <div
-                class="flex justify-center gap-2"
-              >
+                  class="w-full sm:w-[95%] lg:w-full mt-6 sm:mt-6 lg:mt-2 mb-4"
+                >
+                  <div
+                    class="animate-pulse bg-muted h-10 w-full rounded-md lg:bg-background"
+                  />
+                </div>
                 <div
-                  class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
-                />
-                <div
-                  class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
-                />
-                <div
-                  class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
-                />
-                <div
-                  class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
-                />
+                  class="flex justify-center gap-2"
+                >
+                  <div
+                    class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+                  />
+                  <div
+                    class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+                  />
+                  <div
+                    class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+                  />
+                  <div
+                    class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+                  />
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+    <div
+      class="h-32 sticky bottom-0 bg-background flex items-center flex-col lg:hidden"
+      data-testid="cart-cta-mobile"
+    >
+      <div
+        class="w-full sm:w-[95%] lg:w-full mt-6 sm:mt-6 lg:mt-2 mb-4"
+      >
+        <div
+          class="animate-pulse bg-muted h-10 w-full rounded-md lg:bg-background"
+        />
+      </div>
+      <div
+        class="flex justify-center gap-2"
+      >
+        <div
+          class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+        />
+        <div
+          class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+        />
+        <div
+          class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+        />
+        <div
+          class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+        />
+      </div>
+    </div>
   </div>
+</div>
+`;
+
+exports[`CartSkeleton stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
   <div
-    class="h-32 sticky bottom-0 bg-background flex items-center flex-col lg:hidden"
-    data-testid="cart-cta-mobile"
+    class="bg-muted flex-1"
+    data-testid="sf-cart-container"
   >
     <div
-      class="w-full sm:w-[95%] lg:w-full mt-6 sm:mt-6 lg:mt-2 mb-4"
+      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-14"
     >
       <div
-        class="animate-pulse bg-muted h-10 w-full rounded-md lg:bg-background"
-      />
+        class="space-y-24"
+      >
+        <div
+          class="space-y-4"
+        >
+          <div
+            class="animate-pulse rounded-md bg-muted h-7 lg:h-8 w-48"
+            data-testid="cart-title-skeleton"
+          />
+          <div
+            class="grid grid-cols-1 lg:grid-cols-[66%_1fr] gap-10 xl:gap-20"
+          >
+            <div
+              class="space-y-4"
+            >
+              <div
+                class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl py-6 border border-border shadow-sm"
+                data-slot="card"
+                data-testid="cart-product-item"
+              >
+                <div
+                  class="p-4"
+                  data-slot="card-content"
+                >
+                  <div
+                    class=""
+                  >
+                    <div
+                      class="flex items-start"
+                    >
+                      <div
+                        class="animate-pulse bg-muted flex-shrink-0 w-16 sm:w-20 h-16 sm:h-20 mr-4 sm:mr-6 rounded"
+                      />
+                      <div
+                        class="flex-1 space-y-3"
+                      >
+                        <div
+                          class="space-y-1"
+                        >
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-6 w-3/4"
+                          />
+                          <div
+                            class="space-y-1"
+                          >
+                            <div
+                              class="animate-pulse rounded-md bg-muted h-4 w-1/2"
+                            />
+                            <div
+                              class="animate-pulse rounded-md bg-muted h-4 w-1/3"
+                            />
+                          </div>
+                          <div
+                            class="sm:hidden mt-2"
+                          >
+                            <div
+                              class="animate-pulse rounded-md bg-muted h-4 w-20"
+                            />
+                          </div>
+                          <div
+                            class="space-y-2"
+                          >
+                            <div
+                              class="animate-pulse rounded-md bg-muted h-8 w-24"
+                            />
+                            <div
+                              class="animate-pulse rounded-md bg-muted h-6 w-16"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="hidden sm:block ml-4"
+                      >
+                        <div
+                          class="space-y-2"
+                        >
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-20"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="space-y-4"
+            >
+              <div
+                class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+                data-slot="card"
+                data-testid="cart-order-summary"
+              >
+                <div
+                  class="p-6"
+                  data-slot="card-content"
+                >
+                  <div
+                    class="space-y-5"
+                  >
+                    <div
+                      class="animate-pulse rounded-md bg-muted h-6 w-32"
+                    />
+                    <div
+                      class="space-y-4"
+                    >
+                      <div
+                        class="border border-border rounded"
+                      >
+                        <div
+                          class="p-4 flex items-center justify-between"
+                        >
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-24"
+                          />
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-4"
+                          />
+                        </div>
+                      </div>
+                      <div
+                        class="space-y-4"
+                      >
+                        <div
+                          class="flex justify-between items-center"
+                        >
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-16"
+                          />
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-20"
+                          />
+                        </div>
+                        <div
+                          class="flex justify-between items-center"
+                        >
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-20"
+                          />
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-16"
+                          />
+                        </div>
+                        <div
+                          class="flex justify-between items-center"
+                        >
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-12"
+                          />
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-16"
+                          />
+                        </div>
+                      </div>
+                      <div
+                        class="space-y-2"
+                      >
+                        <div
+                          class="animate-pulse rounded-md bg-muted h-10 w-full"
+                        />
+                        <div
+                          class="animate-pulse rounded-md bg-muted h-8 w-20"
+                        />
+                      </div>
+                      <div
+                        class="shrink-0 bg-border h-[1px] w-full"
+                      />
+                      <div
+                        class="flex justify-between items-center"
+                      >
+                        <div
+                          class="animate-pulse rounded-md bg-muted h-5 w-28"
+                        />
+                        <div
+                          class="animate-pulse rounded-md bg-muted h-5 w-24"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="hidden lg:block"
+                data-testid="cart-cta-desktop"
+              >
+                <div
+                  class="w-full sm:w-[95%] lg:w-full mt-6 sm:mt-6 lg:mt-2 mb-4"
+                >
+                  <div
+                    class="animate-pulse bg-muted h-10 w-full rounded-md lg:bg-background"
+                  />
+                </div>
+                <div
+                  class="flex justify-center gap-2"
+                >
+                  <div
+                    class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+                  />
+                  <div
+                    class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+                  />
+                  <div
+                    class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+                  />
+                  <div
+                    class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <div
-      class="flex justify-center gap-2"
+      class="h-32 sticky bottom-0 bg-background flex items-center flex-col lg:hidden"
+      data-testid="cart-cta-mobile"
     >
       <div
-        class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
-      />
+        class="w-full sm:w-[95%] lg:w-full mt-6 sm:mt-6 lg:mt-2 mb-4"
+      >
+        <div
+          class="animate-pulse bg-muted h-10 w-full rounded-md lg:bg-background"
+        />
+      </div>
       <div
-        class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
-      />
+        class="flex justify-center gap-2"
+      >
+        <div
+          class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+        />
+        <div
+          class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+        />
+        <div
+          class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+        />
+        <div
+          class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`CartSkeleton stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="bg-muted flex-1"
+    data-testid="sf-cart-container"
+  >
+    <div
+      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-14"
+    >
       <div
-        class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
-      />
+        class="space-y-24"
+      >
+        <div
+          class="space-y-4"
+        >
+          <div
+            class="animate-pulse rounded-md bg-muted h-7 lg:h-8 w-48"
+            data-testid="cart-title-skeleton"
+          />
+          <div
+            class="grid grid-cols-1 lg:grid-cols-[66%_1fr] gap-10 xl:gap-20"
+          >
+            <div
+              class="space-y-4"
+            >
+              <div
+                class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl py-6 border border-border shadow-sm"
+                data-slot="card"
+                data-testid="cart-product-item"
+              >
+                <div
+                  class="p-4"
+                  data-slot="card-content"
+                >
+                  <div
+                    class=""
+                  >
+                    <div
+                      class="flex items-start"
+                    >
+                      <div
+                        class="animate-pulse bg-muted flex-shrink-0 w-16 sm:w-20 h-16 sm:h-20 mr-4 sm:mr-6 rounded"
+                      />
+                      <div
+                        class="flex-1 space-y-3"
+                      >
+                        <div
+                          class="space-y-1"
+                        >
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-6 w-3/4"
+                          />
+                          <div
+                            class="space-y-1"
+                          >
+                            <div
+                              class="animate-pulse rounded-md bg-muted h-4 w-1/2"
+                            />
+                            <div
+                              class="animate-pulse rounded-md bg-muted h-4 w-1/3"
+                            />
+                          </div>
+                          <div
+                            class="sm:hidden mt-2"
+                          >
+                            <div
+                              class="animate-pulse rounded-md bg-muted h-4 w-20"
+                            />
+                          </div>
+                          <div
+                            class="space-y-2"
+                          >
+                            <div
+                              class="animate-pulse rounded-md bg-muted h-8 w-24"
+                            />
+                            <div
+                              class="animate-pulse rounded-md bg-muted h-6 w-16"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="hidden sm:block ml-4"
+                      >
+                        <div
+                          class="space-y-2"
+                        >
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-20"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="space-y-4"
+            >
+              <div
+                class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+                data-slot="card"
+                data-testid="cart-order-summary"
+              >
+                <div
+                  class="p-6"
+                  data-slot="card-content"
+                >
+                  <div
+                    class="space-y-5"
+                  >
+                    <div
+                      class="animate-pulse rounded-md bg-muted h-6 w-32"
+                    />
+                    <div
+                      class="space-y-4"
+                    >
+                      <div
+                        class="border border-border rounded"
+                      >
+                        <div
+                          class="p-4 flex items-center justify-between"
+                        >
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-24"
+                          />
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-4"
+                          />
+                        </div>
+                      </div>
+                      <div
+                        class="space-y-4"
+                      >
+                        <div
+                          class="flex justify-between items-center"
+                        >
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-16"
+                          />
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-20"
+                          />
+                        </div>
+                        <div
+                          class="flex justify-between items-center"
+                        >
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-20"
+                          />
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-16"
+                          />
+                        </div>
+                        <div
+                          class="flex justify-between items-center"
+                        >
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-12"
+                          />
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-16"
+                          />
+                        </div>
+                      </div>
+                      <div
+                        class="space-y-2"
+                      >
+                        <div
+                          class="animate-pulse rounded-md bg-muted h-10 w-full"
+                        />
+                        <div
+                          class="animate-pulse rounded-md bg-muted h-8 w-20"
+                        />
+                      </div>
+                      <div
+                        class="shrink-0 bg-border h-[1px] w-full"
+                      />
+                      <div
+                        class="flex justify-between items-center"
+                      >
+                        <div
+                          class="animate-pulse rounded-md bg-muted h-5 w-28"
+                        />
+                        <div
+                          class="animate-pulse rounded-md bg-muted h-5 w-24"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="hidden lg:block"
+                data-testid="cart-cta-desktop"
+              >
+                <div
+                  class="w-full sm:w-[95%] lg:w-full mt-6 sm:mt-6 lg:mt-2 mb-4"
+                >
+                  <div
+                    class="animate-pulse bg-muted h-10 w-full rounded-md lg:bg-background"
+                  />
+                </div>
+                <div
+                  class="flex justify-center gap-2"
+                >
+                  <div
+                    class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+                  />
+                  <div
+                    class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+                  />
+                  <div
+                    class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+                  />
+                  <div
+                    class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="h-32 sticky bottom-0 bg-background flex items-center flex-col lg:hidden"
+      data-testid="cart-cta-mobile"
+    >
       <div
-        class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
-      />
+        class="w-full sm:w-[95%] lg:w-full mt-6 sm:mt-6 lg:mt-2 mb-4"
+      >
+        <div
+          class="animate-pulse bg-muted h-10 w-full rounded-md lg:bg-background"
+        />
+      </div>
+      <div
+        class="flex justify-center gap-2"
+      >
+        <div
+          class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+        />
+        <div
+          class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+        />
+        <div
+          class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+        />
+        <div
+          class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`CartSkeleton stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="bg-muted flex-1"
+    data-testid="sf-cart-container"
+  >
+    <div
+      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-14"
+    >
+      <div
+        class="space-y-24"
+      >
+        <div
+          class="space-y-4"
+        >
+          <div
+            class="animate-pulse rounded-md bg-muted h-7 lg:h-8 w-48"
+            data-testid="cart-title-skeleton"
+          />
+          <div
+            class="grid grid-cols-1 lg:grid-cols-[66%_1fr] gap-10 xl:gap-20"
+          >
+            <div
+              class="space-y-4"
+            >
+              <div
+                class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl py-6 border border-border shadow-sm"
+                data-slot="card"
+                data-testid="cart-product-item"
+              >
+                <div
+                  class="p-4"
+                  data-slot="card-content"
+                >
+                  <div
+                    class=""
+                  >
+                    <div
+                      class="flex items-start"
+                    >
+                      <div
+                        class="animate-pulse bg-muted flex-shrink-0 w-16 sm:w-20 h-16 sm:h-20 mr-4 sm:mr-6 rounded"
+                      />
+                      <div
+                        class="flex-1 space-y-3"
+                      >
+                        <div
+                          class="space-y-1"
+                        >
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-6 w-3/4"
+                          />
+                          <div
+                            class="space-y-1"
+                          >
+                            <div
+                              class="animate-pulse rounded-md bg-muted h-4 w-1/2"
+                            />
+                            <div
+                              class="animate-pulse rounded-md bg-muted h-4 w-1/3"
+                            />
+                          </div>
+                          <div
+                            class="sm:hidden mt-2"
+                          >
+                            <div
+                              class="animate-pulse rounded-md bg-muted h-4 w-20"
+                            />
+                          </div>
+                          <div
+                            class="space-y-2"
+                          >
+                            <div
+                              class="animate-pulse rounded-md bg-muted h-8 w-24"
+                            />
+                            <div
+                              class="animate-pulse rounded-md bg-muted h-6 w-16"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="hidden sm:block ml-4"
+                      >
+                        <div
+                          class="space-y-2"
+                        >
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-20"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="space-y-4"
+            >
+              <div
+                class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+                data-slot="card"
+                data-testid="cart-order-summary"
+              >
+                <div
+                  class="p-6"
+                  data-slot="card-content"
+                >
+                  <div
+                    class="space-y-5"
+                  >
+                    <div
+                      class="animate-pulse rounded-md bg-muted h-6 w-32"
+                    />
+                    <div
+                      class="space-y-4"
+                    >
+                      <div
+                        class="border border-border rounded"
+                      >
+                        <div
+                          class="p-4 flex items-center justify-between"
+                        >
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-24"
+                          />
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-4"
+                          />
+                        </div>
+                      </div>
+                      <div
+                        class="space-y-4"
+                      >
+                        <div
+                          class="flex justify-between items-center"
+                        >
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-16"
+                          />
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-20"
+                          />
+                        </div>
+                        <div
+                          class="flex justify-between items-center"
+                        >
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-20"
+                          />
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-16"
+                          />
+                        </div>
+                        <div
+                          class="flex justify-between items-center"
+                        >
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-12"
+                          />
+                          <div
+                            class="animate-pulse rounded-md bg-muted h-4 w-16"
+                          />
+                        </div>
+                      </div>
+                      <div
+                        class="space-y-2"
+                      >
+                        <div
+                          class="animate-pulse rounded-md bg-muted h-10 w-full"
+                        />
+                        <div
+                          class="animate-pulse rounded-md bg-muted h-8 w-20"
+                        />
+                      </div>
+                      <div
+                        class="shrink-0 bg-border h-[1px] w-full"
+                      />
+                      <div
+                        class="flex justify-between items-center"
+                      >
+                        <div
+                          class="animate-pulse rounded-md bg-muted h-5 w-28"
+                        />
+                        <div
+                          class="animate-pulse rounded-md bg-muted h-5 w-24"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="hidden lg:block"
+                data-testid="cart-cta-desktop"
+              >
+                <div
+                  class="w-full sm:w-[95%] lg:w-full mt-6 sm:mt-6 lg:mt-2 mb-4"
+                >
+                  <div
+                    class="animate-pulse bg-muted h-10 w-full rounded-md lg:bg-background"
+                  />
+                </div>
+                <div
+                  class="flex justify-center gap-2"
+                >
+                  <div
+                    class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+                  />
+                  <div
+                    class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+                  />
+                  <div
+                    class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+                  />
+                  <div
+                    class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="h-32 sticky bottom-0 bg-background flex items-center flex-col lg:hidden"
+      data-testid="cart-cta-mobile"
+    >
+      <div
+        class="w-full sm:w-[95%] lg:w-full mt-6 sm:mt-6 lg:mt-2 mb-4"
+      >
+        <div
+          class="animate-pulse bg-muted h-10 w-full rounded-md lg:bg-background"
+        />
+      </div>
+      <div
+        class="flex justify-center gap-2"
+      >
+        <div
+          class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+        />
+        <div
+          class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+        />
+        <div
+          class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+        />
+        <div
+          class="animate-pulse bg-muted w-10 h-8 rounded lg:bg-background"
+        />
+      </div>
     </div>
   </div>
 </div>

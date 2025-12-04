@@ -1,228 +1,437 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`SelectNative stories snapshot > Default story renders and matches snapshot 1`] = `
-<div
-  class="space-y-2 w-[200px]"
->
-  <label
-    class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
-    data-slot="label"
-    for="select"
-  >
-    Choose an option
-  </label>
+<div>
   <div
-    class="relative flex"
+    class="space-y-2 w-[200px]"
   >
-    <select
-      class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center rounded-md border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8"
-      data-slot="select-native"
-      id="select"
+    <label
+      class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
+      data-slot="label"
+      for="select"
     >
-      <option
-        value=""
-      >
-        Select...
-      </option>
-      <option
-        value="option1"
-      >
-        Option 1
-      </option>
-      <option
-        value="option2"
-      >
-        Option 2
-      </option>
-      <option
-        value="option3"
-      >
-        Option 3
-      </option>
-    </select>
-    <span
-      class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
+      Choose an option
+    </label>
+    <div
+      class="relative flex"
     >
-      <svg
-        aria-hidden="true"
-        class="lucide lucide-chevron-down"
-        fill="none"
-        height="16"
-        stroke="currentColor"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        viewBox="0 0 24 24"
-        width="16"
-        xmlns="http://www.w3.org/2000/svg"
+      <select
+        class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center rounded-md border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8"
+        data-slot="select-native"
+        id="select"
       >
-        <path
-          d="m6 9 6 6 6-6"
-        />
-      </svg>
-    </span>
+        <option
+          value=""
+        >
+          Select...
+        </option>
+        <option
+          value="option1"
+        >
+          Option 1
+        </option>
+        <option
+          value="option2"
+        >
+          Option 2
+        </option>
+        <option
+          value="option3"
+        >
+          Option 3
+        </option>
+      </select>
+      <span
+        class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-chevron-down"
+          fill="none"
+          height="16"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="16"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m6 9 6 6 6-6"
+          />
+        </svg>
+      </span>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SelectNative stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="space-y-2 w-[200px]"
+  >
+    <label
+      class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
+      data-slot="label"
+      for="select"
+    >
+      Choose an option
+    </label>
+    <div
+      class="relative flex"
+    >
+      <select
+        class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center rounded-md border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8"
+        data-slot="select-native"
+        id="select"
+      >
+        <option
+          value=""
+        >
+          Select...
+        </option>
+        <option
+          value="option1"
+        >
+          Option 1
+        </option>
+        <option
+          value="option2"
+        >
+          Option 2
+        </option>
+        <option
+          value="option3"
+        >
+          Option 3
+        </option>
+      </select>
+      <span
+        class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-chevron-down"
+          fill="none"
+          height="16"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="16"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m6 9 6 6 6-6"
+          />
+        </svg>
+      </span>
+    </div>
   </div>
 </div>
 `;
 
 exports[`SelectNative stories snapshot > Disabled story renders and matches snapshot 1`] = `
-<div
-  class="space-y-2 w-[200px]"
->
-  <label
-    class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
-    data-slot="label"
-    for="select-disabled"
-  >
-    Disabled select
-  </label>
+<div>
   <div
-    class="relative flex"
+    class="space-y-2 w-[200px]"
   >
-    <select
-      class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center rounded-md border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8"
-      data-slot="select-native"
-      disabled=""
-      id="select-disabled"
+    <label
+      class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
+      data-slot="label"
+      for="select-disabled"
     >
-      <option
-        value="option1"
-      >
-        Option 1
-      </option>
-      <option
-        value="option2"
-      >
-        Option 2
-      </option>
-    </select>
-    <span
-      class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
+      Disabled select
+    </label>
+    <div
+      class="relative flex"
     >
-      <svg
-        aria-hidden="true"
-        class="lucide lucide-chevron-down"
-        fill="none"
-        height="16"
-        stroke="currentColor"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        viewBox="0 0 24 24"
-        width="16"
-        xmlns="http://www.w3.org/2000/svg"
+      <select
+        class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center rounded-md border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8"
+        data-slot="select-native"
+        disabled=""
+        id="select-disabled"
       >
-        <path
-          d="m6 9 6 6 6-6"
-        />
-      </svg>
-    </span>
+        <option
+          value="option1"
+        >
+          Option 1
+        </option>
+        <option
+          value="option2"
+        >
+          Option 2
+        </option>
+      </select>
+      <span
+        class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-chevron-down"
+          fill="none"
+          height="16"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="16"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m6 9 6 6 6-6"
+          />
+        </svg>
+      </span>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SelectNative stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="space-y-2 w-[200px]"
+  >
+    <label
+      class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
+      data-slot="label"
+      for="select"
+    >
+      Choose an option
+    </label>
+    <div
+      class="relative flex"
+    >
+      <select
+        class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center rounded-md border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8"
+        data-slot="select-native"
+        id="select"
+      >
+        <option
+          value=""
+        >
+          Select...
+        </option>
+        <option
+          value="option1"
+        >
+          Option 1
+        </option>
+        <option
+          value="option2"
+        >
+          Option 2
+        </option>
+        <option
+          value="option3"
+        >
+          Option 3
+        </option>
+      </select>
+      <span
+        class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-chevron-down"
+          fill="none"
+          height="16"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="16"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m6 9 6 6 6-6"
+          />
+        </svg>
+      </span>
+    </div>
   </div>
 </div>
 `;
 
 exports[`SelectNative stories snapshot > Multiple story renders and matches snapshot 1`] = `
-<div
-  class="space-y-2 w-[200px]"
->
-  <label
-    class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
-    data-slot="label"
-    for="select-multiple"
-  >
-    Choose multiple options
-  </label>
+<div>
   <div
-    class="relative flex"
+    class="space-y-2 w-[200px]"
   >
-    <select
-      class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center rounded-md border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 [&_option:checked]:bg-accent py-1 *:px-3 *:py-1"
-      data-slot="select-native"
-      id="select-multiple"
-      multiple=""
+    <label
+      class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
+      data-slot="label"
+      for="select-multiple"
     >
-      <option
-        value="option1"
+      Choose multiple options
+    </label>
+    <div
+      class="relative flex"
+    >
+      <select
+        class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center rounded-md border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 [&_option:checked]:bg-accent py-1 *:px-3 *:py-1"
+        data-slot="select-native"
+        id="select-multiple"
+        multiple=""
       >
-        Option 1
-      </option>
-      <option
-        value="option2"
+        <option
+          value="option1"
+        >
+          Option 1
+        </option>
+        <option
+          value="option2"
+        >
+          Option 2
+        </option>
+        <option
+          value="option3"
+        >
+          Option 3
+        </option>
+        <option
+          value="option4"
+        >
+          Option 4
+        </option>
+      </select>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SelectNative stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="space-y-2 w-[200px]"
+  >
+    <label
+      class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
+      data-slot="label"
+      for="select"
+    >
+      Choose an option
+    </label>
+    <div
+      class="relative flex"
+    >
+      <select
+        class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center rounded-md border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8"
+        data-slot="select-native"
+        id="select"
       >
-        Option 2
-      </option>
-      <option
-        value="option3"
+        <option
+          value=""
+        >
+          Select...
+        </option>
+        <option
+          value="option1"
+        >
+          Option 1
+        </option>
+        <option
+          value="option2"
+        >
+          Option 2
+        </option>
+        <option
+          value="option3"
+        >
+          Option 3
+        </option>
+      </select>
+      <span
+        class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
       >
-        Option 3
-      </option>
-      <option
-        value="option4"
-      >
-        Option 4
-      </option>
-    </select>
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-chevron-down"
+          fill="none"
+          height="16"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="16"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m6 9 6 6 6-6"
+          />
+        </svg>
+      </span>
+    </div>
   </div>
 </div>
 `;
 
 exports[`SelectNative stories snapshot > WithDefaultValue story renders and matches snapshot 1`] = `
-<div
-  class="space-y-2 w-[200px]"
->
-  <label
-    class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
-    data-slot="label"
-    for="select-default"
-  >
-    Choose an option
-  </label>
+<div>
   <div
-    class="relative flex"
+    class="space-y-2 w-[200px]"
   >
-    <select
-      class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center rounded-md border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8"
-      data-slot="select-native"
-      id="select-default"
+    <label
+      class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
+      data-slot="label"
+      for="select-default"
     >
-      <option
-        value="option1"
-      >
-        Option 1
-      </option>
-      <option
-        selected=""
-        value="option2"
-      >
-        Option 2
-      </option>
-      <option
-        value="option3"
-      >
-        Option 3
-      </option>
-    </select>
-    <span
-      class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
+      Choose an option
+    </label>
+    <div
+      class="relative flex"
     >
-      <svg
-        aria-hidden="true"
-        class="lucide lucide-chevron-down"
-        fill="none"
-        height="16"
-        stroke="currentColor"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        viewBox="0 0 24 24"
-        width="16"
-        xmlns="http://www.w3.org/2000/svg"
+      <select
+        class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center rounded-md border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8"
+        data-slot="select-native"
+        id="select-default"
       >
-        <path
-          d="m6 9 6 6 6-6"
-        />
-      </svg>
-    </span>
+        <option
+          value="option1"
+        >
+          Option 1
+        </option>
+        <option
+          selected=""
+          value="option2"
+        >
+          Option 2
+        </option>
+        <option
+          value="option3"
+        >
+          Option 3
+        </option>
+      </select>
+      <span
+        class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-chevron-down"
+          fill="none"
+          height="16"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="16"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m6 9 6 6 6-6"
+          />
+        </svg>
+      </span>
+    </div>
   </div>
 </div>
 `;

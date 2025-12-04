@@ -429,3 +429,87 @@ export const StaticView: Story = {
         await expect(status).toBeInTheDocument();
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test initial state - should show summary view
+        const summaryContent = canvas.getByText('Contact Information');
+        await expect(summaryContent).toBeInTheDocument();
+
+        // Test that component renders properly
+        await expect(canvasElement.firstChild).toBeInTheDocument();
+
+        // Test edit button is present (but don't click in test environment)
+        const editButtons = canvas.getAllByRole('button');
+        void expect(editButtons.length).toBeGreaterThan(0);
+
+        // Verify buttons are properly rendered
+        editButtons.forEach((button) => {
+            void expect(button).toBeInTheDocument();
+            void expect(button).not.toBeDisabled();
+        });
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test initial state - should show summary view
+        const summaryContent = canvas.getByText('Contact Information');
+        await expect(summaryContent).toBeInTheDocument();
+
+        // Test that component renders properly
+        await expect(canvasElement.firstChild).toBeInTheDocument();
+
+        // Test edit button is present (but don't click in test environment)
+        const editButtons = canvas.getAllByRole('button');
+        void expect(editButtons.length).toBeGreaterThan(0);
+
+        // Verify buttons are properly rendered
+        editButtons.forEach((button) => {
+            void expect(button).toBeInTheDocument();
+            void expect(button).not.toBeDisabled();
+        });
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test initial state - should show summary view
+        const summaryContent = canvas.getByText('Contact Information');
+        await expect(summaryContent).toBeInTheDocument();
+
+        // Test that component renders properly
+        await expect(canvasElement.firstChild).toBeInTheDocument();
+
+        // Test edit button is present (but don't click in test environment)
+        const editButtons = canvas.getAllByRole('button');
+        void expect(editButtons.length).toBeGreaterThan(0);
+
+        // Verify buttons are properly rendered
+        editButtons.forEach((button) => {
+            void expect(button).toBeInTheDocument();
+            void expect(button).not.toBeDisabled();
+        });
+    },
+};

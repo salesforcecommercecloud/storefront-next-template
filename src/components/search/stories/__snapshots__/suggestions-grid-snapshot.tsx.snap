@@ -1,426 +1,1091 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`SuggestionsGrid stories snapshot > Default story renders and matches snapshot 1`] = `
-<div
-  class="overflow-hidden"
-  data-testid="sf-horizontal-product-suggestions"
->
+<div>
   <div
-    class="flex gap-4 overflow-x-hidden pb-2"
+    class="overflow-hidden"
+    data-testid="sf-horizontal-product-suggestions"
   >
-    <a
-      class="block hover:underline flex-1 max-w-[20%]"
-      data-testid="product-tile"
-      href="/products/running-shoes"
+    <div
+      class="flex gap-4 overflow-x-hidden pb-2"
     >
-      <div
-        class="w-full"
+      <a
+        class="block hover:underline flex-1 max-w-[20%]"
+        data-testid="product-tile"
+        href="/products/running-shoes"
       >
         <div
-          class="mb-2"
+          class="w-full"
         >
           <div
-            class="w-full relative aspect-[4/3]"
+            class="mb-2"
           >
             <div
-              class=""
+              class="w-full relative aspect-[4/3]"
             >
-              <img
-                alt=""
-                aria-hidden="true"
-                class="absolute inset-0 w-full h-full object-cover block"
-                fetchpriority="low"
-                loading="eager"
-                src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop"
-              />
+              <div
+                class=""
+              >
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="absolute inset-0 w-full h-full object-cover block"
+                  fetchpriority="low"
+                  loading="eager"
+                  src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop"
+                />
+              </div>
             </div>
           </div>
+          <p
+            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+          >
+            Running Shoes
+          </p>
+          <p
+            class="text-sm font-semibold text-foreground"
+          >
+            £
+            99.99
+          </p>
         </div>
-        <p
-          class="text-sm font-medium text-foreground mb-1 line-clamp-2"
-        >
-          Running Shoes
-        </p>
-        <p
-          class="text-sm font-semibold text-foreground"
-        >
-          £
-          99.99
-        </p>
-      </div>
-    </a>
-    <a
-      class="block hover:underline flex-1 max-w-[20%]"
-      data-testid="product-tile"
-      href="/products/hiking-boots"
-    >
-      <div
-        class="w-full"
+      </a>
+      <a
+        class="block hover:underline flex-1 max-w-[20%]"
+        data-testid="product-tile"
+        href="/products/hiking-boots"
       >
         <div
-          class="mb-2"
+          class="w-full"
         >
           <div
-            class="w-full relative aspect-[4/3]"
+            class="mb-2"
           >
             <div
-              class=""
+              class="w-full relative aspect-[4/3]"
             >
-              <img
-                alt=""
-                aria-hidden="true"
-                class="absolute inset-0 w-full h-full object-cover block"
-                fetchpriority="low"
-                loading="eager"
-                src="https://images.unsplash.com/photo-1608256246200-53bd35f3f44e?w=400&h=400&fit=crop"
-              />
+              <div
+                class=""
+              >
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="absolute inset-0 w-full h-full object-cover block"
+                  fetchpriority="low"
+                  loading="eager"
+                  src="https://images.unsplash.com/photo-1608256246200-53bd35f3f44e?w=400&h=400&fit=crop"
+                />
+              </div>
             </div>
           </div>
+          <p
+            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+          >
+            Hiking Boots
+          </p>
+          <p
+            class="text-sm font-semibold text-foreground"
+          >
+            £
+            149.99
+          </p>
         </div>
-        <p
-          class="text-sm font-medium text-foreground mb-1 line-clamp-2"
-        >
-          Hiking Boots
-        </p>
-        <p
-          class="text-sm font-semibold text-foreground"
-        >
-          £
-          149.99
-        </p>
-      </div>
-    </a>
-    <a
-      class="block hover:underline flex-1 max-w-[20%]"
-      data-testid="product-tile"
-      href="/products/casual-sneakers"
-    >
-      <div
-        class="w-full"
+      </a>
+      <a
+        class="block hover:underline flex-1 max-w-[20%]"
+        data-testid="product-tile"
+        href="/products/casual-sneakers"
       >
         <div
-          class="mb-2"
+          class="w-full"
         >
           <div
-            class="w-full relative aspect-[4/3]"
+            class="mb-2"
           >
             <div
-              class=""
+              class="w-full relative aspect-[4/3]"
             >
-              <img
-                alt=""
-                aria-hidden="true"
-                class="absolute inset-0 w-full h-full object-cover block"
-                fetchpriority="low"
-                loading="eager"
-                src="https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=400&h=400&fit=crop"
-              />
+              <div
+                class=""
+              >
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="absolute inset-0 w-full h-full object-cover block"
+                  fetchpriority="low"
+                  loading="eager"
+                  src="https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=400&h=400&fit=crop"
+                />
+              </div>
             </div>
           </div>
+          <p
+            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+          >
+            Casual Sneakers
+          </p>
+          <p
+            class="text-sm font-semibold text-foreground"
+          >
+            £
+            79.99
+          </p>
         </div>
-        <p
-          class="text-sm font-medium text-foreground mb-1 line-clamp-2"
-        >
-          Casual Sneakers
-        </p>
-        <p
-          class="text-sm font-semibold text-foreground"
-        >
-          £
-          79.99
-        </p>
-      </div>
-    </a>
-    <a
-      class="block hover:underline flex-1 max-w-[20%]"
-      data-testid="product-tile"
-      href="/products/dress-shoes"
-    >
-      <div
-        class="w-full"
+      </a>
+      <a
+        class="block hover:underline flex-1 max-w-[20%]"
+        data-testid="product-tile"
+        href="/products/dress-shoes"
       >
         <div
-          class="mb-2"
+          class="w-full"
         >
           <div
-            class="w-full relative aspect-[4/3]"
+            class="mb-2"
           >
             <div
-              class=""
+              class="w-full relative aspect-[4/3]"
             >
-              <img
-                alt=""
-                aria-hidden="true"
-                class="absolute inset-0 w-full h-full object-cover block"
-                fetchpriority="low"
-                loading="eager"
-                src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=400&fit=crop"
-              />
+              <div
+                class=""
+              >
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="absolute inset-0 w-full h-full object-cover block"
+                  fetchpriority="low"
+                  loading="eager"
+                  src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=400&fit=crop"
+                />
+              </div>
             </div>
           </div>
+          <p
+            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+          >
+            Dress Shoes
+          </p>
+          <p
+            class="text-sm font-semibold text-foreground"
+          >
+            £
+            199.99
+          </p>
         </div>
-        <p
-          class="text-sm font-medium text-foreground mb-1 line-clamp-2"
-        >
-          Dress Shoes
-        </p>
-        <p
-          class="text-sm font-semibold text-foreground"
-        >
-          £
-          199.99
-        </p>
-      </div>
-    </a>
-    <a
-      class="block hover:underline flex-1 max-w-[20%]"
-      data-testid="product-tile"
-      href="/products/sandals"
-    >
-      <div
-        class="w-full"
+      </a>
+      <a
+        class="block hover:underline flex-1 max-w-[20%]"
+        data-testid="product-tile"
+        href="/products/sandals"
       >
         <div
-          class="mb-2"
+          class="w-full"
         >
           <div
-            class="w-full relative aspect-[4/3]"
+            class="mb-2"
           >
             <div
-              class=""
+              class="w-full relative aspect-[4/3]"
             >
-              <img
-                alt=""
-                aria-hidden="true"
-                class="absolute inset-0 w-full h-full object-cover block"
-                fetchpriority="low"
-                loading="eager"
-                src="https://images.unsplash.com/photo-1531572753322-ad063cecc140?w=400&h=400&fit=crop"
-              />
+              <div
+                class=""
+              >
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="absolute inset-0 w-full h-full object-cover block"
+                  fetchpriority="low"
+                  loading="eager"
+                  src="https://images.unsplash.com/photo-1531572753322-ad063cecc140?w=400&h=400&fit=crop"
+                />
+              </div>
             </div>
           </div>
+          <p
+            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+          >
+            Sandals
+          </p>
+          <p
+            class="text-sm font-semibold text-foreground"
+          >
+            £
+            49.99
+          </p>
         </div>
-        <p
-          class="text-sm font-medium text-foreground mb-1 line-clamp-2"
-        >
-          Sandals
-        </p>
-        <p
-          class="text-sm font-semibold text-foreground"
-        >
-          £
-          49.99
-        </p>
-      </div>
-    </a>
+      </a>
+    </div>
   </div>
 </div>
 `;
 
-exports[`SuggestionsGrid stories snapshot > Empty story renders and matches snapshot 1`] = `null`;
-
-exports[`SuggestionsGrid stories snapshot > SingleProduct story renders and matches snapshot 1`] = `
-<div
-  class="overflow-hidden"
-  data-testid="sf-horizontal-product-suggestions"
->
+exports[`SuggestionsGrid stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
   <div
-    class="flex gap-4 overflow-x-hidden pb-2"
+    class="overflow-hidden"
+    data-testid="sf-horizontal-product-suggestions"
   >
-    <a
-      class="block hover:underline flex-1 max-w-[20%]"
-      data-testid="product-tile"
-      href="/products/running-shoes"
+    <div
+      class="flex gap-4 overflow-x-hidden pb-2"
     >
-      <div
-        class="w-full"
+      <a
+        class="block hover:underline flex-1 max-w-[20%]"
+        data-testid="product-tile"
+        href="/products/running-shoes"
       >
         <div
-          class="mb-2"
+          class="w-full"
         >
           <div
-            class="w-full relative aspect-[4/3]"
+            class="mb-2"
           >
             <div
-              class=""
+              class="w-full relative aspect-[4/3]"
             >
-              <img
-                alt=""
-                aria-hidden="true"
-                class="absolute inset-0 w-full h-full object-cover block"
-                fetchpriority="low"
-                loading="eager"
-                src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop"
-              />
+              <div
+                class=""
+              >
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="absolute inset-0 w-full h-full object-cover block"
+                  fetchpriority="low"
+                  loading="eager"
+                  src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop"
+                />
+              </div>
             </div>
           </div>
+          <p
+            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+          >
+            Running Shoes
+          </p>
+          <p
+            class="text-sm font-semibold text-foreground"
+          >
+            £
+            99.99
+          </p>
         </div>
-        <p
-          class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+      </a>
+      <a
+        class="block hover:underline flex-1 max-w-[20%]"
+        data-testid="product-tile"
+        href="/products/hiking-boots"
+      >
+        <div
+          class="w-full"
         >
-          Running Shoes
-        </p>
-        <p
-          class="text-sm font-semibold text-foreground"
+          <div
+            class="mb-2"
+          >
+            <div
+              class="w-full relative aspect-[4/3]"
+            >
+              <div
+                class=""
+              >
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="absolute inset-0 w-full h-full object-cover block"
+                  fetchpriority="low"
+                  loading="eager"
+                  src="https://images.unsplash.com/photo-1608256246200-53bd35f3f44e?w=400&h=400&fit=crop"
+                />
+              </div>
+            </div>
+          </div>
+          <p
+            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+          >
+            Hiking Boots
+          </p>
+          <p
+            class="text-sm font-semibold text-foreground"
+          >
+            £
+            149.99
+          </p>
+        </div>
+      </a>
+      <a
+        class="block hover:underline flex-1 max-w-[20%]"
+        data-testid="product-tile"
+        href="/products/casual-sneakers"
+      >
+        <div
+          class="w-full"
         >
-          £
-          99.99
-        </p>
-      </div>
-    </a>
+          <div
+            class="mb-2"
+          >
+            <div
+              class="w-full relative aspect-[4/3]"
+            >
+              <div
+                class=""
+              >
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="absolute inset-0 w-full h-full object-cover block"
+                  fetchpriority="low"
+                  loading="eager"
+                  src="https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=400&h=400&fit=crop"
+                />
+              </div>
+            </div>
+          </div>
+          <p
+            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+          >
+            Casual Sneakers
+          </p>
+          <p
+            class="text-sm font-semibold text-foreground"
+          >
+            £
+            79.99
+          </p>
+        </div>
+      </a>
+      <a
+        class="block hover:underline flex-1 max-w-[20%]"
+        data-testid="product-tile"
+        href="/products/dress-shoes"
+      >
+        <div
+          class="w-full"
+        >
+          <div
+            class="mb-2"
+          >
+            <div
+              class="w-full relative aspect-[4/3]"
+            >
+              <div
+                class=""
+              >
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="absolute inset-0 w-full h-full object-cover block"
+                  fetchpriority="low"
+                  loading="eager"
+                  src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=400&fit=crop"
+                />
+              </div>
+            </div>
+          </div>
+          <p
+            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+          >
+            Dress Shoes
+          </p>
+          <p
+            class="text-sm font-semibold text-foreground"
+          >
+            £
+            199.99
+          </p>
+        </div>
+      </a>
+      <a
+        class="block hover:underline flex-1 max-w-[20%]"
+        data-testid="product-tile"
+        href="/products/sandals"
+      >
+        <div
+          class="w-full"
+        >
+          <div
+            class="mb-2"
+          >
+            <div
+              class="w-full relative aspect-[4/3]"
+            >
+              <div
+                class=""
+              >
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="absolute inset-0 w-full h-full object-cover block"
+                  fetchpriority="low"
+                  loading="eager"
+                  src="https://images.unsplash.com/photo-1531572753322-ad063cecc140?w=400&h=400&fit=crop"
+                />
+              </div>
+            </div>
+          </div>
+          <p
+            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+          >
+            Sandals
+          </p>
+          <p
+            class="text-sm font-semibold text-foreground"
+          >
+            £
+            49.99
+          </p>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SuggestionsGrid stories snapshot > Empty story renders and matches snapshot 1`] = `<div />`;
+
+exports[`SuggestionsGrid stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="overflow-hidden"
+    data-testid="sf-horizontal-product-suggestions"
+  >
+    <div
+      class="flex gap-4 overflow-x-hidden pb-2"
+    >
+      <a
+        class="block hover:underline flex-1 max-w-[20%]"
+        data-testid="product-tile"
+        href="/products/running-shoes"
+      >
+        <div
+          class="w-full"
+        >
+          <div
+            class="mb-2"
+          >
+            <div
+              class="w-full relative aspect-[4/3]"
+            >
+              <div
+                class=""
+              >
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="absolute inset-0 w-full h-full object-cover block"
+                  fetchpriority="low"
+                  loading="eager"
+                  src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop"
+                />
+              </div>
+            </div>
+          </div>
+          <p
+            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+          >
+            Running Shoes
+          </p>
+          <p
+            class="text-sm font-semibold text-foreground"
+          >
+            £
+            99.99
+          </p>
+        </div>
+      </a>
+      <a
+        class="block hover:underline flex-1 max-w-[20%]"
+        data-testid="product-tile"
+        href="/products/hiking-boots"
+      >
+        <div
+          class="w-full"
+        >
+          <div
+            class="mb-2"
+          >
+            <div
+              class="w-full relative aspect-[4/3]"
+            >
+              <div
+                class=""
+              >
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="absolute inset-0 w-full h-full object-cover block"
+                  fetchpriority="low"
+                  loading="eager"
+                  src="https://images.unsplash.com/photo-1608256246200-53bd35f3f44e?w=400&h=400&fit=crop"
+                />
+              </div>
+            </div>
+          </div>
+          <p
+            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+          >
+            Hiking Boots
+          </p>
+          <p
+            class="text-sm font-semibold text-foreground"
+          >
+            £
+            149.99
+          </p>
+        </div>
+      </a>
+      <a
+        class="block hover:underline flex-1 max-w-[20%]"
+        data-testid="product-tile"
+        href="/products/casual-sneakers"
+      >
+        <div
+          class="w-full"
+        >
+          <div
+            class="mb-2"
+          >
+            <div
+              class="w-full relative aspect-[4/3]"
+            >
+              <div
+                class=""
+              >
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="absolute inset-0 w-full h-full object-cover block"
+                  fetchpriority="low"
+                  loading="eager"
+                  src="https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=400&h=400&fit=crop"
+                />
+              </div>
+            </div>
+          </div>
+          <p
+            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+          >
+            Casual Sneakers
+          </p>
+          <p
+            class="text-sm font-semibold text-foreground"
+          >
+            £
+            79.99
+          </p>
+        </div>
+      </a>
+      <a
+        class="block hover:underline flex-1 max-w-[20%]"
+        data-testid="product-tile"
+        href="/products/dress-shoes"
+      >
+        <div
+          class="w-full"
+        >
+          <div
+            class="mb-2"
+          >
+            <div
+              class="w-full relative aspect-[4/3]"
+            >
+              <div
+                class=""
+              >
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="absolute inset-0 w-full h-full object-cover block"
+                  fetchpriority="low"
+                  loading="eager"
+                  src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=400&fit=crop"
+                />
+              </div>
+            </div>
+          </div>
+          <p
+            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+          >
+            Dress Shoes
+          </p>
+          <p
+            class="text-sm font-semibold text-foreground"
+          >
+            £
+            199.99
+          </p>
+        </div>
+      </a>
+      <a
+        class="block hover:underline flex-1 max-w-[20%]"
+        data-testid="product-tile"
+        href="/products/sandals"
+      >
+        <div
+          class="w-full"
+        >
+          <div
+            class="mb-2"
+          >
+            <div
+              class="w-full relative aspect-[4/3]"
+            >
+              <div
+                class=""
+              >
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="absolute inset-0 w-full h-full object-cover block"
+                  fetchpriority="low"
+                  loading="eager"
+                  src="https://images.unsplash.com/photo-1531572753322-ad063cecc140?w=400&h=400&fit=crop"
+                />
+              </div>
+            </div>
+          </div>
+          <p
+            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+          >
+            Sandals
+          </p>
+          <p
+            class="text-sm font-semibold text-foreground"
+          >
+            £
+            49.99
+          </p>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SuggestionsGrid stories snapshot > SingleProduct story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="overflow-hidden"
+    data-testid="sf-horizontal-product-suggestions"
+  >
+    <div
+      class="flex gap-4 overflow-x-hidden pb-2"
+    >
+      <a
+        class="block hover:underline flex-1 max-w-[20%]"
+        data-testid="product-tile"
+        href="/products/running-shoes"
+      >
+        <div
+          class="w-full"
+        >
+          <div
+            class="mb-2"
+          >
+            <div
+              class="w-full relative aspect-[4/3]"
+            >
+              <div
+                class=""
+              >
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="absolute inset-0 w-full h-full object-cover block"
+                  fetchpriority="low"
+                  loading="eager"
+                  src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop"
+                />
+              </div>
+            </div>
+          </div>
+          <p
+            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+          >
+            Running Shoes
+          </p>
+          <p
+            class="text-sm font-semibold text-foreground"
+          >
+            £
+            99.99
+          </p>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SuggestionsGrid stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="overflow-hidden"
+    data-testid="sf-horizontal-product-suggestions"
+  >
+    <div
+      class="flex gap-4 overflow-x-hidden pb-2"
+    >
+      <a
+        class="block hover:underline flex-1 max-w-[20%]"
+        data-testid="product-tile"
+        href="/products/running-shoes"
+      >
+        <div
+          class="w-full"
+        >
+          <div
+            class="mb-2"
+          >
+            <div
+              class="w-full relative aspect-[4/3]"
+            >
+              <div
+                class=""
+              >
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="absolute inset-0 w-full h-full object-cover block"
+                  fetchpriority="low"
+                  loading="eager"
+                  src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop"
+                />
+              </div>
+            </div>
+          </div>
+          <p
+            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+          >
+            Running Shoes
+          </p>
+          <p
+            class="text-sm font-semibold text-foreground"
+          >
+            £
+            99.99
+          </p>
+        </div>
+      </a>
+      <a
+        class="block hover:underline flex-1 max-w-[20%]"
+        data-testid="product-tile"
+        href="/products/hiking-boots"
+      >
+        <div
+          class="w-full"
+        >
+          <div
+            class="mb-2"
+          >
+            <div
+              class="w-full relative aspect-[4/3]"
+            >
+              <div
+                class=""
+              >
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="absolute inset-0 w-full h-full object-cover block"
+                  fetchpriority="low"
+                  loading="eager"
+                  src="https://images.unsplash.com/photo-1608256246200-53bd35f3f44e?w=400&h=400&fit=crop"
+                />
+              </div>
+            </div>
+          </div>
+          <p
+            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+          >
+            Hiking Boots
+          </p>
+          <p
+            class="text-sm font-semibold text-foreground"
+          >
+            £
+            149.99
+          </p>
+        </div>
+      </a>
+      <a
+        class="block hover:underline flex-1 max-w-[20%]"
+        data-testid="product-tile"
+        href="/products/casual-sneakers"
+      >
+        <div
+          class="w-full"
+        >
+          <div
+            class="mb-2"
+          >
+            <div
+              class="w-full relative aspect-[4/3]"
+            >
+              <div
+                class=""
+              >
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="absolute inset-0 w-full h-full object-cover block"
+                  fetchpriority="low"
+                  loading="eager"
+                  src="https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=400&h=400&fit=crop"
+                />
+              </div>
+            </div>
+          </div>
+          <p
+            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+          >
+            Casual Sneakers
+          </p>
+          <p
+            class="text-sm font-semibold text-foreground"
+          >
+            £
+            79.99
+          </p>
+        </div>
+      </a>
+      <a
+        class="block hover:underline flex-1 max-w-[20%]"
+        data-testid="product-tile"
+        href="/products/dress-shoes"
+      >
+        <div
+          class="w-full"
+        >
+          <div
+            class="mb-2"
+          >
+            <div
+              class="w-full relative aspect-[4/3]"
+            >
+              <div
+                class=""
+              >
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="absolute inset-0 w-full h-full object-cover block"
+                  fetchpriority="low"
+                  loading="eager"
+                  src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=400&fit=crop"
+                />
+              </div>
+            </div>
+          </div>
+          <p
+            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+          >
+            Dress Shoes
+          </p>
+          <p
+            class="text-sm font-semibold text-foreground"
+          >
+            £
+            199.99
+          </p>
+        </div>
+      </a>
+      <a
+        class="block hover:underline flex-1 max-w-[20%]"
+        data-testid="product-tile"
+        href="/products/sandals"
+      >
+        <div
+          class="w-full"
+        >
+          <div
+            class="mb-2"
+          >
+            <div
+              class="w-full relative aspect-[4/3]"
+            >
+              <div
+                class=""
+              >
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="absolute inset-0 w-full h-full object-cover block"
+                  fetchpriority="low"
+                  loading="eager"
+                  src="https://images.unsplash.com/photo-1531572753322-ad063cecc140?w=400&h=400&fit=crop"
+                />
+              </div>
+            </div>
+          </div>
+          <p
+            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+          >
+            Sandals
+          </p>
+          <p
+            class="text-sm font-semibold text-foreground"
+          >
+            £
+            49.99
+          </p>
+        </div>
+      </a>
+    </div>
   </div>
 </div>
 `;
 
 exports[`SuggestionsGrid stories snapshot > WithoutImages story renders and matches snapshot 1`] = `
-<div
-  class="overflow-hidden"
-  data-testid="sf-horizontal-product-suggestions"
->
+<div>
   <div
-    class="flex gap-4 overflow-x-hidden pb-2"
+    class="overflow-hidden"
+    data-testid="sf-horizontal-product-suggestions"
   >
-    <a
-      class="block hover:underline flex-1 max-w-[20%]"
-      data-testid="product-tile"
-      href="/products/no-image"
+    <div
+      class="flex gap-4 overflow-x-hidden pb-2"
     >
-      <div
-        class="w-full"
+      <a
+        class="block hover:underline flex-1 max-w-[20%]"
+        data-testid="product-tile"
+        href="/products/no-image"
       >
         <div
-          class="mb-2"
+          class="w-full"
         >
           <div
-            class="w-full relative aspect-[4/3]"
+            class="mb-2"
           >
             <div
-              class="absolute inset-0 w-full h-full flex items-center justify-center bg-muted text-foreground"
+              class="w-full relative aspect-[4/3]"
             >
               <div
-                class="text-center"
+                class="absolute inset-0 w-full h-full flex items-center justify-center bg-muted text-foreground"
               >
                 <div
-                  class="text-2xl mb-1"
+                  class="text-center"
                 >
-                  📷
-                </div>
-                <div
-                  class="text-xs"
-                >
-                  No image available
+                  <div
+                    class="text-2xl mb-1"
+                  >
+                    📷
+                  </div>
+                  <div
+                    class="text-xs"
+                  >
+                    No image available
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+          <p
+            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+          >
+            Product Without Image
+          </p>
+          <p
+            class="text-sm font-semibold text-foreground"
+          >
+            £
+            29.99
+          </p>
         </div>
-        <p
-          class="text-sm font-medium text-foreground mb-1 line-clamp-2"
-        >
-          Product Without Image
-        </p>
-        <p
-          class="text-sm font-semibold text-foreground"
-        >
-          £
-          29.99
-        </p>
-      </div>
-    </a>
-    <a
-      class="block hover:underline flex-1 max-w-[20%]"
-      data-testid="product-tile"
-      href="/products/another"
-    >
-      <div
-        class="w-full"
+      </a>
+      <a
+        class="block hover:underline flex-1 max-w-[20%]"
+        data-testid="product-tile"
+        href="/products/another"
       >
         <div
-          class="mb-2"
+          class="w-full"
         >
           <div
-            class="w-full relative aspect-[4/3]"
+            class="mb-2"
           >
             <div
-              class="absolute inset-0 w-full h-full flex items-center justify-center bg-muted text-foreground"
+              class="w-full relative aspect-[4/3]"
             >
               <div
-                class="text-center"
+                class="absolute inset-0 w-full h-full flex items-center justify-center bg-muted text-foreground"
               >
                 <div
-                  class="text-2xl mb-1"
+                  class="text-center"
                 >
-                  📷
-                </div>
-                <div
-                  class="text-xs"
-                >
-                  No image available
+                  <div
+                    class="text-2xl mb-1"
+                  >
+                    📷
+                  </div>
+                  <div
+                    class="text-xs"
+                  >
+                    No image available
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+          <p
+            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+          >
+            Another Product
+          </p>
+          <p
+            class="text-sm font-semibold text-foreground"
+          >
+            £
+            39.99
+          </p>
         </div>
-        <p
-          class="text-sm font-medium text-foreground mb-1 line-clamp-2"
-        >
-          Another Product
-        </p>
-        <p
-          class="text-sm font-semibold text-foreground"
-        >
-          £
-          39.99
-        </p>
-      </div>
-    </a>
+      </a>
+    </div>
   </div>
 </div>
 `;
 
 exports[`SuggestionsGrid stories snapshot > WithoutPrices story renders and matches snapshot 1`] = `
-<div
-  class="overflow-hidden"
-  data-testid="sf-horizontal-product-suggestions"
->
+<div>
   <div
-    class="flex gap-4 overflow-x-hidden pb-2"
+    class="overflow-hidden"
+    data-testid="sf-horizontal-product-suggestions"
   >
-    <a
-      class="block hover:underline flex-1 max-w-[20%]"
-      data-testid="product-tile"
-      href="/products/no-price"
+    <div
+      class="flex gap-4 overflow-x-hidden pb-2"
     >
-      <div
-        class="w-full"
+      <a
+        class="block hover:underline flex-1 max-w-[20%]"
+        data-testid="product-tile"
+        href="/products/no-price"
       >
         <div
-          class="mb-2"
+          class="w-full"
         >
           <div
-            class="w-full relative aspect-[4/3]"
+            class="mb-2"
           >
             <div
-              class=""
+              class="w-full relative aspect-[4/3]"
             >
-              <img
-                alt=""
-                aria-hidden="true"
-                class="absolute inset-0 w-full h-full object-cover block"
-                fetchpriority="low"
-                loading="eager"
-                src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop"
-              />
+              <div
+                class=""
+              >
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="absolute inset-0 w-full h-full object-cover block"
+                  fetchpriority="low"
+                  loading="eager"
+                  src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop"
+                />
+              </div>
             </div>
           </div>
+          <p
+            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+          >
+            Product Without Price
+          </p>
         </div>
-        <p
-          class="text-sm font-medium text-foreground mb-1 line-clamp-2"
-        >
-          Product Without Price
-        </p>
-      </div>
-    </a>
+      </a>
+    </div>
   </div>
 </div>
 `;

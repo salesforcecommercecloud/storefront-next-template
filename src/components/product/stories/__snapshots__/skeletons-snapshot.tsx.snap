@@ -1,6 +1,336 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`Product Skeletons stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="p-4"
+  >
+    <div
+      class="block md:hidden space-y-4"
+    >
+      <div
+        class="animate-pulse rounded-md bg-muted h-8 w-3/4"
+      />
+      <div
+        class="animate-pulse rounded-md bg-muted h-4 w-full"
+      />
+      <div
+        class="animate-pulse rounded-md bg-muted h-4 w-2/3"
+      />
+    </div>
+    <div
+      class="grid grid-cols-1 lg:grid-cols-2 gap-8"
+    >
+      <div
+        class="space-y-4"
+      >
+        <div
+          class="animate-pulse rounded-md bg-muted aspect-square w-full"
+        />
+        <div
+          class="flex space-x-2"
+        >
+          <div
+            class="animate-pulse rounded-md bg-muted aspect-square w-16 h-16"
+          />
+          <div
+            class="animate-pulse rounded-md bg-muted aspect-square w-16 h-16"
+          />
+          <div
+            class="animate-pulse rounded-md bg-muted aspect-square w-16 h-16"
+          />
+          <div
+            class="animate-pulse rounded-md bg-muted aspect-square w-16 h-16"
+          />
+        </div>
+      </div>
+      <div
+        class="space-y-6"
+      >
+        <div
+          class="hidden md:block space-y-4"
+        >
+          <div
+            class="animate-pulse rounded-md bg-muted h-10 w-3/4"
+          />
+          <div
+            class="animate-pulse rounded-md bg-muted h-4 w-full"
+          />
+          <div
+            class="animate-pulse rounded-md bg-muted h-4 w-2/3"
+          />
+        </div>
+        <div
+          class="space-y-2"
+        >
+          <div
+            class="animate-pulse rounded-md bg-muted h-8 w-32"
+          />
+          <div
+            class="animate-pulse rounded-md bg-muted h-4 w-24"
+          />
+        </div>
+        <div
+          class="space-y-4"
+        >
+          <div
+            class="space-y-2"
+          >
+            <div
+              class="animate-pulse rounded-md bg-muted h-4 w-16"
+            />
+            <div
+              class="flex space-x-2"
+            >
+              <div
+                class="animate-pulse bg-muted w-8 h-8 rounded-full"
+              />
+              <div
+                class="animate-pulse bg-muted w-8 h-8 rounded-full"
+              />
+              <div
+                class="animate-pulse bg-muted w-8 h-8 rounded-full"
+              />
+              <div
+                class="animate-pulse bg-muted w-8 h-8 rounded-full"
+              />
+            </div>
+          </div>
+          <div
+            class="space-y-2"
+          >
+            <div
+              class="animate-pulse rounded-md bg-muted h-4 w-12"
+            />
+            <div
+              class="flex space-x-2"
+            >
+              <div
+                class="animate-pulse rounded-md bg-muted w-12 h-10"
+              />
+              <div
+                class="animate-pulse rounded-md bg-muted w-12 h-10"
+              />
+              <div
+                class="animate-pulse rounded-md bg-muted w-12 h-10"
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          class="space-y-4"
+        >
+          <div
+            class="flex items-center space-x-4"
+          >
+            <div
+              class="animate-pulse rounded-md bg-muted h-10 w-24"
+            />
+            <div
+              class="animate-pulse rounded-md bg-muted h-10 flex-1"
+            />
+          </div>
+          <div
+            class="animate-pulse rounded-md bg-muted h-10 w-full"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="mt-16 space-y-4"
+    >
+      <div
+        class="border rounded-lg p-4"
+      >
+        <div
+          class="animate-pulse rounded-md bg-muted h-6 w-48"
+        />
+      </div>
+      <div
+        class="border rounded-lg p-4"
+      >
+        <div
+          class="animate-pulse rounded-md bg-muted h-6 w-48"
+        />
+      </div>
+      <div
+        class="border rounded-lg p-4"
+      >
+        <div
+          class="animate-pulse rounded-md bg-muted h-6 w-48"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`Product Skeletons stories snapshot > MainSkeleton story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="p-4"
+  >
+    <div
+      class="block md:hidden space-y-4"
+    >
+      <div
+        class="animate-pulse rounded-md bg-muted h-8 w-3/4"
+      />
+      <div
+        class="animate-pulse rounded-md bg-muted h-4 w-full"
+      />
+      <div
+        class="animate-pulse rounded-md bg-muted h-4 w-2/3"
+      />
+    </div>
+    <div
+      class="grid grid-cols-1 lg:grid-cols-2 gap-8"
+    >
+      <div
+        class="space-y-4"
+      >
+        <div
+          class="animate-pulse rounded-md bg-muted aspect-square w-full"
+        />
+        <div
+          class="flex space-x-2"
+        >
+          <div
+            class="animate-pulse rounded-md bg-muted aspect-square w-16 h-16"
+          />
+          <div
+            class="animate-pulse rounded-md bg-muted aspect-square w-16 h-16"
+          />
+          <div
+            class="animate-pulse rounded-md bg-muted aspect-square w-16 h-16"
+          />
+          <div
+            class="animate-pulse rounded-md bg-muted aspect-square w-16 h-16"
+          />
+        </div>
+      </div>
+      <div
+        class="space-y-6"
+      >
+        <div
+          class="hidden md:block space-y-4"
+        >
+          <div
+            class="animate-pulse rounded-md bg-muted h-10 w-3/4"
+          />
+          <div
+            class="animate-pulse rounded-md bg-muted h-4 w-full"
+          />
+          <div
+            class="animate-pulse rounded-md bg-muted h-4 w-2/3"
+          />
+        </div>
+        <div
+          class="space-y-2"
+        >
+          <div
+            class="animate-pulse rounded-md bg-muted h-8 w-32"
+          />
+          <div
+            class="animate-pulse rounded-md bg-muted h-4 w-24"
+          />
+        </div>
+        <div
+          class="space-y-4"
+        >
+          <div
+            class="space-y-2"
+          >
+            <div
+              class="animate-pulse rounded-md bg-muted h-4 w-16"
+            />
+            <div
+              class="flex space-x-2"
+            >
+              <div
+                class="animate-pulse bg-muted w-8 h-8 rounded-full"
+              />
+              <div
+                class="animate-pulse bg-muted w-8 h-8 rounded-full"
+              />
+              <div
+                class="animate-pulse bg-muted w-8 h-8 rounded-full"
+              />
+              <div
+                class="animate-pulse bg-muted w-8 h-8 rounded-full"
+              />
+            </div>
+          </div>
+          <div
+            class="space-y-2"
+          >
+            <div
+              class="animate-pulse rounded-md bg-muted h-4 w-12"
+            />
+            <div
+              class="flex space-x-2"
+            >
+              <div
+                class="animate-pulse rounded-md bg-muted w-12 h-10"
+              />
+              <div
+                class="animate-pulse rounded-md bg-muted w-12 h-10"
+              />
+              <div
+                class="animate-pulse rounded-md bg-muted w-12 h-10"
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          class="space-y-4"
+        >
+          <div
+            class="flex items-center space-x-4"
+          >
+            <div
+              class="animate-pulse rounded-md bg-muted h-10 w-24"
+            />
+            <div
+              class="animate-pulse rounded-md bg-muted h-10 flex-1"
+            />
+          </div>
+          <div
+            class="animate-pulse rounded-md bg-muted h-10 w-full"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="mt-16 space-y-4"
+    >
+      <div
+        class="border rounded-lg p-4"
+      >
+        <div
+          class="animate-pulse rounded-md bg-muted h-6 w-48"
+        />
+      </div>
+      <div
+        class="border rounded-lg p-4"
+      >
+        <div
+          class="animate-pulse rounded-md bg-muted h-6 w-48"
+        />
+      </div>
+      <div
+        class="border rounded-lg p-4"
+      >
+        <div
+          class="animate-pulse rounded-md bg-muted h-6 w-48"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Product Skeletons stories snapshot > Mobile story renders and matches snapshot 1`] = `
 <div>
   <div
     class="p-4"
@@ -970,6 +1300,171 @@ exports[`Product Skeletons stories snapshot > RecommendationsSkeleton story rend
             class="animate-pulse bg-muted h-10 w-10 rounded-full"
           />
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Product Skeletons stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="p-4"
+  >
+    <div
+      class="block md:hidden space-y-4"
+    >
+      <div
+        class="animate-pulse rounded-md bg-muted h-8 w-3/4"
+      />
+      <div
+        class="animate-pulse rounded-md bg-muted h-4 w-full"
+      />
+      <div
+        class="animate-pulse rounded-md bg-muted h-4 w-2/3"
+      />
+    </div>
+    <div
+      class="grid grid-cols-1 lg:grid-cols-2 gap-8"
+    >
+      <div
+        class="space-y-4"
+      >
+        <div
+          class="animate-pulse rounded-md bg-muted aspect-square w-full"
+        />
+        <div
+          class="flex space-x-2"
+        >
+          <div
+            class="animate-pulse rounded-md bg-muted aspect-square w-16 h-16"
+          />
+          <div
+            class="animate-pulse rounded-md bg-muted aspect-square w-16 h-16"
+          />
+          <div
+            class="animate-pulse rounded-md bg-muted aspect-square w-16 h-16"
+          />
+          <div
+            class="animate-pulse rounded-md bg-muted aspect-square w-16 h-16"
+          />
+        </div>
+      </div>
+      <div
+        class="space-y-6"
+      >
+        <div
+          class="hidden md:block space-y-4"
+        >
+          <div
+            class="animate-pulse rounded-md bg-muted h-10 w-3/4"
+          />
+          <div
+            class="animate-pulse rounded-md bg-muted h-4 w-full"
+          />
+          <div
+            class="animate-pulse rounded-md bg-muted h-4 w-2/3"
+          />
+        </div>
+        <div
+          class="space-y-2"
+        >
+          <div
+            class="animate-pulse rounded-md bg-muted h-8 w-32"
+          />
+          <div
+            class="animate-pulse rounded-md bg-muted h-4 w-24"
+          />
+        </div>
+        <div
+          class="space-y-4"
+        >
+          <div
+            class="space-y-2"
+          >
+            <div
+              class="animate-pulse rounded-md bg-muted h-4 w-16"
+            />
+            <div
+              class="flex space-x-2"
+            >
+              <div
+                class="animate-pulse bg-muted w-8 h-8 rounded-full"
+              />
+              <div
+                class="animate-pulse bg-muted w-8 h-8 rounded-full"
+              />
+              <div
+                class="animate-pulse bg-muted w-8 h-8 rounded-full"
+              />
+              <div
+                class="animate-pulse bg-muted w-8 h-8 rounded-full"
+              />
+            </div>
+          </div>
+          <div
+            class="space-y-2"
+          >
+            <div
+              class="animate-pulse rounded-md bg-muted h-4 w-12"
+            />
+            <div
+              class="flex space-x-2"
+            >
+              <div
+                class="animate-pulse rounded-md bg-muted w-12 h-10"
+              />
+              <div
+                class="animate-pulse rounded-md bg-muted w-12 h-10"
+              />
+              <div
+                class="animate-pulse rounded-md bg-muted w-12 h-10"
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          class="space-y-4"
+        >
+          <div
+            class="flex items-center space-x-4"
+          >
+            <div
+              class="animate-pulse rounded-md bg-muted h-10 w-24"
+            />
+            <div
+              class="animate-pulse rounded-md bg-muted h-10 flex-1"
+            />
+          </div>
+          <div
+            class="animate-pulse rounded-md bg-muted h-10 w-full"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="mt-16 space-y-4"
+    >
+      <div
+        class="border rounded-lg p-4"
+      >
+        <div
+          class="animate-pulse rounded-md bg-muted h-6 w-48"
+        />
+      </div>
+      <div
+        class="border rounded-lg p-4"
+      >
+        <div
+          class="animate-pulse rounded-md bg-muted h-6 w-48"
+        />
+      </div>
+      <div
+        class="border rounded-lg p-4"
+      >
+        <div
+          class="animate-pulse rounded-md bg-muted h-6 w-48"
+        />
       </div>
     </div>
   </div>

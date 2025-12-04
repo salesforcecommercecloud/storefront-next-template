@@ -52,6 +52,58 @@ exports[`Search stories snapshot > Default story renders and matches snapshot 1`
 </div>
 `;
 
+exports[`Search stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="p-8 w-full max-w-md"
+  >
+    <form
+      class="relative z-10"
+    >
+      <div
+        class="relative"
+      >
+        <input
+          aria-autocomplete="list"
+          aria-controls="radix-«r5»"
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-label="Search"
+          class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full pl-10"
+          data-slot="popover-trigger"
+          data-state="closed"
+          placeholder="Search"
+          role="combobox"
+          type="text"
+        />
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-search pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m21 21-4.34-4.34"
+          />
+          <circle
+            cx="11"
+            cy="11"
+            r="8"
+          />
+        </svg>
+      </div>
+    </form>
+  </div>
+</div>
+`;
+
 exports[`Search stories snapshot > Interactive story renders and matches snapshot 1`] = `
 <div>
   <div
@@ -66,6 +118,110 @@ exports[`Search stories snapshot > Interactive story renders and matches snapsho
         <input
           aria-autocomplete="list"
           aria-controls="radix-«r1»"
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-label="Search"
+          class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full pl-10"
+          data-slot="popover-trigger"
+          data-state="closed"
+          placeholder="Search"
+          role="combobox"
+          type="text"
+        />
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-search pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m21 21-4.34-4.34"
+          />
+          <circle
+            cx="11"
+            cy="11"
+            r="8"
+          />
+        </svg>
+      </div>
+    </form>
+  </div>
+</div>
+`;
+
+exports[`Search stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="p-8 w-full max-w-md"
+  >
+    <form
+      class="relative z-10"
+    >
+      <div
+        class="relative"
+      >
+        <input
+          aria-autocomplete="list"
+          aria-controls="radix-«r3»"
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-label="Search"
+          class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full pl-10"
+          data-slot="popover-trigger"
+          data-state="closed"
+          placeholder="Search"
+          role="combobox"
+          type="text"
+        />
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-search pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m21 21-4.34-4.34"
+          />
+          <circle
+            cx="11"
+            cy="11"
+            r="8"
+          />
+        </svg>
+      </div>
+    </form>
+  </div>
+</div>
+`;
+
+exports[`Search stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="p-8 w-full max-w-md"
+  >
+    <form
+      class="relative z-10"
+    >
+      <div
+        class="relative"
+      >
+        <input
+          aria-autocomplete="list"
+          aria-controls="radix-«r4»"
           aria-expanded="false"
           aria-haspopup="listbox"
           aria-label="Search"

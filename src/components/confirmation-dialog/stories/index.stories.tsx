@@ -139,28 +139,6 @@ Standard confirmation dialog for delete actions.
     },
 };
 
-function RemoveItemDialog() {
-    const [open, setOpen] = useState(true);
-    return (
-        <ConfirmationDialog
-            open={open}
-            onOpenChange={setOpen}
-            title="Remove from Cart"
-            description="This item will be removed from your shopping cart. You can add it back later if needed."
-            cancelButtonText="Keep Item"
-            confirmButtonText="Remove"
-            onCancel={() => {
-                action('keep-item-clicked')();
-                setOpen(false);
-            }}
-            onConfirm={() => {
-                action('remove-item-clicked')();
-                setOpen(false);
-            }}
-        />
-    );
-}
-
 export const RemoveItem: Story = {
     render: () => <RemoveItemDialog />,
     parameters: {
@@ -186,6 +164,28 @@ Confirmation dialog for removing items from cart.
         await expect(removeButton).toBeInTheDocument();
     },
 };
+
+function RemoveItemDialog() {
+    const [open, setOpen] = useState(true);
+    return (
+        <ConfirmationDialog
+            open={open}
+            onOpenChange={setOpen}
+            title="Remove from Cart"
+            description="This item will be removed from your shopping cart. You can add it back later if needed."
+            cancelButtonText="Keep Item"
+            confirmButtonText="Remove"
+            onCancel={() => {
+                action('keep-item-clicked')();
+                setOpen(false);
+            }}
+            onConfirm={() => {
+                action('remove-item-clicked')();
+                setOpen(false);
+            }}
+        />
+    );
+}
 
 function DisabledConfirmDialog() {
     const [open, setOpen] = useState(true);
@@ -281,5 +281,92 @@ Confirmation dialog in closed state.
         const documentBody = within(document.body);
         const dialog = documentBody.queryByRole('alertdialog');
         await expect(dialog).toBeNull();
+    },
+};
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async () => {
+        const documentBody = within(document.body);
+
+        // Check for dialog
+        const dialog = await documentBody.findByRole('alertdialog', {}, { timeout: 5000 });
+        await expect(dialog).toBeInTheDocument();
+
+        // Check for title
+        const title = await documentBody.findByText(/delete item/i, {}, { timeout: 5000 });
+        await expect(title).toBeInTheDocument();
+
+        // Check for description
+        const description = await documentBody.findByText(/are you sure/i, {}, { timeout: 5000 });
+        await expect(description).toBeInTheDocument();
+
+        // Check for buttons
+        const cancelButton = await documentBody.findByRole('button', { name: /cancel/i }, { timeout: 5000 });
+        await expect(cancelButton).toBeInTheDocument();
+
+        const confirmButton = await documentBody.findByRole('button', { name: /delete/i }, { timeout: 5000 });
+        await expect(confirmButton).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async () => {
+        const documentBody = within(document.body);
+
+        // Check for dialog
+        const dialog = await documentBody.findByRole('alertdialog', {}, { timeout: 5000 });
+        await expect(dialog).toBeInTheDocument();
+
+        // Check for title
+        const title = await documentBody.findByText(/delete item/i, {}, { timeout: 5000 });
+        await expect(title).toBeInTheDocument();
+
+        // Check for description
+        const description = await documentBody.findByText(/are you sure/i, {}, { timeout: 5000 });
+        await expect(description).toBeInTheDocument();
+
+        // Check for buttons
+        const cancelButton = await documentBody.findByRole('button', { name: /cancel/i }, { timeout: 5000 });
+        await expect(cancelButton).toBeInTheDocument();
+
+        const confirmButton = await documentBody.findByRole('button', { name: /delete/i }, { timeout: 5000 });
+        await expect(confirmButton).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async () => {
+        const documentBody = within(document.body);
+
+        // Check for dialog
+        const dialog = await documentBody.findByRole('alertdialog', {}, { timeout: 5000 });
+        await expect(dialog).toBeInTheDocument();
+
+        // Check for title
+        const title = await documentBody.findByText(/delete item/i, {}, { timeout: 5000 });
+        await expect(title).toBeInTheDocument();
+
+        // Check for description
+        const description = await documentBody.findByText(/are you sure/i, {}, { timeout: 5000 });
+        await expect(description).toBeInTheDocument();
+
+        // Check for buttons
+        const cancelButton = await documentBody.findByRole('button', { name: /cancel/i }, { timeout: 5000 });
+        await expect(cancelButton).toBeInTheDocument();
+
+        const confirmButton = await documentBody.findByRole('button', { name: /delete/i }, { timeout: 5000 });
+        await expect(confirmButton).toBeInTheDocument();
     },
 };

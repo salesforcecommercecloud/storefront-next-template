@@ -171,3 +171,114 @@ export const DesignPreview: Story = {
         });
     },
 };
+
+export const Mobile: Story = {
+    ...DefaultIdle,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement, step }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        await step('Verify component renders without errors', () => {
+            void expect(canvasElement.firstChild).toBeInTheDocument();
+        });
+
+        await step('Verify all interactive elements are accessible', () => {
+            const buttons = canvas.queryAllByRole('button');
+            const links = canvas.queryAllByRole('link');
+            const inputs = canvas.queryAllByRole('textbox');
+
+            [...buttons, ...links, ...inputs].forEach((el) => {
+                void expect(el).toBeInTheDocument();
+            });
+        });
+
+        await step('Test basic user interactions', async () => {
+            const buttons = canvas.queryAllByRole('button');
+            if (buttons.length > 0 && !buttons[0].hasAttribute('disabled')) {
+                await userEvent.hover(buttons[0]);
+                await userEvent.click(buttons[0]);
+            }
+        });
+
+        await step('Verify component state after interaction', () => {
+            void expect(canvasElement.firstChild).toBeInTheDocument();
+        });
+    },
+};
+
+export const Tablet: Story = {
+    ...DefaultIdle,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement, step }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        await step('Verify component renders without errors', () => {
+            void expect(canvasElement.firstChild).toBeInTheDocument();
+        });
+
+        await step('Verify all interactive elements are accessible', () => {
+            const buttons = canvas.queryAllByRole('button');
+            const links = canvas.queryAllByRole('link');
+            const inputs = canvas.queryAllByRole('textbox');
+
+            [...buttons, ...links, ...inputs].forEach((el) => {
+                void expect(el).toBeInTheDocument();
+            });
+        });
+
+        await step('Test basic user interactions', async () => {
+            const buttons = canvas.queryAllByRole('button');
+            if (buttons.length > 0 && !buttons[0].hasAttribute('disabled')) {
+                await userEvent.hover(buttons[0]);
+                await userEvent.click(buttons[0]);
+            }
+        });
+
+        await step('Verify component state after interaction', () => {
+            void expect(canvasElement.firstChild).toBeInTheDocument();
+        });
+    },
+};
+
+export const Desktop: Story = {
+    ...DefaultIdle,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement, step }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        await step('Verify component renders without errors', () => {
+            void expect(canvasElement.firstChild).toBeInTheDocument();
+        });
+
+        await step('Verify all interactive elements are accessible', () => {
+            const buttons = canvas.queryAllByRole('button');
+            const links = canvas.queryAllByRole('link');
+            const inputs = canvas.queryAllByRole('textbox');
+
+            [...buttons, ...links, ...inputs].forEach((el) => {
+                void expect(el).toBeInTheDocument();
+            });
+        });
+
+        await step('Test basic user interactions', async () => {
+            const buttons = canvas.queryAllByRole('button');
+            if (buttons.length > 0 && !buttons[0].hasAttribute('disabled')) {
+                await userEvent.hover(buttons[0]);
+                await userEvent.click(buttons[0]);
+            }
+        });
+
+        await step('Verify component state after interaction', () => {
+            void expect(canvasElement.firstChild).toBeInTheDocument();
+        });
+    },
+};

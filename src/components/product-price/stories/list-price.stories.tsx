@@ -89,3 +89,45 @@ export const Range: Story = {
         );
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const price = canvas.getByText('$129.99');
+        await expect(price).toBeInTheDocument();
+        await expect(price).toHaveClass('line-through');
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const price = canvas.getByText('$129.99');
+        await expect(price).toBeInTheDocument();
+        await expect(price).toHaveClass('line-through');
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const price = canvas.getByText('$129.99');
+        await expect(price).toBeInTheDocument();
+        await expect(price).toHaveClass('line-through');
+    },
+};

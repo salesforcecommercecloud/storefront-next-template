@@ -281,3 +281,66 @@ export const Interactive: Story = {
         await expect(quantityInput).toHaveValue(8);
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const quantityInput = canvas.getByRole('spinbutton');
+        await expect(quantityInput).toBeInTheDocument();
+        await expect(quantityInput).toHaveValue(1);
+
+        const incrementButton = canvas.getByTestId('quantity-increment');
+        await expect(incrementButton).toBeInTheDocument();
+
+        const decrementButton = canvas.getByTestId('quantity-decrement');
+        await expect(decrementButton).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const quantityInput = canvas.getByRole('spinbutton');
+        await expect(quantityInput).toBeInTheDocument();
+        await expect(quantityInput).toHaveValue(1);
+
+        const incrementButton = canvas.getByTestId('quantity-increment');
+        await expect(incrementButton).toBeInTheDocument();
+
+        const decrementButton = canvas.getByTestId('quantity-decrement');
+        await expect(decrementButton).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const quantityInput = canvas.getByRole('spinbutton');
+        await expect(quantityInput).toBeInTheDocument();
+        await expect(quantityInput).toHaveValue(1);
+
+        const incrementButton = canvas.getByTestId('quantity-increment');
+        await expect(incrementButton).toBeInTheDocument();
+
+        const decrementButton = canvas.getByTestId('quantity-decrement');
+        await expect(decrementButton).toBeInTheDocument();
+    },
+};

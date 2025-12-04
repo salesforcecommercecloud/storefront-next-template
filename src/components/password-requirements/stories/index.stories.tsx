@@ -161,3 +161,51 @@ Password requirements with a partially valid password.
         await expect(checkIcons.length + xIcons.length).toBeGreaterThan(0);
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Check for requirements title
+        const title = await canvas.findByText(/requirements/i, {}, { timeout: 5000 });
+        await expect(title).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Check for requirements title
+        const title = await canvas.findByText(/requirements/i, {}, { timeout: 5000 });
+        await expect(title).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Check for requirements title
+        const title = await canvas.findByText(/requirements/i, {}, { timeout: 5000 });
+        await expect(title).toBeInTheDocument();
+    },
+};

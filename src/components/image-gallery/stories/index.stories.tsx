@@ -243,3 +243,102 @@ Image gallery with no images (empty state).
         );
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+
+        // Wait for canvas to be ready
+        await expect(canvasElement).toBeInTheDocument();
+
+        const canvas = within(canvasElement);
+
+        // Check for images - DynamicImage wraps img in picture/div, thumbnails use regular img
+        // Try multiple approaches to find images
+        let images: HTMLElement[] = [];
+
+        try {
+            images = await canvas.findAllByRole('img', {}, { timeout: 10000 });
+        } catch {
+            // Fallback: query directly for img elements
+            const imgElements = canvasElement.querySelectorAll('img');
+            images = Array.from(imgElements);
+        }
+
+        // Should have at least main image + thumbnails (4 total for mockImages)
+        await expect(images.length).toBeGreaterThan(0);
+
+        // Verify at least one image is present
+        await expect(images[0]).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+
+        // Wait for canvas to be ready
+        await expect(canvasElement).toBeInTheDocument();
+
+        const canvas = within(canvasElement);
+
+        // Check for images - DynamicImage wraps img in picture/div, thumbnails use regular img
+        // Try multiple approaches to find images
+        let images: HTMLElement[] = [];
+
+        try {
+            images = await canvas.findAllByRole('img', {}, { timeout: 10000 });
+        } catch {
+            // Fallback: query directly for img elements
+            const imgElements = canvasElement.querySelectorAll('img');
+            images = Array.from(imgElements);
+        }
+
+        // Should have at least main image + thumbnails (4 total for mockImages)
+        await expect(images.length).toBeGreaterThan(0);
+
+        // Verify at least one image is present
+        await expect(images[0]).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+
+        // Wait for canvas to be ready
+        await expect(canvasElement).toBeInTheDocument();
+
+        const canvas = within(canvasElement);
+
+        // Check for images - DynamicImage wraps img in picture/div, thumbnails use regular img
+        // Try multiple approaches to find images
+        let images: HTMLElement[] = [];
+
+        try {
+            images = await canvas.findAllByRole('img', {}, { timeout: 10000 });
+        } catch {
+            // Fallback: query directly for img elements
+            const imgElements = canvasElement.querySelectorAll('img');
+            images = Array.from(imgElements);
+        }
+
+        // Should have at least main image + thumbnails (4 total for mockImages)
+        await expect(images.length).toBeGreaterThan(0);
+
+        // Verify at least one image is present
+        await expect(images[0]).toBeInTheDocument();
+    },
+};

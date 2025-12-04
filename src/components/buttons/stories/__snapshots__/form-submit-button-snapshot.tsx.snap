@@ -4,9 +4,15 @@ exports[`FormSubmitButton stories snapshot > CustomStyling story renders and mat
 
 exports[`FormSubmitButton stories snapshot > Default story renders and matches snapshot 1`] = `null`;
 
+exports[`FormSubmitButton stories snapshot > Desktop story renders and matches snapshot 1`] = `null`;
+
 exports[`FormSubmitButton stories snapshot > Disabled story renders and matches snapshot 1`] = `null`;
 
 exports[`FormSubmitButton stories snapshot > InRegistrationForm story renders and matches snapshot 1`] = `null`;
+
+exports[`FormSubmitButton stories snapshot > Mobile story renders and matches snapshot 1`] = `null`;
+
+exports[`FormSubmitButton stories snapshot > Tablet story renders and matches snapshot 1`] = `null`;
 
 exports[`FormSubmitButton stories snapshot > WithCustomText story renders and matches snapshot 1`] = `null`;
 

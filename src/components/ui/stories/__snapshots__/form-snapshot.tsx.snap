@@ -273,6 +273,170 @@ exports[`Form stories snapshot > Default story renders and matches snapshot 1`] 
 </div>
 `;
 
+exports[`Form stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
+  <form
+    autocomplete="off"
+    class="space-y-6 max-w-md"
+  >
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+        data-error="false"
+        data-slot="form-label"
+        for="«ro»-form-item"
+      >
+        Username
+      </label>
+      <input
+        aria-describedby="«ro»-form-item-description"
+        autocomplete="off"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+        data-slot="form-control"
+        id="«ro»-form-item"
+        name="username"
+        placeholder="Enter your username"
+        value=""
+      />
+      <p
+        class="text-muted-foreground text-sm"
+        data-slot="form-description"
+        id="«ro»-form-item-description"
+      >
+        This is your public display name.
+      </p>
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+        data-error="false"
+        data-slot="form-label"
+        for="«rp»-form-item"
+      >
+        Email
+      </label>
+      <input
+        aria-describedby="«rp»-form-item-description"
+        autocomplete="off"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+        data-slot="form-control"
+        id="«rp»-form-item"
+        name="email"
+        placeholder="Enter your email"
+        type="email"
+        value=""
+      />
+      <p
+        class="text-muted-foreground text-sm"
+        data-slot="form-description"
+        id="«rp»-form-item-description"
+      >
+        We'll never share your email with anyone else.
+      </p>
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+        data-error="false"
+        data-slot="form-label"
+        for="«rq»-form-item"
+      >
+        Password
+      </label>
+      <input
+        aria-describedby="«rq»-form-item-description"
+        autocomplete="off"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+        data-slot="form-control"
+        id="«rq»-form-item"
+        name="password"
+        placeholder="Enter your password"
+        type="password"
+        value=""
+      />
+      <p
+        class="text-muted-foreground text-sm"
+        data-slot="form-description"
+        id="«rq»-form-item-description"
+      >
+        Must be at least 8 characters long.
+      </p>
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+        data-error="false"
+        data-slot="form-label"
+        for="«rr»-form-item"
+      >
+        Confirm Password
+      </label>
+      <input
+        aria-describedby="«rr»-form-item-description"
+        autocomplete="off"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+        data-slot="form-control"
+        id="«rr»-form-item"
+        name="confirmPassword"
+        placeholder="Confirm your password"
+        type="password"
+        value=""
+      />
+    </div>
+    <div
+      class="gap-2 flex flex-row items-start space-x-3 space-y-0"
+      data-slot="form-item"
+    >
+      <input
+        aria-describedby="«rs»-form-item-description"
+        class="mt-1"
+        data-slot="form-control"
+        id="«rs»-form-item"
+        type="checkbox"
+      />
+      <div
+        class="space-y-1 leading-none"
+      >
+        <label
+          class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+          data-error="false"
+          data-slot="form-label"
+          for="«rs»-form-item"
+        >
+          Accept terms and conditions
+        </label>
+        <p
+          class="text-muted-foreground text-sm"
+          data-slot="form-description"
+          id="«rs»-form-item-description"
+        >
+          You agree to our Terms of Service and Privacy Policy.
+        </p>
+      </div>
+    </div>
+    <button
+      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+      data-slot="button"
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</div>
+`;
+
 exports[`Form stories snapshot > LoginForm story renders and matches snapshot 1`] = `
 <div>
   <form
@@ -362,6 +526,170 @@ exports[`Form stories snapshot > LoginForm story renders and matches snapshot 1`
 </div>
 `;
 
+exports[`Form stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div>
+  <form
+    autocomplete="off"
+    class="space-y-6 max-w-md"
+  >
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+        data-error="false"
+        data-slot="form-label"
+        for="«re»-form-item"
+      >
+        Username
+      </label>
+      <input
+        aria-describedby="«re»-form-item-description"
+        autocomplete="off"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+        data-slot="form-control"
+        id="«re»-form-item"
+        name="username"
+        placeholder="Enter your username"
+        value=""
+      />
+      <p
+        class="text-muted-foreground text-sm"
+        data-slot="form-description"
+        id="«re»-form-item-description"
+      >
+        This is your public display name.
+      </p>
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+        data-error="false"
+        data-slot="form-label"
+        for="«rf»-form-item"
+      >
+        Email
+      </label>
+      <input
+        aria-describedby="«rf»-form-item-description"
+        autocomplete="off"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+        data-slot="form-control"
+        id="«rf»-form-item"
+        name="email"
+        placeholder="Enter your email"
+        type="email"
+        value=""
+      />
+      <p
+        class="text-muted-foreground text-sm"
+        data-slot="form-description"
+        id="«rf»-form-item-description"
+      >
+        We'll never share your email with anyone else.
+      </p>
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+        data-error="false"
+        data-slot="form-label"
+        for="«rg»-form-item"
+      >
+        Password
+      </label>
+      <input
+        aria-describedby="«rg»-form-item-description"
+        autocomplete="off"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+        data-slot="form-control"
+        id="«rg»-form-item"
+        name="password"
+        placeholder="Enter your password"
+        type="password"
+        value=""
+      />
+      <p
+        class="text-muted-foreground text-sm"
+        data-slot="form-description"
+        id="«rg»-form-item-description"
+      >
+        Must be at least 8 characters long.
+      </p>
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+        data-error="false"
+        data-slot="form-label"
+        for="«rh»-form-item"
+      >
+        Confirm Password
+      </label>
+      <input
+        aria-describedby="«rh»-form-item-description"
+        autocomplete="off"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+        data-slot="form-control"
+        id="«rh»-form-item"
+        name="confirmPassword"
+        placeholder="Confirm your password"
+        type="password"
+        value=""
+      />
+    </div>
+    <div
+      class="gap-2 flex flex-row items-start space-x-3 space-y-0"
+      data-slot="form-item"
+    >
+      <input
+        aria-describedby="«ri»-form-item-description"
+        class="mt-1"
+        data-slot="form-control"
+        id="«ri»-form-item"
+        type="checkbox"
+      />
+      <div
+        class="space-y-1 leading-none"
+      >
+        <label
+          class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+          data-error="false"
+          data-slot="form-label"
+          for="«ri»-form-item"
+        >
+          Accept terms and conditions
+        </label>
+        <p
+          class="text-muted-foreground text-sm"
+          data-slot="form-description"
+          id="«ri»-form-item-description"
+        >
+          You agree to our Terms of Service and Privacy Policy.
+        </p>
+      </div>
+    </div>
+    <button
+      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+      data-slot="button"
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</div>
+`;
+
 exports[`Form stories snapshot > SimpleForm story renders and matches snapshot 1`] = `
 <div>
   <form
@@ -414,6 +742,170 @@ exports[`Form stories snapshot > SimpleForm story renders and matches snapshot 1
         type="email"
         value=""
       />
+    </div>
+    <button
+      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+      data-slot="button"
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</div>
+`;
+
+exports[`Form stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div>
+  <form
+    autocomplete="off"
+    class="space-y-6 max-w-md"
+  >
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+        data-error="false"
+        data-slot="form-label"
+        for="«rj»-form-item"
+      >
+        Username
+      </label>
+      <input
+        aria-describedby="«rj»-form-item-description"
+        autocomplete="off"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+        data-slot="form-control"
+        id="«rj»-form-item"
+        name="username"
+        placeholder="Enter your username"
+        value=""
+      />
+      <p
+        class="text-muted-foreground text-sm"
+        data-slot="form-description"
+        id="«rj»-form-item-description"
+      >
+        This is your public display name.
+      </p>
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+        data-error="false"
+        data-slot="form-label"
+        for="«rk»-form-item"
+      >
+        Email
+      </label>
+      <input
+        aria-describedby="«rk»-form-item-description"
+        autocomplete="off"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+        data-slot="form-control"
+        id="«rk»-form-item"
+        name="email"
+        placeholder="Enter your email"
+        type="email"
+        value=""
+      />
+      <p
+        class="text-muted-foreground text-sm"
+        data-slot="form-description"
+        id="«rk»-form-item-description"
+      >
+        We'll never share your email with anyone else.
+      </p>
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+        data-error="false"
+        data-slot="form-label"
+        for="«rl»-form-item"
+      >
+        Password
+      </label>
+      <input
+        aria-describedby="«rl»-form-item-description"
+        autocomplete="off"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+        data-slot="form-control"
+        id="«rl»-form-item"
+        name="password"
+        placeholder="Enter your password"
+        type="password"
+        value=""
+      />
+      <p
+        class="text-muted-foreground text-sm"
+        data-slot="form-description"
+        id="«rl»-form-item-description"
+      >
+        Must be at least 8 characters long.
+      </p>
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+        data-error="false"
+        data-slot="form-label"
+        for="«rm»-form-item"
+      >
+        Confirm Password
+      </label>
+      <input
+        aria-describedby="«rm»-form-item-description"
+        autocomplete="off"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+        data-slot="form-control"
+        id="«rm»-form-item"
+        name="confirmPassword"
+        placeholder="Confirm your password"
+        type="password"
+        value=""
+      />
+    </div>
+    <div
+      class="gap-2 flex flex-row items-start space-x-3 space-y-0"
+      data-slot="form-item"
+    >
+      <input
+        aria-describedby="«rn»-form-item-description"
+        class="mt-1"
+        data-slot="form-control"
+        id="«rn»-form-item"
+        type="checkbox"
+      />
+      <div
+        class="space-y-1 leading-none"
+      >
+        <label
+          class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+          data-error="false"
+          data-slot="form-label"
+          for="«rn»-form-item"
+        >
+          Accept terms and conditions
+        </label>
+        <p
+          class="text-muted-foreground text-sm"
+          data-slot="form-description"
+          id="«rn»-form-item-description"
+        >
+          You agree to our Terms of Service and Privacy Policy.
+        </p>
+      </div>
     </div>
     <button
       class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"

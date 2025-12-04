@@ -547,3 +547,96 @@ export const MultipleCards: Story = {
         void expect(canvasElement.firstChild).toBeInTheDocument();
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test that card title is displayed
+        const title = canvas.getByText('Card Title');
+        await expect(title).toBeInTheDocument();
+
+        // Test that card description is displayed
+        const description = canvas.getByText('Card description goes here');
+        await expect(description).toBeInTheDocument();
+
+        // Test that card content is displayed
+        const content = canvas.getByText(/main content of the card/i);
+        await expect(content).toBeInTheDocument();
+
+        // Test that action button is present and clickable
+        const actionButton = canvas.getByRole('button', { name: /action/i });
+        await expect(actionButton).toBeInTheDocument();
+        await expect(actionButton).not.toBeDisabled();
+
+        // Test button interaction
+        await userEvent.click(actionButton);
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test that card title is displayed
+        const title = canvas.getByText('Card Title');
+        await expect(title).toBeInTheDocument();
+
+        // Test that card description is displayed
+        const description = canvas.getByText('Card description goes here');
+        await expect(description).toBeInTheDocument();
+
+        // Test that card content is displayed
+        const content = canvas.getByText(/main content of the card/i);
+        await expect(content).toBeInTheDocument();
+
+        // Test that action button is present and clickable
+        const actionButton = canvas.getByRole('button', { name: /action/i });
+        await expect(actionButton).toBeInTheDocument();
+        await expect(actionButton).not.toBeDisabled();
+
+        // Test button interaction
+        await userEvent.click(actionButton);
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test that card title is displayed
+        const title = canvas.getByText('Card Title');
+        await expect(title).toBeInTheDocument();
+
+        // Test that card description is displayed
+        const description = canvas.getByText('Card description goes here');
+        await expect(description).toBeInTheDocument();
+
+        // Test that card content is displayed
+        const content = canvas.getByText(/main content of the card/i);
+        await expect(content).toBeInTheDocument();
+
+        // Test that action button is present and clickable
+        const actionButton = canvas.getByRole('button', { name: /action/i });
+        await expect(actionButton).toBeInTheDocument();
+        await expect(actionButton).not.toBeDisabled();
+
+        // Test button interaction
+        await userEvent.click(actionButton);
+    },
+};

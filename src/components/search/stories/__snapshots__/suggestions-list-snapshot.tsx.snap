@@ -1,276 +1,584 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`SuggestionsList stories snapshot > Default story renders and matches snapshot 1`] = `
-<div
-  class="space-y-0"
-  data-testid="sf-suggestion"
->
+<div>
   <div
-    class="-mx-4"
+    class="space-y-0"
+    data-testid="sf-suggestion"
   >
-    <button
-      class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+    <div
+      class="-mx-4"
     >
-      <div
-        class="flex items-center"
+      <button
+        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
       >
         <div
-          class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+          class="flex items-center"
         >
           <div
-            class="w-full h-full"
+            class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
           >
-            <img
-              alt=""
-              aria-hidden="true"
-              class="w-full h-full object-cover rounded-full"
-              fetchpriority="low"
-              loading="eager"
-              src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100&h=100&fit=crop"
-            />
+            <div
+              class="w-full h-full"
+            >
+              <img
+                alt=""
+                aria-hidden="true"
+                class="w-full h-full object-cover rounded-full"
+                fetchpriority="low"
+                loading="eager"
+                src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100&h=100&fit=crop"
+              />
+            </div>
+          </div>
+          <div
+            class="text-left"
+          >
+            <span
+              class="text-base font-medium text-foreground"
+            >
+              Footwear
+            </span>
           </div>
         </div>
-        <div
-          class="text-left"
-        >
-          <span
-            class="text-base font-medium text-foreground"
-          >
-            Footwear
-          </span>
-        </div>
-      </div>
-    </button>
-    <button
-      class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
-    >
-      <div
-        class="flex items-center"
+      </button>
+      <button
+        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
       >
         <div
-          class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+          class="flex items-center"
         >
           <div
-            class="w-full h-full"
+            class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
           >
-            <img
-              alt=""
-              aria-hidden="true"
-              class="w-full h-full object-cover rounded-full"
-              fetchpriority="low"
-              loading="eager"
-              src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=100&h=100&fit=crop"
-            />
+            <div
+              class="w-full h-full"
+            >
+              <img
+                alt=""
+                aria-hidden="true"
+                class="w-full h-full object-cover rounded-full"
+                fetchpriority="low"
+                loading="eager"
+                src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=100&h=100&fit=crop"
+              />
+            </div>
+          </div>
+          <div
+            class="text-left"
+          >
+            <span
+              class="text-base font-medium text-foreground"
+            >
+              Clothing
+            </span>
           </div>
         </div>
-        <div
-          class="text-left"
-        >
-          <span
-            class="text-base font-medium text-foreground"
-          >
-            Clothing
-          </span>
-        </div>
-      </div>
-    </button>
-    <button
-      class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
-    >
-      <div
-        class="flex items-center"
+      </button>
+      <button
+        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
       >
         <div
-          class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
-        />
-        <div
-          class="text-left"
+          class="flex items-center"
         >
-          <span
-            class="text-base font-medium text-foreground"
+          <div
+            class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+          />
+          <div
+            class="text-left"
           >
-            Accessories
-          </span>
+            <span
+              class="text-base font-medium text-foreground"
+            >
+              Accessories
+            </span>
+          </div>
         </div>
-      </div>
-    </button>
+      </button>
+    </div>
   </div>
 </div>
 `;
 
-exports[`SuggestionsList stories snapshot > Empty story renders and matches snapshot 1`] = `null`;
-
-exports[`SuggestionsList stories snapshot > SingleSuggestion story renders and matches snapshot 1`] = `
-<div
-  class="space-y-0"
-  data-testid="sf-suggestion"
->
+exports[`SuggestionsList stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
   <div
-    class="-mx-4"
+    class="space-y-0"
+    data-testid="sf-suggestion"
   >
-    <button
-      class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+    <div
+      class="-mx-4"
     >
-      <div
-        class="flex items-center"
+      <button
+        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
       >
         <div
-          class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+          class="flex items-center"
         >
           <div
-            class="w-full h-full"
+            class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
           >
-            <img
-              alt=""
-              aria-hidden="true"
-              class="w-full h-full object-cover rounded-full"
-              fetchpriority="low"
-              loading="eager"
-              src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100&h=100&fit=crop"
-            />
+            <div
+              class="w-full h-full"
+            >
+              <img
+                alt=""
+                aria-hidden="true"
+                class="w-full h-full object-cover rounded-full"
+                fetchpriority="low"
+                loading="eager"
+                src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100&h=100&fit=crop"
+              />
+            </div>
+          </div>
+          <div
+            class="text-left"
+          >
+            <span
+              class="text-base font-medium text-foreground"
+            >
+              Footwear
+            </span>
           </div>
         </div>
+      </button>
+      <button
+        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+      >
         <div
-          class="text-left"
+          class="flex items-center"
         >
-          <span
-            class="text-base font-medium text-foreground"
+          <div
+            class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
           >
-            Single Item
-          </span>
+            <div
+              class="w-full h-full"
+            >
+              <img
+                alt=""
+                aria-hidden="true"
+                class="w-full h-full object-cover rounded-full"
+                fetchpriority="low"
+                loading="eager"
+                src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=100&h=100&fit=crop"
+              />
+            </div>
+          </div>
+          <div
+            class="text-left"
+          >
+            <span
+              class="text-base font-medium text-foreground"
+            >
+              Clothing
+            </span>
+          </div>
         </div>
-      </div>
-    </button>
+      </button>
+      <button
+        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+      >
+        <div
+          class="flex items-center"
+        >
+          <div
+            class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+          />
+          <div
+            class="text-left"
+          >
+            <span
+              class="text-base font-medium text-foreground"
+            >
+              Accessories
+            </span>
+          </div>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SuggestionsList stories snapshot > Empty story renders and matches snapshot 1`] = `<div />`;
+
+exports[`SuggestionsList stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="space-y-0"
+    data-testid="sf-suggestion"
+  >
+    <div
+      class="-mx-4"
+    >
+      <button
+        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+      >
+        <div
+          class="flex items-center"
+        >
+          <div
+            class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+          >
+            <div
+              class="w-full h-full"
+            >
+              <img
+                alt=""
+                aria-hidden="true"
+                class="w-full h-full object-cover rounded-full"
+                fetchpriority="low"
+                loading="eager"
+                src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100&h=100&fit=crop"
+              />
+            </div>
+          </div>
+          <div
+            class="text-left"
+          >
+            <span
+              class="text-base font-medium text-foreground"
+            >
+              Footwear
+            </span>
+          </div>
+        </div>
+      </button>
+      <button
+        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+      >
+        <div
+          class="flex items-center"
+        >
+          <div
+            class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+          >
+            <div
+              class="w-full h-full"
+            >
+              <img
+                alt=""
+                aria-hidden="true"
+                class="w-full h-full object-cover rounded-full"
+                fetchpriority="low"
+                loading="eager"
+                src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=100&h=100&fit=crop"
+              />
+            </div>
+          </div>
+          <div
+            class="text-left"
+          >
+            <span
+              class="text-base font-medium text-foreground"
+            >
+              Clothing
+            </span>
+          </div>
+        </div>
+      </button>
+      <button
+        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+      >
+        <div
+          class="flex items-center"
+        >
+          <div
+            class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+          />
+          <div
+            class="text-left"
+          >
+            <span
+              class="text-base font-medium text-foreground"
+            >
+              Accessories
+            </span>
+          </div>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SuggestionsList stories snapshot > SingleSuggestion story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="space-y-0"
+    data-testid="sf-suggestion"
+  >
+    <div
+      class="-mx-4"
+    >
+      <button
+        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+      >
+        <div
+          class="flex items-center"
+        >
+          <div
+            class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+          >
+            <div
+              class="w-full h-full"
+            >
+              <img
+                alt=""
+                aria-hidden="true"
+                class="w-full h-full object-cover rounded-full"
+                fetchpriority="low"
+                loading="eager"
+                src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100&h=100&fit=crop"
+              />
+            </div>
+          </div>
+          <div
+            class="text-left"
+          >
+            <span
+              class="text-base font-medium text-foreground"
+            >
+              Single Item
+            </span>
+          </div>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SuggestionsList stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="space-y-0"
+    data-testid="sf-suggestion"
+  >
+    <div
+      class="-mx-4"
+    >
+      <button
+        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+      >
+        <div
+          class="flex items-center"
+        >
+          <div
+            class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+          >
+            <div
+              class="w-full h-full"
+            >
+              <img
+                alt=""
+                aria-hidden="true"
+                class="w-full h-full object-cover rounded-full"
+                fetchpriority="low"
+                loading="eager"
+                src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100&h=100&fit=crop"
+              />
+            </div>
+          </div>
+          <div
+            class="text-left"
+          >
+            <span
+              class="text-base font-medium text-foreground"
+            >
+              Footwear
+            </span>
+          </div>
+        </div>
+      </button>
+      <button
+        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+      >
+        <div
+          class="flex items-center"
+        >
+          <div
+            class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+          >
+            <div
+              class="w-full h-full"
+            >
+              <img
+                alt=""
+                aria-hidden="true"
+                class="w-full h-full object-cover rounded-full"
+                fetchpriority="low"
+                loading="eager"
+                src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=100&h=100&fit=crop"
+              />
+            </div>
+          </div>
+          <div
+            class="text-left"
+          >
+            <span
+              class="text-base font-medium text-foreground"
+            >
+              Clothing
+            </span>
+          </div>
+        </div>
+      </button>
+      <button
+        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+      >
+        <div
+          class="flex items-center"
+        >
+          <div
+            class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+          />
+          <div
+            class="text-left"
+          >
+            <span
+              class="text-base font-medium text-foreground"
+            >
+              Accessories
+            </span>
+          </div>
+        </div>
+      </button>
+    </div>
   </div>
 </div>
 `;
 
 exports[`SuggestionsList stories snapshot > WithProducts story renders and matches snapshot 1`] = `
-<div
-  class="space-y-0"
-  data-testid="sf-suggestion"
->
+<div>
   <div
-    class="-mx-4"
+    class="space-y-0"
+    data-testid="sf-suggestion"
   >
-    <button
-      class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+    <div
+      class="-mx-4"
     >
-      <div
-        class="flex items-center"
+      <button
+        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
       >
         <div
-          class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+          class="flex items-center"
         >
           <div
-            class="w-full h-full"
+            class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
           >
-            <img
-              alt=""
-              aria-hidden="true"
-              class="w-full h-full object-cover rounded-full"
-              fetchpriority="low"
-              loading="eager"
-              src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100&h=100&fit=crop"
-            />
+            <div
+              class="w-full h-full"
+            >
+              <img
+                alt=""
+                aria-hidden="true"
+                class="w-full h-full object-cover rounded-full"
+                fetchpriority="low"
+                loading="eager"
+                src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100&h=100&fit=crop"
+              />
+            </div>
+          </div>
+          <div
+            class="text-left"
+          >
+            <span
+              class="text-base font-medium text-foreground"
+            >
+              Running Shoes
+            </span>
           </div>
         </div>
-        <div
-          class="text-left"
-        >
-          <span
-            class="text-base font-medium text-foreground"
-          >
-            Running Shoes
-          </span>
-        </div>
-      </div>
-    </button>
-    <button
-      class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
-    >
-      <div
-        class="flex items-center"
+      </button>
+      <button
+        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
       >
         <div
-          class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+          class="flex items-center"
         >
           <div
-            class="w-full h-full"
+            class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
           >
-            <img
-              alt=""
-              aria-hidden="true"
-              class="w-full h-full object-cover rounded-full"
-              fetchpriority="low"
-              loading="eager"
-              src="https://images.unsplash.com/photo-1608256246200-53bd35f3f44e?w=100&h=100&fit=crop"
-            />
+            <div
+              class="w-full h-full"
+            >
+              <img
+                alt=""
+                aria-hidden="true"
+                class="w-full h-full object-cover rounded-full"
+                fetchpriority="low"
+                loading="eager"
+                src="https://images.unsplash.com/photo-1608256246200-53bd35f3f44e?w=100&h=100&fit=crop"
+              />
+            </div>
+          </div>
+          <div
+            class="text-left"
+          >
+            <span
+              class="text-base font-medium text-foreground"
+            >
+              Hiking Boots
+            </span>
           </div>
         </div>
-        <div
-          class="text-left"
-        >
-          <span
-            class="text-base font-medium text-foreground"
-          >
-            Hiking Boots
-          </span>
-        </div>
-      </div>
-    </button>
+      </button>
+    </div>
   </div>
 </div>
 `;
 
 exports[`SuggestionsList stories snapshot > WithoutImages story renders and matches snapshot 1`] = `
-<div
-  class="space-y-0"
-  data-testid="sf-suggestion"
->
+<div>
   <div
-    class="-mx-4"
+    class="space-y-0"
+    data-testid="sf-suggestion"
   >
-    <button
-      class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+    <div
+      class="-mx-4"
     >
-      <div
-        class="flex items-center"
+      <button
+        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
       >
         <div
-          class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
-        />
-        <div
-          class="text-left"
+          class="flex items-center"
         >
-          <span
-            class="text-base font-medium text-foreground"
+          <div
+            class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+          />
+          <div
+            class="text-left"
           >
-            Category Without Image
-          </span>
+            <span
+              class="text-base font-medium text-foreground"
+            >
+              Category Without Image
+            </span>
+          </div>
         </div>
-      </div>
-    </button>
-    <button
-      class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
-    >
-      <div
-        class="flex items-center"
+      </button>
+      <button
+        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
       >
         <div
-          class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
-        />
-        <div
-          class="text-left"
+          class="flex items-center"
         >
-          <span
-            class="text-base font-medium text-foreground"
+          <div
+            class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+          />
+          <div
+            class="text-left"
           >
-            Another Category
-          </span>
+            <span
+              class="text-base font-medium text-foreground"
+            >
+              Another Category
+            </span>
+          </div>
         </div>
-      </div>
-    </button>
+      </button>
+    </div>
   </div>
 </div>
 `;

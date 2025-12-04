@@ -520,3 +520,96 @@ export const NoVariations: Story = {
         await expect(variationRadios.length).toBe(0);
     },
 };
+
+export const Mobile: Story = {
+    ...WithVariations,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test component interaction
+        const buttons = canvas.queryAllByRole('button');
+        const inputs = canvas.queryAllByRole('textbox');
+
+        // Perform basic interactions - only click enabled buttons
+        if (buttons.length > 0) {
+            const enabledButton = buttons.find(
+                (btn) => !btn.hasAttribute('disabled') && !btn.classList.contains('pointer-events-none')
+            );
+            if (enabledButton) {
+                await userEvent.click(enabledButton);
+            }
+        }
+        if (inputs.length > 0) {
+            await userEvent.click(inputs[0]);
+        }
+
+        // Verify component renders
+        void expect(canvasElement.firstChild).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...WithVariations,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test component interaction
+        const buttons = canvas.queryAllByRole('button');
+        const inputs = canvas.queryAllByRole('textbox');
+
+        // Perform basic interactions - only click enabled buttons
+        if (buttons.length > 0) {
+            const enabledButton = buttons.find(
+                (btn) => !btn.hasAttribute('disabled') && !btn.classList.contains('pointer-events-none')
+            );
+            if (enabledButton) {
+                await userEvent.click(enabledButton);
+            }
+        }
+        if (inputs.length > 0) {
+            await userEvent.click(inputs[0]);
+        }
+
+        // Verify component renders
+        void expect(canvasElement.firstChild).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...WithVariations,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test component interaction
+        const buttons = canvas.queryAllByRole('button');
+        const inputs = canvas.queryAllByRole('textbox');
+
+        // Perform basic interactions - only click enabled buttons
+        if (buttons.length > 0) {
+            const enabledButton = buttons.find(
+                (btn) => !btn.hasAttribute('disabled') && !btn.classList.contains('pointer-events-none')
+            );
+            if (enabledButton) {
+                await userEvent.click(enabledButton);
+            }
+        }
+        if (inputs.length > 0) {
+            await userEvent.click(inputs[0]);
+        }
+
+        // Verify component renders
+        void expect(canvasElement.firstChild).toBeInTheDocument();
+    },
+};

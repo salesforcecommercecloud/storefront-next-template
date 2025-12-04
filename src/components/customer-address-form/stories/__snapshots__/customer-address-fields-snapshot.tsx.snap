@@ -1,34 +1,9 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`CustomerAddressFields stories snapshot > Default story renders and matches snapshot 1`] = `
-<div
-  class="space-y-4"
->
+<div>
   <div
-    class="grid gap-2"
-    data-slot="form-item"
-  >
-    <label
-      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
-      data-error="false"
-      data-slot="form-label"
-      for="«r0»-form-item"
-    >
-      Address Title
-    </label>
-    <input
-      aria-describedby="«r0»-form-item-description"
-      autocomplete="off"
-      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
-      data-slot="form-control"
-      id="«r0»-form-item"
-      name="addressId"
-      type="text"
-      value=""
-    />
-  </div>
-  <div
-    class="grid grid-cols-1 md:grid-cols-2 gap-4"
+    class="space-y-4"
   >
     <div
       class="grid gap-2"
@@ -38,18 +13,92 @@ exports[`CustomerAddressFields stories snapshot > Default story renders and matc
         class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
         data-error="false"
         data-slot="form-label"
-        for="«r1»-form-item"
+        for="«r0»-form-item"
       >
-        First Name
+        Address Title
       </label>
       <input
-        aria-describedby="«r1»-form-item-description"
-        autocomplete="given-name"
+        aria-describedby="«r0»-form-item-description"
+        autocomplete="off"
         class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
         data-slot="form-control"
-        id="«r1»-form-item"
-        name="firstName"
+        id="«r0»-form-item"
+        name="addressId"
         type="text"
+        value=""
+      />
+    </div>
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 gap-4"
+    >
+      <div
+        class="grid gap-2"
+        data-slot="form-item"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+          data-error="false"
+          data-slot="form-label"
+          for="«r1»-form-item"
+        >
+          First Name
+        </label>
+        <input
+          aria-describedby="«r1»-form-item-description"
+          autocomplete="given-name"
+          class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+          data-slot="form-control"
+          id="«r1»-form-item"
+          name="firstName"
+          type="text"
+          value=""
+        />
+      </div>
+      <div
+        class="grid gap-2"
+        data-slot="form-item"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+          data-error="false"
+          data-slot="form-label"
+          for="«r2»-form-item"
+        >
+          Last Name
+        </label>
+        <input
+          aria-describedby="«r2»-form-item-description"
+          autocomplete="family-name"
+          class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+          data-slot="form-control"
+          id="«r2»-form-item"
+          name="lastName"
+          type="text"
+          value=""
+        />
+      </div>
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+        data-error="false"
+        data-slot="form-label"
+        for="«r3»-form-item"
+      >
+        Phone
+      </label>
+      <input
+        aria-describedby="«r3»-form-item-description"
+        autocomplete="tel"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+        data-slot="form-control"
+        id="«r3»-form-item"
+        inputmode="numeric"
+        name="phone"
+        type="tel"
         value=""
       />
     </div>
@@ -61,456 +110,29 @@ exports[`CustomerAddressFields stories snapshot > Default story renders and matc
         class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
         data-error="false"
         data-slot="form-label"
-        for="«r2»-form-item"
+        for="«r4»-form-item"
       >
-        Last Name
-      </label>
-      <input
-        aria-describedby="«r2»-form-item-description"
-        autocomplete="family-name"
-        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
-        data-slot="form-control"
-        id="«r2»-form-item"
-        name="lastName"
-        type="text"
-        value=""
-      />
-    </div>
-  </div>
-  <div
-    class="grid gap-2"
-    data-slot="form-item"
-  >
-    <label
-      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
-      data-error="false"
-      data-slot="form-label"
-      for="«r3»-form-item"
-    >
-      Phone
-    </label>
-    <input
-      aria-describedby="«r3»-form-item-description"
-      autocomplete="tel"
-      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
-      data-slot="form-control"
-      id="«r3»-form-item"
-      inputmode="numeric"
-      name="phone"
-      type="tel"
-      value=""
-    />
-  </div>
-  <div
-    class="grid gap-2"
-    data-slot="form-item"
-  >
-    <label
-      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
-      data-error="false"
-      data-slot="form-label"
-      for="«r4»-form-item"
-    >
-      Country
-    </label>
-    <div
-      class="relative flex"
-    >
-      <select
-        aria-describedby="«r4»-form-item-description"
-        class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8 rounded-md"
-        data-slot="form-control"
-        id="«r4»-form-item"
-        name="countryCode"
-      >
-        <option
-          value="US"
-        >
-          United States
-        </option>
-        <option
-          value="CA"
-        >
-          Canada
-        </option>
-      </select>
-      <span
-        class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
-      >
-        <svg
-          aria-hidden="true"
-          class="lucide lucide-chevron-down"
-          fill="none"
-          height="16"
-          stroke="currentColor"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          viewBox="0 0 24 24"
-          width="16"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="m6 9 6 6 6-6"
-          />
-        </svg>
-      </span>
-    </div>
-  </div>
-  <div
-    class="grid gap-2"
-    data-slot="form-item"
-  >
-    <label
-      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
-      data-error="false"
-      data-slot="form-label"
-      for="«r5»-form-item"
-    >
-      Address
-    </label>
-    <input
-      aria-describedby="«r5»-form-item-description"
-      autocomplete="address-line1"
-      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
-      data-slot="form-control"
-      id="«r5»-form-item"
-      name="address1"
-      type="text"
-      value=""
-    />
-  </div>
-  <div
-    class="grid gap-2"
-    data-slot="form-item"
-  >
-    <label
-      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
-      data-error="false"
-      data-slot="form-label"
-      for="«r6»-form-item"
-    >
-      Address Line 2
-    </label>
-    <input
-      aria-describedby="«r6»-form-item-description"
-      autocomplete="address-line2"
-      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
-      data-slot="form-control"
-      id="«r6»-form-item"
-      name="address2"
-      placeholder="Apartment, suite, etc. (optional)"
-      type="text"
-      value=""
-    />
-  </div>
-  <div
-    class="grid gap-2"
-    data-slot="form-item"
-  >
-    <label
-      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
-      data-error="false"
-      data-slot="form-label"
-      for="«r7»-form-item"
-    >
-      City
-    </label>
-    <input
-      aria-describedby="«r7»-form-item-description"
-      autocomplete="address-level2"
-      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
-      data-slot="form-control"
-      id="«r7»-form-item"
-      name="city"
-      type="text"
-      value=""
-    />
-  </div>
-  <div
-    class="grid grid-cols-1 md:grid-cols-2 gap-4"
-  >
-    <div
-      class="grid gap-2"
-      data-slot="form-item"
-    >
-      <label
-        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
-        data-error="false"
-        data-slot="form-label"
-        for="«r8»-form-item"
-      >
-        State
+        Country
       </label>
       <div
         class="relative flex"
       >
         <select
-          aria-describedby="«r8»-form-item-description"
+          aria-describedby="«r4»-form-item-description"
           class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8 rounded-md"
           data-slot="form-control"
-          id="«r8»-form-item"
-          name="stateCode"
+          id="«r4»-form-item"
+          name="countryCode"
         >
           <option
-            value=""
+            value="US"
           >
-            Select State
-          </option>
-          <option
-            value="AL"
-          >
-            Alabama
-          </option>
-          <option
-            value="AK"
-          >
-            Alaska
-          </option>
-          <option
-            value="AZ"
-          >
-            Arizona
-          </option>
-          <option
-            value="AR"
-          >
-            Arkansas
+            United States
           </option>
           <option
             value="CA"
           >
-            California
-          </option>
-          <option
-            value="CO"
-          >
-            Colorado
-          </option>
-          <option
-            value="CT"
-          >
-            Connecticut
-          </option>
-          <option
-            value="DE"
-          >
-            Delaware
-          </option>
-          <option
-            value="DC"
-          >
-            District Of Columbia
-          </option>
-          <option
-            value="FL"
-          >
-            Florida
-          </option>
-          <option
-            value="GA"
-          >
-            Georgia
-          </option>
-          <option
-            value="HI"
-          >
-            Hawaii
-          </option>
-          <option
-            value="ID"
-          >
-            Idaho
-          </option>
-          <option
-            value="IL"
-          >
-            Illinois
-          </option>
-          <option
-            value="IN"
-          >
-            Indiana
-          </option>
-          <option
-            value="IA"
-          >
-            Iowa
-          </option>
-          <option
-            value="KS"
-          >
-            Kansas
-          </option>
-          <option
-            value="KY"
-          >
-            Kentucky
-          </option>
-          <option
-            value="LA"
-          >
-            Louisiana
-          </option>
-          <option
-            value="ME"
-          >
-            Maine
-          </option>
-          <option
-            value="MD"
-          >
-            Maryland
-          </option>
-          <option
-            value="MA"
-          >
-            Massachusetts
-          </option>
-          <option
-            value="MI"
-          >
-            Michigan
-          </option>
-          <option
-            value="MN"
-          >
-            Minnesota
-          </option>
-          <option
-            value="MS"
-          >
-            Mississippi
-          </option>
-          <option
-            value="MO"
-          >
-            Missouri
-          </option>
-          <option
-            value="MT"
-          >
-            Montana
-          </option>
-          <option
-            value="NE"
-          >
-            Nebraska
-          </option>
-          <option
-            value="NV"
-          >
-            Nevada
-          </option>
-          <option
-            value="NH"
-          >
-            New Hampshire
-          </option>
-          <option
-            value="NJ"
-          >
-            New Jersey
-          </option>
-          <option
-            value="NM"
-          >
-            New Mexico
-          </option>
-          <option
-            value="NY"
-          >
-            New York
-          </option>
-          <option
-            value="NC"
-          >
-            North Carolina
-          </option>
-          <option
-            value="ND"
-          >
-            North Dakota
-          </option>
-          <option
-            value="OH"
-          >
-            Ohio
-          </option>
-          <option
-            value="OK"
-          >
-            Oklahoma
-          </option>
-          <option
-            value="OR"
-          >
-            Oregon
-          </option>
-          <option
-            value="PA"
-          >
-            Pennsylvania
-          </option>
-          <option
-            value="RI"
-          >
-            Rhode Island
-          </option>
-          <option
-            value="SC"
-          >
-            South Carolina
-          </option>
-          <option
-            value="SD"
-          >
-            South Dakota
-          </option>
-          <option
-            value="TN"
-          >
-            Tennessee
-          </option>
-          <option
-            value="TX"
-          >
-            Texas
-          </option>
-          <option
-            value="UT"
-          >
-            Utah
-          </option>
-          <option
-            value="VT"
-          >
-            Vermont
-          </option>
-          <option
-            value="VA"
-          >
-            Virginia
-          </option>
-          <option
-            value="WA"
-          >
-            Washington
-          </option>
-          <option
-            value="WV"
-          >
-            West Virginia
-          </option>
-          <option
-            value="WI"
-          >
-            Wisconsin
-          </option>
-          <option
-            value="WY"
-          >
-            Wyoming
+            Canada
           </option>
         </select>
         <span
@@ -544,82 +166,2216 @@ exports[`CustomerAddressFields stories snapshot > Default story renders and matc
         class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
         data-error="false"
         data-slot="form-label"
-        for="«r9»-form-item"
+        for="«r5»-form-item"
       >
-        Zip Code
+        Address
       </label>
       <input
-        aria-describedby="«r9»-form-item-description"
-        autocomplete="postal-code"
+        aria-describedby="«r5»-form-item-description"
+        autocomplete="address-line1"
         class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
         data-slot="form-control"
-        id="«r9»-form-item"
-        name="postalCode"
+        id="«r5»-form-item"
+        name="address1"
         type="text"
         value=""
       />
     </div>
-  </div>
-  <div
-    class="gap-2 flex flex-row items-start space-x-3 space-y-0"
-    data-slot="form-item"
-  >
-    <button
-      aria-checked="false"
-      aria-describedby="«ra»-form-item-description"
-      class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
-      data-slot="form-control"
-      data-state="unchecked"
-      id="«ra»-form-item"
-      role="checkbox"
-      type="button"
-      value="on"
-    />
     <div
-      class="space-y-1 leading-none"
+      class="grid gap-2"
+      data-slot="form-item"
     >
       <label
-        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground cursor-pointer"
+        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
         data-error="false"
         data-slot="form-label"
-        for="«ra»-form-item"
+        for="«r6»-form-item"
       >
-        Set as default
+        Address Line 2
       </label>
+      <input
+        aria-describedby="«r6»-form-item-description"
+        autocomplete="address-line2"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+        data-slot="form-control"
+        id="«r6»-form-item"
+        name="address2"
+        placeholder="Apartment, suite, etc. (optional)"
+        type="text"
+        value=""
+      />
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+        data-error="false"
+        data-slot="form-label"
+        for="«r7»-form-item"
+      >
+        City
+      </label>
+      <input
+        aria-describedby="«r7»-form-item-description"
+        autocomplete="address-level2"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+        data-slot="form-control"
+        id="«r7»-form-item"
+        name="city"
+        type="text"
+        value=""
+      />
+    </div>
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 gap-4"
+    >
+      <div
+        class="grid gap-2"
+        data-slot="form-item"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+          data-error="false"
+          data-slot="form-label"
+          for="«r8»-form-item"
+        >
+          State
+        </label>
+        <div
+          class="relative flex"
+        >
+          <select
+            aria-describedby="«r8»-form-item-description"
+            class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8 rounded-md"
+            data-slot="form-control"
+            id="«r8»-form-item"
+            name="stateCode"
+          >
+            <option
+              value=""
+            >
+              Select State
+            </option>
+            <option
+              value="AL"
+            >
+              Alabama
+            </option>
+            <option
+              value="AK"
+            >
+              Alaska
+            </option>
+            <option
+              value="AZ"
+            >
+              Arizona
+            </option>
+            <option
+              value="AR"
+            >
+              Arkansas
+            </option>
+            <option
+              value="CA"
+            >
+              California
+            </option>
+            <option
+              value="CO"
+            >
+              Colorado
+            </option>
+            <option
+              value="CT"
+            >
+              Connecticut
+            </option>
+            <option
+              value="DE"
+            >
+              Delaware
+            </option>
+            <option
+              value="DC"
+            >
+              District Of Columbia
+            </option>
+            <option
+              value="FL"
+            >
+              Florida
+            </option>
+            <option
+              value="GA"
+            >
+              Georgia
+            </option>
+            <option
+              value="HI"
+            >
+              Hawaii
+            </option>
+            <option
+              value="ID"
+            >
+              Idaho
+            </option>
+            <option
+              value="IL"
+            >
+              Illinois
+            </option>
+            <option
+              value="IN"
+            >
+              Indiana
+            </option>
+            <option
+              value="IA"
+            >
+              Iowa
+            </option>
+            <option
+              value="KS"
+            >
+              Kansas
+            </option>
+            <option
+              value="KY"
+            >
+              Kentucky
+            </option>
+            <option
+              value="LA"
+            >
+              Louisiana
+            </option>
+            <option
+              value="ME"
+            >
+              Maine
+            </option>
+            <option
+              value="MD"
+            >
+              Maryland
+            </option>
+            <option
+              value="MA"
+            >
+              Massachusetts
+            </option>
+            <option
+              value="MI"
+            >
+              Michigan
+            </option>
+            <option
+              value="MN"
+            >
+              Minnesota
+            </option>
+            <option
+              value="MS"
+            >
+              Mississippi
+            </option>
+            <option
+              value="MO"
+            >
+              Missouri
+            </option>
+            <option
+              value="MT"
+            >
+              Montana
+            </option>
+            <option
+              value="NE"
+            >
+              Nebraska
+            </option>
+            <option
+              value="NV"
+            >
+              Nevada
+            </option>
+            <option
+              value="NH"
+            >
+              New Hampshire
+            </option>
+            <option
+              value="NJ"
+            >
+              New Jersey
+            </option>
+            <option
+              value="NM"
+            >
+              New Mexico
+            </option>
+            <option
+              value="NY"
+            >
+              New York
+            </option>
+            <option
+              value="NC"
+            >
+              North Carolina
+            </option>
+            <option
+              value="ND"
+            >
+              North Dakota
+            </option>
+            <option
+              value="OH"
+            >
+              Ohio
+            </option>
+            <option
+              value="OK"
+            >
+              Oklahoma
+            </option>
+            <option
+              value="OR"
+            >
+              Oregon
+            </option>
+            <option
+              value="PA"
+            >
+              Pennsylvania
+            </option>
+            <option
+              value="RI"
+            >
+              Rhode Island
+            </option>
+            <option
+              value="SC"
+            >
+              South Carolina
+            </option>
+            <option
+              value="SD"
+            >
+              South Dakota
+            </option>
+            <option
+              value="TN"
+            >
+              Tennessee
+            </option>
+            <option
+              value="TX"
+            >
+              Texas
+            </option>
+            <option
+              value="UT"
+            >
+              Utah
+            </option>
+            <option
+              value="VT"
+            >
+              Vermont
+            </option>
+            <option
+              value="VA"
+            >
+              Virginia
+            </option>
+            <option
+              value="WA"
+            >
+              Washington
+            </option>
+            <option
+              value="WV"
+            >
+              West Virginia
+            </option>
+            <option
+              value="WI"
+            >
+              Wisconsin
+            </option>
+            <option
+              value="WY"
+            >
+              Wyoming
+            </option>
+          </select>
+          <span
+            class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-down"
+              fill="none"
+              height="16"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+              />
+            </svg>
+          </span>
+        </div>
+      </div>
+      <div
+        class="grid gap-2"
+        data-slot="form-item"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+          data-error="false"
+          data-slot="form-label"
+          for="«r9»-form-item"
+        >
+          Zip Code
+        </label>
+        <input
+          aria-describedby="«r9»-form-item-description"
+          autocomplete="postal-code"
+          class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+          data-slot="form-control"
+          id="«r9»-form-item"
+          name="postalCode"
+          type="text"
+          value=""
+        />
+      </div>
+    </div>
+    <div
+      class="gap-2 flex flex-row items-start space-x-3 space-y-0"
+      data-slot="form-item"
+    >
+      <button
+        aria-checked="false"
+        aria-describedby="«ra»-form-item-description"
+        class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+        data-slot="form-control"
+        data-state="unchecked"
+        id="«ra»-form-item"
+        role="checkbox"
+        type="button"
+        value="on"
+      />
+      <div
+        class="space-y-1 leading-none"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground cursor-pointer"
+          data-error="false"
+          data-slot="form-label"
+          for="«ra»-form-item"
+        >
+          Set as default
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`CustomerAddressFields stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="space-y-4"
+  >
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+        data-error="false"
+        data-slot="form-label"
+        for="«r1n»-form-item"
+      >
+        Address Title
+      </label>
+      <input
+        aria-describedby="«r1n»-form-item-description"
+        autocomplete="off"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+        data-slot="form-control"
+        id="«r1n»-form-item"
+        name="addressId"
+        type="text"
+        value=""
+      />
+    </div>
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 gap-4"
+    >
+      <div
+        class="grid gap-2"
+        data-slot="form-item"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+          data-error="false"
+          data-slot="form-label"
+          for="«r1o»-form-item"
+        >
+          First Name
+        </label>
+        <input
+          aria-describedby="«r1o»-form-item-description"
+          autocomplete="given-name"
+          class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+          data-slot="form-control"
+          id="«r1o»-form-item"
+          name="firstName"
+          type="text"
+          value=""
+        />
+      </div>
+      <div
+        class="grid gap-2"
+        data-slot="form-item"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+          data-error="false"
+          data-slot="form-label"
+          for="«r1p»-form-item"
+        >
+          Last Name
+        </label>
+        <input
+          aria-describedby="«r1p»-form-item-description"
+          autocomplete="family-name"
+          class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+          data-slot="form-control"
+          id="«r1p»-form-item"
+          name="lastName"
+          type="text"
+          value=""
+        />
+      </div>
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+        data-error="false"
+        data-slot="form-label"
+        for="«r1q»-form-item"
+      >
+        Phone
+      </label>
+      <input
+        aria-describedby="«r1q»-form-item-description"
+        autocomplete="tel"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+        data-slot="form-control"
+        id="«r1q»-form-item"
+        inputmode="numeric"
+        name="phone"
+        type="tel"
+        value=""
+      />
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+        data-error="false"
+        data-slot="form-label"
+        for="«r1r»-form-item"
+      >
+        Country
+      </label>
+      <div
+        class="relative flex"
+      >
+        <select
+          aria-describedby="«r1r»-form-item-description"
+          class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8 rounded-md"
+          data-slot="form-control"
+          id="«r1r»-form-item"
+          name="countryCode"
+        >
+          <option
+            value="US"
+          >
+            United States
+          </option>
+          <option
+            value="CA"
+          >
+            Canada
+          </option>
+        </select>
+        <span
+          class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-chevron-down"
+            fill="none"
+            height="16"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="m6 9 6 6 6-6"
+            />
+          </svg>
+        </span>
+      </div>
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+        data-error="false"
+        data-slot="form-label"
+        for="«r1s»-form-item"
+      >
+        Address
+      </label>
+      <input
+        aria-describedby="«r1s»-form-item-description"
+        autocomplete="address-line1"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+        data-slot="form-control"
+        id="«r1s»-form-item"
+        name="address1"
+        type="text"
+        value=""
+      />
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+        data-error="false"
+        data-slot="form-label"
+        for="«r1t»-form-item"
+      >
+        Address Line 2
+      </label>
+      <input
+        aria-describedby="«r1t»-form-item-description"
+        autocomplete="address-line2"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+        data-slot="form-control"
+        id="«r1t»-form-item"
+        name="address2"
+        placeholder="Apartment, suite, etc. (optional)"
+        type="text"
+        value=""
+      />
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+        data-error="false"
+        data-slot="form-label"
+        for="«r1u»-form-item"
+      >
+        City
+      </label>
+      <input
+        aria-describedby="«r1u»-form-item-description"
+        autocomplete="address-level2"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+        data-slot="form-control"
+        id="«r1u»-form-item"
+        name="city"
+        type="text"
+        value=""
+      />
+    </div>
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 gap-4"
+    >
+      <div
+        class="grid gap-2"
+        data-slot="form-item"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+          data-error="false"
+          data-slot="form-label"
+          for="«r1v»-form-item"
+        >
+          State
+        </label>
+        <div
+          class="relative flex"
+        >
+          <select
+            aria-describedby="«r1v»-form-item-description"
+            class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8 rounded-md"
+            data-slot="form-control"
+            id="«r1v»-form-item"
+            name="stateCode"
+          >
+            <option
+              value=""
+            >
+              Select State
+            </option>
+            <option
+              value="AL"
+            >
+              Alabama
+            </option>
+            <option
+              value="AK"
+            >
+              Alaska
+            </option>
+            <option
+              value="AZ"
+            >
+              Arizona
+            </option>
+            <option
+              value="AR"
+            >
+              Arkansas
+            </option>
+            <option
+              value="CA"
+            >
+              California
+            </option>
+            <option
+              value="CO"
+            >
+              Colorado
+            </option>
+            <option
+              value="CT"
+            >
+              Connecticut
+            </option>
+            <option
+              value="DE"
+            >
+              Delaware
+            </option>
+            <option
+              value="DC"
+            >
+              District Of Columbia
+            </option>
+            <option
+              value="FL"
+            >
+              Florida
+            </option>
+            <option
+              value="GA"
+            >
+              Georgia
+            </option>
+            <option
+              value="HI"
+            >
+              Hawaii
+            </option>
+            <option
+              value="ID"
+            >
+              Idaho
+            </option>
+            <option
+              value="IL"
+            >
+              Illinois
+            </option>
+            <option
+              value="IN"
+            >
+              Indiana
+            </option>
+            <option
+              value="IA"
+            >
+              Iowa
+            </option>
+            <option
+              value="KS"
+            >
+              Kansas
+            </option>
+            <option
+              value="KY"
+            >
+              Kentucky
+            </option>
+            <option
+              value="LA"
+            >
+              Louisiana
+            </option>
+            <option
+              value="ME"
+            >
+              Maine
+            </option>
+            <option
+              value="MD"
+            >
+              Maryland
+            </option>
+            <option
+              value="MA"
+            >
+              Massachusetts
+            </option>
+            <option
+              value="MI"
+            >
+              Michigan
+            </option>
+            <option
+              value="MN"
+            >
+              Minnesota
+            </option>
+            <option
+              value="MS"
+            >
+              Mississippi
+            </option>
+            <option
+              value="MO"
+            >
+              Missouri
+            </option>
+            <option
+              value="MT"
+            >
+              Montana
+            </option>
+            <option
+              value="NE"
+            >
+              Nebraska
+            </option>
+            <option
+              value="NV"
+            >
+              Nevada
+            </option>
+            <option
+              value="NH"
+            >
+              New Hampshire
+            </option>
+            <option
+              value="NJ"
+            >
+              New Jersey
+            </option>
+            <option
+              value="NM"
+            >
+              New Mexico
+            </option>
+            <option
+              value="NY"
+            >
+              New York
+            </option>
+            <option
+              value="NC"
+            >
+              North Carolina
+            </option>
+            <option
+              value="ND"
+            >
+              North Dakota
+            </option>
+            <option
+              value="OH"
+            >
+              Ohio
+            </option>
+            <option
+              value="OK"
+            >
+              Oklahoma
+            </option>
+            <option
+              value="OR"
+            >
+              Oregon
+            </option>
+            <option
+              value="PA"
+            >
+              Pennsylvania
+            </option>
+            <option
+              value="RI"
+            >
+              Rhode Island
+            </option>
+            <option
+              value="SC"
+            >
+              South Carolina
+            </option>
+            <option
+              value="SD"
+            >
+              South Dakota
+            </option>
+            <option
+              value="TN"
+            >
+              Tennessee
+            </option>
+            <option
+              value="TX"
+            >
+              Texas
+            </option>
+            <option
+              value="UT"
+            >
+              Utah
+            </option>
+            <option
+              value="VT"
+            >
+              Vermont
+            </option>
+            <option
+              value="VA"
+            >
+              Virginia
+            </option>
+            <option
+              value="WA"
+            >
+              Washington
+            </option>
+            <option
+              value="WV"
+            >
+              West Virginia
+            </option>
+            <option
+              value="WI"
+            >
+              Wisconsin
+            </option>
+            <option
+              value="WY"
+            >
+              Wyoming
+            </option>
+          </select>
+          <span
+            class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-down"
+              fill="none"
+              height="16"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+              />
+            </svg>
+          </span>
+        </div>
+      </div>
+      <div
+        class="grid gap-2"
+        data-slot="form-item"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+          data-error="false"
+          data-slot="form-label"
+          for="«r20»-form-item"
+        >
+          Zip Code
+        </label>
+        <input
+          aria-describedby="«r20»-form-item-description"
+          autocomplete="postal-code"
+          class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+          data-slot="form-control"
+          id="«r20»-form-item"
+          name="postalCode"
+          type="text"
+          value=""
+        />
+      </div>
+    </div>
+    <div
+      class="gap-2 flex flex-row items-start space-x-3 space-y-0"
+      data-slot="form-item"
+    >
+      <button
+        aria-checked="false"
+        aria-describedby="«r21»-form-item-description"
+        class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+        data-slot="form-control"
+        data-state="unchecked"
+        id="«r21»-form-item"
+        role="checkbox"
+        type="button"
+        value="on"
+      />
+      <div
+        class="space-y-1 leading-none"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground cursor-pointer"
+          data-error="false"
+          data-slot="form-label"
+          for="«r21»-form-item"
+        >
+          Set as default
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`CustomerAddressFields stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="space-y-4"
+  >
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+        data-error="false"
+        data-slot="form-label"
+        for="«r11»-form-item"
+      >
+        Address Title
+      </label>
+      <input
+        aria-describedby="«r11»-form-item-description"
+        autocomplete="off"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+        data-slot="form-control"
+        id="«r11»-form-item"
+        name="addressId"
+        type="text"
+        value=""
+      />
+    </div>
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 gap-4"
+    >
+      <div
+        class="grid gap-2"
+        data-slot="form-item"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+          data-error="false"
+          data-slot="form-label"
+          for="«r12»-form-item"
+        >
+          First Name
+        </label>
+        <input
+          aria-describedby="«r12»-form-item-description"
+          autocomplete="given-name"
+          class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+          data-slot="form-control"
+          id="«r12»-form-item"
+          name="firstName"
+          type="text"
+          value=""
+        />
+      </div>
+      <div
+        class="grid gap-2"
+        data-slot="form-item"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+          data-error="false"
+          data-slot="form-label"
+          for="«r13»-form-item"
+        >
+          Last Name
+        </label>
+        <input
+          aria-describedby="«r13»-form-item-description"
+          autocomplete="family-name"
+          class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+          data-slot="form-control"
+          id="«r13»-form-item"
+          name="lastName"
+          type="text"
+          value=""
+        />
+      </div>
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+        data-error="false"
+        data-slot="form-label"
+        for="«r14»-form-item"
+      >
+        Phone
+      </label>
+      <input
+        aria-describedby="«r14»-form-item-description"
+        autocomplete="tel"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+        data-slot="form-control"
+        id="«r14»-form-item"
+        inputmode="numeric"
+        name="phone"
+        type="tel"
+        value=""
+      />
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+        data-error="false"
+        data-slot="form-label"
+        for="«r15»-form-item"
+      >
+        Country
+      </label>
+      <div
+        class="relative flex"
+      >
+        <select
+          aria-describedby="«r15»-form-item-description"
+          class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8 rounded-md"
+          data-slot="form-control"
+          id="«r15»-form-item"
+          name="countryCode"
+        >
+          <option
+            value="US"
+          >
+            United States
+          </option>
+          <option
+            value="CA"
+          >
+            Canada
+          </option>
+        </select>
+        <span
+          class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-chevron-down"
+            fill="none"
+            height="16"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="m6 9 6 6 6-6"
+            />
+          </svg>
+        </span>
+      </div>
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+        data-error="false"
+        data-slot="form-label"
+        for="«r16»-form-item"
+      >
+        Address
+      </label>
+      <input
+        aria-describedby="«r16»-form-item-description"
+        autocomplete="address-line1"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+        data-slot="form-control"
+        id="«r16»-form-item"
+        name="address1"
+        type="text"
+        value=""
+      />
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+        data-error="false"
+        data-slot="form-label"
+        for="«r17»-form-item"
+      >
+        Address Line 2
+      </label>
+      <input
+        aria-describedby="«r17»-form-item-description"
+        autocomplete="address-line2"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+        data-slot="form-control"
+        id="«r17»-form-item"
+        name="address2"
+        placeholder="Apartment, suite, etc. (optional)"
+        type="text"
+        value=""
+      />
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+        data-error="false"
+        data-slot="form-label"
+        for="«r18»-form-item"
+      >
+        City
+      </label>
+      <input
+        aria-describedby="«r18»-form-item-description"
+        autocomplete="address-level2"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+        data-slot="form-control"
+        id="«r18»-form-item"
+        name="city"
+        type="text"
+        value=""
+      />
+    </div>
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 gap-4"
+    >
+      <div
+        class="grid gap-2"
+        data-slot="form-item"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+          data-error="false"
+          data-slot="form-label"
+          for="«r19»-form-item"
+        >
+          State
+        </label>
+        <div
+          class="relative flex"
+        >
+          <select
+            aria-describedby="«r19»-form-item-description"
+            class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8 rounded-md"
+            data-slot="form-control"
+            id="«r19»-form-item"
+            name="stateCode"
+          >
+            <option
+              value=""
+            >
+              Select State
+            </option>
+            <option
+              value="AL"
+            >
+              Alabama
+            </option>
+            <option
+              value="AK"
+            >
+              Alaska
+            </option>
+            <option
+              value="AZ"
+            >
+              Arizona
+            </option>
+            <option
+              value="AR"
+            >
+              Arkansas
+            </option>
+            <option
+              value="CA"
+            >
+              California
+            </option>
+            <option
+              value="CO"
+            >
+              Colorado
+            </option>
+            <option
+              value="CT"
+            >
+              Connecticut
+            </option>
+            <option
+              value="DE"
+            >
+              Delaware
+            </option>
+            <option
+              value="DC"
+            >
+              District Of Columbia
+            </option>
+            <option
+              value="FL"
+            >
+              Florida
+            </option>
+            <option
+              value="GA"
+            >
+              Georgia
+            </option>
+            <option
+              value="HI"
+            >
+              Hawaii
+            </option>
+            <option
+              value="ID"
+            >
+              Idaho
+            </option>
+            <option
+              value="IL"
+            >
+              Illinois
+            </option>
+            <option
+              value="IN"
+            >
+              Indiana
+            </option>
+            <option
+              value="IA"
+            >
+              Iowa
+            </option>
+            <option
+              value="KS"
+            >
+              Kansas
+            </option>
+            <option
+              value="KY"
+            >
+              Kentucky
+            </option>
+            <option
+              value="LA"
+            >
+              Louisiana
+            </option>
+            <option
+              value="ME"
+            >
+              Maine
+            </option>
+            <option
+              value="MD"
+            >
+              Maryland
+            </option>
+            <option
+              value="MA"
+            >
+              Massachusetts
+            </option>
+            <option
+              value="MI"
+            >
+              Michigan
+            </option>
+            <option
+              value="MN"
+            >
+              Minnesota
+            </option>
+            <option
+              value="MS"
+            >
+              Mississippi
+            </option>
+            <option
+              value="MO"
+            >
+              Missouri
+            </option>
+            <option
+              value="MT"
+            >
+              Montana
+            </option>
+            <option
+              value="NE"
+            >
+              Nebraska
+            </option>
+            <option
+              value="NV"
+            >
+              Nevada
+            </option>
+            <option
+              value="NH"
+            >
+              New Hampshire
+            </option>
+            <option
+              value="NJ"
+            >
+              New Jersey
+            </option>
+            <option
+              value="NM"
+            >
+              New Mexico
+            </option>
+            <option
+              value="NY"
+            >
+              New York
+            </option>
+            <option
+              value="NC"
+            >
+              North Carolina
+            </option>
+            <option
+              value="ND"
+            >
+              North Dakota
+            </option>
+            <option
+              value="OH"
+            >
+              Ohio
+            </option>
+            <option
+              value="OK"
+            >
+              Oklahoma
+            </option>
+            <option
+              value="OR"
+            >
+              Oregon
+            </option>
+            <option
+              value="PA"
+            >
+              Pennsylvania
+            </option>
+            <option
+              value="RI"
+            >
+              Rhode Island
+            </option>
+            <option
+              value="SC"
+            >
+              South Carolina
+            </option>
+            <option
+              value="SD"
+            >
+              South Dakota
+            </option>
+            <option
+              value="TN"
+            >
+              Tennessee
+            </option>
+            <option
+              value="TX"
+            >
+              Texas
+            </option>
+            <option
+              value="UT"
+            >
+              Utah
+            </option>
+            <option
+              value="VT"
+            >
+              Vermont
+            </option>
+            <option
+              value="VA"
+            >
+              Virginia
+            </option>
+            <option
+              value="WA"
+            >
+              Washington
+            </option>
+            <option
+              value="WV"
+            >
+              West Virginia
+            </option>
+            <option
+              value="WI"
+            >
+              Wisconsin
+            </option>
+            <option
+              value="WY"
+            >
+              Wyoming
+            </option>
+          </select>
+          <span
+            class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-down"
+              fill="none"
+              height="16"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+              />
+            </svg>
+          </span>
+        </div>
+      </div>
+      <div
+        class="grid gap-2"
+        data-slot="form-item"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+          data-error="false"
+          data-slot="form-label"
+          for="«r1a»-form-item"
+        >
+          Zip Code
+        </label>
+        <input
+          aria-describedby="«r1a»-form-item-description"
+          autocomplete="postal-code"
+          class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+          data-slot="form-control"
+          id="«r1a»-form-item"
+          name="postalCode"
+          type="text"
+          value=""
+        />
+      </div>
+    </div>
+    <div
+      class="gap-2 flex flex-row items-start space-x-3 space-y-0"
+      data-slot="form-item"
+    >
+      <button
+        aria-checked="false"
+        aria-describedby="«r1b»-form-item-description"
+        class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+        data-slot="form-control"
+        data-state="unchecked"
+        id="«r1b»-form-item"
+        role="checkbox"
+        type="button"
+        value="on"
+      />
+      <div
+        class="space-y-1 leading-none"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground cursor-pointer"
+          data-error="false"
+          data-slot="form-label"
+          for="«r1b»-form-item"
+        >
+          Set as default
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`CustomerAddressFields stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="space-y-4"
+  >
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+        data-error="false"
+        data-slot="form-label"
+        for="«r1c»-form-item"
+      >
+        Address Title
+      </label>
+      <input
+        aria-describedby="«r1c»-form-item-description"
+        autocomplete="off"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+        data-slot="form-control"
+        id="«r1c»-form-item"
+        name="addressId"
+        type="text"
+        value=""
+      />
+    </div>
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 gap-4"
+    >
+      <div
+        class="grid gap-2"
+        data-slot="form-item"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+          data-error="false"
+          data-slot="form-label"
+          for="«r1d»-form-item"
+        >
+          First Name
+        </label>
+        <input
+          aria-describedby="«r1d»-form-item-description"
+          autocomplete="given-name"
+          class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+          data-slot="form-control"
+          id="«r1d»-form-item"
+          name="firstName"
+          type="text"
+          value=""
+        />
+      </div>
+      <div
+        class="grid gap-2"
+        data-slot="form-item"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+          data-error="false"
+          data-slot="form-label"
+          for="«r1e»-form-item"
+        >
+          Last Name
+        </label>
+        <input
+          aria-describedby="«r1e»-form-item-description"
+          autocomplete="family-name"
+          class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+          data-slot="form-control"
+          id="«r1e»-form-item"
+          name="lastName"
+          type="text"
+          value=""
+        />
+      </div>
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+        data-error="false"
+        data-slot="form-label"
+        for="«r1f»-form-item"
+      >
+        Phone
+      </label>
+      <input
+        aria-describedby="«r1f»-form-item-description"
+        autocomplete="tel"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+        data-slot="form-control"
+        id="«r1f»-form-item"
+        inputmode="numeric"
+        name="phone"
+        type="tel"
+        value=""
+      />
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+        data-error="false"
+        data-slot="form-label"
+        for="«r1g»-form-item"
+      >
+        Country
+      </label>
+      <div
+        class="relative flex"
+      >
+        <select
+          aria-describedby="«r1g»-form-item-description"
+          class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8 rounded-md"
+          data-slot="form-control"
+          id="«r1g»-form-item"
+          name="countryCode"
+        >
+          <option
+            value="US"
+          >
+            United States
+          </option>
+          <option
+            value="CA"
+          >
+            Canada
+          </option>
+        </select>
+        <span
+          class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-chevron-down"
+            fill="none"
+            height="16"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="m6 9 6 6 6-6"
+            />
+          </svg>
+        </span>
+      </div>
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+        data-error="false"
+        data-slot="form-label"
+        for="«r1h»-form-item"
+      >
+        Address
+      </label>
+      <input
+        aria-describedby="«r1h»-form-item-description"
+        autocomplete="address-line1"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+        data-slot="form-control"
+        id="«r1h»-form-item"
+        name="address1"
+        type="text"
+        value=""
+      />
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+        data-error="false"
+        data-slot="form-label"
+        for="«r1i»-form-item"
+      >
+        Address Line 2
+      </label>
+      <input
+        aria-describedby="«r1i»-form-item-description"
+        autocomplete="address-line2"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+        data-slot="form-control"
+        id="«r1i»-form-item"
+        name="address2"
+        placeholder="Apartment, suite, etc. (optional)"
+        type="text"
+        value=""
+      />
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+        data-error="false"
+        data-slot="form-label"
+        for="«r1j»-form-item"
+      >
+        City
+      </label>
+      <input
+        aria-describedby="«r1j»-form-item-description"
+        autocomplete="address-level2"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+        data-slot="form-control"
+        id="«r1j»-form-item"
+        name="city"
+        type="text"
+        value=""
+      />
+    </div>
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 gap-4"
+    >
+      <div
+        class="grid gap-2"
+        data-slot="form-item"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+          data-error="false"
+          data-slot="form-label"
+          for="«r1k»-form-item"
+        >
+          State
+        </label>
+        <div
+          class="relative flex"
+        >
+          <select
+            aria-describedby="«r1k»-form-item-description"
+            class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8 rounded-md"
+            data-slot="form-control"
+            id="«r1k»-form-item"
+            name="stateCode"
+          >
+            <option
+              value=""
+            >
+              Select State
+            </option>
+            <option
+              value="AL"
+            >
+              Alabama
+            </option>
+            <option
+              value="AK"
+            >
+              Alaska
+            </option>
+            <option
+              value="AZ"
+            >
+              Arizona
+            </option>
+            <option
+              value="AR"
+            >
+              Arkansas
+            </option>
+            <option
+              value="CA"
+            >
+              California
+            </option>
+            <option
+              value="CO"
+            >
+              Colorado
+            </option>
+            <option
+              value="CT"
+            >
+              Connecticut
+            </option>
+            <option
+              value="DE"
+            >
+              Delaware
+            </option>
+            <option
+              value="DC"
+            >
+              District Of Columbia
+            </option>
+            <option
+              value="FL"
+            >
+              Florida
+            </option>
+            <option
+              value="GA"
+            >
+              Georgia
+            </option>
+            <option
+              value="HI"
+            >
+              Hawaii
+            </option>
+            <option
+              value="ID"
+            >
+              Idaho
+            </option>
+            <option
+              value="IL"
+            >
+              Illinois
+            </option>
+            <option
+              value="IN"
+            >
+              Indiana
+            </option>
+            <option
+              value="IA"
+            >
+              Iowa
+            </option>
+            <option
+              value="KS"
+            >
+              Kansas
+            </option>
+            <option
+              value="KY"
+            >
+              Kentucky
+            </option>
+            <option
+              value="LA"
+            >
+              Louisiana
+            </option>
+            <option
+              value="ME"
+            >
+              Maine
+            </option>
+            <option
+              value="MD"
+            >
+              Maryland
+            </option>
+            <option
+              value="MA"
+            >
+              Massachusetts
+            </option>
+            <option
+              value="MI"
+            >
+              Michigan
+            </option>
+            <option
+              value="MN"
+            >
+              Minnesota
+            </option>
+            <option
+              value="MS"
+            >
+              Mississippi
+            </option>
+            <option
+              value="MO"
+            >
+              Missouri
+            </option>
+            <option
+              value="MT"
+            >
+              Montana
+            </option>
+            <option
+              value="NE"
+            >
+              Nebraska
+            </option>
+            <option
+              value="NV"
+            >
+              Nevada
+            </option>
+            <option
+              value="NH"
+            >
+              New Hampshire
+            </option>
+            <option
+              value="NJ"
+            >
+              New Jersey
+            </option>
+            <option
+              value="NM"
+            >
+              New Mexico
+            </option>
+            <option
+              value="NY"
+            >
+              New York
+            </option>
+            <option
+              value="NC"
+            >
+              North Carolina
+            </option>
+            <option
+              value="ND"
+            >
+              North Dakota
+            </option>
+            <option
+              value="OH"
+            >
+              Ohio
+            </option>
+            <option
+              value="OK"
+            >
+              Oklahoma
+            </option>
+            <option
+              value="OR"
+            >
+              Oregon
+            </option>
+            <option
+              value="PA"
+            >
+              Pennsylvania
+            </option>
+            <option
+              value="RI"
+            >
+              Rhode Island
+            </option>
+            <option
+              value="SC"
+            >
+              South Carolina
+            </option>
+            <option
+              value="SD"
+            >
+              South Dakota
+            </option>
+            <option
+              value="TN"
+            >
+              Tennessee
+            </option>
+            <option
+              value="TX"
+            >
+              Texas
+            </option>
+            <option
+              value="UT"
+            >
+              Utah
+            </option>
+            <option
+              value="VT"
+            >
+              Vermont
+            </option>
+            <option
+              value="VA"
+            >
+              Virginia
+            </option>
+            <option
+              value="WA"
+            >
+              Washington
+            </option>
+            <option
+              value="WV"
+            >
+              West Virginia
+            </option>
+            <option
+              value="WI"
+            >
+              Wisconsin
+            </option>
+            <option
+              value="WY"
+            >
+              Wyoming
+            </option>
+          </select>
+          <span
+            class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-down"
+              fill="none"
+              height="16"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+              />
+            </svg>
+          </span>
+        </div>
+      </div>
+      <div
+        class="grid gap-2"
+        data-slot="form-item"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+          data-error="false"
+          data-slot="form-label"
+          for="«r1l»-form-item"
+        >
+          Zip Code
+        </label>
+        <input
+          aria-describedby="«r1l»-form-item-description"
+          autocomplete="postal-code"
+          class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+          data-slot="form-control"
+          id="«r1l»-form-item"
+          name="postalCode"
+          type="text"
+          value=""
+        />
+      </div>
+    </div>
+    <div
+      class="gap-2 flex flex-row items-start space-x-3 space-y-0"
+      data-slot="form-item"
+    >
+      <button
+        aria-checked="false"
+        aria-describedby="«r1m»-form-item-description"
+        class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+        data-slot="form-control"
+        data-state="unchecked"
+        id="«r1m»-form-item"
+        role="checkbox"
+        type="button"
+        value="on"
+      />
+      <div
+        class="space-y-1 leading-none"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground cursor-pointer"
+          data-error="false"
+          data-slot="form-label"
+          for="«r1m»-form-item"
+        >
+          Set as default
+        </label>
+      </div>
     </div>
   </div>
 </div>
 `;
 
 exports[`CustomerAddressFields stories snapshot > WithCanadianAddress story renders and matches snapshot 1`] = `
-<div
-  class="space-y-4"
->
+<div>
   <div
-    class="grid gap-2"
-    data-slot="form-item"
-  >
-    <label
-      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
-      data-error="false"
-      data-slot="form-label"
-      for="«rm»-form-item"
-    >
-      Address Title
-    </label>
-    <input
-      aria-describedby="«rm»-form-item-description"
-      autocomplete="off"
-      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
-      data-slot="form-control"
-      id="«rm»-form-item"
-      name="addressId"
-      type="text"
-      value="Work"
-    />
-  </div>
-  <div
-    class="grid grid-cols-1 md:grid-cols-2 gap-4"
+    class="space-y-4"
   >
     <div
       class="grid gap-2"
@@ -629,19 +2385,93 @@ exports[`CustomerAddressFields stories snapshot > WithCanadianAddress story rend
         class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
         data-error="false"
         data-slot="form-label"
-        for="«rn»-form-item"
+        for="«rm»-form-item"
       >
-        First Name
+        Address Title
       </label>
       <input
-        aria-describedby="«rn»-form-item-description"
-        autocomplete="given-name"
+        aria-describedby="«rm»-form-item-description"
+        autocomplete="off"
         class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
         data-slot="form-control"
-        id="«rn»-form-item"
-        name="firstName"
+        id="«rm»-form-item"
+        name="addressId"
         type="text"
-        value="Jane"
+        value="Work"
+      />
+    </div>
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 gap-4"
+    >
+      <div
+        class="grid gap-2"
+        data-slot="form-item"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+          data-error="false"
+          data-slot="form-label"
+          for="«rn»-form-item"
+        >
+          First Name
+        </label>
+        <input
+          aria-describedby="«rn»-form-item-description"
+          autocomplete="given-name"
+          class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+          data-slot="form-control"
+          id="«rn»-form-item"
+          name="firstName"
+          type="text"
+          value="Jane"
+        />
+      </div>
+      <div
+        class="grid gap-2"
+        data-slot="form-item"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+          data-error="false"
+          data-slot="form-label"
+          for="«ro»-form-item"
+        >
+          Last Name
+        </label>
+        <input
+          aria-describedby="«ro»-form-item-description"
+          autocomplete="family-name"
+          class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+          data-slot="form-control"
+          id="«ro»-form-item"
+          name="lastName"
+          type="text"
+          value="Smith"
+        />
+      </div>
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+        data-error="false"
+        data-slot="form-label"
+        for="«rp»-form-item"
+      >
+        Phone
+      </label>
+      <input
+        aria-describedby="«rp»-form-item-description"
+        autocomplete="tel"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+        data-slot="form-control"
+        id="«rp»-form-item"
+        inputmode="numeric"
+        name="phone"
+        type="tel"
+        value="555-5678"
       />
     </div>
     <div
@@ -652,265 +2482,29 @@ exports[`CustomerAddressFields stories snapshot > WithCanadianAddress story rend
         class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
         data-error="false"
         data-slot="form-label"
-        for="«ro»-form-item"
+        for="«rq»-form-item"
       >
-        Last Name
-      </label>
-      <input
-        aria-describedby="«ro»-form-item-description"
-        autocomplete="family-name"
-        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
-        data-slot="form-control"
-        id="«ro»-form-item"
-        name="lastName"
-        type="text"
-        value="Smith"
-      />
-    </div>
-  </div>
-  <div
-    class="grid gap-2"
-    data-slot="form-item"
-  >
-    <label
-      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
-      data-error="false"
-      data-slot="form-label"
-      for="«rp»-form-item"
-    >
-      Phone
-    </label>
-    <input
-      aria-describedby="«rp»-form-item-description"
-      autocomplete="tel"
-      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
-      data-slot="form-control"
-      id="«rp»-form-item"
-      inputmode="numeric"
-      name="phone"
-      type="tel"
-      value="555-5678"
-    />
-  </div>
-  <div
-    class="grid gap-2"
-    data-slot="form-item"
-  >
-    <label
-      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
-      data-error="false"
-      data-slot="form-label"
-      for="«rq»-form-item"
-    >
-      Country
-    </label>
-    <div
-      class="relative flex"
-    >
-      <select
-        aria-describedby="«rq»-form-item-description"
-        class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8 rounded-md"
-        data-slot="form-control"
-        id="«rq»-form-item"
-        name="countryCode"
-      >
-        <option
-          value="US"
-        >
-          United States
-        </option>
-        <option
-          value="CA"
-        >
-          Canada
-        </option>
-      </select>
-      <span
-        class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
-      >
-        <svg
-          aria-hidden="true"
-          class="lucide lucide-chevron-down"
-          fill="none"
-          height="16"
-          stroke="currentColor"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          viewBox="0 0 24 24"
-          width="16"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="m6 9 6 6 6-6"
-          />
-        </svg>
-      </span>
-    </div>
-  </div>
-  <div
-    class="grid gap-2"
-    data-slot="form-item"
-  >
-    <label
-      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
-      data-error="false"
-      data-slot="form-label"
-      for="«rr»-form-item"
-    >
-      Address
-    </label>
-    <input
-      aria-describedby="«rr»-form-item-description"
-      autocomplete="address-line1"
-      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
-      data-slot="form-control"
-      id="«rr»-form-item"
-      name="address1"
-      type="text"
-      value="456 Yonge St"
-    />
-  </div>
-  <div
-    class="grid gap-2"
-    data-slot="form-item"
-  >
-    <label
-      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
-      data-error="false"
-      data-slot="form-label"
-      for="«rs»-form-item"
-    >
-      Address Line 2
-    </label>
-    <input
-      aria-describedby="«rs»-form-item-description"
-      autocomplete="address-line2"
-      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
-      data-slot="form-control"
-      id="«rs»-form-item"
-      name="address2"
-      placeholder="Apartment, suite, etc. (optional)"
-      type="text"
-    />
-  </div>
-  <div
-    class="grid gap-2"
-    data-slot="form-item"
-  >
-    <label
-      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
-      data-error="false"
-      data-slot="form-label"
-      for="«rt»-form-item"
-    >
-      City
-    </label>
-    <input
-      aria-describedby="«rt»-form-item-description"
-      autocomplete="address-level2"
-      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
-      data-slot="form-control"
-      id="«rt»-form-item"
-      name="city"
-      type="text"
-      value="Toronto"
-    />
-  </div>
-  <div
-    class="grid grid-cols-1 md:grid-cols-2 gap-4"
-  >
-    <div
-      class="grid gap-2"
-      data-slot="form-item"
-    >
-      <label
-        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
-        data-error="false"
-        data-slot="form-label"
-        for="«ru»-form-item"
-      >
-        Province
+        Country
       </label>
       <div
         class="relative flex"
       >
         <select
-          aria-describedby="«ru»-form-item-description"
+          aria-describedby="«rq»-form-item-description"
           class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8 rounded-md"
           data-slot="form-control"
-          id="«ru»-form-item"
-          name="stateCode"
+          id="«rq»-form-item"
+          name="countryCode"
         >
           <option
-            value=""
+            value="US"
           >
-            Select Province
+            United States
           </option>
           <option
-            value="AB"
+            value="CA"
           >
-            Alberta
-          </option>
-          <option
-            value="BC"
-          >
-            British Columbia
-          </option>
-          <option
-            value="MB"
-          >
-            Manitoba
-          </option>
-          <option
-            value="NB"
-          >
-            New Brunswick
-          </option>
-          <option
-            value="NL"
-          >
-            Newfoundland and Labrador
-          </option>
-          <option
-            value="NS"
-          >
-            Nova Scotia
-          </option>
-          <option
-            value="NT"
-          >
-            Northwest Territories
-          </option>
-          <option
-            value="NU"
-          >
-            Nunavut
-          </option>
-          <option
-            value="ON"
-          >
-            Ontario
-          </option>
-          <option
-            value="PE"
-          >
-            Prince Edward Island
-          </option>
-          <option
-            value="QC"
-          >
-            Quebec
-          </option>
-          <option
-            value="SK"
-          >
-            Saskatchewan
-          </option>
-          <option
-            value="YT"
-          >
-            Yukon
+            Canada
           </option>
         </select>
         <span
@@ -944,82 +2538,246 @@ exports[`CustomerAddressFields stories snapshot > WithCanadianAddress story rend
         class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
         data-error="false"
         data-slot="form-label"
-        for="«rv»-form-item"
+        for="«rr»-form-item"
       >
-        Postal Code
+        Address
       </label>
       <input
-        aria-describedby="«rv»-form-item-description"
-        autocomplete="postal-code"
+        aria-describedby="«rr»-form-item-description"
+        autocomplete="address-line1"
         class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
         data-slot="form-control"
-        id="«rv»-form-item"
-        name="postalCode"
+        id="«rr»-form-item"
+        name="address1"
         type="text"
-        value="M5B 2H3"
+        value="456 Yonge St"
       />
     </div>
-  </div>
-  <div
-    class="gap-2 flex flex-row items-start space-x-3 space-y-0"
-    data-slot="form-item"
-  >
-    <button
-      aria-checked="false"
-      aria-describedby="«r10»-form-item-description"
-      class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
-      data-slot="form-control"
-      data-state="unchecked"
-      id="«r10»-form-item"
-      role="checkbox"
-      type="button"
-      value="on"
-    />
     <div
-      class="space-y-1 leading-none"
+      class="grid gap-2"
+      data-slot="form-item"
     >
       <label
-        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground cursor-pointer"
+        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
         data-error="false"
         data-slot="form-label"
-        for="«r10»-form-item"
+        for="«rs»-form-item"
       >
-        Set as default
+        Address Line 2
       </label>
+      <input
+        aria-describedby="«rs»-form-item-description"
+        autocomplete="address-line2"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+        data-slot="form-control"
+        id="«rs»-form-item"
+        name="address2"
+        placeholder="Apartment, suite, etc. (optional)"
+        type="text"
+      />
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+        data-error="false"
+        data-slot="form-label"
+        for="«rt»-form-item"
+      >
+        City
+      </label>
+      <input
+        aria-describedby="«rt»-form-item-description"
+        autocomplete="address-level2"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+        data-slot="form-control"
+        id="«rt»-form-item"
+        name="city"
+        type="text"
+        value="Toronto"
+      />
+    </div>
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 gap-4"
+    >
+      <div
+        class="grid gap-2"
+        data-slot="form-item"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+          data-error="false"
+          data-slot="form-label"
+          for="«ru»-form-item"
+        >
+          Province
+        </label>
+        <div
+          class="relative flex"
+        >
+          <select
+            aria-describedby="«ru»-form-item-description"
+            class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8 rounded-md"
+            data-slot="form-control"
+            id="«ru»-form-item"
+            name="stateCode"
+          >
+            <option
+              value=""
+            >
+              Select Province
+            </option>
+            <option
+              value="AB"
+            >
+              Alberta
+            </option>
+            <option
+              value="BC"
+            >
+              British Columbia
+            </option>
+            <option
+              value="MB"
+            >
+              Manitoba
+            </option>
+            <option
+              value="NB"
+            >
+              New Brunswick
+            </option>
+            <option
+              value="NL"
+            >
+              Newfoundland and Labrador
+            </option>
+            <option
+              value="NS"
+            >
+              Nova Scotia
+            </option>
+            <option
+              value="NT"
+            >
+              Northwest Territories
+            </option>
+            <option
+              value="NU"
+            >
+              Nunavut
+            </option>
+            <option
+              value="ON"
+            >
+              Ontario
+            </option>
+            <option
+              value="PE"
+            >
+              Prince Edward Island
+            </option>
+            <option
+              value="QC"
+            >
+              Quebec
+            </option>
+            <option
+              value="SK"
+            >
+              Saskatchewan
+            </option>
+            <option
+              value="YT"
+            >
+              Yukon
+            </option>
+          </select>
+          <span
+            class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-down"
+              fill="none"
+              height="16"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+              />
+            </svg>
+          </span>
+        </div>
+      </div>
+      <div
+        class="grid gap-2"
+        data-slot="form-item"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+          data-error="false"
+          data-slot="form-label"
+          for="«rv»-form-item"
+        >
+          Postal Code
+        </label>
+        <input
+          aria-describedby="«rv»-form-item-description"
+          autocomplete="postal-code"
+          class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+          data-slot="form-control"
+          id="«rv»-form-item"
+          name="postalCode"
+          type="text"
+          value="M5B 2H3"
+        />
+      </div>
+    </div>
+    <div
+      class="gap-2 flex flex-row items-start space-x-3 space-y-0"
+      data-slot="form-item"
+    >
+      <button
+        aria-checked="false"
+        aria-describedby="«r10»-form-item-description"
+        class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+        data-slot="form-control"
+        data-state="unchecked"
+        id="«r10»-form-item"
+        role="checkbox"
+        type="button"
+        value="on"
+      />
+      <div
+        class="space-y-1 leading-none"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground cursor-pointer"
+          data-error="false"
+          data-slot="form-label"
+          for="«r10»-form-item"
+        >
+          Set as default
+        </label>
+      </div>
     </div>
   </div>
 </div>
 `;
 
 exports[`CustomerAddressFields stories snapshot > WithInitialData story renders and matches snapshot 1`] = `
-<div
-  class="space-y-4"
->
+<div>
   <div
-    class="grid gap-2"
-    data-slot="form-item"
-  >
-    <label
-      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
-      data-error="false"
-      data-slot="form-label"
-      for="«rb»-form-item"
-    >
-      Address Title
-    </label>
-    <input
-      aria-describedby="«rb»-form-item-description"
-      autocomplete="off"
-      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
-      data-slot="form-control"
-      id="«rb»-form-item"
-      name="addressId"
-      type="text"
-      value="Home"
-    />
-  </div>
-  <div
-    class="grid grid-cols-1 md:grid-cols-2 gap-4"
+    class="space-y-4"
   >
     <div
       class="grid gap-2"
@@ -1029,19 +2787,93 @@ exports[`CustomerAddressFields stories snapshot > WithInitialData story renders 
         class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
         data-error="false"
         data-slot="form-label"
-        for="«rc»-form-item"
+        for="«rb»-form-item"
       >
-        First Name
+        Address Title
       </label>
       <input
-        aria-describedby="«rc»-form-item-description"
-        autocomplete="given-name"
+        aria-describedby="«rb»-form-item-description"
+        autocomplete="off"
         class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
         data-slot="form-control"
-        id="«rc»-form-item"
-        name="firstName"
+        id="«rb»-form-item"
+        name="addressId"
         type="text"
-        value="John"
+        value="Home"
+      />
+    </div>
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 gap-4"
+    >
+      <div
+        class="grid gap-2"
+        data-slot="form-item"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+          data-error="false"
+          data-slot="form-label"
+          for="«rc»-form-item"
+        >
+          First Name
+        </label>
+        <input
+          aria-describedby="«rc»-form-item-description"
+          autocomplete="given-name"
+          class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+          data-slot="form-control"
+          id="«rc»-form-item"
+          name="firstName"
+          type="text"
+          value="John"
+        />
+      </div>
+      <div
+        class="grid gap-2"
+        data-slot="form-item"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+          data-error="false"
+          data-slot="form-label"
+          for="«rd»-form-item"
+        >
+          Last Name
+        </label>
+        <input
+          aria-describedby="«rd»-form-item-description"
+          autocomplete="family-name"
+          class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+          data-slot="form-control"
+          id="«rd»-form-item"
+          name="lastName"
+          type="text"
+          value="Doe"
+        />
+      </div>
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+        data-error="false"
+        data-slot="form-label"
+        for="«re»-form-item"
+      >
+        Phone
+      </label>
+      <input
+        aria-describedby="«re»-form-item-description"
+        autocomplete="tel"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+        data-slot="form-control"
+        id="«re»-form-item"
+        inputmode="numeric"
+        name="phone"
+        type="tel"
+        value="555-1234"
       />
     </div>
     <div
@@ -1052,456 +2884,29 @@ exports[`CustomerAddressFields stories snapshot > WithInitialData story renders 
         class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
         data-error="false"
         data-slot="form-label"
-        for="«rd»-form-item"
+        for="«rf»-form-item"
       >
-        Last Name
-      </label>
-      <input
-        aria-describedby="«rd»-form-item-description"
-        autocomplete="family-name"
-        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
-        data-slot="form-control"
-        id="«rd»-form-item"
-        name="lastName"
-        type="text"
-        value="Doe"
-      />
-    </div>
-  </div>
-  <div
-    class="grid gap-2"
-    data-slot="form-item"
-  >
-    <label
-      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
-      data-error="false"
-      data-slot="form-label"
-      for="«re»-form-item"
-    >
-      Phone
-    </label>
-    <input
-      aria-describedby="«re»-form-item-description"
-      autocomplete="tel"
-      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
-      data-slot="form-control"
-      id="«re»-form-item"
-      inputmode="numeric"
-      name="phone"
-      type="tel"
-      value="555-1234"
-    />
-  </div>
-  <div
-    class="grid gap-2"
-    data-slot="form-item"
-  >
-    <label
-      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
-      data-error="false"
-      data-slot="form-label"
-      for="«rf»-form-item"
-    >
-      Country
-    </label>
-    <div
-      class="relative flex"
-    >
-      <select
-        aria-describedby="«rf»-form-item-description"
-        class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8 rounded-md"
-        data-slot="form-control"
-        id="«rf»-form-item"
-        name="countryCode"
-      >
-        <option
-          value="US"
-        >
-          United States
-        </option>
-        <option
-          value="CA"
-        >
-          Canada
-        </option>
-      </select>
-      <span
-        class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
-      >
-        <svg
-          aria-hidden="true"
-          class="lucide lucide-chevron-down"
-          fill="none"
-          height="16"
-          stroke="currentColor"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          viewBox="0 0 24 24"
-          width="16"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="m6 9 6 6 6-6"
-          />
-        </svg>
-      </span>
-    </div>
-  </div>
-  <div
-    class="grid gap-2"
-    data-slot="form-item"
-  >
-    <label
-      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
-      data-error="false"
-      data-slot="form-label"
-      for="«rg»-form-item"
-    >
-      Address
-    </label>
-    <input
-      aria-describedby="«rg»-form-item-description"
-      autocomplete="address-line1"
-      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
-      data-slot="form-control"
-      id="«rg»-form-item"
-      name="address1"
-      type="text"
-      value="123 Main St"
-    />
-  </div>
-  <div
-    class="grid gap-2"
-    data-slot="form-item"
-  >
-    <label
-      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
-      data-error="false"
-      data-slot="form-label"
-      for="«rh»-form-item"
-    >
-      Address Line 2
-    </label>
-    <input
-      aria-describedby="«rh»-form-item-description"
-      autocomplete="address-line2"
-      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
-      data-slot="form-control"
-      id="«rh»-form-item"
-      name="address2"
-      placeholder="Apartment, suite, etc. (optional)"
-      type="text"
-      value="Apt 4B"
-    />
-  </div>
-  <div
-    class="grid gap-2"
-    data-slot="form-item"
-  >
-    <label
-      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
-      data-error="false"
-      data-slot="form-label"
-      for="«ri»-form-item"
-    >
-      City
-    </label>
-    <input
-      aria-describedby="«ri»-form-item-description"
-      autocomplete="address-level2"
-      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
-      data-slot="form-control"
-      id="«ri»-form-item"
-      name="city"
-      type="text"
-      value="San Francisco"
-    />
-  </div>
-  <div
-    class="grid grid-cols-1 md:grid-cols-2 gap-4"
-  >
-    <div
-      class="grid gap-2"
-      data-slot="form-item"
-    >
-      <label
-        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
-        data-error="false"
-        data-slot="form-label"
-        for="«rj»-form-item"
-      >
-        State
+        Country
       </label>
       <div
         class="relative flex"
       >
         <select
-          aria-describedby="«rj»-form-item-description"
+          aria-describedby="«rf»-form-item-description"
           class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8 rounded-md"
           data-slot="form-control"
-          id="«rj»-form-item"
-          name="stateCode"
+          id="«rf»-form-item"
+          name="countryCode"
         >
           <option
-            value=""
+            value="US"
           >
-            Select State
-          </option>
-          <option
-            value="AL"
-          >
-            Alabama
-          </option>
-          <option
-            value="AK"
-          >
-            Alaska
-          </option>
-          <option
-            value="AZ"
-          >
-            Arizona
-          </option>
-          <option
-            value="AR"
-          >
-            Arkansas
+            United States
           </option>
           <option
             value="CA"
           >
-            California
-          </option>
-          <option
-            value="CO"
-          >
-            Colorado
-          </option>
-          <option
-            value="CT"
-          >
-            Connecticut
-          </option>
-          <option
-            value="DE"
-          >
-            Delaware
-          </option>
-          <option
-            value="DC"
-          >
-            District Of Columbia
-          </option>
-          <option
-            value="FL"
-          >
-            Florida
-          </option>
-          <option
-            value="GA"
-          >
-            Georgia
-          </option>
-          <option
-            value="HI"
-          >
-            Hawaii
-          </option>
-          <option
-            value="ID"
-          >
-            Idaho
-          </option>
-          <option
-            value="IL"
-          >
-            Illinois
-          </option>
-          <option
-            value="IN"
-          >
-            Indiana
-          </option>
-          <option
-            value="IA"
-          >
-            Iowa
-          </option>
-          <option
-            value="KS"
-          >
-            Kansas
-          </option>
-          <option
-            value="KY"
-          >
-            Kentucky
-          </option>
-          <option
-            value="LA"
-          >
-            Louisiana
-          </option>
-          <option
-            value="ME"
-          >
-            Maine
-          </option>
-          <option
-            value="MD"
-          >
-            Maryland
-          </option>
-          <option
-            value="MA"
-          >
-            Massachusetts
-          </option>
-          <option
-            value="MI"
-          >
-            Michigan
-          </option>
-          <option
-            value="MN"
-          >
-            Minnesota
-          </option>
-          <option
-            value="MS"
-          >
-            Mississippi
-          </option>
-          <option
-            value="MO"
-          >
-            Missouri
-          </option>
-          <option
-            value="MT"
-          >
-            Montana
-          </option>
-          <option
-            value="NE"
-          >
-            Nebraska
-          </option>
-          <option
-            value="NV"
-          >
-            Nevada
-          </option>
-          <option
-            value="NH"
-          >
-            New Hampshire
-          </option>
-          <option
-            value="NJ"
-          >
-            New Jersey
-          </option>
-          <option
-            value="NM"
-          >
-            New Mexico
-          </option>
-          <option
-            value="NY"
-          >
-            New York
-          </option>
-          <option
-            value="NC"
-          >
-            North Carolina
-          </option>
-          <option
-            value="ND"
-          >
-            North Dakota
-          </option>
-          <option
-            value="OH"
-          >
-            Ohio
-          </option>
-          <option
-            value="OK"
-          >
-            Oklahoma
-          </option>
-          <option
-            value="OR"
-          >
-            Oregon
-          </option>
-          <option
-            value="PA"
-          >
-            Pennsylvania
-          </option>
-          <option
-            value="RI"
-          >
-            Rhode Island
-          </option>
-          <option
-            value="SC"
-          >
-            South Carolina
-          </option>
-          <option
-            value="SD"
-          >
-            South Dakota
-          </option>
-          <option
-            value="TN"
-          >
-            Tennessee
-          </option>
-          <option
-            value="TX"
-          >
-            Texas
-          </option>
-          <option
-            value="UT"
-          >
-            Utah
-          </option>
-          <option
-            value="VT"
-          >
-            Vermont
-          </option>
-          <option
-            value="VA"
-          >
-            Virginia
-          </option>
-          <option
-            value="WA"
-          >
-            Washington
-          </option>
-          <option
-            value="WV"
-          >
-            West Virginia
-          </option>
-          <option
-            value="WI"
-          >
-            Wisconsin
-          </option>
-          <option
-            value="WY"
-          >
-            Wyoming
+            Canada
           </option>
         </select>
         <span
@@ -1535,73 +2940,453 @@ exports[`CustomerAddressFields stories snapshot > WithInitialData story renders 
         class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
         data-error="false"
         data-slot="form-label"
-        for="«rk»-form-item"
+        for="«rg»-form-item"
       >
-        Zip Code
+        Address
       </label>
       <input
-        aria-describedby="«rk»-form-item-description"
-        autocomplete="postal-code"
+        aria-describedby="«rg»-form-item-description"
+        autocomplete="address-line1"
         class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
         data-slot="form-control"
-        id="«rk»-form-item"
-        name="postalCode"
+        id="«rg»-form-item"
+        name="address1"
         type="text"
-        value="94102"
+        value="123 Main St"
       />
     </div>
-  </div>
-  <div
-    class="gap-2 flex flex-row items-start space-x-3 space-y-0"
-    data-slot="form-item"
-  >
-    <button
-      aria-checked="true"
-      aria-describedby="«rl»-form-item-description"
-      class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
-      data-slot="form-control"
-      data-state="checked"
-      id="«rl»-form-item"
-      role="checkbox"
-      type="button"
-      value="on"
-    >
-      <span
-        class="flex items-center justify-center text-current transition-none"
-        data-slot="checkbox-indicator"
-        data-state="checked"
-        style="pointer-events: none;"
-      >
-        <svg
-          aria-hidden="true"
-          class="lucide lucide-check size-3.5"
-          fill="none"
-          height="24"
-          stroke="currentColor"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M20 6 9 17l-5-5"
-          />
-        </svg>
-      </span>
-    </button>
     <div
-      class="space-y-1 leading-none"
+      class="grid gap-2"
+      data-slot="form-item"
     >
       <label
-        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground cursor-pointer"
+        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
         data-error="false"
         data-slot="form-label"
-        for="«rl»-form-item"
+        for="«rh»-form-item"
       >
-        Set as default
+        Address Line 2
       </label>
+      <input
+        aria-describedby="«rh»-form-item-description"
+        autocomplete="address-line2"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+        data-slot="form-control"
+        id="«rh»-form-item"
+        name="address2"
+        placeholder="Apartment, suite, etc. (optional)"
+        type="text"
+        value="Apt 4B"
+      />
+    </div>
+    <div
+      class="grid gap-2"
+      data-slot="form-item"
+    >
+      <label
+        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+        data-error="false"
+        data-slot="form-label"
+        for="«ri»-form-item"
+      >
+        City
+      </label>
+      <input
+        aria-describedby="«ri»-form-item-description"
+        autocomplete="address-level2"
+        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+        data-slot="form-control"
+        id="«ri»-form-item"
+        name="city"
+        type="text"
+        value="San Francisco"
+      />
+    </div>
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 gap-4"
+    >
+      <div
+        class="grid gap-2"
+        data-slot="form-item"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+          data-error="false"
+          data-slot="form-label"
+          for="«rj»-form-item"
+        >
+          State
+        </label>
+        <div
+          class="relative flex"
+        >
+          <select
+            aria-describedby="«rj»-form-item-description"
+            class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8 rounded-md"
+            data-slot="form-control"
+            id="«rj»-form-item"
+            name="stateCode"
+          >
+            <option
+              value=""
+            >
+              Select State
+            </option>
+            <option
+              value="AL"
+            >
+              Alabama
+            </option>
+            <option
+              value="AK"
+            >
+              Alaska
+            </option>
+            <option
+              value="AZ"
+            >
+              Arizona
+            </option>
+            <option
+              value="AR"
+            >
+              Arkansas
+            </option>
+            <option
+              value="CA"
+            >
+              California
+            </option>
+            <option
+              value="CO"
+            >
+              Colorado
+            </option>
+            <option
+              value="CT"
+            >
+              Connecticut
+            </option>
+            <option
+              value="DE"
+            >
+              Delaware
+            </option>
+            <option
+              value="DC"
+            >
+              District Of Columbia
+            </option>
+            <option
+              value="FL"
+            >
+              Florida
+            </option>
+            <option
+              value="GA"
+            >
+              Georgia
+            </option>
+            <option
+              value="HI"
+            >
+              Hawaii
+            </option>
+            <option
+              value="ID"
+            >
+              Idaho
+            </option>
+            <option
+              value="IL"
+            >
+              Illinois
+            </option>
+            <option
+              value="IN"
+            >
+              Indiana
+            </option>
+            <option
+              value="IA"
+            >
+              Iowa
+            </option>
+            <option
+              value="KS"
+            >
+              Kansas
+            </option>
+            <option
+              value="KY"
+            >
+              Kentucky
+            </option>
+            <option
+              value="LA"
+            >
+              Louisiana
+            </option>
+            <option
+              value="ME"
+            >
+              Maine
+            </option>
+            <option
+              value="MD"
+            >
+              Maryland
+            </option>
+            <option
+              value="MA"
+            >
+              Massachusetts
+            </option>
+            <option
+              value="MI"
+            >
+              Michigan
+            </option>
+            <option
+              value="MN"
+            >
+              Minnesota
+            </option>
+            <option
+              value="MS"
+            >
+              Mississippi
+            </option>
+            <option
+              value="MO"
+            >
+              Missouri
+            </option>
+            <option
+              value="MT"
+            >
+              Montana
+            </option>
+            <option
+              value="NE"
+            >
+              Nebraska
+            </option>
+            <option
+              value="NV"
+            >
+              Nevada
+            </option>
+            <option
+              value="NH"
+            >
+              New Hampshire
+            </option>
+            <option
+              value="NJ"
+            >
+              New Jersey
+            </option>
+            <option
+              value="NM"
+            >
+              New Mexico
+            </option>
+            <option
+              value="NY"
+            >
+              New York
+            </option>
+            <option
+              value="NC"
+            >
+              North Carolina
+            </option>
+            <option
+              value="ND"
+            >
+              North Dakota
+            </option>
+            <option
+              value="OH"
+            >
+              Ohio
+            </option>
+            <option
+              value="OK"
+            >
+              Oklahoma
+            </option>
+            <option
+              value="OR"
+            >
+              Oregon
+            </option>
+            <option
+              value="PA"
+            >
+              Pennsylvania
+            </option>
+            <option
+              value="RI"
+            >
+              Rhode Island
+            </option>
+            <option
+              value="SC"
+            >
+              South Carolina
+            </option>
+            <option
+              value="SD"
+            >
+              South Dakota
+            </option>
+            <option
+              value="TN"
+            >
+              Tennessee
+            </option>
+            <option
+              value="TX"
+            >
+              Texas
+            </option>
+            <option
+              value="UT"
+            >
+              Utah
+            </option>
+            <option
+              value="VT"
+            >
+              Vermont
+            </option>
+            <option
+              value="VA"
+            >
+              Virginia
+            </option>
+            <option
+              value="WA"
+            >
+              Washington
+            </option>
+            <option
+              value="WV"
+            >
+              West Virginia
+            </option>
+            <option
+              value="WI"
+            >
+              Wisconsin
+            </option>
+            <option
+              value="WY"
+            >
+              Wyoming
+            </option>
+          </select>
+          <span
+            class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-down"
+              fill="none"
+              height="16"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+              />
+            </svg>
+          </span>
+        </div>
+      </div>
+      <div
+        class="grid gap-2"
+        data-slot="form-item"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+          data-error="false"
+          data-slot="form-label"
+          for="«rk»-form-item"
+        >
+          Zip Code
+        </label>
+        <input
+          aria-describedby="«rk»-form-item-description"
+          autocomplete="postal-code"
+          class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+          data-slot="form-control"
+          id="«rk»-form-item"
+          name="postalCode"
+          type="text"
+          value="94102"
+        />
+      </div>
+    </div>
+    <div
+      class="gap-2 flex flex-row items-start space-x-3 space-y-0"
+      data-slot="form-item"
+    >
+      <button
+        aria-checked="true"
+        aria-describedby="«rl»-form-item-description"
+        class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+        data-slot="form-control"
+        data-state="checked"
+        id="«rl»-form-item"
+        role="checkbox"
+        type="button"
+        value="on"
+      >
+        <span
+          class="flex items-center justify-center text-current transition-none"
+          data-slot="checkbox-indicator"
+          data-state="checked"
+          style="pointer-events: none;"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-check size-3.5"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M20 6 9 17l-5-5"
+            />
+          </svg>
+        </span>
+      </button>
+      <div
+        class="space-y-1 leading-none"
+      >
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground cursor-pointer"
+          data-error="false"
+          data-slot="form-label"
+          for="«rl»-form-item"
+        >
+          Set as default
+        </label>
+      </div>
     </div>
   </div>
 </div>

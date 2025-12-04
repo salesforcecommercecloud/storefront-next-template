@@ -103,3 +103,45 @@ export const CustomItemCount: Story = {
         // Just verifying it renders is sufficient for now.
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        // Skeletons are usually divs with specific classes, hard to test with roles.
+        // We can check if the container exists.
+        const container = canvasElement.querySelector('.animate-pulse');
+        await expect(container).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        // Skeletons are usually divs with specific classes, hard to test with roles.
+        // We can check if the container exists.
+        const container = canvasElement.querySelector('.animate-pulse');
+        await expect(container).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        // Skeletons are usually divs with specific classes, hard to test with roles.
+        // We can check if the container exists.
+        const container = canvasElement.querySelector('.animate-pulse');
+        await expect(container).toBeInTheDocument();
+    },
+};

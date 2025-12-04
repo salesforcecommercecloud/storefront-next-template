@@ -487,3 +487,48 @@ export const AllTypes: Story = {
         await userEvent.type(textInput, 'Multiple inputs');
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const input = canvas.getByPlaceholderText('Enter text...');
+        await userEvent.type(input, 'Default text');
+        await userEvent.clear(input);
+        await userEvent.type(input, 'Testing input component');
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const input = canvas.getByPlaceholderText('Enter text...');
+        await userEvent.type(input, 'Default text');
+        await userEvent.clear(input);
+        await userEvent.type(input, 'Testing input component');
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const input = canvas.getByPlaceholderText('Enter text...');
+        await userEvent.type(input, 'Default text');
+        await userEvent.clear(input);
+        await userEvent.type(input, 'Testing input component');
+    },
+};

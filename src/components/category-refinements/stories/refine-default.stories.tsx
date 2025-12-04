@@ -231,3 +231,66 @@ RefineDefault with no selected options:
         });
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Test checkboxes are present
+        const checkboxes = canvas.getAllByRole('checkbox');
+        await expect(checkboxes.length).toBeGreaterThan(0);
+
+        // Test clicking a checkbox
+        if (checkboxes.length > 0) {
+            await userEvent.click(checkboxes[0]);
+        }
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Test checkboxes are present
+        const checkboxes = canvas.getAllByRole('checkbox');
+        await expect(checkboxes.length).toBeGreaterThan(0);
+
+        // Test clicking a checkbox
+        if (checkboxes.length > 0) {
+            await userEvent.click(checkboxes[0]);
+        }
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Test checkboxes are present
+        const checkboxes = canvas.getAllByRole('checkbox');
+        await expect(checkboxes.length).toBeGreaterThan(0);
+
+        // Test clicking a checkbox
+        if (checkboxes.length > 0) {
+            await userEvent.click(checkboxes[0]);
+        }
+    },
+};

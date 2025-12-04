@@ -20,6 +20,8 @@ function HeroStoryHarness({ children }: { children: ReactNode }): ReactElement {
             if (!target || !root.contains(target)) return;
             const link = target.closest('a');
             if (link) {
+                event.preventDefault();
+                event.stopPropagation();
                 logClick({ href: link.getAttribute('href') || '', text: link.textContent?.trim() || '' });
             }
         };
@@ -132,5 +134,65 @@ export const WithoutSubtitle: Story = {
         // Check for title
         const title = await canvas.findByText(/simple hero/i, {}, { timeout: 5000 });
         await expect(title).toBeInTheDocument();
+    },
+};
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Check for title
+        const title = await canvas.findByText(/welcome to our store/i, {}, { timeout: 5000 });
+        await expect(title).toBeInTheDocument();
+
+        // Check for CTA button
+        const cta = await canvas.findByRole('link', { name: /shop now/i }, { timeout: 5000 });
+        await expect(cta).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Check for title
+        const title = await canvas.findByText(/welcome to our store/i, {}, { timeout: 5000 });
+        await expect(title).toBeInTheDocument();
+
+        // Check for CTA button
+        const cta = await canvas.findByRole('link', { name: /shop now/i }, { timeout: 5000 });
+        await expect(cta).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Check for title
+        const title = await canvas.findByText(/welcome to our store/i, {}, { timeout: 5000 });
+        await expect(title).toBeInTheDocument();
+
+        // Check for CTA button
+        const cta = await canvas.findByRole('link', { name: /shop now/i }, { timeout: 5000 });
+        await expect(cta).toBeInTheDocument();
     },
 };

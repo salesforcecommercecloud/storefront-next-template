@@ -500,3 +500,75 @@ CartQuantityPicker integrated into a cart item display:
         await expect(quantityInput).toHaveValue(2);
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test quantity input is present (use input type to avoid matching button labels)
+        const quantityInput = canvasElement.querySelector('input[type="number"]') as HTMLInputElement;
+        await expect(quantityInput).toBeInTheDocument();
+        await expect(quantityInput).toHaveValue(1);
+
+        // Test increment button is present
+        const incrementButton = await canvas.findByRole('button', { name: /increment/i }, { timeout: 5000 });
+        await expect(incrementButton).toBeInTheDocument();
+
+        // Test decrement button is present
+        const decrementButton = await canvas.findByRole('button', { name: /decrement/i }, { timeout: 5000 });
+        await expect(decrementButton).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test quantity input is present (use input type to avoid matching button labels)
+        const quantityInput = canvasElement.querySelector('input[type="number"]') as HTMLInputElement;
+        await expect(quantityInput).toBeInTheDocument();
+        await expect(quantityInput).toHaveValue(1);
+
+        // Test increment button is present
+        const incrementButton = await canvas.findByRole('button', { name: /increment/i }, { timeout: 5000 });
+        await expect(incrementButton).toBeInTheDocument();
+
+        // Test decrement button is present
+        const decrementButton = await canvas.findByRole('button', { name: /decrement/i }, { timeout: 5000 });
+        await expect(decrementButton).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test quantity input is present (use input type to avoid matching button labels)
+        const quantityInput = canvasElement.querySelector('input[type="number"]') as HTMLInputElement;
+        await expect(quantityInput).toBeInTheDocument();
+        await expect(quantityInput).toHaveValue(1);
+
+        // Test increment button is present
+        const incrementButton = await canvas.findByRole('button', { name: /increment/i }, { timeout: 5000 });
+        await expect(incrementButton).toBeInTheDocument();
+
+        // Test decrement button is present
+        const decrementButton = await canvas.findByRole('button', { name: /decrement/i }, { timeout: 5000 });
+        await expect(decrementButton).toBeInTheDocument();
+    },
+};

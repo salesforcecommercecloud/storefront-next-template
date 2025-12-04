@@ -462,3 +462,129 @@ export const Interactive: Story = {
         await expect(confirmPasswordInput).toHaveValue('NewPassword123!');
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const { t } = getTranslation();
+
+        // Verify form fields are present
+        const currentPasswordInput = await canvas.findByPlaceholderText(
+            t('account:password.currentPasswordPlaceholder'),
+            {},
+            { timeout: 5000 }
+        );
+        await expect(currentPasswordInput).toBeInTheDocument();
+
+        const passwordInput = await canvas.findByPlaceholderText(
+            t('account:password.newPasswordPlaceholder'),
+            {},
+            { timeout: 5000 }
+        );
+        await expect(passwordInput).toBeInTheDocument();
+
+        const confirmPasswordInput = await canvas.findByPlaceholderText(
+            t('account:password.confirmPasswordPlaceholder'),
+            {},
+            { timeout: 5000 }
+        );
+        await expect(confirmPasswordInput).toBeInTheDocument();
+
+        // Verify submit button
+        const submitButton = await canvas.findByRole(
+            'button',
+            { name: t('account:password.saveButton') },
+            { timeout: 5000 }
+        );
+        await expect(submitButton).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const { t } = getTranslation();
+
+        // Verify form fields are present
+        const currentPasswordInput = await canvas.findByPlaceholderText(
+            t('account:password.currentPasswordPlaceholder'),
+            {},
+            { timeout: 5000 }
+        );
+        await expect(currentPasswordInput).toBeInTheDocument();
+
+        const passwordInput = await canvas.findByPlaceholderText(
+            t('account:password.newPasswordPlaceholder'),
+            {},
+            { timeout: 5000 }
+        );
+        await expect(passwordInput).toBeInTheDocument();
+
+        const confirmPasswordInput = await canvas.findByPlaceholderText(
+            t('account:password.confirmPasswordPlaceholder'),
+            {},
+            { timeout: 5000 }
+        );
+        await expect(confirmPasswordInput).toBeInTheDocument();
+
+        // Verify submit button
+        const submitButton = await canvas.findByRole(
+            'button',
+            { name: t('account:password.saveButton') },
+            { timeout: 5000 }
+        );
+        await expect(submitButton).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const { t } = getTranslation();
+
+        // Verify form fields are present
+        const currentPasswordInput = await canvas.findByPlaceholderText(
+            t('account:password.currentPasswordPlaceholder'),
+            {},
+            { timeout: 5000 }
+        );
+        await expect(currentPasswordInput).toBeInTheDocument();
+
+        const passwordInput = await canvas.findByPlaceholderText(
+            t('account:password.newPasswordPlaceholder'),
+            {},
+            { timeout: 5000 }
+        );
+        await expect(passwordInput).toBeInTheDocument();
+
+        const confirmPasswordInput = await canvas.findByPlaceholderText(
+            t('account:password.confirmPasswordPlaceholder'),
+            {},
+            { timeout: 5000 }
+        );
+        await expect(confirmPasswordInput).toBeInTheDocument();
+
+        // Verify submit button
+        const submitButton = await canvas.findByRole(
+            'button',
+            { name: t('account:password.saveButton') },
+            { timeout: 5000 }
+        );
+        await expect(submitButton).toBeInTheDocument();
+    },
+};

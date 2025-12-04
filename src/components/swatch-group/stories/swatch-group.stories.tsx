@@ -4,6 +4,51 @@ import { Swatch } from '../swatch';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { action } from 'storybook/actions';
+import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
+
+function ActionLogger({ children }: { children: ReactNode }): ReactElement {
+    const containerRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        const root = containerRef.current;
+        if (!root) return;
+
+        const logChange = action('swatch-group-change');
+        const logClick = action('swatch-group-click');
+
+        const handleClick = (event: MouseEvent) => {
+            const target = event.target as HTMLElement | null;
+            if (!target || !root.contains(target)) return;
+
+            // Check for swatches which might be radio inputs or buttons/divs with role radio
+            const swatch = target.closest('[role="radio"], input[type="radio"]');
+            if (swatch) {
+                const label = swatch.getAttribute('aria-label') || swatch.getAttribute('value') || 'swatch';
+                logClick({ label });
+            }
+        };
+
+        const handleChange = (event: Event) => {
+            const target = event.target as HTMLInputElement | null;
+            if (!target || !root.contains(target)) return;
+
+            if (target.type === 'radio') {
+                logChange({ value: target.value });
+            }
+        };
+
+        // Capture both clicks and native changes if inputs are used
+        root.addEventListener('click', handleClick);
+        root.addEventListener('change', handleChange);
+
+        return () => {
+            root.removeEventListener('click', handleClick);
+            root.removeEventListener('change', handleChange);
+        };
+    }, []);
+
+    return <div ref={containerRef}>{children}</div>;
+}
 
 const meta: Meta<typeof SwatchGroup> = {
     title: 'SWATCH/SwatchGroup',
@@ -18,6 +63,13 @@ const meta: Meta<typeof SwatchGroup> = {
         },
     },
     tags: ['autodocs', 'interaction'],
+    decorators: [
+        (Story) => (
+            <ActionLogger>
+                <Story />
+            </ActionLogger>
+        ),
+    ],
     argTypes: {
         label: {
             description: 'Label text displayed above the swatches',
@@ -193,6 +245,69 @@ export const NoSelection: Story = {
         // First swatch should be focusable when no selection
         const redSwatch = await canvas.findByRole('radio', { name: /red/i }, { timeout: 5000 });
         // Verify the swatch exists - focusability is managed by SwatchGroup
+        await expect(redSwatch).toBeInTheDocument();
+    },
+};
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const label = await canvas.findByText(/color/i, {}, { timeout: 5000 });
+        await expect(label).toBeInTheDocument();
+
+        // Wait a bit for SwatchGroup to process the value prop
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        const redSwatch = await canvas.findByRole('radio', { name: /red/i }, { timeout: 5000 });
+        // Verify the swatch exists - the selected state is managed by SwatchGroup
+        await expect(redSwatch).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const label = await canvas.findByText(/color/i, {}, { timeout: 5000 });
+        await expect(label).toBeInTheDocument();
+
+        // Wait a bit for SwatchGroup to process the value prop
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        const redSwatch = await canvas.findByRole('radio', { name: /red/i }, { timeout: 5000 });
+        // Verify the swatch exists - the selected state is managed by SwatchGroup
+        await expect(redSwatch).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const label = await canvas.findByText(/color/i, {}, { timeout: 5000 });
+        await expect(label).toBeInTheDocument();
+
+        // Wait a bit for SwatchGroup to process the value prop
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        const redSwatch = await canvas.findByRole('radio', { name: /red/i }, { timeout: 5000 });
+        // Verify the swatch exists - the selected state is managed by SwatchGroup
         await expect(redSwatch).toBeInTheDocument();
     },
 };

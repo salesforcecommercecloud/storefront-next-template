@@ -4,11 +4,17 @@ exports[`ProductInfo stories snapshot > BackOrderStatus story renders and matche
 
 exports[`ProductInfo stories snapshot > ControlledSwatchMode story renders and matches snapshot 1`] = `null`;
 
+exports[`ProductInfo stories snapshot > Desktop story renders and matches snapshot 1`] = `null`;
+
+exports[`ProductInfo stories snapshot > Mobile story renders and matches snapshot 1`] = `null`;
+
 exports[`ProductInfo stories snapshot > NoVariations story renders and matches snapshot 1`] = `null`;
 
 exports[`ProductInfo stories snapshot > OutOfStockStatus story renders and matches snapshot 1`] = `null`;
 
 exports[`ProductInfo stories snapshot > PreOrderStatus story renders and matches snapshot 1`] = `null`;
+
+exports[`ProductInfo stories snapshot > Tablet story renders and matches snapshot 1`] = `null`;
 
 exports[`ProductInfo stories snapshot > WithDisabledVariants story renders and matches snapshot 1`] = `null`;
 

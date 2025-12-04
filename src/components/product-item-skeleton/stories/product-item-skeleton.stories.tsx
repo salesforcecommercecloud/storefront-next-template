@@ -78,3 +78,60 @@ export const Default: Story = {
         await expect(canvasElement.firstChild).toBeInTheDocument();
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        // Check for skeleton elements
+        // The skeleton uses animate-pulse class internally (via Skeleton component)
+        // We can check if any element has appropriate classes or just that it renders.
+        // Since Skeleton is from ui/skeleton, it might be a div.
+
+        // Wait, the ProductItemSkeleton wraps Skeletons, but itself might not have animate-pulse on the root.
+        // But the Skeletons inside do.
+        // Let's just check it renders something.
+        await expect(canvasElement.firstChild).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        // Check for skeleton elements
+        // The skeleton uses animate-pulse class internally (via Skeleton component)
+        // We can check if any element has appropriate classes or just that it renders.
+        // Since Skeleton is from ui/skeleton, it might be a div.
+
+        // Wait, the ProductItemSkeleton wraps Skeletons, but itself might not have animate-pulse on the root.
+        // But the Skeletons inside do.
+        // Let's just check it renders something.
+        await expect(canvasElement.firstChild).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        // Check for skeleton elements
+        // The skeleton uses animate-pulse class internally (via Skeleton component)
+        // We can check if any element has appropriate classes or just that it renders.
+        // Since Skeleton is from ui/skeleton, it might be a div.
+
+        // Wait, the ProductItemSkeleton wraps Skeletons, but itself might not have animate-pulse on the root.
+        // But the Skeletons inside do.
+        // Let's just check it renders something.
+        await expect(canvasElement.firstChild).toBeInTheDocument();
+    },
+};

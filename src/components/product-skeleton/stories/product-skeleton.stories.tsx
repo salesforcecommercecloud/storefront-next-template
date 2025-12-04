@@ -72,3 +72,48 @@ export const Default: Story = {
         await expect(canvas.getByTestId('product-info-skeleton')).toBeInTheDocument();
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        // Check for skeleton sections
+        await expect(canvas.getByTestId('product-skeleton')).toBeInTheDocument();
+        await expect(canvas.getByTestId('image-gallery-skeleton')).toBeInTheDocument();
+        await expect(canvas.getByTestId('product-info-skeleton')).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        // Check for skeleton sections
+        await expect(canvas.getByTestId('product-skeleton')).toBeInTheDocument();
+        await expect(canvas.getByTestId('image-gallery-skeleton')).toBeInTheDocument();
+        await expect(canvas.getByTestId('product-info-skeleton')).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        // Check for skeleton sections
+        await expect(canvas.getByTestId('product-skeleton')).toBeInTheDocument();
+        await expect(canvas.getByTestId('image-gallery-skeleton')).toBeInTheDocument();
+        await expect(canvas.getByTestId('product-info-skeleton')).toBeInTheDocument();
+    },
+};

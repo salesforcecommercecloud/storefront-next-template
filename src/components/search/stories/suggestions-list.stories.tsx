@@ -3,6 +3,34 @@ import SuggestionsList from '../suggestions-list';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { action } from 'storybook/actions';
+import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
+
+function ActionLogger({ children }: { children: ReactNode }): ReactElement {
+    const containerRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        const root = containerRef.current;
+        if (!root) return;
+
+        const logClick = action('suggestion-click');
+
+        const handleClick = (event: MouseEvent) => {
+            const target = event.target as HTMLElement | null;
+            if (!target) return;
+            const button = target.closest('button');
+            if (button && root.contains(button)) {
+                logClick({ text: button.textContent?.trim() });
+            }
+        };
+
+        root.addEventListener('click', handleClick);
+        return () => {
+            root.removeEventListener('click', handleClick);
+        };
+    }, []);
+
+    return <div ref={containerRef}>{children}</div>;
+}
 
 const meta: Meta<typeof SuggestionsList> = {
     title: 'Search/SuggestionsList',
@@ -17,6 +45,13 @@ const meta: Meta<typeof SuggestionsList> = {
         },
     },
     tags: ['autodocs', 'interaction'],
+    decorators: [
+        (Story) => (
+            <ActionLogger>
+                <Story />
+            </ActionLogger>
+        ),
+    ],
     argTypes: {
         suggestions: {
             description: 'Array of suggestions to display',
@@ -158,5 +193,53 @@ export const SingleSuggestion: Story = {
 
         const itemButton = canvas.getByRole('button', { name: /single item/i });
         await expect(itemButton).toBeInTheDocument();
+    },
+};
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const footwearButton = await canvas.findByRole('button', { name: /footwear/i });
+        await expect(footwearButton).toBeInTheDocument();
+
+        await userEvent.click(footwearButton);
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const footwearButton = await canvas.findByRole('button', { name: /footwear/i });
+        await expect(footwearButton).toBeInTheDocument();
+
+        await userEvent.click(footwearButton);
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const footwearButton = await canvas.findByRole('button', { name: /footwear/i });
+        await expect(footwearButton).toBeInTheDocument();
+
+        await userEvent.click(footwearButton);
     },
 };

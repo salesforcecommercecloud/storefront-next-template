@@ -106,3 +106,54 @@ export const ExtraLarge: Story = {
         size: 'xl',
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        void expect(canvasElement).toBeInTheDocument();
+        void expect(canvasElement.children.length).toBeGreaterThan(0);
+
+        const spinnerElement = canvasElement.querySelector('.animate-spin');
+        void expect(spinnerElement).toBeInTheDocument();
+
+        void expect(canvasElement.firstChild).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        void expect(canvasElement).toBeInTheDocument();
+        void expect(canvasElement.children.length).toBeGreaterThan(0);
+
+        const spinnerElement = canvasElement.querySelector('.animate-spin');
+        void expect(spinnerElement).toBeInTheDocument();
+
+        void expect(canvasElement.firstChild).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        void expect(canvasElement).toBeInTheDocument();
+        void expect(canvasElement.children.length).toBeGreaterThan(0);
+
+        const spinnerElement = canvasElement.querySelector('.animate-spin');
+        void expect(spinnerElement).toBeInTheDocument();
+
+        void expect(canvasElement.firstChild).toBeInTheDocument();
+    },
+};

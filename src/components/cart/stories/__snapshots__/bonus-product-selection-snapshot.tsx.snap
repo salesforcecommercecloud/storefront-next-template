@@ -86,6 +86,92 @@ exports[`BonusProductSelection stories snapshot > Default story renders and matc
 </div>
 `;
 
+exports[`BonusProductSelection stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div
+  data-bonus-product-harness="true"
+>
+  <section
+    aria-label="Bonus Product Bundle"
+    class="w-full"
+    data-node-id="16247:74507"
+  >
+    <div
+      class="w-full"
+      data-orientation="vertical"
+      data-slot="accordion"
+    >
+      <div
+        class="border-b last:border-b-0 border-none"
+        data-orientation="vertical"
+        data-slot="accordion-item"
+        data-state="closed"
+      >
+        <h3
+          class="flex"
+          data-orientation="vertical"
+          data-state="closed"
+        >
+          <button
+            aria-controls="radix-«rb»"
+            aria-expanded="false"
+            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 rounded-md text-sm font-medium transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 text-left hover:no-underline py-4 justify-start items-center gap-1.5"
+            data-orientation="vertical"
+            data-radix-collection-item=""
+            data-slot="accordion-trigger"
+            data-state="closed"
+            id="radix-«ra»"
+            type="button"
+          >
+            <span
+              class="text-base leading-tight text-foreground"
+            >
+              <span
+                class="font-bold"
+              >
+                Buy one Classic Fit Shirt and get one free tie
+              </span>
+              <span
+                class="font-normal"
+              >
+                 (1 of 1 added to cart)
+              </span>
+            </span>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+              />
+            </svg>
+          </button>
+        </h3>
+        <div
+          aria-labelledby="radix-«ra»"
+          class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
+          data-orientation="vertical"
+          data-slot="accordion-content"
+          data-state="closed"
+          hidden=""
+          id="radix-«rb»"
+          role="region"
+          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
+        />
+      </div>
+    </div>
+  </section>
+</div>
+`;
+
 exports[`BonusProductSelection stories snapshot > Expanded story renders and matches snapshot 1`] = `
 <div
   data-bonus-product-harness="true"
@@ -163,6 +249,178 @@ exports[`BonusProductSelection stories snapshot > Expanded story renders and mat
           data-state="closed"
           hidden=""
           id="radix-«r3»"
+          role="region"
+          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
+        />
+      </div>
+    </div>
+  </section>
+</div>
+`;
+
+exports[`BonusProductSelection stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div
+  data-bonus-product-harness="true"
+>
+  <section
+    aria-label="Bonus Product Bundle"
+    class="w-full"
+    data-node-id="16247:74507"
+  >
+    <div
+      class="w-full"
+      data-orientation="vertical"
+      data-slot="accordion"
+    >
+      <div
+        class="border-b last:border-b-0 border-none"
+        data-orientation="vertical"
+        data-slot="accordion-item"
+        data-state="closed"
+      >
+        <h3
+          class="flex"
+          data-orientation="vertical"
+          data-state="closed"
+        >
+          <button
+            aria-controls="radix-«r7»"
+            aria-expanded="false"
+            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 rounded-md text-sm font-medium transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 text-left hover:no-underline py-4 justify-start items-center gap-1.5"
+            data-orientation="vertical"
+            data-radix-collection-item=""
+            data-slot="accordion-trigger"
+            data-state="closed"
+            id="radix-«r6»"
+            type="button"
+          >
+            <span
+              class="text-base leading-tight text-foreground"
+            >
+              <span
+                class="font-bold"
+              >
+                Buy one Classic Fit Shirt and get one free tie
+              </span>
+              <span
+                class="font-normal"
+              >
+                 (1 of 1 added to cart)
+              </span>
+            </span>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+              />
+            </svg>
+          </button>
+        </h3>
+        <div
+          aria-labelledby="radix-«r6»"
+          class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
+          data-orientation="vertical"
+          data-slot="accordion-content"
+          data-state="closed"
+          hidden=""
+          id="radix-«r7»"
+          role="region"
+          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
+        />
+      </div>
+    </div>
+  </section>
+</div>
+`;
+
+exports[`BonusProductSelection stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div
+  data-bonus-product-harness="true"
+>
+  <section
+    aria-label="Bonus Product Bundle"
+    class="w-full"
+    data-node-id="16247:74507"
+  >
+    <div
+      class="w-full"
+      data-orientation="vertical"
+      data-slot="accordion"
+    >
+      <div
+        class="border-b last:border-b-0 border-none"
+        data-orientation="vertical"
+        data-slot="accordion-item"
+        data-state="closed"
+      >
+        <h3
+          class="flex"
+          data-orientation="vertical"
+          data-state="closed"
+        >
+          <button
+            aria-controls="radix-«r9»"
+            aria-expanded="false"
+            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 rounded-md text-sm font-medium transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 text-left hover:no-underline py-4 justify-start items-center gap-1.5"
+            data-orientation="vertical"
+            data-radix-collection-item=""
+            data-slot="accordion-trigger"
+            data-state="closed"
+            id="radix-«r8»"
+            type="button"
+          >
+            <span
+              class="text-base leading-tight text-foreground"
+            >
+              <span
+                class="font-bold"
+              >
+                Buy one Classic Fit Shirt and get one free tie
+              </span>
+              <span
+                class="font-normal"
+              >
+                 (1 of 1 added to cart)
+              </span>
+            </span>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+              />
+            </svg>
+          </button>
+        </h3>
+        <div
+          aria-labelledby="radix-«r8»"
+          class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
+          data-orientation="vertical"
+          data-slot="accordion-content"
+          data-state="closed"
+          hidden=""
+          id="radix-«r9»"
           role="region"
           style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
         />

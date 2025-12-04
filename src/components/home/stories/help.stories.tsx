@@ -102,3 +102,63 @@ export const Default: Story = {
         await expect(contactButton).toHaveAttribute('href', '/contact');
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for heading
+        const heading = await canvas.findByText(/we're here to help/i, {}, { timeout: 5000 });
+        await expect(heading).toBeInTheDocument();
+
+        // Check for contact button
+        const contactButton = await canvas.findByRole('link', { name: /contact us/i }, { timeout: 5000 });
+        await expect(contactButton).toBeInTheDocument();
+        await expect(contactButton).toHaveAttribute('href', '/contact');
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for heading
+        const heading = await canvas.findByText(/we're here to help/i, {}, { timeout: 5000 });
+        await expect(heading).toBeInTheDocument();
+
+        // Check for contact button
+        const contactButton = await canvas.findByRole('link', { name: /contact us/i }, { timeout: 5000 });
+        await expect(contactButton).toBeInTheDocument();
+        await expect(contactButton).toHaveAttribute('href', '/contact');
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for heading
+        const heading = await canvas.findByText(/we're here to help/i, {}, { timeout: 5000 });
+        await expect(heading).toBeInTheDocument();
+
+        // Check for contact button
+        const contactButton = await canvas.findByRole('link', { name: /contact us/i }, { timeout: 5000 });
+        await expect(contactButton).toBeInTheDocument();
+        await expect(contactButton).toHaveAttribute('href', '/contact');
+    },
+};

@@ -1,72 +1,106 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Skeleton stories snapshot > Article story renders and matches snapshot 1`] = `
-<div
-  class="space-y-4 w-[400px]"
->
+<div>
   <div
-    class="animate-pulse rounded-md bg-muted h-8 w-[300px]"
-  />
-  <div
-    class="animate-pulse rounded-md bg-muted h-4 w-full"
-  />
-  <div
-    class="animate-pulse rounded-md bg-muted h-4 w-full"
-  />
-  <div
-    class="animate-pulse rounded-md bg-muted h-4 w-[200px]"
-  />
+    class="space-y-4 w-[400px]"
+  >
+    <div
+      class="animate-pulse rounded-md bg-muted h-8 w-[300px]"
+    />
+    <div
+      class="animate-pulse rounded-md bg-muted h-4 w-full"
+    />
+    <div
+      class="animate-pulse rounded-md bg-muted h-4 w-full"
+    />
+    <div
+      class="animate-pulse rounded-md bg-muted h-4 w-[200px]"
+    />
+  </div>
 </div>
 `;
 
 exports[`Skeleton stories snapshot > Avatar story renders and matches snapshot 1`] = `
-<div
-  class="flex items-center space-x-4"
->
+<div>
   <div
-    class="animate-pulse bg-muted h-10 w-10 rounded-full"
-  />
-  <div
-    class="space-y-2"
+    class="flex items-center space-x-4"
   >
     <div
-      class="animate-pulse rounded-md bg-muted h-4 w-[200px]"
+      class="animate-pulse bg-muted h-10 w-10 rounded-full"
     />
     <div
-      class="animate-pulse rounded-md bg-muted h-4 w-[150px]"
-    />
+      class="space-y-2"
+    >
+      <div
+        class="animate-pulse rounded-md bg-muted h-4 w-[200px]"
+      />
+      <div
+        class="animate-pulse rounded-md bg-muted h-4 w-[150px]"
+      />
+    </div>
   </div>
 </div>
 `;
 
 exports[`Skeleton stories snapshot > Card story renders and matches snapshot 1`] = `
-<div
-  class="flex items-center space-x-4 w-[400px]"
->
+<div>
   <div
-    class="animate-pulse bg-muted h-12 w-12 rounded-full"
-  />
-  <div
-    class="space-y-2"
+    class="flex items-center space-x-4 w-[400px]"
   >
     <div
-      class="animate-pulse rounded-md bg-muted h-4 w-[250px]"
+      class="animate-pulse bg-muted h-12 w-12 rounded-full"
     />
     <div
-      class="animate-pulse rounded-md bg-muted h-4 w-[200px]"
-    />
+      class="space-y-2"
+    >
+      <div
+        class="animate-pulse rounded-md bg-muted h-4 w-[250px]"
+      />
+      <div
+        class="animate-pulse rounded-md bg-muted h-4 w-[200px]"
+      />
+    </div>
   </div>
 </div>
 `;
 
 exports[`Skeleton stories snapshot > Circle story renders and matches snapshot 1`] = `
-<div
-  class="animate-pulse bg-muted h-12 w-12 rounded-full"
-/>
+<div>
+  <div
+    class="animate-pulse bg-muted h-12 w-12 rounded-full"
+  />
+</div>
 `;
 
 exports[`Skeleton stories snapshot > Default story renders and matches snapshot 1`] = `
-<div
-  class="animate-pulse rounded-md bg-muted h-4 w-[250px]"
-/>
+<div>
+  <div
+    class="animate-pulse rounded-md bg-muted h-4 w-[250px]"
+  />
+</div>
+`;
+
+exports[`Skeleton stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="animate-pulse rounded-md bg-muted h-4 w-[250px]"
+  />
+</div>
+`;
+
+exports[`Skeleton stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="animate-pulse rounded-md bg-muted h-4 w-[250px]"
+  />
+</div>
+`;
+
+exports[`Skeleton stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="animate-pulse rounded-md bg-muted h-4 w-[250px]"
+  />
+</div>
 `;

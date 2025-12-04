@@ -103,3 +103,42 @@ export const Controlled: Story = {
         await expect(canvas.getByText(firstChild.name || '')).toBeInTheDocument();
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText(firstChild.name || '')).toBeInTheDocument();
+        // Should have link swatches in uncontrolled mode
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText(firstChild.name || '')).toBeInTheDocument();
+        // Should have link swatches in uncontrolled mode
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText(firstChild.name || '')).toBeInTheDocument();
+        // Should have link swatches in uncontrolled mode
+    },
+};

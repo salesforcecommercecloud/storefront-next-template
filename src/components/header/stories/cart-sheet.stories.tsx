@@ -230,3 +230,60 @@ Interactive cart sheet for testing user interactions.
         }
     },
 };
+
+export const Mobile: Story = {
+    ...Empty,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement: _canvasElement }) => {
+        // Cart sheet renders in a portal, so check document.body
+        const documentBody = within(document.body);
+
+        // Check for cart sheet dialog
+        const cartSheet = await documentBody.findByRole('dialog', { hidden: false }, { timeout: 5000 });
+        await expect(cartSheet).toBeInTheDocument();
+
+        // Check for checkout button
+        const checkoutButton = await documentBody.findByRole('link', { name: /checkout/i }, { timeout: 5000 });
+        await expect(checkoutButton).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Empty,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement: _canvasElement }) => {
+        // Cart sheet renders in a portal, so check document.body
+        const documentBody = within(document.body);
+
+        // Check for cart sheet dialog
+        const cartSheet = await documentBody.findByRole('dialog', { hidden: false }, { timeout: 5000 });
+        await expect(cartSheet).toBeInTheDocument();
+
+        // Check for checkout button
+        const checkoutButton = await documentBody.findByRole('link', { name: /checkout/i }, { timeout: 5000 });
+        await expect(checkoutButton).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Empty,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement: _canvasElement }) => {
+        // Cart sheet renders in a portal, so check document.body
+        const documentBody = within(document.body);
+
+        // Check for cart sheet dialog
+        const cartSheet = await documentBody.findByRole('dialog', { hidden: false }, { timeout: 5000 });
+        await expect(cartSheet).toBeInTheDocument();
+
+        // Check for checkout button
+        const checkoutButton = await documentBody.findByRole('link', { name: /checkout/i }, { timeout: 5000 });
+        await expect(checkoutButton).toBeInTheDocument();
+    },
+};

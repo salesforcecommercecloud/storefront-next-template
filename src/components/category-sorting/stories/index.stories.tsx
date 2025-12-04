@@ -261,3 +261,72 @@ CategorySorting with a pre-selected sort option:
         await expect(select.value).not.toBe('');
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Test sort label is present
+        const label = canvas.getByText(/sort by/i);
+        await expect(label).toBeInTheDocument();
+
+        // Test select is present
+        const select = canvas.getByRole('combobox');
+        await expect(select).toBeInTheDocument();
+
+        // Test changing sort option
+        await userEvent.selectOptions(select, select.options[1]?.value || '');
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Test sort label is present
+        const label = canvas.getByText(/sort by/i);
+        await expect(label).toBeInTheDocument();
+
+        // Test select is present
+        const select = canvas.getByRole('combobox');
+        await expect(select).toBeInTheDocument();
+
+        // Test changing sort option
+        await userEvent.selectOptions(select, select.options[1]?.value || '');
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Test sort label is present
+        const label = canvas.getByText(/sort by/i);
+        await expect(label).toBeInTheDocument();
+
+        // Test select is present
+        const select = canvas.getByRole('combobox');
+        await expect(select).toBeInTheDocument();
+
+        // Test changing sort option
+        await userEvent.selectOptions(select, select.options[1]?.value || '');
+    },
+};

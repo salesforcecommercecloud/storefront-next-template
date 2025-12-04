@@ -231,3 +231,81 @@ This is the initial state users see when they start creating a password.
         await expect(canvasElement.firstChild).toBeInTheDocument();
     },
 };
+
+export const Mobile: Story = {
+    ...EmptyPassword,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test component interaction
+        const buttons = canvas.queryAllByRole('button');
+        const inputs = canvas.queryAllByRole('textbox');
+
+        // Perform basic interactions
+        if (buttons.length > 0) {
+            await userEvent.click(buttons[0]);
+        }
+        if (inputs.length > 0) {
+            await userEvent.click(inputs[0]);
+        }
+
+        // Verify component renders
+        await expect(canvasElement.firstChild).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...EmptyPassword,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test component interaction
+        const buttons = canvas.queryAllByRole('button');
+        const inputs = canvas.queryAllByRole('textbox');
+
+        // Perform basic interactions
+        if (buttons.length > 0) {
+            await userEvent.click(buttons[0]);
+        }
+        if (inputs.length > 0) {
+            await userEvent.click(inputs[0]);
+        }
+
+        // Verify component renders
+        await expect(canvasElement.firstChild).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...EmptyPassword,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test component interaction
+        const buttons = canvas.queryAllByRole('button');
+        const inputs = canvas.queryAllByRole('textbox');
+
+        // Perform basic interactions
+        if (buttons.length > 0) {
+            await userEvent.click(buttons[0]);
+        }
+        if (inputs.length > 0) {
+            await userEvent.click(inputs[0]);
+        }
+
+        // Verify component renders
+        await expect(canvasElement.firstChild).toBeInTheDocument();
+    },
+};

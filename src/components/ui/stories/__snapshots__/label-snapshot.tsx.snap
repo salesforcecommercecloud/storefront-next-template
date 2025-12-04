@@ -1,73 +1,114 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Label stories snapshot > Default story renders and matches snapshot 1`] = `
-<label
-  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
-  data-slot="label"
->
-  Email
-</label>
-`;
-
-exports[`Label stories snapshot > Required story renders and matches snapshot 1`] = `
-<div
-  class="space-y-2"
->
+<div>
   <label
     class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
     data-slot="label"
-    for="name"
   >
-    Name 
-    <span
-      class="text-destructive"
-    >
-      *
-    </span>
+    Email
   </label>
-  <input
-    class="border rounded px-3 py-2"
-    id="name"
-    placeholder="Enter your name"
-    type="text"
-  />
+</div>
+`;
+
+exports[`Label stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
+  <label
+    class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
+    data-slot="label"
+  >
+    Email
+  </label>
+</div>
+`;
+
+exports[`Label stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div>
+  <label
+    class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
+    data-slot="label"
+  >
+    Email
+  </label>
+</div>
+`;
+
+exports[`Label stories snapshot > Required story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="space-y-2"
+  >
+    <label
+      class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
+      data-slot="label"
+      for="name"
+    >
+      Name 
+      <span
+        class="text-destructive"
+      >
+        *
+      </span>
+    </label>
+    <input
+      class="border rounded px-3 py-2"
+      id="name"
+      placeholder="Enter your name"
+      type="text"
+    />
+  </div>
+</div>
+`;
+
+exports[`Label stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div>
+  <label
+    class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
+    data-slot="label"
+  >
+    Email
+  </label>
 </div>
 `;
 
 exports[`Label stories snapshot > WithCheckbox story renders and matches snapshot 1`] = `
-<div
-  class="flex items-center space-x-2"
->
-  <input
-    id="terms"
-    type="checkbox"
-  />
-  <label
-    class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
-    data-slot="label"
-    for="terms"
+<div>
+  <div
+    class="flex items-center space-x-2"
   >
-    Accept terms and conditions
-  </label>
+    <input
+      id="terms"
+      type="checkbox"
+    />
+    <label
+      class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
+      data-slot="label"
+      for="terms"
+    >
+      Accept terms and conditions
+    </label>
+  </div>
 </div>
 `;
 
 exports[`Label stories snapshot > WithInput story renders and matches snapshot 1`] = `
-<div
-  class="space-y-2"
->
-  <label
-    class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
-    data-slot="label"
-    for="email"
+<div>
+  <div
+    class="space-y-2"
   >
-    Email
-  </label>
-  <input
-    class="border rounded px-3 py-2"
-    id="email"
-    placeholder="Enter your email"
-    type="email"
-  />
+    <label
+      class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
+      data-slot="label"
+      for="email"
+    >
+      Email
+    </label>
+    <input
+      class="border rounded px-3 py-2"
+      id="email"
+      placeholder="Enter your email"
+      type="email"
+    />
+  </div>
 </div>
 `;

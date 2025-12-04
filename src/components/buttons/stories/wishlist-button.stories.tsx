@@ -588,3 +588,66 @@ This story shows the WishlistButton with custom styling:
         await expect(canvasElement.firstChild).toBeInTheDocument();
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test wishlist button renders correctly
+        const wishlistButton = canvas.getByRole('button', { name: /add to wishlist|remove from wishlist/i });
+        await expect(wishlistButton).toBeInTheDocument();
+
+        // Test button is enabled (not disabled since isLoading is false by default)
+        await expect(wishlistButton).not.toBeDisabled();
+
+        // Verify component renders
+        await expect(canvasElement.firstChild).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test wishlist button renders correctly
+        const wishlistButton = canvas.getByRole('button', { name: /add to wishlist|remove from wishlist/i });
+        await expect(wishlistButton).toBeInTheDocument();
+
+        // Test button is enabled (not disabled since isLoading is false by default)
+        await expect(wishlistButton).not.toBeDisabled();
+
+        // Verify component renders
+        await expect(canvasElement.firstChild).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test wishlist button renders correctly
+        const wishlistButton = canvas.getByRole('button', { name: /add to wishlist|remove from wishlist/i });
+        await expect(wishlistButton).toBeInTheDocument();
+
+        // Test button is enabled (not disabled since isLoading is false by default)
+        await expect(wishlistButton).not.toBeDisabled();
+
+        // Verify component renders
+        await expect(canvasElement.firstChild).toBeInTheDocument();
+    },
+};

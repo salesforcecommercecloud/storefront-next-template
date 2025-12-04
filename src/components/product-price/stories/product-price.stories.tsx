@@ -136,3 +136,48 @@ export const OnSale: Story = {
         await expect(listPrices.length).toBeGreaterThan(0);
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        // Use getAllByText to handle duplicates (visible + sr-only)
+        const prices = canvas.getAllByText(/\$99.99/);
+        await expect(prices.length).toBeGreaterThan(0);
+        await expect(prices[0]).toBeVisible();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        // Use getAllByText to handle duplicates (visible + sr-only)
+        const prices = canvas.getAllByText(/\$99.99/);
+        await expect(prices.length).toBeGreaterThan(0);
+        await expect(prices[0]).toBeVisible();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        // Use getAllByText to handle duplicates (visible + sr-only)
+        const prices = canvas.getAllByText(/\$99.99/);
+        await expect(prices.length).toBeGreaterThan(0);
+        await expect(prices[0]).toBeVisible();
+    },
+};

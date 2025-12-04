@@ -101,3 +101,42 @@ export const RecommendationsSkeleton: StoryObj<typeof ProductRecommendationsSkel
         await expect(container).toBeInTheDocument();
     },
 };
+
+export const Mobile: Story = {
+    ...MainSkeleton,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        // Check structure
+        const container = canvasElement.querySelector('.animate-pulse');
+        await expect(container).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...MainSkeleton,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        // Check structure
+        const container = canvasElement.querySelector('.animate-pulse');
+        await expect(container).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...MainSkeleton,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        // Check structure
+        const container = canvasElement.querySelector('.animate-pulse');
+        await expect(container).toBeInTheDocument();
+    },
+};

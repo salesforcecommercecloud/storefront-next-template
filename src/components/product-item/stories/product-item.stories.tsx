@@ -28,6 +28,8 @@ function ActionLogger({ children }: { children: ReactNode }): ReactElement {
 
             const interactiveElement = target.closest('button, a, [role="button"]');
             if (interactiveElement) {
+                event.preventDefault();
+                event.stopPropagation();
                 const label = interactiveElement.textContent?.trim().substring(0, 50) || 'unlabeled';
                 const tag = interactiveElement.tagName.toLowerCase();
 
@@ -121,5 +123,47 @@ export const WithActions: Story = {
         const canvas = within(canvasElement);
         await expect(canvas.getByText('Remove')).toBeInTheDocument();
         await expect(canvas.getByText('Edit')).toBeInTheDocument();
+    },
+};
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText(mockProductItem.productName)).toBeInTheDocument();
+        const prices = canvas.getAllByText(/\$99.99/);
+        await expect(prices.length).toBeGreaterThan(0);
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText(mockProductItem.productName)).toBeInTheDocument();
+        const prices = canvas.getAllByText(/\$99.99/);
+        await expect(prices.length).toBeGreaterThan(0);
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText(mockProductItem.productName)).toBeInTheDocument();
+        const prices = canvas.getAllByText(/\$99.99/);
+        await expect(prices.length).toBeGreaterThan(0);
     },
 };

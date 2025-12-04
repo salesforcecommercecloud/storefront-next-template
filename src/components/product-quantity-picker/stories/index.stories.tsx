@@ -420,3 +420,42 @@ export const Interactive: Story = {
         void expect(canvasElement).toBeInTheDocument();
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        // Basic test - just verify component renders
+        void expect(canvasElement).toBeInTheDocument();
+        void expect(canvasElement.children.length).toBeGreaterThan(0);
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        // Basic test - just verify component renders
+        void expect(canvasElement).toBeInTheDocument();
+        void expect(canvasElement.children.length).toBeGreaterThan(0);
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        // Basic test - just verify component renders
+        void expect(canvasElement).toBeInTheDocument();
+        void expect(canvasElement.children.length).toBeGreaterThan(0);
+    },
+};

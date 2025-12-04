@@ -343,3 +343,63 @@ RefinePrice with no predefined ranges:
         await expect(checkboxes.length).toBe(0);
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Test price inputs are present
+        const inputs = canvas.getAllByRole('spinbutton');
+        await expect(inputs.length).toBeGreaterThanOrEqual(2);
+
+        // Test predefined ranges are present
+        const checkboxes = canvas.getAllByRole('checkbox');
+        await expect(checkboxes.length).toBeGreaterThan(0);
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Test price inputs are present
+        const inputs = canvas.getAllByRole('spinbutton');
+        await expect(inputs.length).toBeGreaterThanOrEqual(2);
+
+        // Test predefined ranges are present
+        const checkboxes = canvas.getAllByRole('checkbox');
+        await expect(checkboxes.length).toBeGreaterThan(0);
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Test price inputs are present
+        const inputs = canvas.getAllByRole('spinbutton');
+        await expect(inputs.length).toBeGreaterThanOrEqual(2);
+
+        // Test predefined ranges are present
+        const checkboxes = canvas.getAllByRole('checkbox');
+        await expect(checkboxes.length).toBeGreaterThan(0);
+    },
+};

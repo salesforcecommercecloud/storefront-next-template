@@ -23,6 +23,8 @@ function BreadcrumbsStoryHarness({ children }: { children: ReactNode }): ReactEl
             if (!link || !isInsideHarness(link)) {
                 return;
             }
+            event.preventDefault();
+            event.stopPropagation();
             const text = link.textContent?.trim() || '';
             if (text) {
                 logClick({ label: text, href: link.getAttribute('href') });
@@ -297,5 +299,77 @@ CategoryBreadcrumbs with a deep category hierarchy:
         // Test multiple breadcrumb links are present
         const links = canvas.getAllByRole('link');
         await expect(links.length).toBeGreaterThanOrEqual(5);
+    },
+};
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Test breadcrumb navigation is present
+        const nav = canvas.getByRole('navigation', { name: /breadcrumb/i });
+        await expect(nav).toBeInTheDocument();
+
+        // Test breadcrumb links are present
+        const links = canvas.getAllByRole('link');
+        await expect(links.length).toBeGreaterThan(0);
+
+        // Test clicking a breadcrumb link - just verify it exists, don't actually navigate
+        // Navigation would cause 404 errors in Storybook since we don't have all category routes
+        await expect(links[0]).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Test breadcrumb navigation is present
+        const nav = canvas.getByRole('navigation', { name: /breadcrumb/i });
+        await expect(nav).toBeInTheDocument();
+
+        // Test breadcrumb links are present
+        const links = canvas.getAllByRole('link');
+        await expect(links.length).toBeGreaterThan(0);
+
+        // Test clicking a breadcrumb link - just verify it exists, don't actually navigate
+        // Navigation would cause 404 errors in Storybook since we don't have all category routes
+        await expect(links[0]).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Test breadcrumb navigation is present
+        const nav = canvas.getByRole('navigation', { name: /breadcrumb/i });
+        await expect(nav).toBeInTheDocument();
+
+        // Test breadcrumb links are present
+        const links = canvas.getAllByRole('link');
+        await expect(links.length).toBeGreaterThan(0);
+
+        // Test clicking a breadcrumb link - just verify it exists, don't actually navigate
+        // Navigation would cause 404 errors in Storybook since we don't have all category routes
+        await expect(links[0]).toBeInTheDocument();
     },
 };

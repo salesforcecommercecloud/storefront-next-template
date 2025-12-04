@@ -435,3 +435,90 @@ export const Interactive: Story = {
         await expect(emailInput).toHaveValue('jane.smith@example.com');
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const { t } = getTranslation();
+
+        // Verify form fields are present
+        const firstNameInput = canvas.getByPlaceholderText(t('account:profile.firstNamePlaceholder'));
+        await expect(firstNameInput).toBeInTheDocument();
+
+        const lastNameInput = canvas.getByPlaceholderText(t('account:profile.lastNamePlaceholder'));
+        await expect(lastNameInput).toBeInTheDocument();
+
+        const emailInput = canvas.getByPlaceholderText(t('account:profile.emailPlaceholder'));
+        await expect(emailInput).toBeInTheDocument();
+
+        const phoneInput = canvas.getByPlaceholderText(t('account:profile.phonePlaceholder'));
+        await expect(phoneInput).toBeInTheDocument();
+
+        // Verify submit button
+        const submitButton = canvas.getByRole('button', { name: t('account:profile.saveButton') });
+        await expect(submitButton).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const { t } = getTranslation();
+
+        // Verify form fields are present
+        const firstNameInput = canvas.getByPlaceholderText(t('account:profile.firstNamePlaceholder'));
+        await expect(firstNameInput).toBeInTheDocument();
+
+        const lastNameInput = canvas.getByPlaceholderText(t('account:profile.lastNamePlaceholder'));
+        await expect(lastNameInput).toBeInTheDocument();
+
+        const emailInput = canvas.getByPlaceholderText(t('account:profile.emailPlaceholder'));
+        await expect(emailInput).toBeInTheDocument();
+
+        const phoneInput = canvas.getByPlaceholderText(t('account:profile.phonePlaceholder'));
+        await expect(phoneInput).toBeInTheDocument();
+
+        // Verify submit button
+        const submitButton = canvas.getByRole('button', { name: t('account:profile.saveButton') });
+        await expect(submitButton).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const { t } = getTranslation();
+
+        // Verify form fields are present
+        const firstNameInput = canvas.getByPlaceholderText(t('account:profile.firstNamePlaceholder'));
+        await expect(firstNameInput).toBeInTheDocument();
+
+        const lastNameInput = canvas.getByPlaceholderText(t('account:profile.lastNamePlaceholder'));
+        await expect(lastNameInput).toBeInTheDocument();
+
+        const emailInput = canvas.getByPlaceholderText(t('account:profile.emailPlaceholder'));
+        await expect(emailInput).toBeInTheDocument();
+
+        const phoneInput = canvas.getByPlaceholderText(t('account:profile.phonePlaceholder'));
+        await expect(phoneInput).toBeInTheDocument();
+
+        // Verify submit button
+        const submitButton = canvas.getByRole('button', { name: t('account:profile.saveButton') });
+        await expect(submitButton).toBeInTheDocument();
+    },
+};

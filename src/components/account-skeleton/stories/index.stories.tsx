@@ -137,3 +137,57 @@ export const LoadingState: Story = {
         await expect(mainContent).toBeInTheDocument();
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+
+        // Verify skeleton elements are present
+        const skeletons = canvasElement.querySelectorAll('[class*="animate-pulse"]');
+        await expect(skeletons.length).toBeGreaterThan(0);
+
+        // Verify skeleton elements exist (check for any skeleton-related elements)
+        const skeletonElements = canvasElement.querySelectorAll('[class*="animate-pulse"], [class*="rounded"]');
+        await expect(skeletonElements.length).toBeGreaterThan(0);
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+
+        // Verify skeleton elements are present
+        const skeletons = canvasElement.querySelectorAll('[class*="animate-pulse"]');
+        await expect(skeletons.length).toBeGreaterThan(0);
+
+        // Verify skeleton elements exist (check for any skeleton-related elements)
+        const skeletonElements = canvasElement.querySelectorAll('[class*="animate-pulse"], [class*="rounded"]');
+        await expect(skeletonElements.length).toBeGreaterThan(0);
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+
+        // Verify skeleton elements are present
+        const skeletons = canvasElement.querySelectorAll('[class*="animate-pulse"]');
+        await expect(skeletons.length).toBeGreaterThan(0);
+
+        // Verify skeleton elements exist (check for any skeleton-related elements)
+        const skeletonElements = canvasElement.querySelectorAll('[class*="animate-pulse"], [class*="rounded"]');
+        await expect(skeletonElements.length).toBeGreaterThan(0);
+    },
+};

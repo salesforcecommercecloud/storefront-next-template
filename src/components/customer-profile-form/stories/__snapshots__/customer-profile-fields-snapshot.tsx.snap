@@ -129,6 +129,135 @@ exports[`CustomerProfileFields stories snapshot > Default story renders and matc
 </div>
 `;
 
+exports[`CustomerProfileFields stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="p-8 max-w-2xl"
+  >
+    <form
+      data-testid="customer-profile-fields-form"
+    >
+      <div
+        class="space-y-4"
+      >
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 gap-4"
+        >
+          <div
+            class="grid gap-2"
+            data-slot="form-item"
+          >
+            <label
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+              data-error="false"
+              data-slot="form-label"
+              for="«rs»-form-item"
+            >
+              First Name
+            </label>
+            <input
+              aria-describedby="«rs»-form-item-description"
+              autocomplete="given-name"
+              class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+              data-slot="form-control"
+              id="«rs»-form-item"
+              name="firstName"
+              placeholder="Enter your first name"
+              type="text"
+              value=""
+            />
+          </div>
+          <div
+            class="grid gap-2"
+            data-slot="form-item"
+          >
+            <label
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+              data-error="false"
+              data-slot="form-label"
+              for="«rt»-form-item"
+            >
+              Last Name
+            </label>
+            <input
+              aria-describedby="«rt»-form-item-description"
+              autocomplete="family-name"
+              class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+              data-slot="form-control"
+              id="«rt»-form-item"
+              name="lastName"
+              placeholder="Enter your last name"
+              type="text"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="grid gap-2"
+          data-slot="form-item"
+        >
+          <label
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+            data-error="false"
+            data-slot="form-label"
+            for="«ru»-form-item"
+          >
+            Email
+          </label>
+          <input
+            aria-describedby="«ru»-form-item-description"
+            autocomplete="email"
+            class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+            data-slot="form-control"
+            id="«ru»-form-item"
+            name="email"
+            placeholder="you@email.com"
+            type="email"
+            value=""
+          />
+        </div>
+        <div
+          class="grid gap-2"
+          data-slot="form-item"
+        >
+          <label
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+            data-error="false"
+            data-slot="form-label"
+            for="«rv»-form-item"
+          >
+            Phone Number
+          </label>
+          <input
+            aria-describedby="«rv»-form-item-description"
+            autocomplete="tel"
+            class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+            data-slot="form-control"
+            id="«rv»-form-item"
+            inputmode="numeric"
+            name="phone"
+            placeholder="Enter your phone number"
+            type="tel"
+            value=""
+          />
+        </div>
+        <div
+          class="flex gap-3 pt-2 justify-center"
+        >
+          <button
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive shadow-xs h-9 py-2 has-[>svg]:px-3 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground px-6"
+            data-slot="button"
+            type="submit"
+          >
+            Save
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+`;
+
 exports[`CustomerProfileFields stories snapshot > Interactive story renders and matches snapshot 1`] = `
 <div>
   <div
@@ -234,6 +363,135 @@ exports[`CustomerProfileFields stories snapshot > Interactive story renders and 
             class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
             data-slot="form-control"
             id="«rj»-form-item"
+            inputmode="numeric"
+            name="phone"
+            placeholder="Enter your phone number"
+            type="tel"
+            value=""
+          />
+        </div>
+        <div
+          class="flex gap-3 pt-2 justify-center"
+        >
+          <button
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive shadow-xs h-9 py-2 has-[>svg]:px-3 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground px-6"
+            data-slot="button"
+            type="submit"
+          >
+            Save
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+`;
+
+exports[`CustomerProfileFields stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="p-8 max-w-2xl"
+  >
+    <form
+      data-testid="customer-profile-fields-form"
+    >
+      <div
+        class="space-y-4"
+      >
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 gap-4"
+        >
+          <div
+            class="grid gap-2"
+            data-slot="form-item"
+          >
+            <label
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+              data-error="false"
+              data-slot="form-label"
+              for="«rk»-form-item"
+            >
+              First Name
+            </label>
+            <input
+              aria-describedby="«rk»-form-item-description"
+              autocomplete="given-name"
+              class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+              data-slot="form-control"
+              id="«rk»-form-item"
+              name="firstName"
+              placeholder="Enter your first name"
+              type="text"
+              value=""
+            />
+          </div>
+          <div
+            class="grid gap-2"
+            data-slot="form-item"
+          >
+            <label
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+              data-error="false"
+              data-slot="form-label"
+              for="«rl»-form-item"
+            >
+              Last Name
+            </label>
+            <input
+              aria-describedby="«rl»-form-item-description"
+              autocomplete="family-name"
+              class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+              data-slot="form-control"
+              id="«rl»-form-item"
+              name="lastName"
+              placeholder="Enter your last name"
+              type="text"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="grid gap-2"
+          data-slot="form-item"
+        >
+          <label
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+            data-error="false"
+            data-slot="form-label"
+            for="«rm»-form-item"
+          >
+            Email
+          </label>
+          <input
+            aria-describedby="«rm»-form-item-description"
+            autocomplete="email"
+            class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+            data-slot="form-control"
+            id="«rm»-form-item"
+            name="email"
+            placeholder="you@email.com"
+            type="email"
+            value=""
+          />
+        </div>
+        <div
+          class="grid gap-2"
+          data-slot="form-item"
+        >
+          <label
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+            data-error="false"
+            data-slot="form-label"
+            for="«rn»-form-item"
+          >
+            Phone Number
+          </label>
+          <input
+            aria-describedby="«rn»-form-item-description"
+            autocomplete="tel"
+            class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+            data-slot="form-control"
+            id="«rn»-form-item"
             inputmode="numeric"
             name="phone"
             placeholder="Enter your phone number"
@@ -380,6 +638,135 @@ exports[`CustomerProfileFields stories snapshot > Submitting story renders and m
             type="submit"
           >
             Saving...
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+`;
+
+exports[`CustomerProfileFields stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="p-8 max-w-2xl"
+  >
+    <form
+      data-testid="customer-profile-fields-form"
+    >
+      <div
+        class="space-y-4"
+      >
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 gap-4"
+        >
+          <div
+            class="grid gap-2"
+            data-slot="form-item"
+          >
+            <label
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+              data-error="false"
+              data-slot="form-label"
+              for="«ro»-form-item"
+            >
+              First Name
+            </label>
+            <input
+              aria-describedby="«ro»-form-item-description"
+              autocomplete="given-name"
+              class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+              data-slot="form-control"
+              id="«ro»-form-item"
+              name="firstName"
+              placeholder="Enter your first name"
+              type="text"
+              value=""
+            />
+          </div>
+          <div
+            class="grid gap-2"
+            data-slot="form-item"
+          >
+            <label
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+              data-error="false"
+              data-slot="form-label"
+              for="«rp»-form-item"
+            >
+              Last Name
+            </label>
+            <input
+              aria-describedby="«rp»-form-item-description"
+              autocomplete="family-name"
+              class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+              data-slot="form-control"
+              id="«rp»-form-item"
+              name="lastName"
+              placeholder="Enter your last name"
+              type="text"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="grid gap-2"
+          data-slot="form-item"
+        >
+          <label
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+            data-error="false"
+            data-slot="form-label"
+            for="«rq»-form-item"
+          >
+            Email
+          </label>
+          <input
+            aria-describedby="«rq»-form-item-description"
+            autocomplete="email"
+            class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+            data-slot="form-control"
+            id="«rq»-form-item"
+            name="email"
+            placeholder="you@email.com"
+            type="email"
+            value=""
+          />
+        </div>
+        <div
+          class="grid gap-2"
+          data-slot="form-item"
+        >
+          <label
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
+            data-error="false"
+            data-slot="form-label"
+            for="«rr»-form-item"
+          >
+            Phone Number
+          </label>
+          <input
+            aria-describedby="«rr»-form-item-description"
+            autocomplete="tel"
+            class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md"
+            data-slot="form-control"
+            id="«rr»-form-item"
+            inputmode="numeric"
+            name="phone"
+            placeholder="Enter your phone number"
+            type="tel"
+            value=""
+          />
+        </div>
+        <div
+          class="flex gap-3 pt-2 justify-center"
+        >
+          <button
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive shadow-xs h-9 py-2 has-[>svg]:px-3 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground px-6"
+            data-slot="button"
+            type="submit"
+          >
+            Save
           </button>
         </div>
       </div>

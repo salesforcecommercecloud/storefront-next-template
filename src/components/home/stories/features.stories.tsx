@@ -86,3 +86,78 @@ export const Default: Story = {
         await expect(accountFeature).toBeInTheDocument();
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for main heading (use role to be more specific)
+        const heading = await canvas.findByRole('heading', { name: /^features$/i }, { timeout: 5000 });
+        await expect(heading).toBeInTheDocument();
+
+        // Check for feature cards
+        const cartFeature = await canvas.findByText(/cart & checkout/i, {}, { timeout: 5000 });
+        await expect(cartFeature).toBeInTheDocument();
+
+        const einsteinFeature = await canvas.findByText(/einstein recommendations/i, {}, { timeout: 5000 });
+        await expect(einsteinFeature).toBeInTheDocument();
+
+        const accountFeature = await canvas.findByText(/my account/i, {}, { timeout: 5000 });
+        await expect(accountFeature).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for main heading (use role to be more specific)
+        const heading = await canvas.findByRole('heading', { name: /^features$/i }, { timeout: 5000 });
+        await expect(heading).toBeInTheDocument();
+
+        // Check for feature cards
+        const cartFeature = await canvas.findByText(/cart & checkout/i, {}, { timeout: 5000 });
+        await expect(cartFeature).toBeInTheDocument();
+
+        const einsteinFeature = await canvas.findByText(/einstein recommendations/i, {}, { timeout: 5000 });
+        await expect(einsteinFeature).toBeInTheDocument();
+
+        const accountFeature = await canvas.findByText(/my account/i, {}, { timeout: 5000 });
+        await expect(accountFeature).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for main heading (use role to be more specific)
+        const heading = await canvas.findByRole('heading', { name: /^features$/i }, { timeout: 5000 });
+        await expect(heading).toBeInTheDocument();
+
+        // Check for feature cards
+        const cartFeature = await canvas.findByText(/cart & checkout/i, {}, { timeout: 5000 });
+        await expect(cartFeature).toBeInTheDocument();
+
+        const einsteinFeature = await canvas.findByText(/einstein recommendations/i, {}, { timeout: 5000 });
+        await expect(einsteinFeature).toBeInTheDocument();
+
+        const accountFeature = await canvas.findByText(/my account/i, {}, { timeout: 5000 });
+        await expect(accountFeature).toBeInTheDocument();
+    },
+};

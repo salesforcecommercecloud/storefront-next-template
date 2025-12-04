@@ -3,6 +3,30 @@ import PayPalSDKButton from '../paypal-sdk-button';
 import { expect } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { action } from 'storybook/actions';
+import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
+import { type PayPalSDKButtonConfig } from '@/hooks/use-paypal-sdk-button';
+
+function ActionLogger({ children }: { children: ReactNode }): ReactElement {
+    const containerRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        const root = containerRef.current;
+        if (!root) return;
+
+        const logClick = action('paypal-sdk-button-click');
+
+        const handleClick = () => {
+            logClick({});
+        };
+
+        root.addEventListener('click', handleClick);
+        return () => {
+            root.removeEventListener('click', handleClick);
+        };
+    }, []);
+
+    return <div ref={containerRef}>{children}</div>;
+}
 
 const meta: Meta<typeof PayPalSDKButton> = {
     title: 'CHECKOUT/PayPalSDKButton',
@@ -17,6 +41,13 @@ const meta: Meta<typeof PayPalSDKButton> = {
         },
     },
     tags: ['autodocs', 'interaction'],
+    decorators: [
+        (Story) => (
+            <ActionLogger>
+                <Story />
+            </ActionLogger>
+        ),
+    ],
     argTypes: {
         config: {
             description: 'Configuration for the PayPal SDK button including styling and funding source',
@@ -36,7 +67,7 @@ const meta: Meta<typeof PayPalSDKButton> = {
 export default meta;
 type Story = StoryObj<typeof PayPalSDKButton>;
 
-const defaultConfig = {
+const defaultConfig: PayPalSDKButtonConfig = {
     style: {
         layout: 'horizontal',
         color: 'gold',
@@ -109,6 +140,45 @@ export const WithTagline: Story = {
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
+        const container = canvasElement.firstChild;
+        await expect(container).toBeInTheDocument();
+    },
+};
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        // Component should render
+        const container = canvasElement.firstChild;
+        await expect(container).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        // Component should render
+        const container = canvasElement.firstChild;
+        await expect(container).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        // Component should render
         const container = canvasElement.firstChild;
         await expect(container).toBeInTheDocument();
     },

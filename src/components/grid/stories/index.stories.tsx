@@ -169,3 +169,51 @@ Inline grid display mode.
         await expect(itemA).toBeInTheDocument();
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Check for grid items
+        const item1 = await canvas.findByText(/item 1/i, {}, { timeout: 5000 });
+        await expect(item1).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Check for grid items
+        const item1 = await canvas.findByText(/item 1/i, {}, { timeout: 5000 });
+        await expect(item1).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Check for grid items
+        const item1 = await canvas.findByText(/item 1/i, {}, { timeout: 5000 });
+        await expect(item1).toBeInTheDocument();
+    },
+};

@@ -139,3 +139,81 @@ export const LoadingState: Story = {
         await expect(cards.length).toBeGreaterThanOrEqual(2);
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+
+        // Verify main container exists
+        const container = canvasElement.querySelector('.space-y-6');
+        await expect(container).toBeInTheDocument();
+
+        // Verify page header skeleton exists
+        const headerSkeleton = canvasElement.querySelector('.h-8.w-40');
+        await expect(headerSkeleton).toBeInTheDocument();
+
+        // Verify profile card exists
+        const profileCard = canvasElement.querySelector('.border-border');
+        await expect(profileCard).toBeInTheDocument();
+
+        // Verify skeleton elements are present
+        const skeletons = canvasElement.querySelectorAll('[class*="animate-pulse"]');
+        await expect(skeletons.length).toBeGreaterThan(0);
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+
+        // Verify main container exists
+        const container = canvasElement.querySelector('.space-y-6');
+        await expect(container).toBeInTheDocument();
+
+        // Verify page header skeleton exists
+        const headerSkeleton = canvasElement.querySelector('.h-8.w-40');
+        await expect(headerSkeleton).toBeInTheDocument();
+
+        // Verify profile card exists
+        const profileCard = canvasElement.querySelector('.border-border');
+        await expect(profileCard).toBeInTheDocument();
+
+        // Verify skeleton elements are present
+        const skeletons = canvasElement.querySelectorAll('[class*="animate-pulse"]');
+        await expect(skeletons.length).toBeGreaterThan(0);
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+
+        // Verify main container exists
+        const container = canvasElement.querySelector('.space-y-6');
+        await expect(container).toBeInTheDocument();
+
+        // Verify page header skeleton exists
+        const headerSkeleton = canvasElement.querySelector('.h-8.w-40');
+        await expect(headerSkeleton).toBeInTheDocument();
+
+        // Verify profile card exists
+        const profileCard = canvasElement.querySelector('.border-border');
+        await expect(profileCard).toBeInTheDocument();
+
+        // Verify skeleton elements are present
+        const skeletons = canvasElement.querySelectorAll('[class*="animate-pulse"]');
+        await expect(skeletons.length).toBeGreaterThan(0);
+    },
+};

@@ -276,3 +276,51 @@ Final step - Review Order. All previous steps are completed.
         await expect(reviewElements[0]).toBeInTheDocument();
     },
 };
+
+export const Mobile: Story = {
+    ...ContactInfo,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for Contact Info step - use findAllByText since text appears multiple times
+        const contactInfoElements = await canvas.findAllByText(/contact info/i, {}, { timeout: 5000 });
+        await expect(contactInfoElements.length).toBeGreaterThan(0);
+        await expect(contactInfoElements[0]).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...ContactInfo,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for Contact Info step - use findAllByText since text appears multiple times
+        const contactInfoElements = await canvas.findAllByText(/contact info/i, {}, { timeout: 5000 });
+        await expect(contactInfoElements.length).toBeGreaterThan(0);
+        await expect(contactInfoElements[0]).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...ContactInfo,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for Contact Info step - use findAllByText since text appears multiple times
+        const contactInfoElements = await canvas.findAllByText(/contact info/i, {}, { timeout: 5000 });
+        await expect(contactInfoElements.length).toBeGreaterThan(0);
+        await expect(contactInfoElements[0]).toBeInTheDocument();
+    },
+};

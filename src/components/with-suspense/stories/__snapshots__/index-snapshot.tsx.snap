@@ -19,6 +19,63 @@ exports[`WithSuspense stories snapshot > Default story renders and matches snaps
 </div>
 `;
 
+exports[`WithSuspense stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="p-6"
+  >
+    <h2
+      class="text-xl font-bold mb-2"
+    >
+      Default Component
+    </h2>
+    <p
+      class="text-muted-foreground"
+    >
+      This component was loaded with Suspense.
+    </p>
+  </div>
+</div>
+`;
+
+exports[`WithSuspense stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="p-6"
+  >
+    <h2
+      class="text-xl font-bold mb-2"
+    >
+      Default Component
+    </h2>
+    <p
+      class="text-muted-foreground"
+    >
+      This component was loaded with Suspense.
+    </p>
+  </div>
+</div>
+`;
+
+exports[`WithSuspense stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="p-6"
+  >
+    <h2
+      class="text-xl font-bold mb-2"
+    >
+      Default Component
+    </h2>
+    <p
+      class="text-muted-foreground"
+    >
+      This component was loaded with Suspense.
+    </p>
+  </div>
+</div>
+`;
+
 exports[`WithSuspense stories snapshot > WithCustomFallback story renders and matches snapshot 1`] = `
 <div>
   <div

@@ -171,6 +171,348 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
 </div>
 `;
 
+exports[`ProductItem stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="max-w-2xl mx-auto"
+  >
+    <div
+      class="relative"
+      data-testid="sf-product-item-061492183589M"
+    >
+      <div
+        class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl p-0 border border-none shadow-none"
+        data-slot="card"
+      >
+        <div
+          class="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden"
+          data-slot="card-content"
+        >
+          <div
+            class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
+          >
+            <div
+              class="flex-shrink-0 flex items-center justify-center"
+            >
+              <div
+                class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+              >
+                <img
+                  alt="Men's Classic Deer Gloves, , small"
+                  class="h-full w-full object-contain"
+                  src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd4659c06/images/small/TG508_206.jpg?sw=160&q=60"
+                />
+              </div>
+            </div>
+            <div
+              class="flex-1 space-y-3 min-w-0"
+            >
+              <div
+                class="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-6 min-w-0"
+              >
+                <div
+                  class="min-w-0"
+                >
+                  <div
+                    class="mb-4 flex items-start gap-2 min-w-0"
+                  >
+                    <h2
+                      class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
+                    >
+                      <a
+                        class="text-foreground hover:text-primary block break-words"
+                        href="/product/TG508M"
+                        title="Men's Classic Deer Gloves"
+                        to="/product/TG508M"
+                      >
+                        Men's Classic Deer Gloves
+                      </a>
+                    </h2>
+                  </div>
+                  <div>
+                    <div
+                      class="text-sm text-muted-foreground space-y-1 mb-1"
+                    >
+                      <div>
+                        Size
+                        : 
+                        L
+                      </div>
+                    </div>
+                  </div>
+                  <p
+                    class="text-sm text-muted-foreground leading-relaxed text-left break-words"
+                  >
+                    These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
+                  </p>
+                  <div
+                    class="min-w-0"
+                  />
+                </div>
+                <div
+                  class="text-right md:hidden"
+                  data-testid="mobile-product-price"
+                >
+                  <div
+                    class="space-y-1 text-right pr-2"
+                  >
+                    <div
+                      class="text-xl font-medium"
+                    >
+                      $99.99
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="grid gap-4 justify-items-end flex-shrink-0"
+                >
+                  <div>
+                    <label
+                      class="items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground mb-2 block"
+                      data-slot="label"
+                      for="quantity"
+                    >
+                      Quantity:
+                    </label>
+                    <div
+                      class="flex items-center space-x-1"
+                    >
+                      <button
+                        aria-label="Decrement Quantity for the product"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
+                        data-slot="button"
+                        data-testid="quantity-decrement"
+                        disabled=""
+                      >
+                        <span
+                          class="text-sm"
+                        >
+                          −
+                        </span>
+                      </button>
+                      <input
+                        aria-label="Quantity:"
+                        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        data-slot="input"
+                        min="0"
+                        step="1"
+                        type="number"
+                        value="1"
+                      />
+                      <button
+                        aria-label="Increment Quantity for the product"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
+                        data-slot="button"
+                        data-testid="quantity-increment"
+                      >
+                        <span
+                          class="text-sm"
+                        >
+                          +
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                  <div
+                    class="self-end"
+                  >
+                    <div
+                      class="text-right hidden md:block"
+                      data-testid="desktop-product-price"
+                    >
+                      <div
+                        class="space-y-1 text-right pr-2"
+                      >
+                        <div
+                          class="text-xl font-medium"
+                        >
+                          $99.99
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ProductItem stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="max-w-2xl mx-auto"
+  >
+    <div
+      class="relative"
+      data-testid="sf-product-item-061492183589M"
+    >
+      <div
+        class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl p-0 border border-none shadow-none"
+        data-slot="card"
+      >
+        <div
+          class="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden"
+          data-slot="card-content"
+        >
+          <div
+            class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
+          >
+            <div
+              class="flex-shrink-0 flex items-center justify-center"
+            >
+              <div
+                class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+              >
+                <img
+                  alt="Men's Classic Deer Gloves, , small"
+                  class="h-full w-full object-contain"
+                  src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd4659c06/images/small/TG508_206.jpg?sw=160&q=60"
+                />
+              </div>
+            </div>
+            <div
+              class="flex-1 space-y-3 min-w-0"
+            >
+              <div
+                class="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-6 min-w-0"
+              >
+                <div
+                  class="min-w-0"
+                >
+                  <div
+                    class="mb-4 flex items-start gap-2 min-w-0"
+                  >
+                    <h2
+                      class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
+                    >
+                      <a
+                        class="text-foreground hover:text-primary block break-words"
+                        href="/product/TG508M"
+                        title="Men's Classic Deer Gloves"
+                        to="/product/TG508M"
+                      >
+                        Men's Classic Deer Gloves
+                      </a>
+                    </h2>
+                  </div>
+                  <div>
+                    <div
+                      class="text-sm text-muted-foreground space-y-1 mb-1"
+                    >
+                      <div>
+                        Size
+                        : 
+                        L
+                      </div>
+                    </div>
+                  </div>
+                  <p
+                    class="text-sm text-muted-foreground leading-relaxed text-left break-words"
+                  >
+                    These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
+                  </p>
+                  <div
+                    class="min-w-0"
+                  />
+                </div>
+                <div
+                  class="text-right md:hidden"
+                  data-testid="mobile-product-price"
+                >
+                  <div
+                    class="space-y-1 text-right pr-2"
+                  >
+                    <div
+                      class="text-xl font-medium"
+                    >
+                      $99.99
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="grid gap-4 justify-items-end flex-shrink-0"
+                >
+                  <div>
+                    <label
+                      class="items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground mb-2 block"
+                      data-slot="label"
+                      for="quantity"
+                    >
+                      Quantity:
+                    </label>
+                    <div
+                      class="flex items-center space-x-1"
+                    >
+                      <button
+                        aria-label="Decrement Quantity for the product"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
+                        data-slot="button"
+                        data-testid="quantity-decrement"
+                        disabled=""
+                      >
+                        <span
+                          class="text-sm"
+                        >
+                          −
+                        </span>
+                      </button>
+                      <input
+                        aria-label="Quantity:"
+                        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        data-slot="input"
+                        min="0"
+                        step="1"
+                        type="number"
+                        value="1"
+                      />
+                      <button
+                        aria-label="Increment Quantity for the product"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
+                        data-slot="button"
+                        data-testid="quantity-increment"
+                      >
+                        <span
+                          class="text-sm"
+                        >
+                          +
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                  <div
+                    class="self-end"
+                  >
+                    <div
+                      class="text-right hidden md:block"
+                      data-testid="desktop-product-price"
+                    >
+                      <div
+                        class="space-y-1 text-right pr-2"
+                      >
+                        <div
+                          class="text-xl font-medium"
+                        >
+                          $99.99
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`ProductItem stories snapshot > SummaryVariant story renders and matches snapshot 1`] = `
 <div>
   <div
@@ -237,6 +579,177 @@ exports[`ProductItem stories snapshot > SummaryVariant story renders and matches
             class="text-xl font-medium"
           >
             $99.99
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ProductItem stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="max-w-2xl mx-auto"
+  >
+    <div
+      class="relative"
+      data-testid="sf-product-item-061492183589M"
+    >
+      <div
+        class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl p-0 border border-none shadow-none"
+        data-slot="card"
+      >
+        <div
+          class="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden"
+          data-slot="card-content"
+        >
+          <div
+            class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
+          >
+            <div
+              class="flex-shrink-0 flex items-center justify-center"
+            >
+              <div
+                class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+              >
+                <img
+                  alt="Men's Classic Deer Gloves, , small"
+                  class="h-full w-full object-contain"
+                  src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd4659c06/images/small/TG508_206.jpg?sw=160&q=60"
+                />
+              </div>
+            </div>
+            <div
+              class="flex-1 space-y-3 min-w-0"
+            >
+              <div
+                class="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-6 min-w-0"
+              >
+                <div
+                  class="min-w-0"
+                >
+                  <div
+                    class="mb-4 flex items-start gap-2 min-w-0"
+                  >
+                    <h2
+                      class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
+                    >
+                      <a
+                        class="text-foreground hover:text-primary block break-words"
+                        href="/product/TG508M"
+                        title="Men's Classic Deer Gloves"
+                        to="/product/TG508M"
+                      >
+                        Men's Classic Deer Gloves
+                      </a>
+                    </h2>
+                  </div>
+                  <div>
+                    <div
+                      class="text-sm text-muted-foreground space-y-1 mb-1"
+                    >
+                      <div>
+                        Size
+                        : 
+                        L
+                      </div>
+                    </div>
+                  </div>
+                  <p
+                    class="text-sm text-muted-foreground leading-relaxed text-left break-words"
+                  >
+                    These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
+                  </p>
+                  <div
+                    class="min-w-0"
+                  />
+                </div>
+                <div
+                  class="text-right md:hidden"
+                  data-testid="mobile-product-price"
+                >
+                  <div
+                    class="space-y-1 text-right pr-2"
+                  >
+                    <div
+                      class="text-xl font-medium"
+                    >
+                      $99.99
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="grid gap-4 justify-items-end flex-shrink-0"
+                >
+                  <div>
+                    <label
+                      class="items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground mb-2 block"
+                      data-slot="label"
+                      for="quantity"
+                    >
+                      Quantity:
+                    </label>
+                    <div
+                      class="flex items-center space-x-1"
+                    >
+                      <button
+                        aria-label="Decrement Quantity for the product"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
+                        data-slot="button"
+                        data-testid="quantity-decrement"
+                        disabled=""
+                      >
+                        <span
+                          class="text-sm"
+                        >
+                          −
+                        </span>
+                      </button>
+                      <input
+                        aria-label="Quantity:"
+                        class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        data-slot="input"
+                        min="0"
+                        step="1"
+                        type="number"
+                        value="1"
+                      />
+                      <button
+                        aria-label="Increment Quantity for the product"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
+                        data-slot="button"
+                        data-testid="quantity-increment"
+                      >
+                        <span
+                          class="text-sm"
+                        >
+                          +
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                  <div
+                    class="self-end"
+                  >
+                    <div
+                      class="text-right hidden md:block"
+                      data-testid="desktop-product-price"
+                    >
+                      <div
+                        class="space-y-1 text-right pr-2"
+                      >
+                        <div
+                          class="text-xl font-medium"
+                        >
+                          $99.99
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

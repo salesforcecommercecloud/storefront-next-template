@@ -24,6 +24,8 @@ function ActionLogger({ children }: { children: ReactNode }): ReactElement {
 
             const interactiveElement = target.closest('button, a, [role="button"]');
             if (interactiveElement) {
+                event.preventDefault();
+                event.stopPropagation();
                 const label = interactiveElement.textContent?.trim().substring(0, 50) || 'unlabeled';
                 const tag = interactiveElement.tagName.toLowerCase();
 
@@ -132,5 +134,89 @@ export const WithoutBreadcrumbs: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
         await expect(canvas.getByRole('heading', { level: 1 })).toBeInTheDocument();
+    },
+};
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check Title
+        await expect(
+            canvas.getByRole('heading', { level: 1, name: mockStandardProductOrderable.product.name })
+        ).toBeInTheDocument();
+
+        // Check Price
+        const prices = canvas.getAllByText(/\$99.99/);
+        await expect(prices.length).toBeGreaterThan(0);
+
+        // Check Add to Cart
+        const addToCart = canvas.getByRole('button', { name: /add to cart/i });
+        await expect(addToCart).toBeInTheDocument();
+
+        // Check Breadcrumbs
+        await expect(canvas.getByText('Mens')).toBeInTheDocument();
+        await expect(canvas.getByText('Clothing')).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check Title
+        await expect(
+            canvas.getByRole('heading', { level: 1, name: mockStandardProductOrderable.product.name })
+        ).toBeInTheDocument();
+
+        // Check Price
+        const prices = canvas.getAllByText(/\$99.99/);
+        await expect(prices.length).toBeGreaterThan(0);
+
+        // Check Add to Cart
+        const addToCart = canvas.getByRole('button', { name: /add to cart/i });
+        await expect(addToCart).toBeInTheDocument();
+
+        // Check Breadcrumbs
+        await expect(canvas.getByText('Mens')).toBeInTheDocument();
+        await expect(canvas.getByText('Clothing')).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check Title
+        await expect(
+            canvas.getByRole('heading', { level: 1, name: mockStandardProductOrderable.product.name })
+        ).toBeInTheDocument();
+
+        // Check Price
+        const prices = canvas.getAllByText(/\$99.99/);
+        await expect(prices.length).toBeGreaterThan(0);
+
+        // Check Add to Cart
+        const addToCart = canvas.getByRole('button', { name: /add to cart/i });
+        await expect(addToCart).toBeInTheDocument();
+
+        // Check Breadcrumbs
+        await expect(canvas.getByText('Mens')).toBeInTheDocument();
+        await expect(canvas.getByText('Clothing')).toBeInTheDocument();
     },
 };

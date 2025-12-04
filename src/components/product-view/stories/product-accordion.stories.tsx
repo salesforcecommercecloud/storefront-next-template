@@ -83,3 +83,69 @@ export const Default: Story = {
         await expect(canvas.getByText(/grain deerskin leather/i)).toBeVisible();
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for accordion triggers
+        const detailsTrigger = canvas.getByRole('button', { name: /product details/i });
+        await expect(detailsTrigger).toBeInTheDocument();
+
+        const shippingTrigger = canvas.getByRole('button', { name: /shipping & returns/i });
+        await expect(shippingTrigger).toBeInTheDocument();
+
+        // Open Details
+        await userEvent.click(detailsTrigger);
+        await expect(canvas.getByText(/grain deerskin leather/i)).toBeVisible();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for accordion triggers
+        const detailsTrigger = canvas.getByRole('button', { name: /product details/i });
+        await expect(detailsTrigger).toBeInTheDocument();
+
+        const shippingTrigger = canvas.getByRole('button', { name: /shipping & returns/i });
+        await expect(shippingTrigger).toBeInTheDocument();
+
+        // Open Details
+        await userEvent.click(detailsTrigger);
+        await expect(canvas.getByText(/grain deerskin leather/i)).toBeVisible();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for accordion triggers
+        const detailsTrigger = canvas.getByRole('button', { name: /product details/i });
+        await expect(detailsTrigger).toBeInTheDocument();
+
+        const shippingTrigger = canvas.getByRole('button', { name: /shipping & returns/i });
+        await expect(shippingTrigger).toBeInTheDocument();
+
+        // Open Details
+        await userEvent.click(detailsTrigger);
+        await expect(canvas.getByText(/grain deerskin leather/i)).toBeVisible();
+    },
+};

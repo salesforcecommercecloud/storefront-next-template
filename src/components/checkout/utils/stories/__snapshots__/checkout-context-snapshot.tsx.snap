@@ -87,6 +87,267 @@ exports[`CheckoutContext stories snapshot > Default story renders and matches sn
 </div>
 `;
 
+exports[`CheckoutContext stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div
+  class="w-full max-w-4xl mx-auto p-6"
+  data-checkout-context-harness="true"
+>
+  <div
+    class="space-y-4 p-6 border rounded"
+  >
+    <div>
+      <h3
+        class="text-lg font-semibold mb-2"
+      >
+        Checkout Context State
+      </h3>
+      <div
+        class="space-y-2 text-sm"
+      >
+        <div>
+          <strong>
+            Current Step:
+          </strong>
+           
+          Contact Info
+           (
+          0
+          )
+        </div>
+        <div>
+          <strong>
+            Computed Step:
+          </strong>
+           
+          Contact Info
+           (
+          0
+          )
+        </div>
+        <div>
+          <strong>
+            Editing Step:
+          </strong>
+           
+          None
+           (
+          null
+          )
+        </div>
+      </div>
+    </div>
+    <div
+      class="flex gap-2 flex-wrap"
+    >
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-slot="button"
+      >
+        Go to Next Step
+      </button>
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-slot="button"
+      >
+        Go to Contact Info
+      </button>
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-slot="button"
+      >
+        Go to Shipping
+      </button>
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-slot="button"
+      >
+        Go to Payment
+      </button>
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-slot="button"
+      >
+        Exit Edit Mode
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`CheckoutContext stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div
+  class="w-full max-w-4xl mx-auto p-6"
+  data-checkout-context-harness="true"
+>
+  <div
+    class="space-y-4 p-6 border rounded"
+  >
+    <div>
+      <h3
+        class="text-lg font-semibold mb-2"
+      >
+        Checkout Context State
+      </h3>
+      <div
+        class="space-y-2 text-sm"
+      >
+        <div>
+          <strong>
+            Current Step:
+          </strong>
+           
+          Contact Info
+           (
+          0
+          )
+        </div>
+        <div>
+          <strong>
+            Computed Step:
+          </strong>
+           
+          Contact Info
+           (
+          0
+          )
+        </div>
+        <div>
+          <strong>
+            Editing Step:
+          </strong>
+           
+          None
+           (
+          null
+          )
+        </div>
+      </div>
+    </div>
+    <div
+      class="flex gap-2 flex-wrap"
+    >
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-slot="button"
+      >
+        Go to Next Step
+      </button>
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-slot="button"
+      >
+        Go to Contact Info
+      </button>
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-slot="button"
+      >
+        Go to Shipping
+      </button>
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-slot="button"
+      >
+        Go to Payment
+      </button>
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-slot="button"
+      >
+        Exit Edit Mode
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`CheckoutContext stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div
+  class="w-full max-w-4xl mx-auto p-6"
+  data-checkout-context-harness="true"
+>
+  <div
+    class="space-y-4 p-6 border rounded"
+  >
+    <div>
+      <h3
+        class="text-lg font-semibold mb-2"
+      >
+        Checkout Context State
+      </h3>
+      <div
+        class="space-y-2 text-sm"
+      >
+        <div>
+          <strong>
+            Current Step:
+          </strong>
+           
+          Contact Info
+           (
+          0
+          )
+        </div>
+        <div>
+          <strong>
+            Computed Step:
+          </strong>
+           
+          Contact Info
+           (
+          0
+          )
+        </div>
+        <div>
+          <strong>
+            Editing Step:
+          </strong>
+           
+          None
+           (
+          null
+          )
+        </div>
+      </div>
+    </div>
+    <div
+      class="flex gap-2 flex-wrap"
+    >
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-slot="button"
+      >
+        Go to Next Step
+      </button>
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-slot="button"
+      >
+        Go to Contact Info
+      </button>
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-slot="button"
+      >
+        Go to Shipping
+      </button>
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-slot="button"
+      >
+        Go to Payment
+      </button>
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-slot="button"
+      >
+        Exit Edit Mode
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`CheckoutContext stories snapshot > WithCustomerProfile story renders and matches snapshot 1`] = `
 <div
   class="w-full max-w-4xl mx-auto p-6"

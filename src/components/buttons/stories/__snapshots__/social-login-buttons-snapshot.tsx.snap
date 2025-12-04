@@ -200,6 +200,93 @@ exports[`SocialLoginButtons stories snapshot > Default story renders and matches
 </div>
 `;
 
+exports[`SocialLoginButtons stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div
+  data-social-login-harness="true"
+>
+  <div
+    class="space-y-3"
+  >
+    <div
+      class="relative"
+    >
+      <div
+        class="absolute inset-0 flex items-center"
+      >
+        <span
+          class="w-full border-t border-border/60"
+        />
+      </div>
+      <div
+        class="relative flex justify-center text-xs uppercase"
+      >
+        <span
+          class="bg-background px-2 text-muted-foreground"
+        >
+          Or continue with
+        </span>
+      </div>
+    </div>
+    <div
+      class="grid gap-2"
+    >
+      <form
+        method="post"
+      >
+        <input
+          name="loginMode"
+          type="hidden"
+          value="social"
+        />
+        <input
+          name="provider"
+          type="hidden"
+          value="Apple"
+        />
+        <button
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+          data-slot="button"
+          type="submit"
+        >
+          <span
+            class="mr-2 text-lg"
+          >
+            🍎
+          </span>
+          Continue with Apple
+        </button>
+      </form>
+      <form
+        method="post"
+      >
+        <input
+          name="loginMode"
+          type="hidden"
+          value="social"
+        />
+        <input
+          name="provider"
+          type="hidden"
+          value="Google"
+        />
+        <button
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+          data-slot="button"
+          type="submit"
+        >
+          <span
+            class="mr-2 text-lg"
+          >
+            🔍
+          </span>
+          Continue with Google
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`SocialLoginButtons stories snapshot > InLoginForm story renders and matches snapshot 1`] = `
 <div
   data-social-login-harness="true"
@@ -360,6 +447,93 @@ exports[`SocialLoginButtons stories snapshot > InLoginForm story renders and mat
           type="submit"
         >
           Sign In
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SocialLoginButtons stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div
+  data-social-login-harness="true"
+>
+  <div
+    class="space-y-3"
+  >
+    <div
+      class="relative"
+    >
+      <div
+        class="absolute inset-0 flex items-center"
+      >
+        <span
+          class="w-full border-t border-border/60"
+        />
+      </div>
+      <div
+        class="relative flex justify-center text-xs uppercase"
+      >
+        <span
+          class="bg-background px-2 text-muted-foreground"
+        >
+          Or continue with
+        </span>
+      </div>
+    </div>
+    <div
+      class="grid gap-2"
+    >
+      <form
+        method="post"
+      >
+        <input
+          name="loginMode"
+          type="hidden"
+          value="social"
+        />
+        <input
+          name="provider"
+          type="hidden"
+          value="Apple"
+        />
+        <button
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+          data-slot="button"
+          type="submit"
+        >
+          <span
+            class="mr-2 text-lg"
+          >
+            🍎
+          </span>
+          Continue with Apple
+        </button>
+      </form>
+      <form
+        method="post"
+      >
+        <input
+          name="loginMode"
+          type="hidden"
+          value="social"
+        />
+        <input
+          name="provider"
+          type="hidden"
+          value="Google"
+        />
+        <button
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+          data-slot="button"
+          type="submit"
+        >
+          <span
+            class="mr-2 text-lg"
+          >
+            🔍
+          </span>
+          Continue with Google
         </button>
       </form>
     </div>
@@ -542,6 +716,93 @@ exports[`SocialLoginButtons stories snapshot > SingleProvider story renders and 
     <div
       class="grid gap-2"
     >
+      <form
+        method="post"
+      >
+        <input
+          name="loginMode"
+          type="hidden"
+          value="social"
+        />
+        <input
+          name="provider"
+          type="hidden"
+          value="Google"
+        />
+        <button
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+          data-slot="button"
+          type="submit"
+        >
+          <span
+            class="mr-2 text-lg"
+          >
+            🔍
+          </span>
+          Continue with Google
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SocialLoginButtons stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div
+  data-social-login-harness="true"
+>
+  <div
+    class="space-y-3"
+  >
+    <div
+      class="relative"
+    >
+      <div
+        class="absolute inset-0 flex items-center"
+      >
+        <span
+          class="w-full border-t border-border/60"
+        />
+      </div>
+      <div
+        class="relative flex justify-center text-xs uppercase"
+      >
+        <span
+          class="bg-background px-2 text-muted-foreground"
+        >
+          Or continue with
+        </span>
+      </div>
+    </div>
+    <div
+      class="grid gap-2"
+    >
+      <form
+        method="post"
+      >
+        <input
+          name="loginMode"
+          type="hidden"
+          value="social"
+        />
+        <input
+          name="provider"
+          type="hidden"
+          value="Apple"
+        />
+        <button
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+          data-slot="button"
+          type="submit"
+        >
+          <span
+            class="mr-2 text-lg"
+          >
+            🍎
+          </span>
+          Continue with Apple
+        </button>
+      </form>
       <form
         method="post"
       >

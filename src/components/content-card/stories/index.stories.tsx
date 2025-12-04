@@ -20,6 +20,8 @@ function ContentCardStoryHarness({ children }: { children: ReactNode }): ReactEl
             if (!target || !root.contains(target)) return;
             const link = target.closest('a');
             if (link) {
+                event.preventDefault();
+                event.stopPropagation();
                 logClick({ href: link.getAttribute('href') || '', text: link.textContent?.trim() || '' });
             }
         };
@@ -207,5 +209,77 @@ Content card with transparent background and no border.
         // Check for title
         const title = await canvas.findByText(/transparent card/i, {}, { timeout: 5000 });
         await expect(title).toBeInTheDocument();
+    },
+};
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Check for title
+        const title = await canvas.findByText(/featured product/i, {}, { timeout: 5000 });
+        await expect(title).toBeInTheDocument();
+
+        // Check for description
+        const description = await canvas.findByText(/discover our latest/i, {}, { timeout: 5000 });
+        await expect(description).toBeInTheDocument();
+
+        // Check for button
+        const button = await canvas.findByRole('link', { name: /shop now/i }, { timeout: 5000 });
+        await expect(button).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Check for title
+        const title = await canvas.findByText(/featured product/i, {}, { timeout: 5000 });
+        await expect(title).toBeInTheDocument();
+
+        // Check for description
+        const description = await canvas.findByText(/discover our latest/i, {}, { timeout: 5000 });
+        await expect(description).toBeInTheDocument();
+
+        // Check for button
+        const button = await canvas.findByRole('link', { name: /shop now/i }, { timeout: 5000 });
+        await expect(button).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Check for title
+        const title = await canvas.findByText(/featured product/i, {}, { timeout: 5000 });
+        await expect(title).toBeInTheDocument();
+
+        // Check for description
+        const description = await canvas.findByText(/discover our latest/i, {}, { timeout: 5000 });
+        await expect(description).toBeInTheDocument();
+
+        // Check for button
+        const button = await canvas.findByRole('link', { name: /shop now/i }, { timeout: 5000 });
+        await expect(button).toBeInTheDocument();
     },
 };

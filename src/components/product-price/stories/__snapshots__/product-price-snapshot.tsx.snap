@@ -24,6 +24,54 @@ exports[`ProductPrice stories snapshot > Default story renders and matches snaps
 </div>
 `;
 
+exports[`ProductPrice stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="items-center gap-2"
+  >
+    <span
+      aria-label="Current price: $99.99"
+      aria-live="polite"
+      class="leading-7 [&:not(:first-child)]:mt-6 text-left font-semibold"
+    >
+      $99.99
+    </span>
+    <span
+      aria-atomic="true"
+      aria-live="polite"
+      class="sr-only"
+    >
+      Current price: $99.99
+    </span>
+     
+  </div>
+</div>
+`;
+
+exports[`ProductPrice stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="items-center gap-2"
+  >
+    <span
+      aria-label="Current price: $99.99"
+      aria-live="polite"
+      class="leading-7 [&:not(:first-child)]:mt-6 text-left font-semibold"
+    >
+      $99.99
+    </span>
+    <span
+      aria-atomic="true"
+      aria-live="polite"
+      class="sr-only"
+    >
+      Current price: $99.99
+    </span>
+     
+  </div>
+</div>
+`;
+
 exports[`ProductPrice stories snapshot > OnSale story renders and matches snapshot 1`] = `
 <div>
   <div
@@ -94,6 +142,30 @@ exports[`ProductPrice stories snapshot > PriceRange story renders and matches sn
     >
       List price: £320.00
     </span>
+  </div>
+</div>
+`;
+
+exports[`ProductPrice stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="items-center gap-2"
+  >
+    <span
+      aria-label="Current price: $99.99"
+      aria-live="polite"
+      class="leading-7 [&:not(:first-child)]:mt-6 text-left font-semibold"
+    >
+      $99.99
+    </span>
+    <span
+      aria-atomic="true"
+      aria-live="polite"
+      class="sr-only"
+    >
+      Current price: $99.99
+    </span>
+     
   </div>
 </div>
 `;

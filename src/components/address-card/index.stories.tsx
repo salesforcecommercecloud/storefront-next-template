@@ -10,6 +10,43 @@ import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import AddressCard from './index';
 import type { ShopperCustomersTypes } from 'commerce-sdk-isomorphic';
+import { action } from 'storybook/actions';
+import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
+
+function ActionLogger({ children }: { children: ReactNode }): ReactElement {
+    const containerRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        const root = containerRef.current;
+        if (!root) return;
+
+        const logEdit = action('address-card-edit');
+        const logRemove = action('address-card-remove');
+
+        const handleClick = (event: MouseEvent) => {
+            const target = event.target as HTMLElement | null;
+            if (!target || !root.contains(target)) return;
+
+            const button = target.closest('button');
+            if (button) {
+                const label = button.textContent?.trim() || button.getAttribute('aria-label') || '';
+
+                if (label.match(/edit/i)) {
+                    logEdit({ label });
+                } else if (label.match(/remove/i)) {
+                    logRemove({ label });
+                }
+            }
+        };
+
+        root.addEventListener('click', handleClick);
+        return () => {
+            root.removeEventListener('click', handleClick);
+        };
+    }, []);
+
+    return <div ref={containerRef}>{children}</div>;
+}
 
 /**
  * The AddressCard component displays a single customer address with edit and remove actions.
@@ -42,9 +79,11 @@ and optional onEdit and onRemove handlers for user interactions.
     },
     decorators: [
         (Story) => (
-            <div className="p-8 max-w-2xl">
-                <Story />
-            </div>
+            <ActionLogger>
+                <div className="p-8 max-w-2xl">
+                    <Story />
+                </div>
+            </ActionLogger>
         ),
     ],
     argTypes: {
@@ -88,14 +127,8 @@ export const Default: Story = {
             countryCode: 'US',
             phone: '555-123-4567',
         } as ShopperCustomersTypes.CustomerAddress,
-        onEdit: () => {
-            // eslint-disable-next-line no-console
-            console.log('Edit clicked');
-        },
-        onRemove: () => {
-            // eslint-disable-next-line no-console
-            console.log('Remove clicked');
-        },
+        onEdit: action('onEdit'),
+        onRemove: action('onRemove'),
         isPreferred: false,
     },
     play: async ({ canvasElement }) => {
@@ -139,14 +172,8 @@ export const MinimalAddress: Story = {
             city: 'Seattle',
             countryCode: 'US',
         } as ShopperCustomersTypes.CustomerAddress,
-        onEdit: () => {
-            // eslint-disable-next-line no-console
-            console.log('Edit clicked');
-        },
-        onRemove: () => {
-            // eslint-disable-next-line no-console
-            console.log('Remove clicked');
-        },
+        onEdit: action('onEdit'),
+        onRemove: action('onRemove'),
         isPreferred: false,
     },
 };
@@ -169,14 +196,8 @@ export const PreferredAddress: Story = {
             phone: '555-123-4567',
             preferred: true,
         } as ShopperCustomersTypes.CustomerAddress,
-        onEdit: () => {
-            // eslint-disable-next-line no-console
-            console.log('Edit clicked');
-        },
-        onRemove: () => {
-            // eslint-disable-next-line no-console
-            console.log('Remove clicked');
-        },
+        onEdit: action('onEdit'),
+        onRemove: action('onRemove'),
         isPreferred: true,
     },
     play: async ({ canvasElement }) => {
@@ -214,14 +235,8 @@ export const BillingAddress: Story = {
             countryCode: 'US',
             phone: '555-123-4567',
         } as ShopperCustomersTypes.CustomerAddress,
-        onEdit: () => {
-            // eslint-disable-next-line no-console
-            console.log('Edit clicked');
-        },
-        onRemove: () => {
-            // eslint-disable-next-line no-console
-            console.log('Remove clicked');
-        },
+        onEdit: action('onEdit'),
+        onRemove: action('onRemove'),
         isPreferred: false,
     },
 };
@@ -243,14 +258,8 @@ export const ShippingAddress: Story = {
             countryCode: 'US',
             phone: '555-123-4567',
         } as ShopperCustomersTypes.CustomerAddress,
-        onEdit: () => {
-            // eslint-disable-next-line no-console
-            console.log('Edit clicked');
-        },
-        onRemove: () => {
-            // eslint-disable-next-line no-console
-            console.log('Remove clicked');
-        },
+        onEdit: action('onEdit'),
+        onRemove: action('onRemove'),
         isPreferred: false,
     },
 };
@@ -270,10 +279,7 @@ export const EditOnly: Story = {
             postalCode: '10001',
             countryCode: 'US',
         } as ShopperCustomersTypes.CustomerAddress,
-        onEdit: () => {
-            // eslint-disable-next-line no-console
-            console.log('Edit clicked');
-        },
+        onEdit: action('onEdit'),
         onRemove: undefined,
         isPreferred: false,
     },
@@ -314,10 +320,7 @@ export const RemoveOnly: Story = {
             countryCode: 'US',
         } as ShopperCustomersTypes.CustomerAddress,
         onEdit: undefined,
-        onRemove: () => {
-            // eslint-disable-next-line no-console
-            console.log('Remove clicked');
-        },
+        onRemove: action('onRemove'),
         isPreferred: false,
     },
     play: async ({ canvasElement }) => {
@@ -395,14 +398,107 @@ export const InternationalAddress: Story = {
             countryCode: 'GB',
             phone: '+44 20 1234 5678',
         } as ShopperCustomersTypes.CustomerAddress,
-        onEdit: () => {
-            // eslint-disable-next-line no-console
-            console.log('Edit clicked');
-        },
-        onRemove: () => {
-            // eslint-disable-next-line no-console
-            console.log('Remove clicked');
-        },
+        onEdit: action('onEdit'),
+        onRemove: action('onRemove'),
         isPreferred: false,
+    },
+};
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Verify the address card renders
+        const card = canvasElement.querySelector('[data-slot="card"]');
+        await expect(card || canvasElement).toBeInTheDocument();
+
+        // Verify address title is displayed
+        const addressTitle = canvas.getByText('address-1');
+        await expect(addressTitle).toBeInTheDocument();
+
+        // Verify address information is displayed
+        const addressLine1 = canvas.getByText(/123 Main Street/i);
+        await expect(addressLine1).toBeInTheDocument();
+
+        // Test edit button interaction
+        const editButton = canvas.getByRole('button', { name: /edit/i });
+        await expect(editButton).toBeInTheDocument();
+        await userEvent.click(editButton);
+
+        // Test remove button interaction
+        const removeButton = canvas.getByRole('button', { name: /remove/i });
+        await expect(removeButton).toBeInTheDocument();
+        await userEvent.click(removeButton);
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Verify the address card renders
+        const card = canvasElement.querySelector('[data-slot="card"]');
+        await expect(card || canvasElement).toBeInTheDocument();
+
+        // Verify address title is displayed
+        const addressTitle = canvas.getByText('address-1');
+        await expect(addressTitle).toBeInTheDocument();
+
+        // Verify address information is displayed
+        const addressLine1 = canvas.getByText(/123 Main Street/i);
+        await expect(addressLine1).toBeInTheDocument();
+
+        // Test edit button interaction
+        const editButton = canvas.getByRole('button', { name: /edit/i });
+        await expect(editButton).toBeInTheDocument();
+        await userEvent.click(editButton);
+
+        // Test remove button interaction
+        const removeButton = canvas.getByRole('button', { name: /remove/i });
+        await expect(removeButton).toBeInTheDocument();
+        await userEvent.click(removeButton);
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Verify the address card renders
+        const card = canvasElement.querySelector('[data-slot="card"]');
+        await expect(card || canvasElement).toBeInTheDocument();
+
+        // Verify address title is displayed
+        const addressTitle = canvas.getByText('address-1');
+        await expect(addressTitle).toBeInTheDocument();
+
+        // Verify address information is displayed
+        const addressLine1 = canvas.getByText(/123 Main Street/i);
+        await expect(addressLine1).toBeInTheDocument();
+
+        // Test edit button interaction
+        const editButton = canvas.getByRole('button', { name: /edit/i });
+        await expect(editButton).toBeInTheDocument();
+        await userEvent.click(editButton);
+
+        // Test remove button interaction
+        const removeButton = canvas.getByRole('button', { name: /remove/i });
+        await expect(removeButton).toBeInTheDocument();
+        await userEvent.click(removeButton);
     },
 };

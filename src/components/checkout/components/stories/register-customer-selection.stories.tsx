@@ -189,3 +189,63 @@ Component with callback function to handle account creation preference.
         await expect(checkbox).not.toBeChecked();
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for checkbox
+        const checkbox = await canvas.findByRole('checkbox', {}, { timeout: 5000 });
+        await expect(checkbox).toBeInTheDocument();
+        await expect(checkbox).not.toBeChecked();
+
+        // Check for label - text is "Create an account for a faster checkout next time"
+        const label = await canvas.findByText(/create an account for a faster checkout/i, {}, { timeout: 5000 });
+        await expect(label).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for checkbox
+        const checkbox = await canvas.findByRole('checkbox', {}, { timeout: 5000 });
+        await expect(checkbox).toBeInTheDocument();
+        await expect(checkbox).not.toBeChecked();
+
+        // Check for label - text is "Create an account for a faster checkout next time"
+        const label = await canvas.findByText(/create an account for a faster checkout/i, {}, { timeout: 5000 });
+        await expect(label).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for checkbox
+        const checkbox = await canvas.findByRole('checkbox', {}, { timeout: 5000 });
+        await expect(checkbox).toBeInTheDocument();
+        await expect(checkbox).not.toBeChecked();
+
+        // Check for label - text is "Create an account for a faster checkout next time"
+        const label = await canvas.findByText(/create an account for a faster checkout/i, {}, { timeout: 5000 });
+        await expect(label).toBeInTheDocument();
+    },
+};

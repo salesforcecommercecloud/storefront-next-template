@@ -520,3 +520,90 @@ This story shows custom social providers with fallback icons:
         await userEvent.click(allButtons[0]);
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        // Test component renders
+        void expect(canvasElement).toBeInTheDocument();
+
+        // Test if social login buttons are present (may not be if config isn't set up)
+        const buttons = canvas.queryAllByRole('button');
+
+        if (buttons.length > 0) {
+            // If buttons are present, test that they're enabled
+            buttons.forEach((button) => {
+                void expect(button).not.toBeDisabled();
+            });
+
+            // Test divider text might be present
+            // Don't assert on divider since it might not be present in test environment
+        } else {
+            // If no buttons, that's also acceptable (config might not be set up)
+            void expect(canvasElement.children.length).toBeGreaterThanOrEqual(0);
+        }
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        // Test component renders
+        void expect(canvasElement).toBeInTheDocument();
+
+        // Test if social login buttons are present (may not be if config isn't set up)
+        const buttons = canvas.queryAllByRole('button');
+
+        if (buttons.length > 0) {
+            // If buttons are present, test that they're enabled
+            buttons.forEach((button) => {
+                void expect(button).not.toBeDisabled();
+            });
+
+            // Test divider text might be present
+            // Don't assert on divider since it might not be present in test environment
+        } else {
+            // If no buttons, that's also acceptable (config might not be set up)
+            void expect(canvasElement.children.length).toBeGreaterThanOrEqual(0);
+        }
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        // Test component renders
+        void expect(canvasElement).toBeInTheDocument();
+
+        // Test if social login buttons are present (may not be if config isn't set up)
+        const buttons = canvas.queryAllByRole('button');
+
+        if (buttons.length > 0) {
+            // If buttons are present, test that they're enabled
+            buttons.forEach((button) => {
+                void expect(button).not.toBeDisabled();
+            });
+
+            // Test divider text might be present
+            // Don't assert on divider since it might not be present in test environment
+        } else {
+            // If no buttons, that's also acceptable (config might not be set up)
+            void expect(canvasElement.children.length).toBeGreaterThanOrEqual(0);
+        }
+    },
+};

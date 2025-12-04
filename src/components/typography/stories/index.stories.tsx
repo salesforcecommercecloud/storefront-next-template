@@ -492,3 +492,42 @@ export const TypographyShowcase: Story = {
         void expect(showcaseContainer).toBeInTheDocument();
     },
 };
+
+export const Mobile: Story = {
+    ...Heading1,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const heading = canvas.getByRole('heading', { level: 1 });
+        await expect(heading).toHaveTextContent('Heading 1 - Main Title');
+    },
+};
+
+export const Tablet: Story = {
+    ...Heading1,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const heading = canvas.getByRole('heading', { level: 1 });
+        await expect(heading).toHaveTextContent('Heading 1 - Main Title');
+    },
+};
+
+export const Desktop: Story = {
+    ...Heading1,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const heading = canvas.getByRole('heading', { level: 1 });
+        await expect(heading).toHaveTextContent('Heading 1 - Main Title');
+    },
+};

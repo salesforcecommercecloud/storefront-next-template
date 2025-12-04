@@ -153,3 +153,63 @@ Cart badge icon with many items (edge case).
         await expect(badge).toHaveTextContent('99');
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for shopping cart icon
+        const cartIcon = await canvas.findByTestId('shopping-cart-icon', {}, { timeout: 5000 });
+        await expect(cartIcon).toBeInTheDocument();
+
+        // Check for badge
+        const badge = await canvas.findByTestId('shopping-cart-badge', {}, { timeout: 5000 });
+        await expect(badge).toBeInTheDocument();
+        await expect(badge).toHaveTextContent('0');
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for shopping cart icon
+        const cartIcon = await canvas.findByTestId('shopping-cart-icon', {}, { timeout: 5000 });
+        await expect(cartIcon).toBeInTheDocument();
+
+        // Check for badge
+        const badge = await canvas.findByTestId('shopping-cart-badge', {}, { timeout: 5000 });
+        await expect(badge).toBeInTheDocument();
+        await expect(badge).toHaveTextContent('0');
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for shopping cart icon
+        const cartIcon = await canvas.findByTestId('shopping-cart-icon', {}, { timeout: 5000 });
+        await expect(cartIcon).toBeInTheDocument();
+
+        // Check for badge
+        const badge = await canvas.findByTestId('shopping-cart-badge', {}, { timeout: 5000 });
+        await expect(badge).toBeInTheDocument();
+        await expect(badge).toHaveTextContent('0');
+    },
+};

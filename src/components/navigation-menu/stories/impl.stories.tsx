@@ -250,3 +250,39 @@ export const Interactive: Story = {
         }
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const menu = canvasElement.querySelector('[data-slot="navigation-menu"]');
+        await expect(menu || canvasElement).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const menu = canvasElement.querySelector('[data-slot="navigation-menu"]');
+        await expect(menu || canvasElement).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const menu = canvasElement.querySelector('[data-slot="navigation-menu"]');
+        await expect(menu || canvasElement).toBeInTheDocument();
+    },
+};

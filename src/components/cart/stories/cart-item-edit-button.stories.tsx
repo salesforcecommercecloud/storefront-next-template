@@ -394,3 +394,66 @@ CartItemEditButton integrated into a cart item display:
         await expect(removeButton).toBeInTheDocument();
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Test edit button is present
+        const editButton = await canvas.findByRole('button', { name: /edit/i });
+        await expect(editButton).toBeInTheDocument();
+        await expect(editButton).not.toBeDisabled();
+
+        // Test button has correct test id
+        const testId = editButton.getAttribute('data-testid');
+        await expect(testId).toContain('edit-item-');
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Test edit button is present
+        const editButton = await canvas.findByRole('button', { name: /edit/i });
+        await expect(editButton).toBeInTheDocument();
+        await expect(editButton).not.toBeDisabled();
+
+        // Test button has correct test id
+        const testId = editButton.getAttribute('data-testid');
+        await expect(testId).toContain('edit-item-');
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Test edit button is present
+        const editButton = await canvas.findByRole('button', { name: /edit/i });
+        await expect(editButton).toBeInTheDocument();
+        await expect(editButton).not.toBeDisabled();
+
+        // Test button has correct test id
+        const testId = editButton.getAttribute('data-testid');
+        await expect(testId).toContain('edit-item-');
+    },
+};

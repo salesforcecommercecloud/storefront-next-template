@@ -24,6 +24,8 @@ function ActionLogger({ children }: { children: ReactNode }): ReactElement {
 
             const interactiveElement = target.closest('button, a, [role="button"]');
             if (interactiveElement) {
+                event.preventDefault();
+                event.stopPropagation();
                 const label = interactiveElement.textContent?.trim().substring(0, 50) || 'unlabeled';
                 const tag = interactiveElement.tagName.toLowerCase();
 
@@ -139,5 +141,47 @@ export const WithActions: Story = {
         const canvas = within(canvasElement);
         await expect(canvas.getByText('Remove item-1')).toBeInTheDocument();
         await expect(canvas.getByText('Remove item-2')).toBeInTheDocument();
+    },
+};
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        // Should have 2 items
+        const items = canvas.getAllByTestId(/sf-product-item-/);
+        await expect(items).toHaveLength(2);
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        // Should have 2 items
+        const items = canvas.getAllByTestId(/sf-product-item-/);
+        await expect(items).toHaveLength(2);
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        // Should have 2 items
+        const items = canvas.getAllByTestId(/sf-product-item-/);
+        await expect(items).toHaveLength(2);
     },
 };

@@ -2,7 +2,13 @@
 
 exports[`CartItemEditButton stories snapshot > Default story renders and matches snapshot 1`] = `null`;
 
+exports[`CartItemEditButton stories snapshot > Desktop story renders and matches snapshot 1`] = `null`;
+
 exports[`CartItemEditButton stories snapshot > InCartItem story renders and matches snapshot 1`] = `null`;
+
+exports[`CartItemEditButton stories snapshot > Mobile story renders and matches snapshot 1`] = `null`;
+
+exports[`CartItemEditButton stories snapshot > Tablet story renders and matches snapshot 1`] = `null`;
 
 exports[`CartItemEditButton stories snapshot > WithCustomStyling story renders and matches snapshot 1`] = `null`;
 

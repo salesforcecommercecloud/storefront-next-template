@@ -1,77 +1,148 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`AspectRatio stories snapshot > Default story renders and matches snapshot 1`] = `
-<div
-  data-radix-aspect-ratio-wrapper=""
-  style="position: relative; width: 100%; padding-bottom: 56.25%;"
->
+<div>
   <div
-    class="bg-muted w-[400px]"
-    data-slot="aspect-ratio"
-    style="position: absolute; top: 0px; right: 0px; bottom: 0px; left: 0px;"
+    data-radix-aspect-ratio-wrapper=""
+    style="position: relative; width: 100%; padding-bottom: 56.25%;"
   >
     <div
-      class="flex items-center justify-center h-full text-muted-foreground"
+      class="bg-muted w-[400px]"
+      data-slot="aspect-ratio"
+      style="position: absolute; top: 0px; right: 0px; bottom: 0px; left: 0px;"
     >
-      16:9
+      <div
+        class="flex items-center justify-center h-full text-muted-foreground"
+      >
+        16:9
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`AspectRatio stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
+  <div
+    data-radix-aspect-ratio-wrapper=""
+    style="position: relative; width: 100%; padding-bottom: 56.25%;"
+  >
+    <div
+      class="bg-muted w-[400px]"
+      data-slot="aspect-ratio"
+      style="position: absolute; top: 0px; right: 0px; bottom: 0px; left: 0px;"
+    >
+      <div
+        class="flex items-center justify-center h-full text-muted-foreground"
+      >
+        16:9
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`AspectRatio stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div>
+  <div
+    data-radix-aspect-ratio-wrapper=""
+    style="position: relative; width: 100%; padding-bottom: 56.25%;"
+  >
+    <div
+      class="bg-muted w-[400px]"
+      data-slot="aspect-ratio"
+      style="position: absolute; top: 0px; right: 0px; bottom: 0px; left: 0px;"
+    >
+      <div
+        class="flex items-center justify-center h-full text-muted-foreground"
+      >
+        16:9
+      </div>
     </div>
   </div>
 </div>
 `;
 
 exports[`AspectRatio stories snapshot > Portrait story renders and matches snapshot 1`] = `
-<div
-  data-radix-aspect-ratio-wrapper=""
-  style="position: relative; width: 100%; padding-bottom: 133.33333333333334%;"
->
+<div>
   <div
-    class="bg-muted w-[200px]"
-    data-slot="aspect-ratio"
-    style="position: absolute; top: 0px; right: 0px; bottom: 0px; left: 0px;"
+    data-radix-aspect-ratio-wrapper=""
+    style="position: relative; width: 100%; padding-bottom: 133.33333333333334%;"
   >
     <div
-      class="flex items-center justify-center h-full text-muted-foreground"
+      class="bg-muted w-[200px]"
+      data-slot="aspect-ratio"
+      style="position: absolute; top: 0px; right: 0px; bottom: 0px; left: 0px;"
     >
-      3:4
+      <div
+        class="flex items-center justify-center h-full text-muted-foreground"
+      >
+        3:4
+      </div>
     </div>
   </div>
 </div>
 `;
 
 exports[`AspectRatio stories snapshot > Square story renders and matches snapshot 1`] = `
-<div
-  data-radix-aspect-ratio-wrapper=""
-  style="position: relative; width: 100%; padding-bottom: 100%;"
->
+<div>
   <div
-    class="bg-muted w-[300px]"
-    data-slot="aspect-ratio"
-    style="position: absolute; top: 0px; right: 0px; bottom: 0px; left: 0px;"
+    data-radix-aspect-ratio-wrapper=""
+    style="position: relative; width: 100%; padding-bottom: 100%;"
   >
     <div
-      class="flex items-center justify-center h-full text-muted-foreground"
+      class="bg-muted w-[300px]"
+      data-slot="aspect-ratio"
+      style="position: absolute; top: 0px; right: 0px; bottom: 0px; left: 0px;"
     >
-      1:1
+      <div
+        class="flex items-center justify-center h-full text-muted-foreground"
+      >
+        1:1
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`AspectRatio stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div>
+  <div
+    data-radix-aspect-ratio-wrapper=""
+    style="position: relative; width: 100%; padding-bottom: 56.25%;"
+  >
+    <div
+      class="bg-muted w-[400px]"
+      data-slot="aspect-ratio"
+      style="position: absolute; top: 0px; right: 0px; bottom: 0px; left: 0px;"
+    >
+      <div
+        class="flex items-center justify-center h-full text-muted-foreground"
+      >
+        16:9
+      </div>
     </div>
   </div>
 </div>
 `;
 
 exports[`AspectRatio stories snapshot > WithImage story renders and matches snapshot 1`] = `
-<div
-  data-radix-aspect-ratio-wrapper=""
-  style="position: relative; width: 100%; padding-bottom: 56.25%;"
->
+<div>
   <div
-    class="bg-muted w-[400px] overflow-hidden rounded-lg"
-    data-slot="aspect-ratio"
-    style="position: absolute; top: 0px; right: 0px; bottom: 0px; left: 0px;"
+    data-radix-aspect-ratio-wrapper=""
+    style="position: relative; width: 100%; padding-bottom: 56.25%;"
   >
-    <img
-      alt="Photo"
-      class="h-full w-full object-cover"
-      src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80"
-    />
+    <div
+      class="bg-muted w-[400px] overflow-hidden rounded-lg"
+      data-slot="aspect-ratio"
+      style="position: absolute; top: 0px; right: 0px; bottom: 0px; left: 0px;"
+    >
+      <img
+        alt="Photo"
+        class="h-full w-full object-cover"
+        src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80"
+      />
+    </div>
   </div>
 </div>
 `;

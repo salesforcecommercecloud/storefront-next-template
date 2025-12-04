@@ -199,3 +199,75 @@ Handles the case when no address is provided.
         await expect(message).toBeInTheDocument();
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Check for name
+        const name = await canvas.findByText(/gurpreet saini/i, {}, { timeout: 5000 });
+        await expect(name).toBeInTheDocument();
+
+        // Check for address
+        const address = await canvas.findByText(/123 main st/i, {}, { timeout: 5000 });
+        await expect(address).toBeInTheDocument();
+
+        // Check for city/state/postal
+        const cityState = await canvas.findByText(/south jordan/i, {}, { timeout: 5000 });
+        await expect(cityState).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Check for name
+        const name = await canvas.findByText(/gurpreet saini/i, {}, { timeout: 5000 });
+        await expect(name).toBeInTheDocument();
+
+        // Check for address
+        const address = await canvas.findByText(/123 main st/i, {}, { timeout: 5000 });
+        await expect(address).toBeInTheDocument();
+
+        // Check for city/state/postal
+        const cityState = await canvas.findByText(/south jordan/i, {}, { timeout: 5000 });
+        await expect(cityState).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Check for name
+        const name = await canvas.findByText(/gurpreet saini/i, {}, { timeout: 5000 });
+        await expect(name).toBeInTheDocument();
+
+        // Check for address
+        const address = await canvas.findByText(/123 main st/i, {}, { timeout: 5000 });
+        await expect(address).toBeInTheDocument();
+
+        // Check for city/state/postal
+        const cityState = await canvas.findByText(/south jordan/i, {}, { timeout: 5000 });
+        await expect(cityState).toBeInTheDocument();
+    },
+};

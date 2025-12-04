@@ -1,100 +1,241 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Separator stories snapshot > Default story renders and matches snapshot 1`] = `
-<div
-  class="w-[400px]"
->
+<div>
   <div
-    class="space-y-1"
+    class="w-[400px]"
   >
-    <h4
-      class="text-sm font-medium leading-none"
+    <div
+      class="space-y-1"
     >
-      Radix Primitives
-    </h4>
-    <p
-      class="text-sm text-muted-foreground"
+      <h4
+        class="text-sm font-medium leading-none"
+      >
+        Radix Primitives
+      </h4>
+      <p
+        class="text-sm text-muted-foreground"
+      >
+        An open-source UI component library.
+      </p>
+    </div>
+    <div
+      class="shrink-0 bg-border h-[1px] w-full my-4"
+    />
+    <div
+      class="flex h-5 items-center space-x-4 text-sm"
     >
-      An open-source UI component library.
-    </p>
+      <div>
+        Blog
+      </div>
+      <div
+        class="shrink-0 bg-border h-full w-[1px]"
+      />
+      <div>
+        Docs
+      </div>
+      <div
+        class="shrink-0 bg-border h-full w-[1px]"
+      />
+      <div>
+        Source
+      </div>
+    </div>
   </div>
+</div>
+`;
+
+exports[`Separator stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
   <div
-    class="shrink-0 bg-border h-[1px] w-full my-4"
-  />
-  <div
-    class="flex h-5 items-center space-x-4 text-sm"
+    class="w-[400px]"
   >
-    <div>
-      Blog
+    <div
+      class="space-y-1"
+    >
+      <h4
+        class="text-sm font-medium leading-none"
+      >
+        Radix Primitives
+      </h4>
+      <p
+        class="text-sm text-muted-foreground"
+      >
+        An open-source UI component library.
+      </p>
     </div>
     <div
-      class="shrink-0 bg-border h-full w-[1px]"
+      class="shrink-0 bg-border h-[1px] w-full my-4"
     />
-    <div>
-      Docs
-    </div>
     <div
-      class="shrink-0 bg-border h-full w-[1px]"
-    />
-    <div>
-      Source
+      class="flex h-5 items-center space-x-4 text-sm"
+    >
+      <div>
+        Blog
+      </div>
+      <div
+        class="shrink-0 bg-border h-full w-[1px]"
+      />
+      <div>
+        Docs
+      </div>
+      <div
+        class="shrink-0 bg-border h-full w-[1px]"
+      />
+      <div>
+        Source
+      </div>
     </div>
   </div>
 </div>
 `;
 
 exports[`Separator stories snapshot > Horizontal story renders and matches snapshot 1`] = `
-<div
-  class="w-[400px] space-y-4"
->
-  <div>
-    <h4
-      class="text-sm font-medium"
-    >
-      Section 1
-    </h4>
-    <p
-      class="text-sm text-muted-foreground"
-    >
-      Content for section 1
-    </p>
-  </div>
+<div>
   <div
-    class="shrink-0 bg-border h-[1px] w-full"
-  />
-  <div>
-    <h4
-      class="text-sm font-medium"
+    class="w-[400px] space-y-4"
+  >
+    <div>
+      <h4
+        class="text-sm font-medium"
+      >
+        Section 1
+      </h4>
+      <p
+        class="text-sm text-muted-foreground"
+      >
+        Content for section 1
+      </p>
+    </div>
+    <div
+      class="shrink-0 bg-border h-[1px] w-full"
+    />
+    <div>
+      <h4
+        class="text-sm font-medium"
+      >
+        Section 2
+      </h4>
+      <p
+        class="text-sm text-muted-foreground"
+      >
+        Content for section 2
+      </p>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Separator stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="w-[400px]"
+  >
+    <div
+      class="space-y-1"
     >
-      Section 2
-    </h4>
-    <p
-      class="text-sm text-muted-foreground"
+      <h4
+        class="text-sm font-medium leading-none"
+      >
+        Radix Primitives
+      </h4>
+      <p
+        class="text-sm text-muted-foreground"
+      >
+        An open-source UI component library.
+      </p>
+    </div>
+    <div
+      class="shrink-0 bg-border h-[1px] w-full my-4"
+    />
+    <div
+      class="flex h-5 items-center space-x-4 text-sm"
     >
-      Content for section 2
-    </p>
+      <div>
+        Blog
+      </div>
+      <div
+        class="shrink-0 bg-border h-full w-[1px]"
+      />
+      <div>
+        Docs
+      </div>
+      <div
+        class="shrink-0 bg-border h-full w-[1px]"
+      />
+      <div>
+        Source
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Separator stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="w-[400px]"
+  >
+    <div
+      class="space-y-1"
+    >
+      <h4
+        class="text-sm font-medium leading-none"
+      >
+        Radix Primitives
+      </h4>
+      <p
+        class="text-sm text-muted-foreground"
+      >
+        An open-source UI component library.
+      </p>
+    </div>
+    <div
+      class="shrink-0 bg-border h-[1px] w-full my-4"
+    />
+    <div
+      class="flex h-5 items-center space-x-4 text-sm"
+    >
+      <div>
+        Blog
+      </div>
+      <div
+        class="shrink-0 bg-border h-full w-[1px]"
+      />
+      <div>
+        Docs
+      </div>
+      <div
+        class="shrink-0 bg-border h-full w-[1px]"
+      />
+      <div>
+        Source
+      </div>
+    </div>
   </div>
 </div>
 `;
 
 exports[`Separator stories snapshot > Vertical story renders and matches snapshot 1`] = `
-<div
-  class="flex h-20 items-center space-x-4"
->
-  <div>
-    Left
-  </div>
+<div>
   <div
-    class="shrink-0 bg-border h-full w-[1px]"
-  />
-  <div>
-    Middle
-  </div>
-  <div
-    class="shrink-0 bg-border h-full w-[1px]"
-  />
-  <div>
-    Right
+    class="flex h-20 items-center space-x-4"
+  >
+    <div>
+      Left
+    </div>
+    <div
+      class="shrink-0 bg-border h-full w-[1px]"
+    />
+    <div>
+      Middle
+    </div>
+    <div
+      class="shrink-0 bg-border h-full w-[1px]"
+    />
+    <div>
+      Right
+    </div>
   </div>
 </div>
 `;

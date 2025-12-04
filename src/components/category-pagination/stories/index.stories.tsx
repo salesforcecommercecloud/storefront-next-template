@@ -331,3 +331,75 @@ CategoryPagination when on the first page:
         await expect(prevButton).toBeDisabled();
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Test pagination navigation is present
+        const nav = canvas.getByRole('navigation', { name: /pagination/i });
+        await expect(nav).toBeInTheDocument();
+
+        // Test page buttons are present
+        const pageButtons = canvas.getAllByRole('button');
+        await expect(pageButtons.length).toBeGreaterThan(0);
+
+        // Test clicking a page button
+        const page1Button = canvas.getByRole('button', { name: /page 1/i });
+        await expect(page1Button).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Test pagination navigation is present
+        const nav = canvas.getByRole('navigation', { name: /pagination/i });
+        await expect(nav).toBeInTheDocument();
+
+        // Test page buttons are present
+        const pageButtons = canvas.getAllByRole('button');
+        await expect(pageButtons.length).toBeGreaterThan(0);
+
+        // Test clicking a page button
+        const page1Button = canvas.getByRole('button', { name: /page 1/i });
+        await expect(page1Button).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Test pagination navigation is present
+        const nav = canvas.getByRole('navigation', { name: /pagination/i });
+        await expect(nav).toBeInTheDocument();
+
+        // Test page buttons are present
+        const pageButtons = canvas.getAllByRole('button');
+        await expect(pageButtons.length).toBeGreaterThan(0);
+
+        // Test clicking a page button
+        const page1Button = canvas.getByRole('button', { name: /page 1/i });
+        await expect(page1Button).toBeInTheDocument();
+    },
+};

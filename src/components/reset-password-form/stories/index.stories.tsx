@@ -220,3 +220,105 @@ Interactive reset password form for testing user interactions.
         await expect(confirmPasswordInput).toHaveValue('NewSecurePass123!');
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const { t } = getTranslation();
+
+        // Check for email display using specific id to avoid matching hidden input
+        const emailInput = await canvas.findByLabelText(
+            t('resetPassword:emailLabel') || t('signup:form.emailLabel'),
+            {},
+            { timeout: 5000 }
+        );
+        await expect(emailInput).toBeInTheDocument();
+        await expect(emailInput).toBeDisabled();
+        await expect(emailInput).toHaveValue('user@example.com');
+
+        // Check for new password field
+        const newPasswordInput = await canvas.findByPlaceholderText(
+            t('resetPassword:newPasswordPlaceholder') || t('signup:form.passwordPlaceholder'),
+            {},
+            { timeout: 5000 }
+        );
+        await expect(newPasswordInput).toBeInTheDocument();
+
+        // Check for submit button
+        const submitButton = await canvas.findByRole('button', { name: /reset password/i }, { timeout: 5000 });
+        await expect(submitButton).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const { t } = getTranslation();
+
+        // Check for email display using specific id to avoid matching hidden input
+        const emailInput = await canvas.findByLabelText(
+            t('resetPassword:emailLabel') || t('signup:form.emailLabel'),
+            {},
+            { timeout: 5000 }
+        );
+        await expect(emailInput).toBeInTheDocument();
+        await expect(emailInput).toBeDisabled();
+        await expect(emailInput).toHaveValue('user@example.com');
+
+        // Check for new password field
+        const newPasswordInput = await canvas.findByPlaceholderText(
+            t('resetPassword:newPasswordPlaceholder') || t('signup:form.passwordPlaceholder'),
+            {},
+            { timeout: 5000 }
+        );
+        await expect(newPasswordInput).toBeInTheDocument();
+
+        // Check for submit button
+        const submitButton = await canvas.findByRole('button', { name: /reset password/i }, { timeout: 5000 });
+        await expect(submitButton).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const { t } = getTranslation();
+
+        // Check for email display using specific id to avoid matching hidden input
+        const emailInput = await canvas.findByLabelText(
+            t('resetPassword:emailLabel') || t('signup:form.emailLabel'),
+            {},
+            { timeout: 5000 }
+        );
+        await expect(emailInput).toBeInTheDocument();
+        await expect(emailInput).toBeDisabled();
+        await expect(emailInput).toHaveValue('user@example.com');
+
+        // Check for new password field
+        const newPasswordInput = await canvas.findByPlaceholderText(
+            t('resetPassword:newPasswordPlaceholder') || t('signup:form.passwordPlaceholder'),
+            {},
+            { timeout: 5000 }
+        );
+        await expect(newPasswordInput).toBeInTheDocument();
+
+        // Check for submit button
+        const submitButton = await canvas.findByRole('button', { name: /reset password/i }, { timeout: 5000 });
+        await expect(submitButton).toBeInTheDocument();
+    },
+};

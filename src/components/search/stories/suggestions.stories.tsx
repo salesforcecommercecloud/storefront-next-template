@@ -3,6 +3,39 @@ import Suggestions from '../suggestions';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { action } from 'storybook/actions';
+import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
+
+function ActionLogger({ children }: { children: ReactNode }): ReactElement {
+    const containerRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        const root = containerRef.current;
+        if (!root) return;
+
+        const logClick = action('suggestion-click');
+
+        const handleClick = (event: MouseEvent) => {
+            const target = event.target as HTMLElement | null;
+            if (!target || !root.contains(target)) return;
+
+            // Check for buttons or links
+            const interactive = target.closest('button, a');
+            if (interactive) {
+                const label =
+                    interactive.textContent?.trim() || interactive.getAttribute('aria-label') || 'interactive-element';
+                logClick({ label, type: interactive.tagName.toLowerCase() });
+            }
+        };
+
+        root.addEventListener('click', handleClick, true);
+
+        return () => {
+            root.removeEventListener('click', handleClick, true);
+        };
+    }, []);
+
+    return <div ref={containerRef}>{children}</div>;
+}
 
 const meta: Meta<typeof Suggestions> = {
     title: 'Search/Suggestions',
@@ -17,6 +50,13 @@ const meta: Meta<typeof Suggestions> = {
         },
     },
     tags: ['autodocs', 'interaction'],
+    decorators: [
+        (Story) => (
+            <ActionLogger>
+                <Story />
+            </ActionLogger>
+        ),
+    ],
     argTypes: {
         searchSuggestions: {
             description: 'Object containing various types of search suggestions',
@@ -164,5 +204,50 @@ export const ProductsOnly: Story = {
 
         const runningShoesLink = canvas.getByRole('link', { name: /running shoes/i });
         await expect(runningShoesLink).toBeInTheDocument();
+    },
+};
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Should show suggestions section when searchSuggestions are available
+        const categoriesLabels = await canvas.findAllByText(/categories/i, {}, { timeout: 5000 });
+        await expect(categoriesLabels.length).toBeGreaterThan(0);
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Should show suggestions section when searchSuggestions are available
+        const categoriesLabels = await canvas.findAllByText(/categories/i, {}, { timeout: 5000 });
+        await expect(categoriesLabels.length).toBeGreaterThan(0);
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Should show suggestions section when searchSuggestions are available
+        const categoriesLabels = await canvas.findAllByText(/categories/i, {}, { timeout: 5000 });
+        await expect(categoriesLabels.length).toBeGreaterThan(0);
     },
 };

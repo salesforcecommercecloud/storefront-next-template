@@ -24,6 +24,8 @@ function ActionLogger({ children }: { children: ReactNode }): ReactElement {
 
             const interactiveElement = target.closest('button, a, [role="button"]');
             if (interactiveElement) {
+                event.preventDefault();
+                event.stopPropagation();
                 const label = interactiveElement.textContent?.trim().substring(0, 50) || 'unlabeled';
                 const tag = interactiveElement.tagName.toLowerCase();
 
@@ -135,6 +137,51 @@ export const AllLoaded: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
         await expect(canvas.getByText('All Products Loaded')).toBeInTheDocument();
+        const items = canvas.getAllByRole('link');
+        expect(items.length).toBeGreaterThan(0);
+    },
+};
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText('Paginated Carousel')).toBeInTheDocument();
+        // Use getAllByRole('link') which should find the product tiles
+        const items = canvas.getAllByRole('link');
+        expect(items.length).toBeGreaterThan(0);
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText('Paginated Carousel')).toBeInTheDocument();
+        // Use getAllByRole('link') which should find the product tiles
+        const items = canvas.getAllByRole('link');
+        expect(items.length).toBeGreaterThan(0);
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText('Paginated Carousel')).toBeInTheDocument();
+        // Use getAllByRole('link') which should find the product tiles
         const items = canvas.getAllByRole('link');
         expect(items.length).toBeGreaterThan(0);
     },

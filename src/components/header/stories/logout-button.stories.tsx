@@ -105,3 +105,60 @@ Default logout button.
         await userEvent.click(logoutButton);
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for logout button
+        const logoutButton = await canvas.findByRole('button', { name: /sign out/i }, { timeout: 5000 });
+        await expect(logoutButton).toBeInTheDocument();
+        await expect(logoutButton).not.toBeDisabled();
+
+        // Click logout button
+        await userEvent.click(logoutButton);
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for logout button
+        const logoutButton = await canvas.findByRole('button', { name: /sign out/i }, { timeout: 5000 });
+        await expect(logoutButton).toBeInTheDocument();
+        await expect(logoutButton).not.toBeDisabled();
+
+        // Click logout button
+        await userEvent.click(logoutButton);
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for logout button
+        const logoutButton = await canvas.findByRole('button', { name: /sign out/i }, { timeout: 5000 });
+        await expect(logoutButton).toBeInTheDocument();
+        await expect(logoutButton).not.toBeDisabled();
+
+        // Click logout button
+        await userEvent.click(logoutButton);
+    },
+};

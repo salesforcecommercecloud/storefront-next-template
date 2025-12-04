@@ -89,3 +89,45 @@ export const HtmlContent: Story = {
         await expect(canvas.getByText('HTML Feature 1')).toBeInTheDocument();
     },
 };
+
+export const Mobile: Story = {
+    ...PlainText,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText('Feature 1')).toBeInTheDocument();
+        await expect(canvas.getByText('Feature 2')).toBeInTheDocument();
+        await expect(canvas.getByText('Feature 3')).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...PlainText,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText('Feature 1')).toBeInTheDocument();
+        await expect(canvas.getByText('Feature 2')).toBeInTheDocument();
+        await expect(canvas.getByText('Feature 3')).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...PlainText,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText('Feature 1')).toBeInTheDocument();
+        await expect(canvas.getByText('Feature 2')).toBeInTheDocument();
+        await expect(canvas.getByText('Feature 3')).toBeInTheDocument();
+    },
+};

@@ -1,3 +1,25 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Component stories snapshot > Default story renders and matches snapshot 1`] = `<div />`;
+exports[`Component stories snapshot > Default story renders and matches snapshot 1`] = `
+<div>
+  <div />
+</div>
+`;
+
+exports[`Component stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
+  <div />
+</div>
+`;
+
+exports[`Component stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div>
+  <div />
+</div>
+`;
+
+exports[`Component stories snapshot > Tablet story renders and matches snapshot 1`] = `
+<div>
+  <div />
+</div>
+`;

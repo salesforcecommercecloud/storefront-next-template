@@ -112,7 +112,343 @@ exports[`AccountDetailSkeleton stories snapshot > Default story renders and matc
 </div>
 `;
 
+exports[`AccountDetailSkeleton stories snapshot > Desktop story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="space-y-6"
+  >
+    <div>
+      <div
+        class="animate-pulse rounded-md bg-muted h-8 w-40"
+      />
+    </div>
+    <div
+      class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm border-border"
+      data-slot="card"
+    >
+      <div
+        class="p-6"
+        data-slot="card-content"
+      >
+        <div
+          class="mb-6"
+        >
+          <div
+            class="animate-pulse rounded-md bg-muted h-6 w-24"
+          />
+        </div>
+        <div
+          class="grid grid-cols-1 lg:grid-cols-3 gap-4"
+        >
+          <div>
+            <div
+              class="mb-2"
+            >
+              <div
+                class="animate-pulse rounded-md bg-muted h-4 w-20"
+              />
+            </div>
+            <div>
+              <div
+                class="animate-pulse rounded-md bg-muted h-4 w-32"
+              />
+            </div>
+          </div>
+          <div>
+            <div
+              class="mb-2"
+            >
+              <div
+                class="animate-pulse rounded-md bg-muted h-4 w-20"
+              />
+            </div>
+            <div>
+              <div
+                class="animate-pulse rounded-md bg-muted h-4 w-32"
+              />
+            </div>
+          </div>
+          <div>
+            <div
+              class="mb-2"
+            >
+              <div
+                class="animate-pulse rounded-md bg-muted h-4 w-20"
+              />
+            </div>
+            <div>
+              <div
+                class="animate-pulse rounded-md bg-muted h-4 w-32"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm border-border"
+      data-slot="card"
+    >
+      <div
+        class="p-6"
+        data-slot="card-content"
+      >
+        <div
+          class="mb-6"
+        >
+          <div
+            class="animate-pulse rounded-md bg-muted h-6 w-20"
+          />
+        </div>
+        <div
+          class="grid grid-cols-1 lg:grid-cols-3 gap-4"
+        >
+          <div>
+            <div
+              class="mb-2"
+            >
+              <div
+                class="animate-pulse rounded-md bg-muted h-4 w-16"
+              />
+            </div>
+            <div>
+              <div
+                class="animate-pulse rounded-md bg-muted h-4 w-24"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`AccountDetailSkeleton stories snapshot > LoadingState story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="space-y-6"
+  >
+    <div>
+      <div
+        class="animate-pulse rounded-md bg-muted h-8 w-40"
+      />
+    </div>
+    <div
+      class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm border-border"
+      data-slot="card"
+    >
+      <div
+        class="p-6"
+        data-slot="card-content"
+      >
+        <div
+          class="mb-6"
+        >
+          <div
+            class="animate-pulse rounded-md bg-muted h-6 w-24"
+          />
+        </div>
+        <div
+          class="grid grid-cols-1 lg:grid-cols-3 gap-4"
+        >
+          <div>
+            <div
+              class="mb-2"
+            >
+              <div
+                class="animate-pulse rounded-md bg-muted h-4 w-20"
+              />
+            </div>
+            <div>
+              <div
+                class="animate-pulse rounded-md bg-muted h-4 w-32"
+              />
+            </div>
+          </div>
+          <div>
+            <div
+              class="mb-2"
+            >
+              <div
+                class="animate-pulse rounded-md bg-muted h-4 w-20"
+              />
+            </div>
+            <div>
+              <div
+                class="animate-pulse rounded-md bg-muted h-4 w-32"
+              />
+            </div>
+          </div>
+          <div>
+            <div
+              class="mb-2"
+            >
+              <div
+                class="animate-pulse rounded-md bg-muted h-4 w-20"
+              />
+            </div>
+            <div>
+              <div
+                class="animate-pulse rounded-md bg-muted h-4 w-32"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm border-border"
+      data-slot="card"
+    >
+      <div
+        class="p-6"
+        data-slot="card-content"
+      >
+        <div
+          class="mb-6"
+        >
+          <div
+            class="animate-pulse rounded-md bg-muted h-6 w-20"
+          />
+        </div>
+        <div
+          class="grid grid-cols-1 lg:grid-cols-3 gap-4"
+        >
+          <div>
+            <div
+              class="mb-2"
+            >
+              <div
+                class="animate-pulse rounded-md bg-muted h-4 w-16"
+              />
+            </div>
+            <div>
+              <div
+                class="animate-pulse rounded-md bg-muted h-4 w-24"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`AccountDetailSkeleton stories snapshot > Mobile story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="space-y-6"
+  >
+    <div>
+      <div
+        class="animate-pulse rounded-md bg-muted h-8 w-40"
+      />
+    </div>
+    <div
+      class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm border-border"
+      data-slot="card"
+    >
+      <div
+        class="p-6"
+        data-slot="card-content"
+      >
+        <div
+          class="mb-6"
+        >
+          <div
+            class="animate-pulse rounded-md bg-muted h-6 w-24"
+          />
+        </div>
+        <div
+          class="grid grid-cols-1 lg:grid-cols-3 gap-4"
+        >
+          <div>
+            <div
+              class="mb-2"
+            >
+              <div
+                class="animate-pulse rounded-md bg-muted h-4 w-20"
+              />
+            </div>
+            <div>
+              <div
+                class="animate-pulse rounded-md bg-muted h-4 w-32"
+              />
+            </div>
+          </div>
+          <div>
+            <div
+              class="mb-2"
+            >
+              <div
+                class="animate-pulse rounded-md bg-muted h-4 w-20"
+              />
+            </div>
+            <div>
+              <div
+                class="animate-pulse rounded-md bg-muted h-4 w-32"
+              />
+            </div>
+          </div>
+          <div>
+            <div
+              class="mb-2"
+            >
+              <div
+                class="animate-pulse rounded-md bg-muted h-4 w-20"
+              />
+            </div>
+            <div>
+              <div
+                class="animate-pulse rounded-md bg-muted h-4 w-32"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm border-border"
+      data-slot="card"
+    >
+      <div
+        class="p-6"
+        data-slot="card-content"
+      >
+        <div
+          class="mb-6"
+        >
+          <div
+            class="animate-pulse rounded-md bg-muted h-6 w-20"
+          />
+        </div>
+        <div
+          class="grid grid-cols-1 lg:grid-cols-3 gap-4"
+        >
+          <div>
+            <div
+              class="mb-2"
+            >
+              <div
+                class="animate-pulse rounded-md bg-muted h-4 w-16"
+              />
+            </div>
+            <div>
+              <div
+                class="animate-pulse rounded-md bg-muted h-4 w-24"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`AccountDetailSkeleton stories snapshot > Tablet story renders and matches snapshot 1`] = `
 <div>
   <div
     class="space-y-6"

@@ -183,3 +183,51 @@ Search bar with a query entered (simulated).
         }
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for search input
+        const searchInput = await canvas.findByRole('combobox', {}, { timeout: 5000 });
+        await expect(searchInput).toBeInTheDocument();
+        await expect(searchInput).toHaveAttribute('type', 'text');
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for search input
+        const searchInput = await canvas.findByRole('combobox', {}, { timeout: 5000 });
+        await expect(searchInput).toBeInTheDocument();
+        await expect(searchInput).toHaveAttribute('type', 'text');
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for search input
+        const searchInput = await canvas.findByRole('combobox', {}, { timeout: 5000 });
+        await expect(searchInput).toBeInTheDocument();
+        await expect(searchInput).toHaveAttribute('type', 'text');
+    },
+};

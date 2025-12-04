@@ -37,6 +37,7 @@ function ForgotPasswordFormStoryHarness({ children }: { children: ReactNode }): 
             if (!target || !root.contains(target)) return;
             const link = target.closest('a');
             if (link) {
+                event.preventDefault();
                 logLinkClick({ href: link.getAttribute('href') || '' });
             }
         };
@@ -191,5 +192,89 @@ Interactive forgot password form for testing user interactions.
         );
         await userEvent.type(emailInput, 'user@example.com');
         await expect(emailInput).toHaveValue('user@example.com');
+    },
+};
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const { t } = getTranslation();
+
+        // Check for email input
+        const emailInput = await canvas.findByPlaceholderText(
+            t('resetPassword:emailPlaceholder'),
+            {},
+            { timeout: 5000 }
+        );
+        await expect(emailInput).toBeInTheDocument();
+
+        // Check for submit button
+        const submitButton = await canvas.findByRole('button', { name: /reset/i }, { timeout: 5000 });
+        await expect(submitButton).toBeInTheDocument();
+
+        // Check for login link
+        const loginLink = await canvas.findByRole('link', { name: /go back to login/i }, { timeout: 5000 });
+        await expect(loginLink).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const { t } = getTranslation();
+
+        // Check for email input
+        const emailInput = await canvas.findByPlaceholderText(
+            t('resetPassword:emailPlaceholder'),
+            {},
+            { timeout: 5000 }
+        );
+        await expect(emailInput).toBeInTheDocument();
+
+        // Check for submit button
+        const submitButton = await canvas.findByRole('button', { name: /reset/i }, { timeout: 5000 });
+        await expect(submitButton).toBeInTheDocument();
+
+        // Check for login link
+        const loginLink = await canvas.findByRole('link', { name: /go back to login/i }, { timeout: 5000 });
+        await expect(loginLink).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const { t } = getTranslation();
+
+        // Check for email input
+        const emailInput = await canvas.findByPlaceholderText(
+            t('resetPassword:emailPlaceholder'),
+            {},
+            { timeout: 5000 }
+        );
+        await expect(emailInput).toBeInTheDocument();
+
+        // Check for submit button
+        const submitButton = await canvas.findByRole('button', { name: /reset/i }, { timeout: 5000 });
+        await expect(submitButton).toBeInTheDocument();
+
+        // Check for login link
+        const loginLink = await canvas.findByRole('link', { name: /go back to login/i }, { timeout: 5000 });
+        await expect(loginLink).toBeInTheDocument();
     },
 };

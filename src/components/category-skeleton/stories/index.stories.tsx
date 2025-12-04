@@ -6,6 +6,22 @@ import CategorySkeleton, {
 } from '../index';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
+import { action } from 'storybook/actions';
+import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
+
+function ActionLogger({ children, name }: { children: ReactNode; name: string }): ReactElement {
+    const containerRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        const root = containerRef.current;
+        if (!root) return;
+
+        const logRender = action(`${name}-render`);
+        logRender({});
+    }, [name]);
+
+    return <div ref={containerRef}>{children}</div>;
+}
 
 const meta: Meta<typeof CategorySkeleton> = {
     title: 'CATEGORY/Category Skeleton',
@@ -55,6 +71,13 @@ function CategoryPage() {
             },
         },
     },
+    decorators: [
+        (Story) => (
+            <ActionLogger name="category-skeleton">
+                <Story />
+            </ActionLogger>
+        ),
+    ],
 };
 
 export default meta;
@@ -95,7 +118,11 @@ The default CategorySkeleton shows the complete loading state:
 };
 
 export const BreadcrumbsSkeleton: Story = {
-    render: () => <CategoryBreadcrumbsSkeleton />,
+    render: () => (
+        <ActionLogger name="category-breadcrumbs-skeleton">
+            <CategoryBreadcrumbsSkeleton />
+        </ActionLogger>
+    ),
     parameters: {
         docs: {
             description: {
@@ -127,7 +154,11 @@ CategoryBreadcrumbsSkeleton shows placeholder for breadcrumb navigation:
 };
 
 export const HeaderSkeleton: Story = {
-    render: () => <CategoryHeaderSkeleton />,
+    render: () => (
+        <ActionLogger name="category-header-skeleton">
+            <CategoryHeaderSkeleton />
+        </ActionLogger>
+    ),
     parameters: {
         docs: {
             description: {
@@ -156,7 +187,11 @@ CategoryHeaderSkeleton shows placeholder for category header:
 };
 
 export const RefinementsSkeleton: Story = {
-    render: () => <CategoryRefinementsSkeleton />,
+    render: () => (
+        <ActionLogger name="category-refinements-skeleton">
+            <CategoryRefinementsSkeleton />
+        </ActionLogger>
+    ),
     parameters: {
         docs: {
             description: {
@@ -181,5 +216,56 @@ CategoryRefinementsSkeleton shows placeholder for filter sidebar:
 
         // Test refinements skeleton is present
         await expect(canvasElement.firstChild).toBeInTheDocument();
+    },
+};
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+
+        // Test skeleton container is present
+        await expect(canvasElement.firstChild).toBeInTheDocument();
+
+        // Test product grid skeleton is present
+        const grid = canvasElement.querySelector('.grid');
+        await expect(grid).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+
+        // Test skeleton container is present
+        await expect(canvasElement.firstChild).toBeInTheDocument();
+
+        // Test product grid skeleton is present
+        const grid = canvasElement.querySelector('.grid');
+        await expect(grid).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+
+        // Test skeleton container is present
+        await expect(canvasElement.firstChild).toBeInTheDocument();
+
+        // Test product grid skeleton is present
+        const grid = canvasElement.querySelector('.grid');
+        await expect(grid).toBeInTheDocument();
     },
 };

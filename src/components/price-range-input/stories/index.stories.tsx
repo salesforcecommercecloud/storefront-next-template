@@ -175,3 +175,45 @@ Price range input with min and max allowed values.
         await expect(inputs.length).toBeGreaterThanOrEqual(2);
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+
+        // Check for inputs
+        const inputs = canvasElement.querySelectorAll('input[type="number"]');
+        await expect(inputs.length).toBeGreaterThanOrEqual(2);
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+
+        // Check for inputs
+        const inputs = canvasElement.querySelectorAll('input[type="number"]');
+        await expect(inputs.length).toBeGreaterThanOrEqual(2);
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+
+        // Check for inputs
+        const inputs = canvasElement.querySelectorAll('input[type="number"]');
+        await expect(inputs.length).toBeGreaterThanOrEqual(2);
+    },
+};

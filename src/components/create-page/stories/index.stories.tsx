@@ -163,3 +163,51 @@ Page created with createPage using a custom fallback component.
         await expect(title).toBeInTheDocument();
     },
 };
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Check for title - use findByRole for h1 to avoid multiple matches
+        const title = await canvas.findByRole('heading', { name: /example page/i }, { timeout: 5000 });
+        await expect(title).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Check for title - use findByRole for h1 to avoid multiple matches
+        const title = await canvas.findByRole('heading', { name: /example page/i }, { timeout: 5000 });
+        await expect(title).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Check for title - use findByRole for h1 to avoid multiple matches
+        const title = await canvas.findByRole('heading', { name: /example page/i }, { timeout: 5000 });
+        await expect(title).toBeInTheDocument();
+    },
+};
