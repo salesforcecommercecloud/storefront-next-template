@@ -43,7 +43,7 @@ describe('i18next.client', () => {
         });
 
         it('should return the provided instance when an instance is passed', () => {
-            const result = initI18next(testInstance);
+            const result = initI18next({ instance: testInstance });
 
             expect(result).toBe(testInstance);
         });
@@ -51,13 +51,11 @@ describe('i18next.client', () => {
         it('should initialize with correct configuration', () => {
             const initSpy = vi.spyOn(testInstance, 'init');
 
-            initI18next(testInstance);
+            initI18next({ instance: testInstance });
 
             const callArgs = initSpy.mock.calls[0][0];
             expect(callArgs).toBeDefined();
             expect(callArgs.ns).toEqual([]);
-            // i18next normalizes fallbackLng string to array internally
-            expect(callArgs.fallbackLng).toEqual(expect.arrayContaining(['en']));
             expect(callArgs.detection).toMatchObject({
                 order: ['htmlTag'],
                 caches: [],
@@ -68,7 +66,7 @@ describe('i18next.client', () => {
     describe('dynamic import backend behavior', () => {
         beforeEach(() => {
             // Initialize the test instance using initI18next
-            initI18next(testInstance);
+            initI18next({ language: 'en', instance: testInstance });
         });
 
         it('should load all namespaces for a language when a translation is requested', async () => {

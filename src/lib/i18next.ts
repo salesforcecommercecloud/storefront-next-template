@@ -1,6 +1,16 @@
-import { getInstance } from '@/middlewares/i18next';
-import i18next from 'i18next';
-import type { RouterContextProvider } from 'react-router';
+import i18next, { type i18n } from 'i18next';
+import { createContext, type RouterContextProvider } from 'react-router';
+
+/**
+ * Context to store i18next accessor functions from the i18next middleware.
+ * These functions are bound to the context so they can be called without parameters.
+ * (This allows server loaders to access locale and i18next instance synchronously
+ * without importing server-only code)
+ */
+export const i18nextContext = createContext<{
+    getLocale: () => string;
+    getI18nextInstance: () => i18n;
+} | null>(null);
 
 /**
  * Gets the i18next instance and translation function for use in non-component code.
@@ -10,12 +20,16 @@ import type { RouterContextProvider } from 'react-router';
  */
 export function getTranslation(context?: Readonly<RouterContextProvider>) {
     if (context && typeof window === 'undefined') {
-        // On the server side, you should get the i18next instance that the i18next middleware has created and saved in the context
-        const i18nextOnServer = getInstance(context);
+        // Get i18next accessor functions from context (stored by middleware)
+        const i18nextData = context.get(i18nextContext);
+        if (!i18nextData) {
+            throw new Error('i18next data not found in context. Ensure i18next middleware runs before loaders.');
+        }
 
+        const i18nextInstance = i18nextData.getI18nextInstance();
         return {
-            i18next: i18nextOnServer,
-            t: i18nextOnServer.t,
+            i18next: i18nextInstance,
+            t: i18nextInstance.t,
         };
     }
 

@@ -36,17 +36,21 @@ We maintain 2 separate instances of i18next:
 1. **Server-side instance**: Has access to _all_ translations for the entire site
 2. **Client-side instance**: Dynamically imports translations as static JavaScript chunks
 
+Both instances support **dynamic language switching** at runtime without page reloads.
+
 ### Server-side and Client-side Flow
 
 1. Server-side middleware detects the user locale and initializes i18next
 2. Server has access to all translations from all locales and renders SSR content with translations
-3. Client-side initializes its own i18next instance
+3. Client-side initializes its own i18next instance, reading the language from the HTML `lang` attribute to prevent hydration mismatches
+   - The `initI18next()` function in `root.tsx` accepts an optional `{ language }` parameter to ensure consistency between server and client
 4. When a translation is first requested, the client dynamically imports ALL translations for the current language
    - This triggers an HTTP request for a JavaScript chunk (e.g., `/assets/locales-en-[hash].js`)
    - The chunk is served as a **static asset** (pre-built, minified, and cached with long-term headers)
    - Much more efficient than an API endpoint: no server processing, CDN-friendly, immutable caching
 5. All namespaces for that language are loaded and cached in memory
 6. Subsequent translation requests use the cached data (no additional requests)
+7. When users switch languages, the client loads the new language's translations dynamically (if not already cached) and updates the UI immediately
 
 ## Configuration
 
@@ -62,7 +66,7 @@ i18n: {
 }
 ```
 
-**2. `src/middlewares/i18next.ts`** - i18next middleware configuration:
+**2. `src/middlewares/i18next.server.ts`** - i18next middleware configuration:
 ```typescript
 detection: {
     cookie: localeCookie,
@@ -79,6 +83,105 @@ The middleware automatically detects the user's locale from:
 1. The `lng` cookie (if previously set)
 2. The `Accept-Language` HTTP header
 3. Falls back to the configured `fallbackLng`
+
+### Switching Languages at Runtime
+
+Users can switch languages dynamically without reloading the page using the `LocaleSwitcher` component. The language change happens in two steps:
+
+1. **Client-side update**: Immediately changes the displayed language using i18next's `changeLanguage()` method
+2. **Server-side persistence**: Submits to a server action that sets the `lng` cookie to persist the preference across page reloads
+
+**Using the LocaleSwitcher Component:**
+
+The project includes a pre-built `LocaleSwitcher` component that you can drop into your UI:
+
+```typescript
+import LocaleSwitcher from '@/components/locale-switcher';
+
+export function Footer() {
+    return (
+        <footer>
+            {/* Other footer content */}
+            <LocaleSwitcher />
+        </footer>
+    );
+}
+```
+
+**Building Your Own Language Switcher:**
+
+If you need a custom implementation, here's how to implement language switching:
+
+```typescript
+'use client';
+
+import { useTranslation } from 'react-i18next';
+import { useFetcher } from 'react-router';
+
+export function MyLanguageSwitcher() {
+    const { i18n } = useTranslation();
+    const fetcher = useFetcher();
+
+    const handleLanguageChange = async (newLocale: string) => {
+        // Step 1: Change language client-side for immediate UX
+        await i18n.changeLanguage(newLocale);
+
+        // Step 2: Persist to server cookie for page reloads
+        const formData = new FormData();
+        formData.append('locale', newLocale);
+        void fetcher.submit(formData, {
+            method: 'POST',
+            action: '/action/set-locale',
+        });
+    };
+
+    return (
+        <select 
+            value={i18n.language} 
+            onChange={(e) => void handleLanguageChange(e.target.value)}
+        >
+            <option value="en">English</option>
+            <option value="es">Spanish</option>
+        </select>
+    );
+}
+```
+
+**How It Works:**
+
+The `/action/set-locale` server action (located at `src/routes/action.set-locale.ts`) receives the POST request and sets the `lng` cookie using the same cookie object that the middleware uses for detection:
+
+```typescript
+import { data, type ActionFunction } from 'react-router';
+import { localeCookie } from '@/middlewares/i18next.server';
+
+export const action: ActionFunction = async ({ request }) => {
+    const formData = await request.formData();
+    const locale = formData.get('locale') as string;
+
+    if (!locale) {
+        throw new Response('Locale is required', { status: 400 });
+    }
+
+    const cookieHeader = await localeCookie.serialize(locale);
+
+    return data(
+        { success: true },
+        {
+            headers: {
+                'Set-Cookie': cookieHeader,
+            },
+        }
+    );
+};
+```
+
+**Key Points:**
+
+- Language changes are immediate (no page reload required)
+- The preference persists across sessions via the `lng` cookie
+- All client-side translations are loaded as static assets (one JavaScript chunk per language)
+- Switching languages triggers the dynamic import of the new language's translations if not already loaded
 
 ## File Structure
 
@@ -105,12 +208,19 @@ src/extensions/
     └── es/
         └── index.ts        # Aggregated extension translations
 
+src/components/
+└── locale-switcher/
+    └── index.tsx           # Client component for switching languages
+
 src/lib/
 ├── i18next.ts              # getTranslation() utility for non-components
 └── i18next.client.ts       # Client-side i18next initialization
 
 src/middlewares/
-└── i18next.ts              # Server-side i18next setup and middleware
+└── i18next.server.ts       # Server-side i18next setup and middleware
+
+src/routes/
+└── action.set-locale.ts    # Server action to persist locale preference
 
 scripts/
 └── aggregate-extension-locales.js  # Auto-aggregates extension translations
@@ -127,9 +237,10 @@ import { useTranslation } from 'react-i18next';
 
 function ProductInfo() {
     // Specify the namespace to load
-    // NOTE: without passing in a namespace, the hook would use `translation` namespace by default.
-    // Since we don't have such namespace in our translations, the t() function would not work as expected.
     const { t } = useTranslation('product');
+    // NOTE: without passing in a namespace, the above hook would use `translation` namespace by default.
+    // Since we don't have such namespace in our translations, the `t('namespace:key')` would still work,
+    // but its autocomplete would no longer work in your IDE.
 
     return (
         <div>
@@ -208,8 +319,7 @@ const schema = z.object({
 Use `getTranslation` with the context parameter for server-side translations:
 
 ```typescript
-import { getTranslation } from '@/lib/i18next';
-import { getLocale } from '@/middlewares/i18next';
+import { getTranslation, i18nextContext } from '@/lib/i18next';
 import type { LoaderFunctionArgs } from 'react-router';
 
 export function loader(args: LoaderFunctionArgs) {
@@ -218,7 +328,8 @@ export function loader(args: LoaderFunctionArgs) {
     const translatedTitle = t('product:title');
     
     // Get the current locale for formatting (if needed)
-    const locale = getLocale(args.context);
+    const i18nextData = args.context.get(i18nextContext);
+    const locale = i18nextData?.getLocale() ?? 'en';
     const date = new Date().toLocaleDateString(locale, {
         year: 'numeric',
         month: '2-digit',
@@ -465,7 +576,7 @@ t('cart:empty.title')
 t('nonexistent.key')
 ```
 
-Type definitions are generated from the English locale (`resources.en`) in `src/middlewares/i18next.ts`:
+Type definitions are generated from the English locale (`resources.en`) in `src/middlewares/i18next.server.ts`:
 
 ```typescript
 declare module 'i18next' {

@@ -31,6 +31,7 @@ describe('Footer', () => {
         expect(screen.getByText(t('footer:sections.ourCompany'))).toBeInTheDocument();
         // @sfdc-extension-line SFDC_EXT_INTERNAL_THEME_SWITCHER
         expect(screen.getByText(t('footer:sections.switchThemes'))).toBeInTheDocument();
+        expect(screen.getByText(t('footer:sections.switchLanguage'))).toBeInTheDocument();
     });
 
     test('renders Customer Support section links', () => {
@@ -106,13 +107,24 @@ describe('Footer', () => {
         renderWithRouter(<Footer />);
 
         // Check for ThemeSwitcher select and options
-        const themeSelect = screen.getByRole('combobox');
-        expect(themeSelect).toBeInTheDocument();
+        const themeSelects = screen.getAllByRole('combobox');
+        expect(themeSelects).toHaveLength(2); // Theme and Locale selects
 
         expect(screen.getByRole('option', { name: 'Light Theme' })).toBeInTheDocument();
         expect(screen.getByRole('option', { name: 'Dark Theme' })).toBeInTheDocument();
     });
     // @sfdc-extension-block-end SFDC_EXT_INTERNAL_THEME_SWITCHER
+
+    test('renders LocaleSwitcher component with locale options', () => {
+        renderWithRouter(<Footer />);
+
+        // Check for LocaleSwitcher select and options
+        const localeSelects = screen.getAllByRole('combobox');
+        expect(localeSelects).toHaveLength(2); // Theme and Locale selects
+
+        expect(screen.getByRole('option', { name: 'English' })).toBeInTheDocument();
+        expect(screen.getByRole('option', { name: 'Spanish' })).toBeInTheDocument();
+    });
 
     test('renders copyright text with current year', () => {
         renderWithRouter(<Footer />);

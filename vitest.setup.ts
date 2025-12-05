@@ -26,7 +26,7 @@ beforeAll(() => {
     }
 });
 
-// Mock getInstance to return an i18next instance for server actions
+// Mock getI18nextInstance to return an i18next instance for server actions
 // Individual tests can override this if needed
 vi.mock('@/middlewares/i18next', async () => {
     const actual = await vi.importActual('@/middlewares/i18next');
@@ -64,7 +64,7 @@ vi.mock('@/middlewares/i18next', async () => {
 
     return {
         ...actual,
-        getInstance: () => mockI18next,
+        getI18nextInstance: () => mockI18next,
         getLocale: () => 'en',
     };
 });

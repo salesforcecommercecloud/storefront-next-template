@@ -1,10 +1,13 @@
 import { initReactI18next } from 'react-i18next';
-import { createCookie } from 'react-router';
 import { createI18nextMiddleware } from 'remix-i18next/middleware';
-import resources from '@/locales'; // Import translations from all of your locales
+import { createCookie, type MiddlewareFunction } from 'react-router';
+import resources from '@/locales'; // Import translations from all of your locales - SERVER ONLY
 import 'i18next';
+import { i18nextContext } from '@/lib/i18next';
 
-// This cookie will be used to store the user locale preference
+/**
+ * This cookie is used to store the user locale/language preference
+ */
 export const localeCookie = createCookie('lng', {
     path: '/',
     sameSite: 'lax',
@@ -12,7 +15,7 @@ export const localeCookie = createCookie('lng', {
     httpOnly: true,
 });
 
-export const [i18nextMiddleware, getLocale, getInstance] = createI18nextMiddleware({
+const [originalI18nextMiddleware, getLocale, getInstance] = createI18nextMiddleware({
     // Read the locale from the cookie, if it exists, and set it in the context.
     // If the cookie doesn't exist, it will use the Accept-Language header or the fallback language.
     detection: {
@@ -26,7 +29,19 @@ export const [i18nextMiddleware, getLocale, getInstance] = createI18nextMiddlewa
     plugins: [initReactI18next], // Plugins you may need, like react-i18next
 });
 
-// This adds type-safety to the `t` function
+const i18nextMiddleware: MiddlewareFunction<Response> = async (args, next) => {
+    // Store bound accessor functions in context (bound to args.context)
+    // These will be called AFTER originalI18nextMiddleware sets up i18next
+    args.context.set(i18nextContext, {
+        getLocale: () => getLocale(args.context),
+        getI18nextInstance: () => getInstance(args.context),
+    });
+    return originalI18nextMiddleware(args, next);
+};
+
+export { i18nextMiddleware };
+
+// This adds type-safety to the `t` function throughout the application
 declare module 'i18next' {
     interface CustomTypeOptions {
         resources: typeof resources.en; // Use `en` as source of truth for the types

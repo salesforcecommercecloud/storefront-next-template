@@ -151,8 +151,6 @@ vi.mock('@/middlewares/i18next', async () => {
 
     return {
         ...(await vi.importActual('@/middlewares/i18next')),
-        getLocale: vi.fn(() => 'en'),
-        getInstance: vi.fn(() => testInstance),
         i18nextMiddleware: vi.fn(),
     };
 });
@@ -356,8 +354,15 @@ describe('root.tsx', () => {
 
             vi.mocked(fetchCategory).mockResolvedValue(mockCategory);
 
-            const { getInstance } = await import('@/middlewares/i18next');
-            const i18nextInstance = getInstance(createTestContext());
+            // Create a mock i18next instance for testing
+            const i18next = await import('i18next');
+            const { initReactI18next } = await import('react-i18next');
+            const testI18nInstance = i18next.default.createInstance();
+            await testI18nInstance.use(initReactI18next).init({
+                lng: 'en',
+                fallbackLng: 'en',
+                resources: { en: { translation: {} } },
+            });
 
             const Stub = createRoutesStub([
                 {
@@ -375,7 +380,7 @@ describe('root.tsx', () => {
                         basket: { basketId: 'test-basket', productItems: [] },
                         appConfig: mockConfig,
                         locale: 'en',
-                        getI18next: () => i18nextInstance,
+                        getI18next: () => testI18nInstance,
                     }),
                 },
             ]);
@@ -454,8 +459,15 @@ describe('root.tsx', () => {
             // Set window.__APP_CONFIG__ as fallback
             (window as any).__APP_CONFIG__ = mockConfig;
 
-            const { getInstance } = await import('@/middlewares/i18next');
-            const i18nextInstance = getInstance(createTestContext());
+            // Create a mock i18next instance for testing
+            const i18next = await import('i18next');
+            const { initReactI18next } = await import('react-i18next');
+            const testI18nInstance = i18next.default.createInstance();
+            await testI18nInstance.use(initReactI18next).init({
+                lng: 'en',
+                fallbackLng: 'en',
+                resources: { en: { translation: {} } },
+            });
 
             const Stub = createRoutesStub([
                 {
@@ -472,7 +484,7 @@ describe('root.tsx', () => {
                         }),
                         basket: { basketId: 'test-basket', productItems: [] },
                         locale: 'en',
-                        getI18next: () => i18nextInstance,
+                        getI18next: () => testI18nInstance,
                         // appConfig not in loader data
                     }),
                 },
@@ -492,6 +504,10 @@ describe('root.tsx', () => {
     describe('loader function', () => {
         it('should return category promises and auth function', async () => {
             const { fetchCategory } = await import('@/lib/api/categories');
+            const { i18nextContext } = await import('@/lib/i18next');
+            const i18next = await import('i18next');
+            const { initReactI18next } = await import('react-i18next');
+            const resources = await import('@/locales');
 
             const mockRootCategory: ShopperProducts.schemas['Category'] = {
                 id: 'root',
@@ -505,7 +521,24 @@ describe('root.tsx', () => {
             vi.mocked(fetchCategory).mockResolvedValueOnce(mockRootCategory);
             vi.mocked(fetchCategory).mockResolvedValue({ id: 'sub', name: 'Sub' });
 
+            // Set up i18next context
+            const testInstance = i18next.default.createInstance();
+            void testInstance.use(initReactI18next).init({
+                lng: 'en',
+                fallbackLng: 'en',
+                resources: resources.default,
+                interpolation: {
+                    escapeValue: false,
+                },
+            });
+
             const context = createTestContext();
+            // Set up i18next context with bound functions
+            context.set(i18nextContext, {
+                getLocale: () => 'en',
+                getI18nextInstance: () => testInstance,
+            });
+
             const result = loader({ context, request: new Request('http://localhost'), params: {} }) as any;
 
             expect(result).toHaveProperty('root');
@@ -533,6 +566,10 @@ describe('root.tsx', () => {
 
         it('should not fetch sub categories when onlineSubCategoriesCount is 0', async () => {
             const { fetchCategory } = await import('@/lib/api/categories');
+            const { i18nextContext } = await import('@/lib/i18next');
+            const i18next = await import('i18next');
+            const { initReactI18next } = await import('react-i18next');
+            const resources = await import('@/locales');
 
             const mockRootCategory: ShopperProducts.schemas['Category'] = {
                 id: 'root',
@@ -545,7 +582,24 @@ describe('root.tsx', () => {
 
             vi.mocked(fetchCategory).mockResolvedValue(mockRootCategory);
 
+            // Set up i18next context
+            const testInstance = i18next.default.createInstance();
+            void testInstance.use(initReactI18next).init({
+                lng: 'en',
+                fallbackLng: 'en',
+                resources: resources.default,
+                interpolation: {
+                    escapeValue: false,
+                },
+            });
+
             const context = createTestContext();
+            // Set up i18next context with bound functions
+            context.set(i18nextContext, {
+                getLocale: () => 'en',
+                getI18nextInstance: () => testInstance,
+            });
+
             const result = loader({ context, request: new Request('http://localhost'), params: {} }) as any;
 
             await result.root;
@@ -558,6 +612,10 @@ describe('root.tsx', () => {
         it('should call getAuth to retrieve session data', async () => {
             const { fetchCategory } = await import('@/lib/api/categories');
             const { getAuth } = await import('@/middlewares/auth.server');
+            const { i18nextContext } = await import('@/lib/i18next');
+            const i18next = await import('i18next');
+            const { initReactI18next } = await import('react-i18next');
+            const resources = await import('@/locales');
 
             const mockSession: SessionData = {
                 access_token: 'test-token',
@@ -568,7 +626,24 @@ describe('root.tsx', () => {
             vi.mocked(fetchCategory).mockResolvedValue({ id: 'root', name: 'Root' });
             vi.mocked(getAuth).mockReturnValue(mockSession);
 
+            // Set up i18next context
+            const testInstance = i18next.default.createInstance();
+            void testInstance.use(initReactI18next).init({
+                lng: 'en',
+                fallbackLng: 'en',
+                resources: resources.default,
+                interpolation: {
+                    escapeValue: false,
+                },
+            });
+
             const context = createTestContext();
+            // Set up i18next context with bound functions
+            context.set(i18nextContext, {
+                getLocale: () => 'en',
+                getI18nextInstance: () => testInstance,
+            });
+
             const result = loader({ context, request: new Request('http://localhost'), params: {} }) as any;
 
             expect(getAuth).toHaveBeenCalledWith(context);
@@ -576,6 +651,19 @@ describe('root.tsx', () => {
             expect(result.appConfig).toBeDefined();
             expect(result.locale).toBe('en');
             expect(typeof result.getI18next).toBe('function');
+        });
+
+        it('should throw error when i18next data is not found in context', async () => {
+            const { fetchCategory } = await import('@/lib/api/categories');
+
+            vi.mocked(fetchCategory).mockResolvedValue({ id: 'root', name: 'Root' });
+
+            const context = createTestContext();
+            // Do not set i18next context to simulate missing middleware
+
+            expect(() => {
+                loader({ context, request: new Request('http://localhost'), params: {} });
+            }).toThrow('i18next data not found in context. Ensure i18next middleware runs before loaders.');
         });
     });
 

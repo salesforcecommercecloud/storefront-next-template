@@ -31,7 +31,8 @@ import {
 } from '@/middlewares/performance-metrics';
 import { appConfigMiddlewareServer } from '@/middlewares/app-config.server';
 import { appConfigMiddlewareClient } from '@/middlewares/app-config.client';
-import { getLocale, i18nextMiddleware, getInstance } from '@/middlewares/i18next';
+import { i18nextMiddleware } from '@/middlewares/i18next.server';
+import { i18nextContext } from '@/lib/i18next';
 import BasketProvider from '@/providers/basket';
 import { ComposeProviders } from '@/providers/compose-providers';
 import RecommendersProvider from '@/providers/recommenders';
@@ -53,8 +54,9 @@ import { PageViewTracker } from '@/lib/analytics/page-view-tracker';
 
 // On the client side, initialize i18next.
 // (On the server side, it's initialized elsewhere in middlewares/i18next.ts file)
-// TODO: create util function
-const i18nextOnClient = typeof window !== 'undefined' ? initI18next() : undefined;
+// Read the language from the server-rendered HTML to avoid language detection issues
+const i18nextOnClient =
+    typeof window !== 'undefined' ? initI18next({ language: document.documentElement.lang || undefined }) : undefined;
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const middleware: MiddlewareFunction<Response>[] = [
@@ -90,10 +92,17 @@ export const loader = ({
 
     const appConfig = getConfig(context);
 
-    const locale = getLocale(context);
+    // Get i18next accessor functions from context (stored by middleware)
+    const i18nextData = context.get(i18nextContext);
+    if (!i18nextData) {
+        throw new Error('i18next data not found in context. Ensure i18next middleware runs before loaders.');
+    }
+
+    // Call the bound functions to get locale and i18next instance
+    const locale = i18nextData.getLocale();
     // On the server side, our middleware stores the translations in this i18next object
     // so we'll need to be careful not to accidentally serialize this object (to avoid bloating the html).
-    const i18next = getInstance(context);
+    const i18next = i18nextData.getI18nextInstance();
 
     // Load the root category and its sub categories information
     const rootCategoryPromise = fetchCategory(context, 'root', 1);

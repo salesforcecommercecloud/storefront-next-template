@@ -795,7 +795,8 @@
             "customerSupport": "Customer Support",
             "account": "Account",
             "ourCompany": "Our Company",
-            "switchThemes": "Switch Themes"
+            "switchThemes": "Switch Themes",
+            "switchLanguage": "Language"
         },
         "links": {
             "contactUs": "Contact Us",
@@ -809,6 +810,12 @@
             "instagramLabel": "Instagram",
             "xLabel": "X",
             "facebookLabel": "Facebook"
+        },
+        "newsletter": {
+            "title": "Be the first to know",
+            "description": "Sign up to stay in the loop about the hottest deals",
+            "emailPlaceholder": "Your email",
+            "subscribeButton": "Subscribe"
         },
         "copyright": "Salesforce or its affiliates. All rights reserved. This is a demo store only. Orders made WILL NOT be processed."
     },
@@ -899,5 +906,10 @@
         "accept": "Accept",
         "decline": "Decline",
         "closeAriaLabel": "Close"
+    },
+    "localeSwitcher": {
+        "ariaLabel": "Language selector",
+        "english": "English",
+        "spanish": "Spanish"
     }
 }

@@ -1,16 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { getTranslation } from './i18next';
-import { getInstance } from '@/middlewares/i18next';
+import { getTranslation, i18nextContext } from './i18next';
 import { createTestContext } from '@/lib/test-utils/context-provider';
-
-// Mock the i18next middleware
-vi.mock('@/middlewares/i18next', async () => {
-    const actual = await vi.importActual('@/middlewares/i18next');
-    return {
-        ...actual,
-        getInstance: vi.fn(),
-    };
-});
 
 describe('i18next', () => {
     describe('getTranslation', () => {
@@ -39,7 +29,11 @@ describe('i18next', () => {
                     language: 'es',
                 } as any;
 
-                vi.mocked(getInstance).mockReturnValue(mockServerI18next);
+                // Mock bound i18next accessor functions and store them in context
+                context.set(i18nextContext, {
+                    getLocale: () => 'es',
+                    getI18nextInstance: () => mockServerI18next,
+                });
 
                 const { t } = getTranslation(context);
                 const result = t('test.key');
@@ -47,6 +41,16 @@ describe('i18next', () => {
                 // Test behavior: translation function works and returns a string
                 expect(typeof result).toBe('string');
                 expect(result).toContain('test.key');
+            });
+
+            it('should throw error when i18next data is not found in context', () => {
+                const context = createTestContext();
+                // Don't set i18next data in context to simulate missing middleware
+
+                // Test behavior: throws meaningful error when middleware hasn't run
+                expect(() => getTranslation(context)).toThrow(
+                    'i18next data not found in context. Ensure i18next middleware runs before loaders.'
+                );
             });
         });
 

@@ -5,6 +5,7 @@ import Signup from './signup';
 import { useTranslation } from 'react-i18next';
 // @sfdc-extension-line SFDC_EXT_INTERNAL_THEME_SWITCHER
 import ThemeSwitcher from '@/extensions/theme-switcher/components/theme-switcher';
+import LocaleSwitcher from '@/components/locale-switcher';
 
 export default function Footer(): ReactElement {
     const { t } = useTranslation('footer');
@@ -36,6 +37,10 @@ export default function Footer(): ReactElement {
                             <ThemeSwitcher />
                         </div>
                         {/* @sfdc-extension-block-end SFDC_EXT_INTERNAL_THEME_SWITCHER */}
+                        <h3 className="text-lg font-semibold my-4">{t('sections.switchLanguage')}</h3>
+                        <div className="flex items-center gap-2">
+                            <LocaleSwitcher />
+                        </div>
                     </div>
 
                     {/* Account */}

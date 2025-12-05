@@ -1,10 +1,12 @@
 'use client';
 
 import { type FormEvent, type ReactElement, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 export default function Signup(): ReactElement {
+    const { t } = useTranslation('footer');
     const inputRef = useRef<HTMLInputElement | null>(null);
 
     const handleSubmit = useCallback(
@@ -21,12 +23,17 @@ export default function Signup(): ReactElement {
 
     return (
         <>
-            <h3 className="text-lg font-semibold">Be the first to know</h3>
-            <p className="text-sm">Sign up to stay in the loop about the hottest deals</p>
+            <h3 className="text-lg font-semibold">{t('newsletter.title')}</h3>
+            <p className="text-sm">{t('newsletter.description')}</p>
             <form onSubmit={handleSubmit} className="flex mt-4 w-full max-w-sm items-center gap-2">
-                <Input ref={inputRef} type="email" placeholder="Your email" className="text-primary-foreground" />
+                <Input
+                    ref={inputRef}
+                    type="email"
+                    placeholder={t('newsletter.emailPlaceholder')}
+                    className="text-primary-foreground"
+                />
                 <Button type="submit" variant="outline">
-                    Subscribe
+                    {t('newsletter.subscribeButton')}
                 </Button>
             </form>
         </>
