@@ -10,6 +10,7 @@ import { renderHook, act } from '@testing-library/react';
 import { useAnalytics } from './use-analytics';
 import type { SessionData } from '@/lib/api/types';
 import type { ShopperBasketsV2, ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import { TrackingConsent } from '@/types/tracking-consent';
 
 vi.mock('@/providers/auth', () => ({
     useAuth: vi.fn(),
@@ -17,6 +18,10 @@ vi.mock('@/providers/auth', () => ({
 
 vi.mock('@/config', () => ({
     useConfig: vi.fn(),
+}));
+
+vi.mock('./use-tracking-consent', () => ({
+    useTrackingConsent: vi.fn(),
 }));
 
 vi.mock('@salesforce/storefront-next-runtime/events', () => ({
@@ -42,6 +47,7 @@ import { getAllAdapters } from '@/lib/adapters';
 import { initializeEngagementAdapters } from '@/adapters';
 import { createEvent, getEventMediator, type EventMediator } from '@salesforce/storefront-next-runtime/events';
 import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
+import { useTrackingConsent } from './use-tracking-consent';
 
 const mockAnalytics: EventMediator = {
     track: vi.fn(),
@@ -121,6 +127,15 @@ describe('useAnalytics', () => {
                     ...data,
                 }) as any
         );
+
+        // Default to tracking consent accepted for all existing tests
+        vi.mocked(useTrackingConsent).mockReturnValue({
+            trackingConsent: TrackingConsent.Accepted,
+            isTrackingConsentEnabled: true,
+            shouldShowBanner: false,
+            setTrackingConsent: vi.fn(),
+            defaultTrackingConsent: TrackingConsent.Declined,
+        });
 
         // Mock window.__APP_CONFIG__
         if (typeof window !== 'undefined') {
@@ -434,6 +449,65 @@ describe('useAnalytics', () => {
                         userType: 'registered',
                         usid: undefined,
                     },
+                })
+            );
+        });
+    });
+
+    describe('tracking consent', () => {
+        beforeEach(() => {
+            vi.mocked(useAuth).mockReturnValue(mockAuth);
+        });
+
+        it('should not track when tracking consent is declined', async () => {
+            vi.mocked(useTrackingConsent).mockReturnValue({
+                trackingConsent: TrackingConsent.Declined,
+                isTrackingConsentEnabled: true,
+                shouldShowBanner: false,
+                setTrackingConsent: vi.fn(),
+                defaultTrackingConsent: TrackingConsent.Declined,
+            });
+
+            const { result } = renderHook(() => useAnalytics());
+
+            await result.current.trackViewPage({ url: '/test-page' });
+
+            expect(mockAnalytics.track).not.toHaveBeenCalled();
+        });
+
+        it('should not track when tracking consent is undefined', async () => {
+            vi.mocked(useTrackingConsent).mockReturnValue({
+                trackingConsent: undefined,
+                isTrackingConsentEnabled: true,
+                shouldShowBanner: true,
+                setTrackingConsent: vi.fn(),
+                defaultTrackingConsent: TrackingConsent.Declined,
+            });
+
+            const { result } = renderHook(() => useAnalytics());
+
+            await result.current.trackViewPage({ url: '/test-page' });
+
+            expect(mockAnalytics.track).not.toHaveBeenCalled();
+        });
+
+        it('should track when tracking consent is accepted', async () => {
+            vi.mocked(useTrackingConsent).mockReturnValue({
+                trackingConsent: TrackingConsent.Accepted,
+                isTrackingConsentEnabled: true,
+                shouldShowBanner: false,
+                setTrackingConsent: vi.fn(),
+                defaultTrackingConsent: TrackingConsent.Declined,
+            });
+
+            const { result } = renderHook(() => useAnalytics());
+
+            await result.current.trackViewPage({ url: '/test-page' });
+
+            expect(mockAnalytics.track).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    eventType: 'view_page',
+                    path: '/test-page',
                 })
             );
         });

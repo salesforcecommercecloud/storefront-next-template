@@ -11,6 +11,8 @@ import {
 import { useConfig, type AppConfig } from '@/config';
 import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
 import { getAllAdapters } from '@/lib/adapters';
+import { useTrackingConsent } from './use-tracking-consent';
+import { TrackingConsent } from '@/types/tracking-consent';
 
 /**
  * Ensures adapters are initialized and returns the event mediator
@@ -28,16 +30,23 @@ async function getInitializedMediator(appConfig: AppConfig): Promise<EventMediat
  *
  * @param authPromise - Promise that resolves when auth is available
  * @param appConfig - The application configuration
+ * @param trackingConsent - The user's tracking consent status
  * @param eventType - The type of event to track
  * @param eventData - The event data (without user payload, as payload is added automatically)
- * @returns Promise that resolves when tracking is complete or undefined if auth/mediator is unavailable
+ * @returns Promise that resolves when tracking is complete or undefined if auth/mediator is unavailable or consent is declined
  */
 async function trackEvent<TEventType extends AnalyticsEvent['eventType']>(
     authPromise: Promise<SessionData | undefined>,
     appConfig: AppConfig,
+    trackingConsent: TrackingConsent | undefined,
     eventType: TEventType,
     eventData: Omit<Parameters<typeof createEvent<TEventType>>[1], 'payload'>
 ): Promise<void> {
+    // Don't track if user has declined tracking or hasn't provided consent
+    if (trackingConsent !== TrackingConsent.Accepted) {
+        return;
+    }
+
     // Wait for auth to be defined before tracking
     const auth = await authPromise;
     if (auth === undefined) {
@@ -66,6 +75,7 @@ async function trackEvent<TEventType extends AnalyticsEvent['eventType']>(
 export const useAnalytics = () => {
     const auth = useAuth();
     const appConfig = useConfig();
+    const { trackingConsent } = useTrackingConsent();
 
     // Store the promise resolver so we can resolve it when auth becomes available
     const authResolverRef = useRef<((value: SessionData | undefined) => void) | null>(null);
@@ -122,7 +132,7 @@ export const useAnalytics = () => {
      * function is provided for manual firing of page views.
      */
     const trackViewPage = async (data: { url: string }) => {
-        return trackEvent(authPromiseRef.current, appConfig, 'view_page', {
+        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, 'view_page', {
             path: data.url,
         });
     };
@@ -131,7 +141,7 @@ export const useAnalytics = () => {
      * Track a product view
      */
     const trackViewProduct = async (data: { product: ShopperProducts.schemas['Product'] }) => {
-        return trackEvent(authPromiseRef.current, appConfig, 'view_product', {
+        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, 'view_product', {
             product: data.product,
         });
     };
@@ -140,7 +150,7 @@ export const useAnalytics = () => {
      * Track add to cart
      */
     const trackCartItemAdd = async (data: { cartItems: ShopperBasketsV2.schemas['ProductItem'][] }) => {
-        return trackEvent(authPromiseRef.current, appConfig, 'cart_item_add', {
+        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, 'cart_item_add', {
             cartItems: data.cartItems,
         });
     };
@@ -149,7 +159,7 @@ export const useAnalytics = () => {
      * Track start of checkout process
      */
     const trackCheckoutStart = async (data: { basket: ShopperBasketsV2.schemas['Basket'] }) => {
-        return trackEvent(authPromiseRef.current, appConfig, 'checkout_start', {
+        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, 'checkout_start', {
             basket: data.basket,
         });
     };
@@ -162,7 +172,7 @@ export const useAnalytics = () => {
         stepNumber: number;
         basket: ShopperBasketsV2.schemas['Basket'];
     }) => {
-        return trackEvent(authPromiseRef.current, appConfig, 'checkout_step', {
+        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, 'checkout_step', {
             stepName: data.stepName,
             stepNumber: data.stepNumber,
             basket: data.basket,
@@ -178,7 +188,7 @@ export const useAnalytics = () => {
         sort: string;
         refinements: ShopperSearch.schemas['ProductSearchResult']['selectedRefinements'];
     }) => {
-        return trackEvent(authPromiseRef.current, appConfig, 'view_search', {
+        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, 'view_search', {
             searchInputText: data.searchInputText,
             searchResults: data.searchResults,
             sort: data.sort || '',
@@ -195,7 +205,7 @@ export const useAnalytics = () => {
         sort: string;
         refinements: ShopperSearch.schemas['ProductSearchResult']['selectedRefinements'];
     }) => {
-        return trackEvent(authPromiseRef.current, appConfig, 'view_category', {
+        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, 'view_category', {
             category: data.category,
             searchResults: data.searchResults,
             sort: data.sort || '',
@@ -210,7 +220,7 @@ export const useAnalytics = () => {
         category: ShopperProducts.schemas['Category'];
         product: ShopperSearch.schemas['ProductSearchHit'];
     }) => {
-        return trackEvent(authPromiseRef.current, appConfig, 'click_product_in_category', {
+        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, 'click_product_in_category', {
             category: data.category,
             product: data.product,
         });
@@ -223,7 +233,7 @@ export const useAnalytics = () => {
         searchInputText: string;
         product: ShopperSearch.schemas['ProductSearchHit'];
     }) => {
-        return trackEvent(authPromiseRef.current, appConfig, 'click_product_in_search', {
+        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, 'click_product_in_search', {
             searchInputText: data.searchInputText,
             product: data.product,
         });

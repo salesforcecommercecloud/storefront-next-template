@@ -270,6 +270,14 @@ vi.mock('@/config', () => ({
     })),
 }));
 
+// Mock functions from useAnalytics to avoid tracking consent dependency chain
+vi.mock('@/hooks/use-analytics', () => ({
+    useAnalytics: vi.fn(() => ({
+        trackCheckoutStart: vi.fn(),
+        trackCheckoutStep: vi.fn(),
+    })),
+}));
+
 vi.mock('@/hooks/use-customer-lookup', () => ({
     useLoginSuggestion: () => null,
 }));

@@ -6,6 +6,8 @@ import { useConfig } from '@/config';
 import { useAuth } from '@/providers/auth';
 import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
 import { getAllAdapters } from '@/lib/adapters';
+import { useTrackingConsent } from '@/hooks/use-tracking-consent';
+import { TrackingConsent } from '@/types/tracking-consent';
 
 /**
  * Component that tracks page view events asynchronously
@@ -20,12 +22,18 @@ export function PageViewTracker() {
     const location = useLocation();
     const config = useConfig();
     const auth = useAuth();
+    const { trackingConsent } = useTrackingConsent();
     const trackedRef = useRef<{ path: string; timestamp: number } | null>(null);
     const trackingResetDuration = config.engagement.analytics.pageViewsResetDuration;
 
     useEffect(() => {
         // Only track on client side
         if (typeof window === 'undefined') {
+            return;
+        }
+
+        // Don't track if user has declined tracking or hasn't provided consent
+        if (trackingConsent !== TrackingConsent.Accepted) {
             return;
         }
 
@@ -98,6 +106,7 @@ export function PageViewTracker() {
         config.engagement.analytics.pageViewsBlocklist,
         config,
         auth,
+        trackingConsent,
         trackingResetDuration,
     ]);
 

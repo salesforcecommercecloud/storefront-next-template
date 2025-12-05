@@ -74,8 +74,7 @@ export function resetEventMediator(): void {
  * @param getAdapters - Function that returns the current array of event adapters
  */
 async function processEventWithAdapters(event: AnalyticsEvent, getAdapters: () => EventAdapter[]): Promise<void> {
-    // TODO: Handle DNT here
-
+    // Get the current array of event adapters
     const eventAdapters = getAdapters();
     if (eventAdapters.length === 0) {
         // eslint-disable-next-line no-console

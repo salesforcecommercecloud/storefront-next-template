@@ -18,10 +18,12 @@ import { createEvent, sendViewPageEvent, getEventMediator } from '@salesforce/st
 import { getAllAdapters } from '@/lib/adapters';
 import { initializeEngagementAdapters } from '@/adapters';
 import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
+import { TrackingConsent } from '@/types/tracking-consent';
 
 // Mock dependencies
 const mockUseAuth = vi.fn();
 const mockUseConfig = vi.fn();
+const mockUseTrackingConsent = vi.fn();
 
 // Don't mock useLocation - let it use the actual router location
 
@@ -31,6 +33,10 @@ vi.mock('@/providers/auth', () => ({
 
 vi.mock('@/config', () => ({
     useConfig: () => mockUseConfig(),
+}));
+
+vi.mock('@/hooks/use-tracking-consent', () => ({
+    useTrackingConsent: () => mockUseTrackingConsent(),
 }));
 
 // Mock dynamic imports - these are loaded asynchronously
@@ -90,6 +96,15 @@ describe('PageViewTracker', () => {
         // Setup default mocks - auth must be defined for tracking to occur
         mockUseAuth.mockReturnValue(defaultGuestAuth);
         mockUseConfig.mockReturnValue(defaultConfig);
+
+        // Default to tracking consent accepted for all existing tests
+        mockUseTrackingConsent.mockReturnValue({
+            trackingConsent: TrackingConsent.Accepted,
+            isTrackingConsentEnabled: true,
+            shouldShowBanner: false,
+            setTrackingConsent: vi.fn(),
+            defaultTrackingConsent: TrackingConsent.Declined,
+        });
 
         // Setup dynamic import mocks
         vi.mocked(createEvent).mockReturnValue(mockEvent);
@@ -423,6 +438,62 @@ describe('PageViewTracker', () => {
         it('should render nothing (returns null)', () => {
             const { container } = renderPageViewTracker('/test-page');
             expect(container.firstChild).toBeNull();
+        });
+    });
+
+    describe('Tracking consent', () => {
+        it('should not track when tracking consent is declined', async () => {
+            mockUseAuth.mockReturnValue(defaultGuestAuth);
+            mockUseConfig.mockReturnValue(defaultConfig);
+            mockUseTrackingConsent.mockReturnValue({
+                trackingConsent: TrackingConsent.Declined,
+                isTrackingConsentEnabled: true,
+                shouldShowBanner: false,
+                setTrackingConsent: vi.fn(),
+                defaultTrackingConsent: TrackingConsent.Declined,
+            });
+
+            renderPageViewTracker('/test-page');
+
+            await waitForNoTracking();
+        });
+
+        it('should not track when tracking consent is undefined', async () => {
+            mockUseAuth.mockReturnValue(defaultGuestAuth);
+            mockUseConfig.mockReturnValue(defaultConfig);
+            mockUseTrackingConsent.mockReturnValue({
+                trackingConsent: undefined,
+                isTrackingConsentEnabled: true,
+                shouldShowBanner: true,
+                setTrackingConsent: vi.fn(),
+                defaultTrackingConsent: TrackingConsent.Declined,
+            });
+
+            renderPageViewTracker('/test-page');
+
+            await waitForNoTracking();
+        });
+
+        it('should track when tracking consent is accepted', async () => {
+            mockUseAuth.mockReturnValue(defaultGuestAuth);
+            mockUseConfig.mockReturnValue(defaultConfig);
+            mockUseTrackingConsent.mockReturnValue({
+                trackingConsent: TrackingConsent.Accepted,
+                isTrackingConsentEnabled: true,
+                shouldShowBanner: false,
+                setTrackingConsent: vi.fn(),
+                defaultTrackingConsent: TrackingConsent.Declined,
+            });
+
+            renderPageViewTracker('/test-page');
+
+            await waitFor(() => {
+                expectPageViewTracked('/test-page', { userType: 'guest', usid: undefined });
+            });
+
+            await waitFor(() => {
+                expect(sendViewPageEvent).toHaveBeenCalledWith(mockEvent, mockEventMediator);
+            });
         });
     });
 });

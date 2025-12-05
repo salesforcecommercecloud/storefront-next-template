@@ -60,6 +60,13 @@ vi.mock('@/config', () => ({
     })),
 }));
 
+// Mock functions from useAnalytics to avoid tracking consent dependency chain
+vi.mock('@/hooks/use-analytics', () => ({
+    useAnalytics: vi.fn(() => ({
+        trackCartItemAdd: vi.fn(),
+    })),
+}));
+
 // Note: usePickup context is not mocked
 // We wrap components with PickupProvider to provide the real context
 // This allows tests to use the actual pickup context for proper integration testing
