@@ -21,19 +21,25 @@ import authMiddleware, {
 } from './auth.server';
 import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
 
-// Mock commerce-sdk-isomorphic helpers to match dynamic imports in implementation
-vi.mock('commerce-sdk-isomorphic/helpers', () => ({
-    refreshAccessToken: vi.fn(),
-    loginGuestUser: vi.fn(),
-    loginGuestUserPrivate: vi.fn(),
-    loginRegisteredUserB2C: vi.fn(),
-    authorizePasswordless: vi.fn(),
-    getPasswordLessAccessToken: vi.fn(),
-}));
+// Mock createApiClients to return mocked auth namespace
+const mockAuth = {
+    refreshToken: vi.fn(),
+    loginAsGuest: vi.fn(),
+    loginWithCredentials: vi.fn(),
+    passwordless: {
+        authorize: vi.fn(),
+        exchangeToken: vi.fn(),
+    },
+    password: {
+        requestReset: vi.fn(),
+        reset: vi.fn(),
+    },
+};
 
-// Mock createClient
-vi.mock('@/lib/scapi', () => ({
-    default: vi.fn(),
+vi.mock('@/lib/api-clients', () => ({
+    createApiClients: vi.fn(() => ({
+        auth: mockAuth,
+    })),
 }));
 
 // Mock cookies.server
@@ -85,23 +91,6 @@ vi.mock('@/lib/utils', () => ({
     isAbsoluteURL: vi.fn((url: string) => url.startsWith('http')),
     stringToBase64: vi.fn((str: string) => Buffer.from(str).toString('base64')),
 }));
-
-// Helper to create mock ShopperLogin client
-function createMockShopperLoginClient() {
-    return {
-        getInstance: vi.fn().mockResolvedValue({
-            clientConfig: {
-                parameters: {
-                    redirectURI: 'https://example.com/callback',
-                    siteId: 'test-site',
-                    clientId: 'test-client-id',
-                },
-            },
-            getPasswordResetToken: vi.fn().mockResolvedValue(undefined),
-            resetPassword: vi.fn().mockResolvedValue(undefined),
-        }),
-    };
-}
 
 function getMockTokenResponse(): ShopperLogin.schemas['TokenResponse'] {
     return {
@@ -194,23 +183,20 @@ function getMockRegisteredAuthData(): AuthData {
 }
 
 describe('auth middleware (server)', () => {
-    let mockCreateClient: any;
-    let mockHelpers: any;
-
-    beforeEach(async () => {
+    beforeEach(() => {
         vi.clearAllMocks();
 
         // Set required environment variables
         vi.stubEnv('COMMERCE_API_SLAS_SECRET', 'test-secret');
 
-        // Get mocked modules
-        mockCreateClient = (await import('@/lib/scapi')).default;
-        mockHelpers = await import('commerce-sdk-isomorphic/helpers');
-
-        // Setup default mock implementation
-        mockCreateClient.mockReturnValue({
-            ShopperLogin: createMockShopperLoginClient(),
-        });
+        // Reset mock implementations
+        mockAuth.refreshToken.mockReset();
+        mockAuth.loginAsGuest.mockReset();
+        mockAuth.loginWithCredentials.mockReset();
+        mockAuth.passwordless.authorize.mockReset();
+        mockAuth.passwordless.exchangeToken.mockReset();
+        mockAuth.password.requestReset.mockReset();
+        mockAuth.password.reset.mockReset();
     });
 
     afterEach(() => {
@@ -284,16 +270,12 @@ describe('auth middleware (server)', () => {
             const mockTokenResponse = getMockTokenResponse();
             const refreshToken = 'refresh-token-456';
 
-            mockHelpers.refreshAccessToken.mockResolvedValue(mockTokenResponse);
+            mockAuth.refreshToken.mockResolvedValue(mockTokenResponse);
 
             const result = await refreshAccessToken(provider, refreshToken);
 
-            expect(mockHelpers.refreshAccessToken).toHaveBeenCalledWith({
-                slasClient: expect.anything(),
-                parameters: {
-                    refreshToken,
-                },
-                credentials: {},
+            expect(mockAuth.refreshToken).toHaveBeenCalledWith({
+                refreshToken,
             });
             expect(result).toEqual(mockTokenResponse);
         });
@@ -303,18 +285,13 @@ describe('auth middleware (server)', () => {
             const mockTokenResponse = getMockTokenResponse();
             const refreshToken = 'refresh-token-456';
 
-            mockHelpers.refreshAccessToken.mockResolvedValue(mockTokenResponse);
+            mockAuth.refreshToken.mockResolvedValue(mockTokenResponse);
 
             const result = await refreshAccessToken(provider, refreshToken);
 
-            expect(mockHelpers.refreshAccessToken).toHaveBeenCalledWith({
-                slasClient: expect.anything(),
-                parameters: {
-                    refreshToken,
-                },
-                credentials: {
-                    clientSecret: 'test-secret',
-                },
+            // Note: clientSecret is now handled internally by createApiClients
+            expect(mockAuth.refreshToken).toHaveBeenCalledWith({
+                refreshToken,
             });
             expect(result).toEqual(mockTokenResponse);
         });
@@ -324,7 +301,7 @@ describe('auth middleware (server)', () => {
             const refreshToken = 'invalid-refresh-token';
             const mockError = new Error('Invalid refresh token');
 
-            mockHelpers.refreshAccessToken.mockRejectedValue(mockError);
+            mockAuth.refreshToken.mockRejectedValue(mockError);
 
             await expect(refreshAccessToken(provider, refreshToken)).rejects.toThrow('Invalid refresh token');
         });
@@ -334,19 +311,15 @@ describe('auth middleware (server)', () => {
             const mockTokenResponse = getMockTokenResponse();
             const refreshToken = 'refresh-token-456';
 
-            mockHelpers.refreshAccessToken.mockResolvedValue(mockTokenResponse);
+            mockAuth.refreshToken.mockResolvedValue(mockTokenResponse);
 
             const result = await refreshAccessToken(provider, refreshToken, {
                 trackingConsent: TrackingConsent.Declined,
             });
 
-            expect(mockHelpers.refreshAccessToken).toHaveBeenCalledWith({
-                slasClient: expect.anything(),
-                parameters: {
-                    refreshToken,
-                    dnt: true, // TrackingConsent.Declined converts to true
-                },
-                credentials: {},
+            expect(mockAuth.refreshToken).toHaveBeenCalledWith({
+                refreshToken,
+                dnt: true, // TrackingConsent.Declined converts to true
             });
             expect(result).toEqual(mockTokenResponse);
         });
@@ -370,17 +343,13 @@ describe('auth middleware (server)', () => {
             const mockTokenResponse = getMockTokenResponse();
             const refreshToken = 'refresh-token-456';
 
-            mockHelpers.refreshAccessToken.mockResolvedValue(mockTokenResponse);
+            mockAuth.refreshToken.mockResolvedValue(mockTokenResponse);
 
             const result = await refreshAccessToken(provider, refreshToken);
 
-            expect(mockHelpers.refreshAccessToken).toHaveBeenCalledWith({
-                slasClient: expect.anything(),
-                parameters: {
-                    refreshToken,
-                    dnt: true, // TrackingConsent.Declined converts to true
-                },
-                credentials: {},
+            expect(mockAuth.refreshToken).toHaveBeenCalledWith({
+                refreshToken,
+                dnt: true, // TrackingConsent.Declined converts to true
             });
             expect(result).toEqual(mockTokenResponse);
         });
@@ -404,20 +373,16 @@ describe('auth middleware (server)', () => {
             const mockTokenResponse = getMockTokenResponse();
             const refreshToken = 'refresh-token-456';
 
-            mockHelpers.refreshAccessToken.mockResolvedValue(mockTokenResponse);
+            mockAuth.refreshToken.mockResolvedValue(mockTokenResponse);
 
             // Pass Accepted in options, should override context value
             const result = await refreshAccessToken(provider, refreshToken, {
                 trackingConsent: TrackingConsent.Accepted,
             });
 
-            expect(mockHelpers.refreshAccessToken).toHaveBeenCalledWith({
-                slasClient: expect.anything(),
-                parameters: {
-                    refreshToken,
-                    dnt: false, // TrackingConsent.Accepted converts to false
-                },
-                credentials: {},
+            expect(mockAuth.refreshToken).toHaveBeenCalledWith({
+                refreshToken,
+                dnt: false, // TrackingConsent.Accepted converts to false
             });
             expect(result).toEqual(mockTokenResponse);
         });
@@ -438,17 +403,13 @@ describe('auth middleware (server)', () => {
             const mockTokenResponse = getMockTokenResponse();
             const refreshToken = 'refresh-token-456';
 
-            mockHelpers.refreshAccessToken.mockResolvedValue(mockTokenResponse);
+            mockAuth.refreshToken.mockResolvedValue(mockTokenResponse);
 
             const result = await refreshAccessToken(provider, refreshToken);
 
-            expect(mockHelpers.refreshAccessToken).toHaveBeenCalledWith({
-                slasClient: expect.anything(),
-                parameters: {
-                    refreshToken,
-                    // No dnt parameter
-                },
-                credentials: {},
+            expect(mockAuth.refreshToken).toHaveBeenCalledWith({
+                refreshToken,
+                // No dnt parameter when feature is disabled
             });
             expect(result).toEqual(mockTokenResponse);
         });
@@ -459,15 +420,12 @@ describe('auth middleware (server)', () => {
             const { provider } = mockContext();
             const mockTokenResponse = getMockTokenResponse();
 
-            mockHelpers.loginGuestUser.mockResolvedValue(mockTokenResponse);
+            mockAuth.loginAsGuest.mockResolvedValue(mockTokenResponse);
 
             const result = await loginGuestUser(provider);
 
-            expect(mockHelpers.loginGuestUser).toHaveBeenCalledWith({
-                slasClient: expect.anything(),
-                parameters: {
-                    redirectURI: 'https://example.com/callback',
-                },
+            expect(mockAuth.loginAsGuest).toHaveBeenCalledWith({
+                usid: undefined,
             });
             expect(result).toEqual(mockTokenResponse);
         });
@@ -477,16 +435,12 @@ describe('auth middleware (server)', () => {
             const mockTokenResponse = getMockTokenResponse();
             const usid = 'existing-usid';
 
-            mockHelpers.loginGuestUser.mockResolvedValue(mockTokenResponse);
+            mockAuth.loginAsGuest.mockResolvedValue(mockTokenResponse);
 
             const result = await loginGuestUser(provider, { usid });
 
-            expect(mockHelpers.loginGuestUser).toHaveBeenCalledWith({
-                slasClient: expect.anything(),
-                parameters: {
-                    redirectURI: 'https://example.com/callback',
-                    usid,
-                },
+            expect(mockAuth.loginAsGuest).toHaveBeenCalledWith({
+                usid,
             });
             expect(result).toEqual(mockTokenResponse);
         });
@@ -495,16 +449,13 @@ describe('auth middleware (server)', () => {
             const { provider } = mockContext({}, true);
             const mockTokenResponse = getMockTokenResponse();
 
-            mockHelpers.loginGuestUserPrivate.mockResolvedValue(mockTokenResponse);
+            mockAuth.loginAsGuest.mockResolvedValue(mockTokenResponse);
 
             const result = await loginGuestUser(provider);
 
-            expect(mockHelpers.loginGuestUserPrivate).toHaveBeenCalledWith({
-                slasClient: expect.anything(),
-                credentials: {
-                    clientSecret: 'test-secret',
-                },
-                parameters: {},
+            // Note: private vs public client is now handled internally by createApiClients
+            expect(mockAuth.loginAsGuest).toHaveBeenCalledWith({
+                usid: undefined,
             });
             expect(result).toEqual(mockTokenResponse);
         });
@@ -513,7 +464,7 @@ describe('auth middleware (server)', () => {
             const { provider } = mockContext();
             const mockError = new Error('Guest login failed');
 
-            mockHelpers.loginGuestUser.mockRejectedValue(mockError);
+            mockAuth.loginAsGuest.mockRejectedValue(mockError);
 
             await expect(loginGuestUser(provider)).rejects.toThrow('Guest login failed');
         });
@@ -529,20 +480,14 @@ describe('auth middleware (server)', () => {
             const email = 'test@example.com';
             const password = 'password123';
 
-            mockHelpers.loginRegisteredUserB2C.mockResolvedValue(mockTokenResponse);
+            mockAuth.loginWithCredentials.mockResolvedValue(mockTokenResponse);
 
             const result = await loginRegisteredUser(provider, email, password);
 
-            expect(mockHelpers.loginRegisteredUserB2C).toHaveBeenCalledWith({
-                slasClient: expect.anything(),
-                credentials: {
-                    username: email,
-                    password,
-                },
-                parameters: {
-                    redirectURI: 'https://example.com/callback',
-                    usid: 'usid',
-                },
+            expect(mockAuth.loginWithCredentials).toHaveBeenCalledWith({
+                username: email,
+                password,
+                usid: 'usid',
             });
             expect(result).toEqual(mockTokenResponse);
         });
@@ -557,21 +502,15 @@ describe('auth middleware (server)', () => {
             const password = 'password123';
             const customParameters = { c_customField: 'value' };
 
-            mockHelpers.loginRegisteredUserB2C.mockResolvedValue(mockTokenResponse);
+            mockAuth.loginWithCredentials.mockResolvedValue(mockTokenResponse);
 
             const result = await loginRegisteredUser(provider, email, password, { customParameters });
 
-            expect(mockHelpers.loginRegisteredUserB2C).toHaveBeenCalledWith({
-                slasClient: expect.anything(),
-                credentials: {
-                    username: email,
-                    password,
-                },
-                parameters: {
-                    redirectURI: 'https://example.com/callback',
-                    usid: 'usid',
-                    body: customParameters,
-                },
+            // Note: customParameters are no longer passed to the new auth namespace
+            expect(mockAuth.loginWithCredentials).toHaveBeenCalledWith({
+                username: email,
+                password,
+                usid: 'usid',
             });
             expect(result).toEqual(mockTokenResponse);
         });
@@ -585,21 +524,15 @@ describe('auth middleware (server)', () => {
             const email = 'test@example.com';
             const password = 'password123';
 
-            mockHelpers.loginRegisteredUserB2C.mockResolvedValue(mockTokenResponse);
+            mockAuth.loginWithCredentials.mockResolvedValue(mockTokenResponse);
 
             const result = await loginRegisteredUser(provider, email, password);
 
-            expect(mockHelpers.loginRegisteredUserB2C).toHaveBeenCalledWith({
-                slasClient: expect.anything(),
-                credentials: {
-                    username: email,
-                    password,
-                    clientSecret: 'test-secret',
-                },
-                parameters: {
-                    redirectURI: 'https://example.com/callback',
-                    usid: 'usid',
-                },
+            // Note: clientSecret is now handled internally by createApiClients
+            expect(mockAuth.loginWithCredentials).toHaveBeenCalledWith({
+                username: email,
+                password,
+                usid: 'usid',
             });
             expect(result).toEqual(mockTokenResponse);
         });
@@ -610,7 +543,7 @@ describe('auth middleware (server)', () => {
             const password = 'wrong-password';
             const mockError = new Error('Invalid credentials');
 
-            mockHelpers.loginRegisteredUserB2C.mockRejectedValue(mockError);
+            mockAuth.loginWithCredentials.mockRejectedValue(mockError);
 
             await expect(loginRegisteredUser(provider, email, password)).rejects.toThrow('Invalid credentials');
         });
@@ -635,21 +568,15 @@ describe('auth middleware (server)', () => {
             const email = 'test@example.com';
             const password = 'password123';
 
-            mockHelpers.loginRegisteredUserB2C.mockResolvedValue(mockTokenResponse);
+            mockAuth.loginWithCredentials.mockResolvedValue(mockTokenResponse);
 
             const result = await loginRegisteredUser(provider, email, password);
 
-            expect(mockHelpers.loginRegisteredUserB2C).toHaveBeenCalledWith({
-                slasClient: expect.anything(),
-                credentials: {
-                    username: email,
-                    password,
-                },
-                parameters: {
-                    redirectURI: 'https://example.com/callback',
-                    usid: 'usid',
-                    dnt: true, // TrackingConsent.Declined converts to true
-                },
+            expect(mockAuth.loginWithCredentials).toHaveBeenCalledWith({
+                username: email,
+                password,
+                usid: 'usid',
+                dnt: true, // TrackingConsent.Declined converts to true
             });
             expect(result).toEqual(mockTokenResponse);
         });
@@ -671,21 +598,15 @@ describe('auth middleware (server)', () => {
             const email = 'test@example.com';
             const password = 'password123';
 
-            mockHelpers.loginRegisteredUserB2C.mockResolvedValue(mockTokenResponse);
+            mockAuth.loginWithCredentials.mockResolvedValue(mockTokenResponse);
 
             const result = await loginRegisteredUser(provider, email, password);
 
-            expect(mockHelpers.loginRegisteredUserB2C).toHaveBeenCalledWith({
-                slasClient: expect.anything(),
-                credentials: {
-                    username: email,
-                    password,
-                },
-                parameters: {
-                    redirectURI: 'https://example.com/callback',
-                    usid: 'usid',
-                    // No dnt parameter
-                },
+            expect(mockAuth.loginWithCredentials).toHaveBeenCalledWith({
+                username: email,
+                password,
+                usid: 'usid',
+                // No dnt parameter when feature is disabled
             });
             expect(result).toEqual(mockTokenResponse);
         });
@@ -710,21 +631,15 @@ describe('auth middleware (server)', () => {
             const email = 'test@example.com';
             const password = 'password123';
 
-            mockHelpers.loginRegisteredUserB2C.mockResolvedValue(mockTokenResponse);
+            mockAuth.loginWithCredentials.mockResolvedValue(mockTokenResponse);
 
             const result = await loginRegisteredUser(provider, email, password);
 
-            expect(mockHelpers.loginRegisteredUserB2C).toHaveBeenCalledWith({
-                slasClient: expect.anything(),
-                credentials: {
-                    username: email,
-                    password,
-                },
-                parameters: {
-                    redirectURI: 'https://example.com/callback',
-                    usid: 'usid',
-                    dnt: false, // TrackingConsent.Accepted converts to false
-                },
+            expect(mockAuth.loginWithCredentials).toHaveBeenCalledWith({
+                username: email,
+                password,
+                usid: 'usid',
+                dnt: false, // TrackingConsent.Accepted converts to false
             });
             expect(result).toEqual(mockTokenResponse);
         });
@@ -740,7 +655,7 @@ describe('auth middleware (server)', () => {
                 json: vi.fn(),
             };
 
-            mockHelpers.authorizePasswordless.mockResolvedValue(mockResponse);
+            mockAuth.passwordless.authorize.mockResolvedValue(mockResponse);
 
             const result = await authorizePasswordless(provider, {
                 userid,
@@ -748,14 +663,11 @@ describe('auth middleware (server)', () => {
 
             expect(result).toBe(mockResponse);
             expect(result.status).toBe(200);
-            expect(mockHelpers.authorizePasswordless).toHaveBeenCalledWith(
+            expect(mockAuth.passwordless.authorize).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    slasClient: expect.anything(),
-                    parameters: expect.objectContaining({
-                        userid,
-                        mode: 'callback',
-                        usid: 'usid',
-                    }),
+                    userId: userid,
+                    mode: 'callback',
+                    usid: 'usid',
                 })
             );
         });
@@ -770,7 +682,7 @@ describe('auth middleware (server)', () => {
                 json: vi.fn(),
             };
 
-            mockHelpers.authorizePasswordless.mockResolvedValue(mockResponse);
+            mockAuth.passwordless.authorize.mockResolvedValue(mockResponse);
 
             const result = await authorizePasswordless(provider, {
                 userid,
@@ -779,11 +691,9 @@ describe('auth middleware (server)', () => {
 
             expect(result).toBe(mockResponse);
             expect(result.status).toBe(200);
-            expect(mockHelpers.authorizePasswordless).toHaveBeenCalledWith(
+            expect(mockAuth.passwordless.authorize).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    parameters: expect.objectContaining({
-                        callbackURI: expect.stringContaining('redirectUrl=/dashboard'),
-                    }),
+                    callbackUri: expect.stringContaining('redirectUrl=/dashboard'),
                 })
             );
         });
@@ -793,7 +703,7 @@ describe('auth middleware (server)', () => {
             const userid = 'test@example.com';
             const mockError = new Error('Authorization failed');
 
-            mockHelpers.authorizePasswordless.mockRejectedValue(mockError);
+            mockAuth.passwordless.authorize.mockRejectedValue(mockError);
 
             await expect(authorizePasswordless(provider, { userid })).rejects.toThrow('Authorization failed');
         });
@@ -807,7 +717,7 @@ describe('auth middleware (server)', () => {
                 json: vi.fn().mockResolvedValue({ message: 'Bad request' }),
             };
 
-            mockHelpers.authorizePasswordless.mockResolvedValue(mockResponse);
+            mockAuth.passwordless.authorize.mockResolvedValue(mockResponse);
 
             const result = await authorizePasswordless(provider, { userid });
 
@@ -824,17 +734,13 @@ describe('auth middleware (server)', () => {
             const mockTokenResponse = getMockTokenResponse();
             const token = 'passwordless-token-123';
 
-            mockHelpers.getPasswordLessAccessToken.mockResolvedValue(mockTokenResponse);
+            mockAuth.passwordless.exchangeToken.mockResolvedValue(mockTokenResponse);
 
             const result = await getPasswordLessAccessToken(provider, token);
 
-            expect(mockHelpers.getPasswordLessAccessToken).toHaveBeenCalledWith({
-                slasClient: expect.anything(),
-                credentials: expect.any(Object),
-                parameters: {
-                    pwdlessLoginToken: token,
-                    usid: 'usid',
-                },
+            expect(mockAuth.passwordless.exchangeToken).toHaveBeenCalledWith({
+                pwdlessLoginToken: token,
+                usid: 'usid',
             });
             expect(result).toEqual(mockTokenResponse);
         });
@@ -858,18 +764,14 @@ describe('auth middleware (server)', () => {
             const mockTokenResponse = getMockTokenResponse();
             const token = 'passwordless-token-123';
 
-            mockHelpers.getPasswordLessAccessToken.mockResolvedValue(mockTokenResponse);
+            mockAuth.passwordless.exchangeToken.mockResolvedValue(mockTokenResponse);
 
             const result = await getPasswordLessAccessToken(provider, token);
 
-            expect(mockHelpers.getPasswordLessAccessToken).toHaveBeenCalledWith({
-                slasClient: expect.anything(),
-                credentials: expect.any(Object),
-                parameters: {
-                    pwdlessLoginToken: token,
-                    usid: 'usid',
-                    dnt: '1', // TrackingConsent.Declined = '1' (SDK inconsistency: this helper expects string)
-                },
+            expect(mockAuth.passwordless.exchangeToken).toHaveBeenCalledWith({
+                pwdlessLoginToken: token,
+                usid: 'usid',
+                dnt: true, // TrackingConsent.Declined converts to true
             });
             expect(result).toEqual(mockTokenResponse);
         });
@@ -890,18 +792,14 @@ describe('auth middleware (server)', () => {
             const mockTokenResponse = getMockTokenResponse();
             const token = 'passwordless-token-123';
 
-            mockHelpers.getPasswordLessAccessToken.mockResolvedValue(mockTokenResponse);
+            mockAuth.passwordless.exchangeToken.mockResolvedValue(mockTokenResponse);
 
             const result = await getPasswordLessAccessToken(provider, token);
 
-            expect(mockHelpers.getPasswordLessAccessToken).toHaveBeenCalledWith({
-                slasClient: expect.anything(),
-                credentials: expect.any(Object),
-                parameters: {
-                    pwdlessLoginToken: token,
-                    usid: 'usid',
-                    // No dnt parameter
-                },
+            expect(mockAuth.passwordless.exchangeToken).toHaveBeenCalledWith({
+                pwdlessLoginToken: token,
+                usid: 'usid',
+                // No dnt parameter when feature is disabled
             });
             expect(result).toEqual(mockTokenResponse);
         });
@@ -925,23 +823,19 @@ describe('auth middleware (server)', () => {
             const mockTokenResponse = getMockTokenResponse();
             const token = 'passwordless-token-123';
 
-            mockHelpers.getPasswordLessAccessToken.mockResolvedValue(mockTokenResponse);
+            mockAuth.passwordless.exchangeToken.mockResolvedValue(mockTokenResponse);
 
             const result = await getPasswordLessAccessToken(provider, token);
 
-            expect(mockHelpers.getPasswordLessAccessToken).toHaveBeenCalledWith({
-                slasClient: expect.anything(),
-                credentials: expect.any(Object),
-                parameters: {
-                    pwdlessLoginToken: token,
-                    usid: 'usid',
-                    // No dnt parameter
-                },
+            expect(mockAuth.passwordless.exchangeToken).toHaveBeenCalledWith({
+                pwdlessLoginToken: token,
+                usid: 'usid',
+                // No dnt parameter when trackingConsent is not set
             });
             expect(result).toEqual(mockTokenResponse);
         });
 
-        it('should serialize DNT value false to "0"', async () => {
+        it('should use DNT value false when trackingConsent is Accepted', async () => {
             const authData = getMockAuthData();
             authData.trackingConsent = TrackingConsent.Accepted; // DNT disabled (tracking accepted)
             const { provider, appConfig } = mockContext(authData);
@@ -960,18 +854,14 @@ describe('auth middleware (server)', () => {
             const mockTokenResponse = getMockTokenResponse();
             const token = 'passwordless-token-123';
 
-            mockHelpers.getPasswordLessAccessToken.mockResolvedValue(mockTokenResponse);
+            mockAuth.passwordless.exchangeToken.mockResolvedValue(mockTokenResponse);
 
             const result = await getPasswordLessAccessToken(provider, token);
 
-            expect(mockHelpers.getPasswordLessAccessToken).toHaveBeenCalledWith({
-                slasClient: expect.anything(),
-                credentials: expect.any(Object),
-                parameters: {
-                    pwdlessLoginToken: token,
-                    usid: 'usid',
-                    dnt: '0', // TrackingConsent.Accepted = '0' (SDK inconsistency: this helper expects string)
-                },
+            expect(mockAuth.passwordless.exchangeToken).toHaveBeenCalledWith({
+                pwdlessLoginToken: token,
+                usid: 'usid',
+                dnt: false, // TrackingConsent.Accepted converts to false
             });
             expect(result).toEqual(mockTokenResponse);
         });
@@ -981,7 +871,7 @@ describe('auth middleware (server)', () => {
             const token = 'invalid-token';
             const mockError = new Error('Invalid token');
 
-            mockHelpers.getPasswordLessAccessToken.mockRejectedValue(mockError);
+            mockAuth.passwordless.exchangeToken.mockRejectedValue(mockError);
 
             await expect(getPasswordLessAccessToken(provider, token)).rejects.toThrow('Invalid token');
         });
@@ -991,22 +881,14 @@ describe('auth middleware (server)', () => {
         it('should request password reset token successfully with public SLAS', async () => {
             const { provider } = mockContext({}, false);
             const email = 'test@example.com';
-            const mockSlasClient = await (await mockCreateClient(provider)).ShopperLogin.getInstance();
+
+            mockAuth.password.requestReset.mockResolvedValue(undefined);
 
             await getPasswordResetToken(provider, { email });
 
-            expect(mockSlasClient.getPasswordResetToken).toHaveBeenCalledWith({
-                headers: {
-                    Authorization: '',
-                },
-                body: {
-                    user_id: email,
-                    mode: 'callback',
-                    channel_id: 'test-site',
-                    client_id: 'test-client-id',
-                    callback_uri: 'https://example.com/reset-password-callback',
-                    hint: 'cross_device',
-                },
+            expect(mockAuth.password.requestReset).toHaveBeenCalledWith({
+                userId: email,
+                callbackUri: 'https://example.com/reset-password-callback',
             });
 
             // Verify performance timer was called
@@ -1017,22 +899,15 @@ describe('auth middleware (server)', () => {
         it('should request password reset token with private SLAS and include authorization header', async () => {
             const { provider } = mockContext({}, true);
             const email = 'test@example.com';
-            const mockSlasClient = await (await mockCreateClient(provider)).ShopperLogin.getInstance();
+
+            mockAuth.password.requestReset.mockResolvedValue(undefined);
 
             await getPasswordResetToken(provider, { email });
 
-            expect(mockSlasClient.getPasswordResetToken).toHaveBeenCalledWith({
-                headers: {
-                    Authorization: expect.stringMatching(/^Basic /),
-                },
-                body: {
-                    user_id: email,
-                    mode: 'callback',
-                    channel_id: 'test-site',
-                    client_id: 'test-client-id',
-                    callback_uri: 'https://example.com/reset-password-callback',
-                    hint: 'cross_device',
-                },
+            // Note: Authorization header is now handled internally by createApiClients
+            expect(mockAuth.password.requestReset).toHaveBeenCalledWith({
+                userId: email,
+                callbackUri: 'https://example.com/reset-password-callback',
             });
         });
 
@@ -1040,42 +915,38 @@ describe('auth middleware (server)', () => {
             const { provider, appConfig } = mockContext({}, false);
             appConfig.site.features.resetPassword.callbackUri = 'https://custom-domain.com/reset';
             const email = 'test@example.com';
-            const mockSlasClient = await (await mockCreateClient(provider)).ShopperLogin.getInstance();
+
+            mockAuth.password.requestReset.mockResolvedValue(undefined);
 
             await getPasswordResetToken(provider, { email });
 
-            expect(mockSlasClient.getPasswordResetToken).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    body: expect.objectContaining({
-                        callback_uri: 'https://custom-domain.com/reset',
-                    }),
-                })
-            );
+            expect(mockAuth.password.requestReset).toHaveBeenCalledWith({
+                userId: email,
+                callbackUri: 'https://custom-domain.com/reset',
+            });
         });
 
         it('should handle relative callback URI and prepend app origin', async () => {
             const { provider, appConfig } = mockContext({}, false);
             appConfig.site.features.resetPassword.callbackUri = '/reset-password';
             const email = 'test@example.com';
-            const mockSlasClient = await (await mockCreateClient(provider)).ShopperLogin.getInstance();
+
+            mockAuth.password.requestReset.mockResolvedValue(undefined);
 
             await getPasswordResetToken(provider, { email });
 
-            expect(mockSlasClient.getPasswordResetToken).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    body: expect.objectContaining({
-                        callback_uri: 'https://example.com/reset-password',
-                    }),
-                })
-            );
+            expect(mockAuth.password.requestReset).toHaveBeenCalledWith({
+                userId: email,
+                callbackUri: 'https://example.com/reset-password',
+            });
         });
 
         it('should handle password reset token request failure', async () => {
             const { provider } = mockContext({}, false);
             const email = 'test@example.com';
             const mockError = new Error('Failed to send reset email');
-            const mockSlasClient = await (await mockCreateClient(provider)).ShopperLogin.getInstance();
-            mockSlasClient.getPasswordResetToken.mockRejectedValue(mockError);
+
+            mockAuth.password.requestReset.mockRejectedValue(mockError);
 
             await expect(getPasswordResetToken(provider, { email })).rejects.toThrow('Failed to send reset email');
         });
@@ -1084,8 +955,8 @@ describe('auth middleware (server)', () => {
             const { provider } = mockContext({}, false);
             const email = 'test@example.com';
             const mockError = new Error('Failed to send reset email');
-            const mockSlasClient = await (await mockCreateClient(provider)).ShopperLogin.getInstance();
-            mockSlasClient.getPasswordResetToken.mockRejectedValue(mockError);
+
+            mockAuth.password.requestReset.mockRejectedValue(mockError);
 
             await expect(getPasswordResetToken(provider, { email })).rejects.toThrow();
 
@@ -1100,21 +971,15 @@ describe('auth middleware (server)', () => {
             const email = 'test@example.com';
             const token = 'reset-token-123';
             const newPassword = 'NewSecurePassword123!';
-            const mockSlasClient = await (await mockCreateClient(provider)).ShopperLogin.getInstance();
+
+            mockAuth.password.reset.mockResolvedValue(undefined);
 
             await resetPasswordWithToken(provider, { email, token, newPassword });
 
-            expect(mockSlasClient.resetPassword).toHaveBeenCalledWith({
-                headers: {
-                    Authorization: '',
-                },
-                body: {
-                    user_id: email,
-                    new_password: newPassword,
-                    pwd_action_token: token,
-                    channel_id: 'test-site',
-                    client_id: 'test-client-id',
-                },
+            expect(mockAuth.password.reset).toHaveBeenCalledWith({
+                userId: email,
+                token,
+                newPassword,
             });
 
             // Verify performance timer was called
@@ -1127,21 +992,16 @@ describe('auth middleware (server)', () => {
             const email = 'test@example.com';
             const token = 'reset-token-123';
             const newPassword = 'NewSecurePassword123!';
-            const mockSlasClient = await (await mockCreateClient(provider)).ShopperLogin.getInstance();
+
+            mockAuth.password.reset.mockResolvedValue(undefined);
 
             await resetPasswordWithToken(provider, { email, token, newPassword });
 
-            expect(mockSlasClient.resetPassword).toHaveBeenCalledWith({
-                headers: {
-                    Authorization: expect.stringMatching(/^Basic /),
-                },
-                body: {
-                    user_id: email,
-                    new_password: newPassword,
-                    pwd_action_token: token,
-                    channel_id: 'test-site',
-                    client_id: 'test-client-id',
-                },
+            // Note: Authorization header is now handled internally by createApiClients
+            expect(mockAuth.password.reset).toHaveBeenCalledWith({
+                userId: email,
+                token,
+                newPassword,
             });
         });
 
@@ -1150,12 +1010,17 @@ describe('auth middleware (server)', () => {
             const email = 'test@example.com';
             const token = 'reset-token-123';
             const newPassword = 'NewSecurePassword123!';
-            await (await mockCreateClient(provider)).ShopperLogin.getInstance();
+
+            mockAuth.password.reset.mockResolvedValue(undefined);
+
             await resetPasswordWithToken(provider, { email, token, newPassword });
 
-            // Check that stringToBase64 was called with correct credentials
-            const mockUtils = await import('@/lib/utils');
-            expect(mockUtils.stringToBase64).toHaveBeenCalledWith('test-client-id:test-secret');
+            // Note: Client credential encoding is now handled internally by createApiClients
+            expect(mockAuth.password.reset).toHaveBeenCalledWith({
+                userId: email,
+                token,
+                newPassword,
+            });
         });
 
         it('should handle password reset failure with invalid token', async () => {
@@ -1164,8 +1029,8 @@ describe('auth middleware (server)', () => {
             const token = 'invalid-token';
             const newPassword = 'NewSecurePassword123!';
             const mockError = new Error('Invalid or expired token');
-            const mockSlasClient = await (await mockCreateClient(provider)).ShopperLogin.getInstance();
-            mockSlasClient.resetPassword.mockRejectedValue(mockError);
+
+            mockAuth.password.reset.mockRejectedValue(mockError);
 
             await expect(resetPasswordWithToken(provider, { email, token, newPassword })).rejects.toThrow(
                 'Invalid or expired token'
@@ -1178,8 +1043,8 @@ describe('auth middleware (server)', () => {
             const token = 'reset-token-123';
             const newPassword = 'weak';
             const mockError = new Error('Password does not meet requirements');
-            const mockSlasClient = await (await mockCreateClient(provider)).ShopperLogin.getInstance();
-            mockSlasClient.resetPassword.mockRejectedValue(mockError);
+
+            mockAuth.password.reset.mockRejectedValue(mockError);
 
             await expect(resetPasswordWithToken(provider, { email, token, newPassword })).rejects.toThrow(
                 'Password does not meet requirements'
@@ -1192,8 +1057,8 @@ describe('auth middleware (server)', () => {
             const token = 'reset-token-123';
             const newPassword = 'NewSecurePassword123!';
             const mockError = new Error('Reset failed');
-            const mockSlasClient = await (await mockCreateClient(provider)).ShopperLogin.getInstance();
-            mockSlasClient.resetPassword.mockRejectedValue(mockError);
+
+            mockAuth.password.reset.mockRejectedValue(mockError);
 
             await expect(resetPasswordWithToken(provider, { email, token, newPassword })).rejects.toThrow();
 
@@ -1206,19 +1071,16 @@ describe('auth middleware (server)', () => {
             const email = 'user+test@example.com'; // Email with special chars
             const token = 'token-with-special-chars_123==';
             const newPassword = 'P@ssw0rd!2024#Complex';
-            const mockSlasClient = await (await mockCreateClient(provider)).ShopperLogin.getInstance();
+
+            mockAuth.password.reset.mockResolvedValue(undefined);
 
             await resetPasswordWithToken(provider, { email, token, newPassword });
 
-            expect(mockSlasClient.resetPassword).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    body: expect.objectContaining({
-                        user_id: email,
-                        new_password: newPassword,
-                        pwd_action_token: token,
-                    }),
-                })
-            );
+            expect(mockAuth.password.reset).toHaveBeenCalledWith({
+                userId: email,
+                token,
+                newPassword,
+            });
         });
     });
 
@@ -1257,7 +1119,7 @@ describe('auth middleware (server)', () => {
 
         it('should parse cookies and reconstruct auth data from separate cookies', async () => {
             const mockTokenResponse = getMockTokenResponse();
-            mockHelpers.loginGuestUser.mockResolvedValue(mockTokenResponse);
+            mockAuth.loginAsGuest.mockResolvedValue(mockTokenResponse);
 
             // Create valid JWT with expiry
             const now = Math.floor(Date.now() / 1000);
@@ -1302,7 +1164,7 @@ describe('auth middleware (server)', () => {
 
         it('should determine user type from refresh token cookie presence - guest', async () => {
             const mockTokenResponse = getMockTokenResponse();
-            mockHelpers.loginGuestUser.mockResolvedValue(mockTokenResponse);
+            mockAuth.loginAsGuest.mockResolvedValue(mockTokenResponse);
 
             // Mock guest refresh token cookie only
             mockParseAllCookies.mockReturnValue({
@@ -1343,7 +1205,7 @@ describe('auth middleware (server)', () => {
 
         it('should determine user type from refresh token cookie presence - registered', async () => {
             const mockTokenResponse = getMockTokenResponse();
-            mockHelpers.refreshAccessToken.mockResolvedValue(mockTokenResponse);
+            mockAuth.refreshToken.mockResolvedValue(mockTokenResponse);
 
             // Create valid JWT with expiry
             const now = Math.floor(Date.now() / 1000);
@@ -1406,7 +1268,7 @@ describe('auth middleware (server)', () => {
             await authMiddleware({ request, context, params: {} }, next);
 
             // Verify that guest login was NOT called (auth retrieval skipped)
-            expect(mockHelpers.loginGuestUser).not.toHaveBeenCalled();
+            expect(mockAuth.loginAsGuest).not.toHaveBeenCalled();
             expect(next).toHaveBeenCalled();
         });
 
@@ -1489,9 +1351,9 @@ describe('auth middleware (server)', () => {
 
             await authMiddleware({ request, context, params: {} }, next);
 
-            // Verify all 7 cookies were deleted:
-            // cc-nx-g, cc-nx, cc-at, usid, customerId, cc-idp-at, cc-cv
-            expect(mockSerialize).toHaveBeenCalledTimes(7);
+            // Verify all 8 cookies were deleted:
+            // cc-nx-g, cc-nx, cc-at, usid, customerId, cc-idp-at, cc-cv, tc
+            expect(mockSerialize).toHaveBeenCalledTimes(8);
             expect(mockSerialize).toHaveBeenCalledWith(
                 '',
                 expect.objectContaining({
@@ -1532,7 +1394,7 @@ describe('auth middleware (server)', () => {
 
             // Mock token response to control what gets written after refresh
             const mockTokenResponse = getMockTokenResponse();
-            mockHelpers.refreshAccessToken.mockResolvedValue(mockTokenResponse);
+            mockAuth.refreshToken.mockResolvedValue(mockTokenResponse);
 
             await authMiddleware({ request, context, params: {} }, next);
 
@@ -1628,8 +1490,8 @@ describe('auth middleware (server)', () => {
 
             await authMiddleware({ request, context, params: {} }, next);
 
-            // Verify all 7 cookies were deleted due to error
-            expect(mockSerialize).toHaveBeenCalledTimes(7);
+            // Verify all 8 cookies were deleted due to error
+            expect(mockSerialize).toHaveBeenCalledTimes(8);
         });
 
         it('should use getCookieNameWithSiteId to get cookie names', async () => {
@@ -1669,7 +1531,7 @@ describe('auth middleware (server)', () => {
             mockParseAllCookies.mockReturnValue({});
 
             const mockTokenResponse = getMockTokenResponse();
-            mockHelpers.loginGuestUser.mockResolvedValue(mockTokenResponse);
+            mockAuth.loginAsGuest.mockResolvedValue(mockTokenResponse);
 
             const request = new Request('https://example.com/test');
 
@@ -1686,7 +1548,7 @@ describe('auth middleware (server)', () => {
             await authMiddleware({ request, context, params: {} }, next);
 
             // Should fall back to guest login when no cookies present
-            expect(mockHelpers.loginGuestUser).toHaveBeenCalled();
+            expect(mockAuth.loginAsGuest).toHaveBeenCalled();
             expect(next).toHaveBeenCalled();
         });
 
@@ -1698,7 +1560,7 @@ describe('auth middleware (server)', () => {
             });
 
             const mockTokenResponse = getMockTokenResponse();
-            mockHelpers.refreshAccessToken.mockResolvedValue(mockTokenResponse);
+            mockAuth.refreshToken.mockResolvedValue(mockTokenResponse);
 
             const request = new Request('https://example.com/test', {
                 headers: {
@@ -1733,7 +1595,7 @@ describe('auth middleware (server)', () => {
 
         it('should read and reconstruct IDP access token from cookies', async () => {
             const mockTokenResponse = getMockTokenResponse();
-            mockHelpers.loginGuestUser.mockResolvedValue(mockTokenResponse);
+            mockAuth.loginAsGuest.mockResolvedValue(mockTokenResponse);
 
             // Create valid JWT with expiry
             const now = Math.floor(Date.now() / 1000);
@@ -1779,7 +1641,7 @@ describe('auth middleware (server)', () => {
 
         it('should read and reconstruct code verifier from cookie', async () => {
             const mockTokenResponse = getMockTokenResponse();
-            mockHelpers.loginGuestUser.mockResolvedValue(mockTokenResponse);
+            mockAuth.loginAsGuest.mockResolvedValue(mockTokenResponse);
 
             // Create valid JWT with expiry
             const now = Math.floor(Date.now() / 1000);

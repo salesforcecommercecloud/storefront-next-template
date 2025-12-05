@@ -9,23 +9,19 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { clientAction } from './action.cart-pickup-store-update';
 import { getBasket, updateBasket } from '@/middlewares/basket.client';
-import createClient from '@/lib/scapi';
 import { updateShipmentForPickup } from '@/extensions/bopis/lib/api/shipment';
 import { isStoreOutOfStock } from '@/lib/inventory-utils';
 import { extractResponseError } from '@/lib/utils';
 import { getFirstPickupStoreId, getPickupProductItemsForStore } from '@/extensions/bopis/lib/basket-utils';
 import { createApiClients } from '@/lib/api-clients';
-import { getConfig } from '@/config';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
 
 vi.mock('@/middlewares/basket.client');
-vi.mock('@/lib/scapi');
 vi.mock('@/extensions/bopis/lib/api/shipment');
 vi.mock('@/lib/inventory-utils');
 vi.mock('@/extensions/bopis/lib/basket-utils');
 vi.mock('@/lib/api-clients');
-vi.mock('@/config');
 vi.mock('@/lib/utils', () => ({
     extractResponseError: vi.fn((error) => ({
         responseMessage: error instanceof Error ? error.message : 'Unknown error',
@@ -99,37 +95,25 @@ describe('action.cart-pickup-store-update', () => {
         data: [mockProduct1, mockProduct2],
     };
 
-    const mockBasketsClient = {
+    // Mock for shopperBasketsV2 using new API client structure
+    const mockShopperBasketsV2 = {
         updateItemsInBasket: vi.fn(),
         getBasket: vi.fn(),
     };
 
-    const mockProductsClient = {
+    // Mock for shopperProducts using new API client structure
+    const mockShopperProducts = {
         getProducts: vi.fn(),
     };
 
-    const mockClient = {
-        ShopperBasketsV2: mockBasketsClient,
-        ShopperProducts: mockProductsClient,
+    // Mock for createApiClients return value
+    const mockApiClients = {
+        shopperBasketsV2: mockShopperBasketsV2,
+        shopperProducts: mockShopperProducts,
     };
 
     const mockContext = {} as any;
     const mockServerAction = vi.fn();
-
-    const mockApiClients = {
-        shopperBasketsV2: {
-            getBasket: vi.fn(),
-        },
-    };
-
-    const mockConfig = {
-        commerce: {
-            api: {
-                organizationId: 'org-123',
-                siteId: 'site-123',
-            },
-        },
-    };
 
     beforeEach(() => {
         vi.clearAllMocks();
@@ -137,7 +121,6 @@ describe('action.cart-pickup-store-update', () => {
             basketId: mockBasketId,
             ...mockBasketWithPickupItems,
         } as ShopperBasketsV2.schemas['Basket']);
-        vi.mocked(createClient).mockReturnValue(mockClient as any);
         vi.mocked(updateShipmentForPickup).mockResolvedValue(mockUpdatedBasket);
         vi.mocked(isStoreOutOfStock).mockReturnValue(false);
         vi.mocked(getFirstPickupStoreId).mockReturnValue('old-store-123');
@@ -150,12 +133,10 @@ describe('action.cart-pickup-store-update', () => {
             return basket.productItems.filter((item) => item.shipmentId && shipmentIds.includes(item.shipmentId));
         });
         vi.mocked(createApiClients).mockReturnValue(mockApiClients as any);
-        vi.mocked(getConfig).mockReturnValue(mockConfig as any);
-        mockBasketsClient.getBasket.mockResolvedValue(mockUpdatedBasket);
-        mockApiClients.shopperBasketsV2.getBasket.mockResolvedValue({
+        mockShopperBasketsV2.getBasket.mockResolvedValue({
             data: mockUpdatedBasket,
         });
-        mockProductsClient.getProducts.mockResolvedValue(mockProductsResponse);
+        mockShopperProducts.getProducts.mockResolvedValue(mockProductsResponse);
     });
 
     describe('clientAction', () => {
@@ -338,12 +319,14 @@ describe('action.cart-pickup-store-update', () => {
             expect(response.basket).toBeDefined();
 
             // Verify inventory validation was performed
-            expect(mockProductsClient.getProducts).toHaveBeenCalledWith({
-                parameters: {
-                    ids: ['product-1', 'product-2'],
-                    allImages: true,
-                    perPricebook: true,
-                    inventoryIds: [mockInventoryId],
+            expect(mockShopperProducts.getProducts).toHaveBeenCalledWith({
+                params: {
+                    query: {
+                        ids: ['product-1', 'product-2'],
+                        allImages: true,
+                        perPricebook: true,
+                        inventoryIds: [mockInventoryId],
+                    },
                 },
             });
 
@@ -355,8 +338,10 @@ describe('action.cart-pickup-store-update', () => {
             expect(updateShipmentForPickup).toHaveBeenCalledWith(mockContext, mockBasketId, 'me', mockStoreId);
 
             // Verify items were updated with new inventory ID
-            expect(mockBasketsClient.updateItemsInBasket).toHaveBeenCalledWith({
-                parameters: { basketId: mockBasketId },
+            expect(mockShopperBasketsV2.updateItemsInBasket).toHaveBeenCalledWith({
+                params: {
+                    path: { basketId: mockBasketId },
+                },
                 body: expect.arrayContaining([
                     expect.objectContaining({
                         itemId: 'item-1',
@@ -375,7 +360,7 @@ describe('action.cart-pickup-store-update', () => {
 
             // Verify basket was refreshed using new API clients
             expect(createApiClients).toHaveBeenCalledWith(mockContext);
-            expect(mockApiClients.shopperBasketsV2.getBasket).toHaveBeenCalledWith({
+            expect(mockShopperBasketsV2.getBasket).toHaveBeenCalledWith({
                 params: {
                     path: { basketId: mockBasketId },
                 },
@@ -410,7 +395,7 @@ describe('action.cart-pickup-store-update', () => {
 
             // Verify shipment was NOT updated
             expect(updateShipmentForPickup).not.toHaveBeenCalled();
-            expect(mockBasketsClient.updateItemsInBasket).not.toHaveBeenCalled();
+            expect(mockShopperBasketsV2.updateItemsInBasket).not.toHaveBeenCalled();
         });
 
         test('uses storeId as fallback when storeName is not provided in out of stock error', async () => {
@@ -439,7 +424,7 @@ describe('action.cart-pickup-store-update', () => {
 
         test('returns error when product is not found during validation', async () => {
             // Mock products response without one of the products
-            mockProductsClient.getProducts.mockResolvedValue({
+            mockShopperProducts.getProducts.mockResolvedValue({
                 data: [mockProduct1], // Missing product-2
             });
 
@@ -510,12 +495,14 @@ describe('action.cart-pickup-store-update', () => {
             });
 
             // Should still succeed, but only validate product-1
-            expect(mockProductsClient.getProducts).toHaveBeenCalledWith({
-                parameters: {
-                    ids: ['product-1'],
-                    allImages: true,
-                    perPricebook: true,
-                    inventoryIds: [mockInventoryId],
+            expect(mockShopperProducts.getProducts).toHaveBeenCalledWith({
+                params: {
+                    query: {
+                        ids: ['product-1'],
+                        allImages: true,
+                        perPricebook: true,
+                        inventoryIds: [mockInventoryId],
+                    },
                 },
             });
         });
@@ -567,18 +554,20 @@ describe('action.cart-pickup-store-update', () => {
             });
 
             // Should only fetch product-1 once (duplicates removed)
-            expect(mockProductsClient.getProducts).toHaveBeenCalledWith({
-                parameters: {
-                    ids: ['product-1'],
-                    allImages: true,
-                    perPricebook: true,
-                    inventoryIds: [mockInventoryId],
+            expect(mockShopperProducts.getProducts).toHaveBeenCalledWith({
+                params: {
+                    query: {
+                        ids: ['product-1'],
+                        allImages: true,
+                        perPricebook: true,
+                        inventoryIds: [mockInventoryId],
+                    },
                 },
             });
         });
 
         test('handles empty products response gracefully', async () => {
-            mockProductsClient.getProducts.mockResolvedValue({ data: undefined });
+            mockShopperProducts.getProducts.mockResolvedValue({ data: undefined });
 
             const formData = new FormData();
             formData.append('storeId', mockStoreId);
@@ -603,7 +592,7 @@ describe('action.cart-pickup-store-update', () => {
 
         test('handles API errors during update', async () => {
             const mockError = new Error('API Error');
-            mockBasketsClient.updateItemsInBasket.mockRejectedValue(mockError);
+            mockShopperBasketsV2.updateItemsInBasket.mockRejectedValue(mockError);
 
             const formData = new FormData();
             formData.append('storeId', mockStoreId);
@@ -659,7 +648,7 @@ describe('action.cart-pickup-store-update', () => {
                 .mockResolvedValueOnce(mockUpdatedBasket) // First call succeeds
                 .mockResolvedValueOnce(mockBasketWithPickupItems); // Rollback succeeds
 
-            mockBasketsClient.updateItemsInBasket.mockRejectedValue(mockError);
+            mockShopperBasketsV2.updateItemsInBasket.mockRejectedValue(mockError);
 
             const formData = new FormData();
             formData.append('storeId', mockStoreId);
@@ -698,7 +687,7 @@ describe('action.cart-pickup-store-update', () => {
                 .mockResolvedValueOnce(mockUpdatedBasket as any) // First call succeeds
                 .mockRejectedValueOnce(rollbackError); // Rollback fails
 
-            mockBasketsClient.updateItemsInBasket.mockRejectedValue(mockError);
+            mockShopperBasketsV2.updateItemsInBasket.mockRejectedValue(mockError);
 
             const formData = new FormData();
             formData.append('storeId', mockStoreId);
@@ -809,8 +798,8 @@ describe('action.cart-pickup-store-update', () => {
                 .mockResolvedValueOnce(mockUpdatedBasket) // First call succeeds
                 .mockResolvedValueOnce(mockBasketWithPickupItems); // Rollback succeeds
 
-            mockBasketsClient.updateItemsInBasket.mockResolvedValue({} as any);
-            mockApiClients.shopperBasketsV2.getBasket.mockRejectedValue(mockError);
+            mockShopperBasketsV2.updateItemsInBasket.mockResolvedValue({} as any);
+            mockShopperBasketsV2.getBasket.mockRejectedValue(mockError);
 
             const formData = new FormData();
             formData.append('storeId', mockStoreId);
@@ -878,7 +867,7 @@ describe('action.cart-pickup-store-update', () => {
 
             expect(response.success).toBe(true);
             // Should not update items if none match the new store
-            expect(mockBasketsClient.updateItemsInBasket).not.toHaveBeenCalled();
+            expect(mockShopperBasketsV2.updateItemsInBasket).not.toHaveBeenCalled();
         });
 
         test('handles items with missing itemId - API call fails and error is returned to user', async () => {
@@ -903,7 +892,7 @@ describe('action.cart-pickup-store-update', () => {
             vi.mocked(updateShipmentForPickup).mockResolvedValue(basketWithMissingItemId);
 
             const mockError = new Error('API Error: itemId is required');
-            mockBasketsClient.updateItemsInBasket.mockRejectedValue(mockError);
+            mockShopperBasketsV2.updateItemsInBasket.mockRejectedValue(mockError);
 
             const formData = new FormData();
             formData.append('storeId', mockStoreId);
@@ -922,8 +911,10 @@ describe('action.cart-pickup-store-update', () => {
             });
 
             // API should be called with undefined itemId, which will fail
-            expect(mockBasketsClient.updateItemsInBasket).toHaveBeenCalledWith({
-                parameters: { basketId: mockBasketId },
+            expect(mockShopperBasketsV2.updateItemsInBasket).toHaveBeenCalledWith({
+                params: {
+                    path: { basketId: mockBasketId },
+                },
                 body: [
                     {
                         itemId: undefined,

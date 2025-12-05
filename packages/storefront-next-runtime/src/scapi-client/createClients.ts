@@ -18,6 +18,7 @@ import type {
 import { createClient, type GlobalRequestParameters } from './createClient';
 import { defaultQuerySerializer } from './defaultQuerySerializer';
 import type { ProxyClient } from './proxy-types';
+import { createAuthHelpers, type AuthNamespace } from './auth';
 
 /**
  * Configuration for creating Commerce API clients.
@@ -26,10 +27,18 @@ import type { ProxyClient } from './proxy-types';
  * which will be automatically merged into all API calls as global request parameters.
  */
 export interface CommerceApiClientConfig extends ClientOptions {
+    /** Base URL for Commerce API (required for building auth URLs) */
+    baseUrl: string;
     /** Organization ID - automatically merged into path parameters */
     organizationId: string;
     /** Site ID - automatically merged into query parameters */
     siteId: string;
+    /** SLAS client ID - required for auth operations */
+    clientId: string;
+    /** SLAS client secret - required for private client auth operations */
+    clientSecret?: string;
+    /** OAuth redirect URI - must be registered in SLAS configuration */
+    redirectUri: string;
 }
 
 // Import operation maps for all APIs
@@ -63,11 +72,34 @@ export type Clients = {
     shopperSearch: ProxyClient<Client<ShopperSearch.endpoints>, typeof shopperSearchOps>;
     shopperSeo: ProxyClient<Client<ShopperSeo.endpoints>, typeof shopperSeoOps>;
     shopperStores: ProxyClient<Client<ShopperStores.endpoints>, typeof shopperStoresOps>;
+    /** Authentication helpers for SLAS operations */
+    auth: AuthNamespace;
     use: (middleware: Middleware) => void;
 };
 
 export function createCommerceApiClients(config: CommerceApiClientConfig): Clients {
-    const { baseUrl, fetch: customFetch, querySerializer, organizationId, siteId, ...rest } = config;
+    const {
+        baseUrl,
+        fetch: customFetch,
+        querySerializer,
+        organizationId,
+        siteId,
+        clientId,
+        clientSecret,
+        redirectUri,
+        ...rest
+    } = config;
+
+    // Validate required parameters
+    const requiredParams = { baseUrl, organizationId, siteId, clientId, redirectUri } as const;
+    const missingParams = Object.entries(requiredParams)
+        .filter(([, value]) => !value)
+        .map(([key]) => key);
+    if (missingParams.length > 0) {
+        throw new Error(
+            `Missing required configuration: ${missingParams.join(', ')}. These parameters are required for creating Commerce API clients.`
+        );
+    }
 
     const clientOptions = {
         ...(customFetch ? { fetch: customFetch } : {}),
@@ -209,6 +241,17 @@ export function createCommerceApiClients(config: CommerceApiClientConfig): Clien
         shopperStores,
     ];
 
+    // Create auth helpers namespace
+    const auth = createAuthHelpers({
+        shopperLoginClient: shopperLogin,
+        clientId,
+        clientSecret,
+        redirectUri,
+        organizationId,
+        siteId,
+        baseUrl,
+    });
+
     return {
         shopperBasketsV1,
         shopperBasketsV2,
@@ -224,6 +267,7 @@ export function createCommerceApiClients(config: CommerceApiClientConfig): Clien
         shopperSearch,
         shopperSeo,
         shopperStores,
+        auth,
         use: (middleware: Middleware) => {
             allClients.forEach((client) => client.use(middleware));
         },

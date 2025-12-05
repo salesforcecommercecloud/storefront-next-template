@@ -1,7 +1,7 @@
 import type { ActionFunctionArgs } from 'react-router';
 import type { ShopperCustomersTypes } from 'commerce-sdk-isomorphic';
 import type { CustomQueryParameters } from '@/lib/api/types';
-import createClient from '@/lib/scapi';
+import { createApiClients } from '@/lib/api-clients';
 import { loginRegisteredUser } from './standard-login';
 import { getTranslation } from '@/lib/i18next';
 
@@ -34,8 +34,9 @@ export const registerCustomer = async (
 
         // The registerCustomer endpoint currently does not support custom parameters
         // so we make sure not to send any custom params here
-        const client = createClient(context);
-        await client.ShopperCustomers.registerCustomer({
+        const clients = createApiClients(context);
+        await clients.shopperCustomers.registerCustomer({
+            params: {},
             body: {
                 customer,
                 password,

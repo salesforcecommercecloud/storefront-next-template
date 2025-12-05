@@ -5,6 +5,11 @@ A type-safe, operation-based API client for Salesforce Commerce Cloud Shopper AP
 ## Table of Contents
 
 - [Overview](#overview)
+- [Authentication](#authentication)
+  - [Configuration](#configuration)
+  - [Auth Namespace API](#auth-namespace-api)
+  - [Usage Examples](#authentication-usage-examples)
+  - [Stateless Design](#stateless-design)
 - [Architecture](#architecture)
 - [Libraries Used](#libraries-used)
 - [Why Operation-Based Interface?](#why-operation-based-interface)
@@ -23,6 +28,266 @@ A type-safe, operation-based API client for Salesforce Commerce Cloud Shopper AP
 ## Overview
 
 The SCAPI client provides a developer-friendly, type-safe interface for calling Salesforce Commerce Cloud Shopper APIs. Instead of using generic HTTP methods with path strings, developers can call operations by their semantic names with full TypeScript autocomplete and type checking.
+
+## Authentication
+
+The SCAPI client includes a built-in `auth` namespace that provides a unified, type-safe interface for all SLAS (Shopper Login and Session API) authentication operations. All auth methods are accessible via `clients.auth.*` with full IDE autocomplete and TypeScript support.
+
+### Configuration
+
+To enable authentication, provide the required auth parameters when creating the clients:
+
+```typescript
+import { createCommerceApiClients } from '@salesforce/storefront-next-runtime/scapi-client';
+
+const clients = createCommerceApiClients({
+  // Standard parameters
+  baseUrl: 'https://shortcode.api.commercecloud.salesforce.com',
+  organizationId: 'f_ecom_xxx',
+  siteId: 'RefArch',
+
+  // Auth parameters (required for clients.auth.*)
+  clientId: 'your-slas-client-id',
+  redirectUri: 'https://yoursite.com/callback',
+
+  // Optional: enables private SLAS client features (passwordless, etc.)
+  clientSecret: process.env.COMMERCE_API_SLAS_SECRET,
+});
+```
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `clientId` | Yes | SLAS client ID from Account Manager |
+| `redirectUri` | Yes | OAuth redirect URI (must be registered in SLAS configuration) |
+| `clientSecret` | No | SLAS client secret for private client operations |
+
+### Auth Namespace API
+
+#### Core Authentication (`clients.auth.*`)
+
+```typescript
+// Guest login - auto-detects public vs private SLAS based on clientSecret
+loginAsGuest(options?: {
+  usid?: string;   // Link to existing session
+  dnt?: boolean;   // Do Not Track flag
+}): Promise<TokenResponse>
+
+// Registered user login with credentials
+loginWithCredentials(options: {
+  username: string;
+  password: string;
+  usid?: string;
+  dnt?: boolean;
+}): Promise<TokenResponse>
+
+// Refresh an access token
+refreshToken(options: {
+  refreshToken: string;
+  dnt?: boolean;
+}): Promise<TokenResponse>
+
+// Logout and revoke tokens
+logout(options: {
+  accessToken: string;
+  refreshToken: string;
+}): Promise<TokenResponse>
+```
+
+#### Social/IDP Login (`clients.auth.social.*`)
+
+```typescript
+// Get authorization URL for social login (Google, Facebook, Apple, etc.)
+getAuthorizationUrl(options: {
+  hint: string;           // IDP identifier: 'google', 'facebook', 'apple', etc.
+  redirectUri?: string;   // Override default redirect URI
+  usid?: string;
+}): Promise<{
+  url: string;            // Redirect user to this URL
+  codeVerifier: string;   // Store securely, needed for exchangeCode()
+}>
+
+// Exchange authorization code for tokens (after user returns from IDP)
+exchangeCode(options: {
+  code: string;           // Authorization code from callback
+  codeVerifier: string;   // The codeVerifier from getAuthorizationUrl()
+  redirectUri: string;    // Must match the URI used for authorization
+  usid?: string;
+  dnt?: boolean;
+}): Promise<TokenResponse>
+```
+
+#### Passwordless Login (`clients.auth.passwordless.*`)
+
+> **Note:** Requires `clientSecret` to be configured (private SLAS client only)
+
+```typescript
+// Send magic link or SMS code
+authorize(options: {
+  userId: string;              // Email or phone number
+  callbackUri?: string;        // Required for 'callback' mode
+  mode?: 'callback' | 'sms';   // Default: 'callback'
+  usid?: string;
+}): Promise<ApiResponse>
+
+// Exchange passwordless token for access tokens
+exchangeToken(options: {
+  pwdlessLoginToken: string;   // Token from magic link or SMS
+  usid?: string;
+  dnt?: boolean;
+}): Promise<ApiResponse<TokenResponse>>
+```
+
+#### Password Management (`clients.auth.password.*`)
+
+```typescript
+// Request password reset email
+requestReset(options: {
+  userId: string;       // User's email address
+  callbackUri: string;  // Password reset page URL
+}): Promise<ApiResponse>
+
+// Reset password with token from email
+reset(options: {
+  userId: string;
+  token: string;        // Token from reset email
+  newPassword: string;
+}): Promise<ApiResponse>
+```
+
+### Authentication Usage Examples
+
+#### Guest Login
+
+```typescript
+// Simple guest login
+const tokens = await clients.auth.loginAsGuest();
+console.log('Access token:', tokens.access_token);
+console.log('Refresh token:', tokens.refresh_token);
+
+// Guest login with session linking (e.g., to preserve cart)
+const tokens = await clients.auth.loginAsGuest({
+  usid: existingSessionId,
+});
+```
+
+#### Registered User Login
+
+```typescript
+const tokens = await clients.auth.loginWithCredentials({
+  username: 'user@example.com',
+  password: 'password123',
+  usid: guestUsid, // Optional: merge guest cart with registered user
+});
+
+console.log('Customer ID:', tokens.customer_id);
+```
+
+#### Token Refresh
+
+```typescript
+const newTokens = await clients.auth.refreshToken({
+  refreshToken: storedRefreshToken,
+});
+
+// Update stored tokens
+storeTokens(newTokens);
+```
+
+#### Social Login (Google Example)
+
+```typescript
+// Step 1: Get authorization URL (on "Login with Google" click)
+const { url, codeVerifier } = await clients.auth.social.getAuthorizationUrl({
+  hint: 'google',
+});
+
+// Store codeVerifier securely (e.g., httpOnly cookie)
+setCookie('code_verifier', codeVerifier, { httpOnly: true, maxAge: 300 });
+
+// Redirect user to Google
+redirect(url);
+
+// Step 2: Handle callback (user returns from Google)
+const code = getQueryParam('code');
+const storedCodeVerifier = getCookie('code_verifier');
+
+const tokens = await clients.auth.social.exchangeCode({
+  code,
+  codeVerifier: storedCodeVerifier,
+  redirectUri: 'https://yoursite.com/social-callback',
+});
+
+// Clear code verifier and store tokens
+deleteCookie('code_verifier');
+storeTokens(tokens);
+```
+
+#### Passwordless Login
+
+```typescript
+// Step 1: Send magic link
+await clients.auth.passwordless.authorize({
+  userId: 'user@example.com',
+  callbackUri: 'https://yoursite.com/passwordless-callback',
+  mode: 'callback',
+});
+
+// Step 2: Exchange token (when user clicks magic link)
+const pwdlessToken = getQueryParam('dwsgst'); // Token from URL
+const { data: tokens } = await clients.auth.passwordless.exchangeToken({
+  pwdlessLoginToken: pwdlessToken,
+});
+```
+
+#### Password Reset
+
+```typescript
+// Step 1: Request reset email
+await clients.auth.password.requestReset({
+  userId: 'user@example.com',
+  callbackUri: 'https://yoursite.com/reset-password',
+});
+
+// Step 2: Reset password (when user submits new password)
+const resetToken = getQueryParam('dwrt'); // Token from URL
+await clients.auth.password.reset({
+  userId: 'user@example.com',
+  token: resetToken,
+  newPassword: 'newSecurePassword123',
+});
+```
+
+#### Logout
+
+```typescript
+await clients.auth.logout({
+  accessToken: currentAccessToken,
+  refreshToken: currentRefreshToken,
+});
+
+// Clear stored tokens
+clearTokens();
+```
+
+### Stateless Design
+
+The auth namespace is intentionally **stateless** - it does not store tokens, session data, or any intermediate state internally. This design provides:
+
+1. **SSR Compatibility** - Each HTTP request gets isolated state, avoiding shared singleton issues
+2. **Maximum Flexibility** - Applications choose their own storage strategy (cookies, localStorage, Redis, etc.)
+3. **No Vendor Lock-in** - No opinionated state management that could block customizations
+4. **Testability** - Pure functions with no hidden state are easier to test
+5. **Predictability** - No hidden state mutations that could cause subtle bugs
+
+**What you need to manage:**
+
+| Data | When to Store | Storage Recommendation |
+|------|---------------|------------------------|
+| `access_token` | After any login | Short-lived cookie (~30 min) |
+| `refresh_token` | After any login | httpOnly cookie (30-90 days) |
+| `usid` | After any login | Cookie (same expiry as refresh token) |
+| `codeVerifier` | During social login flow | httpOnly cookie (5 min expiry) |
+| `customer_id` | After registered login | Cookie or session storage |
 
 ## Architecture
 

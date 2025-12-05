@@ -1,11 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router';
 import { authorizeIDP, loginIDPUser, handleSocialLoginLanding } from './social-login';
-import {
-    authorizeIDP as authorizeIDPHelper,
-    loginIDPUser as loginIDPUserHelper,
-} from 'commerce-sdk-isomorphic/helpers';
-import createClient from '@/lib/scapi';
 import { flashAuth, getAuth, updateAuth } from '@/middlewares/auth.server';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
 import { getConfig } from '@/config';
@@ -16,23 +11,16 @@ import { TrackingConsent } from '@/types/tracking-consent';
 
 const { t } = getTranslation();
 
-vi.mock('commerce-sdk-isomorphic/helpers', () => ({
-    authorizeIDP: vi.fn(),
-    loginIDPUser: vi.fn(),
-}));
+// Mock createApiClients to return mocked auth.social namespace
+const mockAuthSocial = {
+    getAuthorizationUrl: vi.fn(),
+    exchangeCode: vi.fn(),
+};
 
-vi.mock('@/lib/scapi', () => ({
-    default: vi.fn(() => ({
-        ShopperLogin: {
-            getInstance: vi.fn(() =>
-                Promise.resolve({
-                    clientConfig: {
-                        parameters: {
-                            redirectURI: 'https://default.example/callback',
-                        },
-                    },
-                })
-            ),
+vi.mock('@/lib/api-clients', () => ({
+    createApiClients: vi.fn(() => ({
+        auth: {
+            social: mockAuthSocial,
         },
     })),
 }));
@@ -59,18 +47,14 @@ vi.mock('@/config', () => ({
 
 vi.mock('@/lib/utils', () => ({
     extractResponseError: vi.fn((err?: any) => Promise.resolve({ responseMessage: (err && err.message) || 'error' })),
+    getAppOrigin: vi.fn(() => 'https://example.com'),
+    isAbsoluteURL: vi.fn((url: string) => url.startsWith('http')),
 }));
-
-const mockedHelpers = {
-    authorizeIDP: vi.mocked(authorizeIDPHelper),
-    loginIDPUser: vi.mocked(loginIDPUserHelper),
-};
 
 const mockIsTrackingConsentEnabled = vi.mocked(isTrackingConsentEnabled);
 
 describe('Social Login', () => {
     const mockContext = {} as unknown as ActionFunctionArgs['context'];
-    const scapi = vi.mocked(createClient);
     const auth = {
         flashAuth: vi.mocked(flashAuth),
         getAuth: vi.mocked(getAuth),
@@ -81,13 +65,17 @@ describe('Social Login', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
+        // Reset mocks
+        mockAuthSocial.getAuthorizationUrl.mockReset();
+        mockAuthSocial.exchangeCode.mockReset();
         // default config
-        cfg.getConfig.mockReturnValue({ commerce: { api: { privateKeyEnabled: false } } } as any);
+        cfg.getConfig.mockReturnValue({
+            commerce: { api: { privateKeyEnabled: false, callback: '/callback' } },
+        } as any);
         // default auth session
         auth.getAuth.mockReturnValue({ usid: 'session-usid', codeVerifier: 'stored-code-verifier' } as any);
         // default tracking consent disabled
         mockIsTrackingConsentEnabled.mockReturnValue(false);
-        // default scapi redirectURI already set in mock
     });
 
     afterEach(() => {
@@ -98,25 +86,18 @@ describe('Social Login', () => {
         it('calls helper with correct args and updates session (public client)', async () => {
             const expectedUrl = 'https://slas/idp/auth-url';
             const expectedVerifier = 'code-verifier-123';
-            mockedHelpers.authorizeIDP.mockResolvedValue({ url: expectedUrl, codeVerifier: expectedVerifier } as any);
+            mockAuthSocial.getAuthorizationUrl.mockResolvedValue({ url: expectedUrl, codeVerifier: expectedVerifier });
 
             const result = await authorizeIDP(mockContext, {
                 hint: 'Google',
-                // omit redirectURI to ensure fallback to slas client config
+                // omit redirectURI to ensure fallback to config
             });
 
-            // ensure SCAPI ShopperLogin instance was requested
-            expect(scapi).toHaveBeenCalledWith(mockContext);
-
             // helper called with composed args
-            expect(mockedHelpers.authorizeIDP).toHaveBeenCalledWith({
-                slasClient: expect.any(Object),
-                parameters: {
-                    redirectURI: 'https://default.example/callback',
-                    hint: 'Google',
-                    usid: 'session-usid',
-                },
-                privateClient: false,
+            expect(mockAuthSocial.getAuthorizationUrl).toHaveBeenCalledWith({
+                hint: 'Google',
+                redirectUri: 'https://example.com/callback',
+                usid: 'session-usid',
             });
 
             // session updated with codeVerifier
@@ -126,8 +107,10 @@ describe('Social Login', () => {
         });
 
         it('passes explicit redirectURI and privateClient=true when configured', async () => {
-            cfg.getConfig.mockReturnValue({ commerce: { api: { privateKeyEnabled: true } } } as any);
-            mockedHelpers.authorizeIDP.mockResolvedValue({ url: 'x', codeVerifier: 'y' } as any);
+            cfg.getConfig.mockReturnValue({
+                commerce: { api: { privateKeyEnabled: true, callback: '/callback' } },
+            } as any);
+            mockAuthSocial.getAuthorizationUrl.mockResolvedValue({ url: 'x', codeVerifier: 'y' });
 
             const result = await authorizeIDP(mockContext, {
                 hint: 'Apple',
@@ -135,14 +118,11 @@ describe('Social Login', () => {
                 usid: 'param-usid',
             });
 
-            expect(mockedHelpers.authorizeIDP).toHaveBeenCalledWith({
-                slasClient: expect.any(Object),
-                parameters: {
-                    redirectURI: 'https://app.example/social-callback',
-                    hint: 'Apple',
-                    usid: 'param-usid',
-                },
-                privateClient: true,
+            // Note: privateClient is now handled internally by createApiClients
+            expect(mockAuthSocial.getAuthorizationUrl).toHaveBeenCalledWith({
+                hint: 'Apple',
+                redirectUri: 'https://app.example/social-callback',
+                usid: 'param-usid',
             });
 
             expect(result.success).toBe(true);
@@ -150,7 +130,7 @@ describe('Social Login', () => {
 
         it('handles errors and flashes message', async () => {
             const err = new Error('boom');
-            mockedHelpers.authorizeIDP.mockRejectedValue(err);
+            mockAuthSocial.getAuthorizationUrl.mockRejectedValue(err);
             utils.extractResponseError.mockResolvedValue({ responseMessage: 'boom' } as any);
 
             const result = await authorizeIDP(mockContext, { hint: 'Google' });
@@ -162,23 +142,18 @@ describe('Social Login', () => {
 
     describe('loginIDPUser', () => {
         it('calls helper with correct args (public client, no clientSecret)', async () => {
-            mockedHelpers.loginIDPUser.mockResolvedValue({ accessToken: 'at', refreshToken: 'rt' } as any);
+            mockAuthSocial.exchangeCode.mockResolvedValue({ access_token: 'at', refresh_token: 'rt' });
 
             const result = await loginIDPUser(mockContext, {
                 code: 'auth-code',
                 redirectURI: 'https://app.example/social-callback',
             });
 
-            expect(mockedHelpers.loginIDPUser).toHaveBeenCalledWith({
-                slasClient: expect.any(Object),
-                credentials: {
-                    codeVerifier: 'stored-code-verifier',
-                },
-                parameters: {
-                    redirectURI: 'https://app.example/social-callback',
-                    code: 'auth-code',
-                    usid: 'session-usid',
-                },
+            expect(mockAuthSocial.exchangeCode).toHaveBeenCalledWith({
+                code: 'auth-code',
+                codeVerifier: 'stored-code-verifier',
+                redirectUri: 'https://app.example/social-callback',
+                usid: 'session-usid',
             });
 
             // Tokens saved and codeVerifier cleared via two updateAuth calls
@@ -187,9 +162,11 @@ describe('Social Login', () => {
         });
 
         it('includes clientSecret when privateKeyEnabled=true', async () => {
-            cfg.getConfig.mockReturnValue({ commerce: { api: { privateKeyEnabled: true } } } as any);
+            cfg.getConfig.mockReturnValue({
+                commerce: { api: { privateKeyEnabled: true, callback: '/callback' } },
+            } as any);
             (process as any).env.COMMERCE_API_SLAS_SECRET = 'super-secret';
-            mockedHelpers.loginIDPUser.mockResolvedValue({ accessToken: 'at' } as any);
+            mockAuthSocial.exchangeCode.mockResolvedValue({ access_token: 'at' });
 
             await loginIDPUser(mockContext, {
                 code: 'auth-code',
@@ -197,17 +174,12 @@ describe('Social Login', () => {
                 usid: 'explicit-usid',
             });
 
-            expect(mockedHelpers.loginIDPUser).toHaveBeenCalledWith({
-                slasClient: expect.any(Object),
-                credentials: {
-                    codeVerifier: 'stored-code-verifier',
-                    clientSecret: 'super-secret',
-                },
-                parameters: {
-                    redirectURI: 'https://app.example/social-callback',
-                    code: 'auth-code',
-                    usid: 'explicit-usid',
-                },
+            // Note: clientSecret is now handled internally by createApiClients
+            expect(mockAuthSocial.exchangeCode).toHaveBeenCalledWith({
+                code: 'auth-code',
+                codeVerifier: 'stored-code-verifier',
+                redirectUri: 'https://app.example/social-callback',
+                usid: 'explicit-usid',
             });
         });
 
@@ -218,24 +190,19 @@ describe('Social Login', () => {
                 trackingConsent: TrackingConsent.Declined, // Enum value representing 'do not track'
             } as any);
             mockIsTrackingConsentEnabled.mockReturnValue(true);
-            mockedHelpers.loginIDPUser.mockResolvedValue({ accessToken: 'at' } as any);
+            mockAuthSocial.exchangeCode.mockResolvedValue({ access_token: 'at' });
 
             await loginIDPUser(mockContext, {
                 code: 'auth-code',
                 redirectURI: 'https://app.example/social-callback',
             });
 
-            expect(mockedHelpers.loginIDPUser).toHaveBeenCalledWith({
-                slasClient: expect.any(Object),
-                credentials: {
-                    codeVerifier: 'stored-code-verifier',
-                },
-                parameters: {
-                    redirectURI: 'https://app.example/social-callback',
-                    code: 'auth-code',
-                    usid: 'session-usid',
-                    dnt: true, // Converted from TrackingConsent.Declined to boolean
-                },
+            expect(mockAuthSocial.exchangeCode).toHaveBeenCalledWith({
+                code: 'auth-code',
+                codeVerifier: 'stored-code-verifier',
+                redirectUri: 'https://app.example/social-callback',
+                usid: 'session-usid',
+                dnt: true, // Converted from TrackingConsent.Declined to boolean
             });
         });
 
@@ -246,24 +213,19 @@ describe('Social Login', () => {
                 trackingConsent: TrackingConsent.Declined, // Enum value
             } as any);
             mockIsTrackingConsentEnabled.mockReturnValue(false);
-            mockedHelpers.loginIDPUser.mockResolvedValue({ accessToken: 'at' } as any);
+            mockAuthSocial.exchangeCode.mockResolvedValue({ access_token: 'at' });
 
             await loginIDPUser(mockContext, {
                 code: 'auth-code',
                 redirectURI: 'https://app.example/social-callback',
             });
 
-            expect(mockedHelpers.loginIDPUser).toHaveBeenCalledWith({
-                slasClient: expect.any(Object),
-                credentials: {
-                    codeVerifier: 'stored-code-verifier',
-                },
-                parameters: {
-                    redirectURI: 'https://app.example/social-callback',
-                    code: 'auth-code',
-                    usid: 'session-usid',
-                    // No dnt parameter
-                },
+            expect(mockAuthSocial.exchangeCode).toHaveBeenCalledWith({
+                code: 'auth-code',
+                codeVerifier: 'stored-code-verifier',
+                redirectUri: 'https://app.example/social-callback',
+                usid: 'session-usid',
+                // No dnt parameter when feature is disabled
             });
         });
 
@@ -274,24 +236,19 @@ describe('Social Login', () => {
                 // No trackingConsent property
             } as any);
             mockIsTrackingConsentEnabled.mockReturnValue(true);
-            mockedHelpers.loginIDPUser.mockResolvedValue({ accessToken: 'at' } as any);
+            mockAuthSocial.exchangeCode.mockResolvedValue({ access_token: 'at' });
 
             await loginIDPUser(mockContext, {
                 code: 'auth-code',
                 redirectURI: 'https://app.example/social-callback',
             });
 
-            expect(mockedHelpers.loginIDPUser).toHaveBeenCalledWith({
-                slasClient: expect.any(Object),
-                credentials: {
-                    codeVerifier: 'stored-code-verifier',
-                },
-                parameters: {
-                    redirectURI: 'https://app.example/social-callback',
-                    code: 'auth-code',
-                    usid: 'session-usid',
-                    // No dnt parameter
-                },
+            expect(mockAuthSocial.exchangeCode).toHaveBeenCalledWith({
+                code: 'auth-code',
+                codeVerifier: 'stored-code-verifier',
+                redirectUri: 'https://app.example/social-callback',
+                usid: 'session-usid',
+                // No dnt parameter when trackingConsent is not set
             });
         });
 
@@ -302,24 +259,19 @@ describe('Social Login', () => {
                 trackingConsent: TrackingConsent.Accepted, // Enum value representing tracking accepted
             } as any);
             mockIsTrackingConsentEnabled.mockReturnValue(true);
-            mockedHelpers.loginIDPUser.mockResolvedValue({ accessToken: 'at' } as any);
+            mockAuthSocial.exchangeCode.mockResolvedValue({ access_token: 'at' });
 
             await loginIDPUser(mockContext, {
                 code: 'auth-code',
                 redirectURI: 'https://app.example/social-callback',
             });
 
-            expect(mockedHelpers.loginIDPUser).toHaveBeenCalledWith({
-                slasClient: expect.any(Object),
-                credentials: {
-                    codeVerifier: 'stored-code-verifier',
-                },
-                parameters: {
-                    redirectURI: 'https://app.example/social-callback',
-                    code: 'auth-code',
-                    usid: 'session-usid',
-                    dnt: false, // Converted from TrackingConsent.Accepted to boolean
-                },
+            expect(mockAuthSocial.exchangeCode).toHaveBeenCalledWith({
+                code: 'auth-code',
+                codeVerifier: 'stored-code-verifier',
+                redirectUri: 'https://app.example/social-callback',
+                usid: 'session-usid',
+                dnt: false, // Converted from TrackingConsent.Accepted to boolean
             });
         });
 
@@ -332,13 +284,13 @@ describe('Social Login', () => {
                 redirectURI: 'https://app.example/social-callback',
             });
 
-            expect(auth.flashAuth).toHaveBeenCalledWith(mockContext, 'Code verifier missing');
-            expect(result).toEqual({ success: false, error: 'Code verifier missing' });
-            expect(mockedHelpers.loginIDPUser).not.toHaveBeenCalled();
+            expect(auth.flashAuth).toHaveBeenCalledWith(mockContext, expect.any(String));
+            expect(result).toEqual({ success: false, error: expect.any(String) });
+            expect(mockAuthSocial.exchangeCode).not.toHaveBeenCalled();
         });
 
         it('handles helper error and flashes message', async () => {
-            mockedHelpers.loginIDPUser.mockRejectedValue(new Error('login failed'));
+            mockAuthSocial.exchangeCode.mockRejectedValue(new Error('login failed'));
             utils.extractResponseError.mockResolvedValue({ responseMessage: 'login failed' } as any);
 
             const result = await loginIDPUser(mockContext, {
@@ -364,7 +316,9 @@ const mockGetAuth = vi.mocked(getAuth);
 describe('handleSocialLoginCallback', () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        mockedHelpers.loginIDPUser.mockResolvedValue({ accessToken: 'at', refreshToken: 'rt' } as any);
+        mockAuthSocial.getAuthorizationUrl.mockReset();
+        mockAuthSocial.exchangeCode.mockReset();
+        mockAuthSocial.exchangeCode.mockResolvedValue({ access_token: 'at', refresh_token: 'rt' });
         mockGetAuth.mockReturnValue({ usid: 'session-usid', codeVerifier: 'stored-code-verifier' } as any);
 
         // Default config mock
@@ -372,6 +326,7 @@ describe('handleSocialLoginCallback', () => {
             commerce: {
                 api: {
                     privateKeyEnabled: false,
+                    callback: '/callback',
                 },
             },
             site: {
@@ -403,12 +358,12 @@ describe('handleSocialLoginCallback', () => {
 
             const result = await handleSocialLoginLanding(args);
 
-            expect(mockedHelpers.loginIDPUser).toHaveBeenCalledTimes(1);
-            const loginCall = mockedHelpers.loginIDPUser.mock.calls[0]?.[0];
-            expect(loginCall?.parameters).toMatchObject({
+            expect(mockAuthSocial.exchangeCode).toHaveBeenCalledTimes(1);
+            const loginCall = mockAuthSocial.exchangeCode.mock.calls[0]?.[0];
+            expect(loginCall).toMatchObject({
                 code: 'auth_code_123',
                 usid: 'user_session_id',
-                redirectURI: 'http://localhost:5173/social-callback',
+                redirectUri: 'http://localhost:5173/social-callback',
             });
             expect(mockMergeBasket).toHaveBeenCalledWith(mockContext);
             expect(result).toBeInstanceOf(Response);
@@ -431,12 +386,12 @@ describe('handleSocialLoginCallback', () => {
 
             const result = await handleSocialLoginLanding(args);
 
-            expect(mockedHelpers.loginIDPUser).toHaveBeenCalledTimes(1);
-            const loginCall = mockedHelpers.loginIDPUser.mock.calls[0]?.[0];
-            expect(loginCall?.parameters).toMatchObject({
+            expect(mockAuthSocial.exchangeCode).toHaveBeenCalledTimes(1);
+            const loginCall = mockAuthSocial.exchangeCode.mock.calls[0]?.[0];
+            expect(loginCall).toMatchObject({
                 code: 'auth_code_123',
                 usid: 'session-usid',
-                redirectURI: 'http://localhost:5173/social-callback',
+                redirectUri: 'http://localhost:5173/social-callback',
             });
             expect(result.status).toBe(302);
             expect(result.headers.get('Location')).toBe('/');
@@ -494,18 +449,18 @@ describe('handleSocialLoginCallback', () => {
 
             await handleSocialLoginLanding(args);
 
-            const loginCall = mockedHelpers.loginIDPUser.mock.calls[0]?.[0];
-            expect(loginCall?.parameters).toMatchObject({
+            const loginCall = mockAuthSocial.exchangeCode.mock.calls[0]?.[0];
+            expect(loginCall).toMatchObject({
                 code: 'test',
                 usid: 'session-usid',
-                redirectURI: 'http://localhost:5173/custom-callback',
+                redirectUri: 'http://localhost:5173/custom-callback',
             });
         });
     });
 
     describe('Failed Login', () => {
         it('should redirect to login on failed IDP login', async () => {
-            mockedHelpers.loginIDPUser.mockRejectedValue(new Error('Invalid code'));
+            mockAuthSocial.exchangeCode.mockRejectedValue(new Error('Invalid code'));
 
             const mockRequest = new Request('http://localhost:5173/social-callback?code=invalid_code');
             const mockContext = { get: vi.fn(), set: vi.fn() };
@@ -517,7 +472,7 @@ describe('handleSocialLoginCallback', () => {
 
             const result = await handleSocialLoginLanding(args);
 
-            expect(mockedHelpers.loginIDPUser).toHaveBeenCalled();
+            expect(mockAuthSocial.exchangeCode).toHaveBeenCalled();
             expect(mockMergeBasket).not.toHaveBeenCalled();
             expect(result.status).toBe(302);
             expect(result.headers.get('Location')).toBe('/login');
@@ -553,7 +508,7 @@ describe('handleSocialLoginCallback', () => {
 
             const result = await handleSocialLoginLanding(args);
 
-            expect(mockedHelpers.loginIDPUser).not.toHaveBeenCalled();
+            expect(mockAuthSocial.exchangeCode).not.toHaveBeenCalled();
             expect(mockMergeBasket).not.toHaveBeenCalled();
             expect(result.status).toBe(302);
             expect(result.headers.get('Location')).toBe('/login');

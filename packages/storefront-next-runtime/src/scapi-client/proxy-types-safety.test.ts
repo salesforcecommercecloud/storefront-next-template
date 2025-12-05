@@ -19,6 +19,8 @@ describe('SCAPI Client Type Safety', () => {
         baseUrl: 'https://test.com',
         organizationId: 'f_ecom_test_prd',
         siteId: 'RefArch',
+        clientId: 'test-client-id',
+        redirectUri: 'https://test.com/callback',
     });
 
     describe('valid API calls', () => {

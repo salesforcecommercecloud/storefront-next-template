@@ -7,11 +7,11 @@ export default defineConfig({
         environment: 'happy-dom',
         coverage: {
             thresholds: {
-                statements: 87,
-                branches: 83,
-                functions: 83,
-                lines: 87,
-             },
+                statements: 89,
+                branches: 87,
+                functions: 87,
+                lines: 89,
+            },
             include: ['src/**/*.{ts,tsx}'],
             exclude: [
                 'src/**/*.test.{ts,tsx}',

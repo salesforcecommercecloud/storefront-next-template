@@ -13,7 +13,6 @@ import { getBasket, updateBasket } from '@/middlewares/basket.client';
 
 // Utils
 import { extractResponseError } from '@/lib/utils';
-import createClient, { type CommerceSdkClient } from '@/lib/scapi';
 import { createApiClients } from '@/lib/api-clients';
 import {
     type BasketActionResponse,
@@ -89,7 +88,7 @@ export async function clientAction({ request, context }: ClientActionFunctionArg
         // Extract the validated fields
         const { storeId, inventoryId, storeName } = validationResult.data;
 
-        const client = createClient(context).ShopperBasketsV2;
+        const clients = createApiClients(context);
         const basket = getBasket(context);
 
         // Validate basket exists
@@ -118,13 +117,14 @@ export async function clientAction({ request, context }: ClientActionFunctionArg
                 .filter((id): id is string => Boolean(id));
 
             // Fetch products with the new store's inventory ID to validate availability
-            const productsClient = createClient(context).ShopperProducts;
-            const productsResponse = await productsClient.getProducts({
-                parameters: {
-                    ids: [...new Set(productIds)], // Remove duplicates
-                    allImages: true,
-                    perPricebook: true,
-                    inventoryIds: [inventoryId], // Include new store's inventory
+            const productsResponse = await clients.shopperProducts.getProducts({
+                params: {
+                    query: {
+                        ids: [...new Set(productIds)], // Remove duplicates
+                        allImages: true,
+                        perPricebook: true,
+                        inventoryIds: [inventoryId], // Include new store's inventory
+                    },
                 },
             });
 
@@ -186,16 +186,14 @@ export async function clientAction({ request, context }: ClientActionFunctionArg
 
             if (itemsToUpdate.length > 0) {
                 // This may fail if the inventory check is stale, but we will handle that in the catch block
-                await client.updateItemsInBasket({
-                    parameters: { basketId },
-                    body: itemsToUpdate as Parameters<
-                        CommerceSdkClient['ShopperBasketsV2']['updateItemsInBasket']
-                    >[0]['body'],
+                await clients.shopperBasketsV2.updateItemsInBasket({
+                    params: {
+                        path: { basketId },
+                    },
+                    body: itemsToUpdate,
                 });
 
                 // Get the updated basket after items update
-                // Use new client to get correct return type
-                const clients = createApiClients(context);
                 const { data: refreshedBasket } = await clients.shopperBasketsV2.getBasket({
                     params: {
                         path: { basketId },

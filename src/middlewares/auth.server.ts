@@ -4,7 +4,7 @@ import {
     type RouterContextProvider,
     type ActionFunctionArgs,
 } from 'react-router';
-import type { ShopperLoginTypes } from 'commerce-sdk-isomorphic';
+import type { TokenResponse } from '@salesforce/storefront-next-runtime/scapi';
 import type { SessionData as AuthData } from '@/lib/api/types';
 import { clearStorage, type StorageErrorData, unpackStorage } from '@/lib/middleware';
 import {
@@ -24,8 +24,8 @@ import {
     COOKIE_CODE_VERIFIER,
     COOKIE_TRACKING_CONSENT,
 } from '@/middlewares/auth.utils';
-import { getAppOrigin, isAbsoluteURL, stringToBase64 } from '@/lib/utils';
-import createClient from '@/lib/scapi';
+import { getAppOrigin, isAbsoluteURL } from '@/lib/utils';
+import { createApiClients } from '@/lib/api-clients';
 import { performanceTimerContext, PERFORMANCE_MARKS } from '@/middlewares/performance-metrics';
 import { getConfig } from '@/config';
 import { getCookieConfig, getCookieNameWithSiteId } from '@/lib/cookie-utils';
@@ -34,30 +34,15 @@ import { getTranslation } from '@/lib/i18next';
 import { TrackingConsent, trackingConsentToBoolean } from '@/types/tracking-consent';
 
 /**
- * Utility to get the SLAS client secret with proper validation
- * Server-only for security - client secrets should never reach client-side code
- */
-const getSlasClientSecret = (): string => {
-    const clientSecret = process.env.COMMERCE_API_SLAS_SECRET;
-    if (!clientSecret) {
-        throw new Error('COMMERCE_API_SLAS_SECRET is required when SLAS is configured as private');
-    }
-    return clientSecret;
-};
-
-/**
  * Refresh access token using refresh token
  */
 export async function refreshAccessToken(
     context: Readonly<RouterContextProvider>,
     refreshToken: string,
     options?: { trackingConsent?: TrackingConsent }
-): Promise<ShopperLoginTypes.TokenResponse> {
-    const { refreshAccessToken: refreshAccessTokenHelper } = await import('commerce-sdk-isomorphic/helpers');
-    const slasClient = await createClient(context).ShopperLogin.getInstance();
+): Promise<TokenResponse> {
+    const clients = createApiClients(context);
     const performanceTimer = context.get(performanceTimerContext);
-    const appConfig = getConfig(context);
-    const isSlasPrivate = appConfig.commerce.api.privateKeyEnabled;
     performanceTimer?.mark(PERFORMANCE_MARKS.authRefreshAccessToken, 'start');
 
     // Get tracking consent from options if provided, otherwise read from auth context (populated from cookies by middleware)
@@ -72,21 +57,15 @@ export async function refreshAccessToken(
         }
     }
 
-    return refreshAccessTokenHelper({
-        slasClient,
-        parameters: {
+    return await clients.auth
+        .refreshToken({
             refreshToken,
             // Convert TrackingConsent enum to boolean for SLAS API
             ...(trackingConsent !== undefined && { dnt: trackingConsentToBoolean(trackingConsent) }),
-        },
-        credentials: {
-            ...(isSlasPrivate && {
-                clientSecret: getSlasClientSecret(),
-            }),
-        },
-    }).finally(() => {
-        performanceTimer?.mark(PERFORMANCE_MARKS.authRefreshAccessToken, 'end');
-    });
+        })
+        .finally(() => {
+            performanceTimer?.mark(PERFORMANCE_MARKS.authRefreshAccessToken, 'end');
+        });
 }
 
 /**
@@ -95,12 +74,8 @@ export async function refreshAccessToken(
 export async function loginGuestUser(
     context: Readonly<RouterContextProvider>,
     options?: { usid?: string }
-): Promise<ShopperLoginTypes.TokenResponse> {
-    const { loginGuestUserPrivate: loginGuestUserPrivateHelper, loginGuestUser: loginGuestUserHelper } = await import(
-        'commerce-sdk-isomorphic/helpers'
-    );
-    const slasClient = await createClient(context).ShopperLogin.getInstance();
-    const { redirectURI } = slasClient.clientConfig.parameters;
+): Promise<TokenResponse> {
+    const clients = createApiClients(context);
     const performanceTimer = context.get(performanceTimerContext);
     const appConfig = getConfig(context);
     const isSlasPrivate = appConfig.commerce.api.privateKeyEnabled;
@@ -109,25 +84,9 @@ export async function loginGuestUser(
         : PERFORMANCE_MARKS.authLoginGuestUser;
     performanceTimer?.mark(performanceName, 'start');
 
-    return isSlasPrivate
-        ? loginGuestUserPrivateHelper({
-              slasClient,
-              parameters: {
-                  ...(options?.usid && { usid: options.usid }),
-              },
-              credentials: { clientSecret: getSlasClientSecret() },
-          }).finally(() => {
-              performanceTimer?.mark(performanceName, 'end');
-          })
-        : loginGuestUserHelper({
-              slasClient,
-              parameters: {
-                  redirectURI,
-                  ...(options?.usid && { usid: options.usid }),
-              },
-          }).finally(() => {
-              performanceTimer?.mark(performanceName, 'end');
-          });
+    return await clients.auth.loginAsGuest({ usid: options?.usid }).finally(() => {
+        performanceTimer?.mark(performanceName, 'end');
+    });
 }
 
 /**
@@ -137,14 +96,10 @@ export async function loginRegisteredUser(
     context: Readonly<RouterContextProvider>,
     email: string,
     password: string,
-    options?: { customParameters?: Record<string, unknown> }
-): Promise<ShopperLoginTypes.TokenResponse> {
-    const { loginRegisteredUserB2C } = await import('commerce-sdk-isomorphic/helpers');
-    const slasClient = await createClient(context).ShopperLogin.getInstance();
-    const { redirectURI } = slasClient.clientConfig.parameters;
+    _options?: { customParameters?: Record<string, unknown> }
+): Promise<TokenResponse> {
+    const clients = createApiClients(context);
     const performanceTimer = context.get(performanceTimerContext);
-    const appConfig = getConfig(context);
-    const isSlasPrivate = appConfig.commerce.api.privateKeyEnabled;
     const { usid } = getAuth(context);
 
     // Get tracking consent from auth context (populated from cookies by middleware)
@@ -162,29 +117,17 @@ export async function loginRegisteredUser(
 
     performanceTimer?.mark(PERFORMANCE_MARKS.authLoginRegisteredUser, 'start');
 
-    return loginRegisteredUserB2C({
-        slasClient,
-        credentials: {
+    return await clients.auth
+        .loginWithCredentials({
             username: email,
             password,
-            ...(isSlasPrivate && {
-                clientSecret: getSlasClientSecret(),
-            }),
-        },
-        parameters: {
-            redirectURI,
-            ...(usid && { usid: String(usid) }),
+            usid: usid ? String(usid) : undefined,
             // Convert TrackingConsent enum to boolean for SLAS API
             ...(trackingConsent !== undefined && { dnt: trackingConsentToBoolean(trackingConsent) }),
-            // Include custom parameters if any
-            ...(options?.customParameters &&
-                Object.keys(options.customParameters).length > 0 && {
-                    body: options.customParameters,
-                }),
-        },
-    }).finally(() => {
-        performanceTimer?.mark(PERFORMANCE_MARKS.authLoginRegisteredUser, 'end');
-    });
+        })
+        .finally(() => {
+            performanceTimer?.mark(PERFORMANCE_MARKS.authLoginRegisteredUser, 'end');
+        });
 }
 
 /**
@@ -197,13 +140,13 @@ export async function authorizePasswordless(
         callbackUri?: string;
         redirectPath?: string;
     }
-): Promise<Response> {
+) {
     const performanceTimer = context.get(performanceTimerContext);
     performanceTimer?.mark(PERFORMANCE_MARKS.authAuthorizePasswordless, 'start');
 
+    const clients = createApiClients(context);
     const session = getAuth(context);
-    const slasClient = await createClient(context).ShopperLogin.getInstance();
-    const userid = parameters.userid;
+    const userId = parameters.userid;
 
     const appConfig = getConfig(context);
     const passwordlessCallback = appConfig.site.features.passwordlessLogin.callbackUri;
@@ -221,21 +164,16 @@ export async function authorizePasswordless(
     const usid = session.usid;
     const mode = finalCallbackUri ? 'callback' : 'sms';
 
-    const { authorizePasswordless: authorizePasswordlessHelper } = await import('commerce-sdk-isomorphic/helpers');
-    return authorizePasswordlessHelper({
-        slasClient,
-        credentials: {
-            clientSecret: getSlasClientSecret(),
-        },
-        parameters: {
-            ...(finalCallbackUri && { callbackURI: finalCallbackUri }),
-            ...(usid && { usid }),
-            userid,
+    return await clients.auth.passwordless
+        .authorize({
+            userId,
+            callbackUri: finalCallbackUri,
+            usid: usid ? String(usid) : undefined,
             mode,
-        },
-    }).finally(() => {
-        performanceTimer?.mark(PERFORMANCE_MARKS.authAuthorizePasswordless, 'end');
-    });
+        })
+        .finally(() => {
+            performanceTimer?.mark(PERFORMANCE_MARKS.authAuthorizePasswordless, 'end');
+        });
 }
 
 /**
@@ -246,43 +184,25 @@ export async function getPasswordResetToken(
     parameters: {
         email: string;
     }
-): Promise<void> {
+) {
     const performanceTimer = context.get(performanceTimerContext);
     performanceTimer?.mark(PERFORMANCE_MARKS.authGetPasswordResetToken, 'start');
 
-    const slasClient = await createClient(context).ShopperLogin.getInstance();
+    const clients = createApiClients(context);
     const appConfig = getConfig(context);
     const resetPasswordCallbackUri = appConfig.site.features.resetPassword.callbackUri;
     const callbackUri = isAbsoluteURL(resetPasswordCallbackUri)
         ? resetPasswordCallbackUri
         : `${getAppOrigin()}${resetPasswordCallbackUri}`;
 
-    const options = {
-        headers: {
-            Authorization: '',
-        },
-        body: {
-            user_id: parameters.email,
-            mode: 'callback',
-            channel_id: slasClient.clientConfig.parameters.siteId,
-            client_id: slasClient.clientConfig.parameters.clientId,
-            callback_uri: callbackUri,
-            hint: 'cross_device',
-        },
-    };
-
-    // Only set authorization header if using private client
-    const isSlasPrivate = appConfig.commerce.api.privateKeyEnabled;
-    if (isSlasPrivate) {
-        const clientId = slasClient.clientConfig.parameters.clientId;
-        const clientSecret = getSlasClientSecret();
-        const basicAuth = stringToBase64(`${clientId}:${clientSecret}`);
-        options.headers.Authorization = `Basic ${basicAuth}`;
-    }
-
-    return slasClient.getPasswordResetToken(options).finally(() => {
-        performanceTimer?.mark(PERFORMANCE_MARKS.authGetPasswordResetToken, 'end');
-    });
+    return await clients.auth.password
+        .requestReset({
+            userId: parameters.email,
+            callbackUri,
+        })
+        .finally(() => {
+            performanceTimer?.mark(PERFORMANCE_MARKS.authGetPasswordResetToken, 'end');
+        });
 }
 
 /**
@@ -295,39 +215,18 @@ export async function resetPasswordWithToken(
         token: string;
         newPassword: string;
     }
-): Promise<void> {
+) {
     const performanceTimer = context.get(performanceTimerContext);
     performanceTimer?.mark(PERFORMANCE_MARKS.authResetPasswordWithToken, 'start');
 
-    const slasClient = await createClient(context).ShopperLogin.getInstance();
-    const appConfig = getConfig(context);
+    const clients = createApiClients(context);
 
-    const options = {
-        headers: {
-            Authorization: '',
-        },
-        body: {
-            user_id: parameters.email,
-            new_password: parameters.newPassword,
-            pwd_action_token: parameters.token,
-            channel_id: slasClient.clientConfig.parameters.siteId,
-            client_id: slasClient.clientConfig.parameters.clientId,
-        },
-    };
-
-    // Only set authorization header if using private client
-    const isSlasPrivate = appConfig.commerce.api.privateKeyEnabled;
-    if (isSlasPrivate) {
-        const clientId = slasClient.clientConfig.parameters.clientId;
-        const clientSecret = getSlasClientSecret();
-        const basicAuth = stringToBase64(`${clientId}:${clientSecret}`);
-        options.headers.Authorization = `Basic ${basicAuth}`;
-    }
-
-    // Use type assertion to bypass SDK's code_verifier requirement since we're using cross_device hint
-    // The SDK type requires code_verifier, but SLAS doesn't need it when using hint: 'cross_device'
-    return slasClient
-        .resetPassword(options as unknown as Parameters<typeof slasClient.resetPassword>[0])
+    return await clients.auth.password
+        .reset({
+            userId: parameters.email,
+            token: parameters.token,
+            newPassword: parameters.newPassword,
+        })
         .finally(() => {
             performanceTimer?.mark(PERFORMANCE_MARKS.authResetPasswordWithToken, 'end');
         });
@@ -337,14 +236,8 @@ export async function resetPasswordWithToken(
  * Get passwordless access token using the token from magic link
  * Takes context and creates SLAS client internally, following auth.server.ts patterns
  */
-export async function getPasswordLessAccessToken(
-    context: Readonly<RouterContextProvider>,
-    pwdlessLoginToken: string
-): Promise<ShopperLoginTypes.TokenResponse> {
-    const { getPasswordLessAccessToken: getPasswordLessAccessTokenHelper } = await import(
-        'commerce-sdk-isomorphic/helpers'
-    );
-    const slasClient = await createClient(context).ShopperLogin.getInstance();
+export async function getPasswordLessAccessToken(context: Readonly<RouterContextProvider>, pwdlessLoginToken: string) {
+    const clients = createApiClients(context);
     const performanceTimer = context.get(performanceTimerContext);
     const session = getAuth(context);
     const usid = session.usid;
@@ -353,32 +246,27 @@ export async function getPasswordLessAccessToken(
     // Get tracking consent from auth context (populated from cookies by middleware)
     // This ensures existing tracking consent preference from guest session propagates to registered user session
     // Only process tracking consent if the feature is enabled in config
-    // Note: This helper expects a string dnt parameter (SDK inconsistency)
-    let dntString: string | undefined;
+    let dnt: boolean | undefined;
     if (isTrackingConsentEnabled(context)) {
         try {
             const authData = getAuth(context);
-            // Convert TrackingConsent enum directly to string for this helper
-            // TrackingConsent.Accepted = '0', TrackingConsent.Declined = '1'
-            dntString = authData.trackingConsent;
+            if (authData.trackingConsent) {
+                dnt = trackingConsentToBoolean(authData.trackingConsent);
+            }
         } catch {
-            // If getAuth fails (e.g., middleware not initialized), dntString remains undefined
+            // If getAuth fails (e.g., middleware not initialized), dnt remains undefined
         }
     }
 
-    return getPasswordLessAccessTokenHelper({
-        slasClient,
-        credentials: {
-            clientSecret: getSlasClientSecret(),
-        },
-        parameters: {
+    return await clients.auth.passwordless
+        .exchangeToken({
             pwdlessLoginToken,
-            ...(usid && { usid: String(usid) }),
-            ...(dntString !== undefined && { dnt: dntString }),
-        },
-    }).finally(() => {
-        performanceTimer?.mark(PERFORMANCE_MARKS.authGetPasswordLessAccessToken, 'end');
-    });
+            usid: usid ? String(usid) : undefined,
+            ...(dnt !== undefined && { dnt }),
+        })
+        .finally(() => {
+            performanceTimer?.mark(PERFORMANCE_MARKS.authGetPasswordLessAccessToken, 'end');
+        });
 }
 
 /**
@@ -859,7 +747,7 @@ export const getAuth = (context: Readonly<RouterContextProvider>): AuthData & St
 
 export const updateAuth = (
     context: Readonly<RouterContextProvider>,
-    updater: ShopperLoginTypes.TokenResponse | ((data: AuthData & StorageErrorData) => AuthData & StorageErrorData)
+    updater: TokenResponse | ((data: AuthData & StorageErrorData) => AuthData & StorageErrorData)
 ) => {
     const storage = context.get(authStorageContext);
     const cache = context.get(authCacheContext);

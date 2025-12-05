@@ -1,25 +1,25 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { fetchPage, type PageDesignerPageParams } from './page';
-import createClient from '@/lib/scapi';
+import { fetchPage } from './page';
+import { createApiClients } from '@/lib/api-clients';
 import { createTestContext } from '@/lib/test-utils';
 
-vi.mock('@/lib/scapi', () => ({
-    default: vi.fn(),
+const mockGetPage = vi.fn();
+
+vi.mock('@/lib/api-clients', () => ({
+    createApiClients: vi.fn(() => ({
+        shopperExperience: {
+            getPage: mockGetPage,
+        },
+    })),
 }));
 
 describe('fetchPage', () => {
-    const mockGetPage = vi.fn();
-    const mockClient = {
-        ShopperExperience: {
-            getPage: mockGetPage,
-        },
-    };
-
     const mockContext = createTestContext();
+    const mockCreateApiClients = vi.mocked(createApiClients);
 
     beforeEach(() => {
         vi.clearAllMocks();
-        vi.mocked(createClient).mockReturnValue(mockClient as never);
+        mockGetPage.mockReset();
     });
 
     const basicParameterTestCases = [
@@ -33,41 +33,39 @@ describe('fetchPage', () => {
                 categoryId: 'electronics',
                 productId: 'laptop-001',
             },
-            expectedParameters: {
-                pageId: 'product-page',
-                mode: 'edit',
-                pdToken: 'abc123',
-                aspectType: 'mobile',
-                categoryId: 'electronics',
-                productId: 'laptop-001',
+            expectedParams: {
+                path: { pageId: 'product-page' },
+                query: {
+                    mode: 'edit',
+                    pdToken: 'abc123',
+                    aspectType: 'mobile',
+                    categoryId: 'electronics',
+                    productId: 'laptop-001',
+                },
             },
             mockResult: { id: 'product-page', name: 'Product Detail Page', pageType: 'productDetailPage' },
         },
         {
             description: 'should handle empty parameters',
             inputParameters: { pageId: '' },
-            expectedParameters: {
-                pageId: '',
-                mode: undefined,
-                pdToken: undefined,
-                aspectType: undefined,
-                categoryId: undefined,
-                productId: undefined,
+            expectedParams: {
+                path: { pageId: '' },
+                query: {},
             },
             mockResult: { id: '', name: 'Default Page', pageType: 'storePage' },
         },
     ];
 
-    it.each(basicParameterTestCases)('$description', async ({ inputParameters, expectedParameters, mockResult }) => {
-        mockGetPage.mockResolvedValue(mockResult);
+    it.each(basicParameterTestCases)('$description', async ({ inputParameters, expectedParams, mockResult }) => {
+        mockGetPage.mockResolvedValue({ data: mockResult });
 
         const result = await fetchPage(mockContext, inputParameters);
 
-        expect(createClient).toHaveBeenCalledWith(mockContext);
+        expect(mockCreateApiClients).toHaveBeenCalledWith(mockContext);
         expect(mockGetPage).toHaveBeenCalledWith({
-            parameters: expectedParameters,
+            params: expectedParams,
         });
-        expect(result).toBe(mockResult);
+        expect(result).toEqual(mockResult);
     });
 
     describe('Page Designer design specific parameters', () => {
@@ -81,13 +79,14 @@ describe('fetchPage', () => {
                     categoryId: 'mens-clothing',
                     aspectType: 'category',
                 },
-                expected: {
-                    pageId: 'homepage',
-                    mode: 'edit',
-                    pdToken: 'edit-token-123',
-                    aspectType: 'category',
-                    categoryId: 'mens-clothing',
-                    productId: undefined,
+                expectedParams: {
+                    path: { pageId: 'homepage' },
+                    query: {
+                        mode: 'edit',
+                        pdToken: 'edit-token-123',
+                        aspectType: 'category',
+                        categoryId: 'mens-clothing',
+                    },
                 },
             },
             {
@@ -98,29 +97,29 @@ describe('fetchPage', () => {
                     categoryId: 'mens-shirts',
                     aspectType: 'product',
                 },
-                expected: {
-                    pageId: 'product-template',
-                    mode: undefined,
-                    pdToken: undefined,
-                    aspectType: 'product',
-                    categoryId: 'mens-shirts',
-                    productId: 'shirt-001',
+                expectedParams: {
+                    path: { pageId: 'product-template' },
+                    query: {
+                        aspectType: 'product',
+                        categoryId: 'mens-shirts',
+                        productId: 'shirt-001',
+                    },
                 },
             },
         ];
 
-        it.each(pageDesignerTestCases)('$description', async ({ parameters, expected }) => {
+        it.each(pageDesignerTestCases)('$description', async ({ parameters, expectedParams }) => {
             const mockResult = {
                 id: parameters.pageId,
                 name: 'Test Page',
                 pageType: 'storePage',
             };
-            mockGetPage.mockResolvedValue(mockResult);
+            mockGetPage.mockResolvedValue({ data: mockResult });
 
             await fetchPage(mockContext, parameters);
 
             expect(mockGetPage).toHaveBeenCalledWith({
-                parameters: expected,
+                params: expectedParams,
             });
         });
     });
@@ -163,14 +162,10 @@ describe('fetchPage', () => {
 
                 if (shouldCheckParameters) {
                     expect(mockGetPage).toHaveBeenCalledWith({
-                        parameters: {
-                            pageId: inputParameters.pageId,
-                            mode: (inputParameters as PageDesignerPageParams).mode,
-                            pdToken: (inputParameters as PageDesignerPageParams).pdToken,
-                            aspectType: (inputParameters as PageDesignerPageParams).aspectType,
-                            categoryId: (inputParameters as PageDesignerPageParams).categoryId,
-                            productId: (inputParameters as PageDesignerPageParams).productId,
-                        } as PageDesignerPageParams,
+                        params: {
+                            path: { pageId: inputParameters.pageId },
+                            query: {},
+                        },
                     });
                 }
             }
@@ -197,58 +192,50 @@ describe('fetchPage', () => {
                     },
                 },
                 inputParameters: { pageId: 'test-page' },
-                shouldCheckReference: true,
             },
             {
                 description: 'should handle empty page response',
                 mockPageResponse: {},
                 inputParameters: { pageId: 'empty-page' },
-                shouldCheckReference: false,
             },
         ];
 
-        it.each(returnValueTestCases)(
-            '$description',
-            async ({ mockPageResponse, inputParameters, shouldCheckReference }) => {
-                mockGetPage.mockResolvedValue(mockPageResponse);
+        it.each(returnValueTestCases)('$description', async ({ mockPageResponse, inputParameters }) => {
+            mockGetPage.mockResolvedValue({ data: mockPageResponse });
 
-                const result = await fetchPage(mockContext, inputParameters);
+            const result = await fetchPage(mockContext, inputParameters);
 
-                expect(result).toEqual(mockPageResponse);
-                if (shouldCheckReference) {
-                    expect(result).toBe(mockPageResponse);
-                }
-            }
-        );
+            expect(result).toEqual(mockPageResponse);
+        });
     });
 
     describe('context usage', () => {
         const contextTestCases = [
             {
-                description: 'should pass the correct context to createClient',
+                description: 'should pass the correct context to createApiClients',
                 testFunction: async () => {
                     const customContext = createTestContext();
                     const mockResult = { id: 'test', name: 'Test Page', pageType: 'storePage' };
-                    mockGetPage.mockResolvedValue(mockResult);
+                    mockGetPage.mockResolvedValue({ data: mockResult });
 
                     await fetchPage(customContext, { pageId: 'test' });
 
-                    expect(createClient).toHaveBeenCalledWith(customContext);
-                    expect(createClient).toHaveBeenCalledTimes(1);
+                    expect(mockCreateApiClients).toHaveBeenCalledWith(customContext);
+                    expect(mockCreateApiClients).toHaveBeenCalledTimes(1);
                 },
             },
             {
                 description: 'should create a new client instance for each call',
                 testFunction: async () => {
                     const mockResult = { id: 'test', name: 'Test Page', pageType: 'storePage' };
-                    mockGetPage.mockResolvedValue(mockResult);
+                    mockGetPage.mockResolvedValue({ data: mockResult });
 
                     await fetchPage(mockContext, { pageId: 'test1' });
                     await fetchPage(mockContext, { pageId: 'test2' });
 
-                    expect(createClient).toHaveBeenCalledTimes(2);
-                    expect(createClient).toHaveBeenNthCalledWith(1, mockContext);
-                    expect(createClient).toHaveBeenNthCalledWith(2, mockContext);
+                    expect(mockCreateApiClients).toHaveBeenCalledTimes(2);
+                    expect(mockCreateApiClients).toHaveBeenNthCalledWith(1, mockContext);
+                    expect(mockCreateApiClients).toHaveBeenNthCalledWith(2, mockContext);
                 },
             },
         ];

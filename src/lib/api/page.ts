@@ -1,6 +1,6 @@
 import { type LoaderFunctionArgs } from 'react-router';
 import type { ShopperExperienceTypes } from 'commerce-sdk-isomorphic';
-import createClient from '@/lib/scapi';
+import { createApiClients } from '@/lib/api-clients';
 
 export type PageDesignerPageParams = {
     pageId: string;
@@ -11,20 +11,25 @@ export type PageDesignerPageParams = {
     productId?: string;
 };
 
-export const fetchPage = (
+export const fetchPage = async (
     context: LoaderFunctionArgs['context'],
     parameters: PageDesignerPageParams
 ): Promise<ShopperExperienceTypes.Page> => {
     const { pageId = '', pdToken, mode, aspectType, categoryId, productId } = parameters || {};
+    const clients = createApiClients(context);
 
-    return createClient(context).ShopperExperience.getPage({
-        parameters: {
-            pageId,
-            mode,
-            pdToken,
-            aspectType,
-            categoryId,
-            productId,
+    const result = await clients.shopperExperience.getPage({
+        params: {
+            path: { pageId },
+            query: {
+                ...(mode && { mode }),
+                ...(pdToken && { pdToken }),
+                ...(aspectType && { aspectType }),
+                ...(categoryId && { categoryId }),
+                ...(productId && { productId }),
+            },
         },
     });
+
+    return result.data;
 };

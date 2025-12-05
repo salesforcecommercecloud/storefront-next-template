@@ -1,12 +1,8 @@
 import { redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from 'react-router';
-import {
-    authorizeIDP as authorizeIDPHelper,
-    loginIDPUser as loginIDPUserHelper,
-} from 'commerce-sdk-isomorphic/helpers';
 import { flashAuth, getAuth, updateAuth } from '@/middlewares/auth.server';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
-import { extractResponseError } from '@/lib/utils';
-import createClient from '@/lib/scapi';
+import { extractResponseError, getAppOrigin } from '@/lib/utils';
+import { createApiClients } from '@/lib/api-clients';
 import { getConfig } from '@/config';
 import { mergeBasket } from '@/lib/api/basket';
 import { getTranslation } from '@/lib/i18next';
@@ -36,19 +32,16 @@ export const authorizeIDP = async (
     try {
         const config = getConfig(context);
         const session = getAuth(context);
-        const slasClient = await createClient(context).ShopperLogin.getInstance();
+        const clients = createApiClients(context);
+
         // SLAS will redirect to this URL after processing the social login
-        const redirectURI = parameters.redirectURI || slasClient.clientConfig.parameters.redirectURI;
+        const redirectUri = parameters.redirectURI || `${getAppOrigin()}${config.commerce.api.callback}`;
         const usid = parameters.usid || session.usid;
 
-        const { url, codeVerifier } = await authorizeIDPHelper({
-            slasClient,
-            parameters: {
-                redirectURI,
-                hint: parameters.hint || '',
-                ...(usid && { usid }),
-            },
-            privateClient: config.commerce.api.privateKeyEnabled,
+        const { url, codeVerifier } = await clients.auth.social.getAuthorizationUrl({
+            hint: parameters.hint || '',
+            redirectUri,
+            ...(usid && { usid }),
         });
 
         // Store the code verifier in the session for later use
@@ -84,12 +77,10 @@ export const loginIDPUser = async (
 
     try {
         const session = getAuth(context);
-        const slasClient = await createClient(context).ShopperLogin.getInstance();
+        const clients = createApiClients(context);
         const codeVerifier = session.codeVerifier;
         const code = parameters.code;
         const usid = parameters.usid || session.usid;
-        const config = getConfig(context);
-        const isSlasPrivate = config.commerce.api.privateKeyEnabled;
 
         if (!codeVerifier) {
             throw new Error(t('errors:codeVerifierMissing'));
@@ -111,20 +102,12 @@ export const loginIDPUser = async (
             }
         }
 
-        const res = await loginIDPUserHelper({
-            slasClient,
-            credentials: {
-                codeVerifier,
-                ...(isSlasPrivate && {
-                    clientSecret: process.env.COMMERCE_API_SLAS_SECRET,
-                }),
-            },
-            parameters: {
-                redirectURI: parameters.redirectURI,
-                code,
-                ...(usid && { usid: String(usid) }),
-                ...(dnt !== undefined && { dnt }),
-            },
+        const res = await clients.auth.social.exchangeCode({
+            code,
+            codeVerifier,
+            redirectUri: parameters.redirectURI,
+            ...(usid && { usid: String(usid) }),
+            ...(dnt !== undefined && { dnt }),
         });
 
         // Update session with user tokens and info (similar to standard login)

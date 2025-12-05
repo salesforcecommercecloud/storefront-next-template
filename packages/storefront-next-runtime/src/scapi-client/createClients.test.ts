@@ -7,9 +7,70 @@ describe('createCommerceApiClients', () => {
     const baseUrl = 'https://test.commercecloud.salesforce.com';
     const organizationId = 'f_ecom_test_prd';
     const siteId = 'RefArch';
+    const clientId = 'test-client-id';
+    const redirectUri = 'https://example.com/callback';
 
     // Default config with required injection parameters
-    const defaultConfig = { baseUrl, organizationId, siteId };
+    const defaultConfig = { baseUrl, organizationId, siteId, clientId, redirectUri };
+
+    describe('required parameter validation', () => {
+        it('should throw error when clientId is missing', () => {
+            expect(() =>
+                createCommerceApiClients({
+                    ...defaultConfig,
+                    clientId: '',
+                })
+            ).toThrow('Missing required configuration: clientId');
+        });
+
+        it('should throw error when organizationId is missing', () => {
+            expect(() =>
+                createCommerceApiClients({
+                    ...defaultConfig,
+                    organizationId: '',
+                })
+            ).toThrow('Missing required configuration: organizationId');
+        });
+
+        it('should throw error when baseUrl is missing', () => {
+            expect(() =>
+                createCommerceApiClients({
+                    ...defaultConfig,
+                    baseUrl: '',
+                })
+            ).toThrow('Missing required configuration: baseUrl');
+        });
+
+        it('should throw error when siteId is missing', () => {
+            expect(() =>
+                createCommerceApiClients({
+                    ...defaultConfig,
+                    siteId: '',
+                })
+            ).toThrow('Missing required configuration: siteId');
+        });
+
+        it('should throw error when redirectUri is missing', () => {
+            expect(() =>
+                createCommerceApiClients({
+                    ...defaultConfig,
+                    redirectUri: '',
+                })
+            ).toThrow('Missing required configuration: redirectUri');
+        });
+
+        it('should list all missing parameters in error message', () => {
+            expect(() =>
+                createCommerceApiClients({
+                    baseUrl: '',
+                    organizationId: '',
+                    siteId: '',
+                    clientId: '',
+                    redirectUri: '',
+                })
+            ).toThrow('Missing required configuration: baseUrl, organizationId, siteId, clientId, redirectUri');
+        });
+    });
 
     describe('client creation', () => {
         it('should create all required client instances', () => {
@@ -29,6 +90,16 @@ describe('createCommerceApiClients', () => {
             expect(clients.shopperSearch).toBeDefined();
             expect(clients.shopperSeo).toBeDefined();
             expect(clients.shopperStores).toBeDefined();
+        });
+
+        it('should create auth namespace with all methods', () => {
+            const clients = createCommerceApiClients(defaultConfig);
+
+            expect(clients.auth).toBeDefined();
+            expect(typeof clients.auth.loginAsGuest).toBe('function');
+            expect(typeof clients.auth.loginWithCredentials).toBe('function');
+            expect(typeof clients.auth.refreshToken).toBe('function');
+            expect(typeof clients.auth.logout).toBe('function');
         });
 
         it('should create a use method', () => {

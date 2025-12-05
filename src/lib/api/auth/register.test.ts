@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { ActionFunctionArgs } from 'react-router';
 import { registerCustomer } from './register';
 import { loginRegisteredUser } from './standard-login';
-import createClient from '@/lib/scapi';
+import { createApiClients } from '@/lib/api-clients';
 import { getTranslation } from '@/lib/i18next';
 
 const { t } = getTranslation();
@@ -12,30 +12,25 @@ vi.mock('./standard-login', () => ({
     loginRegisteredUser: vi.fn(),
 }));
 
-// Mock scapi client
-vi.mock('@/lib/scapi', () => ({
-    default: vi.fn(() => ({
-        ShopperCustomers: {
-            registerCustomer: vi.fn(),
+// Mock shopperCustomers client
+const mockRegisterCustomer = vi.fn();
+
+vi.mock('@/lib/api-clients', () => ({
+    createApiClients: vi.fn(() => ({
+        shopperCustomers: {
+            registerCustomer: mockRegisterCustomer,
         },
     })),
 }));
 
 describe('registerCustomer', () => {
     const mockContext = {} as unknown as ActionFunctionArgs['context'];
-    const mockRegisterCustomer = vi.fn();
     const mockLoginRegisteredUser = vi.mocked(loginRegisteredUser);
-    const mockCreateClient = vi.mocked(createClient);
+    const mockCreateApiClients = vi.mocked(createApiClients);
 
     beforeEach(() => {
         vi.clearAllMocks();
-
-        // Setup default mocks
-        mockCreateClient.mockReturnValue({
-            ShopperCustomers: {
-                registerCustomer: mockRegisterCustomer,
-            },
-        } as any);
+        mockRegisterCustomer.mockReset();
     });
 
     afterEach(() => {
@@ -59,10 +54,11 @@ describe('registerCustomer', () => {
             const result = await registerCustomer(mockContext, registrationData);
 
             // Verify client creation
-            expect(mockCreateClient).toHaveBeenCalledWith(mockContext);
+            expect(mockCreateApiClients).toHaveBeenCalledWith(mockContext);
 
             // Verify registerCustomer was called with correct data
             expect(mockRegisterCustomer).toHaveBeenCalledWith({
+                params: {},
                 body: {
                     customer: {
                         login: 'test@example.com',
@@ -107,6 +103,7 @@ describe('registerCustomer', () => {
 
             // Verify registerCustomer doesn't receive custom parameters
             expect(mockRegisterCustomer).toHaveBeenCalledWith({
+                params: {},
                 body: {
                     customer: {
                         login: 'test@example.com',

@@ -24655,6 +24655,488 @@ type ProxyClient<TClient extends Client<any, any>, TOperations extends Operation
  */
 type OperationMethodsOnly<T> = T extends ProxyClient<any, any> ? Omit<T, 'use' | 'eject'> : never;
 //#endregion
+//#region src/scapi-client/generated/shopper-login-v1.operations.d.ts
+declare const operations$7: {
+  readonly authenticateCustomer: {
+    readonly m: "POST";
+    readonly b: "/organizations/{organizationId}/oauth2";
+    readonly s: "/login";
+  };
+  readonly authorizePasswordlessCustomer: {
+    readonly m: "POST";
+    readonly b: "/organizations/{organizationId}/oauth2";
+    readonly s: "/passwordless/login";
+  };
+  readonly logoutCustomer: {
+    readonly m: "GET";
+    readonly b: "/organizations/{organizationId}/oauth2";
+    readonly s: "/logout";
+  };
+  readonly authorizeCustomer: {
+    readonly m: "GET";
+    readonly b: "/organizations/{organizationId}/oauth2";
+    readonly s: "/authorize";
+  };
+  readonly getAccessToken: {
+    readonly m: "POST";
+    readonly b: "/organizations/{organizationId}/oauth2";
+    readonly s: "/token";
+  };
+  readonly getSessionBridgeAccessToken: {
+    readonly m: "POST";
+    readonly b: "/organizations/{organizationId}/oauth2";
+    readonly s: "/session-bridge/token";
+  };
+  readonly getTrustedSystemAccessToken: {
+    readonly m: "POST";
+    readonly b: "/organizations/{organizationId}/oauth2";
+    readonly s: "/trusted-system/token";
+  };
+  readonly getTrustedAgentAuthorizationToken: {
+    readonly m: "GET";
+    readonly b: "/organizations/{organizationId}/oauth2";
+    readonly s: "/trusted-agent/authorize";
+  };
+  readonly getTrustedAgentAccessToken: {
+    readonly m: "POST";
+    readonly b: "/organizations/{organizationId}/oauth2";
+    readonly s: "/trusted-agent/token";
+  };
+  readonly getPasswordResetToken: {
+    readonly m: "POST";
+    readonly b: "/organizations/{organizationId}/oauth2";
+    readonly s: "/password/reset";
+  };
+  readonly resetPassword: {
+    readonly m: "POST";
+    readonly b: "/organizations/{organizationId}/oauth2";
+    readonly s: "/password/action";
+  };
+  readonly getPasswordLessAccessToken: {
+    readonly m: "POST";
+    readonly b: "/organizations/{organizationId}/oauth2";
+    readonly s: "/passwordless/token";
+  };
+  readonly revokeToken: {
+    readonly m: "POST";
+    readonly b: "/organizations/{organizationId}/oauth2";
+    readonly s: "/revoke";
+  };
+  readonly introspectToken: {
+    readonly m: "POST";
+    readonly b: "/organizations/{organizationId}/oauth2";
+    readonly s: "/introspect";
+  };
+  readonly getUserInfo: {
+    readonly m: "GET";
+    readonly b: "/organizations/{organizationId}/oauth2";
+    readonly s: "/userinfo";
+  };
+  readonly getWellknownOpenidConfiguration: {
+    readonly m: "GET";
+    readonly b: "/organizations/{organizationId}/oauth2";
+    readonly s: "/.well-known/openid-configuration";
+  };
+  readonly getJwksUri: {
+    readonly m: "GET";
+    readonly b: "/organizations/{organizationId}/oauth2";
+    readonly s: "/jwks";
+  };
+};
+//#endregion
+//#region src/scapi-client/auth/types.d.ts
+/**
+ * Re-export TokenResponse from the generated SLAS types for convenience.
+ * This is the response structure returned by all auth methods.
+ */
+type TokenResponse = ShopperLogin.schemas['TokenResponse'];
+/**
+ * The ShopperLogin client type used internally by auth helpers.
+ */
+type ShopperLoginClient = ProxyClient<Client<ShopperLogin.endpoints>, typeof operations$7>;
+/**
+ * Configuration required to create auth helpers.
+ *
+ * These parameters are provided at client creation time and are used
+ * by all auth methods automatically.
+ */
+interface AuthConfig {
+  /** The configured ShopperLogin client instance */
+  shopperLoginClient: ShopperLoginClient;
+  /** SLAS client ID */
+  clientId: string;
+  /** SLAS client secret (required for private client operations) */
+  clientSecret?: string;
+  /** OAuth redirect URI - must be registered in SLAS */
+  redirectUri: string;
+  /** Commerce Cloud organization ID */
+  organizationId: string;
+  /** Commerce Cloud site ID (channel ID) */
+  siteId: string;
+  /** Base URL for Commerce API (e.g., 'https://{shortCode}.api.commercecloud.salesforce.com') */
+  baseUrl: string;
+}
+/**
+ * Options for guest login.
+ */
+interface LoginAsGuestOptions {
+  /** Unique Shopper Identifier to link to a previous session */
+  usid?: string;
+  /** Enable Do Not Track for the user */
+  dnt?: boolean;
+}
+/**
+ * Options for registered user login with credentials.
+ */
+interface LoginWithCredentialsOptions {
+  /** User's email/username */
+  username: string;
+  /** User's password */
+  password: string;
+  /** Unique Shopper Identifier to link to a previous session */
+  usid?: string;
+  /** Enable Do Not Track for the user */
+  dnt?: boolean;
+}
+/**
+ * Options for refreshing an access token.
+ */
+interface RefreshTokenOptions {
+  /** The refresh token to exchange for a new access token */
+  refreshToken: string;
+  /** Enable Do Not Track for the user */
+  dnt?: boolean;
+}
+/**
+ * Options for logging out a user.
+ */
+interface LogoutOptions {
+  /** The current access token */
+  accessToken: string;
+  /** The current refresh token */
+  refreshToken: string;
+}
+/**
+ * Options for initiating passwordless login.
+ */
+interface PasswordlessAuthorizeOptions {
+  /** User identifier (email or phone) */
+  userId: string;
+  /** Callback URI for the magic link (required for 'callback' mode) */
+  callbackUri?: string;
+  /** Unique Shopper Identifier to link to a previous session */
+  usid?: string;
+  /** Login mode: 'callback' for magic link, 'sms' for SMS code */
+  mode?: 'callback' | 'sms';
+}
+/**
+ * Options for exchanging a passwordless login token for access tokens.
+ */
+interface PasswordlessExchangeTokenOptions {
+  /** The passwordless login token from the magic link */
+  pwdlessLoginToken: string;
+  /** Unique Shopper Identifier to link to a previous session */
+  usid?: string;
+  /** Enable Do Not Track for the user */
+  dnt?: boolean;
+}
+/**
+ * Options for requesting a password reset.
+ */
+interface PasswordRequestResetOptions {
+  /** User's email address */
+  userId: string;
+  /** Callback URI for the password reset link */
+  callbackUri: string;
+}
+/**
+ * Options for resetting a password with a token.
+ */
+interface PasswordResetOptions {
+  /** User's email address */
+  userId: string;
+  /** Password reset token from the magic link */
+  token: string;
+  /** New password to set */
+  newPassword: string;
+}
+/**
+ * Options for getting a social login authorization URL.
+ */
+interface SocialGetAuthorizationUrlOptions {
+  /**
+   * The identity provider hint (e.g., 'google', 'facebook', 'apple').
+   * This determines which social login provider to redirect to.
+   */
+  hint: string;
+  /** Override the default redirect URI for this request */
+  redirectUri?: string;
+  /** Unique Shopper Identifier to link to a previous session */
+  usid?: string;
+}
+/**
+ * Result from getAuthorizationUrl containing the redirect URL and code verifier.
+ */
+interface SocialAuthorizationUrlResult {
+  /** The URL to redirect the user to for social login */
+  url: string;
+  /**
+   * The PKCE code verifier that must be stored and passed to exchangeCode().
+   * Store this securely (e.g., in an httpOnly cookie) until the user returns.
+   */
+  codeVerifier: string;
+}
+/**
+ * Options for exchanging a social login authorization code for tokens.
+ */
+interface SocialExchangeCodeOptions {
+  /** The authorization code from the social provider callback */
+  code: string;
+  /** The PKCE code verifier from getAuthorizationUrl() */
+  codeVerifier: string;
+  /** The redirect URI that was used for authorization (must match) */
+  redirectUri: string;
+  /** Unique Shopper Identifier to link to a previous session */
+  usid?: string;
+  /** Enable Do Not Track for the user */
+  dnt?: boolean;
+}
+/**
+ * Social/IDP login namespace.
+ * Provides methods for social login via identity providers (Google, Facebook, Apple, etc.).
+ */
+interface SocialNamespace {
+  /**
+   * Get the authorization URL for social login.
+   *
+   * Generates a PKCE code verifier and returns the URL to redirect the user to.
+   * The code verifier must be stored securely and passed to exchangeCode() after
+   * the user returns from the social provider.
+   *
+   * @param options - The IDP hint and optional parameters
+   * @returns Promise resolving to the authorization URL and code verifier
+   *
+   * @example
+   * ```typescript
+   * const { url, codeVerifier } = await clients.auth.social.getAuthorizationUrl({
+   *   hint: 'google',
+   * });
+   * // Store codeVerifier in httpOnly cookie
+   * // Redirect user to url
+   * ```
+   */
+  getAuthorizationUrl(options: SocialGetAuthorizationUrlOptions): Promise<SocialAuthorizationUrlResult>;
+  /**
+   * Exchange an authorization code from a social provider for access tokens.
+   *
+   * Called after the user returns from the social provider with an authorization code.
+   * Requires the code verifier that was returned from getAuthorizationUrl().
+   *
+   * @param options - The authorization code, code verifier, and redirect URI
+   * @returns Promise resolving to TokenResponse with access and refresh tokens
+   *
+   * @example
+   * ```typescript
+   * const tokens = await clients.auth.social.exchangeCode({
+   *   code: callbackParams.code,
+   *   codeVerifier: storedCodeVerifier,
+   *   redirectUri: 'https://example.com/social-callback',
+   * });
+   * ```
+   */
+  exchangeCode(options: SocialExchangeCodeOptions): Promise<TokenResponse>;
+}
+/**
+ * Passwordless login namespace.
+ * Only available when clientSecret is configured (private SLAS client).
+ */
+interface PasswordlessNamespace {
+  /**
+   * Initiate passwordless login by sending a magic link to the user.
+   *
+   * @param options - User identifier and callback configuration
+   * @returns Promise resolving to the API response (inferred from ShopperLogin client)
+   */
+  authorize(options: PasswordlessAuthorizeOptions): ReturnType<ShopperLoginClient['authorizePasswordlessCustomer']>;
+  /**
+   * Exchange a passwordless login token for access tokens.
+   *
+   * Similar to social.exchangeCode(), this returns the unwrapped TokenResponse
+   * for direct use with session management (e.g., updateAuth).
+   *
+   * @param options - The passwordless token and optional parameters
+   * @returns Promise resolving to TokenResponse with access and refresh tokens
+   */
+  exchangeToken(options: PasswordlessExchangeTokenOptions): Promise<TokenResponse>;
+}
+/**
+ * Password management namespace.
+ */
+interface PasswordNamespace {
+  /**
+   * Request a password reset token to be sent to the user's email.
+   *
+   * @param options - User email and callback URI
+   * @returns Promise resolving to the API response (inferred from ShopperLogin client)
+   */
+  requestReset(options: PasswordRequestResetOptions): ReturnType<ShopperLoginClient['getPasswordResetToken']>;
+  /**
+   * Reset a user's password using a reset token.
+   *
+   * @param options - Email, reset token, and new password
+   * @returns Promise resolving to the API response (inferred from ShopperLogin client)
+   */
+  reset(options: PasswordResetOptions): ReturnType<ShopperLoginClient['resetPassword']>;
+}
+/**
+ * Core authentication namespace.
+ *
+ * Provides methods for authentication operations:
+ * - Guest login (public or private client)
+ * - Registered user login with credentials
+ * - Token refresh
+ * - Logout
+ * - Passwordless login (via `passwordless` sub-namespace)
+ * - Password reset (via `password` sub-namespace)
+ *
+ * All methods that complete login return a TokenResponse containing access_token, refresh_token, etc.
+ */
+interface AuthNamespace {
+  /**
+   * Login as a guest user.
+   *
+   * For public SLAS clients, uses PKCE (Proof Key for Code Exchange) flow.
+   * For private SLAS clients (with clientSecret), uses client_credentials grant.
+   *
+   * @param options - Optional parameters for guest login
+   * @returns Promise resolving to TokenResponse with access and refresh tokens
+   *
+   * @example
+   * ```typescript
+   * // Simple guest login
+   * const tokens = await clients.auth.loginAsGuest();
+   *
+   * // With session linking
+   * const tokens = await clients.auth.loginAsGuest({ usid: 'previous-session-id' });
+   * ```
+   */
+  loginAsGuest(options?: LoginAsGuestOptions): Promise<TokenResponse>;
+  /**
+   * Login with username and password credentials.
+   *
+   * Uses the B2C registered user login flow with PKCE.
+   * For private SLAS clients, the client secret is used for enhanced security.
+   *
+   * @param credentials - User credentials and optional parameters
+   * @returns Promise resolving to TokenResponse with access and refresh tokens
+   *
+   * @example
+   * ```typescript
+   * const tokens = await clients.auth.loginWithCredentials({
+   *   username: 'user@example.com',
+   *   password: 'password123'
+   * });
+   * ```
+   */
+  loginWithCredentials(credentials: LoginWithCredentialsOptions): Promise<TokenResponse>;
+  /**
+   * Refresh an access token using a refresh token.
+   *
+   * Use this to obtain a new access token when the current one expires.
+   * The refresh token has a longer lifetime (typically 30 days).
+   *
+   * @param options - The refresh token and optional parameters
+   * @returns Promise resolving to TokenResponse with new tokens
+   *
+   * @example
+   * ```typescript
+   * const newTokens = await clients.auth.refreshToken({
+   *   refreshToken: storedRefreshToken
+   * });
+   * ```
+   */
+  refreshToken(options: RefreshTokenOptions): Promise<TokenResponse>;
+  /**
+   * Logout a shopper and revoke tokens.
+   *
+   * Revokes both the access token and refresh token.
+   * After logout, the tokens can no longer be used.
+   *
+   * @param options - The access and refresh tokens to revoke
+   * @returns Promise resolving to TokenResponse
+   *
+   * @example
+   * ```typescript
+   * await clients.auth.logout({
+   *   accessToken: currentAccessToken,
+   *   refreshToken: currentRefreshToken
+   * });
+   * ```
+   */
+  logout(options: LogoutOptions): Promise<TokenResponse>;
+  /**
+   * Social/IDP login namespace.
+   * Provides methods for social login via Google, Facebook, Apple, etc.
+   *
+   * @example
+   * ```typescript
+   * // Step 1: Get authorization URL and redirect user
+   * const { url, codeVerifier } = await clients.auth.social.getAuthorizationUrl({
+   *   hint: 'google',
+   * });
+   * // Store codeVerifier securely, then redirect user to url
+   *
+   * // Step 2: After user returns, exchange code for tokens
+   * const tokens = await clients.auth.social.exchangeCode({
+   *   code: callbackParams.code,
+   *   codeVerifier: storedCodeVerifier,
+   *   redirectUri: 'https://example.com/social-callback',
+   * });
+   * ```
+   */
+  social: SocialNamespace;
+  /**
+   * Passwordless login namespace.
+   * Only available when clientSecret is configured (private SLAS client).
+   *
+   * @example
+   * ```typescript
+   * // Send magic link
+   * await clients.auth.passwordless.authorize({
+   *   userId: 'user@example.com',
+   *   callbackUri: 'https://example.com/passwordless-callback',
+   *   mode: 'callback'
+   * });
+   *
+   * // Exchange token from magic link
+   * const tokens = await clients.auth.passwordless.exchangeToken({
+   *   pwdlessLoginToken: tokenFromUrl
+   * });
+   * ```
+   */
+  passwordless: PasswordlessNamespace;
+  /**
+   * Password management namespace.
+   *
+   * @example
+   * ```typescript
+   * // Request password reset
+   * await clients.auth.password.requestReset({
+   *   userId: 'user@example.com',
+   *   callbackUri: 'https://example.com/reset-password'
+   * });
+   *
+   * // Reset password with token
+   * await clients.auth.password.reset({
+   *   userId: 'user@example.com',
+   *   token: tokenFromUrl,
+   *   newPassword: 'newSecurePassword123'
+   * });
+   * ```
+   */
+  password: PasswordNamespace;
+}
+//#endregion
 //#region src/scapi-client/generated/shopper-baskets-v1.operations.d.ts
 declare const operations: {
   readonly createBasket: {
@@ -25243,95 +25725,6 @@ declare const operations$6: {
   };
 };
 //#endregion
-//#region src/scapi-client/generated/shopper-login-v1.operations.d.ts
-declare const operations$7: {
-  readonly authenticateCustomer: {
-    readonly m: "POST";
-    readonly b: "/organizations/{organizationId}/oauth2";
-    readonly s: "/login";
-  };
-  readonly authorizePasswordlessCustomer: {
-    readonly m: "POST";
-    readonly b: "/organizations/{organizationId}/oauth2";
-    readonly s: "/passwordless/login";
-  };
-  readonly logoutCustomer: {
-    readonly m: "GET";
-    readonly b: "/organizations/{organizationId}/oauth2";
-    readonly s: "/logout";
-  };
-  readonly authorizeCustomer: {
-    readonly m: "GET";
-    readonly b: "/organizations/{organizationId}/oauth2";
-    readonly s: "/authorize";
-  };
-  readonly getAccessToken: {
-    readonly m: "POST";
-    readonly b: "/organizations/{organizationId}/oauth2";
-    readonly s: "/token";
-  };
-  readonly getSessionBridgeAccessToken: {
-    readonly m: "POST";
-    readonly b: "/organizations/{organizationId}/oauth2";
-    readonly s: "/session-bridge/token";
-  };
-  readonly getTrustedSystemAccessToken: {
-    readonly m: "POST";
-    readonly b: "/organizations/{organizationId}/oauth2";
-    readonly s: "/trusted-system/token";
-  };
-  readonly getTrustedAgentAuthorizationToken: {
-    readonly m: "GET";
-    readonly b: "/organizations/{organizationId}/oauth2";
-    readonly s: "/trusted-agent/authorize";
-  };
-  readonly getTrustedAgentAccessToken: {
-    readonly m: "POST";
-    readonly b: "/organizations/{organizationId}/oauth2";
-    readonly s: "/trusted-agent/token";
-  };
-  readonly getPasswordResetToken: {
-    readonly m: "POST";
-    readonly b: "/organizations/{organizationId}/oauth2";
-    readonly s: "/password/reset";
-  };
-  readonly resetPassword: {
-    readonly m: "POST";
-    readonly b: "/organizations/{organizationId}/oauth2";
-    readonly s: "/password/action";
-  };
-  readonly getPasswordLessAccessToken: {
-    readonly m: "POST";
-    readonly b: "/organizations/{organizationId}/oauth2";
-    readonly s: "/passwordless/token";
-  };
-  readonly revokeToken: {
-    readonly m: "POST";
-    readonly b: "/organizations/{organizationId}/oauth2";
-    readonly s: "/revoke";
-  };
-  readonly introspectToken: {
-    readonly m: "POST";
-    readonly b: "/organizations/{organizationId}/oauth2";
-    readonly s: "/introspect";
-  };
-  readonly getUserInfo: {
-    readonly m: "GET";
-    readonly b: "/organizations/{organizationId}/oauth2";
-    readonly s: "/userinfo";
-  };
-  readonly getWellknownOpenidConfiguration: {
-    readonly m: "GET";
-    readonly b: "/organizations/{organizationId}/oauth2";
-    readonly s: "/.well-known/openid-configuration";
-  };
-  readonly getJwksUri: {
-    readonly m: "GET";
-    readonly b: "/organizations/{organizationId}/oauth2";
-    readonly s: "/jwks";
-  };
-};
-//#endregion
 //#region src/scapi-client/generated/shopper-orders-v1.operations.d.ts
 declare const operations$8: {
   readonly createOrder: {
@@ -25459,10 +25852,18 @@ declare const operations$13: {
  * which will be automatically merged into all API calls as global request parameters.
  */
 interface CommerceApiClientConfig extends ClientOptions {
+  /** Base URL for Commerce API (required for building auth URLs) */
+  baseUrl: string;
   /** Organization ID - automatically merged into path parameters */
   organizationId: string;
   /** Site ID - automatically merged into query parameters */
   siteId: string;
+  /** SLAS client ID - required for auth operations */
+  clientId: string;
+  /** SLAS client secret - required for private client auth operations */
+  clientSecret?: string;
+  /** OAuth redirect URI - must be registered in SLAS configuration */
+  redirectUri: string;
 }
 type Clients = {
   shopperBasketsV1: ProxyClient<Client<ShopperBasketsV1.endpoints>, typeof operations>;
@@ -25479,6 +25880,8 @@ type Clients = {
   shopperSearch: ProxyClient<Client<ShopperSearch.endpoints>, typeof operations$11>;
   shopperSeo: ProxyClient<Client<ShopperSeo.endpoints>, typeof operations$12>;
   shopperStores: ProxyClient<Client<ShopperStores.endpoints>, typeof operations$13>;
+  /** Authentication helpers for SLAS operations */
+  auth: AuthNamespace;
   use: (middleware: Middleware) => void;
 };
 declare function createCommerceApiClients(config: CommerceApiClientConfig): Clients;
@@ -25668,5 +26071,24 @@ declare class ApiError extends Error {
   };
 }
 //#endregion
-export { ApiError, Clients, CommerceApiClientConfig, type ErrorDetail, GlobalRequestParameters, type OperationMethodsOnly, ShopperBasketsV1, ShopperBasketsV2, ShopperConsents, ShopperContext, ShopperCustomers, ShopperExperience, ShopperGiftCertificates, ShopperLogin, ShopperOrders, ShopperProducts, ShopperPromotions, ShopperSearch, ShopperSeo, ShopperStores, createClient, createCommerceApiClients };
+//#region src/scapi-client/constants.d.ts
+/**
+ * Path patterns for SLAS authentication endpoints.
+ * These endpoints handle their own authentication (Basic auth, PKCE, etc.)
+ * and should NOT have Bearer tokens auto-injected by middleware.
+ *
+ * Use with URL.pathname.includes() to check if a request targets a SLAS auth endpoint.
+ *
+ * @example
+ * ```typescript
+ * const isSlasAuthEndpoint = SLAS_AUTH_ENDPOINTS.some(path => url.pathname.includes(path));
+ * if (isSlasAuthEndpoint) {
+ *     // Skip Bearer token injection - endpoint handles its own auth
+ *     return request;
+ * }
+ * ```
+ */
+declare const SLAS_AUTH_ENDPOINTS: readonly ["/oauth2/token", "/oauth2/authorize", "/oauth2/logout", "/oauth2/login", "/oauth2/passwordless", "/oauth2/password", "/oauth2/session-bridge", "/oauth2/trusted-agent", "/oauth2/trusted-system", "/oauth2/revoke", "/oauth2/introspect"];
+//#endregion
+export { ApiError, type AuthConfig, type AuthNamespace, Clients, CommerceApiClientConfig, type ErrorDetail, GlobalRequestParameters, type LoginAsGuestOptions, type LoginWithCredentialsOptions, type LogoutOptions, type OperationMethodsOnly, type PasswordRequestResetOptions, type PasswordResetOptions, type PasswordlessAuthorizeOptions, type PasswordlessExchangeTokenOptions, type RefreshTokenOptions, SLAS_AUTH_ENDPOINTS, ShopperBasketsV1, ShopperBasketsV2, ShopperConsents, ShopperContext, ShopperCustomers, ShopperExperience, ShopperGiftCertificates, ShopperLogin, ShopperOrders, ShopperProducts, ShopperPromotions, ShopperSearch, ShopperSeo, ShopperStores, type SocialAuthorizationUrlResult, type SocialExchangeCodeOptions, type SocialGetAuthorizationUrlOptions, type TokenResponse, createClient, createCommerceApiClients };
 //# sourceMappingURL=scapi.d.ts.map

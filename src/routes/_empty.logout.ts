@@ -2,7 +2,7 @@ import { type ActionFunctionArgs, type ClientActionFunctionArgs, redirect } from
 import { destroyAuth as destroyAuthServer, getAuth } from '@/middlewares/auth.server';
 import { destroyAuth as destroyAuthClient } from '@/middlewares/auth.client';
 import { destroyBasket } from '@/middlewares/basket.client';
-import createClient from '@/lib/scapi';
+import { createApiClients } from '@/lib/api-clients';
 
 /**
  * This server action is required for authentication, because logout must be handled server-side to properly invalidate
@@ -15,11 +15,10 @@ export async function action({ context }: ActionFunctionArgs) {
     const { access_token, refresh_token } = session;
     if (access_token && refresh_token) {
         try {
-            const { logout } = await import('commerce-sdk-isomorphic/helpers');
-            const slasClient = await createClient(context).ShopperLogin.getInstance();
-            await logout({
-                slasClient,
-                parameters: { accessToken: access_token, refreshToken: refresh_token },
+            const clients = createApiClients(context);
+            await clients.auth.logout({
+                accessToken: access_token,
+                refreshToken: refresh_token,
             });
         } catch {
             // SLAS logout failed, but continue with redirect
