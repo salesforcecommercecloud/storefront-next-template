@@ -260,3 +260,12 @@ html:not(.dark) [data-theme='inverse'] {
     fill: currentColor !important;
     stroke: currentColor !important;
 }
+
+/* Ensure Sonner toasts are always interactive and visible above all content */
+[data-sonner-toaster] {
+    pointer-events: auto !important;
+}
+
+[data-sonner-toast] {
+    pointer-events: auto !important;
+}

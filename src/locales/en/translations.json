@@ -60,7 +60,7 @@
         "signIn": "Sign In",
         "signOut": "Sign Out",
         "signingOut": "Signing out...",
-        "cartTitle": "Your Shopping Cart",
+        "cartTitle": "My Cart",
         "checkout": "Checkout",
         "continueShopping": "Continue Shopping"
     },
@@ -899,6 +899,19 @@
         "ariaLabel": "Theme switcher",
         "lightTheme": "Light Theme",
         "darkTheme": "Dark Theme"
+    },
+    "miniCart": {
+        "noImage": "No image",
+        "quantityLabel": "Quantity:",
+        "quantityAriaLabel": "Quantity",
+        "customQuantityAriaLabel": "Custom quantity",
+        "customOption": "Custom...",
+        "editQuantityAriaLabel": "Edit quantity",
+        "promotionApplied": "Promotion Applied",
+        "removeItemAriaLabel": "Remove item from cart",
+        "emptyCart": "Your cart is empty",
+        "loading": "Loading...",
+        "viewCart": "View Cart"
     },
     "trackingConsent": {
         "title": "Tracking Consent",

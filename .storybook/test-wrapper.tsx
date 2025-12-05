@@ -11,6 +11,17 @@ import BasketProvider from '../src/providers/basket';
 import AuthProvider from '../src/providers/auth';
 import { ConfigProvider } from '../src/config';
 import { mockConfig } from '../src/test-utils/config';
+import { inBasketProductDetails } from '../src/components/__mocks__/basket-with-dress';
+
+// Transform array of products into Record<productId, product> format
+// expected by useBasketWithProducts hook
+const mockProductsData = inBasketProductDetails.data.reduce(
+    (acc, product) => {
+        acc[product.id] = product;
+        return acc;
+    },
+    {} as Record<string, (typeof inBasketProductDetails.data)[0]>
+);
 
 export function StoryTestWrapper({ children }: { children: ReactNode }): ReactElement {
     const inRouter = useInRouterContext();
@@ -38,8 +49,13 @@ export function StoryTestWrapper({ children }: { children: ReactNode }): ReactEl
     }
     
     // Create a memory router for components that need React Router context
+    // Includes resource routes needed by hooks like useBasketWithProducts
     const router = createMemoryRouter(
         [
+            {
+                path: '/resource/basket-products',
+                loader: () => mockProductsData,
+            },
             {
                 path: '*',
                 element: content,

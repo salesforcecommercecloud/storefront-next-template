@@ -35,6 +35,9 @@ export type Config = {
                 enableSaveForLater: boolean;
                 removeAction: string;
                 confirmDescription?: string;
+                miniCart?: {
+                    enableViewCartButton: boolean;
+                };
             };
             search: {
                 placeholder: string;

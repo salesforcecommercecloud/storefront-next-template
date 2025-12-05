@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { applyProviders } from '../src/lib/provider-utils';
 import { storybookProviders } from './storybook-providers';
+import { inBasketProductDetails } from '../src/components/__mocks__/basket-with-dress';
 import '../src/app.css'; // Import global CSS
 
 // Create HOC that applies all Storybook providers
@@ -37,6 +38,22 @@ const RouterWrapper = ({ Story }: { Story: ComponentType }) => {
                 {
                     path: '/',
                     element: <WrappedStory />,
+                },
+                {
+                    // Resource route for basket product enrichment
+                    // Used by useBasketWithProducts hook to fetch full product details
+                    path: '/resource/basket-products',
+                    loader: () => {
+                        // Pre-populate product data from mock
+                        // This simulates what would be fetched from the backend
+                        const productsById: Record<string, unknown> = {};
+                        inBasketProductDetails.data.forEach((product: { id?: string }) => {
+                            if (product.id) {
+                                productsById[product.id] = product;
+                            }
+                        });
+                        return productsById;
+                    },
                 },
             ],
             {

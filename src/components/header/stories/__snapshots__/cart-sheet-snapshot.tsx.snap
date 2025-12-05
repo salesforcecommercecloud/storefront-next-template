@@ -1,49 +1,5 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`CartSheet stories snapshot > Desktop story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="p-8"
-  >
-    <div>
-      <button
-        aria-controls="radix-_r_p_"
-        aria-expanded="true"
-        aria-haspopup="dialog"
-        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3"
-        data-slot="sheet-trigger"
-        data-state="open"
-        type="button"
-      >
-        Open Cart
-      </button>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`CartSheet stories snapshot > Empty story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="p-8"
-  >
-    <div>
-      <button
-        aria-controls="radix-_r_0_"
-        aria-expanded="true"
-        aria-haspopup="dialog"
-        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3"
-        data-slot="sheet-trigger"
-        data-state="open"
-        type="button"
-      >
-        Open Cart
-      </button>
-    </div>
-  </div>
-</div>
-`;
-
 exports[`CartSheet stories snapshot > Interactive story renders and matches snapshot 1`] = `
 <div>
   <div
@@ -51,51 +7,7 @@ exports[`CartSheet stories snapshot > Interactive story renders and matches snap
   >
     <div>
       <button
-        aria-controls="radix-_r_a_"
-        aria-expanded="true"
-        aria-haspopup="dialog"
-        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3"
-        data-slot="sheet-trigger"
-        data-state="open"
-        type="button"
-      >
-        Open Cart
-      </button>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`CartSheet stories snapshot > Mobile story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="p-8"
-  >
-    <div>
-      <button
-        aria-controls="radix-_r_f_"
-        aria-expanded="true"
-        aria-haspopup="dialog"
-        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3"
-        data-slot="sheet-trigger"
-        data-state="open"
-        type="button"
-      >
-        Open Cart
-      </button>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`CartSheet stories snapshot > Tablet story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="p-8"
-  >
-    <div>
-      <button
-        aria-controls="radix-_r_k_"
+        aria-controls="radix-_r_3_"
         aria-expanded="true"
         aria-haspopup="dialog"
         class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3"
@@ -117,7 +29,29 @@ exports[`CartSheet stories snapshot > WithItems story renders and matches snapsh
   >
     <div>
       <button
-        aria-controls="radix-_r_5_"
+        aria-controls="radix-_r_0_"
+        aria-expanded="true"
+        aria-haspopup="dialog"
+        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3"
+        data-slot="sheet-trigger"
+        data-state="open"
+        type="button"
+      >
+        Open Cart
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`CartSheet stories snapshot > WithViewCartButton story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="p-8"
+  >
+    <div>
+      <button
+        aria-controls="radix-_r_6_"
         aria-expanded="true"
         aria-haspopup="dialog"
         class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3"

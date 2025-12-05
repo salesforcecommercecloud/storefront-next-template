@@ -50,7 +50,7 @@ export function useToast() {
             }),
         };
 
-        // If no action provided, add default Close action
+        // If no action provided, add default Close action button
         if (!toastOptions.action && !toastOptions.cancel) {
             sonnerOptions.action = {
                 label: 'Close',

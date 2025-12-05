@@ -542,7 +542,7 @@ exports[`CartSummarySection stories snapshot > DesktopWithItems story renders an
               <span
                 class="font-bold"
               >
-                $39.67
+                $41.56
               </span>
             </div>
           </div>
@@ -1130,7 +1130,7 @@ exports[`CartSummarySection stories snapshot > MobileWithItems story renders and
                 <span
                   class="font-bold"
                 >
-                  $39.67
+                  $41.56
                 </span>
               </div>
             </div>
@@ -1317,7 +1317,7 @@ exports[`CartSummarySection stories snapshot > TabletView story renders and matc
               <span
                 class="font-bold"
               >
-                $39.67
+                $41.56
               </span>
             </div>
           </div>
@@ -1503,7 +1503,7 @@ exports[`CartSummarySection stories snapshot > WithoutProductMap story renders a
               <span
                 class="font-bold"
               >
-                $39.67
+                $41.56
               </span>
             </div>
           </div>

@@ -19,7 +19,7 @@ const basketWithOneItem = {
     lastModified: '2025-09-18T19:53:00.526Z',
     merchandizeTotalTax: 1.89,
     notes: {},
-    orderTotal: null,
+    orderTotal: 41.56,
     productItems: [
         {
             adjustedTax: 1.89,

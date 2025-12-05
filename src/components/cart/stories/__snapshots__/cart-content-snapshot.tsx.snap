@@ -375,7 +375,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                       <span
                         class="font-bold"
                       >
-                        $39.67
+                        $41.56
                       </span>
                     </div>
                   </div>
@@ -2951,7 +2951,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                       <span
                         class="font-bold"
                       >
-                        $39.67
+                        $41.56
                       </span>
                     </div>
                   </div>
@@ -4529,7 +4529,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                       <span
                         class="font-bold"
                       >
-                        $39.67
+                        $41.56
                       </span>
                     </div>
                   </div>
@@ -5192,7 +5192,7 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                       <span
                         class="font-bold"
                       >
-                        $39.67
+                        $41.56
                       </span>
                     </div>
                   </div>
@@ -5884,7 +5884,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                       <span
                         class="font-bold"
                       >
-                        $39.67
+                        $41.56
                       </span>
                     </div>
                   </div>

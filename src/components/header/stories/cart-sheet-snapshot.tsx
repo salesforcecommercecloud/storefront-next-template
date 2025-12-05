@@ -21,6 +21,22 @@ afterEach(() => {
     console.warn = originalWarn;
 });
 
+vi.mock('@/config', async () => {
+    const actual = await vi.importActual('@/config');
+    return {
+        ...(actual as Record<string, unknown>),
+        useConfig: () => ({
+            pages: {
+                cart: {
+                    quantityUpdateDebounce: 500,
+                    maxQuantityPerItem: 10,
+                    removeAction: '/api/cart/remove',
+                },
+            },
+        }),
+    };
+});
+
 vi.mock('react-router', () => ({
     createContext: vi.fn().mockImplementation(() => ({})),
     useFetcher: () => ({
@@ -28,6 +44,8 @@ vi.mock('react-router', () => ({
         state: 'idle',
 
         submit: () => {},
+
+        load: () => {},
         Form: (props: React.PropsWithChildren<Record<string, unknown>>) => <form {...props}>{props.children}</form>,
     }),
     useFetchers: () => [],
@@ -47,10 +65,8 @@ vi.mock('react-router', () => ({
             </a>
         );
     },
-    createMemoryRouter: vi.fn(),
-    RouterProvider: ({ router }: { router: { routes: Array<{ element?: unknown }> } }) => (
-        <div>{router.routes[0]?.element || null}</div>
-    ),
+    createMemoryRouter: vi.fn((routes) => ({ routes })),
+    RouterProvider: ({ children }: { children?: React.ReactNode }) => <div>{children}</div>,
 }));
 
 let mockBasketValue: unknown = undefined;

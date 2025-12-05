@@ -62,6 +62,9 @@ export default defineConfig({
                 maxQuantityPerItem: 999,
                 enableSaveForLater: false,
                 removeAction: '/action/cart-item-remove',
+                miniCart: {
+                    enableViewCartButton: true,
+                },
             },
             search: {
                 placeholder: 'Search',
