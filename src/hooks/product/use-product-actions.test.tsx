@@ -1800,7 +1800,7 @@ describe('useProductActions', () => {
 
             test('returns undefined when editing basket item without pickup store', () => {
                 // Basket item without pickup (regular delivery)
-                const basketWithoutPickup: ShopperBasketsTypes.Basket = {
+                const basketWithoutPickup: ShopperBasketsV2.schemas['Basket'] = {
                     basketId: 'test-basket-123',
                     productItems: [
                         {
@@ -1836,7 +1836,7 @@ describe('useProductActions', () => {
 
             test('returns store info when editing basket item with pickup store', () => {
                 // Basket with pickup item
-                const basketWithPickup: ShopperBasketsTypes.Basket = {
+                const basketWithPickup: ShopperBasketsV2.schemas['Basket'] = {
                     basketId: 'test-basket-123',
                     productItems: [
                         {
@@ -1897,7 +1897,7 @@ describe('useProductActions', () => {
 
             test('returns store with ID only when store details not in pickup stores map', () => {
                 // Basket with pickup item but store not in pickupStores map
-                const basketWithPickup: ShopperBasketsTypes.Basket = {
+                const basketWithPickup: ShopperBasketsV2.schemas['Basket'] = {
                     basketId: 'test-basket-123',
                     productItems: [
                         {
@@ -1955,7 +1955,7 @@ describe('useProductActions', () => {
 
             test('basketPickupStore is available for basket items with pickup', () => {
                 // Basket with pickup item
-                const basketWithPickup: ShopperBasketsTypes.Basket = {
+                const basketWithPickup: ShopperBasketsV2.schemas['Basket'] = {
                     basketId: 'test-basket-123',
                     productItems: [
                         {

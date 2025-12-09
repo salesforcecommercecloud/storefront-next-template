@@ -6,7 +6,7 @@
  */
 
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import type { ShopperCustomersTypes, ShopperProductsTypes, ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperCustomers, ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { clientLoader } from './loader.wishlist-products';
 import { createTestContext } from '@/lib/test-utils';
 import type { ClientLoaderFunctionArgs } from 'react-router';
@@ -133,14 +133,14 @@ describe('loader.wishlist-products', () => {
 
     describe('query parameters', () => {
         test('should use default offset and limit when not provided', async () => {
-            const mockWishlist: ShopperCustomersTypes.CustomerProductList = {
+            const mockWishlist: ShopperCustomers.schemas['CustomerProductList'] = {
                 id: 'wishlist-1',
                 listId: 'wishlist-1',
                 type: 'wish_list',
                 items: [
                     { id: 'item-1', productId: 'product-1' },
                     { id: 'item-2', productId: 'product-2' },
-                ] as ShopperCustomersTypes.CustomerProductListItem[],
+                ] as ShopperCustomers.schemas['CustomerProductListItem'][],
             };
 
             mockGetCustomerProductLists.mockResolvedValue({
@@ -154,7 +154,7 @@ describe('loader.wishlist-products', () => {
                 'product-2': { id: 'product-2', name: 'Product 2' },
             });
 
-            mockConvertProductToProductSearchHit.mockImplementation((product: ShopperProductsTypes.Product) => ({
+            mockConvertProductToProductSearchHit.mockImplementation((product: ShopperProducts.schemas['Product']) => ({
                 productId: product.id,
                 productName: product.name,
             }));
@@ -170,14 +170,14 @@ describe('loader.wishlist-products', () => {
         });
 
         test('should parse offset and limit from query parameters', async () => {
-            const mockWishlist: ShopperCustomersTypes.CustomerProductList = {
+            const mockWishlist: ShopperCustomers.schemas['CustomerProductList'] = {
                 id: 'wishlist-1',
                 listId: 'wishlist-1',
                 type: 'wish_list',
                 items: Array.from({ length: 20 }, (_, i) => ({
                     id: `item-${i}`,
                     productId: `product-${i}`,
-                })) as ShopperCustomersTypes.CustomerProductListItem[],
+                })) as ShopperCustomers.schemas['CustomerProductListItem'][],
             };
 
             mockGetCustomerProductLists.mockResolvedValue({
@@ -255,14 +255,14 @@ describe('loader.wishlist-products', () => {
         });
 
         test('should allow valid edge case values (offset=0, limit=24)', async () => {
-            const mockWishlist: ShopperCustomersTypes.CustomerProductList = {
+            const mockWishlist: ShopperCustomers.schemas['CustomerProductList'] = {
                 id: 'wishlist-1',
                 listId: 'wishlist-1',
                 type: 'wish_list',
                 items: Array.from({ length: 24 }, (_, i) => ({
                     id: `item-${i}`,
                     productId: `product-${i}`,
-                })) as ShopperCustomersTypes.CustomerProductListItem[],
+                })) as ShopperCustomers.schemas['CustomerProductListItem'][],
             };
 
             mockGetCustomerProductLists.mockResolvedValue({
@@ -300,7 +300,7 @@ describe('loader.wishlist-products', () => {
         });
 
         test('should return empty result when listId is missing', async () => {
-            const mockWishlist: ShopperCustomersTypes.CustomerProductList = {
+            const mockWishlist: ShopperCustomers.schemas['CustomerProductList'] = {
                 id: undefined,
                 listId: undefined,
                 type: 'wish_list',
@@ -320,11 +320,13 @@ describe('loader.wishlist-products', () => {
         });
 
         test('should use id field when listId is not available', async () => {
-            const mockWishlist: ShopperCustomersTypes.CustomerProductList = {
+            const mockWishlist: ShopperCustomers.schemas['CustomerProductList'] = {
                 id: 'wishlist-1',
                 listId: undefined,
                 type: 'wish_list',
-                items: [{ id: 'item-1', productId: 'product-1' }] as ShopperCustomersTypes.CustomerProductListItem[],
+                items: [
+                    { id: 'item-1', productId: 'product-1' },
+                ] as ShopperCustomers.schemas['CustomerProductListItem'][],
             };
 
             mockGetCustomerProductLists.mockResolvedValue({
@@ -337,7 +339,7 @@ describe('loader.wishlist-products', () => {
                 'product-1': { id: 'product-1', name: 'Product 1' },
             });
 
-            mockConvertProductToProductSearchHit.mockImplementation((product: ShopperProductsTypes.Product) => ({
+            mockConvertProductToProductSearchHit.mockImplementation((product: ShopperProducts.schemas['Product']) => ({
                 productId: product.id,
                 productName: product.name,
             }));
@@ -364,9 +366,9 @@ describe('loader.wishlist-products', () => {
             const allItems = Array.from({ length: 20 }, (_, i) => ({
                 id: `item-${i}`,
                 productId: `product-${i}`,
-            })) as ShopperCustomersTypes.CustomerProductListItem[];
+            })) as ShopperCustomers.schemas['CustomerProductListItem'][];
 
-            const mockWishlist: ShopperCustomersTypes.CustomerProductList = {
+            const mockWishlist: ShopperCustomers.schemas['CustomerProductList'] = {
                 id: 'wishlist-1',
                 listId: 'wishlist-1',
                 type: 'wish_list',
@@ -381,19 +383,19 @@ describe('loader.wishlist-products', () => {
 
             // Mock products for items 5-9 (offset 5, limit 5)
             const slicedItems = allItems.slice(5, 10);
-            const productsByProductId: Record<string, ShopperProductsTypes.Product> = {};
+            const productsByProductId: Record<string, ShopperProducts.schemas['Product']> = {};
             slicedItems.forEach((item) => {
                 if (item.productId) {
                     productsByProductId[item.productId] = {
                         id: item.productId,
                         name: `Product ${item.productId}`,
-                    } as ShopperProductsTypes.Product;
+                    } as ShopperProducts.schemas['Product'];
                 }
             });
 
             mockFetchProductsForWishlist.mockResolvedValue(productsByProductId);
 
-            mockConvertProductToProductSearchHit.mockImplementation((product: ShopperProductsTypes.Product) => ({
+            mockConvertProductToProductSearchHit.mockImplementation((product: ShopperProducts.schemas['Product']) => ({
                 productId: product.id,
                 productName: product.name,
             }));
@@ -422,14 +424,14 @@ describe('loader.wishlist-products', () => {
         });
 
         test('should return empty products when offset exceeds total items', async () => {
-            const mockWishlist: ShopperCustomersTypes.CustomerProductList = {
+            const mockWishlist: ShopperCustomers.schemas['CustomerProductList'] = {
                 id: 'wishlist-1',
                 listId: 'wishlist-1',
                 type: 'wish_list',
                 items: [
                     { id: 'item-1', productId: 'product-1' },
                     { id: 'item-2', productId: 'product-2' },
-                ] as ShopperCustomersTypes.CustomerProductListItem[],
+                ] as ShopperCustomers.schemas['CustomerProductListItem'][],
             };
 
             mockGetCustomerProductLists.mockResolvedValue({
@@ -458,7 +460,7 @@ describe('loader.wishlist-products', () => {
                 customerProductListItems: [
                     { id: 'item-1', productId: 'product-1' },
                     { id: 'item-2', productId: 'product-2' },
-                ] as ShopperCustomersTypes.CustomerProductListItem[],
+                ] as ShopperCustomers.schemas['CustomerProductListItem'][],
             };
 
             mockGetCustomerProductLists.mockResolvedValue({
@@ -472,7 +474,7 @@ describe('loader.wishlist-products', () => {
                 'product-2': { id: 'product-2', name: 'Product 2' },
             });
 
-            mockConvertProductToProductSearchHit.mockImplementation((product: ShopperProductsTypes.Product) => ({
+            mockConvertProductToProductSearchHit.mockImplementation((product: ShopperProducts.schemas['Product']) => ({
                 productId: product.id,
                 productName: product.name,
             }));
@@ -489,14 +491,14 @@ describe('loader.wishlist-products', () => {
 
     describe('product conversion', () => {
         test('should convert products to ProductSearchHit format', async () => {
-            const mockWishlist: ShopperCustomersTypes.CustomerProductList = {
+            const mockWishlist: ShopperCustomers.schemas['CustomerProductList'] = {
                 id: 'wishlist-1',
                 listId: 'wishlist-1',
                 type: 'wish_list',
                 items: [
                     { id: 'item-1', productId: 'product-1' },
                     { id: 'item-2', productId: 'product-2' },
-                ] as ShopperCustomersTypes.CustomerProductListItem[],
+                ] as ShopperCustomers.schemas['CustomerProductListItem'][],
             };
 
             mockGetCustomerProductLists.mockResolvedValue({
@@ -505,30 +507,30 @@ describe('loader.wishlist-products', () => {
 
             mockGetCustomerProductList.mockResolvedValue({ data: mockWishlist });
 
-            const mockProduct1: ShopperProductsTypes.Product = {
+            const mockProduct1: ShopperProducts.schemas['Product'] = {
                 id: 'product-1',
                 name: 'Product 1',
-            } as ShopperProductsTypes.Product;
+            } as ShopperProducts.schemas['Product'];
 
-            const mockProduct2: ShopperProductsTypes.Product = {
+            const mockProduct2: ShopperProducts.schemas['Product'] = {
                 id: 'product-2',
                 name: 'Product 2',
-            } as ShopperProductsTypes.Product;
+            } as ShopperProducts.schemas['Product'];
 
             mockFetchProductsForWishlist.mockResolvedValue({
                 'product-1': mockProduct1,
                 'product-2': mockProduct2,
             });
 
-            const mockSearchHit1: ShopperSearchTypes.ProductSearchHit = {
+            const mockSearchHit1: ShopperSearch.schemas['ProductSearchHit'] = {
                 productId: 'product-1',
                 productName: 'Product 1',
-            } as ShopperSearchTypes.ProductSearchHit;
+            } as ShopperSearch.schemas['ProductSearchHit'];
 
-            const mockSearchHit2: ShopperSearchTypes.ProductSearchHit = {
+            const mockSearchHit2: ShopperSearch.schemas['ProductSearchHit'] = {
                 productId: 'product-2',
                 productName: 'Product 2',
-            } as ShopperSearchTypes.ProductSearchHit;
+            } as ShopperSearch.schemas['ProductSearchHit'];
 
             mockConvertProductToProductSearchHit
                 .mockReturnValueOnce(mockSearchHit1)
@@ -546,7 +548,7 @@ describe('loader.wishlist-products', () => {
         });
 
         test('should keep null placeholders for products without details', async () => {
-            const mockWishlist: ShopperCustomersTypes.CustomerProductList = {
+            const mockWishlist: ShopperCustomers.schemas['CustomerProductList'] = {
                 id: 'wishlist-1',
                 listId: 'wishlist-1',
                 type: 'wish_list',
@@ -554,7 +556,7 @@ describe('loader.wishlist-products', () => {
                     { id: 'item-1', productId: 'product-1' },
                     { id: 'item-2', productId: 'product-2' },
                     { id: 'item-3', productId: 'product-3' },
-                ] as ShopperCustomersTypes.CustomerProductListItem[],
+                ] as ShopperCustomers.schemas['CustomerProductListItem'][],
             };
 
             mockGetCustomerProductLists.mockResolvedValue({
@@ -565,12 +567,12 @@ describe('loader.wishlist-products', () => {
 
             // Only product-1 and product-3 have actual data, product-2 is just a placeholder
             mockFetchProductsForWishlist.mockResolvedValue({
-                'product-1': { id: 'product-1', name: 'Product 1' } as ShopperProductsTypes.Product,
-                'product-2': { id: 'product-2' } as ShopperProductsTypes.Product, // Placeholder with only id
-                'product-3': { id: 'product-3', name: 'Product 3' } as ShopperProductsTypes.Product,
+                'product-1': { id: 'product-1', name: 'Product 1' } as ShopperProducts.schemas['Product'],
+                'product-2': { id: 'product-2' } as ShopperProducts.schemas['Product'], // Placeholder with only id
+                'product-3': { id: 'product-3', name: 'Product 3' } as ShopperProducts.schemas['Product'],
             });
 
-            mockConvertProductToProductSearchHit.mockImplementation((product: ShopperProductsTypes.Product) => {
+            mockConvertProductToProductSearchHit.mockImplementation((product: ShopperProducts.schemas['Product']) => {
                 // Only convert products with name (real data)
                 if (product.name) {
                     return {
@@ -608,7 +610,7 @@ describe('loader.wishlist-products', () => {
         });
 
         test('should throw error when getCustomerProductList fails', async () => {
-            const mockWishlist: ShopperCustomersTypes.CustomerProductList = {
+            const mockWishlist: ShopperCustomers.schemas['CustomerProductList'] = {
                 id: 'wishlist-1',
                 listId: 'wishlist-1',
                 type: 'wish_list',
@@ -630,11 +632,13 @@ describe('loader.wishlist-products', () => {
         });
 
         test('should throw error when fetchProductsForWishlist fails', async () => {
-            const mockWishlist: ShopperCustomersTypes.CustomerProductList = {
+            const mockWishlist: ShopperCustomers.schemas['CustomerProductList'] = {
                 id: 'wishlist-1',
                 listId: 'wishlist-1',
                 type: 'wish_list',
-                items: [{ id: 'item-1', productId: 'product-1' }] as ShopperCustomersTypes.CustomerProductListItem[],
+                items: [
+                    { id: 'item-1', productId: 'product-1' },
+                ] as ShopperCustomers.schemas['CustomerProductListItem'][],
             };
 
             mockGetCustomerProductLists.mockResolvedValue({

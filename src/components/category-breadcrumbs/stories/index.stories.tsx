@@ -6,7 +6,7 @@ import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-ro
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { mockCategory } from '@/components/__mocks__/mock-data';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 const BREADCRUMBS_HARNESS_ATTR = 'data-breadcrumbs-harness';
 
@@ -101,7 +101,7 @@ function CategoryPage({ categoryId }) {
 
 | Prop | Type | Description |
 |------|------|-------------|
-| \`category\` | \`ShopperProductsTypes.Category\` | The category object containing parent category tree information |
+| \`category\` | \`ShopperProducts.schemas['Category']\` | The category object containing parent category tree information |
 
 ## Behavior
 
@@ -156,7 +156,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 // Create mock category with parent tree
-const mockCategoryWithTree: ShopperProductsTypes.Category = {
+const mockCategoryWithTree: ShopperProducts.schemas['Category'] = {
     ...mockCategory,
     parentCategoryTree: mockCategory.parentCategoryTree || [
         { id: 'mens', name: 'Mens' },
@@ -165,7 +165,7 @@ const mockCategoryWithTree: ShopperProductsTypes.Category = {
     ],
 };
 
-const mockCategorySingle: ShopperProductsTypes.Category = {
+const mockCategorySingle: ShopperProducts.schemas['Category'] = {
     id: 'root',
     name: 'Home',
     parentCategoryTree: [{ id: 'root', name: 'Home' }],

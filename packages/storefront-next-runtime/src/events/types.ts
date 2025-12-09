@@ -5,7 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { type ShopperBasketsTypes, type ShopperProductsTypes, type ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV1, ShopperBasketsV2, ShopperProducts, ShopperSearch } from '../scapi-client';
+
+// Union types to support both V1 and V2 basket APIs
+type BasketProductItem = ShopperBasketsV1.schemas['ProductItem'] | ShopperBasketsV2.schemas['ProductItem'];
+type Basket = ShopperBasketsV1.schemas['Basket'] | ShopperBasketsV2.schemas['Basket'];
 
 // ============================================================================
 // Analytics Payload Types
@@ -70,66 +74,66 @@ export interface ViewPageEvent extends BaseEvent {
 
 export interface ViewProductEvent extends BaseEvent {
     eventType: 'view_product';
-    product: ShopperProductsTypes.Product;
+    product: ShopperProducts.schemas['Product'];
 }
 
 export interface ViewSearchEvent extends BaseEvent {
     eventType: 'view_search';
     searchInputText: string;
-    searchResults: ShopperSearchTypes.ProductSearchHit[];
+    searchResults: ShopperSearch.schemas['ProductSearchHit'][];
     sort: string;
-    refinements: ShopperSearchTypes.ProductSearchResult['selectedRefinements'];
+    refinements: ShopperSearch.schemas['ProductSearchResult']['selectedRefinements'];
 }
 
 export interface ViewCategoryEvent extends BaseEvent {
     eventType: 'view_category';
-    category: ShopperProductsTypes.Category;
-    searchResults: ShopperSearchTypes.ProductSearchHit[];
+    category: ShopperProducts.schemas['Category'];
+    searchResults: ShopperSearch.schemas['ProductSearchHit'][];
     sort: string;
-    refinements: ShopperSearchTypes.ProductSearchResult['selectedRefinements'];
+    refinements: ShopperSearch.schemas['ProductSearchResult']['selectedRefinements'];
 }
 
 export interface ViewRecommenderEvent extends BaseEvent {
     eventType: 'view_recommender';
     recommenderId: string;
     recommenderName: string;
-    products: ShopperSearchTypes.ProductSearchHit[];
+    products: ShopperSearch.schemas['ProductSearchHit'][];
 }
 
 export interface ClickProductInCategoryEvent extends BaseEvent {
     eventType: 'click_product_in_category';
-    category: ShopperProductsTypes.Category;
-    product: ShopperSearchTypes.ProductSearchHit;
+    category: ShopperProducts.schemas['Category'];
+    product: ShopperSearch.schemas['ProductSearchHit'];
 }
 
 export interface ClickProductInSearchEvent extends BaseEvent {
     eventType: 'click_product_in_search';
     searchInputText: string;
-    product: ShopperSearchTypes.ProductSearchHit;
+    product: ShopperSearch.schemas['ProductSearchHit'];
 }
 
 export interface ClickProductInRecommenderEvent extends BaseEvent {
     eventType: 'click_product_in_recommender';
     recommenderId: string;
     recommenderName: string;
-    product: ShopperSearchTypes.ProductSearchHit;
+    product: ShopperSearch.schemas['ProductSearchHit'];
 }
 
 export interface CartItemAddEvent extends BaseEvent {
     eventType: 'cart_item_add';
-    cartItems: Array<ShopperBasketsTypes.ProductItem>;
+    cartItems: Array<BasketProductItem>;
 }
 
 export interface CheckoutStartEvent extends BaseEvent {
     eventType: 'checkout_start';
-    basket: ShopperBasketsTypes.Basket;
+    basket: Basket;
 }
 
 export interface CheckoutStepEvent extends BaseEvent {
     eventType: 'checkout_step';
     stepName: string;
     stepNumber: number;
-    basket: ShopperBasketsTypes.Basket;
+    basket: Basket;
 }
 
 /**

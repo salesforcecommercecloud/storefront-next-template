@@ -1,5 +1,5 @@
 import type { ActionFunctionArgs } from 'react-router';
-import type { ShopperCustomersTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import type { CustomQueryParameters } from '@/lib/api/types';
 import { createApiClients } from '@/lib/api-clients';
 import { loginRegisteredUser } from './standard-login';
@@ -16,7 +16,7 @@ const extractCustomParameters = (parameters: {
 
 export const registerCustomer = async (
     context: ActionFunctionArgs['context'],
-    registrationData: ShopperCustomersTypes.CustomerRegistration
+    registrationData: ShopperCustomers.schemas['CustomerRegistration']
 ): Promise<{
     success: boolean;
     error?: string;

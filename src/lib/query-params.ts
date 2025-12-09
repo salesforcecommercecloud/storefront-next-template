@@ -7,7 +7,7 @@ export type ProductSearchQueryKeys = keyof ShopperSearch.operations['productSear
 
 /**
  * Type-safe query parameter constants for product search
- * These constants ensure we use the correct parameter names as defined in the commerce-sdk-isomorphic types
+ * These constants ensure we use the correct parameter names as defined in the SCAPI client types
  */
 export const PRODUCT_SEARCH_QUERY_PARAMS = {
     SORT: 'sort' as const,

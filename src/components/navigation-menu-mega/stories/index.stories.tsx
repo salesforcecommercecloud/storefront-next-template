@@ -14,7 +14,7 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 import CategoryNavigationMenuMega from '../index';
 // @ts-expect-error Mock data file is JavaScript
 import { mockCategories } from '@/components/__mocks__/mock-data';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -159,7 +159,7 @@ export const Default: Story = {
     args: {
         resolve: Promise.resolve(mockRootCategory),
         defer: Promise.resolve(
-            mockCategoriesList.flatMap((cat: ShopperProductsTypes.Category) => cat.categories || [])
+            mockCategoriesList.flatMap((cat: ShopperProducts.schemas['Category']) => cat.categories || [])
         ),
     },
     parameters: {
@@ -180,7 +180,7 @@ export const Interactive: Story = {
     args: {
         resolve: Promise.resolve(mockRootCategory),
         defer: Promise.resolve(
-            mockCategoriesList.flatMap((cat: ShopperProductsTypes.Category) => cat.categories || [])
+            mockCategoriesList.flatMap((cat: ShopperProducts.schemas['Category']) => cat.categories || [])
         ),
     },
     parameters: {
@@ -216,14 +216,14 @@ export const WithBanners: Story = {
     args: {
         resolve: Promise.resolve({
             ...mockRootCategory,
-            categories: mockCategoriesList.map((cat: ShopperProductsTypes.Category) => ({
+            categories: mockCategoriesList.map((cat: ShopperProducts.schemas['Category']) => ({
                 ...cat,
                 c_headerMenuBanner: '<img src="https://example.com/banner.jpg" alt="Banner" />',
                 c_headerMenuOrientation: 'horizontal',
             })),
         }),
         defer: Promise.resolve(
-            mockCategoriesList.flatMap((cat: ShopperProductsTypes.Category) => cat.categories || [])
+            mockCategoriesList.flatMap((cat: ShopperProducts.schemas['Category']) => cat.categories || [])
         ),
     },
     parameters: {

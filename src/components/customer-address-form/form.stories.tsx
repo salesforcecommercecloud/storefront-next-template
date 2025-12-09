@@ -12,7 +12,7 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 import { CustomerAddressForm } from './form';
 import type { CustomerAddressFormData } from './types';
 import type { ScapiFetcher } from '@/hooks/use-scapi-fetcher';
-import type { ShopperCustomersTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { action } from 'storybook/actions';
 import {
     AlertDialog,
@@ -192,7 +192,7 @@ export const Default: Story = {
             postalCode: '10001',
             preferred: true,
         },
-        updateFetcher: createMockFetcher<ShopperCustomersTypes.CustomerAddress>('idle'),
+        updateFetcher: createMockFetcher<ShopperCustomers.schemas['CustomerAddress']>('idle'),
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
@@ -227,7 +227,7 @@ export const Default: Story = {
 export const Empty: Story = {
     args: {
         initialData: {},
-        updateFetcher: createMockFetcher<ShopperCustomersTypes.CustomerAddress>('idle'),
+        updateFetcher: createMockFetcher<ShopperCustomers.schemas['CustomerAddress']>('idle'),
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
@@ -283,7 +283,7 @@ export const CanadianAddress: Story = {
             postalCode: 'M5B 2H1',
             preferred: false,
         },
-        updateFetcher: createMockFetcher<ShopperCustomersTypes.CustomerAddress>('idle'),
+        updateFetcher: createMockFetcher<ShopperCustomers.schemas['CustomerAddress']>('idle'),
     },
 };
 
@@ -305,7 +305,7 @@ export const Submitting: Story = {
             postalCode: '90001',
             preferred: false,
         },
-        updateFetcher: createMockFetcher<ShopperCustomersTypes.CustomerAddress>('submitting'),
+        updateFetcher: createMockFetcher<ShopperCustomers.schemas['CustomerAddress']>('submitting'),
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
@@ -336,8 +336,8 @@ export const Submitting: Story = {
  */
 export const Error: Story = {
     render: function ErrorStory() {
-        const [fetcher] = useState<ScapiFetcher<ShopperCustomersTypes.CustomerAddress>>(
-            createMockFetcher<ShopperCustomersTypes.CustomerAddress>('idle', undefined, false, [
+        const [fetcher] = useState<ScapiFetcher<ShopperCustomers.schemas['CustomerAddress']>>(
+            createMockFetcher<ShopperCustomers.schemas['CustomerAddress']>('idle', undefined, false, [
                 'Failed to save address. Please try again.',
             ])
         );
@@ -370,8 +370,8 @@ export const Error: Story = {
  */
 export const Success: Story = {
     render: function SuccessStory() {
-        const [fetcher] = useState<ScapiFetcher<ShopperCustomersTypes.CustomerAddress>>(
-            createMockFetcher<ShopperCustomersTypes.CustomerAddress>(
+        const [fetcher] = useState<ScapiFetcher<ShopperCustomers.schemas['CustomerAddress']>>(
+            createMockFetcher<ShopperCustomers.schemas['CustomerAddress']>(
                 'idle',
                 {
                     addressId: 'addr_123',
@@ -461,8 +461,8 @@ export const Interactive: Story = {
         }
     },
     render: function InteractiveStory() {
-        const [fetcher, setFetcher] = useState<ScapiFetcher<ShopperCustomersTypes.CustomerAddress>>(
-            createMockFetcher<ShopperCustomersTypes.CustomerAddress>('idle')
+        const [fetcher, setFetcher] = useState<ScapiFetcher<ShopperCustomers.schemas['CustomerAddress']>>(
+            createMockFetcher<ShopperCustomers.schemas['CustomerAddress']>('idle')
         );
         const [shouldError, setShouldError] = useState(false);
         const [useInlineMessages, setUseInlineMessages] = useState(false);
@@ -472,21 +472,21 @@ export const Interactive: Story = {
 
         const handleSubmit = async (formData: FormData | Record<string, unknown>) => {
             // Simulate API call
-            setFetcher(createMockFetcher<ShopperCustomersTypes.CustomerAddress>('submitting'));
+            setFetcher(createMockFetcher<ShopperCustomers.schemas['CustomerAddress']>('submitting'));
 
             await new Promise((resolve) => setTimeout(resolve, 1000));
 
             if (shouldError) {
                 // Simulate error
                 setFetcher(
-                    createMockFetcher<ShopperCustomersTypes.CustomerAddress>('idle', undefined, false, [
+                    createMockFetcher<ShopperCustomers.schemas['CustomerAddress']>('idle', undefined, false, [
                         'Failed to save address. Please check your input and try again.',
                     ])
                 );
             } else {
                 // Simulate success
                 setFetcher(
-                    createMockFetcher<ShopperCustomersTypes.CustomerAddress>(
+                    createMockFetcher<ShopperCustomers.schemas['CustomerAddress']>(
                         'idle',
                         {
                             addressId: (formData as Record<string, unknown>).addressId as string,
@@ -507,12 +507,12 @@ export const Interactive: Story = {
             }
         };
 
-        const mockFetcher: ScapiFetcher<ShopperCustomersTypes.CustomerAddress> = {
+        const mockFetcher: ScapiFetcher<ShopperCustomers.schemas['CustomerAddress']> = {
             ...fetcher,
             submit: async (target?: FormData | Record<string, unknown>) => {
                 await handleSubmit(target || {});
             },
-        } as ScapiFetcher<ShopperCustomersTypes.CustomerAddress>;
+        } as ScapiFetcher<ShopperCustomers.schemas['CustomerAddress']>;
 
         return (
             <div className="space-y-4">

@@ -21,7 +21,7 @@ import StoreLocatorProvider from '../src/extensions/store-locator/providers/stor
 import { ConfigProvider } from '../src/config';
 import { mockConfig } from '../src/test-utils/config';
 import type { SessionData } from '../src/lib/api/types';
-import type { ShopperBasketsTypes, ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { I18nextProvider } from 'react-i18next';
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
@@ -51,21 +51,21 @@ const mockSessionData: SessionData = {
 
 /**
  * Mock basket data for Storybook
- * Update this when ShopperBasketsTypes.Basket type changes
+ * Update this when ShopperBasketsV2.schemas['Basket'] type changes
  */
-const mockBasket: ShopperBasketsTypes.Basket | undefined = undefined;
+const mockBasket: ShopperBasketsV2.schemas['Basket'] | undefined = undefined;
 
 /**
  * Mock product data for Storybook (used when ProductViewProvider is needed)
- * Update this when ShopperProductsTypes.Product type changes
+ * Update this when ShopperProducts.schemas['Product'] type changes
  */
-const mockProduct: ShopperProductsTypes.Product = {
+const mockProduct: ShopperProducts.schemas['Product'] = {
     id: 'storybook-product',
     name: 'Storybook Product',
     inventory: {
         ats: 10,
     },
-} as ShopperProductsTypes.Product;
+} as ShopperProducts.schemas['Product'];
 
 /**
  * Storybook ConfigProvider wrapper with mock config

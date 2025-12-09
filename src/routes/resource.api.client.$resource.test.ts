@@ -24,20 +24,6 @@ const mockShopperCustomersUpdateCustomer = vi.fn();
 const mockShopperBasketsAddItemToBasket = vi.fn();
 const mockExtractResponseError = vi.mocked(extractResponseError);
 
-vi.mock('commerce-sdk-isomorphic/shopperCustomers', async () => {
-    const actual = await vi.importActual('commerce-sdk-isomorphic/shopperCustomers');
-    return {
-        ...actual,
-        ShopperCustomers: vi.fn(() => ({
-            getCustomer: mockShopperCustomersGetCustomer,
-            updateCustomer: mockShopperCustomersUpdateCustomer,
-        })),
-        ShopperBaskets: vi.fn(() => ({
-            addItemToBasket: mockShopperBasketsAddItemToBasket,
-        })),
-    };
-});
-
 // Mock the createApiClients function
 vi.mock('@/lib/api-clients', () => ({
     createApiClients: vi.fn(() => ({

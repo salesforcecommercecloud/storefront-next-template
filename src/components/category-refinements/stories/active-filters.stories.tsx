@@ -7,7 +7,7 @@ import { expect } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 // @ts-expect-error Mock data file is JavaScript
 import searchResults from '@/components/__mocks__/search-results';
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 
 const ACTIVE_FILTERS_HARNESS_ATTR = 'data-active-filters-harness';
 
@@ -113,7 +113,7 @@ function CategoryPage({ searchResult }) {
 
 | Prop | Type | Description |
 |------|------|-------------|
-| \`result\` | \`ShopperSearchTypes.ProductSearchResult\` | Product search result containing refinements data |
+| \`result\` | \`ShopperSearch.schemas['ProductSearchResult']\` | Product search result containing refinements data |
 
 ## Behavior
 
@@ -140,7 +140,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 // Use real mock data from @mocks directory
-const mockSearchResult = searchResults as ShopperSearchTypes.ProductSearchResult;
+const mockSearchResult = searchResults as ShopperSearch.schemas['ProductSearchResult'];
 
 export const Default: Story = {
     args: {

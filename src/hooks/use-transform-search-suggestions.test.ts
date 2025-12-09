@@ -394,7 +394,7 @@ describe('useTransformSearchSuggestions', () => {
 
     describe('Einstein Suggestions Transformation', () => {
         it('should transform Einstein suggested phrases correctly', () => {
-            const dataWithEinstein: ShopperSearchTypes.SuggestionResult = {
+            const dataWithEinstein: ShopperSearch.schemas['SuggestionResult'] = {
                 searchPhrase: 'test query',
                 einsteinSuggestedPhrases: {
                     popularSearchPhrases: [
@@ -442,7 +442,7 @@ describe('useTransformSearchSuggestions', () => {
         });
 
         it('should handle empty Einstein suggestions', () => {
-            const dataWithEmptyEinstein: ShopperSearchTypes.SuggestionResult = {
+            const dataWithEmptyEinstein: ShopperSearch.schemas['SuggestionResult'] = {
                 searchPhrase: 'test query',
                 einsteinSuggestedPhrases: {
                     popularSearchPhrases: [],
@@ -457,7 +457,7 @@ describe('useTransformSearchSuggestions', () => {
         });
 
         it('should handle missing Einstein suggestions', () => {
-            const dataWithoutEinstein: ShopperSearchTypes.SuggestionResult = {
+            const dataWithoutEinstein: ShopperSearch.schemas['SuggestionResult'] = {
                 searchPhrase: 'test query',
             };
 
@@ -468,7 +468,7 @@ describe('useTransformSearchSuggestions', () => {
         });
 
         it('should handle Einstein suggestions with empty phrases', () => {
-            const dataWithEmptyPhrases: ShopperSearchTypes.SuggestionResult = {
+            const dataWithEmptyPhrases: ShopperSearch.schemas['SuggestionResult'] = {
                 searchPhrase: 'test query',
                 einsteinSuggestedPhrases: {
                     popularSearchPhrases: [
@@ -516,7 +516,7 @@ describe('useTransformSearchSuggestions', () => {
         });
 
         it('should only include Einstein suggestions when arrays have content', () => {
-            const dataWithOnlyPopular: ShopperSearchTypes.SuggestionResult = {
+            const dataWithOnlyPopular: ShopperSearch.schemas['SuggestionResult'] = {
                 searchPhrase: 'test query',
                 einsteinSuggestedPhrases: {
                     popularSearchPhrases: [{ phrase: 'popular search', exactMatch: false }],
@@ -538,7 +538,7 @@ describe('useTransformSearchSuggestions', () => {
         });
 
         it('should only include Einstein suggestions when arrays have content - recent only', () => {
-            const dataWithOnlyRecent: ShopperSearchTypes.SuggestionResult = {
+            const dataWithOnlyRecent: ShopperSearch.schemas['SuggestionResult'] = {
                 searchPhrase: 'test query',
                 einsteinSuggestedPhrases: {
                     popularSearchPhrases: [],

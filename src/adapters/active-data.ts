@@ -1,6 +1,6 @@
 import type { AnalyticsEvent } from '@salesforce/storefront-next-runtime/events';
 import type { EngagementAdapter, EngagementAdapterConfig } from '@/lib/adapters';
-import type { ShopperProductsTypes, ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import Cookies from 'js-cookie';
 
 export type ActiveDataConfig = EngagementAdapterConfig & {
@@ -141,7 +141,9 @@ function urlEncode(value: string): string {
 /**
  * Get product ID from product or product search hit
  */
-function getProductId(product: ShopperProductsTypes.Product | ShopperSearchTypes.ProductSearchHit): string | null {
+function getProductId(
+    product: ShopperProducts.schemas['Product'] | ShopperSearch.schemas['ProductSearchHit']
+): string | null {
     if ('id' in product && product.id) {
         return product.id;
     }
@@ -193,7 +195,7 @@ function createBaseParams(): ActiveDataParams {
  */
 function addProductDataToParams(
     params: ActiveDataParams,
-    products: Array<ShopperProductsTypes.Product | ShopperSearchTypes.ProductSearchHit>,
+    products: Array<ShopperProducts.schemas['Product'] | ShopperSearch.schemas['ProductSearchHit']>,
     eventType: 'event3' | 'event4',
     isRecommendation = false
 ) {

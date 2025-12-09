@@ -54,7 +54,6 @@
         "@salesforce/storefront-next-runtime": "workspace:*",
         "class-variance-authority": "0.7.1",
         "clsx": "2.1.1",
-        "commerce-sdk-isomorphic": "4.0.0-nightly-20251027080801",
         "core-js": "3.45.1",
         "embla-carousel-react": "8.6.0",
         "i18next": "25.5.3",
@@ -139,14 +138,6 @@
             }
         ],
         "client": [
-            {
-                "name": "assets/\\(package\\)-\\(commerce-sdk-isomorphic\\)-\\(lib\\)-index.esm.*.js",
-                "limit": "454 kB"
-            },
-            {
-                "name": "assets/\\(package\\)-\\(commerce-sdk-isomorphic\\)-\\(lib\\)-*.js",
-                "limit": "160 kB"
-            },
             {
                 "name": "assets/\\(package\\)-\\(@react-router-dev\\)-\\(dist\\)-\\(config\\)-\\(defaults\\)-entry.client.*.js",
                 "limit": "190 kB"

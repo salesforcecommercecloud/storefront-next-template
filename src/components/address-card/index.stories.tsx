@@ -9,7 +9,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import AddressCard from './index';
-import type { ShopperCustomersTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { action } from 'storybook/actions';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
 
@@ -71,7 +71,7 @@ The Address Card component provides a card-based layout for displaying customer 
 - Responsive design with shadcn/ui components
 
 **Usage:**
-The component accepts an address object conforming to ShopperCustomersTypes.CustomerAddress
+The component accepts an address object conforming to ShopperCustomers.schemas['CustomerAddress']
 and optional onEdit and onRemove handlers for user interactions.
                 `,
             },
@@ -126,7 +126,7 @@ export const Default: Story = {
             postalCode: '10001',
             countryCode: 'US',
             phone: '555-123-4567',
-        } as ShopperCustomersTypes.CustomerAddress,
+        } as ShopperCustomers.schemas['CustomerAddress'],
         onEdit: action('onEdit'),
         onRemove: action('onRemove'),
         isPreferred: false,
@@ -171,7 +171,7 @@ export const MinimalAddress: Story = {
             address1: '456 Oak Avenue',
             city: 'Seattle',
             countryCode: 'US',
-        } as ShopperCustomersTypes.CustomerAddress,
+        } as ShopperCustomers.schemas['CustomerAddress'],
         onEdit: action('onEdit'),
         onRemove: action('onRemove'),
         isPreferred: false,
@@ -195,7 +195,7 @@ export const PreferredAddress: Story = {
             countryCode: 'US',
             phone: '555-123-4567',
             preferred: true,
-        } as ShopperCustomersTypes.CustomerAddress,
+        } as ShopperCustomers.schemas['CustomerAddress'],
         onEdit: action('onEdit'),
         onRemove: action('onRemove'),
         isPreferred: true,
@@ -234,7 +234,7 @@ export const BillingAddress: Story = {
             postalCode: '10001',
             countryCode: 'US',
             phone: '555-123-4567',
-        } as ShopperCustomersTypes.CustomerAddress,
+        } as ShopperCustomers.schemas['CustomerAddress'],
         onEdit: action('onEdit'),
         onRemove: action('onRemove'),
         isPreferred: false,
@@ -257,7 +257,7 @@ export const ShippingAddress: Story = {
             postalCode: '10001',
             countryCode: 'US',
             phone: '555-123-4567',
-        } as ShopperCustomersTypes.CustomerAddress,
+        } as ShopperCustomers.schemas['CustomerAddress'],
         onEdit: action('onEdit'),
         onRemove: action('onRemove'),
         isPreferred: false,
@@ -278,7 +278,7 @@ export const EditOnly: Story = {
             stateCode: 'NY',
             postalCode: '10001',
             countryCode: 'US',
-        } as ShopperCustomersTypes.CustomerAddress,
+        } as ShopperCustomers.schemas['CustomerAddress'],
         onEdit: action('onEdit'),
         onRemove: undefined,
         isPreferred: false,
@@ -318,7 +318,7 @@ export const RemoveOnly: Story = {
             stateCode: 'NY',
             postalCode: '10001',
             countryCode: 'US',
-        } as ShopperCustomersTypes.CustomerAddress,
+        } as ShopperCustomers.schemas['CustomerAddress'],
         onEdit: undefined,
         onRemove: action('onRemove'),
         isPreferred: false,
@@ -358,7 +358,7 @@ export const NoActions: Story = {
             stateCode: 'NY',
             postalCode: '10001',
             countryCode: 'US',
-        } as ShopperCustomersTypes.CustomerAddress,
+        } as ShopperCustomers.schemas['CustomerAddress'],
         onEdit: undefined,
         onRemove: undefined,
         isPreferred: false,
@@ -397,7 +397,7 @@ export const InternationalAddress: Story = {
             postalCode: 'SW1A 2AA',
             countryCode: 'GB',
             phone: '+44 20 1234 5678',
-        } as ShopperCustomersTypes.CustomerAddress,
+        } as ShopperCustomers.schemas['CustomerAddress'],
         onEdit: action('onEdit'),
         onRemove: action('onRemove'),
         isPreferred: false,

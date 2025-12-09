@@ -10,7 +10,7 @@ interface ProductImageContainerProps {
     product: ShopperSearch.schemas['ProductSearchHit'];
     selectedColorValue?: string | null;
     className?: string;
-    handleProductClick?: (product: ShopperSearchTypes.ProductSearchHit) => void;
+    handleProductClick?: (product: ShopperSearch.schemas['ProductSearchHit']) => void;
     /** Image aspect ratio (width/height). If provided, calculates height based on viewport width. Defaults to 1 (square) */
     imgAspectRatio?: number;
 }

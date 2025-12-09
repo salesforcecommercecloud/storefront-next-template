@@ -1,15 +1,14 @@
 import type { LoaderFunctionArgs } from 'react-router';
 import { fetchPage, type PageDesignerPageParams } from '@/lib/api/page';
-import type { ShopperExperienceTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import { registry } from '@/lib/registry';
 
 type PageParams = Omit<PageDesignerPageParams, 'mode' | 'pdToken'>;
 export function fetchPageFromLoader(
     args: LoaderFunctionArgs,
     params: PageParams
-): Promise<ShopperExperienceTypes.Page> {
+): Promise<ShopperExperience.schemas['Page']> {
     const url = new URL(args.request.url);
-    // ToDo @mjuraschik: move to commerce-sdk-isomorphic
     const mode = url.searchParams.get('mode');
     const isPageDesignerActive = mode === 'EDIT' || mode === 'PREVIEW';
     const pdToken = isPageDesignerActive ? (url.searchParams.get('pdToken') ?? undefined) : undefined;
@@ -25,7 +24,7 @@ export function fetchPageFromLoader(
 
 export function collectComponentDataPromises(
     ctx: LoaderFunctionArgs,
-    pagePromise: Promise<ShopperExperienceTypes.Page>
+    pagePromise: Promise<ShopperExperience.schemas['Page']>
 ): Promise<Record<string, Promise<unknown>>> {
     // Return a promise that resolves to a map of component data promises
     // This allows the page to load in parallel with other data fetching

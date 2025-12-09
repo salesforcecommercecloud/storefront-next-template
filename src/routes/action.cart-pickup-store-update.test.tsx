@@ -14,8 +14,7 @@ import { isStoreOutOfStock } from '@/lib/inventory-utils';
 import { extractResponseError } from '@/lib/utils';
 import { getFirstPickupStoreId, getPickupProductItemsForStore } from '@/extensions/bopis/lib/basket-utils';
 import { createApiClients } from '@/lib/api-clients';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 vi.mock('@/middlewares/basket.client');
 vi.mock('@/extensions/bopis/lib/api/shipment');
@@ -69,7 +68,7 @@ describe('action.cart-pickup-store-update', () => {
         ],
     };
 
-    const mockProduct1: Partial<ShopperProductsTypes.Product> = {
+    const mockProduct1: Partial<ShopperProducts.schemas['Product']> = {
         id: 'product-1',
         inventories: [
             {
@@ -80,7 +79,7 @@ describe('action.cart-pickup-store-update', () => {
         ],
     };
 
-    const mockProduct2: Partial<ShopperProductsTypes.Product> = {
+    const mockProduct2: Partial<ShopperProducts.schemas['Product']> = {
         id: 'product-2',
         inventories: [
             {

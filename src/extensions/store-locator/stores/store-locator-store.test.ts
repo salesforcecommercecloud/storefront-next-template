@@ -258,7 +258,7 @@ describe('createStoreLocatorStore', () => {
                 expect(store.getState().selectedStoreInfo).toEqual(storeInfo);
             });
 
-            it('normalizes ShopperStoresTypes.Store objects and applies name fallback', () => {
+            it("normalizes ShopperStores.schemas['Store'] objects and applies name fallback", () => {
                 const fullStore = {
                     id: 'store1',
                     name: 'Test Store',

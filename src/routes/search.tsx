@@ -87,7 +87,7 @@ function getPageData(loaderCtx: LoaderFunctionArgs, limit: number): SearchPageDa
             // This is a known type limitation, the API intelligently serializes the refine parameter (array) automatically, but the OAS types refers to string.
             refine: refine as unknown as string,
         }),
-        page: pagePromise as Promise<ShopperExperience.schemas['Page']>,
+        page: pagePromise,
         componentData: componentDataPromises,
     };
 }

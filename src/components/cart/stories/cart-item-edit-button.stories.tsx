@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CartItemEditButton } from '../cart-item-edit-button';
-import type { ShopperBasketsTypes, ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { action } from 'storybook/actions';
 import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'react';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
@@ -105,7 +105,7 @@ function CartItem({ product }) {
 
 | Prop | Type | Description |
 |------|------|-------------|
-| \`product\` | \`ShopperBasketsTypes.ProductItem & Partial<ShopperProductsTypes.Product>\` | The cart item product to edit |
+| \`product\` | \`ShopperBasketsV2.schemas['ProductItem'] & Partial<ShopperProducts.schemas['Product']>\` | The cart item product to edit |
 | \`className\` | \`string\` | Optional additional CSS classes |
 
 ## Behavior
@@ -123,7 +123,9 @@ function CartItem({ product }) {
             control: 'object',
             description: 'The cart item product to edit',
             table: {
-                type: { summary: 'ShopperBasketsTypes.ProductItem & Partial<ShopperProductsTypes.Product>' },
+                type: {
+                    summary: "ShopperBasketsV2.schemas['ProductItem'] & Partial<ShopperProducts.schemas['Product']>",
+                },
             },
         },
         className: {
@@ -136,7 +138,8 @@ function CartItem({ product }) {
         },
     },
     args: {
-        product: inBasketProductDetails as ShopperBasketsTypes.ProductItem & Partial<ShopperProductsTypes.Product>,
+        product: inBasketProductDetails as ShopperBasketsV2.schemas['ProductItem'] &
+            Partial<ShopperProducts.schemas['Product']>,
         className: '',
     },
     decorators: [
@@ -176,7 +179,8 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
     args: {
-        product: inBasketProductDetails as ShopperBasketsTypes.ProductItem & Partial<ShopperProductsTypes.Product>,
+        product: inBasketProductDetails as ShopperBasketsV2.schemas['ProductItem'] &
+            Partial<ShopperProducts.schemas['Product']>,
     },
     parameters: {
         docs: {
@@ -217,7 +221,8 @@ The default CartItemEditButton shows a standard edit button:
 
 export const WithCustomStyling: Story = {
     args: {
-        product: inBasketProductDetails as ShopperBasketsTypes.ProductItem & Partial<ShopperProductsTypes.Product>,
+        product: inBasketProductDetails as ShopperBasketsV2.schemas['ProductItem'] &
+            Partial<ShopperProducts.schemas['Product']>,
         className: 'text-blue-600 hover:text-blue-700 font-medium',
     },
     parameters: {
@@ -258,7 +263,7 @@ export const WithHighQuantity: Story = {
         product: {
             ...inBasketProductDetails,
             quantity: 5,
-        } as ShopperBasketsTypes.ProductItem & Partial<ShopperProductsTypes.Product>,
+        } as ShopperBasketsV2.schemas['ProductItem'] & Partial<ShopperProducts.schemas['Product']>,
     },
     parameters: {
         docs: {
@@ -302,7 +307,7 @@ export const WithVariants: Story = {
                 color: 'red',
                 size: 'M',
             },
-        } as ShopperBasketsTypes.ProductItem & Partial<ShopperProductsTypes.Product>,
+        } as ShopperBasketsV2.schemas['ProductItem'] & Partial<ShopperProducts.schemas['Product']>,
     },
     parameters: {
         docs: {
@@ -349,8 +354,8 @@ export const InCartItem: Story = {
                     <div className="flex gap-4 mt-4">
                         <CartItemEditButton
                             product={
-                                inBasketProductDetails as ShopperBasketsTypes.ProductItem &
-                                    Partial<ShopperProductsTypes.Product>
+                                inBasketProductDetails as ShopperBasketsV2.schemas['ProductItem'] &
+                                    Partial<ShopperProducts.schemas['Product']>
                             }
                         />
                         <button className="text-sm text-destructive hover:text-destructive/80">Remove</button>

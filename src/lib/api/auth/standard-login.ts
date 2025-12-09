@@ -1,5 +1,5 @@
 import type { ActionFunctionArgs } from 'react-router';
-import type { ShopperLoginTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
 import type { CustomQueryParameters } from '@/lib/api/types';
 import { flashAuth, updateAuth, loginRegisteredUser as authLoginRegisteredUser } from '@/middlewares/auth.server';
 import { getTranslation } from '@/lib/i18next';
@@ -16,7 +16,7 @@ export const loginRegisteredUser = async (
     const { t } = getTranslation(context);
 
     try {
-        const tokenResponse: ShopperLoginTypes.TokenResponse = await authLoginRegisteredUser(
+        const tokenResponse: ShopperLogin.schemas['TokenResponse'] = await authLoginRegisteredUser(
             context,
             credentials.email,
             credentials.password,

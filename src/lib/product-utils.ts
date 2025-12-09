@@ -35,8 +35,8 @@ export type SwatchData = {
 /**
  * Extract color values from variation attributes
  *
- * @param {ShopperProductsTypes.VariationAttribute[] | undefined} variationAttributes - The variation attributes to search
- * @returns {ShopperProductsTypes.VariationAttributeValue[]} Array of color variation values
+ * @param {ShopperProducts.schemas['VariationAttribute'][] | undefined} variationAttributes - The variation attributes to search
+ * @returns {ShopperProducts.schemas['VariationAttributeValue'][]} Array of color variation values
  *
  * @example
  * const colorValues = getColorValues(product.variationAttributes);
@@ -58,7 +58,7 @@ export function getColorValues(
 /**
  * Build swatch data from an image group for a specific color
  *
- * @param {ShopperProductsTypes.ImageGroup} imageGroup - The image group containing swatch images
+ * @param {ShopperProducts.schemas['ImageGroup']} imageGroup - The image group containing swatch images
  * @param {string} colorValue - The color value for this swatch
  * @param {string} colorName - The display name for this color
  * @returns {SwatchData[]} Array of swatch data objects
@@ -100,7 +100,7 @@ export function buildImageSwatchData(
  * This is useful for displaying product variation selections (e.g. color, size)
  * in a more user-friendly format rather than showing internal IDs.
  *
- * @param {ShopperProductsTypes.VariationAttribute[]} [variationAttributes=[]]
+ * @param {ShopperProducts.schemas['VariationAttribute'][]} [variationAttributes=[]]
  *   The list of variation attributes available for the product.
  *   Each attribute contains an `id`, a `name`, and a list of possible `values`.
  *
@@ -187,7 +187,7 @@ export const createProductUrl = (
  *
  * @param {ShopperProducts.schemas['Product']} product - The product containing image groups
  * @param {string | null} selectedColor - The selected color value to filter by
- * @returns {ShopperProductsTypes.Image[]} Array of images matching the color, or default images
+ * @returns {ShopperProducts.schemas['Image'][]} Array of images matching the color, or default images
  *
  * @example
  * const images = getImagesForColor(product, 'red');

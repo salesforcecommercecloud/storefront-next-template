@@ -10,7 +10,7 @@ import CartContent from '@/components/cart/cart-content';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
 // Utils
-import type { ShopperStoresTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
 
 import { usePickup } from '@/extensions/bopis/context/pickup-context';
 
@@ -61,7 +61,7 @@ describe('CartContent', () => {
     } as any;
 
     describe('BOPIS (Buy Online Pickup In Store) functionality', () => {
-        const mockStore: ShopperStoresTypes.Store = {
+        const mockStore: ShopperStores.schemas['Store'] = {
             id: 'store-1',
             name: 'Test Store',
             inventoryId: 'inventory-1',
@@ -74,7 +74,7 @@ describe('CartContent', () => {
             },
         };
 
-        const createPickupContext = (productIds: string[], store?: ShopperStoresTypes.Store) => {
+        const createPickupContext = (productIds: string[], store?: ShopperStores.schemas['Store']) => {
             const pickupBasketItems = new Map();
             productIds.forEach((productId) => {
                 pickupBasketItems.set(productId, {

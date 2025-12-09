@@ -1,5 +1,5 @@
 import { createContext, type RouterContextProvider } from 'react-router';
-import type { ShopperLoginTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
 import type { SessionData as AuthData } from '@/lib/api/types';
 import {
     clearStorage,
@@ -121,7 +121,7 @@ export const authContext = createContext<{ ref: Promise<AuthData | undefined> }>
  */
 export const updateAuthStorageDataByTokenResponse = (
     storage: Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>,
-    tokenResponse: ShopperLoginTypes.TokenResponse,
+    tokenResponse: ShopperLogin.schemas['TokenResponse'],
     userType?: 'guest' | 'registered',
     appConfig?: AppConfig
 ): void => {
@@ -172,7 +172,9 @@ export const updateAuthStorageDataByTokenResponse = (
  */
 export const updateAuthStorageData = (
     storage: Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>,
-    updater: ShopperLoginTypes.TokenResponse | ((data: AuthData & StorageErrorData) => AuthData & StorageErrorData),
+    updater:
+        | ShopperLogin.schemas['TokenResponse']
+        | ((data: AuthData & StorageErrorData) => AuthData & StorageErrorData),
     appConfig?: AppConfig
 ) => {
     // Extract/store current storage data
@@ -216,7 +218,7 @@ export const updateStorageAndCache = async (
     context: Readonly<RouterContextProvider>,
     storage: Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>,
     cache: { ref: AuthData | undefined },
-    tokenResponse: ShopperLoginTypes.TokenResponse,
+    tokenResponse: ShopperLogin.schemas['TokenResponse'],
     userType: 'guest' | 'registered'
 ): Promise<void> => {
     const promiseCache = context.get(authContext);

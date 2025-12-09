@@ -26,14 +26,11 @@ export const isPasswordValid = (password: string) => {
 
 /**
  * This method extracts the status and message from a ResponseError that is returned
- * by commerce-sdk-isomorphic.
+ * by the SCAPI client.
  *
- * commerce-sdk-isomorphic throws a `ResponseError`, but doesn't export the class.
- * We can't use `instanceof`, so instead we just check for the `response` property
- * and assume it is a `ResponseError` if a response is present
+ * The SCAPI client throws an `ApiError` (exported from @salesforce/storefront-next-runtime/scapi).
+ * We check for the `response` property and assume it is a ResponseError if present.
  *
- * Once commerce-sdk-isomorphic exports `ResponseError` we can revisit if this method is
- * still required.
  * @throws error if the error is not a ResponseError
  */
 export const extractResponseError = async (

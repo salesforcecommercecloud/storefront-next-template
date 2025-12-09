@@ -12,11 +12,11 @@ import AddressCard from './index';
 import { getTranslation } from '@/lib/i18next';
 
 const { t } = getTranslation();
-import type { ShopperCustomersTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 
 // Mock AddressDisplay component
 vi.mock('@/components/address-display', () => ({
-    default: ({ address }: { address: ShopperCustomersTypes.CustomerAddress }) => (
+    default: ({ address }: { address: ShopperCustomers.schemas['CustomerAddress'] }) => (
         <div data-testid="address-display">
             {address.firstName} {address.lastName}
             {address.address1 && `, ${address.address1}`}
@@ -25,7 +25,7 @@ vi.mock('@/components/address-display', () => ({
 }));
 
 describe('AddressCard', () => {
-    const mockAddress: ShopperCustomersTypes.CustomerAddress = {
+    const mockAddress: ShopperCustomers.schemas['CustomerAddress'] = {
         addressId: 'address-123',
         firstName: 'John',
         lastName: 'Doe',
@@ -49,7 +49,7 @@ describe('AddressCard', () => {
         });
 
         test('displays addressId in card title', () => {
-            const addressWithCustomId: ShopperCustomersTypes.CustomerAddress = {
+            const addressWithCustomId: ShopperCustomers.schemas['CustomerAddress'] = {
                 ...mockAddress,
                 addressId: 'home-address',
             };
@@ -211,7 +211,7 @@ describe('AddressCard', () => {
 
     describe('Edge Cases', () => {
         test('handles address with minimal required fields', () => {
-            const minimalAddress: ShopperCustomersTypes.CustomerAddress = {
+            const minimalAddress: ShopperCustomers.schemas['CustomerAddress'] = {
                 addressId: 'minimal-address',
                 countryCode: 'US',
                 firstName: 'Jane',
@@ -225,7 +225,7 @@ describe('AddressCard', () => {
         });
 
         test('handles address with empty string addressId', () => {
-            const addressWithEmptyId: ShopperCustomersTypes.CustomerAddress = {
+            const addressWithEmptyId: ShopperCustomers.schemas['CustomerAddress'] = {
                 ...mockAddress,
                 addressId: '',
             };

@@ -1,6 +1,6 @@
 import { type UseFormReturn } from 'react-hook-form';
 import type { ScapiFetcher } from '@/hooks/use-scapi-fetcher';
-import type { ShopperCustomersTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 
 // Type for the form data (inferred from schema in index.tsx)
 export type CustomerAddressFormData = {
@@ -21,7 +21,7 @@ export type CustomerAddressFormData = {
 export interface CustomerAddressFormProps {
     initialData?: Partial<CustomerAddressFormData>;
     // The fetcher returns CustomerAddress directly (unwrapped by ScapiFetcher)
-    updateFetcher: ScapiFetcher<ShopperCustomersTypes.CustomerAddress>;
+    updateFetcher: ScapiFetcher<ShopperCustomers.schemas['CustomerAddress']>;
     onSuccess?: (formData: CustomerAddressFormData) => void;
     onError?: (error: string) => void;
     onCancel?: () => void;

@@ -1,5 +1,5 @@
 import { type LoaderFunctionArgs } from 'react-router';
-import type { ShopperExperienceTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import { createApiClients } from '@/lib/api-clients';
 
 export type PageDesignerPageParams = {
@@ -14,7 +14,7 @@ export type PageDesignerPageParams = {
 export const fetchPage = async (
     context: LoaderFunctionArgs['context'],
     parameters: PageDesignerPageParams
-): Promise<ShopperExperienceTypes.Page> => {
+): Promise<ShopperExperience.schemas['Page']> => {
     const { pageId = '', pdToken, mode, aspectType, categoryId, productId } = parameters || {};
     const clients = createApiClients(context);
 

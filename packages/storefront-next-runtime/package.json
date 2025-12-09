@@ -77,7 +77,6 @@
   "author": "cc-pwa-kit@salesforce.com",
   "license": "MIT",
   "dependencies": {
-    "commerce-sdk-isomorphic": "4.0.0-nightly-20251027080801",
     "openapi-fetch": "0.15.0"
   },
   "devDependencies": {

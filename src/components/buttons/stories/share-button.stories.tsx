@@ -142,7 +142,7 @@ function ProductDetail({ product }) {
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| \`product\` | \`ShopperProductsTypes.Product\` | - | The product data to share |
+| \`product\` | \`ShopperProducts.schemas['Product']\` | - | The product data to share |
 | \`className\` | \`string\` | \`undefined\` | Optional additional CSS classes |
 
 ## Share Options
@@ -186,7 +186,7 @@ Share providers are configured via \`site.features.socialShare\`:
             control: 'object',
             description: 'The product data to share',
             table: {
-                type: { summary: 'ShopperProductsTypes.Product' },
+                type: { summary: "ShopperProducts.schemas['Product']" },
             },
         },
         className: {

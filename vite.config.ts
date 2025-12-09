@@ -101,30 +101,11 @@ export default defineConfig(({ mode }) => {
             },
         },
         optimizeDeps: {
-            include: [
-                'react-router',
-                'react-router/internal/react-server-client',
-                // Pre-bundle SDK subpaths individually to keep per-API payloads small in dev
-                'commerce-sdk-isomorphic/helpers',
-                'commerce-sdk-isomorphic/shopperBaskets',
-                'commerce-sdk-isomorphic/shopperBasketsv2',
-                'commerce-sdk-isomorphic/shopperConsents',
-                'commerce-sdk-isomorphic/shopperContext',
-                'commerce-sdk-isomorphic/shopperCustomers',
-                'commerce-sdk-isomorphic/shopperExperience',
-                'commerce-sdk-isomorphic/shopperGiftCertificates',
-                'commerce-sdk-isomorphic/shopperLogin',
-                'commerce-sdk-isomorphic/shopperOrders',
-                'commerce-sdk-isomorphic/shopperProducts',
-                'commerce-sdk-isomorphic/shopperPromotions',
-                'commerce-sdk-isomorphic/shopperSearch',
-                'commerce-sdk-isomorphic/shopperSeo',
-                'commerce-sdk-isomorphic/shopperStores',
-            ],
+            include: ['react-router', 'react-router/internal/react-server-client'],
         },
         ssr: {
             // Ensure Vite compiles the SDK for SSR so Node doesn't attempt to run its ESM as CJS
-            noExternal: ['commerce-sdk-isomorphic', '@salesforce/storefront-next-runtime'],
+            noExternal: ['@salesforce/storefront-next-runtime'],
             target: 'node',
         },
         test: {

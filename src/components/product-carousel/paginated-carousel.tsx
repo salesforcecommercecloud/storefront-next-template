@@ -2,7 +2,7 @@
 
 import { type ReactNode, useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import {
     Carousel,
     CarouselContent,
@@ -16,7 +16,7 @@ import { useConfig } from '@/config';
 
 export interface PaginatedProductCarouselProps {
     /** Initial products to display (may include null placeholders for unfetched products) */
-    products: (ShopperSearchTypes.ProductSearchHit | null)[];
+    products: (ShopperSearch.schemas['ProductSearchHit'] | null)[];
     /** Total number of items available (for pagination calculation) */
     total: number;
     /** Current offset (number of items already loaded) */
@@ -24,11 +24,11 @@ export interface PaginatedProductCarouselProps {
     /** Number of items to load per page. Defaults to config.global.paginatedProductCarousel.defaultLimit */
     limit?: number;
     /** Callback to load more products. Should return a promise that resolves to new products (may include null placeholders) */
-    onLoadMore: (offset: number, limit: number) => Promise<(ShopperSearchTypes.ProductSearchHit | null)[]>;
+    onLoadMore: (offset: number, limit: number) => Promise<(ShopperSearch.schemas['ProductSearchHit'] | null)[]>;
     /** Optional title to display above the carousel */
     title?: string;
     /** Custom render function for each product tile. If not provided, uses default ProductTile */
-    renderTile?: (product: ShopperSearchTypes.ProductSearchHit, index: number) => ReactNode;
+    renderTile?: (product: ShopperSearch.schemas['ProductSearchHit'], index: number) => ReactNode;
     /** Whether to show loading indicator when fetching more items */
     showLoadingIndicator?: boolean;
     /** Custom loading component */
@@ -102,7 +102,7 @@ export default function PaginatedProductCarousel({
     const { t } = useTranslation('common');
     const config = useConfig();
     const limit = limitProp ?? config.global.paginatedProductCarousel.defaultLimit;
-    const [products, setProducts] = useState<(ShopperSearchTypes.ProductSearchHit | null)[]>(initialProducts);
+    const [products, setProducts] = useState<(ShopperSearch.schemas['ProductSearchHit'] | null)[]>(initialProducts);
     // currentOffset tracks where the next load should start from (after currently loaded products)
     const [currentOffset, setCurrentOffset] = useState(initialOffset + initialProducts.length);
     const [isLoading, setIsLoading] = useState(false);
@@ -210,7 +210,7 @@ export default function PaginatedProductCarousel({
 
     // Default render function for product tiles
     const defaultRenderTile = useCallback(
-        (product: ShopperSearchTypes.ProductSearchHit, index: number) => (
+        (product: ShopperSearch.schemas['ProductSearchHit'], index: number) => (
             <ProductTile key={product.productId || index} product={product} className="h-auto" />
         ),
         []

@@ -1,7 +1,8 @@
-import { ShopperBasketsTypes, ShopperProductsTypes, ShopperSearchTypes } from "commerce-sdk-isomorphic";
+import { a as ShopperSearch, i as ShopperProducts, n as ShopperBasketsV2, t as ShopperBasketsV1 } from "./types.js";
 
 //#region src/events/types.d.ts
-
+type BasketProductItem = ShopperBasketsV1.schemas['ProductItem'] | ShopperBasketsV2.schemas['ProductItem'];
+type Basket = ShopperBasketsV1.schemas['Basket'] | ShopperBasketsV2.schemas['Basket'];
 /**
  * Interface for analytics user properties.
  * This can be extended by external code via module augmentation without modifying the events module.
@@ -49,57 +50,57 @@ interface ViewPageEvent extends BaseEvent {
 }
 interface ViewProductEvent extends BaseEvent {
   eventType: 'view_product';
-  product: ShopperProductsTypes.Product;
+  product: ShopperProducts.schemas['Product'];
 }
 interface ViewSearchEvent extends BaseEvent {
   eventType: 'view_search';
   searchInputText: string;
-  searchResults: ShopperSearchTypes.ProductSearchHit[];
+  searchResults: ShopperSearch.schemas['ProductSearchHit'][];
   sort: string;
-  refinements: ShopperSearchTypes.ProductSearchResult['selectedRefinements'];
+  refinements: ShopperSearch.schemas['ProductSearchResult']['selectedRefinements'];
 }
 interface ViewCategoryEvent extends BaseEvent {
   eventType: 'view_category';
-  category: ShopperProductsTypes.Category;
-  searchResults: ShopperSearchTypes.ProductSearchHit[];
+  category: ShopperProducts.schemas['Category'];
+  searchResults: ShopperSearch.schemas['ProductSearchHit'][];
   sort: string;
-  refinements: ShopperSearchTypes.ProductSearchResult['selectedRefinements'];
+  refinements: ShopperSearch.schemas['ProductSearchResult']['selectedRefinements'];
 }
 interface ViewRecommenderEvent extends BaseEvent {
   eventType: 'view_recommender';
   recommenderId: string;
   recommenderName: string;
-  products: ShopperSearchTypes.ProductSearchHit[];
+  products: ShopperSearch.schemas['ProductSearchHit'][];
 }
 interface ClickProductInCategoryEvent extends BaseEvent {
   eventType: 'click_product_in_category';
-  category: ShopperProductsTypes.Category;
-  product: ShopperSearchTypes.ProductSearchHit;
+  category: ShopperProducts.schemas['Category'];
+  product: ShopperSearch.schemas['ProductSearchHit'];
 }
 interface ClickProductInSearchEvent extends BaseEvent {
   eventType: 'click_product_in_search';
   searchInputText: string;
-  product: ShopperSearchTypes.ProductSearchHit;
+  product: ShopperSearch.schemas['ProductSearchHit'];
 }
 interface ClickProductInRecommenderEvent extends BaseEvent {
   eventType: 'click_product_in_recommender';
   recommenderId: string;
   recommenderName: string;
-  product: ShopperSearchTypes.ProductSearchHit;
+  product: ShopperSearch.schemas['ProductSearchHit'];
 }
 interface CartItemAddEvent extends BaseEvent {
   eventType: 'cart_item_add';
-  cartItems: Array<ShopperBasketsTypes.ProductItem>;
+  cartItems: Array<BasketProductItem>;
 }
 interface CheckoutStartEvent extends BaseEvent {
   eventType: 'checkout_start';
-  basket: ShopperBasketsTypes.Basket;
+  basket: Basket;
 }
 interface CheckoutStepEvent extends BaseEvent {
   eventType: 'checkout_step';
   stepName: string;
   stepNumber: number;
-  basket: ShopperBasketsTypes.Basket;
+  basket: Basket;
 }
 /**
  * Interface for custom analytics events.

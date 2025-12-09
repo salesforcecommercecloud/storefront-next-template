@@ -331,7 +331,7 @@ function transformProductToEinsteinProduct(product: Product): EinsteinProduct {
     }
 
     // Otherwise it's a ShopperProducts Product
-    const fullProduct = product as ShopperProducts.schemas['Product'];
+    const fullProduct = product;
     return getProductMapping(fullProduct, fullProduct.price);
 }
 

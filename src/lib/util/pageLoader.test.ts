@@ -1,6 +1,6 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { LoaderFunctionArgs } from 'react-router';
-import type { ShopperExperienceTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchPageFromLoader, collectComponentDataPromises } from './pageLoader';
 import { fetchPage } from '@/lib/api/page';
 import { registry } from '@/lib/registry';
@@ -31,11 +31,11 @@ const createLoaderArgs = (url: string, context = TEST_CONTEXT): LoaderFunctionAr
     params: {},
 });
 
-const createMockPage = (regions: any[] = []): ShopperExperienceTypes.Page =>
+const createMockPage = (regions: any[] = []): ShopperExperience.schemas['Page'] =>
     ({
         id: 'mock-page',
         regions,
-    }) as ShopperExperienceTypes.Page;
+    }) as ShopperExperience.schemas['Page'];
 
 const createMockComponent = (id: string, typeId: string, additionalProps = {}) => ({
     id,

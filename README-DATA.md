@@ -50,12 +50,12 @@ In this simple example, data is loaded in an identical manner on both the server
 
 ```typescript jsx
 import type { ClientLoaderFunctionArgs, LoaderFunctionArgs } from 'react-router';
-import type { ShopperCustomersTypes, ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
-import { createApiClients } from '@/lib/api-clients';
+import type { ShopperCustomers, ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import createClient from '@/lib/scapi';
 
 type YourPageData = {
-    customer: ShopperCustomersTypes.Customer;
-    basket: ShopperBasketsTypes.Basket;
+    customer: ShopperCustomers.schemas['Customer'];
+    basket: ShopperBasketsV2.schemas['Basket'];
 };
 
 async function getPageData({ params: { customerId }, context }: LoaderFunctionArgs): Promise<YourPageData> {
@@ -124,12 +124,12 @@ The following example builds on the case from before. Instead of fetching the da
 ```typescript jsx
 import { use } from 'react';
 import type { ClientLoaderFunctionArgs, LoaderFunctionArgs } from 'react-router';
-import type { ShopperCustomersTypes, ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
-import { createApiClients } from '@/lib/api-clients';
+import type { ShopperCustomers, ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import createClient from '@/lib/scapi';
 
 type YourPageData = {
-    customer: Promise<ShopperCustomersTypes.Customer>;
-    basket: Promise<ShopperBasketsTypes.Basket>;
+    customer: Promise<ShopperCustomers.schemas['Customer']>;
+    basket: Promise<ShopperBasketsV2.schemas['Basket']>;
 };
 
 function getPageData({ params: { customerId }, context }: LoaderFunctionArgs): YourPageData {
@@ -243,8 +243,8 @@ const YourPageView = ({
     customer: customerData,
     basket: basketData,
 }: {
-    customer: ShopperCustomersTypes.Customer;
-    basket: ShopperBasketsTypes.Basket;
+    customer: ShopperCustomers.schemas['Customer'];
+    basket: ShopperBasketsV2.schemas['Basket'];
 }) => {
     return (
         <div>
@@ -311,7 +311,9 @@ export default function YourPage({ loaderData: { customer, basket } }: { loaderD
 
 ### SCAPI Clients
 
-Developers who are already familiar with the predecessor framework [PWA Kit](https://github.com/SalesforceCommerceCloud/pwa-kit) will likely already be familiar with the [`commerce-sdk-isomorphic`](https://github.com/SalesforceCommerceCloud/commerce-sdk-isomorphic) and/or its React-specific extension [`commerce-sdk-react`](https://github.com/SalesforceCommerceCloud/pwa-kit/tree/develop/packages/commerce-sdk-react). The isomorphic SDK abstracted aspects such as access to and prior authentication with the RESTful [B2C Commerce APIs](https://developer.salesforce.com/docs/commerce/commerce-api) (SCAPI) in a JavaScript framework-agnostic manner. For StorefrontNext, we explicitly decided against the rather heavyweight additional layer such as `commerce-sdk-react` and `commerce-sdk-isomorphic`. Instead, we provide the comparatively extremely lightweight SCAPI clients ([`@/lib/api-clients`](https://github.com/SalesforceCommerceCloud/storefront-next/blob/main/packages/template-retail-rsc-app/src/lib/api-clients.ts)).
+Developers who are already familiar with the predecessor framework [PWA Kit](https://github.com/SalesforceCommerceCloud/pwa-kit) will likely already be familiar with the RESTful [B2C Commerce APIs](https://developer.salesforce.com/docs/commerce/commerce-api) (SCAPI) and how they were accessed through various SDK layers.
+
+For Storefront Next, we explicitly decided against a rather heavyweight additional layer such as `commerce-sdk-react`. Instead, we provide the lightweight SCAPI client from `@salesforce/storefront-next-runtime/scapi`. This client is generated from OpenAPI specifications and provides full type safety for all SCAPI operations. The SCAPI Fetch Service ([`@/lib/scapi`](https://github.com/SalesforceCommerceCloud/SFCC-Odyssey/blob/main/packages/template-retail-rsc-app/src/lib/scapi.ts)) wraps this client using a [`Proxy`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy), so that aspects such as authentication and client configuration are handled in a completely transparent way for the consumer.
 
 ## Performance Metrics
 

@@ -170,7 +170,7 @@ function getPageData(
         }
         // Re-throw other errors
         throw error;
-    }) as Promise<ShopperExperience.schemas['Page']>;
+    });
 
     // Collect component data promises for components in regions
     // Handle errors gracefully - return empty object if page fetch failed

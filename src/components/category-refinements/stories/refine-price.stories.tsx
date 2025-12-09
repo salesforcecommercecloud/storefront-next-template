@@ -8,7 +8,7 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 // @ts-expect-error Mock data file is JavaScript
 import searchResults from '@/components/__mocks__/search-results';
 import type { FilterValue } from '../types';
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 
 const REFINE_PRICE_HARNESS_ATTR = 'data-refine-price-harness';
 
@@ -123,7 +123,7 @@ function PriceFilter({ values, attributeId, isFilterSelected, toggleFilter, resu
 | \`attributeId\` | \`string\` | The attribute ID (typically 'price') |
 | \`isFilterSelected\` | \`(attributeId: string, value: string) => boolean\` | Function to check if a filter is selected |
 | \`toggleFilter\` | \`(attributeId: string, value: string) => void\` | Function to toggle a filter |
-| \`result\` | \`ShopperSearchTypes.ProductSearchResult\` | Product search result for price validation |
+| \`result\` | \`ShopperSearch.schemas['ProductSearchResult']\` | Product search result for price validation |
 
 ## Behavior
 
@@ -171,7 +171,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 // Use real mock data from @mocks directory
-const mockSearchResult = searchResults as ShopperSearchTypes.ProductSearchResult;
+const mockSearchResult = searchResults as ShopperSearch.schemas['ProductSearchResult'];
 
 const mockPriceValues: FilterValue[] = [
     { value: '(0..50)', label: '$0 - $50', hitCount: 5 },

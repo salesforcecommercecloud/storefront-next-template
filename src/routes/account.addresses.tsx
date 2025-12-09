@@ -4,7 +4,7 @@ import { useOutletContext, Await } from 'react-router';
 
 // Third-party libraries
 import { MapPin } from 'lucide-react';
-import type { ShopperCustomersTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 
 // UI components
 import { Card, CardContent } from '@/components/ui/card';
@@ -25,7 +25,7 @@ import { useScapiFetcherEffect } from '@/hooks/use-scapi-fetcher-effect';
 import { useAuth } from '@/providers/auth';
 
 type AccountLayoutContext = {
-    customer: Promise<ShopperCustomersTypes.Customer | null>;
+    customer: Promise<ShopperCustomers.schemas['Customer'] | null>;
 };
 
 type EditingAddressId = string | null;
@@ -48,7 +48,11 @@ function EditIndicator(): ReactElement {
  * Account addresses content component that renders when customer data is loaded.
  * This component receives the resolved customer data and displays all addresses.
  */
-function AccountAddressesContent({ customer }: { customer: ShopperCustomersTypes.Customer | null }): ReactElement {
+function AccountAddressesContent({
+    customer,
+}: {
+    customer: ShopperCustomers.schemas['Customer'] | null;
+}): ReactElement {
     const { t } = useTranslation('account');
 
     const addresses = customer?.addresses || [];
@@ -65,7 +69,7 @@ function AccountAddressesContent({ customer }: { customer: ShopperCustomersTypes
                 customerId: customerId || '',
             },
         },
-        body: {} as ShopperCustomersTypes.CustomerAddress,
+        body: {} as ShopperCustomers.schemas['CustomerAddress'],
     });
 
     // Create fetcher for updating customer address
@@ -82,7 +86,7 @@ function AccountAddressesContent({ customer }: { customer: ShopperCustomersTypes
                 addressName: updateAddressName,
             },
         },
-        body: {} as ShopperCustomersTypes.CustomerAddress,
+        body: {} as ShopperCustomers.schemas['CustomerAddress'],
     });
 
     const handleAdd = () => {
@@ -340,7 +344,9 @@ export default function AccountAddresses(): ReactElement {
     return (
         <Suspense fallback={<AccountAddressesSkeleton />}>
             <Await resolve={customerPromise}>
-                {(customer: ShopperCustomersTypes.Customer | null) => <AccountAddressesContent customer={customer} />}
+                {(customer: ShopperCustomers.schemas['Customer'] | null) => (
+                    <AccountAddressesContent customer={customer} />
+                )}
             </Await>
         </Suspense>
     );

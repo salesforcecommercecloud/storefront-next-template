@@ -4,7 +4,7 @@ import { Component } from '@/lib/decorators/component';
 import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
 import { RegionDefinition, getRegionDefinition } from '@/lib/decorators';
 import { Region } from '@/components/region';
-import type { ShopperExperienceTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 
 // Based on Radix UI Themes Grid component API
 // Reference: https://www.radix-ui.com/themes/docs/components/grid
@@ -46,7 +46,7 @@ interface GridProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
     children?: ReactNode;
 
     // Page Designer props (need to be extracted to avoid passing to DOM)
-    page?: Promise<ShopperExperienceTypes.Page>;
+    page?: Promise<ShopperExperience.schemas['Page']>;
     componentData?: Promise<Record<string, Promise<unknown>>>;
     designMetadata?: unknown;
     regionId?: string;

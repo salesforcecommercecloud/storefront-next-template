@@ -12,11 +12,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Spinner } from '@/components/spinner';
 import AddressDisplay from '@/components/address-display';
-import type { ShopperCustomersTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 
 interface AddressCardProps {
     /** The address data to display */
-    address: ShopperCustomersTypes.CustomerAddress;
+    address: ShopperCustomers.schemas['CustomerAddress'];
     /** Callback function called when the edit button is clicked */
     onEdit?: () => void;
     /** Callback function called when the remove button is clicked */

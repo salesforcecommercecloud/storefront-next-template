@@ -1,4 +1,5 @@
-import { Q as ShopperExperience, S as ClientAcknowledgedEvent, l as EventPayload, r as ClientApi } from "./index.js";
+import { r as ShopperExperience } from "./types.js";
+import { S as ClientAcknowledgedEvent, l as EventPayload, r as ClientApi } from "./index.js";
 import React from "react";
 
 //#region src/design/react/context/DesignContext.d.ts

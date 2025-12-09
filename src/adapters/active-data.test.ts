@@ -8,7 +8,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createActiveDataAdapter, type ActiveDataConfig } from './active-data';
 import type { AnalyticsEvent } from '@salesforce/storefront-next-runtime/events';
-import type { ShopperProductsTypes, ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import Cookies from 'js-cookie';
 
 vi.mock('js-cookie', () => ({
@@ -124,21 +124,21 @@ function mockDwDntCookie(value: string | undefined): void {
 }
 
 // Mock data
-const mockProduct: ShopperProductsTypes.Product = {
+const mockProduct: ShopperProducts.schemas['Product'] = {
     id: 'test-product-id',
     name: 'Test Product',
     categoryId: 'test-category-id',
-} as ShopperProductsTypes.Product;
+} as ShopperProducts.schemas['Product'];
 
-const mockSearchResult: ShopperSearchTypes.ProductSearchHit = {
+const mockSearchResult: ShopperSearch.schemas['ProductSearchHit'] = {
     productId: 'test-search-product-id',
     productName: 'Test Search Product',
-} as ShopperSearchTypes.ProductSearchHit;
+} as ShopperSearch.schemas['ProductSearchHit'];
 
-const mockCategory: ShopperProductsTypes.Category = {
+const mockCategory: ShopperProducts.schemas['Category'] = {
     id: 'test-category-id',
     name: 'Test Category',
-} as ShopperProductsTypes.Category;
+} as ShopperProducts.schemas['Category'];
 
 // Mock analytics events
 const mockPageViewEvent: AnalyticsEvent = {
@@ -444,7 +444,7 @@ describe('Active Data Adapter', () => {
             const manyProducts = Array.from({ length: 100 }, (_, i) => ({
                 productId: `product-${i}-${'x'.repeat(50)}`, // Long product IDs
                 productName: `Product ${i}`,
-            })) as ShopperSearchTypes.ProductSearchHit[];
+            })) as ShopperSearch.schemas['ProductSearchHit'][];
 
             const largeSearchEvent = {
                 ...mockSearchEvent,
@@ -503,9 +503,9 @@ describe('Active Data Adapter', () => {
             const multiProductEvent = {
                 ...mockSearchEvent,
                 searchResults: [
-                    { productId: 'product-1' } as ShopperSearchTypes.ProductSearchHit,
-                    { productId: 'product-2' } as ShopperSearchTypes.ProductSearchHit,
-                    { productId: 'product-3' } as ShopperSearchTypes.ProductSearchHit,
+                    { productId: 'product-1' } as ShopperSearch.schemas['ProductSearchHit'],
+                    { productId: 'product-2' } as ShopperSearch.schemas['ProductSearchHit'],
+                    { productId: 'product-3' } as ShopperSearch.schemas['ProductSearchHit'],
                 ],
             } as AnalyticsEvent;
 
@@ -527,7 +527,7 @@ describe('Active Data Adapter', () => {
         it('should skip products without id or productId', async () => {
             const productWithoutId = {
                 name: 'Product without ID',
-            } as unknown as ShopperProductsTypes.Product;
+            } as unknown as ShopperProducts.schemas['Product'];
 
             const productEvent = {
                 ...mockProductViewEvent,

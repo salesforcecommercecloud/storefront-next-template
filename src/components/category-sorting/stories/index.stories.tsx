@@ -7,7 +7,7 @@ import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 // @ts-expect-error Mock data file is JavaScript
 import searchResults from '@/components/__mocks__/search-results';
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 
 const SORTING_HARNESS_ATTR = 'data-sorting-harness';
 
@@ -93,7 +93,7 @@ function CategoryPage({ searchResult }) {
 
 | Prop | Type | Description |
 |------|------|-------------|
-| \`result\` | \`ShopperSearchTypes.ProductSearchResult\` | Product search result containing sorting options |
+| \`result\` | \`ShopperSearch.schemas['ProductSearchResult']\` | Product search result containing sorting options |
 
 ## Behavior
 
@@ -140,9 +140,9 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 // Use real mock data from @mocks directory
-const mockSearchResult = searchResults as ShopperSearchTypes.ProductSearchResult;
+const mockSearchResult = searchResults as ShopperSearch.schemas['ProductSearchResult'];
 
-const mockSearchResultNoSorting: ShopperSearchTypes.ProductSearchResult = {
+const mockSearchResultNoSorting: ShopperSearch.schemas['ProductSearchResult'] = {
     ...mockSearchResult,
     sortingOptions: [],
     selectedSortingOption: undefined,

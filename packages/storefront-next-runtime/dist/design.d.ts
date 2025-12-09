@@ -7,8 +7,7 @@
  * @template TComponent - The type of components stored in this registry
  * @example
  * import type React from 'react';
- * import pkg from 'commerce-sdk-isomorphic';
- * const { design: { ComponentRegistry, createReactDesignDecorator } } = pkg;
+ * import { ComponentRegistry, createReactDesignDecorator } from '@salesforce/storefront-next-runtime/design';
  *
  * const registry = new ComponentRegistry<React.Component>({
  *   designDecorator: createReactDesignDecorator(),

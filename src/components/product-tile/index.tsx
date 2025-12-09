@@ -25,7 +25,7 @@ import { SwatchGroup, Swatch } from '@/components/swatch-group';
 interface ProductTileProps extends ComponentProps<'div'> {
     product: ShopperSearch.schemas['ProductSearchHit'];
     maxSwatches?: number;
-    handleProductClick?: (product: ShopperSearchTypes.ProductSearchHit) => void;
+    handleProductClick?: (product: ShopperSearch.schemas['ProductSearchHit']) => void;
     /** Custom footer action button. If provided, replaces the default "More Options" button */
     footerAction?: React.ReactNode;
     /** If true, swatches are displayed but not interactive (read-only mode for wishlist) */

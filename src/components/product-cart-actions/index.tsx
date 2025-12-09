@@ -76,7 +76,7 @@ export default function ProductCartActions({
             // Call before callback
             onBeforeAddToWishlist?.();
             try {
-                await handleAddToWishlist(productToAdd as ShopperProductsTypes.Variant);
+                await handleAddToWishlist(productToAdd as ShopperProducts.schemas['Variant']);
                 // Call success callback after API completes
                 onAddToWishlistSuccess?.();
             } catch (error) {
@@ -111,7 +111,7 @@ export default function ProductCartActions({
         onBeforeAddToWishlist?.();
 
         try {
-            await handleAddToWishlist(productToAdd as ShopperProductsTypes.Variant);
+            await handleAddToWishlist(productToAdd as ShopperProducts.schemas['Variant']);
             // Call success callback after API completes
             onAddToWishlistSuccess?.();
         } catch (error) {

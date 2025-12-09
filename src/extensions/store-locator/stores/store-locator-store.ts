@@ -51,7 +51,7 @@ type StoreLocatorActions = {
     setDeviceCoordinates: (coords: GeoCoordinates) => void;
     setGeoError: (value: boolean) => void;
     setSelectedStoreInfo: (
-        info: SelectedStoreInfo | ShopperStoresTypes.Store | Partial<ShopperStoresTypes.Store> | null
+        info: SelectedStoreInfo | ShopperStores.schemas['Store'] | Partial<ShopperStores.schemas['Store']> | null
     ) => void;
 };
 
@@ -69,7 +69,7 @@ const defaultConfig: StoreLocatorConfig = {
 };
 
 import { getSelectedStoreInfoCookieName } from '@/extensions/store-locator/utils';
-import type { ShopperStoresTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
 
 /**
  * Normalizes a store object to SelectedStoreInfo format.
@@ -79,7 +79,7 @@ import type { ShopperStoresTypes } from 'commerce-sdk-isomorphic';
  * @returns Normalized SelectedStoreInfo or null
  */
 const normalizeStoreInfo = (
-    store: SelectedStoreInfo | ShopperStoresTypes.Store | Partial<ShopperStoresTypes.Store> | null
+    store: SelectedStoreInfo | ShopperStores.schemas['Store'] | Partial<ShopperStores.schemas['Store']> | null
 ): SelectedStoreInfo | null => {
     if (!store || !store.id) {
         return null;

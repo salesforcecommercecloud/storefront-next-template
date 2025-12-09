@@ -4,7 +4,7 @@
  */
 
 import { useState, useCallback } from 'react';
-import type { ShopperProductsTypes, ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { useRecommendersAdapter } from '@/providers/recommenders';
 import { convertProductToProductSearchHit } from '@/lib/product-conversion';
 import { encodeBase64Url } from '@/lib/url';
@@ -13,13 +13,13 @@ import { useAuth } from '@/providers/auth';
 /**
  * Union type for products from either Shopper Products API or Shopper Search API
  */
-export type Product = ShopperProductsTypes.Product | ShopperSearchTypes.ProductSearchHit;
+export type Product = ShopperProducts.schemas['Product'] | ShopperSearch.schemas['ProductSearchHit'];
 
 /**
  * Enriched product recommendation
  * Combines ProductSearchHit with Einstein-specific metadata
  */
-export type EnrichedRecommendation = ShopperSearchTypes.ProductSearchHit & {
+export type EnrichedRecommendation = ShopperSearch.schemas['ProductSearchHit'] & {
     /** Einstein recommendation ID */
     id: string;
     /** Einstein image URL */
@@ -91,7 +91,7 @@ export interface RecommendersAdapter {
  */
 function enrichRecommendationsWithProducts(
     reco: Recommendation,
-    products: ShopperProductsTypes.Product[]
+    products: ShopperProducts.schemas['Product'][]
 ): Recommendation {
     if (!reco.recs?.length || !products.length) {
         return reco;
@@ -170,7 +170,7 @@ export const useRecommenders = (isEnabled: boolean = true) => {
      * Fetch product details from SCAPI using the resource API
      * Uses the same encoding format as useScapiFetcher for consistency
      */
-    const fetchProducts = useCallback(async (ids: string[]): Promise<ShopperProductsTypes.Product[]> => {
+    const fetchProducts = useCallback(async (ids: string[]): Promise<ShopperProducts.schemas['Product'][]> => {
         if (!ids.length) {
             return [];
         }

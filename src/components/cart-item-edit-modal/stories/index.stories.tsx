@@ -5,10 +5,10 @@ import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'r
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import { expect, within } from 'storybook/test';
 import { masterProduct, variantProduct } from '@/components/__mocks__/master-variant-product';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 // Create a product that won't trigger fetches by ensuring matching variant has same productId
-const createMockProductForModal = (): ShopperProductsTypes.Product => {
+const createMockProductForModal = (): ShopperProducts.schemas['Product'] => {
     // Use master product but ensure the variant matching variantProduct.variationValues has productId matching master id
     const product = { ...masterProduct, variationValues: variantProduct.variationValues };
     // Find the variant that matches and update its productId to match the master id
@@ -170,7 +170,7 @@ function CartItem({ product, itemId, quantity }) {
 
 | Prop | Type | Description |
 |------|------|-------------|
-| \`product\` | \`ShopperProductsTypes.Product\` | The product being edited |
+| \`product\` | \`ShopperProducts.schemas['Product']\` | The product being edited |
 | \`initialQuantity\` | \`number\` | Initial quantity from cart item |
 | \`itemId\` | \`string\` | Cart item ID for update operations |
 | \`open\` | \`boolean\` | Whether the modal is open |
@@ -193,7 +193,7 @@ function CartItem({ product, itemId, quantity }) {
             control: 'object',
             description: 'The product being edited',
             table: {
-                type: { summary: 'ShopperProductsTypes.Product' },
+                type: { summary: "ShopperProducts.schemas['Product']" },
             },
         },
         initialQuantity: {

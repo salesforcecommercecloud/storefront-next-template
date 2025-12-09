@@ -6,7 +6,7 @@
  */
 
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import type { ShopperCustomersTypes, ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperCustomers, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchProductsForWishlist, loader, clientLoader } from './account.wishlist';
 import { createTestContext } from '@/lib/test-utils';
 import type { LoaderFunctionArgs, ClientLoaderFunctionArgs } from 'react-router';
@@ -80,7 +80,7 @@ describe('fetchProductsForWishlist', () => {
 
     describe('batching logic', () => {
         test('should make a single request when product IDs count is within productsPerPage limit', async () => {
-            const items: ShopperCustomersTypes.CustomerProductListItem[] = Array.from({ length: 24 }, (_, i) => ({
+            const items: ShopperCustomers.schemas['CustomerProductListItem'][] = Array.from({ length: 24 }, (_, i) => ({
                 id: `item-${i}`,
                 productId: `product-${i}`,
                 priority: 0,
@@ -88,7 +88,7 @@ describe('fetchProductsForWishlist', () => {
                 quantity: 1,
             }));
 
-            const mockProducts: ShopperProductsTypes.Product[] = items
+            const mockProducts: ShopperProducts.schemas['Product'][] = items
                 .filter((item) => item.productId)
                 .map((item) => ({
                     id: item.productId as string,
@@ -115,7 +115,7 @@ describe('fetchProductsForWishlist', () => {
         });
 
         test('should batch requests when product IDs exceed productsPerPage limit', async () => {
-            const items: ShopperCustomersTypes.CustomerProductListItem[] = Array.from({ length: 50 }, (_, i) => ({
+            const items: ShopperCustomers.schemas['CustomerProductListItem'][] = Array.from({ length: 50 }, (_, i) => ({
                 id: `item-${i}`,
                 productId: `product-${i}`,
                 priority: 0,
@@ -193,7 +193,7 @@ describe('fetchProductsForWishlist', () => {
         });
 
         test('should handle exactly 25 product IDs (requires 2 batches)', async () => {
-            const items: ShopperCustomersTypes.CustomerProductListItem[] = Array.from({ length: 25 }, (_, i) => ({
+            const items: ShopperCustomers.schemas['CustomerProductListItem'][] = Array.from({ length: 25 }, (_, i) => ({
                 id: `item-${i}`,
                 productId: `product-${i}`,
                 priority: 0,
@@ -230,7 +230,7 @@ describe('fetchProductsForWishlist', () => {
 
     describe('product ID validation', () => {
         test('should filter out null product IDs', async () => {
-            const items: ShopperCustomersTypes.CustomerProductListItem[] = [
+            const items: ShopperCustomers.schemas['CustomerProductListItem'][] = [
                 { id: 'item-1', productId: 'product-1', priority: 0, public: false, quantity: 1 },
                 { id: 'item-2', productId: null as any, priority: 0, public: false, quantity: 1 },
                 { id: 'item-3', productId: 'product-3', priority: 0, public: false, quantity: 1 },
@@ -260,7 +260,7 @@ describe('fetchProductsForWishlist', () => {
         });
 
         test('should filter out undefined product IDs', async () => {
-            const items: ShopperCustomersTypes.CustomerProductListItem[] = [
+            const items: ShopperCustomers.schemas['CustomerProductListItem'][] = [
                 { id: 'item-1', productId: 'product-1', priority: 0, public: false, quantity: 1 },
                 { id: 'item-2', productId: undefined as any, priority: 0, public: false, quantity: 1 },
                 { id: 'item-3', productId: 'product-3', priority: 0, public: false, quantity: 1 },
@@ -290,7 +290,7 @@ describe('fetchProductsForWishlist', () => {
         });
 
         test('should filter out empty string product IDs', async () => {
-            const items: ShopperCustomersTypes.CustomerProductListItem[] = [
+            const items: ShopperCustomers.schemas['CustomerProductListItem'][] = [
                 { id: 'item-1', productId: 'product-1', priority: 0, public: false, quantity: 1 },
                 { id: 'item-2', productId: '', priority: 0, public: false, quantity: 1 },
                 { id: 'item-3', productId: 'product-3', priority: 0, public: false, quantity: 1 },
@@ -320,7 +320,7 @@ describe('fetchProductsForWishlist', () => {
         });
 
         test('should filter out whitespace-only product IDs', async () => {
-            const items: ShopperCustomersTypes.CustomerProductListItem[] = [
+            const items: ShopperCustomers.schemas['CustomerProductListItem'][] = [
                 { id: 'item-1', productId: 'product-1', priority: 0, public: false, quantity: 1 },
                 { id: 'item-2', productId: '   ', priority: 0, public: false, quantity: 1 },
                 { id: 'item-3', productId: '\t\n', priority: 0, public: false, quantity: 1 },
@@ -351,7 +351,7 @@ describe('fetchProductsForWishlist', () => {
         });
 
         test('should return empty object when all product IDs are invalid', async () => {
-            const items: ShopperCustomersTypes.CustomerProductListItem[] = [
+            const items: ShopperCustomers.schemas['CustomerProductListItem'][] = [
                 { id: 'item-1', productId: null as any, priority: 0, public: false, quantity: 1 },
                 { id: 'item-2', productId: '', priority: 0, public: false, quantity: 1 },
                 { id: 'item-3', productId: '   ', priority: 0, public: false, quantity: 1 },
@@ -366,7 +366,7 @@ describe('fetchProductsForWishlist', () => {
 
     describe('error handling', () => {
         test('should continue processing other batches when one batch fails', async () => {
-            const items: ShopperCustomersTypes.CustomerProductListItem[] = Array.from({ length: 50 }, (_, i) => ({
+            const items: ShopperCustomers.schemas['CustomerProductListItem'][] = Array.from({ length: 50 }, (_, i) => ({
                 id: `item-${i}`,
                 productId: `product-${i}`,
                 priority: 0,
@@ -418,7 +418,7 @@ describe('fetchProductsForWishlist', () => {
         });
 
         test('should return empty object when all batches fail', async () => {
-            const items: ShopperCustomersTypes.CustomerProductListItem[] = Array.from({ length: 30 }, (_, i) => ({
+            const items: ShopperCustomers.schemas['CustomerProductListItem'][] = Array.from({ length: 30 }, (_, i) => ({
                 id: `item-${i}`,
                 productId: `product-${i}`,
                 priority: 0,
@@ -451,7 +451,7 @@ describe('fetchProductsForWishlist', () => {
         });
 
         test('should handle products without id field in response', async () => {
-            const items: ShopperCustomersTypes.CustomerProductListItem[] = [
+            const items: ShopperCustomers.schemas['CustomerProductListItem'][] = [
                 { id: 'item-1', productId: 'product-1', priority: 0, public: false, quantity: 1 },
                 { id: 'item-2', productId: 'product-2', priority: 0, public: false, quantity: 1 },
             ];
@@ -474,7 +474,7 @@ describe('fetchProductsForWishlist', () => {
         });
 
         test('should handle empty data array in response', async () => {
-            const items: ShopperCustomersTypes.CustomerProductListItem[] = [
+            const items: ShopperCustomers.schemas['CustomerProductListItem'][] = [
                 { id: 'item-1', productId: 'product-1', priority: 0, public: false, quantity: 1 },
             ];
 
@@ -488,7 +488,7 @@ describe('fetchProductsForWishlist', () => {
         });
 
         test('should handle null/undefined data in response', async () => {
-            const items: ShopperCustomersTypes.CustomerProductListItem[] = [
+            const items: ShopperCustomers.schemas['CustomerProductListItem'][] = [
                 { id: 'item-1', productId: 'product-1', priority: 0, public: false, quantity: 1 },
             ];
 
@@ -504,13 +504,13 @@ describe('fetchProductsForWishlist', () => {
 
     describe('product mapping', () => {
         test('should correctly map products by product ID', async () => {
-            const items: ShopperCustomersTypes.CustomerProductListItem[] = [
+            const items: ShopperCustomers.schemas['CustomerProductListItem'][] = [
                 { id: 'item-1', productId: 'product-1', priority: 0, public: false, quantity: 1 },
                 { id: 'item-2', productId: 'product-2', priority: 0, public: false, quantity: 1 },
                 { id: 'item-3', productId: 'product-3', priority: 0, public: false, quantity: 1 },
             ];
 
-            const mockProducts: ShopperProductsTypes.Product[] = [
+            const mockProducts: ShopperProducts.schemas['Product'][] = [
                 { id: 'product-1', name: 'Product 1' },
                 { id: 'product-2', name: 'Product 2' },
                 { id: 'product-3', name: 'Product 3' },
@@ -602,14 +602,14 @@ describe('account.wishlist loaders', () => {
         });
 
         test('should return wishlist with items when items are in initial response', async () => {
-            const mockWishlist: ShopperCustomersTypes.CustomerProductList = {
+            const mockWishlist: ShopperCustomers.schemas['CustomerProductList'] = {
                 id: 'wishlist-1',
                 listId: 'wishlist-1',
                 type: 'wish_list',
                 items: [
                     { id: 'item-1', productId: 'product-1' },
                     { id: 'item-2', productId: 'product-2' },
-                ] as ShopperCustomersTypes.CustomerProductListItem[],
+                ] as ShopperCustomers.schemas['CustomerProductListItem'][],
             };
 
             mockGetCustomerProductLists.mockResolvedValue({
@@ -645,7 +645,7 @@ describe('account.wishlist loaders', () => {
         });
 
         test('should only fetch initial batch of products (initialLimit)', async () => {
-            const mockWishlist: ShopperCustomersTypes.CustomerProductList = {
+            const mockWishlist: ShopperCustomers.schemas['CustomerProductList'] = {
                 id: 'wishlist-1',
                 listId: 'wishlist-1',
                 type: 'wish_list',
@@ -655,7 +655,7 @@ describe('account.wishlist loaders', () => {
                     priority: 0,
                     public: false,
                     quantity: 1,
-                })) as ShopperCustomersTypes.CustomerProductListItem[],
+                })) as ShopperCustomers.schemas['CustomerProductListItem'][],
             };
 
             mockGetCustomerProductLists.mockResolvedValue({
@@ -696,20 +696,20 @@ describe('account.wishlist loaders', () => {
         });
 
         test('should fetch full wishlist when items are not in initial response', async () => {
-            const mockWishlistSummary: ShopperCustomersTypes.CustomerProductList = {
+            const mockWishlistSummary: ShopperCustomers.schemas['CustomerProductList'] = {
                 id: 'wishlist-1',
                 listId: 'wishlist-1',
                 type: 'wish_list',
             };
 
-            const mockFullWishlist: ShopperCustomersTypes.CustomerProductList = {
+            const mockFullWishlist: ShopperCustomers.schemas['CustomerProductList'] = {
                 id: 'wishlist-1',
                 listId: 'wishlist-1',
                 type: 'wish_list',
                 items: [
                     { id: 'item-1', productId: 'product-1' },
                     { id: 'item-2', productId: 'product-2' },
-                ] as ShopperCustomersTypes.CustomerProductListItem[],
+                ] as ShopperCustomers.schemas['CustomerProductListItem'][],
             };
 
             mockGetCustomerProductLists.mockResolvedValue({
@@ -759,7 +759,7 @@ describe('account.wishlist loaders', () => {
         });
 
         test('should return empty wishlist when listId is missing', async () => {
-            const mockWishlist: ShopperCustomersTypes.CustomerProductList = {
+            const mockWishlist: ShopperCustomers.schemas['CustomerProductList'] = {
                 id: undefined,
                 listId: undefined,
                 type: 'wish_list',
@@ -794,11 +794,13 @@ describe('account.wishlist loaders', () => {
         });
 
         test('should use id field when listId is not available', async () => {
-            const mockWishlist: ShopperCustomersTypes.CustomerProductList = {
+            const mockWishlist: ShopperCustomers.schemas['CustomerProductList'] = {
                 id: 'wishlist-1',
                 listId: undefined,
                 type: 'wish_list',
-                items: [{ id: 'item-1', productId: 'product-1' }] as ShopperCustomersTypes.CustomerProductListItem[],
+                items: [
+                    { id: 'item-1', productId: 'product-1' },
+                ] as ShopperCustomers.schemas['CustomerProductListItem'][],
             };
 
             mockGetCustomerProductLists.mockResolvedValue({
@@ -861,14 +863,14 @@ describe('account.wishlist loaders', () => {
         });
 
         test('should return wishlist with items when items are in initial response', async () => {
-            const mockWishlist: ShopperCustomersTypes.CustomerProductList = {
+            const mockWishlist: ShopperCustomers.schemas['CustomerProductList'] = {
                 id: 'wishlist-1',
                 listId: 'wishlist-1',
                 type: 'wish_list',
                 items: [
                     { id: 'item-1', productId: 'product-1' },
                     { id: 'item-2', productId: 'product-2' },
-                ] as ShopperCustomersTypes.CustomerProductListItem[],
+                ] as ShopperCustomers.schemas['CustomerProductListItem'][],
             };
 
             mockGetCustomerProductLists.mockResolvedValue({
@@ -919,7 +921,7 @@ describe('account.wishlist loaders', () => {
                 type: 'wish_list',
                 customerProductListItems: [
                     { id: 'item-1', productId: 'product-1' },
-                ] as ShopperCustomersTypes.CustomerProductListItem[],
+                ] as ShopperCustomers.schemas['CustomerProductListItem'][],
             };
 
             mockGetCustomerProductLists.mockResolvedValue({
@@ -944,7 +946,7 @@ describe('account.wishlist loaders', () => {
         });
 
         test('should only fetch initial batch of products (initialLimit) in clientLoader', async () => {
-            const mockWishlist: ShopperCustomersTypes.CustomerProductList = {
+            const mockWishlist: ShopperCustomers.schemas['CustomerProductList'] = {
                 id: 'wishlist-1',
                 listId: 'wishlist-1',
                 type: 'wish_list',
@@ -954,7 +956,7 @@ describe('account.wishlist loaders', () => {
                     priority: 0,
                     public: false,
                     quantity: 1,
-                })) as ShopperCustomersTypes.CustomerProductListItem[],
+                })) as ShopperCustomers.schemas['CustomerProductListItem'][],
             };
 
             mockGetCustomerProductLists.mockResolvedValue({

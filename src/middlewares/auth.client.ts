@@ -4,7 +4,7 @@ import {
     type MiddlewareFunction,
     type RouterContextProvider,
 } from 'react-router';
-import type { ShopperLoginTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
 import { getTranslation } from '@/lib/i18next';
 import type { SessionData } from '@/lib/api/types';
 import { getAllCookies, removeCookie } from '@/lib/cookies.client';
@@ -144,7 +144,7 @@ export function getAuthDataFromCookies(): Partial<AuthStorageData> | undefined {
 export async function handleRefreshToken(
     refreshToken: string,
     trackingConsent?: TrackingConsent
-): Promise<ShopperLoginTypes.TokenResponse> {
+): Promise<ShopperLogin.schemas['TokenResponse']> {
     const response = await fetch('/resource/auth/refresh-token', {
         method: 'POST',
         headers: {
@@ -173,7 +173,7 @@ export async function handleRefreshToken(
  * Client-side helper for guest login operations
  * Uses fetch calls to server resource endpoints
  */
-async function handleGuestLogin(usid: string | undefined): Promise<ShopperLoginTypes.TokenResponse> {
+async function handleGuestLogin(usid: string | undefined): Promise<ShopperLogin.schemas['TokenResponse']> {
     const response = await fetch('/resource/auth/login-guest', {
         method: 'POST',
         headers: {
@@ -414,7 +414,9 @@ export const getAuth = (context: Readonly<RouterContextProvider>): AuthData & St
 
 export const updateAuth = (
     context: Readonly<RouterContextProvider>,
-    updater: ShopperLoginTypes.TokenResponse | ((data: AuthData & StorageErrorData) => AuthData & StorageErrorData)
+    updater:
+        | ShopperLogin.schemas['TokenResponse']
+        | ((data: AuthData & StorageErrorData) => AuthData & StorageErrorData)
 ) => {
     const storage = context.get(authStorageContext);
     const cache = context.get(authCacheContext);

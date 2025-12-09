@@ -7,7 +7,7 @@ import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 // @ts-expect-error Mock data file is JavaScript
 import searchResults from '@/components/__mocks__/search-results';
-import type { ShopperSearchTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 
 const PAGINATION_HARNESS_ATTR = 'data-pagination-harness';
 
@@ -101,7 +101,7 @@ function CategoryPage({ searchResult, limit }) {
 | Prop | Type | Description |
 |------|------|-------------|
 | \`limit\` | \`number\` | Number of products per page |
-| \`result\` | \`ShopperSearchTypes.ProductSearchResult\` | Product search result containing total and offset |
+| \`result\` | \`ShopperSearch.schemas['ProductSearchResult']\` | Product search result containing total and offset |
 
 ## Behavior
 
@@ -149,21 +149,21 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 // Use real mock data from @mocks directory
-const mockSearchResult = searchResults as ShopperSearchTypes.ProductSearchResult;
+const mockSearchResult = searchResults as ShopperSearch.schemas['ProductSearchResult'];
 
-const mockSearchResultPage1: ShopperSearchTypes.ProductSearchResult = {
+const mockSearchResultPage1: ShopperSearch.schemas['ProductSearchResult'] = {
     ...mockSearchResult,
     offset: 0,
     total: 100,
 };
 
-const mockSearchResultPage5: ShopperSearchTypes.ProductSearchResult = {
+const mockSearchResultPage5: ShopperSearch.schemas['ProductSearchResult'] = {
     ...mockSearchResult,
     offset: 96, // Page 5 with limit 24
     total: 100,
 };
 
-const mockSearchResultSinglePage: ShopperSearchTypes.ProductSearchResult = {
+const mockSearchResultSinglePage: ShopperSearch.schemas['ProductSearchResult'] = {
     ...mockSearchResult,
     offset: 0,
     total: 20, // Less than limit
