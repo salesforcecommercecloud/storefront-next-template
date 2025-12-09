@@ -3,9 +3,31 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import PickupOrDelivery from './pickup-or-delivery';
 import { DELIVERY_OPTIONS } from '@/extensions/bopis/constants';
 
+// Mock the hooks
+vi.mock('@/extensions/store-locator/providers/store-locator', () => ({
+    useStoreLocator: vi.fn(),
+}));
+
 describe('PickupOrDelivery', () => {
-    beforeEach(() => {
+    let mockUseStoreLocator: ReturnType<typeof vi.fn>;
+    let mockOpenStoreLocator: ReturnType<typeof vi.fn>;
+
+    beforeEach(async () => {
         vi.clearAllMocks();
+
+        // Get the mocked functions
+        const { useStoreLocator } = await import('@/extensions/store-locator/providers/store-locator');
+
+        mockUseStoreLocator = useStoreLocator as any;
+
+        // Setup mock functions
+        mockOpenStoreLocator = vi.fn();
+
+        // Mock useStoreLocator to return a selector function
+        mockUseStoreLocator.mockImplementation((selector) => {
+            const mockStoreState = { selectedStoreInfo: null, open: mockOpenStoreLocator };
+            return selector(mockStoreState);
+        });
     });
 
     it('renders with default props', () => {
@@ -13,7 +35,13 @@ describe('PickupOrDelivery', () => {
 
         expect(screen.getByTestId('delivery-option-select')).toBeInTheDocument();
         expect(screen.getByLabelText('Ship to Address')).toBeInTheDocument();
-        expect(screen.getByLabelText('Pick Up in Store')).toBeInTheDocument();
+        expect(screen.getByLabelText('Free pickup in')).toBeInTheDocument();
+    });
+
+    it('renders with Select Store label when no pickup store is provided', () => {
+        render(<PickupOrDelivery />);
+
+        expect(screen.getByText('Select Store')).toBeInTheDocument();
     });
 
     it('renders with custom value', () => {
@@ -21,7 +49,7 @@ describe('PickupOrDelivery', () => {
 
         expect(screen.getByTestId('delivery-option-select')).toBeInTheDocument();
         expect(screen.getByLabelText('Ship to Address')).toBeInTheDocument();
-        expect(screen.getByLabelText('Pick Up in Store')).toBeInTheDocument();
+        expect(screen.getByLabelText('Free pickup in')).toBeInTheDocument();
     });
 
     it('renders with custom className', () => {
@@ -33,7 +61,7 @@ describe('PickupOrDelivery', () => {
     it('renders with isPickupDisabled prop', () => {
         render(<PickupOrDelivery isPickupDisabled={true} />);
 
-        const pickupRadio = screen.getByLabelText('Pick Up in Store');
+        const pickupRadio = screen.getByLabelText('Pickup unavailable at');
         expect(pickupRadio).toBeDisabled();
     });
 
@@ -48,7 +76,7 @@ describe('PickupOrDelivery', () => {
         render(<PickupOrDelivery isPickupDisabled={true} isDeliveryDisabled={true} />);
 
         const deliveryRadio = screen.getByLabelText('Ship to Address');
-        const pickupRadio = screen.getByLabelText('Pick Up in Store');
+        const pickupRadio = screen.getByLabelText('Pickup unavailable at');
         expect(deliveryRadio).toBeDisabled();
         expect(pickupRadio).toBeDisabled();
     });
@@ -65,7 +93,7 @@ describe('PickupOrDelivery', () => {
         );
 
         expect(screen.getByTestId('delivery-option-select')).toBeInTheDocument();
-        expect(screen.getByLabelText('Pick Up in Store')).not.toBeDisabled();
+        expect(screen.getByLabelText('Free pickup in')).not.toBeDisabled();
         expect(screen.getByLabelText('Ship to Address')).not.toBeDisabled();
         expect(screen.getByTestId('delivery-option-select').parentElement).toHaveClass('test-class');
     });
@@ -74,7 +102,7 @@ describe('PickupOrDelivery', () => {
         render(<PickupOrDelivery />);
 
         const deliveryRadio = screen.getByLabelText('Ship to Address');
-        const pickupRadio = screen.getByLabelText('Pick Up in Store');
+        const pickupRadio = screen.getByLabelText('Free pickup in');
 
         expect(deliveryRadio).toHaveAttribute('id', 'delivery-option');
         expect(pickupRadio).toHaveAttribute('id', 'pickup-option');
@@ -84,7 +112,7 @@ describe('PickupOrDelivery', () => {
         render(<PickupOrDelivery onChange={undefined} />);
 
         const deliveryRadio = screen.getByLabelText('Ship to Address');
-        const pickupRadio = screen.getByLabelText('Pick Up in Store');
+        const pickupRadio = screen.getByLabelText('Free pickup in');
 
         // Should not throw when rendering
         expect(deliveryRadio).toBeInTheDocument();
@@ -95,7 +123,7 @@ describe('PickupOrDelivery', () => {
         const mockOnChange = vi.fn();
         render(<PickupOrDelivery onChange={mockOnChange} />);
 
-        const pickupRadio = screen.getByLabelText('Pick Up in Store');
+        const pickupRadio = screen.getByLabelText('Free pickup in');
         fireEvent.click(pickupRadio);
 
         expect(mockOnChange).toHaveBeenCalledWith(DELIVERY_OPTIONS.PICKUP);
@@ -115,7 +143,7 @@ describe('PickupOrDelivery', () => {
         const mockOnChange = vi.fn();
         render(<PickupOrDelivery onChange={mockOnChange} isPickupDisabled={true} />);
 
-        const pickupRadio = screen.getByLabelText('Pick Up in Store');
+        const pickupRadio = screen.getByLabelText('Pickup unavailable at');
         fireEvent.click(pickupRadio);
 
         expect(mockOnChange).not.toHaveBeenCalled();
@@ -148,7 +176,7 @@ describe('PickupOrDelivery', () => {
         render(<PickupOrDelivery isPickupDisabled={true} />);
 
         // Find the label by its htmlFor attribute or by text
-        const pickupLabel = screen.getByText('Pick Up in Store');
+        const pickupLabel = screen.getByText('Pickup unavailable at');
         expect(pickupLabel).toHaveClass('opacity-50', 'cursor-not-allowed');
     });
 

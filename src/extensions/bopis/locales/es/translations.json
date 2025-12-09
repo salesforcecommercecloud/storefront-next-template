@@ -3,13 +3,11 @@
         "title": "Entrega:",
         "pickupOrDelivery": {
             "shipToAddress": "Enviar a dirección",
-            "pickUpInStore": "Recoger en tienda"
-        },
-        "storeSelection": {
-            "pickUpIn": "Recoger en",
+            "pickUpInStore": "Recogida gratuita en",
+            "unavailablePickUpIn": "Recogida no disponible en",
             "selectStore": "Seleccionar tienda",
-            "inStockAt": "En stock en",
-            "outOfStockAt": "Agotado en"
+            "inStockAtStore": "Ahora disponible para recoger hoy.",
+            "outOfStockAtStore": "Prueba con otra tienda o selecciona entrega."
         }
     },
     "storeInventoryFilter": {

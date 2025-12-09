@@ -6,14 +6,13 @@
  */
 'use client';
 
-import { type ReactElement, useMemo } from 'react';
+import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import PickupOrDelivery from './pickup-or-delivery';
 import { useDeliveryOptions } from '@/extensions/bopis/hooks/use-delivery-options';
 import { useStoreLocator } from '@/extensions/store-locator/providers/store-locator';
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
-import { getStoreName } from '@/extensions/bopis/lib/store-utils';
 import { Typography } from '@/components/typography';
 
 interface DeliveryOptionsProps {
@@ -52,7 +51,6 @@ export default function DeliveryOptions({
 
     // Get store locator state and actions
     const selectedStore = useStoreLocator((state) => state.selectedStoreInfo);
-    const openStoreLocator = useStoreLocator((state) => state.open);
 
     // Derive isInBasket from basketPickupStore: when truthy, item is in basket
     const isInBasket = !!basketPickupStore;
@@ -62,30 +60,6 @@ export default function DeliveryOptions({
 
     const { selectedDeliveryOption, isStoreOutOfStock, isSiteOutOfStock, handleDeliveryOptionChange } =
         useDeliveryOptions({ product, quantity, isInBasket, pickupStore });
-
-    // Calculate display content based on store state (memoized for performance)
-    const storeMessage = useMemo(() => {
-        if (!pickupStore) {
-            return {
-                text: t('deliveryOptions.storeSelection.pickUpIn'),
-                buttonText: t('deliveryOptions.storeSelection.selectStore'),
-            };
-        }
-
-        const storeName = getStoreName(pickupStore);
-
-        if (isStoreOutOfStock) {
-            return {
-                text: t('deliveryOptions.storeSelection.outOfStockAt'),
-                buttonText: storeName,
-            };
-        }
-
-        return {
-            text: t('deliveryOptions.storeSelection.inStockAt'),
-            buttonText: storeName,
-        };
-    }, [pickupStore, isStoreOutOfStock, t]);
 
     return (
         <div className={className}>
@@ -101,26 +75,11 @@ export default function DeliveryOptions({
                             value={selectedDeliveryOption}
                             onChange={handleDeliveryOptionChange}
                             isPickupDisabled={isStoreOutOfStock}
+                            pickupStore={pickupStore}
                             isDeliveryDisabled={isSiteOutOfStock}
                         />
                     </>
                 )}
-
-                {/* Store message - single div with conditional content */}
-                <div className="text-sm text-muted-foreground">
-                    <p>
-                        <strong>{storeMessage.text}</strong>{' '}
-                        <button
-                            type="button"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                openStoreLocator();
-                            }}
-                            className="text-primary underline hover:text-primary/80 cursor-pointer">
-                            {storeMessage.buttonText}
-                        </button>
-                    </p>
-                </div>
             </div>
         </div>
     );

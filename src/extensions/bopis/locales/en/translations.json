@@ -3,13 +3,11 @@
         "title": "Delivery:",
         "pickupOrDelivery": {
             "shipToAddress": "Ship to Address",
-            "pickUpInStore": "Pick Up in Store"
-        },
-        "storeSelection": {
-            "pickUpIn": "Pick up in",
+            "pickUpInStore": "Free pickup in",
+            "unavailablePickUpIn": "Pickup unavailable at",
             "selectStore": "Select Store",
-            "inStockAt": "In stock at",
-            "outOfStockAt": "Out of Stock at"
+            "inStockAtStore": "Now available for pickup today.",
+            "outOfStockAtStore": "Try another store or select delivery."
         }
     },
     "storeInventoryFilter": {

@@ -298,7 +298,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                   tabindex="0"
                 >
                   <div
-                    class="flex items-center space-x-2"
+                    class="flex items-start space-x-2"
                   >
                     <button
                       aria-checked="true"
@@ -347,7 +347,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                     </label>
                   </div>
                   <div
-                    class="flex items-center space-x-2"
+                    class="flex items-start space-x-2"
                   >
                     <button
                       aria-checked="false"
@@ -361,29 +361,38 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                       type="button"
                       value="pickup"
                     />
-                    <label
-                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      data-slot="label"
-                      for="pickup-option"
+                    <div
+                      class="flex flex-col"
                     >
-                      Pick Up in Store
-                    </label>
+                      <div
+                        class="flex items-center space-x-1"
+                      >
+                        <label
+                          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          data-slot="label"
+                          for="pickup-option"
+                        >
+                          Free pickup in
+                        </label>
+                        <div
+                          class="text-sm"
+                        >
+                          <p>
+                            <button
+                              class="text-primary underline hover:text-primary/80 cursor-pointer"
+                              type="button"
+                            />
+                          </p>
+                        </div>
+                      </div>
+                      <span
+                        class="text-sm font-normal select-none text-muted-foreground mt-1"
+                      >
+                        Now available for pickup today.
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div
-                class="text-sm text-muted-foreground"
-              >
-                <p>
-                  <strong>
-                    In stock at
-                  </strong>
-                   
-                  <button
-                    class="text-primary underline hover:text-primary/80 cursor-pointer"
-                    type="button"
-                  />
-                </p>
               </div>
             </div>
           </div>
@@ -779,7 +788,7 @@ exports[`ProductView stories snapshot > Desktop story renders and matches snapsh
                   tabindex="0"
                 >
                   <div
-                    class="flex items-center space-x-2"
+                    class="flex items-start space-x-2"
                   >
                     <button
                       aria-checked="true"
@@ -828,7 +837,7 @@ exports[`ProductView stories snapshot > Desktop story renders and matches snapsh
                     </label>
                   </div>
                   <div
-                    class="flex items-center space-x-2"
+                    class="flex items-start space-x-2"
                   >
                     <button
                       aria-checked="false"
@@ -842,29 +851,38 @@ exports[`ProductView stories snapshot > Desktop story renders and matches snapsh
                       type="button"
                       value="pickup"
                     />
-                    <label
-                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      data-slot="label"
-                      for="pickup-option"
+                    <div
+                      class="flex flex-col"
                     >
-                      Pick Up in Store
-                    </label>
+                      <div
+                        class="flex items-center space-x-1"
+                      >
+                        <label
+                          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          data-slot="label"
+                          for="pickup-option"
+                        >
+                          Free pickup in
+                        </label>
+                        <div
+                          class="text-sm"
+                        >
+                          <p>
+                            <button
+                              class="text-primary underline hover:text-primary/80 cursor-pointer"
+                              type="button"
+                            />
+                          </p>
+                        </div>
+                      </div>
+                      <span
+                        class="text-sm font-normal select-none text-muted-foreground mt-1"
+                      >
+                        Now available for pickup today.
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div
-                class="text-sm text-muted-foreground"
-              >
-                <p>
-                  <strong>
-                    In stock at
-                  </strong>
-                   
-                  <button
-                    class="text-primary underline hover:text-primary/80 cursor-pointer"
-                    type="button"
-                  />
-                </p>
               </div>
             </div>
           </div>
@@ -1260,7 +1278,7 @@ exports[`ProductView stories snapshot > Mobile story renders and matches snapsho
                   tabindex="0"
                 >
                   <div
-                    class="flex items-center space-x-2"
+                    class="flex items-start space-x-2"
                   >
                     <button
                       aria-checked="true"
@@ -1309,7 +1327,7 @@ exports[`ProductView stories snapshot > Mobile story renders and matches snapsho
                     </label>
                   </div>
                   <div
-                    class="flex items-center space-x-2"
+                    class="flex items-start space-x-2"
                   >
                     <button
                       aria-checked="false"
@@ -1323,29 +1341,38 @@ exports[`ProductView stories snapshot > Mobile story renders and matches snapsho
                       type="button"
                       value="pickup"
                     />
-                    <label
-                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      data-slot="label"
-                      for="pickup-option"
+                    <div
+                      class="flex flex-col"
                     >
-                      Pick Up in Store
-                    </label>
+                      <div
+                        class="flex items-center space-x-1"
+                      >
+                        <label
+                          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          data-slot="label"
+                          for="pickup-option"
+                        >
+                          Free pickup in
+                        </label>
+                        <div
+                          class="text-sm"
+                        >
+                          <p>
+                            <button
+                              class="text-primary underline hover:text-primary/80 cursor-pointer"
+                              type="button"
+                            />
+                          </p>
+                        </div>
+                      </div>
+                      <span
+                        class="text-sm font-normal select-none text-muted-foreground mt-1"
+                      >
+                        Now available for pickup today.
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div
-                class="text-sm text-muted-foreground"
-              >
-                <p>
-                  <strong>
-                    In stock at
-                  </strong>
-                   
-                  <button
-                    class="text-primary underline hover:text-primary/80 cursor-pointer"
-                    type="button"
-                  />
-                </p>
               </div>
             </div>
           </div>
@@ -1741,7 +1768,7 @@ exports[`ProductView stories snapshot > Tablet story renders and matches snapsho
                   tabindex="0"
                 >
                   <div
-                    class="flex items-center space-x-2"
+                    class="flex items-start space-x-2"
                   >
                     <button
                       aria-checked="true"
@@ -1790,7 +1817,7 @@ exports[`ProductView stories snapshot > Tablet story renders and matches snapsho
                     </label>
                   </div>
                   <div
-                    class="flex items-center space-x-2"
+                    class="flex items-start space-x-2"
                   >
                     <button
                       aria-checked="false"
@@ -1804,29 +1831,38 @@ exports[`ProductView stories snapshot > Tablet story renders and matches snapsho
                       type="button"
                       value="pickup"
                     />
-                    <label
-                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      data-slot="label"
-                      for="pickup-option"
+                    <div
+                      class="flex flex-col"
                     >
-                      Pick Up in Store
-                    </label>
+                      <div
+                        class="flex items-center space-x-1"
+                      >
+                        <label
+                          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          data-slot="label"
+                          for="pickup-option"
+                        >
+                          Free pickup in
+                        </label>
+                        <div
+                          class="text-sm"
+                        >
+                          <p>
+                            <button
+                              class="text-primary underline hover:text-primary/80 cursor-pointer"
+                              type="button"
+                            />
+                          </p>
+                        </div>
+                      </div>
+                      <span
+                        class="text-sm font-normal select-none text-muted-foreground mt-1"
+                      >
+                        Now available for pickup today.
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div
-                class="text-sm text-muted-foreground"
-              >
-                <p>
-                  <strong>
-                    In stock at
-                  </strong>
-                   
-                  <button
-                    class="text-primary underline hover:text-primary/80 cursor-pointer"
-                    type="button"
-                  />
-                </p>
               </div>
             </div>
           </div>
@@ -2172,7 +2208,7 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
                   tabindex="0"
                 >
                   <div
-                    class="flex items-center space-x-2"
+                    class="flex items-start space-x-2"
                   >
                     <button
                       aria-checked="true"
@@ -2221,7 +2257,7 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
                     </label>
                   </div>
                   <div
-                    class="flex items-center space-x-2"
+                    class="flex items-start space-x-2"
                   >
                     <button
                       aria-checked="false"
@@ -2235,29 +2271,38 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
                       type="button"
                       value="pickup"
                     />
-                    <label
-                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      data-slot="label"
-                      for="pickup-option"
+                    <div
+                      class="flex flex-col"
                     >
-                      Pick Up in Store
-                    </label>
+                      <div
+                        class="flex items-center space-x-1"
+                      >
+                        <label
+                          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          data-slot="label"
+                          for="pickup-option"
+                        >
+                          Free pickup in
+                        </label>
+                        <div
+                          class="text-sm"
+                        >
+                          <p>
+                            <button
+                              class="text-primary underline hover:text-primary/80 cursor-pointer"
+                              type="button"
+                            />
+                          </p>
+                        </div>
+                      </div>
+                      <span
+                        class="text-sm font-normal select-none text-muted-foreground mt-1"
+                      >
+                        Now available for pickup today.
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div
-                class="text-sm text-muted-foreground"
-              >
-                <p>
-                  <strong>
-                    In stock at
-                  </strong>
-                   
-                  <button
-                    class="text-primary underline hover:text-primary/80 cursor-pointer"
-                    type="button"
-                  />
-                </p>
               </div>
             </div>
           </div>
