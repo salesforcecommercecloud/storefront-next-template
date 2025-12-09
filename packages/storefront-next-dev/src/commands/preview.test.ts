@@ -114,7 +114,6 @@ describe('preview command', () => {
         vi.clearAllMocks();
         process.env = { ...originalEnv };
         delete process.env.NODE_ENV;
-        delete process.env.EXTERNAL_DOMAIN_NAME;
         mockExistsSync.mockReturnValue(true);
     });
 
