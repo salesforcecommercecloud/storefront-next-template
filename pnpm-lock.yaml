@@ -2095,8 +2095,8 @@ packages:
   '@redocly/config@0.22.2':
     resolution: {integrity: sha512-roRDai8/zr2S9YfmzUfNhKjOF0NdcOIqF7bhf4MVC5UxpjIysDjyudvlAiVbpPHp3eDRWbdzUgtkK1a7YiDNyQ==}
 
-  '@redocly/openapi-core@1.34.5':
-    resolution: {integrity: sha512-0EbE8LRbkogtcCXU7liAyC00n9uNG9hJ+eMyHFdUsy9lB/WGqnEBgwjA9q2cyzAVcdTkQqTBBU1XePNnN3OijA==}
+  '@redocly/openapi-core@1.34.6':
+    resolution: {integrity: sha512-2+O+riuIUgVSuLl3Lyh5AplWZyVMNuG2F98/o6NrutKJfW4/GTZdPpZlIphS0HGgcOHgmWcCSHj+dWFlZaGSHw==}
     engines: {node: '>=18.17.0', npm: '>=9.5.0'}
 
   '@remix-run/node-fetch-server@0.9.0':
@@ -8738,7 +8738,7 @@ snapshots:
 
   '@redocly/config@0.22.2': {}
 
-  '@redocly/openapi-core@1.34.5(supports-color@10.2.2)':
+  '@redocly/openapi-core@1.34.6(supports-color@10.2.2)':
     dependencies:
       '@redocly/ajv': 8.17.1
       '@redocly/config': 0.22.2
@@ -12524,7 +12524,7 @@ snapshots:
 
   openapi-typescript@7.10.1(typescript@5.9.3):
     dependencies:
-      '@redocly/openapi-core': 1.34.5(supports-color@10.2.2)
+      '@redocly/openapi-core': 1.34.6(supports-color@10.2.2)
       ansi-colors: 4.1.3
       change-case: 5.4.4
       parse-json: 8.3.0

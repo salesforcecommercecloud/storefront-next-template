@@ -393,12 +393,15 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
     const idpAccessToken = getAuthCookie(COOKIE_IDP_ACCESS_TOKEN);
     const codeVerifier = getAuthCookie(COOKIE_CODE_VERIFIER);
     // Read tracking consent cookie directly as TrackingConsent enum (values match)
-    const trackingConsentCookieValue = allCookies[COOKIE_TRACKING_CONSENT] || null;
+    const trackingConsentCookieValue = getAuthCookie(COOKIE_TRACKING_CONSENT);
     let trackingConsent: TrackingConsent | undefined =
         trackingConsentCookieValue === TrackingConsent.Accepted ||
         trackingConsentCookieValue === TrackingConsent.Declined
             ? trackingConsentCookieValue
             : undefined;
+
+    // Track if we need to delete the tracking consent cookie due to mismatch
+    let hasTrackingConsentMismatch = false;
 
     // Create cookie instances for serialization (Set-Cookie headers)
     const refreshTokenGuestCookie = createCookie<string>(COOKIE_REFRESH_TOKEN_GUEST, cookieConfig, context);
@@ -461,6 +464,7 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
                 // Tracking consent values differ - mark for deletion by not including trackingConsent in authData
                 // This will cause the cookie to be deleted in the response section
                 trackingConsent = undefined;
+                hasTrackingConsentMismatch = true;
             }
         }
     }
@@ -479,6 +483,12 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
     const authStorage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>(
         Object.entries(authData) as [keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]][]
     );
+
+    // Mark storage as updated if tracking consent mismatch was detected
+    // This ensures the response section runs and deletes the invalid cookie
+    if (hasTrackingConsentMismatch) {
+        authStorage.set('isUpdated', true);
+    }
 
     // Create auth cache instance per request. On the server it's crucial to not create a singleton cache instance!
     const authCache: { ref: AuthData | undefined } = { ref: authData as AuthData };
@@ -713,7 +723,7 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
             } else {
                 // Delete tracking consent cookie if it was invalidated (e.g., didn't match token)
                 // Check if cookie exists in request to avoid unnecessary deletion
-                const requestTrackingConsent = allCookies[COOKIE_TRACKING_CONSENT];
+                const requestTrackingConsent = getAuthCookie(COOKIE_TRACKING_CONSENT);
                 if (requestTrackingConsent) {
                     response.headers.append(
                         'Set-Cookie',

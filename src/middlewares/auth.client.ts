@@ -17,6 +17,7 @@ import {
     updateAuthStorageData,
     updateStorageAndCache,
     getSLASAccessTokenClaims,
+    isTrackingConsentEnabled,
     COOKIE_REFRESH_TOKEN_GUEST,
     COOKIE_REFRESH_TOKEN_REGISTERED,
     COOKIE_ACCESS_TOKEN,
@@ -83,7 +84,7 @@ export function getAuthDataFromCookies(): Partial<AuthStorageData> | undefined {
     const idpAccessToken = allCookies[getCookieNameWithSiteId(COOKIE_IDP_ACCESS_TOKEN)] || '';
     // Read tracking consent cookie directly as TrackingConsent enum (values match)
     const trackingConsentCookieValue = allCookies[getCookieNameWithSiteId(COOKIE_TRACKING_CONSENT)] || null;
-    const trackingConsent: TrackingConsent | undefined =
+    let trackingConsent: TrackingConsent | undefined =
         trackingConsentCookieValue === TrackingConsent.Accepted ||
         trackingConsentCookieValue === TrackingConsent.Declined
             ? trackingConsentCookieValue
@@ -125,6 +126,37 @@ export function getAuthDataFromCookies(): Partial<AuthStorageData> | undefined {
     if (accessToken) {
         const claims = getSLASAccessTokenClaims(accessToken);
         if (claims.expiry) authData.access_token_expiry = claims.expiry;
+
+        // Validate tracking consent value from token matches cookie - if they differ, treat as undefined
+        // This matches server-side validation logic to prevent hydration mismatches
+        //
+        // Why client-side validation is needed (even though server validates too):
+        // Request/Response Flow with Cookie Mismatch:
+        //   1. Browser → Request with invalid cookie (dw_dnt=0, but token has dnt=1)
+        //   2. Server middleware validates → detects mismatch → sets trackingConsent=undefined
+        //   3. Server renders HTML with trackingConsent=undefined
+        //   4. Server → Response with Set-Cookie: dw_dnt=; Max-Age=0 (deletion)
+        //   5. ⚠️  BUT during hydration, client reads cookies BEFORE processing Set-Cookie header
+        //   6. Client sees old invalid cookie (dw_dnt=0) in bootstrapAuth
+        //   7. Without client validation → Hydration mismatch! Server rendered with undefined, client has '0'
+        //
+        // The Set-Cookie header only takes effect AFTER the response is fully processed,
+        // but hydration happens DURING response processing. Client-side validation ensures
+        // getAuthDataFromCookies() returns the same result as server middleware.
+        //
+        // TODO: When revisiting auth architecture, consider moving bootstrapAuth from module-level
+        // constant to a function that reads cookies during render, or explore other strategies
+        // to eliminate this timing issue entirely.
+        //
+        // Only validate if tracking consent feature is enabled and both values exist
+        if (isTrackingConsentEnabled() && claims.trackingConsent !== null && trackingConsent !== undefined) {
+            if (claims.trackingConsent !== trackingConsent) {
+                // Tracking consent values differ - cookie is invalid, treat as undefined
+                // Delete the invalid cookie immediately on the client side
+                removeCookie(COOKIE_TRACKING_CONSENT);
+                trackingConsent = undefined;
+            }
+        }
     }
 
     // Always set tracking consent value from cookie (even if undefined) to reflect cookie state

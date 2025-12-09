@@ -9,6 +9,7 @@
 import { createElement, type ReactNode } from 'react';
 import { ConfigProvider, createAppConfig } from '@/config/context';
 import type { Config } from '@/config/schema';
+import { TrackingConsent } from '@/types/tracking-consent';
 
 /**
  * Mock build-time configuration for tests
@@ -207,10 +208,11 @@ export const mockBuildConfig: Config = {
             },
             analytics: {
                 pageViewsBlocklist: [],
+                pageViewsResetDuration: 30000,
                 trackingConsent: {
                     enabled: true,
                     position: 'bottom-center',
-                    defaultTrackingConsent: '1', // TrackingConsent.Declined
+                    defaultTrackingConsent: TrackingConsent.Declined,
                 },
             },
         },
