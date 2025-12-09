@@ -26,21 +26,18 @@ import { collectComponentDataPromises, fetchPageFromLoader } from '@/lib/util/pa
         name: 'Top Full Width Region',
         description: 'Full screen width region at the top of search results',
         maxComponents: 5,
-        componentTypeInclusions: ['heroCarousel', 'productCarousel', 'hero'],
     },
     {
         id: 'plpTopContent',
         name: 'Top Content Region',
         description: 'Content width region below sort/filter, above product grid',
         maxComponents: 5,
-        componentTypeInclusions: ['heroCarousel', 'productCarousel', 'hero'],
     },
     {
         id: 'plpBottom',
         name: 'Bottom Region',
         description: 'Region at the bottom of search results after product grid',
         maxComponents: 5,
-        componentTypeInclusions: ['heroCarousel', 'productCarousel', 'hero'],
     },
 ])
 export class SearchPageMetadata {}

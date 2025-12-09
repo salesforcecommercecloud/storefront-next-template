@@ -16,7 +16,9 @@ export class HeroMetadata {
     @AttributeDefinition()
     title?: string;
 
-    @AttributeDefinition()
+    @AttributeDefinition({
+        type: 'image',
+    })
     imageUrl?: string;
 
     @AttributeDefinition()

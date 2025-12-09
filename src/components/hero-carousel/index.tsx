@@ -1,10 +1,12 @@
-import React, { type ReactElement, useState, useEffect, useMemo, useCallback } from 'react';
+import React, { type ReactElement, useState, useEffect, useMemo, useCallback, use } from 'react';
 import { Link } from 'react-router';
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '@/components/ui/carousel';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Component } from '@/lib/decorators/component';
 import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
+import { RegionDefinition } from '@/lib/decorators/region-definition';
+import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import heroImage from '/images/hero-cube.png';
 
 @Component('heroCarousel', {
@@ -12,6 +14,15 @@ import heroImage from '/images/hero-cube.png';
     description:
         'Interactive carousel component with multiple hero slides, autoplay, navigation controls, and dot indicators',
 })
+@RegionDefinition([
+    {
+        id: 'slides',
+        name: 'Carousel Slides',
+        description:
+            'Add hero components to display as carousel slides. Each hero will be shown as a full-width slide.',
+        maxComponents: 10,
+    },
+])
 export class HeroCarouselMetadata {
     @AttributeDefinition()
     autoPlay?: boolean;
@@ -85,16 +96,48 @@ interface HeroCarouselProps {
     autoPlayInterval?: number;
     showDots?: boolean;
     showNavigation?: boolean;
+    /** Page data containing regions from Page Designer */
+    page?: Promise<ShopperExperience.schemas['Page']>;
 }
 
 export default function HeroCarousel({
-    slides = heroSlides,
+    slides: propSlides = heroSlides,
     autoPlay = true,
     image,
     autoPlayInterval = 5000,
     showDots = true,
     showNavigation = true,
+    page: pagePromise,
 }: HeroCarouselProps): ReactElement {
+    // Unwrap page promise if provided
+    const page = pagePromise ? use(pagePromise) : undefined;
+
+    // Convert page designer heroes to slides format
+    const slidesFromPage = useMemo(() => {
+        if (!page?.regions) return [];
+
+        const slidesRegion = page.regions.find((r) => r.id === 'slides');
+        if (!slidesRegion?.components) return [];
+
+        return slidesRegion.components
+            .filter((comp) => comp.id && comp.typeId)
+            .map((comp) => {
+                const data = comp.data as Record<string, unknown> | undefined;
+                const imageUrl = data?.imageUrl as { url?: string } | undefined;
+                return {
+                    id: comp.id,
+                    title: (data?.title as string) || '',
+                    subtitle: data?.subtitle as string | undefined,
+                    imageUrl: imageUrl?.url || heroImage,
+                    imageAlt: (data?.imageAlt as string) || '',
+                    ctaText: data?.ctaText as string | undefined,
+                    ctaLink: data?.ctaLink as string | undefined,
+                };
+            });
+    }, [page]);
+
+    // Use page data slides if available, otherwise use prop slides
+    const slides = slidesFromPage.length > 0 ? slidesFromPage : propSlides;
     const [currentSlide, setCurrentSlide] = useState(0);
     const [api, setApi] = useState<CarouselApi | null>(null);
     const [isPaused, setIsPaused] = useState(false);
