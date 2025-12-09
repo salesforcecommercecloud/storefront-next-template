@@ -288,7 +288,7 @@ export function clientLoader<
  * to handle the actual Commerce SDK method invocation.
  * @see {@link import('react-router').ActionFunction}
  * @see {@link import('@/hooks/use-scapi-fetcher.ts').useScapiFetcher}
- * @see {@link import('@/lib/scapi.ts').default}
+ * @see {@link import('@/lib/api-clients').createApiClients}
  */
 // eslint-disable-next-line custom/no-server-actions
 export function action<
@@ -314,7 +314,7 @@ export function action<
  * to handle the actual Commerce SDK method invocation.
  * @see {@link import('react-router').ClientActionFunction}
  * @see {@link import('@/hooks/use-scapi-fetcher.ts').useScapiFetcher}
- * @see {@link import('@/lib/scapi.ts').default}
+ * @see {@link import('@/lib/api-clients.ts').createApiClients}
  */
 export function clientAction<
     R extends CommerceSdkMethodReturnType<C, M>,

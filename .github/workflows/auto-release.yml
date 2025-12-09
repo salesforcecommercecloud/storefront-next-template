@@ -17,7 +17,7 @@ on:
 
 env:
   NODE_VERSION: '22'
-  PNPM_VERSION: '10.16.1'
+  PNPM_VERSION: '10.23.0'
 
 jobs:
   auto-release:
@@ -42,12 +42,12 @@ jobs:
         id: version
         run: |
           VERSION=$(node -p "require('./package.json').version")
-          
+
           if [ -z "$VERSION" ]; then
             echo "❌ Failed to read version from package.json"
             exit 1
           fi
-          
+
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "tag=v$VERSION" >> $GITHUB_OUTPUT
           echo "📦 Package version: $VERSION"
@@ -56,7 +56,7 @@ jobs:
         id: check_stable
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          
+
           # Check if version matches stable semver format (X.Y.Z only, no suffix)
           if [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "is-stable=true" >> $GITHUB_OUTPUT
@@ -124,21 +124,21 @@ jobs:
           script: |
             const v1 = '${{ steps.version.outputs.version }}';
             const v2 = '${{ steps.current_latest.outputs.version }}';
-            
+
             // Parse semantic versions
             const parseVersion = (v) => {
               const parts = v.split('.').map(Number);
               return { major: parts[0], minor: parts[1], patch: parts[2] };
             };
-            
+
             const version1 = parseVersion(v1);
             const version2 = parseVersion(v2);
-            
+
             // Compare versions
             let isGreater = false;
             let isEqual = false;
             let isLess = false;
-            
+
             if (version1.major > version2.major) {
               isGreater = true;
               core.info(`🔼 ${v1} > ${v2} (major: ${version1.major} > ${version2.major})`);
@@ -161,7 +161,7 @@ jobs:
               isEqual = true;
               core.info(`🟰 ${v1} == ${v2}`);
             }
-            
+
             core.setOutput('is_greater', isGreater);
             core.setOutput('is_equal', isEqual);
             core.setOutput('is_less', isLess);

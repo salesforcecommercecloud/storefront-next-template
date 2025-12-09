@@ -21,21 +21,30 @@ const getSlasClientSecret = (): string | undefined => {
 };
 
 /**
- * Create Commerce API clients with authentication middleware
- *
+ * Create Commerce API clients with authentication middleware.
+ * On the server in production, API requests will directly target the B2C Commerce API endpoints to saves an extra hop.
+ * On the server in development, and generally on the client, API requests will be proxied through the MRT proxy to
+ * either become visible in the dev tooling or to prevent CORS issues.
  * @param context - React Router context provider
  * @returns Configured commerce API clients
  */
 export function createApiClients(context: RouterContextProvider | Readonly<RouterContextProvider>) {
+    const appOrigin = getAppOrigin();
     const config = getConfig(context);
-    const baseUrl = `${getAppOrigin()}${config.commerce.api.proxy}`;
-    const redirectUri = `${getAppOrigin()}${config.commerce.api.callback}`;
+    const { shortCode, proxy, callback, organizationId, siteId, clientId } = config.commerce.api;
+    // @ts-expect-error: __DEV__ is a global variable existing to support dead code elimination
+    const baseUrl = __DEV__
+        ? `${appOrigin}${proxy}`
+        : typeof window === 'undefined'
+          ? `https://${shortCode}.api.commercecloud.salesforce.com`
+          : `${appOrigin}${proxy}`;
+    const redirectUri = `${appOrigin}${callback}`;
 
     const clients = createCommerceApiClients({
         baseUrl,
-        organizationId: config.commerce.api.organizationId,
-        siteId: config.commerce.api.siteId,
-        clientId: config.commerce.api.clientId,
+        organizationId,
+        siteId,
+        clientId,
         clientSecret: getSlasClientSecret(),
         redirectUri,
     });

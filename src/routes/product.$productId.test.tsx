@@ -86,15 +86,6 @@ vi.mock('@/lib/recommendations', () => ({
     generateRecommendationPromises: vi.fn(),
 }));
 
-vi.mock('@/lib/scapi', () => ({
-    default: () => ({
-        ShopperProducts: {
-            getProduct: vi.fn(),
-            getCategory: vi.fn(),
-        },
-    }),
-}));
-
 const createPageMock = vi.hoisted(() =>
     vi.fn((config: any) => {
         return function ProductPage(props: any) {

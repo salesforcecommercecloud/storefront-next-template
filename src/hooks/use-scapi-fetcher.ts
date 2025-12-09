@@ -71,7 +71,7 @@ type FilterResponseFromReturnType<T> =
  * @see {@link import('@/routes/resource.api.client.$resource.ts').clientLoader}
  * @see {@link import('@/routes/resource.api.client.$resource.ts').action}
  * @see {@link import('@/routes/resource.api.client.$resource.ts').clientAction}
- * @see {@link import('@/lib/scapi.ts').default}
+ * @see {@link import('@/lib/api-clients.ts').createApiClients}
  * @example
  * import { useEffect } from 'react';
  * import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';

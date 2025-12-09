@@ -129,7 +129,7 @@
     },
     "volta": {
         "node": "24.6.0",
-        "pnpm": "10.16.1"
+        "pnpm": "10.23.0"
     },
     "bundlesize": {
         "server": [

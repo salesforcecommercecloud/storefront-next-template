@@ -16,18 +16,6 @@ const mockGetProducts = vi.fn();
 const mockGetCustomerProductLists = vi.fn();
 const mockGetCustomerProductList = vi.fn();
 
-vi.mock('@/lib/scapi', () => ({
-    default: () => ({
-        ShopperProducts: {
-            getProducts: mockGetProducts,
-        },
-        ShopperCustomers: {
-            getCustomerProductLists: mockGetCustomerProductLists,
-            getCustomerProductList: mockGetCustomerProductList,
-        },
-    }),
-}));
-
 // Mock createApiClients
 vi.mock('@/lib/api-clients', () => ({
     createApiClients: () => ({

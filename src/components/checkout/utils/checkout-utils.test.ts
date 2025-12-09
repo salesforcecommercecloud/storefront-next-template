@@ -434,7 +434,6 @@ describe('Checkout Utils', () => {
             mockShopperBasketsClient.updateShippingMethodForShipment.mockResolvedValue({ data: mockBasket });
 
             const { getBasket, updateBasket } = await import('@/middlewares/basket.client');
-            // const createClient = (await import('@/lib/scapi')).default;
             const { getShippingMethodsForShipment } = await import('@/lib/api/shipping-methods');
 
             vi.mocked(getBasket).mockReturnValue(mockBasket);

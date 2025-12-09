@@ -38,18 +38,6 @@ vi.mock('@/config', async (importOriginal) => {
     };
 });
 
-vi.mock('@/lib/scapi', () => ({
-    default: () => ({
-        ShopperCustomers: {
-            getCustomerProductLists: mockGetCustomerProductLists,
-            getCustomerProductList: mockGetCustomerProductList,
-        },
-        ShopperProducts: {
-            getProducts: mockGetProducts,
-        },
-    }),
-}));
-
 vi.mock('@/lib/api-clients', () => ({
     createApiClients: () => ({
         shopperCustomers: {

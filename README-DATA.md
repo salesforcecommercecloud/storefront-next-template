@@ -51,7 +51,7 @@ In this simple example, data is loaded in an identical manner on both the server
 ```typescript jsx
 import type { ClientLoaderFunctionArgs, LoaderFunctionArgs } from 'react-router';
 import type { ShopperCustomersTypes, ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
-import createClient from '@/lib/scapi';
+import { createApiClients } from '@/lib/api-clients';
 
 type YourPageData = {
     customer: ShopperCustomersTypes.Customer;
@@ -59,20 +59,27 @@ type YourPageData = {
 };
 
 async function getPageData({ params: { customerId }, context }: LoaderFunctionArgs): Promise<YourPageData> {
-    const client = createClient(context);
+    const clients = createApiClients(context);
     return {
-        customer: await client.ShopperCustomers.getCustomer({
-            parameters: {
-                customerId,
-            },
-        }),
-        basket: await client.ShopperBasketsV2.getBasket({
-            parameters: {
-                basketId: '...', // <-- `basketId` is required
-            },
-        }),
+        customer: await clients.shopperCustomers
+            .getCustomer({
+                params: {
+                    path: {
+                        customerId,
+                    },
+                },
+            })
+            .then(({ data }) => data),
+        basket: await clients.shopperBasketsV2
+            .getBasket({
+                params: {
+                    path: { basketId }, // <-- `basketId` is required
+                },
+            })
+            .then(({ data }) => data),
     };
 }
+
 
 export function loader(args: LoaderFunctionArgs): Promise<YourPageData> {
     return getPageData(args);
@@ -118,7 +125,7 @@ The following example builds on the case from before. Instead of fetching the da
 import { use } from 'react';
 import type { ClientLoaderFunctionArgs, LoaderFunctionArgs } from 'react-router';
 import type { ShopperCustomersTypes, ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
-import createClient from '@/lib/scapi';
+import { createApiClients } from '@/lib/api-clients';
 
 type YourPageData = {
     customer: Promise<ShopperCustomersTypes.Customer>;
@@ -126,18 +133,24 @@ type YourPageData = {
 };
 
 function getPageData({ params: { customerId }, context }: LoaderFunctionArgs): YourPageData {
-    const client = createClient(context);
+    const clients = createApiClients(context);
     return {
-        customer: client.ShopperCustomers.getCustomer({
-            parameters: {
-                customerId,
-            },
-        }),
-        basket: client.ShopperBasketsV2.getBasket({
-            parameters: {
-                basketId: '...', // <-- `basketId` is required
-            },
-        }),
+        customer: clients.shopperCustomers
+            .getCustomer({
+                params: {
+                    path: {
+                        customerId,
+                    },
+                },
+            })
+            .then(({ data }) => data),
+        basket: clients.shopperBasketsV2
+            .getBasket({
+                params: {
+                    path: { basketId }, // <-- `basketId` is required
+                },
+            })
+            .then(({ data }) => data),
     };
 }
 
@@ -175,7 +188,7 @@ The example above uses React 19’s [`use`](https://react.dev/reference/react/us
 In React Router v7’s framework mode, both a default top-level `<Suspense/>` boundary and an error boundary are already provided, but a few additional tweaks are necessary for an actually good user experience:
 
 1. To prevent using `use` within a page from immediately suspending the entire page and thereby blocking its whole display, we introduced a `<Suspense/>` boundary at the root layout’s [`<Outlet/>`](https://reactrouter.com/api/components/Outlet) level. This allows, for example, the header and footer sections of our layout to be rendered independently of the page’s main content, which may be suspended.
-2. But that’s only the first step on the way to a truly meaningful/attractive user experience. We also offer a [`createPage`](https://github.com/SalesforceCommerceCloud/SFCC-Odyssey/tree/main/packages/template-retail-rsc-app/src/components/create-page) HOC/helper for easily creating a page component, including suspense fallback.
+2. But that’s only the first step on the way to a truly meaningful/attractive user experience. We also offer a [`createPage`](https://github.com/SalesforceCommerceCloud/storefront-next/tree/main/packages/template-retail-rsc-app/src/components/create-page) HOC/helper for easily creating a page component, including suspense fallback.
 
 ---
 
@@ -296,11 +309,9 @@ export default function YourPage({ loaderData: { customer, basket } }: { loaderD
 > [!IMPORTANT]
 > **To enforce a _strict server/client data flow split_, similar to [loaders](#loaders), our project _mandates_ a specific pattern for actions as well:** only the definition of [`clientAction`](https://reactrouter.com/start/framework/actions#client-actions) exports/methods is permitted.
 
-### SCAPI Fetch Service
+### SCAPI Clients
 
-Developers who are already familiar with the predecessor framework [PWA Kit](https://github.com/SalesforceCommerceCloud/pwa-kit) will likely already be familiar with the [`commerce-sdk-isomorphic`](https://github.com/SalesforceCommerceCloud/commerce-sdk-isomorphic) and/or its React-specific extension [`commerce-sdk-react`](https://github.com/SalesforceCommerceCloud/pwa-kit/tree/develop/packages/commerce-sdk-react). The isomorphic SDK abstracts aspects such as access to and prior authentication with the RESTful [B2C Commerce APIs](https://developer.salesforce.com/docs/commerce/commerce-api) (SCAPI) in a JavaScript framework-agnostic manner.
-
-For Odyssey, we explicitly decided against a rather heavyweight additional layer such as `commerce-sdk-react`. Instead, we provide the comparatively extremely lightweight SCAPI Fetch Service ([`@/lib/scapi`](https://github.com/SalesforceCommerceCloud/SFCC-Odyssey/blob/main/packages/template-retail-rsc-app/src/lib/scapi.ts)). This abstracts access to the underlying `commerce-sdk-isomorphic` using a [`Proxy`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy), so that aspects such as dynamic loading of necessary SDK resources are handled in a completely transparent way for the consumer.
+Developers who are already familiar with the predecessor framework [PWA Kit](https://github.com/SalesforceCommerceCloud/pwa-kit) will likely already be familiar with the [`commerce-sdk-isomorphic`](https://github.com/SalesforceCommerceCloud/commerce-sdk-isomorphic) and/or its React-specific extension [`commerce-sdk-react`](https://github.com/SalesforceCommerceCloud/pwa-kit/tree/develop/packages/commerce-sdk-react). The isomorphic SDK abstracted aspects such as access to and prior authentication with the RESTful [B2C Commerce APIs](https://developer.salesforce.com/docs/commerce/commerce-api) (SCAPI) in a JavaScript framework-agnostic manner. For StorefrontNext, we explicitly decided against the rather heavyweight additional layer such as `commerce-sdk-react` and `commerce-sdk-isomorphic`. Instead, we provide the comparatively extremely lightweight SCAPI clients ([`@/lib/api-clients`](https://github.com/SalesforceCommerceCloud/storefront-next/blob/main/packages/template-retail-rsc-app/src/lib/api-clients.ts)).
 
 ## Performance Metrics
 
