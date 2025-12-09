@@ -196,10 +196,14 @@ function HomeView({ loaderData }: RouteComponentProps<HomePageData>) {
                         fallback={
                             <>
                                 {/* Popular Categories */}
-                                <PopularCategories categoriesPromise={loaderData.categories} />
+                                <PopularCategories
+                                    categoriesPromise={loaderData.categories}
+                                    page={loaderData.page}
+                                    componentData={loaderData.componentData}
+                                />
 
                                 {/* Featured Content Cards */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="pt-16 grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <ContentCard
                                         title={t('featuredContent.women.title')}
                                         description={t('featuredContent.women.description')}

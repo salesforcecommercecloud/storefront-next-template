@@ -152,25 +152,12 @@ function getPageData(
     });
 
     // Fetch page data from Page Designer API
-    // Catch 404 errors (page doesn't exist) and return empty page structure
     const pagePromise = fetchPageFromLoader(
         { request, params, context },
         {
             pageId: 'pdp',
         }
-    ).catch((error) => {
-        // If page doesn't exist (404), return empty page structure
-        // This allows the fallback content to render
-        if (error?.status === 404 || error?.message?.includes('404')) {
-            return {
-                id: '',
-                typeId: '',
-                regions: [],
-            } as ShopperExperience.schemas['Page'];
-        }
-        // Re-throw other errors
-        throw error;
-    });
+    );
 
     // Collect component data promises for components in regions
     // Handle errors gracefully - return empty object if page fetch failed
@@ -179,7 +166,6 @@ function getPageData(
             return collectComponentDataPromises({ request, params, context }, Promise.resolve(page));
         })
         .catch(() => {
-            // Return empty component data if collection fails
             return Promise.resolve({});
         });
 

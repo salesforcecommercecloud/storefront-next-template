@@ -1,0 +1,73 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PopularCategory stories snapshot > Default story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="bg-background min-h-screen p-8"
+  >
+    <div
+      class="max-w-md mx-auto"
+    >
+      <div
+        data-testid="content-card"
+      >
+        {"title":"New Arrivals","description":"Shop all new arrivals including women and mens clothing, jewelry, accessories, suits & more at Commerce Cloud","imageUrl":"/images/hero-new-arrivals.png","imageAlt":"New Arrivals","buttonText":"Shop Now","buttonLink":"/category/newarrivals","showBackground":true,"showBorder":true,"loading":"eager"}
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`PopularCategory stories snapshot > Fallback story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="bg-background min-h-screen p-8"
+  >
+    <div
+      class="max-w-md mx-auto"
+    >
+      <div
+        data-testid="content-card"
+      >
+        {"title":"","description":"","imageUrl":"/images/hero-cube.png","imageAlt":"","buttonText":"Shop Now","buttonLink":"/category/root","showBackground":true,"showBorder":true,"loading":"eager"}
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`PopularCategory stories snapshot > WithCategoryProp story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="bg-background min-h-screen p-8"
+  >
+    <div
+      class="max-w-md mx-auto"
+    >
+      <div
+        data-testid="content-card"
+      >
+        {"title":"Womens","description":"Women's range. Fashionable and stylish Shoes, jackets and all other clothing for unbeatable comfort day in, day out. Practical and fashionable styles wherever the occasion.","imageUrl":"/images/womens.jpg","imageAlt":"Womens","buttonText":"Shop Now","buttonLink":"/category/womens","showBackground":true,"showBorder":true,"loading":"eager"}
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`PopularCategory stories snapshot > WithoutImage story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="bg-background min-h-screen p-8"
+  >
+    <div
+      class="max-w-md mx-auto"
+    >
+      <div
+        data-testid="content-card"
+      >
+        {"title":"Mens","description":"Men's range. Hard-wearing boots, jackets and clothing for unbeatable comfort day in, day out.","imageUrl":"/images/hero-cube.png","imageAlt":"Mens","buttonText":"Shop Now","buttonLink":"/category/mens","showBackground":true,"showBorder":true,"loading":"eager"}
+      </div>
+    </div>
+  </div>
+</div>
+`;

@@ -1,15 +1,15 @@
 import { Suspense } from 'react';
 import { Await } from 'react-router';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
-import ContentCard from '@/components/content-card';
+import type { ShopperProducts, ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Typography } from '@/components/typography';
 import { Component, Loader } from '@/lib/decorators/component';
 import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
-import { RegionDefinition } from '@/lib/decorators';
+import { RegionDefinition, getRegionDefinition } from '@/lib/decorators';
 import { useTranslation } from 'react-i18next';
-import heroImage from '/images/hero-cube.png';
 import { loader } from './loaders';
+import PopularCategory from '@/components/home/popular-category';
+import { Region } from '@/components/region';
 
 interface PopularCategoriesProps {
     categoriesPromise?: Promise<ShopperProducts.schemas['Category'][]>;
@@ -17,6 +17,9 @@ interface PopularCategoriesProps {
     paddingX?: string;
     // Data prop provided by the Page Designer component loader
     data?: ShopperProducts.schemas['Category'][];
+    // Page Designer props
+    page?: Promise<ShopperExperience.schemas['Page']>;
+    componentData?: Promise<Record<string, Promise<unknown>>>;
 }
 
 /* v8 ignore start - do not test decorators in unit tests, decorator functionality is tested separately*/
@@ -24,7 +27,14 @@ interface PopularCategoriesProps {
     name: 'Popular Categories',
     description: 'Displays a grid of popular category cards with images, titles, descriptions, and shop now buttons',
 })
-@RegionDefinition([])
+@RegionDefinition([
+    {
+        id: 'categories',
+        name: 'Categories',
+        description: 'Add Popular Category components to display in the grid',
+        maxComponents: 4,
+    },
+])
 @Loader(loader)
 export class PopularCategoriesMetadata {
     @AttributeDefinition({
@@ -65,41 +75,159 @@ function CategoryGridSkeleton({ paddingX = 'px-4 sm:px-6 lg:px-8' }: { paddingX?
 }
 
 /**
- * Content component that renders the category grid
- * Separated to handle both promise-based and direct data scenarios
+ * Helper function to calculate grid configuration based on component/category count
  */
-function CategoryGridContent({ categories }: { categories: ShopperProducts.schemas['Category'][] }) {
+function calculateGridConfig(count: number) {
+    const componentCount = Math.min(Math.max(count || 4, 1), 4);
+    const gridCols = componentCount === 1 ? 'minmax(0, 1fr)' : `repeat(${componentCount}, minmax(0, 1fr))`;
+
+    return {
+        componentCount,
+        gridCols,
+        className: `grid grid-cols-2 gap-4 sm:gap-6 ${componentCount === 1 ? 'lg:grid-cols-[minmax(0,400px)] lg:justify-center' : 'lg:grid-cols-[var(--grid-cols)]'}`,
+        style:
+            componentCount > 1
+                ? ({
+                      '--grid-cols': gridCols,
+                  } as React.CSSProperties)
+                : undefined,
+    };
+}
+
+/**
+ * Title component for category grid
+ */
+function CategoryGridTitle() {
     const { t } = useTranslation('home');
-    const displayCategories = categories.slice(0, 4);
+    return (
+        <div className="text-center mb-8">
+            <Typography variant="h2" align="center" className="text-3xl font-extrabold text-foreground sm:text-4xl">
+                {t('categoryGrid.title')}
+            </Typography>
+        </div>
+    );
+}
+
+/**
+ * Helper function to render fallback categories from data or categoriesPromise
+ */
+function renderFallbackCategories(
+    data?: ShopperProducts.schemas['Category'][],
+    categoriesPromise?: Promise<ShopperProducts.schemas['Category'][]>,
+    paddingX?: string
+) {
+    // Only use data if it has actual categories (not empty array)
+    if (data && Array.isArray(data) && data.length > 0) {
+        const displayCategories = data.slice(0, 4);
+        const fallbackCount = Math.min(Math.max(displayCategories.length || 4, 1), 4);
+        const fallbackGridConfig = calculateGridConfig(fallbackCount);
+        return (
+            <div className={fallbackGridConfig.className} style={fallbackGridConfig.style}>
+                {displayCategories.map((category) => (
+                    <PopularCategory key={category.id} category={category} />
+                ))}
+            </div>
+        );
+    }
+
+    // Use categoriesPromise if data is not available or empty
+    if (categoriesPromise) {
+        return (
+            <Suspense fallback={<CategoryGridSkeleton paddingX={paddingX} />}>
+                <Await
+                    resolve={categoriesPromise}
+                    errorElement={null} // If API fails, gracefully return null instead of breaking the page
+                >
+                    {(categories) => {
+                        const displayCategories = categories.slice(0, 4);
+                        const fallbackCount = Math.min(Math.max(displayCategories.length || 4, 1), 4);
+                        const fallbackGridConfig = calculateGridConfig(fallbackCount);
+                        return (
+                            <div className={fallbackGridConfig.className} style={fallbackGridConfig.style}>
+                                {displayCategories.map((category) => (
+                                    <PopularCategory key={category.id} category={category} />
+                                ))}
+                            </div>
+                        );
+                    }}
+                </Await>
+            </Suspense>
+        );
+    }
+    return null;
+}
+
+/**
+ * Content component that renders the category grid
+ * Handles prioritization: Page Designer mode > data > categoriesPromise
+ */
+function CategoryGridContent({
+    data,
+    categoriesPromise,
+    page,
+    componentData,
+    paddingX,
+}: {
+    data?: ShopperProducts.schemas['Category'][];
+    categoriesPromise?: Promise<ShopperProducts.schemas['Category'][]>;
+    page?: Promise<ShopperExperience.schemas['Page']>;
+    componentData?: Promise<Record<string, Promise<unknown>>>;
+    paddingX?: string;
+}) {
+    // If page or componentData are not provided, show fallback categories
+    if (!page || !componentData) {
+        return (
+            <>
+                <CategoryGridTitle />
+                {renderFallbackCategories(data, categoriesPromise, paddingX)}
+            </>
+        );
+    }
 
     return (
         <>
-            <div className="text-center mb-8">
-                <Typography variant="h2" align="center" className="text-3xl font-extrabold text-foreground sm:text-4xl">
-                    {t('categoryGrid.title')}
-                </Typography>
-            </div>
+            <CategoryGridTitle />
+            <Suspense fallback={null}>
+                <Await
+                    resolve={page}
+                    errorElement={
+                        // If page fetch fails (e.g., page doesn't exist), show fallback categories
+                        renderFallbackCategories(data, categoriesPromise, paddingX)
+                    }>
+                    {(resolvedPage) => {
+                        const hasRegions = resolvedPage?.regions && resolvedPage.regions.length > 0;
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:grid-flow-col lg:auto-cols-fr">
-                {displayCategories.map((category) => {
-                    const { image, c_slotBannerImage } = category;
-                    const imageUrl = (image ?? c_slotBannerImage ?? heroImage) as string;
-                    return (
-                        <ContentCard
-                            key={category.id}
-                            title={category.name || ''}
-                            description={category.pageDescription || ''}
-                            imageUrl={imageUrl}
-                            imageAlt={category.name}
-                            buttonText={t('categoryGrid.shopNowButton')}
-                            buttonLink={`/category/${category.id}`}
-                            showBackground={true}
-                            showBorder={true}
-                            loading="eager"
-                        />
-                    );
-                })}
-            </div>
+                        // Show fallback categories if no regions (page exists but is empty)
+                        if (!hasRegions) {
+                            return renderFallbackCategories(data, categoriesPromise, paddingX);
+                        }
+
+                        // Regions exist - check if categories region has components
+                        const categoriesRegion = resolvedPage.regions?.find((r) => r.id === 'categories');
+                        const hasComponents = (categoriesRegion?.components?.length ?? 0) > 0;
+
+                        // Show fallback categories if no components in categories region
+                        if (!hasComponents) {
+                            return renderFallbackCategories(data, categoriesPromise, paddingX);
+                        }
+
+                        // Region has components - render them
+                        const componentCount = Math.min(Math.max(categoriesRegion?.components?.length || 4, 1), 4);
+                        const gridConfig = calculateGridConfig(componentCount);
+
+                        return (
+                            <div className={gridConfig.className} style={gridConfig.style}>
+                                <Region
+                                    page={Promise.resolve(resolvedPage)}
+                                    regionId="categories"
+                                    metadata={getRegionDefinition(PopularCategoriesMetadata, 'categories')}
+                                    componentData={componentData}
+                                />
+                            </div>
+                        );
+                    }}
+                </Await>
+            </Suspense>
         </>
     );
 }
@@ -117,24 +245,23 @@ export default function PopularCategories({
     categoriesPromise,
     data,
     paddingX = 'px-4 sm:px-6 lg:px-8',
+    page,
+    componentData,
 }: PopularCategoriesProps) {
+    const content = (
+        <CategoryGridContent
+            data={data}
+            categoriesPromise={categoriesPromise}
+            page={page}
+            componentData={componentData}
+            paddingX={paddingX}
+        />
+    );
+
     return (
-        <div className="pt-16">
+        <div className="pb-16">
             <div className={`max-w-screen-2xl mx-auto ${paddingX}`}>
-                {/* If data is already provided (from component loader), render directly */}
-                {data ? (
-                    <CategoryGridContent categories={data} />
-                ) : categoriesPromise ? (
-                    /* If categoriesPromise is provided (from route loader), use Suspense/Await */
-                    <Suspense fallback={<CategoryGridSkeleton paddingX={paddingX} />}>
-                        <Await resolve={categoriesPromise}>
-                            {(categories) => <CategoryGridContent categories={categories} />}
-                        </Await>
-                    </Suspense>
-                ) : (
-                    /* Fallback: show skeleton (component loader will provide data) */
-                    <CategoryGridSkeleton paddingX={paddingX} />
-                )}
+                {content || <CategoryGridSkeleton paddingX={paddingX} />}
             </div>
         </div>
     );

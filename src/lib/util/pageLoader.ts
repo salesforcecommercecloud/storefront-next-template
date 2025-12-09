@@ -22,6 +22,35 @@ export function fetchPageFromLoader(
     });
 }
 
+/**
+ * Recursively collect component data promises from regions
+ */
+function collectFromRegions(
+    ctx: LoaderFunctionArgs,
+    regions: ShopperExperienceTypes.Region[] | undefined,
+    map: Record<string, Promise<unknown>>
+): void {
+    if (!regions) return;
+
+    for (const region of regions) {
+        for (const comp of region.components || []) {
+            const loaders = registry.getLoaders(comp.typeId);
+            if (loaders?.server) {
+                // Each component gets its own independent promise
+                map[comp.id] = loaders.server({
+                    componentData: comp,
+                    context: ctx.context,
+                });
+            }
+
+            // Recursively process nested regions (components can have their own regions)
+            if (comp.regions && comp.regions.length > 0) {
+                collectFromRegions(ctx, comp.regions, map);
+            }
+        }
+    }
+}
+
 export function collectComponentDataPromises(
     ctx: LoaderFunctionArgs,
     pagePromise: Promise<ShopperExperience.schemas['Page']>
@@ -31,18 +60,8 @@ export function collectComponentDataPromises(
     return pagePromise.then((page) => {
         const map: Record<string, Promise<unknown>> = {};
 
-        for (const region of page.regions || []) {
-            for (const comp of region.components || []) {
-                const loaders = registry.getLoaders(comp.typeId);
-                if (loaders?.server) {
-                    // Each component gets its own independent promise
-                    map[comp.id] = loaders.server({
-                        componentData: comp,
-                        context: ctx.context,
-                    });
-                }
-            }
-        }
+        // Process top-level regions and recursively process nested regions
+        collectFromRegions(ctx, page.regions, map);
 
         return map;
     });

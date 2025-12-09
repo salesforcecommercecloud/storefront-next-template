@@ -6,7 +6,7 @@ exports[`PopularCategories stories snapshot > CustomPadding story renders and ma
     class="bg-background min-h-screen"
   >
     <div
-      class="pt-16"
+      class="pb-16"
     >
       <div
         class="max-w-screen-2xl mx-auto px-2"
@@ -21,7 +21,8 @@ exports[`PopularCategories stories snapshot > CustomPadding story renders and ma
           </h2>
         </div>
         <div
-          class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:grid-flow-col lg:auto-cols-fr"
+          class="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-[var(--grid-cols)]"
+          style="--grid-cols: repeat(4, minmax(0, 1fr));"
         >
           <div
             data-testid="content-card"
@@ -56,7 +57,7 @@ exports[`PopularCategories stories snapshot > Default story renders and matches 
     class="bg-background min-h-screen"
   >
     <div
-      class="pt-16"
+      class="pb-16"
     >
       <div
         class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8"
@@ -71,7 +72,8 @@ exports[`PopularCategories stories snapshot > Default story renders and matches 
           </h2>
         </div>
         <div
-          class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:grid-flow-col lg:auto-cols-fr"
+          class="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-[var(--grid-cols)]"
+          style="--grid-cols: repeat(4, minmax(0, 1fr));"
         />
       </div>
     </div>
@@ -85,7 +87,7 @@ exports[`PopularCategories stories snapshot > Empty story renders and matches sn
     class="bg-background min-h-screen"
   >
     <div
-      class="pt-16"
+      class="pb-16"
     >
       <div
         class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8"
@@ -99,9 +101,6 @@ exports[`PopularCategories stories snapshot > Empty story renders and matches sn
             Step into Elegance
           </h2>
         </div>
-        <div
-          class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:grid-flow-col lg:auto-cols-fr"
-        />
       </div>
     </div>
   </div>
@@ -114,7 +113,7 @@ exports[`PopularCategories stories snapshot > Loading story renders and matches 
     class="bg-background min-h-screen"
   >
     <div
-      class="pt-16"
+      class="pb-16"
     >
       <div
         class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8"
@@ -129,7 +128,8 @@ exports[`PopularCategories stories snapshot > Loading story renders and matches 
           </h2>
         </div>
         <div
-          class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:grid-flow-col lg:auto-cols-fr"
+          class="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-[var(--grid-cols)]"
+          style="--grid-cols: repeat(4, minmax(0, 1fr));"
         />
       </div>
     </div>
@@ -143,7 +143,7 @@ exports[`PopularCategories stories snapshot > MoreThanFourCategories story rende
     class="bg-background min-h-screen"
   >
     <div
-      class="pt-16"
+      class="pb-16"
     >
       <div
         class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8"
@@ -158,7 +158,8 @@ exports[`PopularCategories stories snapshot > MoreThanFourCategories story rende
           </h2>
         </div>
         <div
-          class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:grid-flow-col lg:auto-cols-fr"
+          class="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-[var(--grid-cols)]"
+          style="--grid-cols: repeat(4, minmax(0, 1fr));"
         >
           <div
             data-testid="content-card"
@@ -193,89 +194,19 @@ exports[`PopularCategories stories snapshot > SkeletonState story renders and ma
     class="bg-background min-h-screen"
   >
     <div
-      class="pt-16"
+      class="pb-16"
     >
       <div
         class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8"
       >
         <div
-          class="w-full"
+          class="text-center mb-8"
         >
-          <div
-            class="text-center mb-8 px-4 sm:px-6 lg:px-8"
+          <h2
+            class="tracking-tight text-center text-3xl font-extrabold text-foreground sm:text-4xl"
           >
-            <div
-              class="animate-pulse rounded-md bg-muted h-10 w-64 mx-auto"
-            />
-          </div>
-          <div
-            class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 px-4 sm:px-6 lg:px-8"
-          >
-            <div
-              class="space-y-4"
-            >
-              <div
-                class="animate-pulse bg-muted h-48 w-full rounded-lg"
-              />
-              <div
-                class="animate-pulse rounded-md bg-muted h-4 w-3/4"
-              />
-              <div
-                class="animate-pulse rounded-md bg-muted h-4 w-1/2"
-              />
-              <div
-                class="animate-pulse rounded-md bg-muted h-8 w-full"
-              />
-            </div>
-            <div
-              class="space-y-4"
-            >
-              <div
-                class="animate-pulse bg-muted h-48 w-full rounded-lg"
-              />
-              <div
-                class="animate-pulse rounded-md bg-muted h-4 w-3/4"
-              />
-              <div
-                class="animate-pulse rounded-md bg-muted h-4 w-1/2"
-              />
-              <div
-                class="animate-pulse rounded-md bg-muted h-8 w-full"
-              />
-            </div>
-            <div
-              class="space-y-4"
-            >
-              <div
-                class="animate-pulse bg-muted h-48 w-full rounded-lg"
-              />
-              <div
-                class="animate-pulse rounded-md bg-muted h-4 w-3/4"
-              />
-              <div
-                class="animate-pulse rounded-md bg-muted h-4 w-1/2"
-              />
-              <div
-                class="animate-pulse rounded-md bg-muted h-8 w-full"
-              />
-            </div>
-            <div
-              class="space-y-4"
-            >
-              <div
-                class="animate-pulse bg-muted h-48 w-full rounded-lg"
-              />
-              <div
-                class="animate-pulse rounded-md bg-muted h-4 w-3/4"
-              />
-              <div
-                class="animate-pulse rounded-md bg-muted h-4 w-1/2"
-              />
-              <div
-                class="animate-pulse rounded-md bg-muted h-8 w-full"
-              />
-            </div>
-          </div>
+            Step into Elegance
+          </h2>
         </div>
       </div>
     </div>
@@ -289,7 +220,7 @@ exports[`PopularCategories stories snapshot > WithDirectData story renders and m
     class="bg-background min-h-screen"
   >
     <div
-      class="pt-16"
+      class="pb-16"
     >
       <div
         class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8"
@@ -304,7 +235,8 @@ exports[`PopularCategories stories snapshot > WithDirectData story renders and m
           </h2>
         </div>
         <div
-          class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:grid-flow-col lg:auto-cols-fr"
+          class="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-[var(--grid-cols)]"
+          style="--grid-cols: repeat(4, minmax(0, 1fr));"
         >
           <div
             data-testid="content-card"
@@ -339,7 +271,7 @@ exports[`PopularCategories stories snapshot > WithoutImages story renders and ma
     class="bg-background min-h-screen"
   >
     <div
-      class="pt-16"
+      class="pb-16"
     >
       <div
         class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8"
@@ -354,7 +286,8 @@ exports[`PopularCategories stories snapshot > WithoutImages story renders and ma
           </h2>
         </div>
         <div
-          class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:grid-flow-col lg:auto-cols-fr"
+          class="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-[var(--grid-cols)]"
+          style="--grid-cols: repeat(4, minmax(0, 1fr));"
         >
           <div
             data-testid="content-card"
