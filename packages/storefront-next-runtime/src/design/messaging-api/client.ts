@@ -56,6 +56,7 @@ export function createClientApi({ emitter, id, forwardedKeys = [], logger }: Cli
         onHostConnected,
         onHostDisconnected,
         onError,
+        usid,
     }: {
         interval?: number;
         timeout?: number;
@@ -63,6 +64,7 @@ export function createClientApi({ emitter, id, forwardedKeys = [], logger }: Cli
         onHostConnected?: (configuration: HostToClientConfiguration) => void;
         onHostDisconnected?: (reconnect: () => void) => void;
         onError?: (error: Error) => void;
+        usid?: string;
     } = {}) => {
         if (isConnected) {
             disconnect({ isReconnecting: true });
@@ -107,6 +109,7 @@ export function createClientApi({ emitter, id, forwardedKeys = [], logger }: Cli
                         onHostConnected,
                         onHostDisconnected,
                         onError,
+                        usid,
                     })
                 );
             })
@@ -117,7 +120,7 @@ export function createClientApi({ emitter, id, forwardedKeys = [], logger }: Cli
                 throw new Error(`Timed out after waiting ${timeout}ms for host connection`);
             }
 
-            messenger.emit('ClientInitialized', { clientId: id, forwardedKeys }, { requireRemoteId: false });
+            messenger.emit('ClientInitialized', { clientId: id, forwardedKeys, usid }, { requireRemoteId: false });
             connectionTimeoutId = setTimeout(() => checkInitialization(), interval) as unknown as number;
         };
 

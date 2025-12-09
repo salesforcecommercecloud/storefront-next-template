@@ -418,6 +418,7 @@ export interface ClientApi extends IsomorphicApi {
         onHostConnected?: (event: Domain.HostToClientConfiguration) => void;
         onHostDisconnected?: (reconnect: () => void) => void;
         onError?: (error: Error) => void;
+        usid?: string;
     }): void;
 
     /**

@@ -1,0 +1,65 @@
+import type { RouterContextProvider } from 'react-router';
+import { getConfig } from '@/config';
+import { createApiClients } from '@/lib/api-clients';
+import type { ShopperContext as ShopperContextSchema } from '@salesforce/storefront-next-runtime/scapi';
+
+/**
+ * ShopperContext type
+ * Supports sourceCode and customQualifiers per Salesforce Commerce Cloud API
+ * @see https://developer.salesforce.com/docs/commerce/commerce-api/references/shopper-context?meta=createShopperContext
+ */
+export type ShopperContext = {
+    sourceCode?: ShopperContextSchema.schemas['ShopperContext']['sourceCode'];
+    customQualifiers?: ShopperContextSchema.schemas['ShopperContext']['customQualifiers'];
+    assignmentQualifiers?: ShopperContextSchema.schemas['ShopperContext']['assignmentQualifiers'];
+    couponCodes?: string[] | null;
+};
+
+/**
+ * Create or replace shopper context using PUT API
+ *
+ * This function wraps the PUT ShopperContext API call to create or replace
+ * a shopper's context. PUT replaces the entire context.
+ *
+ * @param context - React Router context
+ * @param usid - Shopper's unique identifier
+ * @param body - ShopperContext body to send
+ * @returns Promise that resolves when context is created/replaced (void)
+ * @throws Error if context, usid, or body are invalid, or if the API call fails
+ */
+export async function createShopperContext(
+    context: Readonly<RouterContextProvider>,
+    usid: string,
+    body: Partial<ShopperContext>
+): Promise<void> {
+    // Validate context
+    if (!context) {
+        throw new Error('Context is required');
+    }
+
+    // Validate usid
+    if (!usid || typeof usid !== 'string' || usid.trim().length === 0) {
+        throw new Error('USID is required and must be a non-empty string');
+    }
+
+    // Validate body
+    if (!body) {
+        throw new Error('Body is required and must be a plain object');
+    }
+
+    const config = getConfig(context);
+    const clients = createApiClients(context);
+
+    await clients.shopperContext.createShopperContext({
+        params: {
+            path: {
+                organizationId: config.commerce.api.organizationId,
+                usid,
+            },
+            query: {
+                siteId: config.commerce.api.siteId,
+            },
+        },
+        body,
+    });
+}

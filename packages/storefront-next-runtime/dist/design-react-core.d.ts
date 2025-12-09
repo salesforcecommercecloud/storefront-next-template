@@ -12,6 +12,7 @@ type PageDesignerProviderProps = {
   children: React.ReactNode;
   clientId: string;
   targetOrigin: string;
+  usid?: string;
   clientLogger?: IsomorphicConfiguration['logger'];
   clientConnectionTimeout?: number;
   clientConnectionInterval?: number;
@@ -22,6 +23,7 @@ declare const PageDesignerProvider: {
     children,
     targetOrigin,
     clientId,
+    usid,
     clientLogger,
     clientConnectionTimeout,
     clientConnectionInterval,

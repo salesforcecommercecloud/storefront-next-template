@@ -47,9 +47,11 @@ describe('Messaging API', () => {
 
     function makeClientConnectionPromise({
         shouldReconnect = false,
-    }: { shouldReconnect?: boolean } = {}): Promise<void> {
+        params = {},
+    }: { shouldReconnect?: boolean; params?: Partial<Parameters<typeof client.connect>[0]> } = {}): Promise<void> {
         return new Promise<void>((resolve) =>
             client.connect({
+                ...params,
                 onHostDisconnected: (reconnect) => {
                     if (shouldReconnect) {
                         reconnect();
@@ -120,6 +122,30 @@ describe('Messaging API', () => {
                 expect(client.getRemoteId()).toBe('test-host');
                 expect(host.getRemoteId()).toBe('test-client');
             });
+
+            it.each`
+                usid           | expectedValue
+                ${'test-usid'} | ${'test-usid'}
+                ${undefined}   | ${undefined}
+            `('should pass the usid ($expectedValue) to the client', async ({ usid, expectedValue }) => {
+                const connect = new Promise<void>((resolve, reject) => {
+                    host.on('ClientInitialized', (event) => {
+                        try {
+                            expect(event.usid).toBe(expectedValue);
+                            resolve();
+                        } catch (error) {
+                            reject(error);
+                        }
+                    });
+                });
+
+                void makeClientConnectionPromise(usid ? { params: { usid } } : {});
+                vi.advanceTimersByTime(1500);
+                void makeHostConnectionPromise(host);
+                vi.advanceTimersByTime(1500);
+
+                await connect;
+            });
         });
 
         describe('when an event is emitted on the client before the host', () => {
@@ -145,6 +171,30 @@ describe('Messaging API', () => {
                 await Promise.all([makeClientConnectionPromise(), makeHostConnectionPromise(host)]);
                 expect(client.getRemoteId()).toBe('test-host');
                 expect(host.getRemoteId()).toBe('test-client');
+            });
+
+            it.each`
+                usid           | expectedValue
+                ${'test-usid'} | ${'test-usid'}
+                ${undefined}   | ${undefined}
+            `('should pass the usid ($expectedValue) to the client', async ({ usid, expectedValue }) => {
+                const connect = new Promise<void>((resolve, reject) => {
+                    host.on('ClientInitialized', (event) => {
+                        try {
+                            expect(event.usid).toBe(expectedValue);
+                            resolve();
+                        } catch (error) {
+                            reject(error);
+                        }
+                    });
+                });
+
+                void makeHostConnectionPromise(host);
+                vi.advanceTimersByTime(1500);
+                void makeClientConnectionPromise(usid ? { params: { usid } } : {});
+                vi.advanceTimersByTime(1500);
+
+                await connect;
             });
         });
 

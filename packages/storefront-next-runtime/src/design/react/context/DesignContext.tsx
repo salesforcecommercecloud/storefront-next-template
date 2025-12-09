@@ -62,12 +62,14 @@ export const DesignProvider = ({
     children,
     targetOrigin,
     clientId,
+    usid,
     clientConnectionTimeout,
     clientConnectionInterval,
     clientLogger = noop,
 }: React.PropsWithChildren<{
     targetOrigin: string;
     clientId: string;
+    usid?: string;
     clientConnectionTimeout?: number;
     clientConnectionInterval?: number;
     clientLogger?: IsomorphicConfiguration['logger'];
@@ -114,6 +116,7 @@ export const DesignProvider = ({
             onError: () => {
                 // TODO: Figure out how to handle this.
             },
+            usid,
         });
 
         return () => {
@@ -121,7 +124,7 @@ export const DesignProvider = ({
             setPageDesignerConfig(null);
             setIsConnected(false);
         };
-    }, [clientApi, clientConnectionTimeout, clientConnectionInterval]);
+    }, [clientApi, clientConnectionTimeout, clientConnectionInterval, usid]);
 
     // Use the extracted state management hook
     const contextValue = React.useMemo<DesignContextType>(

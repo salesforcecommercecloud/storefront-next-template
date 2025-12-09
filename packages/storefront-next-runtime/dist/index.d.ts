@@ -142,6 +142,10 @@ interface ClientInitializedEvent extends WithBaseEvent {
    * The keys that are forwarded from the host to the client.
    */
   forwardedKeys?: string[];
+  /**
+   * The user session ID.
+   */
+  usid?: string;
 }
 interface ClientReady extends WithBaseEvent {
   eventType: 'ClientReady';
@@ -848,6 +852,7 @@ interface ClientApi extends IsomorphicApi {
     onHostConnected?: (event: HostToClientConfiguration) => void;
     onHostDisconnected?: (reconnect: () => void) => void;
     onError?: (error: Error) => void;
+    usid?: string;
   }): void;
   /**
    * Notifies the host that the client is ready.

@@ -11,7 +11,7 @@ const PageDesignerContext = createContext({
 	isPreviewMode: false
 });
 const usePageDesignerMode = () => useContext(PageDesignerContext);
-const PageDesignerProvider = ({ children, targetOrigin, clientId, clientLogger, clientConnectionTimeout, clientConnectionInterval, mode }) => {
+const PageDesignerProvider = ({ children, targetOrigin, clientId, usid, clientLogger, clientConnectionTimeout, clientConnectionInterval, mode }) => {
 	const contextValue = useMemo(() => ({
 		isDesignMode: mode === "design" || isDesignModeActive(),
 		isPreviewMode: mode === "preview" || isPreviewModeActive()
@@ -29,6 +29,7 @@ const PageDesignerProvider = ({ children, targetOrigin, clientId, clientLogger, 
 		children: /* @__PURE__ */ jsx(LazyDesignProvider, {
 			targetOrigin,
 			clientId,
+			usid,
 			clientLogger,
 			clientConnectionTimeout,
 			clientConnectionInterval,

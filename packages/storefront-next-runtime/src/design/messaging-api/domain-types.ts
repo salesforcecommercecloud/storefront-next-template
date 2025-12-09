@@ -160,6 +160,10 @@ export interface ClientInitializedEvent extends WithBaseEvent {
      * The keys that are forwarded from the host to the client.
      */
     forwardedKeys?: string[];
+    /**
+     * The user session ID.
+     */
+    usid?: string;
     // Put any client-specific config here
 }
 

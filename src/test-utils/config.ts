@@ -76,6 +76,10 @@ export const mockBuildConfig: Config = {
                 socialLogin: { enabled: true, callbackUri: '/social-callback', providers: ['Apple', 'Google'] },
                 socialShare: { enabled: true, providers: ['Twitter', 'Facebook', 'LinkedIn', 'Email'] },
                 guestCheckout: true,
+                shopperContext: {
+                    enabled: false,
+                    dwsourcecodeCookieSuffix: 'test-site',
+                },
             },
         },
         i18n: {

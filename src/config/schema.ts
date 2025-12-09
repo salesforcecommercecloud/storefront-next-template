@@ -87,6 +87,10 @@ export type Config = {
                     providers: Array<'Twitter' | 'Facebook' | 'LinkedIn' | 'Email'>;
                 };
                 guestCheckout: boolean;
+                shopperContext: {
+                    enabled: boolean;
+                    dwsourcecodeCookieSuffix?: string;
+                };
             };
         };
         i18n: {

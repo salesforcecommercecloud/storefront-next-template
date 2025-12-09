@@ -115,6 +115,10 @@ export default defineConfig({
                     providers: ['Twitter', 'Facebook', 'LinkedIn', 'Email'],
                 },
                 guestCheckout: true,
+                shopperContext: {
+                    enabled: false,
+                    dwsourcecodeCookieSuffix: undefined,
+                },
             },
         },
         // When updating these i18n properties, please also check that the middleware configurations are in sync

@@ -25,6 +25,8 @@ import authMiddlewareServer, { getAuth as getAuthServer } from '@/middlewares/au
 import authMiddlewareClient, { getAuth as getAuthClient } from '@/middlewares/auth.client';
 import AuthProvider, { bootstrapAuth } from '@/providers/auth';
 import basketMiddlewareClient, { getBasket } from '@/middlewares/basket.client';
+import shopperContextMiddlewareServer from '@/middlewares/shopper-context.server';
+import shopperContextMiddlewareClient from '@/middlewares/shopper-context.client';
 import {
     performanceMetricsMiddlewareClient,
     performanceMetricsMiddlewareServer,
@@ -64,6 +66,7 @@ export const middleware: MiddlewareFunction<Response>[] = [
     i18nextMiddleware,
     performanceMetricsMiddlewareServer,
     authMiddlewareServer,
+    shopperContextMiddlewareServer,
 ];
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -74,6 +77,7 @@ export const clientMiddleware: MiddlewareFunction<Record<string, DataStrategyRes
     performanceMetricsMiddlewareClient as unknown as MiddlewareFunction<Record<string, DataStrategyResult>>,
     authMiddlewareClient as unknown as MiddlewareFunction<Record<string, DataStrategyResult>>,
     basketMiddlewareClient as unknown as MiddlewareFunction<Record<string, DataStrategyResult>>,
+    shopperContextMiddlewareClient as unknown as MiddlewareFunction<Record<string, DataStrategyResult>>,
 ];
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -301,7 +305,7 @@ export default function App({ loaderData: { root, subs, auth, basket, getI18next
             <Header>
                 <CategoryNavigationMenuMega resolve={refRoot.current} defer={refSubs.current} />
             </Header>
-            <PageDesignerProvider clientId="odyssey" targetOrigin="*">
+            <PageDesignerProvider clientId="odyssey" targetOrigin="*" usid={sessionData.usid}>
                 <PageDesignerStyles />
                 <main className="flex-grow pt-8">
                     {/* Outlet-level `<Suspense/>` boundary to contain pending promises. */}
