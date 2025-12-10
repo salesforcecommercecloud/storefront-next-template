@@ -29,9 +29,16 @@ if (!fs.existsSync(outputDir)) {
 }
 
 let generatedCount = 0;
+let skippedCount = 0;
 
 walk(componentsDir, (file) => {
     if (file.endsWith('.stories.tsx')) {
+        // Skip ui folder - these are shadcn components, exclude from test generation
+        if (file.includes(path.join('components', 'ui'))) {
+            skippedCount++;
+            return;
+        }
+
         const rel = path.relative(componentsDir, file);
         // Convert path separators to double underscores for flat output structure
         const outName = rel.replace(/[\\/]/g, '__').replace('.stories.tsx', '.story.test.tsx');
@@ -82,3 +89,6 @@ describe('Story tests for ${rel}', () => {
 });
 
 console.log(`✅ Generated ${generatedCount} story test file(s) in ${outputDir}`);
+if (skippedCount > 0) {
+    console.log(`⏭️  Skipped ${skippedCount} story file(s) from ui folder (excluded from test generation)`);
+}

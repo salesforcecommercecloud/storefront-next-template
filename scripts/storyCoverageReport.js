@@ -12,9 +12,59 @@ import fs from 'fs';
 import path from 'path';
 // ---- CONFIG ----
 const COMPONENTS_DIR = path.join(process.cwd(), 'src/components');
-const OUTPUT_DIR = path.join(process.cwd(), 'coverage');
+const OUTPUT_DIR = path.join(process.cwd(), '.storybook', 'coverage');
 const JSON_PATH = path.join(OUTPUT_DIR, 'storybook-component-coverage.json');
 const MD_PATH = path.join(OUTPUT_DIR, 'storybook-component-coverage.md');
+const COMPONENT_OWNERS_PATH = path.join(process.cwd(), 'config', 'component-owners.json');
+
+// Coverage thresholds
+const STORY_COVERAGE_THRESHOLD = 100; // All components must have stories
+const CODE_COVERAGE_THRESHOLD = 80; // Minimum acceptable code coverage
+
+// Load component ownership mapping and build reverse lookup
+// Structure: { "team-name": { "slack": "@channel", "components": [...] } }
+let teamOwners = {};
+let componentOwners = {}; // Reverse lookup: component name -> { team, slack }
+if (fs.existsSync(COMPONENT_OWNERS_PATH)) {
+    try {
+        teamOwners = JSON.parse(fs.readFileSync(COMPONENT_OWNERS_PATH, 'utf8'));
+        // Build reverse lookup map: component name -> ownership info
+        for (const [teamName, teamInfo] of Object.entries(teamOwners)) {
+            if (teamInfo.components && Array.isArray(teamInfo.components)) {
+                for (const componentName of teamInfo.components) {
+                    componentOwners[componentName] = {
+                        team: teamName,
+                        slack: teamInfo.slack || null,
+                    };
+                }
+            }
+        }
+    } catch (e) {
+        console.warn(`⚠️  Could not load component owners file: ${e.message}`);
+    }
+}
+
+/**
+ * Get ownership info for a component by matching component name or parent directory
+ * @param {string} componentName - Component name (e.g., "cart/cart-content" or "checkout/payment-form")
+ * @returns {object|null} Ownership info with team and slack, or null if not found
+ */
+function getComponentOwnership(componentName) {
+    // Try exact match first
+    if (componentOwners[componentName]) {
+        return componentOwners[componentName];
+    }
+    // Try parent directory match (e.g., "cart/cart-content" -> "cart")
+    const parts = componentName.split('/');
+    if (parts.length > 1) {
+        const parentDir = parts[0];
+        if (componentOwners[parentDir]) {
+            return componentOwners[parentDir];
+        }
+    }
+    return null;
+}
+
 // Components that don't require stories (simple icons, internal sub-components, etc.)
 const EXCLUDED_COMPONENTS = new Set([
     // Simple icon components
@@ -116,12 +166,19 @@ function generateCoverage() {
             stories.has(`${dirName}/${baseName}`) ||
             (componentName.endsWith('/index') && stories.has(`${dirName}/stories/index`));
         if (!hasStory) {
-            missing.push({ name: componentName, path: filePath });
+            const ownership = getComponentOwnership(componentName);
+            missing.push({
+                name: componentName,
+                path: filePath,
+                team: ownership?.team || null,
+                slack: ownership?.slack || null,
+            });
         }
     }
     const totalComponents = components.size;
-    const covered = totalComponents - missing.length;
-    const percent = totalComponents === 0 ? 100 : Math.round((covered / totalComponents) * 100);
+    const componentsNeedingStories = totalComponents - excluded.length;
+    const covered = componentsNeedingStories - missing.length;
+    const percent = componentsNeedingStories === 0 ? 100 : Math.round((covered / componentsNeedingStories) * 100);
     // Sort missing components for better readability
     missing.sort((a, b) => a.name.localeCompare(b.name));
 
@@ -142,13 +199,31 @@ function generateCoverage() {
         badgeEmoji = '⚠️';
     }
 
+    // Check if thresholds are met
+    const storyCoverageMet = percent >= STORY_COVERAGE_THRESHOLD;
+
     const jsonSummary = {
         timestamp: new Date().toISOString(),
         totalComponents,
+        componentsNeedingStories,
         componentsWithStories: covered,
         coveragePercent: percent,
         excludedComponents: excluded.length,
-        missingComponents: missing.map((m) => m.name),
+        missingComponents: missing.map((m) => ({
+            name: m.name,
+            team: m.team,
+            slack: m.slack,
+        })),
+        thresholds: {
+            storyCoverage: {
+                threshold: STORY_COVERAGE_THRESHOLD,
+                met: storyCoverageMet,
+            },
+            codeCoverage: {
+                threshold: CODE_COVERAGE_THRESHOLD,
+                met: null, // Will be set after code coverage is loaded
+            },
+        },
     };
 
     // Merge Vitest code coverage metrics if available
@@ -163,6 +238,13 @@ function generateCoverage() {
         try {
             const vitest = JSON.parse(fs.readFileSync(vitestSummaryPath, 'utf8'));
             jsonSummary.codeCoverage = vitest.total; // {lines:{pct:..}, statements:..., functions:..., branches:...}
+            // Calculate average code coverage and check threshold
+            const lines = vitest.total.lines?.pct || 0;
+            const statements = vitest.total.statements?.pct || 0;
+            const functions = vitest.total.functions?.pct || 0;
+            const branches = vitest.total.branches?.pct || 0;
+            const avgCoverage = (lines + statements + functions + branches) / 4;
+            jsonSummary.thresholds.codeCoverage.met = avgCoverage >= CODE_COVERAGE_THRESHOLD;
         } catch (e) {
             console.warn('⚠️  Could not read vitest coverage summary:', e.message);
         }
@@ -199,12 +281,13 @@ ${missing.length === 0 ? '![Status](https://img.shields.io/badge/status-complete
 
 </div>
 
-| Metric | Value | Status |
-|:-------|:-----:|:------:|
-| **Total Components** | \`${totalComponents}\` | ${totalComponents > 0 ? '📦' : '⚠️'} |
-| **Components With Stories** | \`${covered}\` | ${covered === totalComponents ? '✅' : '⚠️'} |
-| **Excluded Components** | \`${excluded.length}\` | ℹ️ |
-| **Coverage** | **\`${percent}%\`** | ${badgeEmoji} |
+| Metric | Value | Status | Threshold |
+|:-------|:-----:|:------:|:---------:|
+| **Total Components** | \`${totalComponents}\` | ${totalComponents > 0 ? '📦' : '⚠️'} | - |
+| **Components Needing Stories** | \`${componentsNeedingStories}\` | ${componentsNeedingStories > 0 ? '📦' : '⚠️'} | - |
+| **Components With Stories** | \`${covered}\` | ${covered === componentsNeedingStories ? '✅' : '⚠️'} | - |
+| **Excluded Components** | \`${excluded.length}\` | ℹ️ | - |
+| **Coverage** | **\`${percent}%\`** | ${badgeEmoji} | \`${STORY_COVERAGE_THRESHOLD}%\` ${storyCoverageMet ? '✅' : '❌'} |
 
 ${
     missing.length === 0
@@ -213,7 +296,7 @@ ${
 
 ### 🎉 Perfect Coverage!
 
-**All \`${totalComponents}\` components have Storybook stories!** 
+**All \`${componentsNeedingStories}\` components that need stories have Storybook stories!** 
 
 ✨ Great job maintaining comprehensive component documentation! ✨
 
@@ -225,9 +308,55 @@ ${
 The following components are missing Storybook stories:
 
 <details>
-<summary><b>Click to expand missing components list</b></summary>
+<summary><b>📋 Click to expand missing components list</b></summary>
 
-${missing.map((m, idx) => `\`${idx + 1}.\` \`${m.name}\``).join('\n')}
+${(() => {
+    // Group missing components by team
+    const byTeam = {};
+    const unassigned = [];
+
+    missing.forEach((m) => {
+        if (m.team) {
+            if (!byTeam[m.team]) {
+                byTeam[m.team] = {
+                    slack: m.slack,
+                    components: [],
+                };
+            }
+            byTeam[m.team].components.push(m);
+        } else {
+            unassigned.push(m);
+        }
+    });
+
+    // Build markdown output
+    let output = '';
+
+    // Grouped by team
+    const sortedTeams = Object.keys(byTeam).sort();
+    sortedTeams.forEach((teamName) => {
+        const teamData = byTeam[teamName];
+        const slackInfo = teamData.slack ? ` ${teamData.slack}` : '';
+        output += `\n### 👥 ${teamName}${slackInfo}\n\n`;
+        teamData.components
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .forEach((m) => {
+                output += `- \`${m.name}\`\n`;
+            });
+    });
+
+    // Unassigned components
+    if (unassigned.length > 0) {
+        output += `\n### ⚠️ Unassigned Components\n\n`;
+        unassigned
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .forEach((m) => {
+                output += `- \`${m.name}\`\n`;
+            });
+    }
+
+    return output.trim();
+})()}
 
 </details>
 `
@@ -270,12 +399,13 @@ ${
 
 </div>
 
-| Metric | Coverage | Status |
-|:-------|:--------:|:------:|
-| **📄 Lines** | \`${lines.toFixed(2)}%\` | ${getStatusEmoji(lines)} |
-| **📝 Statements** | \`${statements.toFixed(2)}%\` | ${getStatusEmoji(statements)} |
-| **⚙️ Functions** | \`${functions.toFixed(2)}%\` | ${getStatusEmoji(functions)} |
-| **🌿 Branches** | \`${branches.toFixed(2)}%\` | ${getStatusEmoji(branches)} |
+| Metric | Coverage | Status | Threshold |
+|:-------|:--------:|:------:|:---------:|
+| **📄 Lines** | \`${lines.toFixed(2)}%\` | ${getStatusEmoji(lines)} | \`${CODE_COVERAGE_THRESHOLD}%\` ${lines >= CODE_COVERAGE_THRESHOLD ? '✅' : '❌'} |
+| **📝 Statements** | \`${statements.toFixed(2)}%\` | ${getStatusEmoji(statements)} | \`${CODE_COVERAGE_THRESHOLD}%\` ${statements >= CODE_COVERAGE_THRESHOLD ? '✅' : '❌'} |
+| **⚙️ Functions** | \`${functions.toFixed(2)}%\` | ${getStatusEmoji(functions)} | \`${CODE_COVERAGE_THRESHOLD}%\` ${functions >= CODE_COVERAGE_THRESHOLD ? '✅' : '❌'} |
+| **🌿 Branches** | \`${branches.toFixed(2)}%\` | ${getStatusEmoji(branches)} | \`${CODE_COVERAGE_THRESHOLD}%\` ${branches >= CODE_COVERAGE_THRESHOLD ? '✅' : '❌'} |
+| **📊 Average** | **\`${avgCoverage.toFixed(2)}%\`** | ${getStatusEmoji(avgCoverage)} | \`${CODE_COVERAGE_THRESHOLD}%\` ${avgCoverage >= CODE_COVERAGE_THRESHOLD ? '✅' : '❌'} |
 `;
           })()
         : ''
@@ -296,18 +426,34 @@ ${
     console.log(`📄 JSON: ${JSON_PATH}`);
     console.log(`📄 MD: ${MD_PATH}`);
     console.log(
-        `📊 Coverage: ${percent}% (${covered}/${totalComponents - excluded.length} components, ${excluded.length} excluded)`
+        `📊 Coverage: ${percent}% (${covered}/${componentsNeedingStories} components needing stories, ${excluded.length} excluded)`
     );
-    // Exit non-zero for CI enforcement
-    if (missing.length > 0) {
-        console.error(`\n❌ Missing stories for ${missing.length} component(s):`);
+    // Exit non-zero for CI enforcement if thresholds not met
+    let exitCode = 0;
+    if (!storyCoverageMet) {
+        console.error(`\n❌ Story coverage threshold not met: ${percent}% < ${STORY_COVERAGE_THRESHOLD}%`);
+        console.error(`   Missing stories for ${missing.length} component(s):`);
         missing.slice(0, 10).forEach((m) => {
-            console.error(`   - ${m.name}`);
+            const ownership = m.team ? ` (${m.team}${m.slack ? ` ${m.slack}` : ''})` : '';
+            console.error(`   - ${m.name}${ownership}`);
         });
         if (missing.length > 10) {
             console.error(`   ... and ${missing.length - 10} more (see report for full list)`);
         }
-        process.exit(1);
+        exitCode = 1;
     }
+
+    // Check code coverage threshold if available
+    if (jsonSummary.codeCoverage && jsonSummary.thresholds.codeCoverage.met === false) {
+        const lines = jsonSummary.codeCoverage.lines?.pct || 0;
+        const statements = jsonSummary.codeCoverage.statements?.pct || 0;
+        const functions = jsonSummary.codeCoverage.functions?.pct || 0;
+        const branches = jsonSummary.codeCoverage.branches?.pct || 0;
+        const avgCoverage = (lines + statements + functions + branches) / 4;
+        console.error(`\n❌ Code coverage threshold not met: ${avgCoverage.toFixed(2)}% < ${CODE_COVERAGE_THRESHOLD}%`);
+        exitCode = 1;
+    }
+
+    process.exit(exitCode);
 }
 generateCoverage();

@@ -90,42 +90,6 @@ vi.mock('@/middlewares/i18next', () => {
     };
 });
 
-// Mock document.elementFromPoint for libraries that require it (e.g., input-otp)
-// JSDOM doesn't implement this method, so we provide a simple mock
-if (typeof document !== 'undefined' && !document.elementFromPoint) {
-    document.elementFromPoint = () => null;
-}
-
-// Handle unhandled promise rejections from React Router navigation
-// React Router sometimes creates requests with URLSearchParams in a way that
-// Node.js's undici doesn't accept, but this doesn't affect test correctness
-process.on('unhandledRejection', (reason) => {
-    if (
-        reason instanceof Error &&
-        reason.message.includes('URLSearchParams') &&
-        reason.message.includes('Request constructor')
-    ) {
-        // Suppress React Router navigation errors that don't affect test results
-        return;
-    }
-    // Re-throw other unhandled rejections
-    throw reason;
-});
-
-// Handle uncaught exceptions from libraries that use document.elementFromPoint
-// These are typically from third-party libraries and don't affect test correctness
-process.on('uncaughtException', (error) => {
-    if (
-        error instanceof Error &&
-        error.message.includes('document.elementFromPoint is not a function')
-    ) {
-        // Suppress elementFromPoint errors from libraries like input-otp
-        return;
-    }
-    // Re-throw other uncaught exceptions
-    throw error;
-});
-
 // This is an important step to apply the right configuration when testing your stories.
 // More info at: https://storybook.js.org/docs/api/portable-stories/portable-stories-vitest#setprojectannotations
 const project = setProjectAnnotations([a11yAddonAnnotations, projectAnnotations]);

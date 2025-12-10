@@ -13,7 +13,7 @@ The story coverage and code quality enforcement is fully automated through GitHu
 
 The workflow performs the following automated steps:
 
-1. **Generates Story Tests**: Automatically scans `src/components/` for all `*.stories.tsx` files and generates corresponding Vitest test files using `composeStories` from `@storybook/react-vite`
+1. **Generates Story Tests**: Automatically scans `src/components/` for all `*.stories.tsx` files (excluding `src/components/ui/`) and generates corresponding Vitest test files using `composeStories` from `@storybook/react-vite`
 2. **Runs Tests with Coverage**: Executes the generated story tests with Vitest's coverage instrumentation enabled
 3. **Generates Coverage Report**: Analyzes component coverage by comparing components with their corresponding story files
 4. **Uploads Artifacts**: Saves coverage reports and metrics as GitHub Actions artifacts
@@ -31,7 +31,8 @@ The workflow uses the `generate:story-tests:coverage` npm script which:
 **Story Coverage** measures the percentage of React components in `src/components/` that have corresponding Storybook story files.
 
 **How it's calculated:**
-- Scans all `*.tsx` files in `src/components/` (excluding test files, snapshot files, and story files themselves)
+- Scans all `*.tsx` files in `src/components/` (excluding test files, snapshot files, story files themselves, and the `ui/` folder)
+- **Excludes `src/components/ui/`**: The `ui` folder contains shadcn components and is excluded from both test generation and code coverage
 - Checks for matching `*.stories.tsx` files using flexible matching rules:
   - Exact name match (e.g., `cart/cart-content.tsx` matches `cart/cart-content.stories.tsx`)
   - Story in `stories/` subdirectory (e.g., `cart/cart-content.tsx` matches `cart/stories/cart-content.stories.tsx`)
@@ -59,6 +60,7 @@ The workflow uses the `generate:story-tests:coverage` npm script which:
 - Coverage is collected when running story tests via `composeStories`
 - Each story's `play()` function is executed, which exercises component interactions
 - Coverage data is merged from Vitest's coverage summary JSON
+- **Excludes `src/components/ui/`**: The `ui` folder is excluded from code coverage collection (configured in both `vite.config.ts` and `.storybook/vite.config.ts`)
 
 **Coverage data source:**
 - Location: `.storybook/coverage/coverage-vitest/coverage-summary.json`
@@ -100,7 +102,7 @@ The workflow generates and uploads the following artifacts:
 
 #### 1. Story Coverage JSON
 - **Artifact Name**: `storybook-coverage-json`
-- **Location**: `packages/template-retail-rsc-app/coverage/storybook-component-coverage.json`
+- **Location**: `packages/template-retail-rsc-app/.storybook/coverage/storybook-component-coverage.json`
 - **Contents**:
   ```json
   {
@@ -121,7 +123,7 @@ The workflow generates and uploads the following artifacts:
 
 #### 2. Story Coverage Markdown Report
 - **Artifact Name**: `storybook-coverage-md`
-- **Location**: `packages/template-retail-rsc-app/coverage/storybook-component-coverage.md`
+- **Location**: `packages/template-retail-rsc-app/.storybook/coverage/storybook-component-coverage.md`
 - **Contents**: Formatted markdown report with:
   - Coverage badges
   - Metrics table
@@ -209,12 +211,14 @@ The coverage scripts are located in the `scripts/` directory:
 
 **What it does:**
 - Recursively scans `src/components/` for `*.stories.tsx` files
+- **Excludes `src/components/ui/`**: Skips all story files in the `ui` folder (shadcn components are excluded from test generation)
 - Generates corresponding test files in `.storybook/tests/generated-stories/`
 - Uses `composeStories` to create testable story components
 - Each generated test:
   - Renders the story component wrapped in `StoryTestWrapper`
   - Executes the story's `play()` function if present
   - Uses a 20-second timeout for async interactions
+- Reports the number of skipped files from the `ui` folder
 
 **Output**: Test files named `{component-path}__{story-name}.story.test.tsx`
 
@@ -237,12 +241,13 @@ node scripts/generate-story-tests.js
 - Calculates story coverage percentage
 - Merges Vitest code coverage data (if available)
 - Generates:
-  - JSON summary: `coverage/storybook-component-coverage.json`
-  - Markdown report: `coverage/storybook-component-coverage.md`
+  - JSON summary: `.storybook/coverage/storybook-component-coverage.json`
+  - Markdown report: `.storybook/coverage/storybook-component-coverage.md`
 
 **Configuration:**
 - **Components directory**: `src/components/`
-- **Output directory**: `coverage/`
+- **Output directory**: `.storybook/coverage/`
+- **Excluded folders**: `src/components/ui/` (shadcn components - excluded from test generation and coverage)
 - **Excluded components**: Defined in `EXCLUDED_COMPONENTS` constant (icons, internal sub-components)
 - **Vitest coverage path**: `.storybook/coverage/coverage-vitest/coverage-summary.json`
 
@@ -274,4 +279,3 @@ The story coverage and code quality enforcement system provides:
 ✅ **Configurable exclusions** for components that don't need stories  
 
 This ensures that component documentation (via Storybook) and test coverage remain high quality throughout the development lifecycle.
-
