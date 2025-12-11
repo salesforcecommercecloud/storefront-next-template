@@ -600,7 +600,49 @@
             "actions": {
                 "continueShopping": "Continue Shopping",
                 "viewAccount": "View Account"
-            }
+            },
+            "hero": {
+                "thankYou": "Thank you, {{name}}!",
+                "orderConfirmed": "Your order is confirmed.",
+                "emailConfirmation": "We've sent a confirmation email to {{email}}.",
+                "needHelp": "Need help?",
+                "defaultName": "Customer",
+                "emailFallback": "your email"
+            },
+            "helpLinks": {
+                "faq": "FAQ",
+                "contact": "Contact Us",
+                "returns": "Return Policy"
+            },
+            "summaryLabels": {
+                "arriving": "Arriving by",
+                "shippingAddress": "Shipping Address",
+                "shippingMethod": "Shipping Method",
+                "noAddress": "No address available",
+                "estimatedDatePlaceholder": "Processing now",
+                "quantity": "Qty: {{count}}",
+                "freeShipping": "Free"
+            },
+            "totals": {
+                "subtotal": "Subtotal",
+                "promotions": "Promotions",
+                "shipping": "Shipping",
+                "tax": "Tax",
+                "total": "Total"
+            },
+            "payment": {
+                "methodSummary": "{{method}} ending in {{lastDigits}}",
+                "noMethod": "Payment method on file"
+            },
+            "newsletter": {
+                "title": "Get 10% off your next order. Join email list.",
+                "subtitle": "Stay up to date on product drops and exclusive offers.",
+                "placeholder": "Email address",
+                "cta": "Join"
+            },
+            "summaryTitle": "Summary",
+            "emptyItemsFallback": "Your items are being prepared.",
+            "productPlaceholderInitial": "Item"
         },
         "errorBoundary": {
             "title": "Checkout Temporarily Unavailable",

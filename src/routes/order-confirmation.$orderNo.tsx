@@ -1,17 +1,22 @@
 import { type ReactElement, use } from 'react';
+import AddressDisplay from '@/components/address-display';
 import { type ClientLoaderFunctionArgs, Link, type LoaderFunctionArgs } from 'react-router';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Typography } from '@/components/typography';
+import ProductImage from '@/components/product-image/product-image';
 import { createApiClients } from '@/lib/api-clients';
+import { formatCurrency } from '@/lib/currency';
 import createPage, { type RouteComponentProps } from '@/components/create-page';
 import type {
     ShopperOrders,
+    ShopperProducts,
     // @sfdc-extension-line SFDC_EXT_BOPIS
     ShopperStores,
 } from '@salesforce/storefront-next-runtime/scapi';
-import AddressDisplay from '@/components/address-display';
-import { getCardTypeDisplay, getFormattedMaskedCardNumber } from '@/lib/payment-utils';
+import { getCardTypeDisplay } from '@/lib/payment-utils';
+import { getDisplayVariationValues } from '@/lib/product-utils';
 import OrderSkeleton from '@/components/order-skeleton';
 import { useTranslation } from 'react-i18next';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -21,10 +26,45 @@ import { getPickupStoreFromMap } from '@/extensions/bopis/lib/store-utils';
 import StoreDetails from '@/extensions/store-locator/components/store-locator/details';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
+type ProductDataById = Record<string, ShopperProducts.schemas['Product'] | undefined>;
+
 type CheckoutConfirmationLoaderData = {
     order: Promise<ShopperOrders.schemas['Order']>;
+    productsById: Promise<ProductDataById>;
     // @sfdc-extension-line SFDC_EXT_BOPIS
     storesByStoreId: Promise<Map<string, ShopperStores.schemas['Store']>>;
+};
+
+type ImageSource = {
+    disBaseLink?: string;
+    link?: string;
+};
+
+const resolveImageUrl = (source?: ImageSource) => source?.disBaseLink || source?.link;
+
+const getPrimaryImageFromProduct = (product: ShopperProducts.schemas['Product'] | undefined) => {
+    const directImage = resolveImageUrl(product?.image as ImageSource);
+    if (directImage) {
+        return directImage;
+    }
+
+    const imageGroups = product?.imageGroups ?? [];
+    for (const group of imageGroups) {
+        const groupImage = resolveImageUrl(group.images?.[0] as ImageSource);
+        if (groupImage) {
+            return groupImage;
+        }
+    }
+
+    const additionalImages = (product?.images as ImageSource[]) ?? [];
+    for (const image of additionalImages) {
+        const url = resolveImageUrl(image);
+        if (url) {
+            return url;
+        }
+    }
+
+    return undefined;
 };
 
 /**
@@ -51,8 +91,44 @@ function getPageData({ context, params }: LoaderFunctionArgs): CheckoutConfirmat
     // @sfdc-extension-line SFDC_EXT_BOPIS
     const storesByStoreIdPromise = orderPromise.then((order) => fetchStoresForOrder(context, order));
 
+    const productsByIdPromise: Promise<ProductDataById> = orderPromise.then(async (order) => {
+        const productIds = Array.from(
+            // prevents duplicate product IDs
+            new Set(
+                (order.productItems ?? [])
+                    .map((item) => item.productId)
+                    .filter((id): id is string => typeof id === 'string' && id.length > 0)
+            )
+        );
+
+        if (!productIds.length) {
+            return {};
+        }
+
+        try {
+            const { data } = await clients.shopperProducts.getProducts({
+                params: {
+                    query: {
+                        ids: productIds,
+                        expand: ['images', 'variations'],
+                    },
+                },
+            });
+
+            const productsById: ProductDataById = {};
+            (data?.data ?? []).forEach((product) => {
+                productsById[product.id] = product;
+            });
+            return productsById;
+        } catch {
+            // Return empty object on error - allows the page to render without product details
+            return {};
+        }
+    });
+
     return {
         order: orderPromise,
+        productsById: productsByIdPromise,
         // @sfdc-extension-line SFDC_EXT_BOPIS
         storesByStoreId: storesByStoreIdPromise,
     };
@@ -133,81 +209,156 @@ export function ErrorBoundary() {
 function CheckoutConfirmation({
     loaderData: {
         order: orderPromise,
+        productsById: productsByIdPromise,
         // @sfdc-extension-line SFDC_EXT_BOPIS
         storesByStoreId: storesByStoreIdPromise,
     },
 }: RouteComponentProps<CheckoutConfirmationLoaderData>): ReactElement {
     const order = use(orderPromise);
+    const productsById = use(productsByIdPromise);
     const { t } = useTranslation('checkout');
     // @sfdc-extension-line SFDC_EXT_BOPIS
     const { t: tBopis } = useTranslation('extBopis');
 
-    let showShippingDetails = true;
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
     const storesByStoreId = use(storesByStoreIdPromise);
     const store = getPickupStoreFromMap(
         getOrderPickupShipment(order)?.c_fromStoreId as string | undefined,
         storesByStoreId
     );
-    if (store) {
-        showShippingDetails = false;
-    }
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
+    const primaryShipment = order.shipments?.[0];
+    const shippingAddress = primaryShipment?.shippingAddress;
+    const shippingMethodName = primaryShipment?.shippingMethod?.name || t('confirmation.fields.defaultShippingMethod');
+    const estimatedDeliveryTime =
+        primaryShipment?.shippingMethod?.description || t('confirmation.summaryLabels.estimatedDatePlaceholder');
+
+    const customerName =
+        order.customerInfo?.firstName || order.billingAddress?.firstName || t('confirmation.hero.defaultName');
+    const customerEmail = order.customerInfo?.email || t('confirmation.hero.emailFallback');
+
+    // NOTE/TODO: Integrators should replace placeholder URLs with actual FAQ, contact, and return policy links once available.
+    const helpActions = [
+        { label: t('confirmation.helpLinks.faq'), href: '#' },
+        { label: t('confirmation.helpLinks.contact'), href: '#' },
+        { label: t('confirmation.helpLinks.returns'), href: '#' },
+    ];
+
+    const productItems = order.productItems ?? [];
+    const promotionsTotal = (order.orderPriceAdjustments ?? []).reduce(
+        (sum, adjustment) => sum + (adjustment.price ?? 0),
+        0
+    );
+    const totals = {
+        subtotal: order.productTotal ?? order.productSubTotal ?? 0,
+        promotions: promotionsTotal,
+        shipping: order.shippingTotal ?? 0,
+        tax: order.taxTotal ?? 0,
+        total: order.orderTotal ?? 0,
+    };
+
+    const paymentInstrument = order.paymentInstruments?.[0];
+    const paymentMethodDisplay = paymentInstrument
+        ? getCardTypeDisplay(paymentInstrument, t('confirmation.fields.defaultPaymentMethod'))
+        : t('confirmation.fields.defaultPaymentMethod');
+    const paymentSummary = paymentInstrument
+        ? t('confirmation.payment.methodSummary', {
+              method: paymentMethodDisplay,
+              lastDigits: paymentInstrument.paymentCard?.numberLastDigits ?? '',
+          })
+        : paymentMethodDisplay;
+
+    const summaryRows = [
+        { key: 'subtotal', label: t('confirmation.totals.subtotal'), value: totals.subtotal },
+        { key: 'promotions', label: t('confirmation.totals.promotions'), value: totals.promotions },
+        { key: 'shipping', label: t('confirmation.totals.shipping'), value: totals.shipping },
+        { key: 'tax', label: t('confirmation.totals.tax'), value: totals.tax },
+        { key: 'total', label: t('confirmation.totals.total'), value: totals.total, bold: true },
+    ];
+
     return (
-        <div className="min-h-screen bg-background">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {/* Success Header */}
-                <div className="text-center mb-8">
-                    <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <svg className="w-8 h-8 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                    </div>
-
-                    <Typography variant="h1" as="h1" className="mb-4 text-accent">
-                        {t('confirmation.title')}
-                    </Typography>
-
-                    <Typography variant="p" className="text-muted-foreground">
-                        {t('confirmation.fields.orderNumber')}{' '}
-                        <span className="font-mono font-medium">{order.orderNo}</span>
-                    </Typography>
-
-                    <Typography variant="p" className="text-muted-foreground mt-2">
-                        {t('confirmation.confirmationEmailSent', {
-                            email: order.customerInfo?.email || '',
-                        })}
-                    </Typography>
-                </div>
-
-                {/* Order Summary */}
-                <Card className="mb-8">
-                    <CardHeader>
-                        <CardTitle>{t('confirmation.sections.orderSummary')}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-2">
-                            <div className="flex justify-between text-sm">
-                                <span>{t('confirmation.fields.orderNumber')}</span>
-                                <span className="font-mono">{order.orderNo}</span>
+        <div className="min-h-screen bg-muted/30">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6">
+                {/* Thank You and Order Confirmation section */}
+                <Card className="border border-border/70 shadow-sm">
+                    <CardContent className="p-8 space-y-6">
+                        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                            <div className="space-y-2">
+                                <Typography variant="h2" as="h1" className="text-foreground">
+                                    {t('confirmation.hero.thankYou', { name: customerName })}
+                                </Typography>
+                                <Typography variant="p" className="text-muted-foreground">
+                                    {t('confirmation.hero.orderConfirmed')}
+                                </Typography>
+                                <Typography variant="p" className="text-foreground font-medium">
+                                    {t('confirmation.hero.emailConfirmation', { email: customerEmail })}
+                                </Typography>
                             </div>
-                            <div className="flex justify-between text-sm">
-                                <span>{t('confirmation.fields.status')}</span>
-                                <span>{order.status}</span>
+                            <div className="text-left md:text-right space-y-1">
+                                <p className="text-lg font-semibold text-foreground">
+                                    {t('confirmation.orderNumber')}
+                                    <span className="text-primary"> {order.orderNo}</span>
+                                </p>
                             </div>
-                            <div className="flex justify-between text-sm">
-                                <span>{t('confirmation.fields.total')}</span>
-                                <span className="font-medium">
-                                    {new Intl.NumberFormat('en-US', {
-                                        style: 'currency',
-                                        currency: order.currency || 'USD',
-                                    }).format(order.orderTotal || 0)}
-                                </span>
+                        </div>
+
+                        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                            <Typography variant="p" className="text-foreground font-medium">
+                                {t('confirmation.hero.needHelp')}
+                            </Typography>
+                            <div className="flex flex-wrap gap-3">
+                                {helpActions.map(({ label, href }) =>
+                                    href ? (
+                                        <Button key={label} variant="outline" size="sm" asChild>
+                                            <Link to={href}>{label}</Link>
+                                        </Button>
+                                    ) : (
+                                        <Button key={label} variant="outline" size="sm">
+                                            {label}
+                                        </Button>
+                                    )
+                                )}
                             </div>
                         </div>
                     </CardContent>
                 </Card>
+
+                {/* Shipping Details section */}
+                {!store && (
+                    <Card className="border border-border/70 shadow-sm">
+                        <CardContent className="grid gap-6 p-6 md:grid-cols-3">
+                            <div>
+                                <p className="text-md font-semibold tracking-wide text-foreground">
+                                    {t('confirmation.summaryLabels.arriving')}
+                                </p>
+                                <p className="mt-3 text-sm font-medium text-muted-foreground">
+                                    {estimatedDeliveryTime}
+                                </p>
+                            </div>
+                            <div>
+                                <p className="text-md font-semibold tracking-wide text-foreground">
+                                    {t('confirmation.summaryLabels.shippingAddress')}
+                                </p>
+                                <div className="mt-3 space-y-2">
+                                    {shippingAddress ? (
+                                        <AddressDisplay address={shippingAddress} />
+                                    ) : (
+                                        <p className="text-sm font-medium text-muted-foreground">
+                                            {t('confirmation.summaryLabels.noAddress')}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                            <div>
+                                <p className="text-md font-semibold tracking-wide text-foreground">
+                                    {t('confirmation.summaryLabels.shippingMethod')}
+                                </p>
+                                <p className="mt-3 text-sm font-medium text-muted-foreground">{shippingMethodName}</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
 
                 {/* @sfdc-extension-block-start SFDC_EXT_BOPIS */}
                 {/* Pickup Details */}
@@ -231,73 +382,164 @@ function CheckoutConfirmation({
                 )}
                 {/* @sfdc-extension-block-end SFDC_EXT_BOPIS */}
 
-                {/* Shipping Details */}
-                {showShippingDetails && (
-                    <Card className="mb-8">
-                        <CardHeader>
-                            <CardTitle>{t('confirmation.sections.shippingDetails')}</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="grid md:grid-cols-2 gap-6">
-                                <div>
-                                    <Typography variant="h5" as="h3" className="mb-2">
-                                        {t('confirmation.fields.shippingAddress')}
-                                    </Typography>
-                                    {order.shipments?.[0]?.shippingAddress && (
-                                        <AddressDisplay address={order.shipments[0].shippingAddress} />
-                                    )}
-                                </div>
-                                <div>
-                                    <Typography variant="h5" as="h3" className="mb-2">
-                                        {t('confirmation.fields.shippingMethod')}
-                                    </Typography>
-                                    <Typography variant="p" className="text-muted-foreground">
-                                        {order.shipments?.[0]?.shippingMethod?.name ||
-                                            t('confirmation.fields.defaultShippingMethod')}
-                                    </Typography>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                )}
-
-                {/* Payment Details */}
-                <Card className="mb-8">
-                    <CardHeader>
-                        <CardTitle>{t('confirmation.sections.paymentDetails')}</CardTitle>
+                {/* Product Items Summary section */}
+                <Card className="border border-border/70 shadow-sm">
+                    <CardHeader className="pb-3">
+                        <CardTitle className="text-xl font-medium">{t('confirmation.summaryTitle')}</CardTitle>
                     </CardHeader>
-                    <CardContent>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            <div>
-                                <Typography variant="h5" as="h3" className="mb-2">
-                                    {t('confirmation.fields.billingAddress')}
+                    <CardContent className="space-y-4">
+                        <div className="space-y-4">
+                            {productItems.length === 0 ? (
+                                <Typography variant="p" className="text-muted-foreground">
+                                    {t('confirmation.emptyItemsFallback')}
                                 </Typography>
-                                {order.billingAddress && <AddressDisplay address={order.billingAddress} />}
-                            </div>
-                            <div>
-                                <Typography variant="h5" as="h3" className="mb-2">
-                                    {t('confirmation.fields.paymentMethod')}
-                                </Typography>
-                                {order.paymentInstruments?.[0] && (
-                                    <div>
-                                        <Typography variant="p" className="text-muted-foreground">
-                                            {getCardTypeDisplay(
-                                                order.paymentInstruments[0],
-                                                t('confirmation.fields.defaultPaymentMethod')
-                                            )}
-                                        </Typography>
-                                        <Typography variant="p" className="text-muted-foreground">
-                                            {getFormattedMaskedCardNumber(order.paymentInstruments[0])}
-                                        </Typography>
+                            ) : (
+                                productItems.map((item, index) => {
+                                    const finalPrice =
+                                        item.priceAfterOrderDiscount ??
+                                        item.priceAfterItemDiscount ??
+                                        item.price ??
+                                        item.basePrice ??
+                                        0;
+                                    const originalPrice =
+                                        item.basePrice && item.basePrice > finalPrice ? item.basePrice : undefined;
+
+                                    const productData = item.productId ? productsById[item.productId] : undefined;
+                                    const productKey = item.itemId ?? `${item.productId}-${index}`;
+                                    const productName = item.productName ?? t('confirmation.productPlaceholderInitial');
+
+                                    const imageSrc = getPrimaryImageFromProduct(productData);
+                                    const variationValues =
+                                        productData && productData.variationAttributes
+                                            ? Object.entries(
+                                                  getDisplayVariationValues(
+                                                      productData.variationAttributes,
+                                                      (productData.variationValues ?? {}) as Record<string, string>
+                                                  )
+                                              )
+                                            : [];
+                                    return (
+                                        <div
+                                            key={productKey}
+                                            className="rounded-2xl border border-border/70 bg-card shadow-sm p-4 sm:p-7 flex flex-col gap-4 sm:flex-row sm:items-center">
+                                            <div className="flex items-center justify-center">
+                                                <div className="h-24 w-24 rounded-xl bg-muted overflow-hidden flex items-center justify-center text-muted-foreground text-lg font-semibold">
+                                                    {imageSrc ? (
+                                                        <ProductImage
+                                                            src={imageSrc}
+                                                            alt={productName}
+                                                            className="h-full w-full object-cover"
+                                                            loading="lazy"
+                                                        />
+                                                    ) : (
+                                                        (productName?.[0] ??
+                                                        t('confirmation.productPlaceholderInitial'))
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <div className="flex-1 space-y-1">
+                                                <p className="font-semibold text-foreground leading-tight">
+                                                    {productName}
+                                                </p>
+                                                {variationValues.length > 0 &&
+                                                    variationValues.map(([label, value]) => (
+                                                        <p
+                                                            key={`${productKey}-${label}`}
+                                                            className="text-sm text-muted-foreground">
+                                                            {label}: {value}
+                                                        </p>
+                                                    ))}
+                                                <p className="text-sm text-muted-foreground">
+                                                    {t('confirmation.summaryLabels.quantity', {
+                                                        count: item.quantity ?? 1,
+                                                    })}
+                                                </p>
+                                            </div>
+                                            <div className="text-right space-y-1 sm:self-start">
+                                                {originalPrice && (
+                                                    <p className="text-sm text-muted-foreground line-through">
+                                                        {formatCurrency(originalPrice)}
+                                                    </p>
+                                                )}
+                                                <p className="text-lg font-semibold text-foreground">
+                                                    {formatCurrency(finalPrice)}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            )}
+                        </div>
+                        <div className="space-y-2 border-t pt-4">
+                            {summaryRows.map((row) => {
+                                const isPromotion = row.key === 'promotions' && row.value !== 0;
+                                return (
+                                    <div key={row.key} className="flex items-center justify-between text-sm">
+                                        <span
+                                            className={
+                                                row.bold ? 'font-semibold text-foreground' : 'text-muted-foreground'
+                                            }>
+                                            {row.label}
+                                        </span>
+                                        <span
+                                            className={
+                                                row.bold
+                                                    ? 'font-semibold text-foreground'
+                                                    : isPromotion
+                                                      ? 'text-sm text-green-600 font-semibold'
+                                                      : 'text-foreground'
+                                            }>
+                                            {row.key === 'shipping' && row.value === 0
+                                                ? t('confirmation.summaryLabels.freeShipping')
+                                                : formatCurrency(row.value)}
+                                        </span>
                                     </div>
-                                )}
-                            </div>
+                                );
+                            })}
                         </div>
                     </CardContent>
                 </Card>
 
-                {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                {/* Credit Card Details section */}
+                <Card className="border border-border/70 shadow-sm">
+                    <CardContent className="flex flex-col gap-6 p-6 md:flex-row md:items-center md:justify-between">
+                        <div className="flex items-center gap-4">
+                            <span className="text-xs font-semibold uppercase tracking-wide text-primary">
+                                {paymentInstrument?.paymentCard?.cardType ||
+                                    paymentInstrument?.paymentMethodId ||
+                                    t('payment.defaultCardLabel')}
+                            </span>
+                            <div>
+                                <p className="font-medium text-foreground">{paymentSummary}</p>
+                            </div>
+                        </div>
+                        <p className="text-lg font-semibold text-foreground">{formatCurrency(totals.total)}</p>
+                    </CardContent>
+                </Card>
+
+                {/* Newsletter subscription section */}
+                <Card className="border border-border/70 shadow-sm">
+                    <CardContent className="space-y-4 p-6">
+                        <div>
+                            <p className="font-medium text-foreground">{t('confirmation.newsletter.title')}</p>
+                            <p className="text-sm text-muted-foreground">{t('confirmation.newsletter.subtitle')}</p>
+                        </div>
+                        {/* NOTE/TODO: This is a static placeholder form. Integrators should handle submit events here
+                           (e.g., call their marketing/newsletter API or hook into an existing newsletter service). */}
+                        <form className="flex flex-col gap-3 sm:flex-row">
+                            <Input
+                                type="email"
+                                placeholder={t('confirmation.newsletter.placeholder')}
+                                className="h-12 flex-1"
+                            />
+                            <Button type="button" className="h-12 sm:w-auto">
+                                {t('confirmation.newsletter.cta')}
+                            </Button>
+                        </form>
+                    </CardContent>
+                </Card>
+
+                <div className="flex flex-col justify-center gap-4 pt-2 sm:flex-row">
                     <Button asChild size="lg">
                         <Link to="/">{t('confirmation.actions.continueShopping')}</Link>
                     </Button>

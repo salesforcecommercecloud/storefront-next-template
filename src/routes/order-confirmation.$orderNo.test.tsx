@@ -74,10 +74,15 @@ vi.mock('react-router', () => ({
     ),
 }));
 
+const mockGetProducts = vi.fn().mockResolvedValue({ data: { data: [] } });
+
 vi.mock('@/lib/api-clients', () => ({
     createApiClients: vi.fn(() => ({
         shopperOrders: {
             getOrder: vi.fn(),
+        },
+        shopperProducts: {
+            getProducts: mockGetProducts,
         },
     })),
 }));
@@ -130,6 +135,7 @@ import { fetchStoresForOrder } from '@/extensions/bopis/lib/api/stores';
 
 describe('Order Confirmation Route', () => {
     beforeEach(async () => {
+        mockGetProducts.mockReset();
         vi.clearAllMocks();
         vi.resetModules();
         // Import the route module to trigger createPage call with mocks in place
@@ -207,6 +213,9 @@ describe('Order Confirmation Route', () => {
                 shopperOrders: {
                     getOrder: mockGetOrder,
                 },
+                shopperProducts: {
+                    getProducts: mockGetProducts,
+                },
             } as any);
 
             // @sfdc-extension-line SFDC_EXT_BOPIS
@@ -219,6 +228,8 @@ describe('Order Confirmation Route', () => {
             expect(clientLoaderResult).toBeDefined();
             expect(loaderResult).toHaveProperty('order');
             expect(clientLoaderResult).toHaveProperty('order');
+            expect(loaderResult).toHaveProperty('productsById');
+            expect(clientLoaderResult).toHaveProperty('productsById');
         });
 
         test('should fetch order with correct organization and site IDs', async () => {
@@ -232,6 +243,9 @@ describe('Order Confirmation Route', () => {
             vi.mocked(createApiClients).mockReturnValue({
                 shopperOrders: {
                     getOrder: mockGetOrder,
+                },
+                shopperProducts: {
+                    getProducts: mockGetProducts,
                 },
             } as any);
 
@@ -255,6 +269,9 @@ describe('Order Confirmation Route', () => {
             vi.mocked(createApiClients).mockReturnValue({
                 shopperOrders: {
                     getOrder: mockGetOrder,
+                },
+                shopperProducts: {
+                    getProducts: mockGetProducts,
                 },
             } as any);
 
