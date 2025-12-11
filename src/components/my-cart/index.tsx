@@ -5,7 +5,7 @@ import { type ReactElement } from 'react';
 import { ShoppingCart } from 'lucide-react';
 
 // Commerce SDK
-import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@salesforce/storefront-next-runtime/scapi';
 
 // Components
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -18,13 +18,15 @@ import { useTranslation } from 'react-i18next';
  * Props for the MyCart component
  *
  * @interface MyCartProps
- * @property {ShopperBasketsV2.schemas['Basket']} basket - The shopping basket containing product items
- * @property {Record<string, ShopperProducts.schemas['Product']>} [productMap] - Optional product details mapping
- * @property {boolean} [itemsExpanded] - Whether the accordion should be expanded by default
+ * @property {ShopperBasketsV2.schemas['Basket']} basket
+ * @property {Record<string, ShopperProducts.schemas['Product']>} [productMap]
+ * @property {Record<string, ShopperPromotions.schemas['Promotion']>} [promotions]
+ * @property {boolean} [itemsExpanded]
  */
 interface MyCartProps {
     basket: ShopperBasketsV2.schemas['Basket'];
     productMap?: Record<string, ShopperProducts.schemas['Product']>;
+    promotions?: Record<string, ShopperPromotions.schemas['Promotion']>;
     itemsExpanded?: boolean;
 }
 
@@ -41,7 +43,12 @@ interface MyCartProps {
  * @param props - Component props
  * @returns JSX element representing the my cart component
  */
-export default function MyCart({ basket, productMap = {}, itemsExpanded = false }: MyCartProps): ReactElement {
+export default function MyCart({
+    basket,
+    productMap = {},
+    promotions,
+    itemsExpanded = false,
+}: MyCartProps): ReactElement {
     const { t } = useTranslation('checkout');
     const totalItems = basket?.productItems?.reduce((acc, item) => acc + (item.quantity ?? 0), 0) || 0;
 
@@ -62,6 +69,7 @@ export default function MyCart({ basket, productMap = {}, itemsExpanded = false 
                     <ProductItemsList
                         productItems={basket.productItems}
                         productsByItemId={productMap}
+                        promotions={promotions}
                         variant="summary"
                         separateCards={true}
                     />

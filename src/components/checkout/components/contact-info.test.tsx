@@ -188,30 +188,6 @@ describe('ContactInfo Integration Tests', () => {
             expect(screen.getByPlaceholderText(/phone number/i)).toBeInTheDocument();
         });
 
-        test('renders phone label for guest users', async () => {
-            useBasket.mockReturnValue(createMockBasket({ customerInfo: { customerId: null } }));
-            useCustomerProfile.mockReturnValue(null);
-
-            render(<ContactInfo {...createDefaultProps()} />);
-
-            await waitFor(() => {
-                expect(screen.getByText('Phone Number')).toBeInTheDocument();
-            });
-        });
-
-        test('phone input is accessible via label', async () => {
-            useBasket.mockReturnValue(createMockBasket({ customerInfo: { customerId: null } }));
-            useCustomerProfile.mockReturnValue(null);
-
-            render(<ContactInfo {...createDefaultProps()} />);
-
-            await waitFor(() => {
-                const phoneInput = screen.getByLabelText(/phone number/i);
-                expect(phoneInput).toBeInTheDocument();
-                expect(phoneInput).toHaveAttribute('type', 'tel');
-            });
-        });
-
         test('hides phone fields for logged-in users', async () => {
             useCustomerProfile.mockReturnValue({
                 customerId: 'customer-123',

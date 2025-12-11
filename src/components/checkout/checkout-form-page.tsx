@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Typography } from '@/components/typography';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
-import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@salesforce/storefront-next-runtime/scapi';
 import { useTranslation } from 'react-i18next';
 import { useAnalytics } from '@/hooks/use-analytics';
 import type { CheckoutStep } from './utils/checkout-context-types';
@@ -65,29 +65,32 @@ function GuestAccountCreation({ cart, customerProfile, onSaved }: GuestAccountCr
 interface CheckoutFormPageProps {
     shippingMethods?: ShopperBasketsV2.schemas['ShippingMethodResult'];
     productMapPromise: Promise<Record<string, ShopperProducts.schemas['Product']>>;
+    promotionsPromise?: Promise<Record<string, ShopperPromotions.schemas['Promotion']>>;
 }
 
 /**
- * Wrapper component that resolves productMap Promise within Suspense boundary.
- *
- * This pattern enables streaming: the rest of the checkout form can render
- * and be interactive immediately, while MyCart streams in independently
- * once product data is available.
+ * Wrapper component that resolves productMap and promotions Promises within Suspense boundary.
  */
 function MyCartWithData({
     basket,
     productMapPromise,
+    promotionsPromise,
 }: {
     basket: ShopperBasketsV2.schemas['Basket'];
     productMapPromise: Promise<Record<string, ShopperProducts.schemas['Product']>>;
+    promotionsPromise?: Promise<Record<string, ShopperPromotions.schemas['Promotion']>>;
 }) {
-    // Resolve promise within Suspense boundary - allows component to suspend independently
     const productMap = use(productMapPromise);
+    const promotions = promotionsPromise ? use(promotionsPromise) : undefined;
 
-    return <MyCart basket={basket} productMap={productMap} itemsExpanded={true} />;
+    return <MyCart basket={basket} productMap={productMap} promotions={promotions} itemsExpanded={true} />;
 }
 
-export default function CheckoutFormPage({ shippingMethods, productMapPromise }: CheckoutFormPageProps) {
+export default function CheckoutFormPage({
+    shippingMethods,
+    productMapPromise,
+    promotionsPromise,
+}: CheckoutFormPageProps) {
     const { t } = useTranslation('checkout');
 
     // Use basket from provider (managed by middleware)
@@ -286,7 +289,11 @@ export default function CheckoutFormPage({ shippingMethods, productMapPromise }:
                                     </Card>
 
                                     <Suspense fallback={<div className="h-48 bg-muted animate-pulse rounded" />}>
-                                        <MyCartWithData basket={cart} productMapPromise={productMapPromise} />
+                                        <MyCartWithData
+                                            basket={cart}
+                                            productMapPromise={productMapPromise}
+                                            promotionsPromise={promotionsPromise}
+                                        />
                                     </Suspense>
                                 </div>
                             </AccordionContent>
@@ -413,9 +420,12 @@ export default function CheckoutFormPage({ shippingMethods, productMapPromise }:
                                 </CardContent>
                             </Card>
 
-                            {/* My Cart - Streams independently from rest of checkout */}
                             <Suspense fallback={<div className="h-64 bg-muted animate-pulse rounded" />}>
-                                <MyCartWithData basket={cart} productMapPromise={productMapPromise} />
+                                <MyCartWithData
+                                    basket={cart}
+                                    productMapPromise={productMapPromise}
+                                    promotionsPromise={promotionsPromise}
+                                />
                             </Suspense>
                         </div>
                     </div>

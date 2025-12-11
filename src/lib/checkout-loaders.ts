@@ -10,6 +10,7 @@ import type { LoaderFunctionArgs, ClientLoaderFunctionArgs } from 'react-router'
 import type {
     ShopperBasketsV2,
     ShopperProducts,
+    ShopperPromotions,
     // @sfdc-extension-line SFDC_EXT_BOPIS
     ShopperStores,
 } from '@salesforce/storefront-next-runtime/scapi';
@@ -35,6 +36,7 @@ export type CheckoutPageData = {
     shippingMethods?: Promise<ShopperBasketsV2.schemas['ShippingMethodResult'] | null>;
     customerProfile?: Promise<CustomerProfile | null>;
     productMap: Promise<Record<string, ShopperProducts.schemas['Product']>>;
+    promotions?: Promise<Record<string, ShopperPromotions.schemas['Promotion']>>;
     isRegisteredCustomer?: boolean;
     shippingDefaultSet?: Promise<undefined>;
     // @sfdc-extension-line SFDC_EXT_BOPIS
@@ -130,6 +132,88 @@ async function fetchProductsInBasket(
 }
 
 /**
+ * Fetches promotion details for promotion IDs found in basket items, shipping items, and order-level adjustments.
+ * @returns Promise that resolves to a mapping of promotion IDs to promotion data
+ */
+async function fetchPromotionsForBasket(
+    context: ClientLoaderFunctionArgs['context'],
+    productItems: ShopperBasketsV2.schemas['ProductItem'][],
+    basket?: ShopperBasketsV2.schemas['Basket'] | null
+): Promise<Record<string, ShopperPromotions.schemas['Promotion']>> {
+    const promotionIds = new Set<string>();
+
+    // Extract promotion IDs from product items
+    productItems.forEach((productItem) => {
+        if (productItem.priceAdjustments?.length) {
+            productItem.priceAdjustments.forEach((adjustment) => {
+                if (adjustment.promotionId) {
+                    promotionIds.add(adjustment.promotionId);
+                }
+            });
+        }
+    });
+
+    // Extract promotion IDs from shipping items
+    if (basket?.shippingItems?.length) {
+        basket.shippingItems.forEach((shippingItem) => {
+            if (shippingItem.priceAdjustments?.length) {
+                shippingItem.priceAdjustments.forEach((adjustment) => {
+                    if (adjustment.promotionId) {
+                        promotionIds.add(adjustment.promotionId);
+                    }
+                });
+            }
+        });
+    }
+
+    // Extract promotion IDs from order-level price adjustments
+    if (basket?.priceAdjustments && Array.isArray(basket.priceAdjustments)) {
+        basket.priceAdjustments.forEach((adjustment) => {
+            if (adjustment.promotionId) {
+                promotionIds.add(adjustment.promotionId);
+            }
+        });
+    }
+
+    if (promotionIds.size === 0) {
+        return {};
+    }
+
+    const clients = createApiClients(context);
+    const promotionIdsArray = Array.from(promotionIds);
+
+    // API limit: maximum 50 promotion IDs per request. We batch if needed
+    const MAX_PROMOTION_IDS_PER_REQUEST = 50;
+    const promotions: Record<string, ShopperPromotions.schemas['Promotion']> = {};
+
+    for (let i = 0; i < promotionIdsArray.length; i += MAX_PROMOTION_IDS_PER_REQUEST) {
+        const batchIds = promotionIdsArray.slice(i, i + MAX_PROMOTION_IDS_PER_REQUEST);
+
+        try {
+            const { data: promotionsData } = await clients.shopperPromotions.getPromotions({
+                params: {
+                    query: {
+                        ids: batchIds,
+                    },
+                },
+            });
+
+            if (promotionsData?.data) {
+                promotionsData.data.forEach((promotion) => {
+                    if (promotion.id) {
+                        promotions[promotion.id] = promotion;
+                    }
+                });
+            }
+        } catch {
+            // Continue with next batch if this one fails
+        }
+    }
+
+    return promotions;
+}
+
+/**
  * Handles basket prefill for returning customers and returns updated basket
  *
  * IMPORTANT: Returns the updated basket (not the profile) because:
@@ -191,8 +275,9 @@ export async function clientLoader(args: ClientLoaderFunctionArgs): Promise<Chec
         const userIsRegistered = isRegisteredCustomer(context);
         const session = getAuthClient(context);
 
-        // Fetch product details for cart items display
         const productMapPromise = fetchProductsInBasket(context, basket?.productItems ?? []);
+
+        const promotionsPromise = fetchPromotionsForBasket(context, basket?.productItems ?? [], basket);
 
         let shippingDefaultSet = Promise.resolve(undefined);
         // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -240,6 +325,7 @@ export async function clientLoader(args: ClientLoaderFunctionArgs): Promise<Chec
                     ...(shippingMethodsPromise && { shippingMethods: shippingMethodsPromise }),
                     customerProfile: Promise.resolve(customerProfile),
                     productMap: productMapPromise,
+                    promotions: promotionsPromise,
                     isRegisteredCustomer: true,
                     shippingDefaultSet,
                     // @sfdc-extension-line SFDC_EXT_BOPIS
@@ -258,6 +344,7 @@ export async function clientLoader(args: ClientLoaderFunctionArgs): Promise<Chec
         return {
             ...(shippingMethodsPromise && { shippingMethods: shippingMethodsPromise }),
             productMap: productMapPromise,
+            promotions: promotionsPromise,
             isRegisteredCustomer: false,
             shippingDefaultSet,
             // @sfdc-extension-line SFDC_EXT_BOPIS
@@ -267,6 +354,7 @@ export async function clientLoader(args: ClientLoaderFunctionArgs): Promise<Chec
         // Fallback to empty data on any error
         return {
             productMap: Promise.resolve({}),
+            promotions: Promise.resolve({}),
             isRegisteredCustomer: false,
         };
     }

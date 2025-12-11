@@ -41,12 +41,11 @@ export function loader(args: LoaderFunctionArgs): CheckoutPageData {
 
         const shippingMethodsPromise = getServerShippingMethodsData(context, authSession);
 
-        // Return promises for streaming
-        // Note: productMap is client-side only (requires basket from client middleware)
         return {
             customerProfile: customerProfilePromise,
             shippingMethods: shippingMethodsPromise,
-            productMap: Promise.resolve({}), // Empty on server, client loader will populate
+            productMap: Promise.resolve({}),
+            promotions: Promise.resolve({}),
             isRegisteredCustomer: isRegistered,
         };
     } catch {
@@ -55,6 +54,7 @@ export function loader(args: LoaderFunctionArgs): CheckoutPageData {
             customerProfile: Promise.resolve(null),
             shippingMethods: Promise.resolve(null),
             productMap: Promise.resolve({}),
+            promotions: Promise.resolve({}),
             isRegisteredCustomer: false,
         };
     }
@@ -146,6 +146,7 @@ function CheckoutView({
         customerProfile,
         shippingMethods,
         productMap,
+        promotions,
         shippingDefaultSet,
         // @sfdc-extension-line SFDC_EXT_BOPIS
         storesByStoreId,
@@ -156,13 +157,15 @@ function CheckoutView({
     const customerProfileData = customerProfile ? use(customerProfile) : null;
     const shippingMethodsData = shippingMethods ? use(shippingMethods) : null;
 
-    // Pass productMap Promise to CheckoutFormPage for streaming-friendly rendering
-    // MyCart component (wrapped in Suspense) will resolve it independently
     const content = (
         <CheckoutProvider
             customerProfile={customerProfileData ?? undefined}
             shippingDefaultSet={shippingDefaultSet ?? Promise.resolve(undefined)}>
-            <CheckoutFormPage shippingMethods={shippingMethodsData ?? undefined} productMapPromise={productMap} />
+            <CheckoutFormPage
+                shippingMethods={shippingMethodsData ?? undefined}
+                productMapPromise={productMap}
+                promotionsPromise={promotions}
+            />
         </CheckoutProvider>
     );
 

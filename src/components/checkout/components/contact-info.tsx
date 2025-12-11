@@ -138,12 +138,10 @@ export default function ContactInfo({
                                     name="phone"
                                     render={({ field }) => (
                                         <FormItem className="flex-1">
-                                            <FormLabel className="text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold">
-                                                {t('contactInfo.phoneLabel')}
-                                            </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     type="tel"
+                                                    aria-label={t('contactInfo.phoneLabel')}
                                                     placeholder={t('contactInfo.phonePlaceholder')}
                                                     autoComplete="tel-national"
                                                     className="h-12 text-base border-2 border-[#9ca3af] dark:border-input focus:border-primary transition-colors text-foreground bg-background"

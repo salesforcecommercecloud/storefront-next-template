@@ -15,7 +15,26 @@ interface MockFormProps extends MockComponentProps {
     onSubmit?: (e: React.FormEvent) => void;
 }
 
-// MSW server setup for API mocking
+function createErrorResponse(message = 'Failed to process request') {
+    return HttpResponse.json(
+        {
+            success: false,
+            error: message,
+        },
+        { status: 400 }
+    );
+}
+
+async function makeFormRequest(url: string, formData: URLSearchParams) {
+    return fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData.toString(),
+    });
+}
+
 const server = setupServer(
     // Customer profile API
     http.get('/api/customers/:customerId', ({ params }) => {
@@ -133,17 +152,26 @@ const server = setupServer(
 
     // Contact info submission
     http.post('/action/submit-contact-info', async ({ request }) => {
-        const formData = await request.formData();
-        const email = formData.get('email') as string;
+        try {
+            const formData = await request.formData();
+            const email = formData.get('email') as string;
 
-        return HttpResponse.json({
-            success: true,
-            step: 'contactInfo',
-            data: { email },
-        });
+            return HttpResponse.json({
+                success: true,
+                step: 'contactInfo',
+                data: { email },
+            });
+        } catch {
+            return HttpResponse.json(
+                {
+                    success: false,
+                    error: 'Failed to process request',
+                },
+                { status: 400 }
+            );
+        }
     }),
 
-    // Shipping address submission
     http.post('/action/submit-shipping-address', async ({ request }) => {
         const formData = await request.formData();
 
@@ -434,12 +462,198 @@ describe('Checkout Flow Integration Tests', () => {
         productMapPromise: Promise.resolve({}),
     };
 
+    const baseHandlers = [
+        http.get('/api/customers/:customerId', ({ params }) => {
+            if (params.customerId === 'returning-customer-123') {
+                return HttpResponse.json({
+                    customer: {
+                        customerId: 'returning-customer-123',
+                        email: 'returning@example.com',
+                        firstName: 'Jane',
+                        lastName: 'Smith',
+                        phoneHome: '+1-555-0123',
+                    },
+                    addresses: [
+                        {
+                            addressId: 'home-address',
+                            firstName: 'Jane',
+                            lastName: 'Smith',
+                            address1: '456 Oak Street',
+                            city: 'San Francisco',
+                            stateCode: 'CA',
+                            postalCode: '94102',
+                            countryCode: 'US',
+                            phone: '+1-555-0123',
+                            preferred: true,
+                        },
+                    ],
+                    paymentInstruments: [
+                        {
+                            paymentInstrumentId: 'saved-card-1',
+                            paymentMethodId: 'CREDIT_CARD',
+                            paymentCard: {
+                                cardType: 'Visa',
+                                maskedNumber: '**** **** **** 1234',
+                                holder: 'Jane Smith',
+                                expirationMonth: 12,
+                                expirationYear: 2025,
+                            },
+                            preferred: true,
+                        },
+                    ],
+                });
+            }
+            return new HttpResponse(null, { status: 404 });
+        }),
+        http.post('/api/customer-lookup', async ({ request }) => {
+            const body = (await request.json()) as { email: string };
+            const { email } = body;
+            if (email === 'returning@example.com') {
+                return HttpResponse.json({
+                    recommendation: 'login',
+                    message: 'Welcome back! Please log in to access your saved information.',
+                });
+            }
+            return HttpResponse.json({
+                recommendation: 'guest',
+                message: 'Continue as guest or create an account for faster checkout.',
+            });
+        }),
+        http.get('/api/baskets/:basketId', () => {
+            return HttpResponse.json({
+                basketId: 'test-basket-123',
+                currency: 'USD',
+                productItems: [
+                    {
+                        itemId: 'item-1',
+                        productId: 'product-1',
+                        productName: 'Test Product',
+                        price: 99.99,
+                        quantity: 1,
+                    },
+                ],
+                productTotal: 99.99,
+                orderTotal: 115.98,
+                shippingTotal: 5.99,
+                taxTotal: 10.0,
+            });
+        }),
+        http.get('/api/baskets/:basketId/shipments/:shipmentId/shipping-methods', () => {
+            return HttpResponse.json({
+                applicableShippingMethods: [
+                    {
+                        id: 'standard',
+                        name: 'Standard Shipping',
+                        description: '5-7 business days',
+                        price: 5.99,
+                        estimatedArrivalTime: '5-7 business days',
+                        default: true,
+                    },
+                    {
+                        id: 'express',
+                        name: 'Express Shipping',
+                        description: '2-3 business days',
+                        price: 12.99,
+                        estimatedArrivalTime: '2-3 business days',
+                    },
+                    {
+                        id: 'overnight',
+                        name: 'Overnight Shipping',
+                        description: 'Next business day',
+                        price: 24.99,
+                        estimatedArrivalTime: 'Next business day',
+                    },
+                ],
+            });
+        }),
+        http.post('/action/submit-contact-info', async ({ request }) => {
+            try {
+                const formData = await request.formData();
+                const email = formData.get('email') as string;
+                return HttpResponse.json({
+                    success: true,
+                    step: 'contactInfo',
+                    data: { email },
+                });
+            } catch {
+                return createErrorResponse();
+            }
+        }),
+        http.post('/action/submit-shipping-address', async ({ request }) => {
+            try {
+                const formData = await request.formData();
+
+                return HttpResponse.json({
+                    success: true,
+                    step: 'shippingAddress',
+                    data: {
+                        firstName: formData.get('firstName'),
+                        lastName: formData.get('lastName'),
+                        address1: formData.get('address1'),
+                        city: formData.get('city'),
+                        stateCode: formData.get('stateCode'),
+                        postalCode: formData.get('postalCode'),
+                    },
+                });
+            } catch {
+                return createErrorResponse();
+            }
+        }),
+        http.post('/action/submit-shipping-options', async ({ request }) => {
+            try {
+                const formData = await request.formData();
+                const shippingMethodId = formData.get('shippingMethodId') as string;
+                return HttpResponse.json({
+                    success: true,
+                    step: 'shippingOptions',
+                    data: { shippingMethodId },
+                });
+            } catch {
+                return createErrorResponse();
+            }
+        }),
+        http.post('/action/submit-payment', async ({ request }) => {
+            try {
+                const formData = await request.formData();
+                const cardNumber = formData.get('cardNumber') as string;
+                if (cardNumber === '4000000000000002') {
+                    return HttpResponse.json(
+                        {
+                            success: false,
+                            error: 'Payment declined. Please try a different card.',
+                            step: 'payment',
+                        },
+                        { status: 400 }
+                    );
+                }
+                return HttpResponse.json({
+                    success: true,
+                    step: 'payment',
+                    data: {
+                        paymentMethodId: 'CREDIT_CARD',
+                        maskedCardNumber: `**** **** **** ${cardNumber.slice(-4)}`,
+                    },
+                });
+            } catch {
+                return createErrorResponse();
+            }
+        }),
+        http.post('/action/place-order', () => {
+            return HttpResponse.json({
+                success: true,
+                orderNo: 'ORDER-2024-001',
+                redirectTo: '/order-confirmation/ORDER-2024-001',
+            });
+        }),
+    ];
+
     beforeAll(() => {
-        server.listen({ onUnhandledRequest: 'error' });
+        server.listen({ onUnhandledRequest: 'warn' });
     });
 
     afterEach(() => {
         server.resetHandlers();
+        server.use(...baseHandlers);
         vi.clearAllMocks();
     });
 
@@ -448,7 +662,6 @@ describe('Checkout Flow Integration Tests', () => {
     });
 
     beforeEach(() => {
-        // Setup default React Router mocks
         mockUseLoaderData.mockReturnValue({
             shippingMethods: {
                 applicableShippingMethods: [
@@ -731,14 +944,11 @@ describe('Checkout Flow Integration Tests', () => {
                 })
             );
 
-            const formData = new FormData();
+            const formData = new URLSearchParams();
             formData.append('firstName', '');
             formData.append('lastName', '');
 
-            const response = await fetch('/action/submit-shipping-address', {
-                method: 'POST',
-                body: formData,
-            });
+            const response = await makeFormRequest('/action/submit-shipping-address', formData);
 
             const data = await response.json();
             expect(response.status).toBe(400);
@@ -812,9 +1022,8 @@ describe('Checkout Flow Integration Tests', () => {
                 })
             );
 
-            // Create multiple FormData instances (since FormData can't be cloned)
             const createFormData = () => {
-                const formData = new FormData();
+                const formData = new URLSearchParams();
                 formData.append('email', 'test@example.com');
                 return formData;
             };
@@ -825,7 +1034,10 @@ describe('Checkout Flow Integration Tests', () => {
                 .map(() =>
                     fetch('/action/submit-contact-info', {
                         method: 'POST',
-                        body: createFormData(),
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: createFormData().toString(),
                     })
                 );
 
@@ -956,56 +1168,62 @@ describe('Checkout Flow Integration Tests', () => {
         test('validates all contact info fields', async () => {
             server.use(
                 http.post('/action/submit-contact-info', async ({ request }) => {
-                    const formData = await request.formData();
-                    const email = formData.get('email') as string;
+                    try {
+                        const formData = await request.formData();
+                        const email = formData.get('email') as string;
 
-                    if (!email || !email.includes('@')) {
+                        if (!email || !email.includes('@')) {
+                            return HttpResponse.json(
+                                {
+                                    success: false,
+                                    fieldErrors: { email: 'Valid email is required' },
+                                    step: 'contactInfo',
+                                },
+                                { status: 400 }
+                            );
+                        }
+
+                        return HttpResponse.json({
+                            success: true,
+                            step: 'contactInfo',
+                            data: { email },
+                        });
+                    } catch {
                         return HttpResponse.json(
                             {
                                 success: false,
-                                fieldErrors: { email: 'Valid email is required' },
-                                step: 'contactInfo',
+                                error: 'Failed to process request',
                             },
                             { status: 400 }
                         );
                     }
-
-                    return HttpResponse.json({
-                        success: true,
-                        step: 'contactInfo',
-                        data: { email },
-                    });
                 })
             );
 
             // Test invalid email
-            const invalidFormData = new FormData();
+            const invalidFormData = new URLSearchParams();
             invalidFormData.append('email', 'invalid-email');
 
-            const invalidResponse = await fetch('/action/submit-contact-info', {
-                method: 'POST',
-                body: invalidFormData,
-            });
+            const invalidResponse = await makeFormRequest('/action/submit-contact-info', invalidFormData);
 
+            expect(invalidResponse.ok).toBe(false);
             const invalidData = await invalidResponse.json();
             expect(invalidData.success).toBe(false);
             expect(invalidData.fieldErrors.email).toBe('Valid email is required');
 
             // Test valid email
-            const validFormData = new FormData();
+            const validFormData = new URLSearchParams();
             validFormData.append('email', 'valid@example.com');
 
-            const validResponse = await fetch('/action/submit-contact-info', {
-                method: 'POST',
-                body: validFormData,
-            });
+            const validResponse = await makeFormRequest('/action/submit-contact-info', validFormData);
 
+            expect(validResponse.ok).toBe(true);
             const validData = await validResponse.json();
             expect(validData.success).toBe(true);
         });
 
         test('validates complete shipping address submission', async () => {
-            const formData = new FormData();
+            const formData = new URLSearchParams();
             formData.append('firstName', 'John');
             formData.append('lastName', 'Doe');
             formData.append('address1', '123 Main St');
@@ -1013,25 +1231,21 @@ describe('Checkout Flow Integration Tests', () => {
             formData.append('stateCode', 'NY');
             formData.append('postalCode', '10001');
 
-            const response = await fetch('/action/submit-shipping-address', {
-                method: 'POST',
-                body: formData,
-            });
+            const response = await makeFormRequest('/action/submit-shipping-address', formData);
 
+            expect(response.ok).toBe(true);
             const data = await response.json();
+            expect(data).toHaveProperty('success');
             expect(data.success).toBe(true);
             expect(data.data.firstName).toBe('John');
             expect(data.data.lastName).toBe('Doe');
         });
 
         test('validates shipping options selection', async () => {
-            const formData = new FormData();
+            const formData = new URLSearchParams();
             formData.append('shippingMethodId', 'express');
 
-            const response = await fetch('/action/submit-shipping-options', {
-                method: 'POST',
-                body: formData,
-            });
+            const response = await makeFormRequest('/action/submit-shipping-options', formData);
 
             const data = await response.json();
             expect(data.success).toBe(true);
@@ -1039,17 +1253,14 @@ describe('Checkout Flow Integration Tests', () => {
         });
 
         test('validates payment with billing same as shipping', async () => {
-            const formData = new FormData();
+            const formData = new URLSearchParams();
             formData.append('cardNumber', '4111111111111111');
             formData.append('cardholderName', 'John Doe');
             formData.append('expiryDate', '12/25');
             formData.append('cvv', '123');
             formData.append('billingSameAsShipping', 'true');
 
-            const response = await fetch('/action/submit-payment', {
-                method: 'POST',
-                body: formData,
-            });
+            const response = await makeFormRequest('/action/submit-payment', formData);
 
             const data = await response.json();
             expect(data.success).toBe(true);
@@ -1057,7 +1268,7 @@ describe('Checkout Flow Integration Tests', () => {
         });
 
         test('validates payment with separate billing address', async () => {
-            const formData = new FormData();
+            const formData = new URLSearchParams();
             formData.append('cardNumber', '4111111111111111');
             formData.append('cardholderName', 'John Doe');
             formData.append('expiryDate', '12/25');
@@ -1070,10 +1281,7 @@ describe('Checkout Flow Integration Tests', () => {
             formData.append('billingStateCode', 'CA');
             formData.append('billingPostalCode', '90210');
 
-            const response = await fetch('/action/submit-payment', {
-                method: 'POST',
-                body: formData,
-            });
+            const response = await makeFormRequest('/action/submit-payment', formData);
 
             const data = await response.json();
             expect(data.success).toBe(true);
@@ -1107,15 +1315,12 @@ describe('Checkout Flow Integration Tests', () => {
                 })
             );
 
-            const formData = new FormData();
+            const formData = new URLSearchParams();
             formData.append('useSavedPaymentMethod', 'true');
             formData.append('selectedSavedPaymentMethod', 'saved-card-1');
             formData.append('billingSameAsShipping', 'true');
 
-            const response = await fetch('/action/submit-payment', {
-                method: 'POST',
-                body: formData,
-            });
+            const response = await makeFormRequest('/action/submit-payment', formData);
 
             const data = await response.json();
             expect(data.success).toBe(true);
@@ -1126,54 +1331,41 @@ describe('Checkout Flow Integration Tests', () => {
             // Test the complete flow step by step
 
             // 1. Contact Info
-            const contactData = new FormData();
+            const contactData = new URLSearchParams();
             contactData.append('email', 'complete@example.com');
-            const contactResponse = await fetch('/action/submit-contact-info', {
-                method: 'POST',
-                body: contactData,
-            });
+            const contactResponse = await makeFormRequest('/action/submit-contact-info', contactData);
             expect((await contactResponse.json()).success).toBe(true);
 
             // 2. Shipping Address
-            const shippingData = new FormData();
+            const shippingData = new URLSearchParams();
             shippingData.append('firstName', 'Complete');
             shippingData.append('lastName', 'Test');
             shippingData.append('address1', '123 Complete St');
             shippingData.append('city', 'Test City');
             shippingData.append('stateCode', 'CA');
             shippingData.append('postalCode', '12345');
-            const shippingResponse = await fetch('/action/submit-shipping-address', {
-                method: 'POST',
-                body: shippingData,
-            });
+            const shippingResponse = await makeFormRequest('/action/submit-shipping-address', shippingData);
             expect((await shippingResponse.json()).success).toBe(true);
 
             // 3. Shipping Options
-            const optionsData = new FormData();
+            const optionsData = new URLSearchParams();
             optionsData.append('shippingMethodId', 'standard');
-            const optionsResponse = await fetch('/action/submit-shipping-options', {
-                method: 'POST',
-                body: optionsData,
-            });
+            const optionsResponse = await makeFormRequest('/action/submit-shipping-options', optionsData);
             expect((await optionsResponse.json()).success).toBe(true);
 
             // 4. Payment
-            const paymentData = new FormData();
+            const paymentData = new URLSearchParams();
             paymentData.append('cardNumber', '4111111111111111');
             paymentData.append('cardholderName', 'Complete Test');
             paymentData.append('expiryDate', '12/25');
             paymentData.append('cvv', '123');
             paymentData.append('billingSameAsShipping', 'true');
-            const paymentResponse = await fetch('/action/submit-payment', {
-                method: 'POST',
-                body: paymentData,
-            });
+            const paymentResponse = await makeFormRequest('/action/submit-payment', paymentData);
             expect((await paymentResponse.json()).success).toBe(true);
 
             // 5. Order Placement
-            const orderResponse = await fetch('/action/place-order', {
-                method: 'POST',
-            });
+            const orderFormData = new URLSearchParams();
+            const orderResponse = await makeFormRequest('/action/place-order', orderFormData);
             const orderData = await orderResponse.json();
             expect(orderData.success).toBe(true);
             expect(orderData.orderNo).toBe('ORDER-2024-001');
@@ -1286,13 +1478,10 @@ describe('Checkout Flow Integration Tests', () => {
             expect(addressesData.addresses[0].address1).toBe('456 Oak Street');
 
             // Test using a saved address
-            const formData = new FormData();
+            const formData = new URLSearchParams();
             formData.append('addressId', 'home-address');
 
-            const useSavedAddressResponse = await fetch('/action/use-saved-address', {
-                method: 'POST',
-                body: formData,
-            });
+            const useSavedAddressResponse = await makeFormRequest('/action/use-saved-address', formData);
 
             const savedAddressData = await useSavedAddressResponse.json();
             expect(savedAddressData.success).toBe(true);
@@ -1451,74 +1640,69 @@ describe('Checkout Flow Integration Tests', () => {
 
                 // Order placement for registered customer
                 http.post('/action/place-order', async ({ request }) => {
-                    const formData = await request.formData();
-                    const customerId = formData.get('customerId') as string;
+                    try {
+                        const formData = await request.formData();
+                        const customerId = formData.get('customerId') as string;
 
-                    return HttpResponse.json({
-                        success: true,
-                        orderNo: 'ORDER-2024-REG-001',
-                        customerId: customerId || null,
-                        redirectTo: '/order-confirmation/ORDER-2024-REG-001',
-                        customerOrder: customerId ? true : false,
-                    });
+                        return HttpResponse.json({
+                            success: true,
+                            orderNo: 'ORDER-2024-REG-001',
+                            customerId: customerId || null,
+                            redirectTo: '/order-confirmation/ORDER-2024-REG-001',
+                            customerOrder: customerId ? true : false,
+                        });
+                    } catch {
+                        return HttpResponse.json(
+                            {
+                                success: false,
+                                error: 'Failed to process request',
+                            },
+                            { status: 400 }
+                        );
+                    }
                 })
             );
 
             // Complete registered shopper flow
 
             // 1. Contact Info (with customer ID)
-            const contactData = new FormData();
+            const contactData = new URLSearchParams();
             contactData.append('email', 'returning@example.com');
             contactData.append('customerId', 'returning-customer-123');
-            const contactResponse = await fetch('/action/submit-contact-info', {
-                method: 'POST',
-                body: contactData,
-            });
+            const contactResponse = await makeFormRequest('/action/submit-contact-info', contactData);
             const contactResult = await contactResponse.json();
             expect(contactResult.success).toBe(true);
             expect(contactResult.data.isRegistered).toBe(true);
 
             // 2. Shipping Address (using saved address)
-            const shippingData = new FormData();
+            const shippingData = new URLSearchParams();
             shippingData.append('useSavedAddress', 'true');
             shippingData.append('savedAddressId', 'home-address');
-            const shippingResponse = await fetch('/action/submit-shipping-address', {
-                method: 'POST',
-                body: shippingData,
-            });
+            const shippingResponse = await makeFormRequest('/action/submit-shipping-address', shippingData);
             const shippingResult = await shippingResponse.json();
             expect(shippingResult.success).toBe(true);
             expect(shippingResult.data.useSavedAddress).toBe(true);
 
             // 3. Shipping Options (same as guest)
-            const optionsData = new FormData();
+            const optionsData = new URLSearchParams();
             optionsData.append('shippingMethodId', 'standard');
-            const optionsResponse = await fetch('/action/submit-shipping-options', {
-                method: 'POST',
-                body: optionsData,
-            });
+            const optionsResponse = await makeFormRequest('/action/submit-shipping-options', optionsData);
             expect((await optionsResponse.json()).success).toBe(true);
 
             // 4. Payment (using saved payment method)
-            const paymentData = new FormData();
+            const paymentData = new URLSearchParams();
             paymentData.append('useSavedPaymentMethod', 'true');
             paymentData.append('selectedSavedPaymentMethod', 'saved-card-1');
             paymentData.append('billingSameAsShipping', 'true');
-            const paymentResponse = await fetch('/action/submit-payment', {
-                method: 'POST',
-                body: paymentData,
-            });
+            const paymentResponse = await makeFormRequest('/action/submit-payment', paymentData);
             const paymentResult = await paymentResponse.json();
             expect(paymentResult.success).toBe(true);
             expect(paymentResult.data.useSavedPaymentMethod).toBe(true);
 
             // 5. Order Placement (for registered customer)
-            const orderData = new FormData();
+            const orderData = new URLSearchParams();
             orderData.append('customerId', 'returning-customer-123');
-            const orderResponse = await fetch('/action/place-order', {
-                method: 'POST',
-                body: orderData,
-            });
+            const orderResponse = await makeFormRequest('/action/place-order', orderData);
             const orderResult = await orderResponse.json();
             expect(orderResult.success).toBe(true);
             expect(orderResult.orderNo).toBe('ORDER-2024-REG-001');

@@ -73,4 +73,31 @@ describe('MyCart', () => {
             })
         );
     });
+
+    it('passes promotions to ProductItemsList when provided', () => {
+        const promotions = {
+            'promo-1': { id: 'promo-1', name: 'Test Promotion', calloutMsg: 'Save 20%' },
+        };
+
+        render(<MyCart basket={basket} productMap={productMap} promotions={promotions} />);
+
+        expect(mockProductItemsList).toHaveBeenCalledTimes(1);
+        expect(mockProductItemsList).toHaveBeenCalledWith(
+            expect.objectContaining({
+                productItems: basket.productItems,
+                productsByItemId: productMap,
+                promotions,
+                variant: 'summary',
+                separateCards: true,
+            })
+        );
+    });
+
+    it('handles missing promotions gracefully', () => {
+        render(<MyCart basket={basket} productMap={productMap} />);
+
+        expect(mockProductItemsList).toHaveBeenCalledTimes(1);
+        const callArgs = mockProductItemsList.mock.calls[0][0];
+        expect(callArgs.promotions).toBeUndefined();
+    });
 });
