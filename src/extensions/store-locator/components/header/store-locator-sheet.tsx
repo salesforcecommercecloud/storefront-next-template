@@ -8,15 +8,7 @@
 
 import { type PropsWithChildren, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-    Sheet,
-    SheetClose,
-    SheetContent,
-    SheetHeader,
-    SheetTitle,
-    SheetDescription,
-    SheetTrigger,
-} from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from '@/components/ui/sheet';
 import StoreLocator from '@/extensions/store-locator/components/store-locator';
 import { StoreLocatorLayoutProvider } from '@/extensions/store-locator/context/layout';
 
@@ -49,7 +41,7 @@ export default function StoreLocatorSheet({ children, open, onOpenChange }: Stor
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetTrigger asChild>{children}</SheetTrigger>
-            <SheetContent className="md:w-1/3 md:max-w-1/3 p-0">
+            <SheetContent className="md:w-1/3 md:max-w-1/3 p-0" closeAriaLabel={t('storeLocator.sheet.closeAriaLabel')}>
                 <SheetHeader>
                     <SheetTitle>{t('storeLocator.title')}</SheetTitle>
                     <SheetDescription>{t('storeLocator.description')}</SheetDescription>
@@ -59,7 +51,6 @@ export default function StoreLocatorSheet({ children, open, onOpenChange }: Stor
                         <StoreLocator />
                     </StoreLocatorLayoutProvider>
                 </div>
-                <SheetClose />
             </SheetContent>
         </Sheet>
     );

@@ -1,0 +1,406 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`StoreLocator stories snapshot > Default story renders and matches snapshot 1`] = `
+<div>
+  <section
+    aria-labelledby="store-locator-heading"
+    class="p-4"
+  >
+    <form
+      aria-label="Store search form"
+    >
+      <div
+        class="flex flex-col gap-3"
+      >
+        <div
+          class="flex flex-col gap-1"
+          data-slot="form-item"
+        >
+          <label
+            class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive sr-only"
+            data-error="false"
+            data-slot="form-label"
+            for="_r_0_-form-item"
+          >
+            Country
+          </label>
+          <div
+            class="relative flex"
+          >
+            <select
+              aria-describedby="_r_0_-form-item-description"
+              aria-label="Country"
+              class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center rounded-md border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8"
+              data-slot="form-control"
+              id="_r_0_-form-item"
+            >
+              <option
+                disabled=""
+                value=""
+              >
+                Select a country
+              </option>
+              <option
+                value="US"
+              >
+                United States
+              </option>
+              <option
+                value="GB"
+              >
+                United Kingdom
+              </option>
+            </select>
+            <span
+              class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-chevron-down"
+                fill="none"
+                height="16"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="16"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m6 9 6 6 6-6"
+                />
+              </svg>
+            </span>
+          </div>
+        </div>
+        <div
+          class="flex gap-2 items-end"
+        >
+          <div
+            class="flex flex-1 flex-col gap-1"
+            data-slot="form-item"
+          >
+            <label
+              class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive sr-only"
+              data-error="false"
+              data-slot="form-label"
+              for="_r_1_-form-item"
+            >
+              Postal Code
+            </label>
+            <input
+              aria-describedby="_r_1_-form-item-description"
+              aria-label="Postal Code"
+              class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+              data-slot="form-control"
+              id="_r_1_-form-item"
+              name="postalCode"
+              placeholder="Enter postal code"
+              value=""
+            />
+          </div>
+          <button
+            aria-label="Find"
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 py-2 has-[>svg]:px-3 h-9 px-5"
+            data-slot="button"
+            type="submit"
+          >
+            Find
+          </button>
+        </div>
+        <div
+          class="relative my-2 flex items-center"
+        >
+          <div
+            class="shrink-0 bg-border h-[1px] w-full absolute left-0 right-0"
+          />
+          <span
+            class="bg-background text-muted-foreground mx-auto px-2 text-xs relative z-10"
+          >
+            Or
+          </span>
+        </div>
+        <button
+          aria-label="Use My Location"
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+          data-slot="button"
+          type="button"
+        >
+          Use My Location
+        </button>
+      </div>
+    </form>
+  </section>
+</div>
+`;
+
+exports[`StoreLocator stories snapshot > DesktopLayout story renders and matches snapshot 1`] = `
+<div>
+  <section
+    aria-labelledby="store-locator-heading"
+    class="p-4"
+  >
+    <form
+      aria-label="Store search form"
+    >
+      <div
+        class="flex flex-col gap-3"
+      >
+        <div
+          class="flex flex-col gap-1"
+          data-slot="form-item"
+        >
+          <label
+            class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive sr-only"
+            data-error="false"
+            data-slot="form-label"
+            for="_r_6_-form-item"
+          >
+            Country
+          </label>
+          <div
+            class="relative flex"
+          >
+            <select
+              aria-describedby="_r_6_-form-item-description"
+              aria-label="Country"
+              class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center rounded-md border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8"
+              data-slot="form-control"
+              id="_r_6_-form-item"
+            >
+              <option
+                disabled=""
+                value=""
+              >
+                Select a country
+              </option>
+              <option
+                value="US"
+              >
+                United States
+              </option>
+              <option
+                value="GB"
+              >
+                United Kingdom
+              </option>
+            </select>
+            <span
+              class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-chevron-down"
+                fill="none"
+                height="16"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="16"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m6 9 6 6 6-6"
+                />
+              </svg>
+            </span>
+          </div>
+        </div>
+        <div
+          class="flex gap-2 items-end"
+        >
+          <div
+            class="flex flex-1 flex-col gap-1"
+            data-slot="form-item"
+          >
+            <label
+              class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive sr-only"
+              data-error="false"
+              data-slot="form-label"
+              for="_r_7_-form-item"
+            >
+              Postal Code
+            </label>
+            <input
+              aria-describedby="_r_7_-form-item-description"
+              aria-label="Postal Code"
+              class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+              data-slot="form-control"
+              id="_r_7_-form-item"
+              name="postalCode"
+              placeholder="Enter postal code"
+              value=""
+            />
+          </div>
+          <button
+            aria-label="Find"
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 py-2 has-[>svg]:px-3 h-9 px-5"
+            data-slot="button"
+            type="submit"
+          >
+            Find
+          </button>
+        </div>
+        <div
+          class="relative my-2 flex items-center"
+        >
+          <div
+            class="shrink-0 bg-border h-[1px] w-full absolute left-0 right-0"
+          />
+          <span
+            class="bg-background text-muted-foreground mx-auto px-2 text-xs relative z-10"
+          >
+            Or
+          </span>
+        </div>
+        <button
+          aria-label="Use My Location"
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+          data-slot="button"
+          type="button"
+        >
+          Use My Location
+        </button>
+      </div>
+    </form>
+  </section>
+</div>
+`;
+
+exports[`StoreLocator stories snapshot > MobileLayout story renders and matches snapshot 1`] = `
+<div>
+  <section
+    aria-labelledby="store-locator-heading"
+    class="p-4"
+  >
+    <form
+      aria-label="Store search form"
+    >
+      <div
+        class="flex flex-col gap-3"
+      >
+        <div
+          class="flex flex-col gap-1"
+          data-slot="form-item"
+        >
+          <label
+            class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive sr-only"
+            data-error="false"
+            data-slot="form-label"
+            for="_r_3_-form-item"
+          >
+            Country
+          </label>
+          <div
+            class="relative flex"
+          >
+            <select
+              aria-describedby="_r_3_-form-item-description"
+              aria-label="Country"
+              class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center rounded-md border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8"
+              data-slot="form-control"
+              id="_r_3_-form-item"
+            >
+              <option
+                disabled=""
+                value=""
+              >
+                Select a country
+              </option>
+              <option
+                value="US"
+              >
+                United States
+              </option>
+              <option
+                value="GB"
+              >
+                United Kingdom
+              </option>
+            </select>
+            <span
+              class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-chevron-down"
+                fill="none"
+                height="16"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="16"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m6 9 6 6 6-6"
+                />
+              </svg>
+            </span>
+          </div>
+        </div>
+        <div
+          class="flex gap-2 items-end"
+        >
+          <div
+            class="flex flex-1 flex-col gap-1"
+            data-slot="form-item"
+          >
+            <label
+              class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive sr-only"
+              data-error="false"
+              data-slot="form-label"
+              for="_r_4_-form-item"
+            >
+              Postal Code
+            </label>
+            <input
+              aria-describedby="_r_4_-form-item-description"
+              aria-label="Postal Code"
+              class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+              data-slot="form-control"
+              id="_r_4_-form-item"
+              name="postalCode"
+              placeholder="Enter postal code"
+              value=""
+            />
+          </div>
+          <button
+            aria-label="Find"
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 py-2 has-[>svg]:px-3 h-9 px-5"
+            data-slot="button"
+            type="submit"
+          >
+            Find
+          </button>
+        </div>
+        <div
+          class="relative my-2 flex items-center"
+        >
+          <div
+            class="shrink-0 bg-border h-[1px] w-full absolute left-0 right-0"
+          />
+          <span
+            class="bg-background text-muted-foreground mx-auto px-2 text-xs relative z-10"
+          >
+            Or
+          </span>
+        </div>
+        <button
+          aria-label="Use My Location"
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+          data-slot="button"
+          type="button"
+        >
+          Use My Location
+        </button>
+      </div>
+    </form>
+  </section>
+</div>
+`;

@@ -23,6 +23,9 @@
             "ariaLabel": "Encontrar una tienda",
             "openAriaLabel": "Abrir Encontrar una tienda"
         },
+        "sheet": {
+            "closeAriaLabel": "Cerrar localizador de tiendas"
+        },
         "list": {
             "geoError": "Para usar tu ubicación, habilita el uso compartido de ubicación.",
             "noResults": "Lo sentimos, no hay ubicaciones en esta área.",

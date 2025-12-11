@@ -23,6 +23,9 @@
             "ariaLabel": "Find a Store",
             "openAriaLabel": "Open Find a Store"
         },
+        "sheet": {
+            "closeAriaLabel": "Close store locator"
+        },
         "list": {
             "geoError": "To use your location, enable location sharing.",
             "noResults": "Sorry, there are no locations in this area.",
