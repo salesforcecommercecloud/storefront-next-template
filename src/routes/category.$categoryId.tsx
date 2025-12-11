@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useRef } from 'react';
+import { Suspense, useEffect, useMemo, useRef } from 'react';
 import { Await, type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from 'react-router';
 import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchCategory } from '@/lib/api/categories';
@@ -92,6 +92,10 @@ export default function CategoryPage({
 }: {
     loaderData: CategoryPageData;
 }) {
+    // Memoize Promise.all to prevent creating new promises on every render
+    // This prevents infinite loop when basket updates trigger re-renders
+    const combinedPromise = useMemo(() => Promise.all([category, searchResult]), [category, searchResult]);
+
     const config = useConfig();
     const limit = config.global.productListing.productsPerPage;
 
@@ -164,7 +168,7 @@ export default function CategoryPage({
 
                     <div className="flex-grow">
                         <Suspense fallback={<CategorySkeleton />}>
-                            <Await resolve={Promise.all([category, searchResult])}>
+                            <Await resolve={combinedPromise}>
                                 {([categoryData, searchResultData]) => {
                                     const handleProductClick = (product: ShopperSearch.schemas['ProductSearchHit']) => {
                                         if (analytics) {
