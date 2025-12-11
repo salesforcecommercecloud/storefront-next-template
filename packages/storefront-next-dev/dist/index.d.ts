@@ -1,7 +1,43 @@
+import { Project } from "ts-morph";
 import { Express } from "express";
 import { Plugin, ViteDevServer } from "vite";
 import { ServerBuild } from "react-router";
 
+//#region src/plugins/staticRegistry.d.ts
+
+/**
+ * Configuration options for the static registry plugin
+ */
+interface StaticRegistryPluginConfig {
+  /**
+   * Path to the components directory to scan
+   * @default 'src/components'
+   */
+  componentPath?: string;
+  /**
+   * Path to the registry file to update
+   * Note: The registry file must contain STATIC_REGISTRY_START and STATIC_REGISTRY_END markers
+   * and must export a 'registry' variable (or use registryIdentifier to specify a different name)
+   * @default 'src/lib/registry.ts'
+   */
+  registryPath?: string;
+  /**
+   * Name of the registry variable to use in generated code
+   * @default 'registry'
+   */
+  registryIdentifier?: string;
+  /**
+   * Whether to fail the build on registry generation errors
+   * @default true
+   */
+  failOnError?: boolean;
+  /**
+   * Enable verbose logging
+   * @default false
+   */
+  verbose?: boolean;
+}
+//#endregion
 //#region src/plugin.d.ts
 /**
  * Configuration options for the Storefront Next Vite plugin.
@@ -31,6 +67,15 @@ interface StorefrontNextPluginsConfig {
    * @default false
    */
   readableChunkNames?: boolean;
+  /**
+   * Configuration for the static registry plugin that automatically generates
+   * component registrations based on @Component decorators.
+   *
+   * Set to `false` to disable the static registry plugin entirely.
+   *
+   * @default { componentPath: 'src/components', registryPath: 'src/lib/registry.ts' }
+   */
+  staticRegistry?: StaticRegistryPluginConfig;
 }
 /**
  * Storefront Next Vite plugin that powers the React Router RSC app.

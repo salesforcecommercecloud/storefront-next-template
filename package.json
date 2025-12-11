@@ -160,7 +160,7 @@
             },
             {
                 "name": "assets/-root.*.js",
-                "limit": "110 kB"
+                "limit": "113 kB"
             },
             {
                 "name": "assets/\\(package\\)-\\(@radix-ui-react-visually-hidden\\)-\\(dist\\)-index.*.js",
@@ -168,7 +168,7 @@
             },
             {
                 "name": "assets/\\(components\\)-\\(product-view\\)-child-products.*.js",
-                "limit": "60 kB",
+                "limit": "64 kB",
                 "comment": "Child products component includes Radix UI menu and dropdown dependencies for variant selection"
             },
             {

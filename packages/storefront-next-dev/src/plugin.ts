@@ -3,6 +3,7 @@ import { fixReactRouterManifestUrlsPlugin } from './plugins/fixReactRouterManife
 import { readableChunkFileNamesPlugin } from './plugins/readableChunkFileNames';
 import { managedRuntimeBundlePlugin } from './plugins/managedRuntimeBundle';
 import { patchReactRouterPlugin } from './plugins/patchReactRouter';
+import { staticRegistryPlugin, type StaticRegistryPluginConfig } from './plugins/staticRegistry';
 
 /**
  * Configuration options for the Storefront Next Vite plugin.
@@ -32,6 +33,16 @@ export interface StorefrontNextPluginsConfig {
      * @default false
      */
     readableChunkNames?: boolean;
+
+    /**
+     * Configuration for the static registry plugin that automatically generates
+     * component registrations based on @Component decorators.
+     *
+     * Set to `false` to disable the static registry plugin entirely.
+     *
+     * @default { componentPath: 'src/components', registryPath: 'src/lib/registry.ts' }
+     */
+    staticRegistry?: StaticRegistryPluginConfig;
 }
 
 /**
@@ -54,13 +65,25 @@ export interface StorefrontNextPluginsConfig {
  * })
  */
 export function storefrontNextPlugins(config: StorefrontNextPluginsConfig = {}): Plugin[] {
-    const { readableChunkNames = false } = config;
+    const {
+        readableChunkNames = false,
+        staticRegistry = {
+            componentPath: '',
+            registryPath: '',
+            verbose: false,
+        },
+    } = config;
 
     const plugins: Plugin[] = [
         managedRuntimeBundlePlugin(),
         fixReactRouterManifestUrlsPlugin(),
         patchReactRouterPlugin(),
     ];
+
+    // Add static registry plugin if enabled
+    if (staticRegistry?.componentPath && staticRegistry?.registryPath) {
+        plugins.push(staticRegistryPlugin(staticRegistry));
+    }
 
     if (readableChunkNames) {
         plugins.push(readableChunkFileNamesPlugin());

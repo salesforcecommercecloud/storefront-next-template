@@ -16,3 +16,5 @@ export type {
     ComponentDesignMetadata,
     RegionDesignMetadata,
 } from './components/component.types';
+
+export { createReactAdapter, type ReactDesignComponentType } from './registry/adapter';

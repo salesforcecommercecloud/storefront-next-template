@@ -1,10 +1,27 @@
 import 'reflect-metadata';
-import { type ComponentLoaders, type ComponentTypeMetadata } from '../component-registry';
+import type { RegionDefinitionConfig } from '@/lib/decorators';
 
 export const TYPE_ID_KEY = 'component:typeId';
 export const META_KEY = 'component:metadata';
 export const LOADER_KEY = 'component:loader';
 export const COMPONENT_PACKAGE = 'odyssey_base';
+
+type ComponentId = string;
+
+/**
+ * Metadata describing a component type.
+ */
+export interface ComponentTypeMetadata {
+    id?: ComponentId;
+    /** Human-readable name */
+    name?: string;
+    /** Component description */
+    description?: string;
+    /** Component group/category */
+    group?: string;
+    /** Region definitions of a component */
+    regions?: RegionDefinitionConfig[];
+}
 
 function defineComponentMetadata<T extends object>(typeId: string, metadata: ComponentTypeMetadata, target: T): T {
     const enrichedMetadata = {
@@ -82,14 +99,4 @@ export function Required(target: any, propertyKey: string) {
 export function Optional(target: any, propertyKey: string) {
     const existingOptional = Reflect.getMetadata('component:optional', target) || [];
     Reflect.defineMetadata('component:optional', [...existingOptional, propertyKey], target);
-}
-
-export function Loader(loader: ComponentLoaders) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return function <T extends new (...args: any[]) => any>(target: T): T {
-        // Store metadata on the class constructor
-        Reflect.defineMetadata(LOADER_KEY, loader, target);
-
-        return target;
-    };
 }

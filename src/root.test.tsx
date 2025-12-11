@@ -665,6 +665,108 @@ describe('root.tsx', () => {
                 loader({ context, request: new Request('http://localhost'), params: {} });
             }).toThrow('i18next data not found in context. Ensure i18next middleware runs before loaders.');
         });
+
+        it('should return pageDesignerMode as EDIT when mode=EDIT is in URL', async () => {
+            const { fetchCategory } = await import('@/lib/api/categories');
+            const { i18nextContext } = await import('@/lib/i18next');
+            const i18next = await import('i18next');
+            const { initReactI18next } = await import('react-i18next');
+            const resources = await import('@/locales');
+
+            vi.mocked(fetchCategory).mockResolvedValue({ id: 'root', name: 'Root' });
+
+            const testInstance = i18next.default.createInstance();
+            void testInstance.use(initReactI18next).init({
+                lng: 'en',
+                fallbackLng: 'en',
+                resources: resources.default,
+                interpolation: {
+                    escapeValue: false,
+                },
+            });
+
+            const context = createTestContext();
+            context.set(i18nextContext, {
+                getLocale: () => 'en',
+                getI18nextInstance: () => testInstance,
+            });
+
+            const result = loader({
+                context,
+                request: new Request('http://localhost?mode=EDIT'),
+                params: {},
+            }) as any;
+
+            expect(result.pageDesignerMode).toBe('EDIT');
+        });
+
+        it('should return pageDesignerMode as PREVIEW when mode=PREVIEW is in URL', async () => {
+            const { fetchCategory } = await import('@/lib/api/categories');
+            const { i18nextContext } = await import('@/lib/i18next');
+            const i18next = await import('i18next');
+            const { initReactI18next } = await import('react-i18next');
+            const resources = await import('@/locales');
+
+            vi.mocked(fetchCategory).mockResolvedValue({ id: 'root', name: 'Root' });
+
+            const testInstance = i18next.default.createInstance();
+            void testInstance.use(initReactI18next).init({
+                lng: 'en',
+                fallbackLng: 'en',
+                resources: resources.default,
+                interpolation: {
+                    escapeValue: false,
+                },
+            });
+
+            const context = createTestContext();
+            context.set(i18nextContext, {
+                getLocale: () => 'en',
+                getI18nextInstance: () => testInstance,
+            });
+
+            const result = loader({
+                context,
+                request: new Request('http://localhost?mode=PREVIEW'),
+                params: {},
+            }) as any;
+
+            expect(result.pageDesignerMode).toBe('PREVIEW');
+        });
+
+        it('should return pageDesignerMode as undefined when no mode parameter is in URL', async () => {
+            const { fetchCategory } = await import('@/lib/api/categories');
+            const { i18nextContext } = await import('@/lib/i18next');
+            const i18next = await import('i18next');
+            const { initReactI18next } = await import('react-i18next');
+            const resources = await import('@/locales');
+
+            vi.mocked(fetchCategory).mockResolvedValue({ id: 'root', name: 'Root' });
+
+            const testInstance = i18next.default.createInstance();
+            void testInstance.use(initReactI18next).init({
+                lng: 'en',
+                fallbackLng: 'en',
+                resources: resources.default,
+                interpolation: {
+                    escapeValue: false,
+                },
+            });
+
+            const context = createTestContext();
+            context.set(i18nextContext, {
+                getLocale: () => 'en',
+                getI18nextInstance: () => testInstance,
+            });
+
+            const result = loader({
+                context,
+                request: new Request('http://localhost'),
+                params: {},
+            }) as any;
+
+            expect(result.pageDesignerMode).toBeUndefined();
+        });
     });
 
     describe('clientLoader function', () => {

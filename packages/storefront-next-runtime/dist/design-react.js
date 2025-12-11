@@ -446,5 +446,35 @@ function createReactRegionDesignDecorator(Region) {
 }
 
 //#endregion
-export { createReactComponentDesignDecorator, createReactRegionDesignDecorator, useDesignContext };
+//#region src/design/react/registry/adapter.ts
+/**
+* React framework adapter that implements React-specific behavior
+* for the framework-agnostic component registry.
+*/
+var ReactAdapter = class {
+	/**
+	* Creates a React lazy component from an importer function.
+	*/
+	createLazyComponent(importer) {
+		return React.lazy(async () => {
+			return { default: (await importer()).default };
+		});
+	}
+	/**
+	* Decorates a React component with design-time capabilities.
+	* Uses the React-specific design decorator directly.
+	*/
+	decorateComponent(component) {
+		return createReactComponentDesignDecorator(component);
+	}
+};
+/**
+* Creates a React adapter instance with optional configuration.
+*/
+function createReactAdapter() {
+	return new ReactAdapter();
+}
+
+//#endregion
+export { createReactAdapter, createReactComponentDesignDecorator, createReactRegionDesignDecorator, useDesignContext };
 //# sourceMappingURL=design-react.js.map

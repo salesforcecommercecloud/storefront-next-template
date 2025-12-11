@@ -2,6 +2,7 @@ import { type ReactElement, memo, Suspense } from 'react';
 import { registry } from '@/lib/registry';
 import { Await } from 'react-router';
 import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
+import type { ComponentDesignMetadata } from '@salesforce/storefront-next-runtime/design/react';
 
 export interface ComponentProps {
     component: ShopperExperience.schemas['Component'];
@@ -19,7 +20,6 @@ export const Component = memo(function Component({
     page,
 }: ComponentProps): ReactElement {
     const FallbackComponent = registry.getFallback(component.typeId);
-    const metadata = registry.getMetadata(component.typeId);
     const DynamicComponent = registry.getComponent(component.typeId);
     if (!DynamicComponent) {
         // eslint-disable-next-line @typescript-eslint/only-throw-error
@@ -31,19 +31,21 @@ export const Component = memo(function Component({
         ? componentData.then((dataMap) => dataMap[component.id])
         : Promise.resolve(undefined);
 
+    const designMetadata: ComponentDesignMetadata = {
+        name: component.designMetadata?.name,
+        isFragment: false,
+        isVisible: Boolean(component.visible),
+        isLocalized: Boolean(component.localized),
+        id: component.id,
+    };
+
     return (
         <Suspense fallback={FallbackComponent ? <FallbackComponent /> : <div />}>
             <Await resolve={dataPromise}>
                 {(data) => (
                     <DynamicComponent
                         {...component.data}
-                        designMetadata={{
-                            name: metadata?.name,
-                            isFragment: false,
-                            isVisible: Boolean(component.visible),
-                            isLocalized: Boolean(component.localized),
-                            id: component.id,
-                        }}
+                        designMetadata={designMetadata}
                         data={data}
                         className={className}
                         page={page}

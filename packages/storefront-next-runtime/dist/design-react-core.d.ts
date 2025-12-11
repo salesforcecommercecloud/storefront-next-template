@@ -1,5 +1,6 @@
 import { r as ShopperExperience } from "./types.js";
-import { g as IsomorphicConfiguration } from "./index.js";
+import { g as IsomorphicConfiguration } from "./index2.js";
+import "react";
 import * as react_jsx_runtime0 from "react/jsx-runtime";
 
 //#region src/design/react/core/PageDesignerProvider.d.ts
@@ -16,7 +17,7 @@ type PageDesignerProviderProps = {
   clientLogger?: IsomorphicConfiguration['logger'];
   clientConnectionTimeout?: number;
   clientConnectionInterval?: number;
-  mode?: 'design' | 'preview';
+  mode?: 'EDIT' | 'PREVIEW';
 };
 declare const PageDesignerProvider: {
   ({

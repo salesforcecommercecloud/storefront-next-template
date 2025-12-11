@@ -6,13 +6,12 @@ import {
     withComponentMetadata,
     Required,
     Optional,
-    Loader,
     TYPE_ID_KEY,
     META_KEY,
     LOADER_KEY,
     COMPONENT_PACKAGE,
+    type ComponentTypeMetadata,
 } from './component';
-import type { ComponentTypeMetadata, ComponentLoaders } from '../component-registry';
 
 describe('Component Decorators', () => {
     describe('Component Decorator', () => {
@@ -249,78 +248,6 @@ describe('Component Decorators', () => {
         });
     });
 
-    describe('Loader Decorator', () => {
-        test('decorates class with loader metadata', () => {
-            const mockLoader: ComponentLoaders = {
-                server: () => Promise.resolve({ data: 'test' }),
-            };
-
-            @Loader(mockLoader)
-            class TestComponent {}
-
-            const loader = Reflect.getMetadata(LOADER_KEY, TestComponent);
-            expect(loader).toBe(mockLoader);
-        });
-
-        test('stores server loader', () => {
-            const serverLoader = () => Promise.resolve({ data: 'server data' });
-            const loaders: ComponentLoaders = {
-                server: serverLoader,
-            };
-
-            @Loader(loaders)
-            class ServerComponent {}
-
-            const storedLoader = Reflect.getMetadata(LOADER_KEY, ServerComponent);
-            expect(storedLoader.server).toBe(serverLoader);
-        });
-
-        test('stores client loader', () => {
-            const clientLoader = () => Promise.resolve({ data: 'client data' });
-            const loaders: ComponentLoaders = {
-                client: clientLoader,
-            };
-
-            @Loader(loaders)
-            class ClientComponent {}
-
-            const storedLoader = Reflect.getMetadata(LOADER_KEY, ClientComponent);
-            expect(storedLoader.client).toBe(clientLoader);
-        });
-
-        test('stores both server and client loaders', () => {
-            const serverLoader = () => Promise.resolve({ data: 'server' });
-            const clientLoader = () => Promise.resolve({ data: 'client' });
-            const loaders: ComponentLoaders = {
-                server: serverLoader,
-                client: clientLoader,
-            };
-
-            @Loader(loaders)
-            class DualComponent {}
-
-            const storedLoader = Reflect.getMetadata(LOADER_KEY, DualComponent);
-            expect(storedLoader.server).toBe(serverLoader);
-            expect(storedLoader.client).toBe(clientLoader);
-        });
-
-        test('can be combined with Component decorator', () => {
-            const mockLoader: ComponentLoaders = {
-                server: () => Promise.resolve({ title: 'Dynamic Title' }),
-            };
-
-            @Component('dynamic-hero', { name: 'Dynamic Hero' })
-            @Loader(mockLoader)
-            class DynamicHeroComponent {}
-
-            const typeId = Reflect.getMetadata(TYPE_ID_KEY, DynamicHeroComponent);
-            const loader = Reflect.getMetadata(LOADER_KEY, DynamicHeroComponent);
-
-            expect(typeId).toBe(`${COMPONENT_PACKAGE}.dynamic-hero`);
-            expect(loader).toBe(mockLoader);
-        });
-    });
-
     describe('Combined Decorators', () => {
         test('combines Component, Required, and Optional decorators', () => {
             @Component('full-component', {
@@ -352,13 +279,8 @@ describe('Component Decorators', () => {
             expect(optional).toEqual(['subtitle', 'description']);
         });
 
-        test('combines all decorators including Loader', () => {
-            const mockLoader: ComponentLoaders = {
-                server: () => Promise.resolve({ data: 'loaded' }),
-            };
-
+        test('combines all decorators', () => {
             @Component('complete-component', { name: 'Complete' })
-            @Loader(mockLoader)
             class CompleteComponent {
                 @Required
                 id!: string;
@@ -368,11 +290,9 @@ describe('Component Decorators', () => {
             }
 
             const typeId = Reflect.getMetadata(TYPE_ID_KEY, CompleteComponent);
-            const loader = Reflect.getMetadata(LOADER_KEY, CompleteComponent);
             const required = Reflect.getMetadata('component:required', CompleteComponent.prototype);
 
             expect(typeId).toBe(`${COMPONENT_PACKAGE}.complete-component`);
-            expect(loader).toBe(mockLoader);
             expect(required).toEqual(['id']);
         });
     });

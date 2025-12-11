@@ -30,7 +30,7 @@ type PageDesignerContextType = {
     isPreviewMode: boolean;
 };
 
-const PageDesignerContext = createContext<PageDesignerContextType>({
+export const PageDesignerContext = createContext<PageDesignerContextType>({
     isDesignMode: false,
     isPreviewMode: false,
 });
@@ -46,7 +46,7 @@ type PageDesignerProviderProps = {
     clientLogger?: IsomorphicConfiguration['logger'];
     clientConnectionTimeout?: number;
     clientConnectionInterval?: number;
-    mode?: 'design' | 'preview';
+    mode?: 'EDIT' | 'PREVIEW';
 };
 
 export const PageDesignerProvider = ({
@@ -61,8 +61,8 @@ export const PageDesignerProvider = ({
 }: PageDesignerProviderProps): React.JSX.Element => {
     const contextValue = useMemo(
         () => ({
-            isDesignMode: mode === 'design' || isDesignModeActive(),
-            isPreviewMode: mode === 'preview' || isPreviewModeActive(),
+            isDesignMode: mode === 'EDIT' || isDesignModeActive(),
+            isPreviewMode: mode === 'PREVIEW' || isPreviewModeActive(),
         }),
         [mode]
     );

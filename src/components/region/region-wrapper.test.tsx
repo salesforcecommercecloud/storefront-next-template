@@ -1,11 +1,11 @@
-import { describe, test, expect, vi, beforeEach, type Mock } from 'vitest';
+import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { RegionWrapper } from './region-wrapper';
 import type { RegionDesignMetadata } from '@salesforce/storefront-next-runtime/design/react';
 import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 
-vi.mock('@salesforce/storefront-next-runtime/design/mode', () => ({
-    isDesignModeActive: vi.fn(),
+vi.mock('@salesforce/storefront-next-runtime/design/react/core', () => ({
+    usePageDesignerMode: vi.fn(() => ({ isDesignMode: false, isPreviewMode: false })),
 }));
 
 type DecoratedProps = {
@@ -30,7 +30,7 @@ vi.mock('@salesforce/storefront-next-runtime/design/react', () => ({
     },
 }));
 
-import { isDesignModeActive } from '@salesforce/storefront-next-runtime/design/mode';
+import { usePageDesignerMode } from '@salesforce/storefront-next-runtime/design/react/core';
 
 const makeRegion = (id: string | undefined, compIds: string[]): ShopperExperience.schemas['Region'] => ({
     id: id as string,
@@ -44,7 +44,7 @@ describe('RegionWrapper', () => {
     });
 
     test('(runtime) renders plain RegionRenderer', () => {
-        (isDesignModeActive as unknown as Mock).mockReturnValue(false);
+        vi.mocked(usePageDesignerMode).mockReturnValue({ isDesignMode: false, isPreviewMode: false });
         const region = makeRegion('r1', ['a', 'b']);
 
         const { container } = render(
@@ -63,7 +63,7 @@ describe('RegionWrapper', () => {
     });
 
     test('(design mode) decorated renderer gets metadata', () => {
-        (isDesignModeActive as unknown as Mock).mockReturnValue(true);
+        vi.mocked(usePageDesignerMode).mockReturnValue({ isDesignMode: true, isPreviewMode: false });
         const region = makeRegion('r2', ['x1', 'x2']);
 
         render(<RegionWrapper region={region}>child</RegionWrapper>);
@@ -79,7 +79,7 @@ describe('RegionWrapper', () => {
     });
 
     test('passes through custom inclusion/exclusion lists', () => {
-        (isDesignModeActive as unknown as Mock).mockReturnValue(true);
+        vi.mocked(usePageDesignerMode).mockReturnValue({ isDesignMode: true, isPreviewMode: false });
         const region = makeRegion('rM', ['cZ']);
 
         render(
@@ -100,7 +100,7 @@ describe('RegionWrapper', () => {
     });
 
     test('(design mode but no region id) falls back to plain renderer', () => {
-        (isDesignModeActive as unknown as Mock).mockReturnValue(true);
+        vi.mocked(usePageDesignerMode).mockReturnValue({ isDesignMode: true, isPreviewMode: false });
         const region = makeRegion(undefined, ['cx']);
 
         const { container } = render(

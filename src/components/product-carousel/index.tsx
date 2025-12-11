@@ -6,25 +6,45 @@
  *
  * @fileoverview Exports for product carousel functionality including loading states and Suspense boundaries
  */
-import { AttributeDefinition, Component, Loader } from '@/lib/decorators';
+import { AttributeDefinition, Component } from '@/lib/decorators';
+import { fetchSearchProducts } from '@/lib/api/search';
+import type { LoaderFunctionArgs } from 'react-router';
 
 // Skeleton component for loading states
 export { default as ProductCarouselSkeleton } from './skeleton';
 export { default as Carousel } from './carousel';
 
 // ProductCarousel wrapped with Suspense boundary
-export { ProductCarouselWithSuspense } from './carousel';
-export { ProductCarouselWithSuspense as default } from './carousel';
+import { ProductCarouselWithSuspense } from './carousel';
+export { ProductCarouselWithSuspense };
 
-import { loader } from './loaders';
+// Default export that conforms to ComponentModule interface
+export default ProductCarouselWithSuspense;
 
 @Component('productCarousel', {
     name: 'Product Carousel',
     description:
         'A responsive, interactive carousel that displays a collection of product cards in a horizontally scrollable layout.',
 })
-@Loader(loader)
 export class ProductCarouselWithSuspenseMetadata {
     @AttributeDefinition()
     title?: string;
 }
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function loader(args: { componentData: { [key: string]: unknown }; context: LoaderFunctionArgs['context'] }) {
+    const { componentData, context: routeContext } = args;
+
+    // Extract configuration from component data
+    // ToDo: The fallback should be removed and put in the component default data instead
+    const categoryId = (componentData?.categoryId as string) || 'mens-clothing-shorts';
+    const limit = (componentData?.limit as number) || 12;
+
+    return fetchSearchProducts(routeContext, {
+        categoryId,
+        limit,
+    });
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
+export { default as fallback } from './skeleton';

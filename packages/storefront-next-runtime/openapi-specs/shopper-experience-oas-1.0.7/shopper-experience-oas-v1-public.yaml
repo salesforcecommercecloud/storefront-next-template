@@ -237,6 +237,8 @@ components:
             detailUrl: www.myshop.com/topseller
           type: object
           additionalProperties: false
+        designMetadata:
+          $ref: '#/components/schemas/ComponentDesignMetadata'
         regions:
           title: Regions
           description: The regions (and their assigned components) for the component.
@@ -258,6 +260,28 @@ components:
         - id
         - typeId
       type: object
+    ComponentDesignMetadata:
+      properties:
+        name:
+          title: Name
+          description: The name of the component.
+          example: Hero
+          type: string
+        type:
+          title: Type
+          description: The type of the component.
+          example: commerce_assets.banner
+          type: string
+        description:
+          title: Description
+          description: The description of the component.
+          example: Hero banner component
+          type: string
+        isFragment:
+          title: Is Fragment
+          description: Whether the component is a fragment.
+          example: false
+          type: boolean
     Page:
       properties:
         id:

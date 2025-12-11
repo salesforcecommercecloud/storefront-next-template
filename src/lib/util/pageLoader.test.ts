@@ -4,22 +4,31 @@ import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scap
 import { fetchPageFromLoader, collectComponentDataPromises } from './pageLoader';
 import { fetchPage } from '@/lib/api/page';
 import { registry } from '@/lib/registry';
+import { isDesignModeActive, isPreviewModeActive } from '@salesforce/storefront-next-runtime/design/mode';
 
 vi.mock('@/lib/api/page', () => ({
     fetchPage: vi.fn(),
 }));
 
+vi.mock('@salesforce/storefront-next-runtime/design/mode', () => ({
+    isDesignModeActive: vi.fn(),
+    isPreviewModeActive: vi.fn(),
+}));
+
 vi.mock('@/lib/registry', () => ({
     registry: {
-        getLoaders: vi.fn(),
+        callLoader: vi.fn(),
+        hasLoaders: vi.fn(),
     },
 }));
 
 const mockedFetchPage = vi.mocked(fetchPage);
 const mockedRegistry = vi.mocked(registry);
+const mockedIsDesignModeActive = vi.mocked(isDesignModeActive);
+const mockedIsPreviewModeActive = vi.mocked(isPreviewModeActive);
 
 // Test constants
-const TEST_CONTEXT = { shopperContext: 'test' };
+const TEST_CONTEXT = { get: vi.fn(), set: vi.fn() };
 const BASE_URL = 'https://example.com/page';
 const MOCK_PAGE_ID = 'test-page';
 const MOCK_PD_TOKEN = 'abc123';
@@ -48,6 +57,9 @@ describe('pageLoader', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         mockedFetchPage.mockResolvedValue(createMockPage());
+        // Set default mock behavior for design mode functions
+        mockedIsDesignModeActive.mockReturnValue(false);
+        mockedIsPreviewModeActive.mockReturnValue(false);
     });
 
     afterEach(() => {
@@ -64,6 +76,7 @@ describe('pageLoader', () => {
         });
 
         test('includes mode=EDIT and pdToken (and pageId from URL) when present', async () => {
+            mockedIsDesignModeActive.mockReturnValue(true);
             const urlPageId = 'url-page';
             const args = createLoaderArgs(`${BASE_URL}?mode=EDIT&pdToken=${MOCK_PD_TOKEN}&pageId=${urlPageId}`);
 
@@ -79,6 +92,7 @@ describe('pageLoader', () => {
         });
 
         test('includes mode=PREVIEW and pdToken when present', async () => {
+            mockedIsPreviewModeActive.mockReturnValue(true);
             const previewToken = 'xyz789';
             const args = createLoaderArgs(`${BASE_URL}?mode=PREVIEW&pdToken=${previewToken}`);
 
@@ -92,6 +106,7 @@ describe('pageLoader', () => {
         });
 
         test('does not include pdToken if missing even in EDIT mode', async () => {
+            mockedIsDesignModeActive.mockReturnValue(true);
             const args = createLoaderArgs(`${BASE_URL}?mode=EDIT`);
 
             await fetchPageFromLoader(args, { pageId: MOCK_PAGE_ID });
@@ -109,8 +124,7 @@ describe('pageLoader', () => {
             await fetchPageFromLoader(args, { pageId: paramPageId });
 
             expect(fetchPage).toHaveBeenCalledWith(TEST_CONTEXT, {
-                pageId: paramPageId, // URL pageId is ignored in VIEW mode
-                mode: 'VIEW',
+                pageId: paramPageId,
             });
         });
 
@@ -133,17 +147,21 @@ describe('pageLoader', () => {
 
             expect(result).toEqual({});
             // eslint-disable-next-line @typescript-eslint/unbound-method
-            expect(mockedRegistry.getLoaders).toHaveBeenCalledTimes(0);
+            expect(mockedRegistry.callLoader).toHaveBeenCalledTimes(0);
         });
 
         test('returns promises only for components with server loaders', async () => {
             const heroData = { title: 'Hero Title' };
             const footerData = { links: ['home', 'about'] };
 
-            mockedRegistry.getLoaders
-                .mockReturnValueOnce({ server: vi.fn().mockResolvedValue(heroData) })
-                .mockReturnValueOnce(undefined) // carousel has no loader
-                .mockReturnValueOnce({ server: vi.fn().mockResolvedValue(footerData) });
+            mockedRegistry.hasLoaders
+                .mockReturnValueOnce(true)
+                .mockReturnValueOnce(false) // carousel has no loader
+                .mockReturnValueOnce(true);
+
+            mockedRegistry.callLoader
+                .mockReturnValueOnce(Promise.resolve(heroData))
+                .mockReturnValueOnce(Promise.resolve(footerData));
 
             const args = createLoaderArgs(BASE_URL);
             const components = [
@@ -161,26 +179,33 @@ describe('pageLoader', () => {
         });
 
         test('server loader receives componentData and context', async () => {
-            const serverLoader = vi.fn().mockResolvedValue({ loaded: true });
-            mockedRegistry.getLoaders.mockReturnValue({ server: serverLoader });
+            const expectedData = { loaded: true };
+            mockedRegistry.hasLoaders.mockReturnValue(true);
+            mockedRegistry.callLoader.mockReturnValue(Promise.resolve(expectedData));
 
             const args = createLoaderArgs(BASE_URL);
             const component = createMockComponent('hero-1', 'hero', { title: 'Hero Title' });
             const page = createMockPage([createMockRegion([component])]);
 
             const dataPromises = await collectComponentDataPromises(args, Promise.resolve(page));
-            await dataPromises['hero-1'];
+            const result = await dataPromises['hero-1'];
 
-            expect(serverLoader).toHaveBeenCalledWith({
-                componentData: component,
-                context: TEST_CONTEXT,
-            });
+            // eslint-disable-next-line @typescript-eslint/unbound-method
+            expect(mockedRegistry.callLoader).toHaveBeenCalledWith(
+                'hero',
+                {
+                    componentData: component,
+                    context: TEST_CONTEXT,
+                },
+                'loader'
+            );
+            expect(result).toEqual(expectedData);
         });
 
         test('rejects promise when server loader throws error', async () => {
             const loaderError = new Error('Server loader failed');
-            const serverLoader = vi.fn().mockRejectedValue(loaderError);
-            mockedRegistry.getLoaders.mockReturnValue({ server: serverLoader });
+            mockedRegistry.hasLoaders.mockReturnValue(true);
+            mockedRegistry.callLoader.mockReturnValue(Promise.reject(loaderError));
 
             const args = createLoaderArgs(BASE_URL);
             const component = createMockComponent('failing-component', 'hero');
@@ -203,7 +228,7 @@ describe('pageLoader', () => {
 
             expect(dataPromises).toEqual({});
             // eslint-disable-next-line @typescript-eslint/unbound-method
-            expect(mockedRegistry.getLoaders).toHaveBeenCalledTimes(0);
+            expect(mockedRegistry.callLoader).toHaveBeenCalledTimes(0);
         });
 
         test('processes multiple regions with mixed loader availability', async () => {
@@ -211,11 +236,16 @@ describe('pageLoader', () => {
             const bannerData = { type: 'banner' };
             const footerData = { type: 'footer' };
 
-            mockedRegistry.getLoaders
-                .mockReturnValueOnce({ server: vi.fn().mockResolvedValue(heroData) })
-                .mockReturnValueOnce({ server: vi.fn().mockResolvedValue(bannerData) })
-                .mockReturnValueOnce(undefined) // carousel has no loader
-                .mockReturnValueOnce({ server: vi.fn().mockResolvedValue(footerData) });
+            mockedRegistry.hasLoaders
+                .mockReturnValueOnce(true) // hero has loader
+                .mockReturnValueOnce(true) // banner has loader
+                .mockReturnValueOnce(false) // carousel has no loader
+                .mockReturnValueOnce(true); // footer has loader
+
+            mockedRegistry.callLoader
+                .mockReturnValueOnce(Promise.resolve(heroData))
+                .mockReturnValueOnce(Promise.resolve(bannerData))
+                .mockReturnValueOnce(Promise.resolve(footerData));
 
             const args = createLoaderArgs(BASE_URL);
             const page = createMockPage([

@@ -1,1 +1,1 @@
-{"version":3,"file":"design-mode.d.ts","names":[],"sources":["../src/design/modeDetection.ts"],"sourcesContent":[],"mappings":";;AAWA;AAKA;AAEa,cAPA,UAO+D,EAAA,GAAA,GAAA,MAAA,GAAA,IAAA;cAF/D;cAEA"}
+{"version":3,"file":"design-mode.d.ts","names":[],"sources":["../src/design/modeDetection.ts"],"sourcesContent":[],"mappings":";;AAgBA;;;;;AA0BA;;AAAkD,cA1BrC,UA0BqC,EAAA,CAAA,GAAA,CAAA,EAAA,MAAA,GA1BR,GA0BQ,GA1BF,OA0BE,EAAA,GAAA,MAAA,GAAA,IAAA;;;AAOlD;;;AAAyD,cAP5C,kBAO4C,EAAA,CAAA,GAAA,CAAA,EAAA,MAAA,GAPP,GAOO,GAPD,OAOC,EAAA,GAAA,OAAA;;;;;;cAA5C,qCAAsC,MAAM"}

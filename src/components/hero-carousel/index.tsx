@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Component } from '@/lib/decorators/component';
 import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
+import withSuspense from '@/components/with-suspense';
+import HeroCarouselSkeleton from './skeleton';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import heroImage from '/images/hero-cube.png';
@@ -100,7 +102,7 @@ interface HeroCarouselProps {
     page?: Promise<ShopperExperience.schemas['Page']>;
 }
 
-export default function HeroCarousel({
+export function HeroCarouselPlain({
     slides: propSlides = heroSlides,
     autoPlay = true,
     image,
@@ -398,3 +400,44 @@ const HeroSlideContent = React.memo(
 );
 
 HeroSlideContent.displayName = 'HeroSlideContent';
+
+/**
+ * HeroCarouselWithSuspense component provides a HeroCarousel wrapped with a Suspense boundary.
+ *
+ * This component automatically shows the HeroCarouselSkeleton as a fallback while the
+ * HeroCarousel is loading, providing better user experience during data fetching.
+ *
+ * When used with a `resolve` prop, the resolved data should be an object containing
+ * slides data that will be passed as props to the HeroCarousel component.
+ *
+ * @example
+ * ```tsx
+ * // Basic usage with Suspense boundary
+ * <HeroCarouselWithSuspense
+ *   slides={heroSlides}
+ *   autoPlay={true}
+ *   showDots={true}
+ * />
+ *
+ * // Usage with promise resolution as a prop
+ * <HeroCarouselWithSuspense
+ *   resolve={heroDataPromise}
+ *   autoPlay={true}
+ * />
+ *
+ * // Usage in a page with streaming
+ * function HomePage() {
+ *   return (
+ *     <div>
+ *       <HeroCarouselWithSuspense resolve={heroDataPromise} />
+ *       <ProductCarouselWithSuspense resolve={productsPromise} />
+ *     </div>
+ *   );
+ * }
+ * ```
+ */
+const HeroCarousel = withSuspense(HeroCarouselPlain, {
+    fallback: <HeroCarouselSkeleton />,
+});
+
+export default HeroCarousel;

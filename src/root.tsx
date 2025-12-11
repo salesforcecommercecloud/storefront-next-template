@@ -51,8 +51,10 @@ import { useExecutePendingAction } from '@/hooks/use-execute-pending-action';
 import './app.css';
 import { initI18next } from '@/lib/i18next.client';
 import { PageDesignerProvider } from '@salesforce/storefront-next-runtime/design/react/core';
+import { isDesignModeActive, isPreviewModeActive } from '@salesforce/storefront-next-runtime/design/mode';
 import { PageDesignerStyles } from './page-designer-styles';
 import { PageViewTracker } from '@/lib/analytics/page-view-tracker';
+import { initializeRegistry } from '@/lib/static-registry';
 
 // On the client side, initialize i18next.
 // (On the server side, it's initialized elsewhere in middlewares/i18next.ts file)
@@ -83,12 +85,14 @@ export const clientMiddleware: MiddlewareFunction<Record<string, DataStrategyRes
 // eslint-disable-next-line react-refresh/only-export-components
 export const loader = ({
     context,
+    request,
 }: LoaderFunctionArgs): {
     root: Promise<ShopperProducts.schemas['Category']>;
     subs: Promise<ShopperProducts.schemas['Category'][]>;
     auth: () => SessionData; // Use a function to prevent state serialization
     appConfig: AppConfig;
     locale: string;
+    pageDesignerMode: 'EDIT' | 'PREVIEW' | undefined;
     // Return as function to prevent i18next instance serialization
     getI18next: () => i18n;
 } => {
@@ -150,6 +154,7 @@ export const loader = ({
         // Wrap these returned objects with a function, to avoid React Router serialization
         auth: () => session,
         getI18next: () => i18next,
+        pageDesignerMode: isDesignModeActive(request) ? 'EDIT' : isPreviewModeActive(request) ? 'PREVIEW' : undefined,
     };
 };
 
@@ -240,7 +245,11 @@ export function ErrorBoundary({ error }: { error: unknown }) {
     );
 }
 
-export default function App({ loaderData: { root, subs, auth, basket, getI18next } }: { loaderData: LoaderData }) {
+export default function App({
+    loaderData: { root, subs, auth, basket, getI18next, pageDesignerMode },
+}: {
+    loaderData: LoaderData;
+}) {
     const i18next = (typeof window === 'undefined' ? getI18next?.() : i18nextOnClient) as i18n;
 
     // We're only loading the root and sub categories from the server on the very first navigation. These refs ensure
@@ -284,6 +293,9 @@ export default function App({ loaderData: { root, subs, auth, basket, getI18next
     const loaderSession = auth?.();
     const sessionData = loaderSession ?? bootstrapAuth;
 
+    // Initialize Page Designer components
+    initializeRegistry();
+
     // Memoize the providers array to prevent unnecessary remounting of providers on render
     const providers = useMemo(
         () =>
@@ -305,7 +317,7 @@ export default function App({ loaderData: { root, subs, auth, basket, getI18next
             <Header>
                 <CategoryNavigationMenuMega resolve={refRoot.current} defer={refSubs.current} />
             </Header>
-            <PageDesignerProvider clientId="odyssey" targetOrigin="*" usid={sessionData.usid}>
+            <PageDesignerProvider clientId="odyssey" targetOrigin="*" usid={sessionData.usid} mode={pageDesignerMode}>
                 <PageDesignerStyles />
                 <main className="flex-grow pt-8">
                     {/* Outlet-level `<Suspense/>` boundary to contain pending promises. */}

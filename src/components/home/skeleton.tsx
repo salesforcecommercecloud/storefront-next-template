@@ -1,3 +1,5 @@
+import HeroSkeleton from './hero';
+
 /**
  * Home skeleton component that displays loading placeholders for the home page.
  * This component provides visual feedback while the home page data is loading.
@@ -8,25 +10,7 @@ export default function HomeSkeleton() {
     return (
         <div className="animate-pulse">
             {/* Hero Section Skeleton */}
-            <div className="w-full bg-muted/30 border-border/60">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8 bg-background ring-primary">
-                    <div className="flex flex-col md:flex-row w-full border-destructive/40">
-                        {/* Left column - Content Skeleton */}
-                        <div className="w-full md:w-1/2 flex flex-col justify-center p-8 md:p-12 bg-secondary/20">
-                            <div className="max-w-xl space-y-6">
-                                <div className="h-16 bg-muted w-3/4 rounded" />
-                                <div className="h-8 bg-muted w-1/2 rounded" />
-                                <div className="h-16 bg-muted w-32 rounded" />
-                            </div>
-                        </div>
-
-                        {/* Right column - Image Skeleton */}
-                        <div className="w-full md:w-1/2 relative md:h-auto lg:h-[530px]">
-                            <div className="bg-muted h-full w-full" />
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <HeroSkeleton />
 
             {/* Featured Products Section Skeleton */}
             <div className="py-16">

@@ -35,7 +35,6 @@ describe('Component', () => {
     test('shows custom fallback while pending, then renders Dynamic with resolved data and metadata', async () => {
         const Fallback = () => <div data-testid="inner-fallback" />;
         (registry.getFallback as any).mockReturnValue(Fallback);
-        (registry.getMetadata as any).mockReturnValue({ typeId: 'hero', name: 'Hero' });
 
         let lastProps: Record<string, unknown> | undefined;
         const Dynamic: FC<any> = (p) => {
@@ -48,6 +47,7 @@ describe('Component', () => {
             id: 'c1',
             typeId: 'hero',
             data: { foo: 1 } as any,
+            designMetadata: { name: 'Hero' },
             localized: true,
             visible: true,
         };
@@ -88,7 +88,6 @@ describe('Component', () => {
 
     test('renders immediately with data=undefined when no componentData is given', async () => {
         (registry.getFallback as any).mockReturnValue(undefined);
-        (registry.getMetadata as any).mockReturnValue({ typeId: 'hero', name: 'H2' });
 
         let lastProps: Record<string, unknown> | undefined;
         const Dynamic: FC<any> = (p) => {
@@ -97,7 +96,11 @@ describe('Component', () => {
         };
         (registry.getComponent as any).mockReturnValue(Dynamic);
 
-        const component: ShopperExperience.schemas['Component'] = { id: 'c2', typeId: 'hero' };
+        const component: ShopperExperience.schemas['Component'] = {
+            id: 'c2',
+            typeId: 'hero',
+            designMetadata: { name: 'H2' },
+        };
 
         render(
             <Component
@@ -120,7 +123,6 @@ describe('Component', () => {
 
     test('uses default <div/> fallback when no custom fallback is registered', async () => {
         (registry.getFallback as any).mockReturnValue(undefined);
-        (registry.getMetadata as any).mockReturnValue(undefined);
 
         const Dynamic: FC = () => <div data-testid="dyn-default" />;
         (registry.getComponent as any).mockReturnValue(Dynamic);
@@ -150,7 +152,6 @@ describe('Component', () => {
         (registry.getComponent as any).mockReturnValue(undefined);
         const preloadGate = deferred<void>();
         (registry.preload as any).mockReturnValue(preloadGate.promise);
-        (registry.getMetadata as any).mockReturnValue({ name: 'Post' });
 
         const DynamicAfter: FC<any> = () => <div data-testid="dyn-after-preload" />;
 
@@ -179,7 +180,6 @@ describe('Component', () => {
 
     test('selects the correct promise from the data map using component.id', async () => {
         (registry.getFallback as any).mockReturnValue(undefined);
-        (registry.getMetadata as any).mockReturnValue({ name: 'Meta' });
 
         let seenData: unknown;
         const Dynamic: FC<any> = (p) => {

@@ -15512,6 +15512,7 @@ interface components$8 {
        *     }
        */
       custom?: Record<string, never>;
+      designMetadata?: components$8["schemas"]["ComponentDesignMetadata"];
       /**
        * Regions
        * @description The regions (and their assigned components) for the component.
@@ -15538,6 +15539,32 @@ interface components$8 {
        *     ]
        */
       regions?: components$8["schemas"]["Region"][];
+    };
+    ComponentDesignMetadata: {
+      /**
+       * Name
+       * @description The name of the component.
+       * @example Hero
+       */
+      name?: string;
+      /**
+       * Type
+       * @description The type of the component.
+       * @example commerce_assets.banner
+       */
+      type?: string;
+      /**
+       * Description
+       * @description The description of the component.
+       * @example Hero banner component
+       */
+      description?: string;
+      /**
+       * Is Fragment
+       * @description Whether the component is a fragment.
+       * @example false
+       */
+      isFragment?: boolean;
     };
     Page: {
       /**

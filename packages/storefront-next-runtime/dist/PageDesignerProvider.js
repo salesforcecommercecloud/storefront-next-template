@@ -13,8 +13,8 @@ const PageDesignerContext = createContext({
 const usePageDesignerMode = () => useContext(PageDesignerContext);
 const PageDesignerProvider = ({ children, targetOrigin, clientId, usid, clientLogger, clientConnectionTimeout, clientConnectionInterval, mode }) => {
 	const contextValue = useMemo(() => ({
-		isDesignMode: mode === "design" || isDesignModeActive(),
-		isPreviewMode: mode === "preview" || isPreviewModeActive()
+		isDesignMode: mode === "EDIT" || isDesignModeActive(),
+		isPreviewMode: mode === "PREVIEW" || isPreviewModeActive()
 	}), [mode]);
 	const { isDesignMode, isPreviewMode } = contextValue;
 	if (isDesignMode && !targetOrigin) throw new Error("PageDesignerProvider: targetOrigin is required when in design mode for security reasons. This should be the origin of the host application that contains this iframe ");

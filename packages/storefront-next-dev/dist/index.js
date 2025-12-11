@@ -1,7 +1,10 @@
 import path, { resolve } from "node:path";
 import fs from "fs-extra";
-import path$1, { basename, extname, join, posix, resolve as resolve$1 } from "path";
+import path$1, { basename, dirname, extname, join, posix, relative, resolve as resolve$1 } from "path";
 import { URL as URL$1, fileURLToPath } from "url";
+import fs$1, { existsSync, readFileSync, writeFileSync } from "fs";
+import { glob } from "glob";
+import { Node, Project, ts } from "ts-morph";
 import os from "os";
 import archiver from "archiver";
 import { Minimatch, minimatch } from "minimatch";
@@ -10,15 +13,13 @@ import dotenv from "dotenv";
 import chalk from "chalk";
 import express from "express";
 import { createRequestHandler } from "@react-router/express";
-import { existsSync } from "node:fs";
+import { existsSync as existsSync$1 } from "node:fs";
 import { pathToFileURL } from "node:url";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import compression from "compression";
 import zlib from "node:zlib";
 import morgan from "morgan";
-import fs$1 from "fs";
 import { access, mkdir, readFile, readdir, rm, writeFile } from "fs/promises";
-import { Node, Project } from "ts-morph";
 
 //#region src/plugins/fixReactRouterManifestUrls.ts
 function patchAssetsPaths(dir) {
@@ -255,6 +256,274 @@ const patchReactRouterPlugin = () => {
 };
 
 //#endregion
+//#region src/plugins/staticRegistry.ts
+const DEFAULT_COMPONENT_GROUP$1 = "odyssey_base";
+/**
+* Extracts component ID and group from @Component decorator using ts-morph AST parsing
+*/
+function extractComponentInfo(decorator) {
+	const callExpression = decorator.getCallExpression();
+	if (!callExpression) return null;
+	const args = callExpression.getArguments();
+	if (args.length === 0) return null;
+	const firstArg = args[0];
+	let baseComponentId;
+	if (Node.isStringLiteral(firstArg)) baseComponentId = firstArg.getLiteralValue();
+	else if (Node.isNoSubstitutionTemplateLiteral(firstArg)) baseComponentId = firstArg.getText().slice(1, -1);
+	else if (Node.isTemplateExpression(firstArg)) throw new Error(`@Component id must be a simple string literal or backtick string without interpolation. Found: ${firstArg.getText()}`);
+	else return null;
+	let group = DEFAULT_COMPONENT_GROUP$1;
+	if (args.length > 1) {
+		const secondArg = args[1];
+		if (Node.isObjectLiteralExpression(secondArg)) {
+			const groupProperty = secondArg.getProperty("group");
+			if (groupProperty && Node.isPropertyAssignment(groupProperty)) {
+				const initializer = groupProperty.getInitializer();
+				if (initializer && Node.isStringLiteral(initializer)) group = initializer.getLiteralValue();
+			}
+		}
+	}
+	return {
+		id: `${group}.${baseComponentId}`,
+		group
+	};
+}
+/**
+* Checks if a source file has a specific named export using ts-morph AST parsing
+*/
+function hasNamedExport(sourceFile, exportName) {
+	if (sourceFile.getFunctions().filter((func) => func.hasExportKeyword() && func.getName() === exportName).length > 0) return true;
+	const variableStatements = sourceFile.getVariableStatements().filter((stmt) => stmt.hasExportKeyword());
+	for (const stmt of variableStatements) {
+		const declarations = stmt.getDeclarations();
+		for (const decl of declarations) if (decl.getName() === exportName) return true;
+	}
+	const exportDeclarations = sourceFile.getExportDeclarations();
+	for (const exportDecl of exportDeclarations) {
+		const namedExports = exportDecl.getNamedExports();
+		for (const namedExport of namedExports) {
+			const localName = namedExport.getName();
+			const aliasName = namedExport.getAliasNode()?.getText();
+			if (localName === exportName || aliasName === exportName) return true;
+		}
+	}
+	return false;
+}
+/**
+* Checks if a source file has a fallback export (including default exports with 'fallback' in name)
+*/
+function hasFallbackExport(sourceFile) {
+	if (hasNamedExport(sourceFile, "fallback")) return true;
+	const functions = sourceFile.getFunctions().filter((func) => func.hasExportKeyword() && func.hasDefaultKeyword());
+	for (const func of functions) {
+		const name = func.getName();
+		if (name && name.toLowerCase().includes("fallback")) return true;
+	}
+	return false;
+}
+/**
+* Scans all files in the component directory for @Component decorators and extracts metadata using ts-morph
+*/
+async function scanComponents(project, projectRoot, componentPath, registryPath, verbose$1) {
+	const componentFiles = await glob(`${componentPath}/**/*.{ts,tsx}`, {
+		cwd: projectRoot,
+		absolute: true
+	});
+	if (verbose$1) console.log(`🔍 Scanning ${componentFiles.length} files in ${componentPath}...`);
+	const components = [];
+	const registryDir = dirname(resolve$1(projectRoot, registryPath));
+	for (const filePath of componentFiles) try {
+		const content = readFileSync(filePath, "utf-8");
+		const sourceFile = project.createSourceFile(filePath, content, { overwrite: true });
+		const classes = sourceFile.getClasses();
+		for (const classDeclaration of classes) {
+			const decorators = classDeclaration.getDecorators();
+			for (const decorator of decorators) if (decorator.getName() === "Component") {
+				const componentInfo = extractComponentInfo(decorator);
+				if (componentInfo) {
+					let relativePath = relative(registryDir, filePath).replace(/\\/g, "/").replace(/\.(ts|tsx)$/, "");
+					if (!relativePath.startsWith(".")) relativePath = `./${relativePath}`;
+					const hasLoaderExport = hasNamedExport(sourceFile, "loader");
+					const hasClientLoaderExport = hasNamedExport(sourceFile, "clientLoader");
+					const hasFallback = hasFallbackExport(sourceFile);
+					components.push({
+						id: componentInfo.id,
+						filePath,
+						relativePath,
+						hasLoader: hasLoaderExport,
+						hasClientLoader: hasClientLoaderExport,
+						hasFallback
+					});
+					if (verbose$1) {
+						const exports = [];
+						if (hasLoaderExport) exports.push("loader");
+						if (hasClientLoaderExport) exports.push("clientLoader");
+						if (hasFallback) exports.push("fallback");
+						const exportsText = exports.length > 0 ? ` (with ${exports.join(", ")})` : "";
+						console.log(`  ✅ Found component: ${componentInfo.id} → ${relativePath}${exportsText}`);
+					}
+				}
+			}
+		}
+	} catch (error$1) {
+		if (verbose$1) console.warn(`⚠️  Could not process ${filePath}:`, error$1.message);
+	}
+	return components;
+}
+/**
+* Generates the initializeRegistry function code
+*/
+function generateRegistryCode(components, registryIdentifier = "registry") {
+	const sorted = [...components].sort((a, b) => a.id.localeCompare(b.id) || a.relativePath.localeCompare(b.relativePath));
+	if (sorted.length === 0) return `
+/* eslint-disable */
+/**
+ * Initialize the static component registry.
+ * This function is auto-generated by the staticRegistry Vite plugin.
+ * 
+ * DO NOT EDIT THIS FUNCTION MANUALLY - it will be overwritten on next build.
+ */
+export function initializeRegistry(targetRegistry = ${registryIdentifier}): void {
+    // No components found with @Component decorators
+}
+`;
+	const registrations = sorted.map(({ id, relativePath, hasLoader, hasClientLoader, hasFallback }) => {
+		if (hasLoader || hasClientLoader || hasFallback) {
+			const metadata = [];
+			if (hasLoader) metadata.push(`loader: 'loader'`);
+			if (hasClientLoader) metadata.push(`clientLoader: 'clientLoader'`);
+			if (hasFallback) metadata.push(`fallback: 'fallback'`);
+			return `    targetRegistry.registerImporter('${id}', () => import('${relativePath}'), { ${metadata.join(", ")} });`;
+		} else return `    targetRegistry.registerImporter('${id}', () => import('${relativePath}'));`;
+	}).join("\n");
+	return `
+/* eslint-disable */
+/**
+ * Initialize the static component registry.
+ * This function is auto-generated by the staticRegistry Vite plugin.
+ * 
+ * DO NOT EDIT THIS FUNCTION MANUALLY - it will be overwritten on next build.
+ * 
+ * Components registered: ${sorted.map((c) => c.id).join(", ")}
+ */
+export function initializeRegistry(targetRegistry = ${registryIdentifier}): void {
+${registrations}
+}
+`;
+}
+/**
+* Updates the registry.ts file with the generated code
+*/
+function updateRegistryFile(registryFilePath, generatedCode, verbose$1) {
+	let existingContent;
+	if (!existsSync(registryFilePath)) {
+		if (verbose$1) console.log(`📝 Creating new registry file...`);
+		const basicRegistryContent = `import { ComponentRegistry } from '@/lib/component-registry';
+
+// Create the component registry instance
+export const registry = new ComponentRegistry();
+
+// STATIC_REGISTRY_START
+// Generated content will be inserted here by the static registry plugin
+// STATIC_REGISTRY_END
+`;
+		writeFileSync(registryFilePath, basicRegistryContent, "utf-8");
+		existingContent = basicRegistryContent;
+	} else try {
+		existingContent = readFileSync(registryFilePath, "utf-8");
+	} catch (error$1) {
+		throw new Error(`Failed to read registry file: ${error$1.message}`);
+	}
+	const startMarker = "// STATIC_REGISTRY_START";
+	const endMarker = "// STATIC_REGISTRY_END";
+	const startIndex = existingContent.indexOf(startMarker);
+	const endIndex = existingContent.indexOf(endMarker);
+	if (startIndex === -1 || endIndex === -1) throw new Error(`Registry file ${registryFilePath} is missing static registry markers. Please add "${startMarker}" and "${endMarker}" markers to define the generated content area.`);
+	const updatedContent = `${existingContent.slice(0, startIndex + 24)}\n${generatedCode}\n${existingContent.slice(endIndex)}`;
+	try {
+		writeFileSync(registryFilePath, updatedContent, "utf-8");
+		if (verbose$1) console.log(`💾 Updated registry file: ${registryFilePath}`);
+	} catch (error$1) {
+		throw new Error(`Failed to write registry file: ${error$1.message}`);
+	}
+}
+/**
+* Vite plugin that generates static component registry based on @Component decorators.
+*
+* This plugin scans component files for @Component decorators and automatically generates
+* a static registry function that pre-registers all components with their import paths.
+* This eliminates the need for manual component registration and provides build-time
+* optimization for component discovery.
+*
+* @param config - Configuration options for the plugin
+* @returns A Vite plugin that generates static component registrations
+*
+* @example
+* // In vite.config.ts
+* export default defineConfig({
+*   plugins: [
+*     staticRegistryPlugin({
+*       componentPath: 'src/components',
+*       registryPath: 'src/lib/registry.ts',
+*       verbose: true
+*     })
+*   ]
+* })
+*/
+const staticRegistryPlugin = (config = {}) => {
+	const { componentPath = "src/components", registryPath = "src/lib/static-registry.ts", registryIdentifier = "registry", failOnError = true, verbose: verbose$1 = false } = config;
+	let projectRoot;
+	const runRegistryGeneration = async () => {
+		if (verbose$1) console.log("🚀 Starting static registry generation...");
+		const components = await scanComponents(new Project({ compilerOptions: {
+			target: ts.ScriptTarget.Latest,
+			module: ts.ModuleKind.ESNext,
+			jsx: ts.JsxEmit.ReactJSX,
+			allowJs: true,
+			skipLibCheck: true,
+			noEmit: true
+		} }), projectRoot, componentPath, registryPath, verbose$1);
+		if (verbose$1) console.log(`📦 Found ${components.length} components with @Component decorators`);
+		const generatedCode = generateRegistryCode(components, registryIdentifier);
+		const registryFilePath = resolve$1(projectRoot, registryPath);
+		updateRegistryFile(registryFilePath, generatedCode, verbose$1);
+		if (verbose$1) console.log("✅ Static registry generation complete!");
+		return registryFilePath;
+	};
+	return {
+		name: "storefrontnext:static-registry",
+		configResolved(resolvedConfig) {
+			projectRoot = resolvedConfig.root;
+		},
+		async buildStart() {
+			try {
+				await runRegistryGeneration();
+			} catch (error$1) {
+				console.error(`❌ Static registry generation failed: ${error$1.message}`);
+				if (failOnError) throw error$1;
+				console.warn("⚠️  Continuing build without static registry...");
+			}
+		},
+		async handleHotUpdate({ file, server }) {
+			const normalizedComponentPath = componentPath.replace(/\\/g, "/");
+			const normalizedFile = file.replace(/\\/g, "/");
+			if (normalizedFile.includes(`/${normalizedComponentPath}/`) && (normalizedFile.endsWith(".ts") || normalizedFile.endsWith(".tsx"))) {
+				if (verbose$1) console.log(`🔄 Component file changed: ${file}, regenerating registry...`);
+				try {
+					const registryFilePath = await runRegistryGeneration();
+					const registryModule = server.moduleGraph.getModuleById(registryFilePath);
+					if (registryModule) await server.reloadModule(registryModule);
+					if (verbose$1) console.log("✅ Registry regenerated successfully!");
+				} catch (error$1) {
+					console.error(`❌ Failed to regenerate registry: ${error$1.message}`);
+				}
+				return [];
+			}
+		}
+	};
+};
+
+//#endregion
 //#region src/plugin.ts
 /**
 * Storefront Next Vite plugin that powers the React Router RSC app.
@@ -276,12 +545,17 @@ const patchReactRouterPlugin = () => {
 * })
 */
 function storefrontNextPlugins(config = {}) {
-	const { readableChunkNames = false } = config;
+	const { readableChunkNames = false, staticRegistry = {
+		componentPath: "",
+		registryPath: "",
+		verbose: false
+	} } = config;
 	const plugins = [
 		managedRuntimeBundlePlugin(),
 		fixReactRouterManifestUrlsPlugin(),
 		patchReactRouterPlugin()
 	];
+	if (staticRegistry?.componentPath && staticRegistry?.registryPath) plugins.push(staticRegistryPlugin(staticRegistry));
 	if (readableChunkNames) plugins.push(readableChunkFileNamesPlugin());
 	return plugins;
 }
@@ -764,12 +1038,12 @@ function loadConfigFromEnv() {
 async function loadProjectConfig(projectDirectory) {
 	const configPath = resolve(projectDirectory, "config.server.ts");
 	const tsconfigPath = resolve(projectDirectory, "tsconfig.json");
-	if (!existsSync(configPath)) throw new Error(`config.server.ts not found at ${configPath}.\nPlease ensure config.server.ts exists in your project root.`);
+	if (!existsSync$1(configPath)) throw new Error(`config.server.ts not found at ${configPath}.\nPlease ensure config.server.ts exists in your project root.`);
 	const { tsImport } = await import("tsx/esm/api");
 	const configUrl = pathToFileURL(configPath).href;
 	const config = (await tsImport(configUrl, {
 		parentURL: import.meta.url,
-		tsconfig: existsSync(tsconfigPath) ? tsconfigPath : void 0
+		tsconfig: existsSync$1(tsconfigPath) ? tsconfigPath : void 0
 	})).default;
 	if (!config?.app?.commerce?.api) throw new Error("Invalid config.server.ts: missing app.commerce.api configuration.\nPlease ensure your config.server.ts has the commerce API configuration.");
 	const api = config.app.commerce.api;

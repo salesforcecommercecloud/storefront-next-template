@@ -3,11 +3,11 @@ import { Await } from 'react-router';
 import type { ShopperProducts, ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Typography } from '@/components/typography';
-import { Component, Loader } from '@/lib/decorators/component';
+import { Component } from '@/lib/decorators/component';
 import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
 import { RegionDefinition, getRegionDefinition } from '@/lib/decorators';
 import { useTranslation } from 'react-i18next';
-import { loader } from './loaders';
+import { loader as loaders } from './loaders';
 import PopularCategory from '@/components/home/popular-category';
 import { Region } from '@/components/region';
 
@@ -35,7 +35,6 @@ interface PopularCategoriesProps {
         maxComponents: 4,
     },
 ])
-@Loader(loader)
 export class PopularCategoriesMetadata {
     @AttributeDefinition({
         name: 'Parent Category ID',
@@ -231,6 +230,11 @@ function CategoryGridContent({
         </>
     );
 }
+
+/* eslint-disable-next-line react-refresh/only-export-components*/
+export const loader = loaders.server;
+/* eslint-disable-next-line react-refresh/only-export-components*/
+export const clientLoader = loaders.client;
 
 /**
  * Popular Categories component that displays a grid of category cards

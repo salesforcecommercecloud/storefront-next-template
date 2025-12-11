@@ -1,5 +1,6 @@
+import { r as ComponentModule, s as FrameworkAdapter } from "./index.js";
 import { r as ShopperExperience } from "./types.js";
-import { S as ClientAcknowledgedEvent, l as EventPayload, r as ClientApi } from "./index.js";
+import { S as ClientAcknowledgedEvent, l as EventPayload, r as ClientApi } from "./index2.js";
 import React from "react";
 
 //#region src/design/react/context/DesignContext.d.ts
@@ -97,5 +98,33 @@ declare function createReactComponentDesignDecorator<TProps>(Component: React.Co
 //#region src/design/react/components/RegionDecorator.d.ts
 declare function createReactRegionDesignDecorator<TProps>(Region: React.ComponentType<TProps>): (props: RegionDecoratorProps<TProps>) => React.JSX.Element;
 //#endregion
-export { type ComponentDecoratorProps, type ComponentDesignMetadata, type DesignContextType, type RegionDecoratorProps, type RegionDesignMetadata, createReactComponentDesignDecorator, createReactRegionDesignDecorator, useDesignContext };
+//#region src/design/react/registry/adapter.d.ts
+type ReactComponentModule<TProps> = ComponentModule<TProps, ReactDesignComponentType<TProps>>;
+/**
+ * A React component that optionally accepts design metadata.
+ * Any component returned from the registry could potentially accept design metadata.
+ * This includes both regular components and lazy components with their React-specific properties.
+ */
+type ReactDesignComponentType<TProps> = React.ComponentType<TProps> | React.LazyExoticComponent<React.ComponentType<TProps>>;
+/**
+ * React framework adapter that implements React-specific behavior
+ * for the framework-agnostic component registry.
+ */
+declare class ReactAdapter<TProps> implements FrameworkAdapter<TProps, ReactDesignComponentType<TProps>> {
+  /**
+   * Creates a React lazy component from an importer function.
+   */
+  createLazyComponent(importer: () => Promise<ReactComponentModule<TProps>>): ReactDesignComponentType<TProps>;
+  /**
+   * Decorates a React component with design-time capabilities.
+   * Uses the React-specific design decorator directly.
+   */
+  decorateComponent(component: ReactDesignComponentType<TProps>): ReactDesignComponentType<TProps>;
+}
+/**
+ * Creates a React adapter instance with optional configuration.
+ */
+declare function createReactAdapter<TProps>(): ReactAdapter<TProps>;
+//#endregion
+export { type ComponentDecoratorProps, type ComponentDesignMetadata, type DesignContextType, type ReactDesignComponentType, type RegionDecoratorProps, type RegionDesignMetadata, createReactAdapter, createReactComponentDesignDecorator, createReactRegionDesignDecorator, useDesignContext };
 //# sourceMappingURL=design-react.d.ts.map

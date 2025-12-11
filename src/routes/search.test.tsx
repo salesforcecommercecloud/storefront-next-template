@@ -58,7 +58,7 @@ const createMockPage = (regions: any[] = []): ShopperExperience.schemas['Page'] 
     }) as ShopperExperience.schemas['Page'];
 
 // Mock Page Designer mode - must be before Region mock
-vi.mock('@salesforce/storefront-next-runtime/design', () => ({
+vi.mock('@salesforce/storefront-next-runtime/design/mode', () => ({
     isDesignModeActive: vi.fn(() => false),
 }));
 

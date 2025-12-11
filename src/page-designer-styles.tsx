@@ -5,7 +5,7 @@ import { usePageDesignerMode } from '@salesforce/storefront-next-runtime/design/
  * Imports the Page Designer styles when in design mode.
  */
 export function PageDesignerStyles() {
-    const isDesignMode = usePageDesignerMode();
+    const { isDesignMode } = usePageDesignerMode();
 
     useEffect(() => {
         if (isDesignMode) {

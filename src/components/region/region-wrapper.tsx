@@ -6,7 +6,7 @@
  */
 
 import { type ReactNode } from 'react';
-import { isDesignModeActive } from '@salesforce/storefront-next-runtime/design/mode';
+import { usePageDesignerMode } from '@salesforce/storefront-next-runtime/design/react/core';
 import {
     createReactRegionDesignDecorator,
     type RegionDesignMetadata,
@@ -54,7 +54,7 @@ const DecoratedRegionRenderer = createReactRegionDesignDecorator(RegionRenderer)
  * ```
  */
 export function RegionWrapper({ region, children, className, designMetadata, ...rest }: RegionRendererProps) {
-    const isDesignMode = isDesignModeActive();
+    const { isDesignMode } = usePageDesignerMode();
 
     if (isDesignMode && region?.id) {
         return (

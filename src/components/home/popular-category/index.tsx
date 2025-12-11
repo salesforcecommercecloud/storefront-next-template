@@ -2,11 +2,11 @@ import type { ComponentProps } from 'react';
 import type { ShopperProducts, ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import type { ComponentDesignMetadata } from '@salesforce/storefront-next-runtime/design/react';
 import ContentCard from '@/components/content-card';
-import { Component, Loader } from '@/lib/decorators/component';
+import { Component } from '@/lib/decorators/component';
 import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
 import { useTranslation } from 'react-i18next';
 import heroImage from '/images/hero-cube.png';
-import { loader } from './loaders';
+import { loader as loaders } from './loaders';
 
 interface PopularCategoryProps extends ComponentProps<'div'> {
     // Category data from Page Designer (via loader) or programmatic use
@@ -25,7 +25,6 @@ interface PopularCategoryProps extends ComponentProps<'div'> {
     name: 'Popular Category',
     description: 'Displays a single category card with image, title, description, and shop now button',
 })
-@Loader(loader)
 export class PopularCategoryMetadata {
     @AttributeDefinition({
         name: 'Category',
@@ -35,6 +34,11 @@ export class PopularCategoryMetadata {
     category?: string;
 }
 /* v8 ignore stop */
+
+/* eslint-disable-next-line react-refresh/only-export-components*/
+export const loader = loaders.server;
+/* eslint-disable-next-line react-refresh/only-export-components*/
+export const clientLoader = loaders.client;
 
 /**
  * PopularCategory component that displays a single category as a content card

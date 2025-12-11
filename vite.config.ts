@@ -72,7 +72,14 @@ export default defineConfig(({ mode }) => {
             tailwindcss(),
             tsconfigPaths(),
             devtoolsJson(),
-            storefrontNextPlugin({ readableChunkNames: enableReadableChunkNames }),
+            storefrontNextPlugin({
+                readableChunkNames: enableReadableChunkNames,
+                staticRegistry: {
+                    componentPath: 'src/components',
+                    registryPath: 'src/lib/static-registry.ts',
+                    verbose: mode !== 'production' && mode !== 'test',
+                },
+            }),
             perEnvironmentPlugin('bundlesize', (env) => {
                 if (!enableBundlesizeCheck) {
                     return;
@@ -133,6 +140,7 @@ export default defineConfig(({ mode }) => {
                     'src/test-utils/*',
                     'src/lib/test-utils/*',
                     'src/**/__tests__/*',
+                    'src/lib/static-registry.ts',
                 ],
                 reportOnFailure: true,
                 thresholds: coverageConfigThresholds,

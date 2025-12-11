@@ -2,24 +2,31 @@ import type { LoaderFunctionArgs } from 'react-router';
 import { fetchPage, type PageDesignerPageParams } from '@/lib/api/page';
 import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import { registry } from '@/lib/registry';
+import { isDesignModeActive, isPreviewModeActive } from '@salesforce/storefront-next-runtime/design/mode';
 
 type PageParams = Omit<PageDesignerPageParams, 'mode' | 'pdToken'>;
 export function fetchPageFromLoader(
     args: LoaderFunctionArgs,
     params: PageParams
 ): Promise<ShopperExperience.schemas['Page']> {
+    const isPageDesignerActive = isDesignModeActive(args.request) || isPreviewModeActive(args.request);
     const url = new URL(args.request.url);
-    const mode = url.searchParams.get('mode');
-    const isPageDesignerActive = mode === 'EDIT' || mode === 'PREVIEW';
-    const pdToken = isPageDesignerActive ? (url.searchParams.get('pdToken') ?? undefined) : undefined;
-    const pageId = isPageDesignerActive ? (url.searchParams.get('pageId') ?? undefined) : undefined;
 
-    return fetchPage(args.context, {
-        ...params,
-        ...(mode ? { mode } : {}),
-        ...(pdToken ? { pdToken } : {}),
-        ...(pageId ? { pageId } : {}),
-    });
+    if (!isPageDesignerActive) {
+        return fetchPage(args.context, params);
+    }
+
+    const pageDesignerParams: Partial<PageDesignerPageParams> = {
+        mode: url.searchParams.get('mode') || undefined,
+        pdToken: url.searchParams.get('pdToken') || undefined,
+        pageId: url.searchParams.get('pageId') || undefined,
+    };
+
+    const cleanParams = Object.fromEntries(
+        Object.entries(pageDesignerParams).filter(([, value]) => value !== undefined)
+    );
+
+    return fetchPage(args.context, { ...params, ...cleanParams });
 }
 
 /**
@@ -27,20 +34,25 @@ export function fetchPageFromLoader(
  */
 function collectFromRegions(
     ctx: LoaderFunctionArgs,
-    regions: ShopperExperienceTypes.Region[] | undefined,
+    regions: ShopperExperience.schemas['Region'][] | undefined,
     map: Record<string, Promise<unknown>>
 ): void {
     if (!regions) return;
 
     for (const region of regions) {
         for (const comp of region.components || []) {
-            const loaders = registry.getLoaders(comp.typeId);
-            if (loaders?.server) {
-                // Each component gets its own independent promise
-                map[comp.id] = loaders.server({
-                    componentData: comp,
-                    context: ctx.context,
-                });
+            // Check if component has a loader before calling it
+            const hasLoaders = registry.hasLoaders(comp.typeId);
+
+            if (hasLoaders) {
+                map[comp.id] = registry.callLoader(
+                    comp.typeId,
+                    {
+                        componentData: comp,
+                        context: ctx.context,
+                    },
+                    'loader'
+                );
             }
 
             // Recursively process nested regions (components can have their own regions)
