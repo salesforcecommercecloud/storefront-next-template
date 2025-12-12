@@ -194,18 +194,27 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                             data-testid="mobile-product-price"
                           >
                             <div
-                              class="space-y-1 text-right pr-2"
+                              class="font-semibold text-base"
                             >
                               <div
-                                class="text-xl font-medium"
+                                class="items-center gap-2 text-card-foreground text-right font-semibold text-sm leading-none relative"
                               >
-                                $39.67
-                              </div>
-                              <div
-                                class="text-md text-muted-foreground"
-                              >
-                                $61.99
-                                 each
+                                <span
+                                  aria-label="Current price: $39.67"
+                                  aria-live="polite"
+                                  class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                                >
+                                  $39.67
+                                </span>
+                                <span
+                                  aria-atomic="true"
+                                  aria-live="polite"
+                                  class="sr-only"
+                                >
+                                  Button Front Jacket
+                                  Current price: $39.67
+                                </span>
+                                 
                               </div>
                             </div>
                           </div>
@@ -267,18 +276,27 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                                 data-testid="desktop-product-price"
                               >
                                 <div
-                                  class="space-y-1 text-right pr-2"
+                                  class="font-semibold text-base"
                                 >
                                   <div
-                                    class="text-xl font-medium"
+                                    class="items-center gap-2"
                                   >
-                                    $39.67
-                                  </div>
-                                  <div
-                                    class="text-md text-muted-foreground"
-                                  >
-                                    $61.99
-                                     each
+                                    <span
+                                      aria-label="Current price: $39.67"
+                                      aria-live="polite"
+                                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                    >
+                                      $39.67
+                                    </span>
+                                    <span
+                                      aria-atomic="true"
+                                      aria-live="polite"
+                                      class="sr-only"
+                                    >
+                                      Button Front Jacket
+                                      Current price: $39.67
+                                    </span>
+                                     
                                   </div>
                                 </div>
                               </div>
@@ -881,19 +899,35 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                             data-testid="mobile-product-price"
                           >
                             <div
-                              class="space-y-1 text-right pr-2"
+                              class="font-semibold text-base"
                             >
                               <div
-                                class="text-xl font-medium"
+                                class="items-center gap-2 text-card-foreground text-right font-semibold text-sm leading-none relative"
                               >
-                                $38.38
+                                <span
+                                  aria-label="Current price: $38.38"
+                                  aria-live="polite"
+                                  class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                                >
+                                  $38.38
+                                </span>
+                                <span
+                                  aria-atomic="true"
+                                  aria-live="polite"
+                                  class="sr-only"
+                                >
+                                  Solid Silk Tie
+                                  Current price: $38.38
+                                </span>
+                                 
                               </div>
-                              <div
-                                class="text-md text-muted-foreground"
-                              >
-                                $29.99
-                                 each
-                              </div>
+                            </div>
+                            <div
+                              class="text-muted-foreground text-sm"
+                            >
+                              $19.19
+                               
+                              each
                             </div>
                           </div>
                           <div
@@ -953,19 +987,35 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                 data-testid="desktop-product-price"
                               >
                                 <div
-                                  class="space-y-1 text-right pr-2"
+                                  class="font-semibold text-base"
                                 >
                                   <div
-                                    class="text-xl font-medium"
+                                    class="items-center gap-2"
                                   >
-                                    $38.38
+                                    <span
+                                      aria-label="Current price: $38.38"
+                                      aria-live="polite"
+                                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                    >
+                                      $38.38
+                                    </span>
+                                    <span
+                                      aria-atomic="true"
+                                      aria-live="polite"
+                                      class="sr-only"
+                                    >
+                                      Solid Silk Tie
+                                      Current price: $38.38
+                                    </span>
+                                     
                                   </div>
-                                  <div
-                                    class="text-md text-muted-foreground"
-                                  >
-                                    $29.99
-                                     each
-                                  </div>
+                                </div>
+                                <div
+                                  class="text-muted-foreground text-sm"
+                                >
+                                  $19.19
+                                   
+                                  each
                                 </div>
                               </div>
                             </div>
@@ -1080,18 +1130,34 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                             data-testid="mobile-product-price"
                           >
                             <div
-                              class="space-y-1 text-right pr-2"
+                              class="font-semibold text-base"
                             >
                               <div
-                                class="text-xl font-medium"
+                                class="items-center gap-2 text-card-foreground text-right font-semibold text-sm leading-none relative"
                               >
-                                $35.19
+                                <span
+                                  aria-label="Current price: $35.19"
+                                  aria-live="polite"
+                                  class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                                >
+                                  $35.19
+                                </span>
+                                <span
+                                  aria-atomic="true"
+                                  aria-live="polite"
+                                  class="sr-only"
+                                >
+                                  Floral Ruffle Top
+                                  Current price: $35.19
+                                </span>
+                                 
                               </div>
                               <div
-                                class="text-md text-muted-foreground"
+                                class="items-center gap-2 text-right font-semibold relative text-sm text-muted-foreground"
                               >
-                                $54.99
-                                 each
+                                <span>
+                                  Buy one Long Center Seam Skirt and get 2 tops
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -1153,18 +1219,34 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                 data-testid="desktop-product-price"
                               >
                                 <div
-                                  class="space-y-1 text-right pr-2"
+                                  class="font-semibold text-base"
                                 >
                                   <div
-                                    class="text-xl font-medium"
+                                    class="items-center gap-2"
                                   >
-                                    $35.19
+                                    <span
+                                      aria-label="Current price: $35.19"
+                                      aria-live="polite"
+                                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                    >
+                                      $35.19
+                                    </span>
+                                    <span
+                                      aria-atomic="true"
+                                      aria-live="polite"
+                                      class="sr-only"
+                                    >
+                                      Floral Ruffle Top
+                                      Current price: $35.19
+                                    </span>
+                                     
                                   </div>
                                   <div
-                                    class="text-md text-muted-foreground"
+                                    class="items-center gap-2 text-sm text-muted-foreground"
                                   >
-                                    $54.99
-                                     each
+                                    <span>
+                                      Buy one Long Center Seam Skirt and get 2 tops
+                                    </span>
                                   </div>
                                 </div>
                               </div>
@@ -1767,19 +1849,35 @@ exports[`CartContent stories snapshot > DesktopLayout story renders and matches 
                             data-testid="mobile-product-price"
                           >
                             <div
-                              class="space-y-1 text-right pr-2"
+                              class="font-semibold text-base"
                             >
                               <div
-                                class="text-xl font-medium"
+                                class="items-center gap-2 text-card-foreground text-right font-semibold text-sm leading-none relative"
                               >
-                                $38.38
+                                <span
+                                  aria-label="Current price: $38.38"
+                                  aria-live="polite"
+                                  class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                                >
+                                  $38.38
+                                </span>
+                                <span
+                                  aria-atomic="true"
+                                  aria-live="polite"
+                                  class="sr-only"
+                                >
+                                  Solid Silk Tie
+                                  Current price: $38.38
+                                </span>
+                                 
                               </div>
-                              <div
-                                class="text-md text-muted-foreground"
-                              >
-                                $29.99
-                                 each
-                              </div>
+                            </div>
+                            <div
+                              class="text-muted-foreground text-sm"
+                            >
+                              $19.19
+                               
+                              each
                             </div>
                           </div>
                           <div
@@ -1839,19 +1937,35 @@ exports[`CartContent stories snapshot > DesktopLayout story renders and matches 
                                 data-testid="desktop-product-price"
                               >
                                 <div
-                                  class="space-y-1 text-right pr-2"
+                                  class="font-semibold text-base"
                                 >
                                   <div
-                                    class="text-xl font-medium"
+                                    class="items-center gap-2"
                                   >
-                                    $38.38
+                                    <span
+                                      aria-label="Current price: $38.38"
+                                      aria-live="polite"
+                                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                    >
+                                      $38.38
+                                    </span>
+                                    <span
+                                      aria-atomic="true"
+                                      aria-live="polite"
+                                      class="sr-only"
+                                    >
+                                      Solid Silk Tie
+                                      Current price: $38.38
+                                    </span>
+                                     
                                   </div>
-                                  <div
-                                    class="text-md text-muted-foreground"
-                                  >
-                                    $29.99
-                                     each
-                                  </div>
+                                </div>
+                                <div
+                                  class="text-muted-foreground text-sm"
+                                >
+                                  $19.19
+                                   
+                                  each
                                 </div>
                               </div>
                             </div>
@@ -1966,18 +2080,34 @@ exports[`CartContent stories snapshot > DesktopLayout story renders and matches 
                             data-testid="mobile-product-price"
                           >
                             <div
-                              class="space-y-1 text-right pr-2"
+                              class="font-semibold text-base"
                             >
                               <div
-                                class="text-xl font-medium"
+                                class="items-center gap-2 text-card-foreground text-right font-semibold text-sm leading-none relative"
                               >
-                                $35.19
+                                <span
+                                  aria-label="Current price: $35.19"
+                                  aria-live="polite"
+                                  class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                                >
+                                  $35.19
+                                </span>
+                                <span
+                                  aria-atomic="true"
+                                  aria-live="polite"
+                                  class="sr-only"
+                                >
+                                  Floral Ruffle Top
+                                  Current price: $35.19
+                                </span>
+                                 
                               </div>
                               <div
-                                class="text-md text-muted-foreground"
+                                class="items-center gap-2 text-right font-semibold relative text-sm text-muted-foreground"
                               >
-                                $54.99
-                                 each
+                                <span>
+                                  Buy one Long Center Seam Skirt and get 2 tops
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -2039,18 +2169,34 @@ exports[`CartContent stories snapshot > DesktopLayout story renders and matches 
                                 data-testid="desktop-product-price"
                               >
                                 <div
-                                  class="space-y-1 text-right pr-2"
+                                  class="font-semibold text-base"
                                 >
                                   <div
-                                    class="text-xl font-medium"
+                                    class="items-center gap-2"
                                   >
-                                    $35.19
+                                    <span
+                                      aria-label="Current price: $35.19"
+                                      aria-live="polite"
+                                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                    >
+                                      $35.19
+                                    </span>
+                                    <span
+                                      aria-atomic="true"
+                                      aria-live="polite"
+                                      class="sr-only"
+                                    >
+                                      Floral Ruffle Top
+                                      Current price: $35.19
+                                    </span>
+                                     
                                   </div>
                                   <div
-                                    class="text-md text-muted-foreground"
+                                    class="items-center gap-2 text-sm text-muted-foreground"
                                   >
-                                    $54.99
-                                     each
+                                    <span>
+                                      Buy one Long Center Seam Skirt and get 2 tops
+                                    </span>
                                   </div>
                                 </div>
                               </div>
@@ -2771,19 +2917,49 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                             data-testid="mobile-product-price"
                           >
                             <div
-                              class="space-y-1 text-right pr-2"
+                              class="font-semibold text-base"
                             >
                               <div
-                                class="text-xl font-medium"
+                                class="items-center gap-2 text-card-foreground text-right font-semibold text-sm leading-none relative"
                               >
-                                $39.67
+                                <span
+                                  aria-label="Current price: $39.67"
+                                  aria-live="polite"
+                                  class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                                >
+                                  $39.67
+                                </span>
+                                <span
+                                  aria-atomic="true"
+                                  aria-live="polite"
+                                  class="sr-only"
+                                >
+                                  Button Front Jacket
+                                  Current price: $39.67
+                                </span>
+                                 
+                                <span
+                                  aria-label="List price: $396.70"
+                                  class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-xs leading-none relative"
+                                >
+                                  $396.70
+                                </span>
+                                <span
+                                  aria-atomic="true"
+                                  aria-live="polite"
+                                  class="sr-only"
+                                >
+                                  Button Front Jacket
+                                  List price: $396.70
+                                </span>
                               </div>
-                              <div
-                                class="text-md text-muted-foreground"
-                              >
-                                $61.99
-                                 each
-                              </div>
+                            </div>
+                            <div
+                              class="text-muted-foreground text-sm"
+                            >
+                              $3.97
+                               
+                              each
                             </div>
                           </div>
                           <div
@@ -2843,19 +3019,49 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                                 data-testid="desktop-product-price"
                               >
                                 <div
-                                  class="space-y-1 text-right pr-2"
+                                  class="font-semibold text-base"
                                 >
                                   <div
-                                    class="text-xl font-medium"
+                                    class="items-center gap-2"
                                   >
-                                    $39.67
+                                    <span
+                                      aria-label="Current price: $39.67"
+                                      aria-live="polite"
+                                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                    >
+                                      $39.67
+                                    </span>
+                                    <span
+                                      aria-atomic="true"
+                                      aria-live="polite"
+                                      class="sr-only"
+                                    >
+                                      Button Front Jacket
+                                      Current price: $39.67
+                                    </span>
+                                     
+                                    <span
+                                      aria-label="List price: $396.70"
+                                      class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
+                                    >
+                                      $396.70
+                                    </span>
+                                    <span
+                                      aria-atomic="true"
+                                      aria-live="polite"
+                                      class="sr-only"
+                                    >
+                                      Button Front Jacket
+                                      List price: $396.70
+                                    </span>
                                   </div>
-                                  <div
-                                    class="text-md text-muted-foreground"
-                                  >
-                                    $61.99
-                                     each
-                                  </div>
+                                </div>
+                                <div
+                                  class="text-muted-foreground text-sm"
+                                >
+                                  $3.97
+                                   
+                                  each
                                 </div>
                               </div>
                             </div>
@@ -3457,19 +3663,35 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                             data-testid="mobile-product-price"
                           >
                             <div
-                              class="space-y-1 text-right pr-2"
+                              class="font-semibold text-base"
                             >
                               <div
-                                class="text-xl font-medium"
+                                class="items-center gap-2 text-card-foreground text-right font-semibold text-sm leading-none relative"
                               >
-                                $38.38
+                                <span
+                                  aria-label="Current price: $38.38"
+                                  aria-live="polite"
+                                  class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                                >
+                                  $38.38
+                                </span>
+                                <span
+                                  aria-atomic="true"
+                                  aria-live="polite"
+                                  class="sr-only"
+                                >
+                                  Solid Silk Tie
+                                  Current price: $38.38
+                                </span>
+                                 
                               </div>
-                              <div
-                                class="text-md text-muted-foreground"
-                              >
-                                $29.99
-                                 each
-                              </div>
+                            </div>
+                            <div
+                              class="text-muted-foreground text-sm"
+                            >
+                              $19.19
+                               
+                              each
                             </div>
                           </div>
                           <div
@@ -3529,19 +3751,35 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                 data-testid="desktop-product-price"
                               >
                                 <div
-                                  class="space-y-1 text-right pr-2"
+                                  class="font-semibold text-base"
                                 >
                                   <div
-                                    class="text-xl font-medium"
+                                    class="items-center gap-2"
                                   >
-                                    $38.38
+                                    <span
+                                      aria-label="Current price: $38.38"
+                                      aria-live="polite"
+                                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                    >
+                                      $38.38
+                                    </span>
+                                    <span
+                                      aria-atomic="true"
+                                      aria-live="polite"
+                                      class="sr-only"
+                                    >
+                                      Solid Silk Tie
+                                      Current price: $38.38
+                                    </span>
+                                     
                                   </div>
-                                  <div
-                                    class="text-md text-muted-foreground"
-                                  >
-                                    $29.99
-                                     each
-                                  </div>
+                                </div>
+                                <div
+                                  class="text-muted-foreground text-sm"
+                                >
+                                  $19.19
+                                   
+                                  each
                                 </div>
                               </div>
                             </div>
@@ -3656,18 +3894,34 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                             data-testid="mobile-product-price"
                           >
                             <div
-                              class="space-y-1 text-right pr-2"
+                              class="font-semibold text-base"
                             >
                               <div
-                                class="text-xl font-medium"
+                                class="items-center gap-2 text-card-foreground text-right font-semibold text-sm leading-none relative"
                               >
-                                $35.19
+                                <span
+                                  aria-label="Current price: $35.19"
+                                  aria-live="polite"
+                                  class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                                >
+                                  $35.19
+                                </span>
+                                <span
+                                  aria-atomic="true"
+                                  aria-live="polite"
+                                  class="sr-only"
+                                >
+                                  Floral Ruffle Top
+                                  Current price: $35.19
+                                </span>
+                                 
                               </div>
                               <div
-                                class="text-md text-muted-foreground"
+                                class="items-center gap-2 text-right font-semibold relative text-sm text-muted-foreground"
                               >
-                                $54.99
-                                 each
+                                <span>
+                                  Buy one Long Center Seam Skirt and get 2 tops
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -3729,18 +3983,34 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                 data-testid="desktop-product-price"
                               >
                                 <div
-                                  class="space-y-1 text-right pr-2"
+                                  class="font-semibold text-base"
                                 >
                                   <div
-                                    class="text-xl font-medium"
+                                    class="items-center gap-2"
                                   >
-                                    $35.19
+                                    <span
+                                      aria-label="Current price: $35.19"
+                                      aria-live="polite"
+                                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                    >
+                                      $35.19
+                                    </span>
+                                    <span
+                                      aria-atomic="true"
+                                      aria-live="polite"
+                                      class="sr-only"
+                                    >
+                                      Floral Ruffle Top
+                                      Current price: $35.19
+                                    </span>
+                                     
                                   </div>
                                   <div
-                                    class="text-md text-muted-foreground"
+                                    class="items-center gap-2 text-sm text-muted-foreground"
                                   >
-                                    $54.99
-                                     each
+                                    <span>
+                                      Buy one Long Center Seam Skirt and get 2 tops
+                                    </span>
                                   </div>
                                 </div>
                               </div>
@@ -4265,10 +4535,8 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                         <div
                           class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
                         >
-                          <img
-                            alt="Button Front Jacket, Aqua Haze, small"
-                            class="h-full w-full object-contain"
-                            src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw99c77d53/images/small/PG.10212871.JJ8OLXX.PZ.jpg?sw=160&q=60"
+                          <div
+                            class="w-full h-full bg-muted rounded"
                           />
                         </div>
                       </div>
@@ -4289,34 +4557,17 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                               >
                                 <a
                                   class="text-foreground hover:text-primary block break-words"
-                                  href="/product/25518795M"
+                                  href="#"
                                   title="Very Long Product Name That Should Wrap Properly In The Cart Display Area"
                                 >
                                   Very Long Product Name That Should Wrap Properly In The Cart Display Area
                                 </a>
                               </h2>
                             </div>
-                            <div>
-                              <div
-                                class="text-sm text-muted-foreground space-y-1 mb-1"
-                              >
-                                <div>
-                                  Color
-                                  : 
-                                  Aqua Haze
-                                </div>
-                                <div>
-                                  Size
-                                  : 
-                                  M
-                                </div>
-                              </div>
-                            </div>
+                            <div />
                             <p
                               class="text-sm text-muted-foreground leading-relaxed text-left break-words"
-                            >
-                              We took our best selling jacket and updated it with a new color for the season. Start showing off!
-                            </p>
+                            />
                             <div
                               class="min-w-0"
                             >
@@ -4348,18 +4599,27 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                             data-testid="mobile-product-price"
                           >
                             <div
-                              class="space-y-1 text-right pr-2"
+                              class="font-semibold text-base"
                             >
                               <div
-                                class="text-xl font-medium"
+                                class="items-center gap-2 text-card-foreground text-right font-semibold text-sm leading-none relative"
                               >
-                                $39.67
-                              </div>
-                              <div
-                                class="text-md text-muted-foreground"
-                              >
-                                $61.99
-                                 each
+                                <span
+                                  aria-label="Current price: $39.67"
+                                  aria-live="polite"
+                                  class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                                >
+                                  $39.67
+                                </span>
+                                <span
+                                  aria-atomic="true"
+                                  aria-live="polite"
+                                  class="sr-only"
+                                >
+                                  Very Long Product Name That Should Wrap Properly In The Cart Display Area
+                                  Current price: $39.67
+                                </span>
+                                 
                               </div>
                             </div>
                           </div>
@@ -4421,18 +4681,27 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                                 data-testid="desktop-product-price"
                               >
                                 <div
-                                  class="space-y-1 text-right pr-2"
+                                  class="font-semibold text-base"
                                 >
                                   <div
-                                    class="text-xl font-medium"
+                                    class="items-center gap-2"
                                   >
-                                    $39.67
-                                  </div>
-                                  <div
-                                    class="text-md text-muted-foreground"
-                                  >
-                                    $61.99
-                                     each
+                                    <span
+                                      aria-label="Current price: $39.67"
+                                      aria-live="polite"
+                                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                    >
+                                      $39.67
+                                    </span>
+                                    <span
+                                      aria-atomic="true"
+                                      aria-live="polite"
+                                      class="sr-only"
+                                    >
+                                      Very Long Product Name That Should Wrap Properly In The Cart Display Area
+                                      Current price: $39.67
+                                    </span>
+                                     
                                   </div>
                                 </div>
                               </div>
@@ -5021,14 +5290,28 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                             data-testid="mobile-product-price"
                           >
                             <div
-                              class="space-y-1 text-right pr-2"
+                              class="font-semibold text-base"
                             >
                               <div
-                                class="text-xl font-medium"
+                                class="items-center gap-2 text-card-foreground text-right font-semibold text-sm leading-none relative"
                               >
-                                $39.67
+                                <span
+                                  aria-label="Current price: $39.67"
+                                  aria-live="polite"
+                                  class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                                >
+                                  $39.67
+                                </span>
+                                <span
+                                  aria-atomic="true"
+                                  aria-live="polite"
+                                  class="sr-only"
+                                >
+                                  Button Front Jacket
+                                  Current price: $39.67
+                                </span>
+                                 
                               </div>
-                              NaN
                             </div>
                           </div>
                           <div
@@ -5089,14 +5372,28 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                                 data-testid="desktop-product-price"
                               >
                                 <div
-                                  class="space-y-1 text-right pr-2"
+                                  class="font-semibold text-base"
                                 >
                                   <div
-                                    class="text-xl font-medium"
+                                    class="items-center gap-2"
                                   >
-                                    $39.67
+                                    <span
+                                      aria-label="Current price: $39.67"
+                                      aria-live="polite"
+                                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                    >
+                                      $39.67
+                                    </span>
+                                    <span
+                                      aria-atomic="true"
+                                      aria-live="polite"
+                                      class="sr-only"
+                                    >
+                                      Button Front Jacket
+                                      Current price: $39.67
+                                    </span>
+                                     
                                   </div>
-                                  NaN
                                 </div>
                               </div>
                             </div>
@@ -5703,18 +6000,27 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                             data-testid="mobile-product-price"
                           >
                             <div
-                              class="space-y-1 text-right pr-2"
+                              class="font-semibold text-base"
                             >
                               <div
-                                class="text-xl font-medium"
+                                class="items-center gap-2 text-card-foreground text-right font-semibold text-sm leading-none relative"
                               >
-                                $39.67
-                              </div>
-                              <div
-                                class="text-md text-muted-foreground"
-                              >
-                                $61.99
-                                 each
+                                <span
+                                  aria-label="Current price: $39.67"
+                                  aria-live="polite"
+                                  class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                                >
+                                  $39.67
+                                </span>
+                                <span
+                                  aria-atomic="true"
+                                  aria-live="polite"
+                                  class="sr-only"
+                                >
+                                  Button Front Jacket
+                                  Current price: $39.67
+                                </span>
+                                 
                               </div>
                             </div>
                           </div>
@@ -5776,18 +6082,27 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                                 data-testid="desktop-product-price"
                               >
                                 <div
-                                  class="space-y-1 text-right pr-2"
+                                  class="font-semibold text-base"
                                 >
                                   <div
-                                    class="text-xl font-medium"
+                                    class="items-center gap-2"
                                   >
-                                    $39.67
-                                  </div>
-                                  <div
-                                    class="text-md text-muted-foreground"
-                                  >
-                                    $61.99
-                                     each
+                                    <span
+                                      aria-label="Current price: $39.67"
+                                      aria-live="polite"
+                                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                    >
+                                      $39.67
+                                    </span>
+                                    <span
+                                      aria-atomic="true"
+                                      aria-live="polite"
+                                      class="sr-only"
+                                    >
+                                      Button Front Jacket
+                                      Current price: $39.67
+                                    </span>
+                                     
                                   </div>
                                 </div>
                               </div>

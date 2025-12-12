@@ -57,12 +57,15 @@ const renderWithRouter = (component: React.ReactElement) => {
 };
 
 // Test data
+// Note: In the real SFCC Basket API, `price` and `priceAfterItemDiscount` are TOTAL line values,
+// not per-unit values. `basePrice` is the per-unit list price.
 const mockProductItem: ShopperBasketsV2.schemas['ProductItem'] = {
     itemId: 'item-1',
     productId: 'product-1',
     productName: 'Test Product',
-    price: 39.99,
-    priceAfterItemDiscount: 29.99,
+    basePrice: 39.99,
+    price: 79.98,
+    priceAfterItemDiscount: 59.98,
     quantity: 2,
     variationValues: {
         color: 'red',
@@ -255,8 +258,9 @@ describe('ProductItemsList', () => {
                 expect.objectContaining({
                     itemId: 'item-1',
                     productName: 'Test Product',
-                    price: 39.99,
-                    priceAfterItemDiscount: 29.99,
+                    basePrice: 39.99,
+                    price: 79.98,
+                    priceAfterItemDiscount: 59.98,
                     productId: 'product-1',
                     quantity: 2,
                     variationAttributes: [
@@ -329,8 +333,9 @@ describe('ProductItemsList', () => {
                     isProductUnavailable: false,
                     itemId: 'item-1',
                     name: 'Test Product',
-                    price: 39.99,
-                    priceAfterItemDiscount: 29.99,
+                    basePrice: 39.99,
+                    price: 79.98,
+                    priceAfterItemDiscount: 59.98,
                     productId: 'product-1',
                     productName: 'Test Product',
                     quantity: 2,
@@ -377,8 +382,9 @@ describe('ProductItemsList', () => {
                 expect.objectContaining({
                     isProductUnavailable: true,
                     itemId: 'item-1',
-                    price: 39.99,
-                    priceAfterItemDiscount: 29.99,
+                    basePrice: 39.99,
+                    price: 79.98,
+                    priceAfterItemDiscount: 59.98,
                     productId: 'product-1',
                     productName: 'Test Product',
                     quantity: 2,
@@ -458,8 +464,9 @@ describe('ProductItemsList', () => {
                 expect.objectContaining({
                     isProductUnavailable: true,
                     itemId: 'item-1',
-                    price: 39.99,
-                    priceAfterItemDiscount: 29.99,
+                    basePrice: 39.99,
+                    price: 79.98,
+                    priceAfterItemDiscount: 59.98,
                     productId: 'product-1',
                     productName: 'Test Product',
                     quantity: 2,
@@ -532,8 +539,9 @@ describe('ProductItemsList', () => {
                     isProductUnavailable: false,
                     itemId: 'item-1',
                     name: 'Test Product',
-                    price: 39.99,
-                    priceAfterItemDiscount: 29.99,
+                    basePrice: 39.99,
+                    price: 79.98,
+                    priceAfterItemDiscount: 59.98,
                     productId: 'product-1',
                     productName: 'Test Product',
                     quantity: 2,
@@ -584,8 +592,9 @@ describe('ProductItemsList', () => {
                 expect.objectContaining({
                     isProductUnavailable: true,
                     itemId: 'item-1',
-                    price: 39.99,
-                    priceAfterItemDiscount: 29.99,
+                    basePrice: 39.99,
+                    price: 79.98,
+                    priceAfterItemDiscount: 59.98,
                     productId: 'product-1',
                     productName: 'Test Product',
                     quantity: 2,
@@ -670,8 +679,9 @@ describe('ProductItemsList', () => {
             expect(screen.getByTestId('sf-product-item-product-1')).toBeInTheDocument();
             expect(screen.getByText('Test Product')).toBeInTheDocument();
 
-            // Check that price is formatted correctly
-            expect(screen.getAllByText('$29.99')).toHaveLength(2);
+            // Check that per-unit price with "each" label is formatted correctly (qty > 1)
+            // Total price: $59.98, Per-unit: $29.99 each
+            expect(screen.getAllByText('$29.99 each')).toHaveLength(2);
         });
 
         test('handles missing product data gracefully', () => {
@@ -690,8 +700,9 @@ describe('ProductItemsList', () => {
 
             renderWithRouter(<ProductItemsList productItems={productItems} productsByItemId={productsByItemId} />);
 
-            // Check that price is displayed (should use basket priceAfterItemDiscount price)
-            expect(screen.getAllByText('$29.99')).toHaveLength(2);
+            // Check that per-unit price with "each" label is displayed (qty > 1)
+            // priceAfterItemDiscount: 59.98 / quantity: 2 = $29.99 each
+            expect(screen.getAllByText('$29.99 each')).toHaveLength(2);
 
             // Check that quantity is displayed in the quantity picker
             expect(screen.getByDisplayValue('2')).toBeInTheDocument();

@@ -170,6 +170,94 @@ exports[`ProductPrice stories snapshot > Tablet story renders and matches snapsh
 </div>
 `;
 
+exports[`ProductPrice stories snapshot > WithCustomPromoCalloutStyling story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="items-center gap-2"
+  >
+    <span
+      aria-label="Current price: $79.99"
+      aria-live="polite"
+      class="leading-7 [&:not(:first-child)]:mt-6 text-left font-semibold"
+    >
+      $79.99
+    </span>
+    <span
+      aria-atomic="true"
+      aria-live="polite"
+      class="sr-only"
+    >
+      Current price: $79.99
+    </span>
+     
+    <span
+      aria-label="List price: $99.99"
+      class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground line-through"
+    >
+      $99.99
+    </span>
+    <span
+      aria-atomic="true"
+      aria-live="polite"
+      class="sr-only"
+    >
+      List price: $99.99
+    </span>
+  </div>
+  <div
+    class="items-center gap-2 text-sm text-muted-foreground"
+  >
+    <span>
+      Get 20% off of this item.
+    </span>
+  </div>
+</div>
+`;
+
+exports[`ProductPrice stories snapshot > WithPromoCallout story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="items-center gap-2"
+  >
+    <span
+      aria-label="Current price: $79.99"
+      aria-live="polite"
+      class="leading-7 [&:not(:first-child)]:mt-6 text-left font-semibold"
+    >
+      $79.99
+    </span>
+    <span
+      aria-atomic="true"
+      aria-live="polite"
+      class="sr-only"
+    >
+      Current price: $79.99
+    </span>
+     
+    <span
+      aria-label="List price: $99.99"
+      class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground line-through"
+    >
+      $99.99
+    </span>
+    <span
+      aria-atomic="true"
+      aria-live="polite"
+      class="sr-only"
+    >
+      List price: $99.99
+    </span>
+  </div>
+  <div
+    class="items-center gap-2"
+  >
+    <span>
+      Get 20% off of this item.
+    </span>
+  </div>
+</div>
+`;
+
 exports[`ProductPrice stories snapshot > WithQuantity story renders and matches snapshot 1`] = `
 <div>
   <div

@@ -918,19 +918,24 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                             </div>
                           </div>
                           <div
-                            class="flex items-center justify-between pr-4"
+                            class="items-center gap-2 text-sm"
                           >
-                            <div
-                              class="text-xl font-medium"
+                            <span
+                              aria-label="Current price: $19.19"
+                              aria-live="polite"
+                              class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                             >
-                              $38.38
-                            </div>
-                            <div
-                              class="text-md text-muted-foreground"
+                              $19.19
+                            </span>
+                            <span
+                              aria-atomic="true"
+                              aria-live="polite"
+                              class="sr-only"
                             >
-                              $29.99
-                               each
-                            </div>
+                              Solid Silk Tie
+                              Current price: $19.19
+                            </span>
+                             
                           </div>
                         </div>
                       </div>
@@ -993,19 +998,31 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                             </div>
                           </div>
                           <div
-                            class="flex items-center justify-between pr-4"
+                            class="items-center gap-2 text-sm"
                           >
-                            <div
-                              class="text-xl font-medium"
+                            <span
+                              aria-label="Current price: $35.19"
+                              aria-live="polite"
+                              class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                             >
                               $35.19
-                            </div>
-                            <div
-                              class="text-md text-muted-foreground"
+                            </span>
+                            <span
+                              aria-atomic="true"
+                              aria-live="polite"
+                              class="sr-only"
                             >
-                              $54.99
-                               each
-                            </div>
+                              Floral Ruffle Top
+                              Current price: $35.19
+                            </span>
+                             
+                          </div>
+                          <div
+                            class="items-center gap-2 text-sm"
+                          >
+                            <span>
+                              Buy one Long Center Seam Skirt and get 2 tops
+                            </span>
                           </div>
                         </div>
                       </div>

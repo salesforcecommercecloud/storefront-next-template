@@ -560,7 +560,8 @@ export const LongProductNames: Story = {
                   ]
                 : [],
         },
-        productsByItemId: createProductMap(basketWithOneItem.productItems || [], dressProductDetails),
+        // Pass empty productsByItemId so basket item's productName is used (not overwritten by product details)
+        productsByItemId: {},
     },
     parameters: {
         docs: {
@@ -578,14 +579,14 @@ This verifies the component handles long product names gracefully.
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
 
         // Wait for and verify cart container is rendered
         const cartContainer = canvasElement.querySelector('[data-testid="sf-cart-container"]');
         await expect(cartContainer).toBeInTheDocument();
 
-        // Verify long product name is displayed
-        const longName = await canvas.findByText(/very long product name/i, {}, { timeout: 5000 });
-        await expect(longName).toBeInTheDocument();
+        // Verify long product name is displayed using textContent check
+        // (findByText can fail when text is split across elements)
+        const hasLongName = canvasElement.textContent?.toLowerCase().includes('very long product name');
+        await expect(hasLongName).toBe(true);
     },
 };

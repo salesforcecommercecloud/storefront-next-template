@@ -108,6 +108,36 @@ export const findLowestPrice = (product: Product): LowestPriceResult | undefined
  */
 export const getPriceData = (product: Product, opts: { quantity?: number } = {}) => {
     const { quantity = 1 } = opts;
+
+    // Check if this is a basket item (has basePrice and itemId - basket item specific fields)
+    const isBasketItem = 'itemId' in product && 'basePrice' in product;
+
+    if (isBasketItem) {
+        // For basket items, use basket-specific price fields
+        const basketItem = product as ShopperBasketsV2.schemas['ProductItem'];
+        const basePrice = basketItem.basePrice ?? 0;
+        const unitPrice = basketItem.price ?? basePrice;
+        // priceAfterItemDiscount is the final price after all discounts for the line item
+        const discountedPrice = basketItem.priceAfterItemDiscount ?? unitPrice;
+        // Calculate per-unit discounted price
+        const itemQuantity = basketItem.quantity ?? 1;
+        const currentPrice = itemQuantity > 0 ? discountedPrice / itemQuantity : unitPrice;
+        const listPrice = basePrice;
+        const isOnSale = currentPrice < listPrice;
+
+        return {
+            currentPrice,
+            listPrice: isOnSale ? listPrice : undefined,
+            pricePerUnit: unitPrice,
+            isOnSale,
+            isASet: false,
+            isMaster: false,
+            isRange: false,
+            tieredPrice: undefined,
+            maxPrice: undefined,
+        };
+    }
+
     const isASet = product?.hitType === 'set' || !!product?.type?.set;
     const isMaster = product?.hitType === 'master' || !!product?.type?.master;
     let currentPrice: number;

@@ -181,3 +181,66 @@ export const Desktop: Story = {
         await expect(prices[0]).toBeVisible();
     },
 };
+
+export const WithPromoCallout: Story = {
+    args: {
+        product: {
+            ...mockStandardProductOrderable.product,
+            price: 79.99,
+            tieredPrices: [
+                { price: 99.99, pricebook: 'list-prices', quantity: 1 },
+                { price: 79.99, pricebook: 'sale-prices', quantity: 1 },
+            ],
+            productPromotions: [
+                {
+                    promotionalPrice: 79.99,
+                    calloutMsg: 'Get 20% off of this item.',
+                },
+            ],
+        },
+        currency: 'USD',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        // Check sale price is displayed
+        const salePrices = canvas.getAllByText(/\$79.99/);
+        await expect(salePrices.length).toBeGreaterThan(0);
+        // Check promo callout is displayed
+        const promoCallout = canvas.getByText(/Get 20% off/);
+        await expect(promoCallout).toBeVisible();
+    },
+};
+
+export const WithCustomPromoCalloutStyling: Story = {
+    args: {
+        product: {
+            ...mockStandardProductOrderable.product,
+            price: 79.99,
+            tieredPrices: [
+                { price: 99.99, pricebook: 'list-prices', quantity: 1 },
+                { price: 79.99, pricebook: 'sale-prices', quantity: 1 },
+            ],
+            productPromotions: [
+                {
+                    promotionalPrice: 79.99,
+                    calloutMsg: 'Get 20% off of this item.',
+                },
+            ],
+        },
+        currency: 'USD',
+        promoCalloutProps: {
+            className: 'text-sm text-muted-foreground',
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        // Check promo callout is displayed with custom styling
+        const promoCallout = canvas.getByText(/Get 20% off/);
+        await expect(promoCallout).toBeVisible();
+        // Verify the custom class is applied (checking parent container)
+        const promoContainer = promoCallout.closest('div');
+        await expect(promoContainer).toHaveClass('text-sm');
+    },
+};

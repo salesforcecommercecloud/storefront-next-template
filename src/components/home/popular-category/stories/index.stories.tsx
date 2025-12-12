@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import PopularCategory from './index';
+import PopularCategory from '../index';
 import { action } from 'storybook/actions';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
 import { expect, within, userEvent } from 'storybook/test';

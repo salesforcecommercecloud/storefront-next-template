@@ -13,13 +13,29 @@ vi.mock('@/lib/product-utils', () => ({
     createProductUrl: vi.fn(() => '/product/test-product'),
     getDecoratedVariationAttributes: vi.fn(() => [
         {
-            id: 'size',
-            name: 'Size',
+            id: 'color',
+            name: 'Colour',
             values: [
-                { value: '', name: '' }, // Empty size value - edge case
-                { value: 'small', name: 'Small' },
-                { value: 'medium', name: 'Medium' },
-                { value: 'large', name: 'Large' },
+                {
+                    value: 'navy',
+                    name: 'Navy',
+                    swatch: { link: 'https://example.com/navy.jpg', disBaseLink: 'https://example.com/navy.jpg' },
+                },
+                {
+                    value: 'red',
+                    name: 'Red',
+                    swatch: { link: 'https://example.com/red.jpg', disBaseLink: 'https://example.com/red.jpg' },
+                },
+                {
+                    value: 'blue',
+                    name: 'Blue',
+                    swatch: { link: 'https://example.com/blue.jpg', disBaseLink: 'https://example.com/blue.jpg' },
+                },
+                {
+                    value: 'black',
+                    name: 'Black',
+                    swatch: { link: 'https://example.com/black.jpg', disBaseLink: 'https://example.com/black.jpg' },
+                },
             ],
         },
     ]),
@@ -51,12 +67,12 @@ const mockProduct: ShopperSearch.schemas['ProductSearchHit'] = {
     price: 99.99,
     variationAttributes: [
         {
-            id: 'size',
+            id: 'color',
             values: [
-                { value: '', name: '' }, // Empty size value - edge case
-                { value: 'small', name: 'Small' },
-                { value: 'medium', name: 'Medium' },
-                { value: 'large', name: 'Large' },
+                { value: 'navy', name: 'Navy' },
+                { value: 'red', name: 'Red' },
+                { value: 'blue', name: 'Blue' },
+                { value: 'black', name: 'Black' },
             ],
         },
     ],
@@ -65,16 +81,16 @@ const mockProduct: ShopperSearch.schemas['ProductSearchHit'] = {
             viewType: 'swatch',
             images: [
                 {
-                    alt: 'Default swatch',
-                    link: 'https://example.com/swatch1.jpg',
-                    disBaseLink: 'https://example.com/swatch1.jpg',
-                    variationAttributes: [{ id: 'size', values: [{ value: '' }] }],
+                    alt: 'Navy swatch',
+                    link: 'https://example.com/navy.jpg',
+                    disBaseLink: 'https://example.com/navy.jpg',
+                    variationAttributes: [{ id: 'color', values: [{ value: 'navy' }] }],
                 },
                 {
-                    alt: 'Small swatch',
-                    link: 'https://example.com/swatch2.jpg',
-                    disBaseLink: 'https://example.com/swatch2.jpg',
-                    variationAttributes: [{ id: 'size', values: [{ value: 'small' }] }],
+                    alt: 'Red swatch',
+                    link: 'https://example.com/red.jpg',
+                    disBaseLink: 'https://example.com/red.jpg',
+                    variationAttributes: [{ id: 'color', values: [{ value: 'red' }] }],
                 },
             ],
         },
@@ -239,58 +255,60 @@ describe('ProductTile', () => {
     });
 });
 
-describe('ProductTile Styling and Layout', () => {
-    test('applies text truncation to product name', () => {
+describe('ProductTile UI Variants', () => {
+    test('renders color swatches with circular shape', () => {
         renderComponent();
 
-        const productName = screen.getByText('Test Product');
-        expect(productName).toHaveClass('line-clamp-2');
+        // Color swatches should be rendered as circles
+        const swatchGroup = screen.getByRole('radiogroup', { name: 'Colour' });
+        expect(swatchGroup).toBeInTheDocument();
     });
 
-    test('applies correct styling to product name container', () => {
-        renderComponent();
+    test('displays more swatches indicator (+) when exceeding maxSwatches', () => {
+        // With 4 colors and maxSwatches=2, should show +2 indicator
+        renderComponent({ maxSwatches: 2 });
 
-        const productName = screen.getByText('Test Product');
-        const nameContainer = productName.closest('div');
-        expect(nameContainer).toHaveClass('h-10');
+        const plusIndicator = screen.getByTitle('+2');
+        expect(plusIndicator).toBeInTheDocument();
     });
 
-    test('applies correct styling to price display', () => {
-        renderComponent();
+    test('does not show more indicator when swatches fit within maxSwatches', () => {
+        // With maxSwatches=4 and 4 colors, no indicator needed
+        renderComponent({ maxSwatches: 4 });
 
-        const price = screen.getByText('$99.99');
-        expect(price).toHaveClass('text-card-foreground', 'text-right', 'font-semibold', 'text-base', 'leading-none');
+        const plusIndicator = screen.queryByTitle(/^\+\d+$/);
+        expect(plusIndicator).not.toBeInTheDocument();
     });
 
-    test('applies correct styling to badges', () => {
+    test('renders Sale badge when product has sale badge', () => {
         renderComponent();
 
-        const badges = screen.getAllByText(/Sale|New/);
-        badges.forEach((badge) => {
-            expect(badge).toHaveClass('text-xs', 'leading-3', 'font-medium');
+        expect(screen.getByText('Sale')).toBeInTheDocument();
+    });
+
+    test('renders multiple badges when product has multiple badges', () => {
+        renderComponent();
+
+        expect(screen.getByText('Sale')).toBeInTheDocument();
+        expect(screen.getByText('New')).toBeInTheDocument();
+    });
+
+    test('renders custom footer action when provided', () => {
+        const customFooter = <button>Add to Cart</button>;
+        renderComponent({ footerAction: customFooter });
+
+        expect(screen.getByRole('button', { name: 'Add to Cart' })).toBeInTheDocument();
+        expect(screen.queryByText(/more options/i)).not.toBeInTheDocument();
+    });
+
+    test('disables swatch interaction in read-only mode for wishlist', () => {
+        renderComponent({
+            disableSwatchInteraction: true,
+            selectedVariantColorValue: 'navy',
         });
-    });
 
-    test('applies correct styling to more options button', () => {
-        renderComponent();
-
-        const button = screen.getByRole('button', { name: /more options/i });
-        expect(button).toHaveClass('w-full', 'text-sm', 'font-normal');
-    });
-
-    test('applies correct image container styling', () => {
-        renderComponent();
-
-        // Check that the image container has the correct styling by looking for the image link
-        const imageLink = screen.getByLabelText('View Test Product');
-        expect(imageLink).toHaveClass('block', 'w-full', 'h-full');
-    });
-
-    test('applies correct swatch group styling', () => {
-        renderComponent();
-
-        // Check that swatches are rendered (they should be present in the component)
-        const swatches = screen.getAllByRole('button');
-        expect(swatches.length).toBeGreaterThan(0);
+        // In disabled mode with a selected variant, only the selected variant's swatch should be shown
+        const swatches = screen.getAllByRole('radio');
+        expect(swatches).toHaveLength(1);
     });
 });

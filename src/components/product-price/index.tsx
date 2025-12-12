@@ -22,6 +22,7 @@ interface ProductPriceProps {
     quantity?: number;
     currentPriceProps?: Omit<ComponentProps<typeof CurrentPrice>, 'price' | 'currency' | 'labelForA11y'>;
     listPriceProps?: Omit<ComponentProps<typeof ListPrice>, 'price' | 'currency' | 'labelForA11y'>;
+    promoCalloutProps?: Omit<ComponentProps<typeof PromoCallout>, 'product'>;
     type?: 'unit' | 'total';
     className?: string;
 }
@@ -40,6 +41,7 @@ interface ProductPriceProps {
  * @param quantity - quantity to take into the account for price display
  * @param currentPriceProps - extra props to be passing to CurrentPrice component
  * @param listPriceProps - extra props to be passing to ListPrice component
+ * @param promoCalloutProps - extra props to be passing to PromoCallout component (className overrides default)
  * @param type - type of price to display. 'unit' for unit price, 'total' for total price (unit price * quantity).
  * @param labelForA11y - label to be used for a11y
  */
@@ -51,6 +53,7 @@ export default function ProductPrice({
     type = 'total',
     currentPriceProps = {},
     listPriceProps = {},
+    promoCalloutProps = {},
     className,
 }: ProductPriceProps) {
     const priceData = getPriceData(product, { quantity });
@@ -88,7 +91,11 @@ export default function ProductPrice({
         return (
             <>
                 <div className={cn('items-center gap-2', className)}>{renderCurrentPrice(true)}</div>
-                <PromoCallout product={product} className={className} />
+                <PromoCallout
+                    product={product}
+                    {...promoCalloutProps}
+                    className={cn(className, promoCalloutProps?.className)}
+                />
             </>
         );
     }
@@ -97,7 +104,11 @@ export default function ProductPrice({
         return (
             <>
                 <div className={cn('items-center gap-2', className)}>{renderPriceSet(isRange ?? false)}</div>
-                <PromoCallout product={product} className={className} />
+                <PromoCallout
+                    product={product}
+                    {...promoCalloutProps}
+                    className={cn(className, promoCalloutProps?.className)}
+                />
             </>
         );
     }
@@ -105,7 +116,11 @@ export default function ProductPrice({
     return (
         <>
             <div className={cn('items-center gap-2', className)}>{renderPriceSet(isRange ?? false)}</div>
-            <PromoCallout product={product} className={className} />
+            <PromoCallout
+                product={product}
+                {...promoCalloutProps}
+                className={cn(className, promoCalloutProps?.className)}
+            />
         </>
     );
 }

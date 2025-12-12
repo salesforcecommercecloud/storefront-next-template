@@ -60,9 +60,9 @@ describe('ProductItem', () => {
         productId: 'test-product-id',
         productName: 'Test Product',
         name: 'Test Product',
-        price: 39.99,
-        priceAfterItemDiscount: 29.99,
-        pricePerUnit: 29.99,
+        basePrice: 29.99, // per-unit list price
+        price: 59.98, // total: 29.99 × 2
+        priceAfterItemDiscount: 59.98, // total after discount
         quantity: 2,
         variationValues: {
             color: 'red',
@@ -133,13 +133,13 @@ describe('ProductItem', () => {
             const quantityPicker = screen.getByDisplayValue('2');
             expect(quantityPicker).toBeInTheDocument();
 
-            // Price appears in both mobile and desktop views
-            const priceElements = screen.getAllByText('$29.99');
+            // Per-unit price with "each" label appears in both mobile and desktop views
+            const eachPriceElements = screen.getAllByText('$29.99 each');
             //Since we are using Tailwind css classes to show/hide (md:hidden),
             // JSDOM does not compute these classes into proper css properties
             // we can only assert if these two exists in DOM, but can't check the visibility
             // it can only visible on proper browser (or E2E tests)
-            expect(priceElements).toHaveLength(2); // Mobile and desktop
+            expect(eachPriceElements).toHaveLength(2); // Mobile and desktop
         });
 
         test('does not render quantity text in default variant', () => {
@@ -403,6 +403,7 @@ describe('ProductItem', () => {
         test('handles missing price (defaults to 0)', () => {
             const productWithoutPrice = {
                 ...mockProduct,
+                basePrice: undefined,
                 price: undefined,
                 priceAfterItemDiscount: undefined,
             };
@@ -476,29 +477,30 @@ describe('ProductItem', () => {
         test('uses priceAfterItemDiscount when available', () => {
             const productWithDiscountPrice = {
                 ...mockProduct,
-                price: 39.99,
-                priceAfterItemDiscount: 29.99,
+                basePrice: 39.99,
+                price: 79.98, // total: 39.99 × 2
+                priceAfterItemDiscount: 59.98, // discounted total: 29.99 × 2
             };
 
             renderWithRouter(<ProductItem productItem={productWithDiscountPrice} />);
 
-            // Component uses priceAfterItemDiscount directly
-            const priceElements = screen.getAllByText('$29.99');
+            // Component uses priceAfterItemDiscount for "each" calculation: 59.98 / 2 = $29.99
+            const priceElements = screen.getAllByText('$29.99 each');
             expect(priceElements).toHaveLength(2); // Mobile and desktop price elements
         });
 
         test('handles missing priceAfterItemDiscount gracefully', () => {
             const productWithoutDiscountPrice = {
                 ...mockProduct,
-                price: 39.99,
+                basePrice: 39.99,
+                price: 79.98, // total: 39.99 × 2
                 priceAfterItemDiscount: undefined,
             };
 
             renderWithRouter(<ProductItem productItem={productWithoutDiscountPrice} />);
 
-            // Component should handle undefined priceAfterItemDiscount gracefully
-            // This might show $0.00 or handle it in some other way
-            const priceElements = screen.getAllByText('$0.00');
+            // Falls back to price for "each" calculation: 79.98 / 2 = $39.99
+            const priceElements = screen.getAllByText('$39.99 each');
             expect(priceElements).toHaveLength(2); // Mobile and desktop price elements
         });
     });
@@ -592,6 +594,8 @@ describe('ProductItem', () => {
         test('handles missing promotions gracefully', () => {
             const productWithPromotions = {
                 ...mockProduct,
+                price: 79.98, // total: 39.99 × 2
+                priceAfterItemDiscount: 59.98, // discounted total (different from price to show PromoPopover)
                 priceAdjustments: [{ promotionId: 'promo-1', itemText: '20% discount applied' }],
             };
 
@@ -692,8 +696,10 @@ describe('ProductItem', () => {
             const bonusProduct = {
                 ...mockProduct,
                 bonusProductLineItem: true,
-                price: 39.99,
-                pricePerUnit: 39.99,
+                basePrice: 39.99,
+                price: 39.99, // qty 1 × 39.99
+                priceAfterItemDiscount: 0, // Bonus product is free
+                quantity: 1,
             };
 
             renderWithRouter(<ProductItem productItem={bonusProduct} />);
@@ -741,8 +747,9 @@ describe('ProductItem', () => {
                 ...mockProduct,
                 bonusProductLineItem: true,
                 bonusDiscountLineItemId: 'bonus-discount-123',
-                price: 49.99,
-                pricePerUnit: 49.99,
+                basePrice: 49.99,
+                price: 49.99, // qty 1 × 49.99
+                priceAfterItemDiscount: 0, // Bonus product is free
                 quantity: 1,
                 productName: 'Free Bonus Tie',
             };
@@ -780,6 +787,90 @@ describe('ProductItem', () => {
             expect(screen.queryByTestId('mobile-primary-action')).not.toBeInTheDocument();
             expect(screen.queryByTestId('primary-action')).not.toBeInTheDocument();
             expect(screen.queryByTestId(`remove-item-${mockProduct.itemId}`)).not.toBeInTheDocument();
+        });
+    });
+
+    describe('Total price and per-unit display', () => {
+        test('displays total price and "each" label when quantity is greater than 1', () => {
+            const productWithQuantity = {
+                ...mockProduct,
+                basePrice: 44.0,
+                price: 88.0, // total: 44 × 2
+                priceAfterItemDiscount: 88.0, // total after discount: 44 × 2
+                quantity: 2,
+            };
+
+            renderWithRouter(<ProductItem productItem={productWithQuantity} />);
+
+            // Should display "each" label for per-unit price when qty > 1
+            const eachElements = screen.getAllByText(/each/);
+            expect(eachElements.length).toBeGreaterThanOrEqual(1);
+
+            // Per-unit price should be displayed (total / quantity = 88 / 2 = $44.00)
+            const perUnitPriceElements = screen.getAllByText('$44.00 each');
+            expect(perUnitPriceElements.length).toBeGreaterThanOrEqual(1);
+        });
+
+        test('does not display "each" label when quantity is 1', () => {
+            const productWithSingleQuantity = {
+                ...mockProduct,
+                basePrice: 44.0,
+                price: 44.0,
+                priceAfterItemDiscount: 44.0,
+                quantity: 1,
+            };
+
+            renderWithRouter(<ProductItem productItem={productWithSingleQuantity} />);
+
+            // Should NOT display "each" label when qty = 1
+            expect(screen.queryByText(/each/)).not.toBeInTheDocument();
+        });
+
+        test('calculates per-unit price correctly from total', () => {
+            const productWithDiscount = {
+                ...mockProduct,
+                basePrice: 29.99,
+                price: 89.97, // total: 29.99 × 3
+                priceAfterItemDiscount: 59.97, // discounted total: 19.99 × 3
+                quantity: 3,
+            };
+
+            renderWithRouter(<ProductItem productItem={productWithDiscount} />);
+
+            // Per-unit price = 59.97 / 3 = $19.99
+            const perUnitPriceElements = screen.getAllByText('$19.99 each');
+            expect(perUnitPriceElements.length).toBeGreaterThanOrEqual(1);
+        });
+
+        test('handles undefined quantity by defaulting to 1 (no "each" label)', () => {
+            const productWithUndefinedQuantity = {
+                ...mockProduct,
+                basePrice: 44.0,
+                price: 44.0,
+                priceAfterItemDiscount: 44.0,
+                quantity: undefined,
+            };
+
+            renderWithRouter(<ProductItem productItem={productWithUndefinedQuantity} />);
+
+            // Should NOT display "each" label when qty defaults to 1
+            expect(screen.queryByText(/each/)).not.toBeInTheDocument();
+        });
+
+        test('uses price when priceAfterItemDiscount is undefined for "each" calculation', () => {
+            const productWithoutDiscount = {
+                ...mockProduct,
+                basePrice: 25.0,
+                price: 50.0, // total: 25 × 2
+                priceAfterItemDiscount: undefined,
+                quantity: 2,
+            };
+
+            renderWithRouter(<ProductItem productItem={productWithoutDiscount} />);
+
+            // Per-unit price = price / quantity = 50 / 2 = $25.00
+            const perUnitPriceElements = screen.getAllByText('$25.00 each');
+            expect(perUnitPriceElements.length).toBeGreaterThanOrEqual(1);
         });
     });
 

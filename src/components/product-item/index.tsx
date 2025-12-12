@@ -17,6 +17,7 @@ import { Spinner } from '@/components/spinner';
 import { Typography } from '@/components/typography';
 import CartQuantityPicker from '@/components/cart/cart-quantity-picker';
 import BundledProductItems from './bundled-product-items';
+import ProductPrice from '../product-price';
 // TODO: uncomment after integrate gift basket api
 // import { Checkbox } from '@/components/ui/checkbox';
 // import { Label } from '@/components/ui/label';
@@ -218,77 +219,6 @@ function ProductItemVariantAttributes({
 }
 
 /**
- * ProductItemVariantPrice component that displays product pricing information
- *
- * @param props - Component props
- * @param props.product - Product data containing price information
- * @param props.baseDirection - Layout direction for price display
- * @param props.isBonusProduct - Whether this is a bonus product (shows $0.00 with strikethrough original)
- * @returns JSX element with formatted price information
- */
-function ProductItemVariantPrice({
-    productItem,
-    baseDirection = 'column',
-}: {
-    productItem: Item;
-    baseDirection?: 'row' | 'column';
-}): ReactElement {
-    if (!productItem) {
-        return <div className="text-xl font-medium">{formatCurrency(0)}</div>;
-    }
-
-    const price = productItem?.priceAfterItemDiscount ?? 0;
-    const pricePerUnit = Number(productItem?.pricePerUnit);
-    const isBonusProduct = Boolean(productItem?.bonusProductLineItem);
-
-    // For bonus products, show strikethrough original price and $0.00
-    if (isBonusProduct) {
-        if (baseDirection === 'row') {
-            return (
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        {pricePerUnit > 0 && (
-                            <div className="text-md text-muted-foreground line-through">
-                                {formatCurrency(pricePerUnit)}
-                            </div>
-                        )}
-                        <div className="text-xl font-medium">{formatCurrency(0)}</div>
-                    </div>
-                </div>
-            );
-        }
-        return (
-            <div className="space-y-1">
-                {pricePerUnit > 0 && (
-                    <div className="text-md text-muted-foreground line-through">{formatCurrency(pricePerUnit)}</div>
-                )}
-                <div className="text-xl font-medium">{formatCurrency(0)}</div>
-            </div>
-        );
-    }
-
-    // Regular product pricing
-    if (baseDirection === 'row') {
-        return (
-            <div className="flex items-center justify-between pr-4">
-                <div className="text-xl font-medium">{formatCurrency(price)}</div>
-                {pricePerUnit && pricePerUnit !== price && (
-                    <div className="text-md text-muted-foreground">{formatCurrency(pricePerUnit)} each</div>
-                )}
-            </div>
-        );
-    }
-    return (
-        <div className="space-y-1 text-right pr-2">
-            <div className="text-xl font-medium">{formatCurrency(price)}</div>
-            {pricePerUnit && pricePerUnit !== price && (
-                <div className="text-md text-muted-foreground">{formatCurrency(pricePerUnit)} each</div>
-            )}
-        </div>
-    );
-}
-
-/**
  * Props for the ProductItem component
  *
  * @interface ProductItemProps
@@ -339,7 +269,6 @@ function ProductItem({
 
     // Check if this is a bonus product
     const isBonusProduct = Boolean(productItem?.bonusProductLineItem);
-    const baseDirection = isBonusProduct ? 'row' : 'column';
 
     // Summary variant - compact display for product summary
     if (displayVariant === 'summary') {
@@ -360,8 +289,19 @@ function ProductItem({
                         displayVariant={displayVariant}
                         promotions={promotions}
                     />
-                    {/*TODO: Replace this with ProductPrice*/}
-                    <ProductItemVariantPrice productItem={productItem} baseDirection="row" />
+                    <ProductPrice
+                        type="unit"
+                        product={productItem as ShopperProducts.schemas['Product']}
+                        currency="USD"
+                        labelForA11y={productItem?.productName}
+                        currentPriceProps={{
+                            className: 'text-card-foreground text-right font-semibold text-sm leading-none relative',
+                        }}
+                        listPriceProps={{
+                            className: 'text-muted-foreground text-right text-sm leading-none relative',
+                        }}
+                        className="text-sm"
+                    />
                 </div>
             </div>
         );
@@ -407,8 +347,36 @@ function ProductItem({
                                     )}
                                 </div>
                                 <div className="text-right md:hidden" data-testid="mobile-product-price">
-                                    {/*TODO: Replace this with ProductPrice*/}
-                                    <ProductItemVariantPrice productItem={productItem} />
+                                    <div className="font-semibold text-base">
+                                        <ProductPrice
+                                            type="total"
+                                            product={productItem as ShopperProducts.schemas['Product']}
+                                            quantity={productItem.quantity ?? 1}
+                                            currency="USD"
+                                            labelForA11y={productItem?.productName}
+                                            className="text-card-foreground text-right font-semibold text-sm leading-none relative"
+                                            currentPriceProps={{
+                                                className:
+                                                    'text-card-foreground text-right font-semibold text-sm leading-none relative',
+                                            }}
+                                            listPriceProps={{
+                                                className:
+                                                    'text-muted-foreground text-right text-xs leading-none relative',
+                                            }}
+                                            promoCalloutProps={{
+                                                className: 'text-sm text-muted-foreground',
+                                            }}
+                                        />
+                                    </div>
+                                    {(productItem.quantity ?? 1) > 1 && (
+                                        <div className="text-muted-foreground text-sm">
+                                            {formatCurrency(
+                                                (productItem.priceAfterItemDiscount ?? productItem.price ?? 0) /
+                                                    (productItem.quantity ?? 1)
+                                            )}{' '}
+                                            each
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="grid gap-4 justify-items-end flex-shrink-0">
@@ -421,10 +389,35 @@ function ProductItem({
                                     />
                                     <div className="self-end">
                                         <div className="text-right hidden md:block" data-testid="desktop-product-price">
-                                            <ProductItemVariantPrice
-                                                productItem={productItem}
-                                                baseDirection={baseDirection}
-                                            />
+                                            <div className="font-semibold text-base">
+                                                <ProductPrice
+                                                    type="total"
+                                                    product={productItem as ShopperProducts.schemas['Product']}
+                                                    quantity={productItem.quantity ?? 1}
+                                                    currency="USD"
+                                                    labelForA11y={productItem?.productName}
+                                                    currentPriceProps={{
+                                                        className:
+                                                            'text-card-foreground text-lg text-right font-semibold leading-none relative',
+                                                    }}
+                                                    listPriceProps={{
+                                                        className:
+                                                            'text-muted-foreground text-right text-sm leading-none relative',
+                                                    }}
+                                                    promoCalloutProps={{
+                                                        className: 'text-sm text-muted-foreground',
+                                                    }}
+                                                />
+                                            </div>
+                                            {(productItem.quantity ?? 1) > 1 && (
+                                                <div className="text-muted-foreground text-sm">
+                                                    {formatCurrency(
+                                                        (productItem.priceAfterItemDiscount ?? productItem.price ?? 0) /
+                                                            (productItem.quantity ?? 1)
+                                                    )}{' '}
+                                                    each
+                                                </div>
+                                            )}
                                         </div>
                                         {/*Comment out since this is not integrated with api yet*/}
                                         {/*<div className="text-sm flex items-center gap-3">*/}

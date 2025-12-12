@@ -414,7 +414,7 @@ export default function CheckoutFormPage({
                                             showCartItems={false}
                                             showHeading={false}
                                             showPromoCodeForm={true}
-                                            productMap={{}}
+                                            productsByItemId={{}}
                                         />
                                     </Suspense>
                                 </CardContent>

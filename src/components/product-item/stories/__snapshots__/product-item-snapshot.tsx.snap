@@ -83,12 +83,27 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                   data-testid="mobile-product-price"
                 >
                   <div
-                    class="space-y-1 text-right pr-2"
+                    class="font-semibold text-base"
                   >
                     <div
-                      class="text-xl font-medium"
+                      class="items-center gap-2 text-card-foreground text-right font-semibold text-sm leading-none relative"
                     >
-                      $99.99
+                      <span
+                        aria-label="Current price: $99.99"
+                        aria-live="polite"
+                        class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                      >
+                        $99.99
+                      </span>
+                      <span
+                        aria-atomic="true"
+                        aria-live="polite"
+                        class="sr-only"
+                      >
+                        Men's Classic Deer Gloves
+                        Current price: $99.99
+                      </span>
+                       
                     </div>
                   </div>
                 </div>
@@ -150,12 +165,27 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                       data-testid="desktop-product-price"
                     >
                       <div
-                        class="space-y-1 text-right pr-2"
+                        class="font-semibold text-base"
                       >
                         <div
-                          class="text-xl font-medium"
+                          class="items-center gap-2"
                         >
-                          $99.99
+                          <span
+                            aria-label="Current price: $99.99"
+                            aria-live="polite"
+                            class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                          >
+                            $99.99
+                          </span>
+                          <span
+                            aria-atomic="true"
+                            aria-live="polite"
+                            class="sr-only"
+                          >
+                            Men's Classic Deer Gloves
+                            Current price: $99.99
+                          </span>
+                           
                         </div>
                       </div>
                     </div>
@@ -254,12 +284,27 @@ exports[`ProductItem stories snapshot > Desktop story renders and matches snapsh
                   data-testid="mobile-product-price"
                 >
                   <div
-                    class="space-y-1 text-right pr-2"
+                    class="font-semibold text-base"
                   >
                     <div
-                      class="text-xl font-medium"
+                      class="items-center gap-2 text-card-foreground text-right font-semibold text-sm leading-none relative"
                     >
-                      $99.99
+                      <span
+                        aria-label="Current price: $99.99"
+                        aria-live="polite"
+                        class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                      >
+                        $99.99
+                      </span>
+                      <span
+                        aria-atomic="true"
+                        aria-live="polite"
+                        class="sr-only"
+                      >
+                        Men's Classic Deer Gloves
+                        Current price: $99.99
+                      </span>
+                       
                     </div>
                   </div>
                 </div>
@@ -321,12 +366,27 @@ exports[`ProductItem stories snapshot > Desktop story renders and matches snapsh
                       data-testid="desktop-product-price"
                     >
                       <div
-                        class="space-y-1 text-right pr-2"
+                        class="font-semibold text-base"
                       >
                         <div
-                          class="text-xl font-medium"
+                          class="items-center gap-2"
                         >
-                          $99.99
+                          <span
+                            aria-label="Current price: $99.99"
+                            aria-live="polite"
+                            class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                          >
+                            $99.99
+                          </span>
+                          <span
+                            aria-atomic="true"
+                            aria-live="polite"
+                            class="sr-only"
+                          >
+                            Men's Classic Deer Gloves
+                            Current price: $99.99
+                          </span>
+                           
                         </div>
                       </div>
                     </div>
@@ -425,12 +485,27 @@ exports[`ProductItem stories snapshot > Mobile story renders and matches snapsho
                   data-testid="mobile-product-price"
                 >
                   <div
-                    class="space-y-1 text-right pr-2"
+                    class="font-semibold text-base"
                   >
                     <div
-                      class="text-xl font-medium"
+                      class="items-center gap-2 text-card-foreground text-right font-semibold text-sm leading-none relative"
                     >
-                      $99.99
+                      <span
+                        aria-label="Current price: $99.99"
+                        aria-live="polite"
+                        class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                      >
+                        $99.99
+                      </span>
+                      <span
+                        aria-atomic="true"
+                        aria-live="polite"
+                        class="sr-only"
+                      >
+                        Men's Classic Deer Gloves
+                        Current price: $99.99
+                      </span>
+                       
                     </div>
                   </div>
                 </div>
@@ -492,12 +567,27 @@ exports[`ProductItem stories snapshot > Mobile story renders and matches snapsho
                       data-testid="desktop-product-price"
                     >
                       <div
-                        class="space-y-1 text-right pr-2"
+                        class="font-semibold text-base"
                       >
                         <div
-                          class="text-xl font-medium"
+                          class="items-center gap-2"
                         >
-                          $99.99
+                          <span
+                            aria-label="Current price: $99.99"
+                            aria-live="polite"
+                            class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                          >
+                            $99.99
+                          </span>
+                          <span
+                            aria-atomic="true"
+                            aria-live="polite"
+                            class="sr-only"
+                          >
+                            Men's Classic Deer Gloves
+                            Current price: $99.99
+                          </span>
+                           
                         </div>
                       </div>
                     </div>
@@ -573,13 +663,24 @@ exports[`ProductItem stories snapshot > SummaryVariant story renders and matches
           </div>
         </div>
         <div
-          class="flex items-center justify-between pr-4"
+          class="items-center gap-2 text-sm"
         >
-          <div
-            class="text-xl font-medium"
+          <span
+            aria-label="Current price: $99.99"
+            aria-live="polite"
+            class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
           >
             $99.99
-          </div>
+          </span>
+          <span
+            aria-atomic="true"
+            aria-live="polite"
+            class="sr-only"
+          >
+            Men's Classic Deer Gloves
+            Current price: $99.99
+          </span>
+           
         </div>
       </div>
     </div>
@@ -670,12 +771,27 @@ exports[`ProductItem stories snapshot > Tablet story renders and matches snapsho
                   data-testid="mobile-product-price"
                 >
                   <div
-                    class="space-y-1 text-right pr-2"
+                    class="font-semibold text-base"
                   >
                     <div
-                      class="text-xl font-medium"
+                      class="items-center gap-2 text-card-foreground text-right font-semibold text-sm leading-none relative"
                     >
-                      $99.99
+                      <span
+                        aria-label="Current price: $99.99"
+                        aria-live="polite"
+                        class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                      >
+                        $99.99
+                      </span>
+                      <span
+                        aria-atomic="true"
+                        aria-live="polite"
+                        class="sr-only"
+                      >
+                        Men's Classic Deer Gloves
+                        Current price: $99.99
+                      </span>
+                       
                     </div>
                   </div>
                 </div>
@@ -737,12 +853,27 @@ exports[`ProductItem stories snapshot > Tablet story renders and matches snapsho
                       data-testid="desktop-product-price"
                     >
                       <div
-                        class="space-y-1 text-right pr-2"
+                        class="font-semibold text-base"
                       >
                         <div
-                          class="text-xl font-medium"
+                          class="items-center gap-2"
                         >
-                          $99.99
+                          <span
+                            aria-label="Current price: $99.99"
+                            aria-live="polite"
+                            class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                          >
+                            $99.99
+                          </span>
+                          <span
+                            aria-atomic="true"
+                            aria-live="polite"
+                            class="sr-only"
+                          >
+                            Men's Classic Deer Gloves
+                            Current price: $99.99
+                          </span>
+                           
                         </div>
                       </div>
                     </div>
@@ -856,12 +987,27 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                   data-testid="mobile-product-price"
                 >
                   <div
-                    class="space-y-1 text-right pr-2"
+                    class="font-semibold text-base"
                   >
                     <div
-                      class="text-xl font-medium"
+                      class="items-center gap-2 text-card-foreground text-right font-semibold text-sm leading-none relative"
                     >
-                      $99.99
+                      <span
+                        aria-label="Current price: $99.99"
+                        aria-live="polite"
+                        class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                      >
+                        $99.99
+                      </span>
+                      <span
+                        aria-atomic="true"
+                        aria-live="polite"
+                        class="sr-only"
+                      >
+                        Men's Classic Deer Gloves
+                        Current price: $99.99
+                      </span>
+                       
                     </div>
                   </div>
                 </div>
@@ -923,12 +1069,27 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                       data-testid="desktop-product-price"
                     >
                       <div
-                        class="space-y-1 text-right pr-2"
+                        class="font-semibold text-base"
                       >
                         <div
-                          class="text-xl font-medium"
+                          class="items-center gap-2"
                         >
-                          $99.99
+                          <span
+                            aria-label="Current price: $99.99"
+                            aria-live="polite"
+                            class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                          >
+                            $99.99
+                          </span>
+                          <span
+                            aria-atomic="true"
+                            aria-live="polite"
+                            class="sr-only"
+                          >
+                            Men's Classic Deer Gloves
+                            Current price: $99.99
+                          </span>
+                           
                         </div>
                       </div>
                     </div>

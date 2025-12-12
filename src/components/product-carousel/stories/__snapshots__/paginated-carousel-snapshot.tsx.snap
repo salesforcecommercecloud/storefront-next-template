@@ -37,11 +37,11 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
               class="w-full max-w-full min-w-0"
             >
               <div
-                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
+                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
                 data-slot="card"
               >
                 <div
-                  class="flex items-center [.border-t]:pt-6 px-6 pb-6 pt-6"
+                  class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
                   data-slot="card-footer"
                 >
                   <button
@@ -52,11 +52,50 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
                   </button>
                 </div>
                 <div
-                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-24"
+                  class="px-6"
                   data-slot="card-content"
                 >
                   <div
-                    class="flex flex-col gap-1.5 items-start justify-start relative flex-1 min-w-0 h-full"
+                    class="items-center gap-2 text-sm mt-2"
+                  >
+                    <span
+                      aria-label="Current price: $63.99"
+                      aria-live="polite"
+                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                    >
+                      $63.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 1
+                      Current price: $63.99
+                    </span>
+                     
+                    <span
+                      aria-label="List price: $67.99"
+                      class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
+                    >
+                      $67.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 1
+                      List price: $67.99
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+                  data-slot="card-content"
+                >
+                  <div
+                    class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
                   >
                     <div
                       class="h-10 flex items-start"
@@ -71,7 +110,7 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
                       </a>
                     </div>
                     <div
-                      class="h-8 flex items-center"
+                      class="h-8 flex items-end"
                     />
                   </div>
                   <div
@@ -93,15 +132,10 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
                         Sale
                       </span>
                     </div>
-                    <div
-                      class="text-card-foreground text-right font-semibold text-base leading-none relative"
-                    >
-                      $63.99
-                    </div>
                   </div>
                 </div>
                 <div
-                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center flex-1"
+                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
                   data-slot="card-header"
                 >
                   <div
@@ -169,11 +203,11 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
               class="w-full max-w-full min-w-0"
             >
               <div
-                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
+                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
                 data-slot="card"
               >
                 <div
-                  class="flex items-center [.border-t]:pt-6 px-6 pb-6 pt-6"
+                  class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
                   data-slot="card-footer"
                 >
                   <button
@@ -184,11 +218,50 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
                   </button>
                 </div>
                 <div
-                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-24"
+                  class="px-6"
                   data-slot="card-content"
                 >
                   <div
-                    class="flex flex-col gap-1.5 items-start justify-start relative flex-1 min-w-0 h-full"
+                    class="items-center gap-2 text-sm mt-2"
+                  >
+                    <span
+                      aria-label="Current price: $63.99"
+                      aria-live="polite"
+                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                    >
+                      $63.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 2
+                      Current price: $63.99
+                    </span>
+                     
+                    <span
+                      aria-label="List price: $67.99"
+                      class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
+                    >
+                      $67.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 2
+                      List price: $67.99
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+                  data-slot="card-content"
+                >
+                  <div
+                    class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
                   >
                     <div
                       class="h-10 flex items-start"
@@ -203,7 +276,7 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
                       </a>
                     </div>
                     <div
-                      class="h-8 flex items-center"
+                      class="h-8 flex items-end"
                     />
                   </div>
                   <div
@@ -225,15 +298,10 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
                         Sale
                       </span>
                     </div>
-                    <div
-                      class="text-card-foreground text-right font-semibold text-base leading-none relative"
-                    >
-                      $63.99
-                    </div>
                   </div>
                 </div>
                 <div
-                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center flex-1"
+                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
                   data-slot="card-header"
                 >
                   <div
@@ -301,11 +369,11 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
               class="w-full max-w-full min-w-0"
             >
               <div
-                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
+                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
                 data-slot="card"
               >
                 <div
-                  class="flex items-center [.border-t]:pt-6 px-6 pb-6 pt-6"
+                  class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
                   data-slot="card-footer"
                 >
                   <button
@@ -316,11 +384,50 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
                   </button>
                 </div>
                 <div
-                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-24"
+                  class="px-6"
                   data-slot="card-content"
                 >
                   <div
-                    class="flex flex-col gap-1.5 items-start justify-start relative flex-1 min-w-0 h-full"
+                    class="items-center gap-2 text-sm mt-2"
+                  >
+                    <span
+                      aria-label="Current price: $63.99"
+                      aria-live="polite"
+                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                    >
+                      $63.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 3
+                      Current price: $63.99
+                    </span>
+                     
+                    <span
+                      aria-label="List price: $67.99"
+                      class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
+                    >
+                      $67.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 3
+                      List price: $67.99
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+                  data-slot="card-content"
+                >
+                  <div
+                    class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
                   >
                     <div
                       class="h-10 flex items-start"
@@ -335,7 +442,7 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
                       </a>
                     </div>
                     <div
-                      class="h-8 flex items-center"
+                      class="h-8 flex items-end"
                     />
                   </div>
                   <div
@@ -357,15 +464,10 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
                         Sale
                       </span>
                     </div>
-                    <div
-                      class="text-card-foreground text-right font-semibold text-base leading-none relative"
-                    >
-                      $63.99
-                    </div>
                   </div>
                 </div>
                 <div
-                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center flex-1"
+                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
                   data-slot="card-header"
                 >
                   <div
@@ -433,11 +535,11 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
               class="w-full max-w-full min-w-0"
             >
               <div
-                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
+                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
                 data-slot="card"
               >
                 <div
-                  class="flex items-center [.border-t]:pt-6 px-6 pb-6 pt-6"
+                  class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
                   data-slot="card-footer"
                 >
                   <button
@@ -448,11 +550,50 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
                   </button>
                 </div>
                 <div
-                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-24"
+                  class="px-6"
                   data-slot="card-content"
                 >
                   <div
-                    class="flex flex-col gap-1.5 items-start justify-start relative flex-1 min-w-0 h-full"
+                    class="items-center gap-2 text-sm mt-2"
+                  >
+                    <span
+                      aria-label="Current price: $63.99"
+                      aria-live="polite"
+                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                    >
+                      $63.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 4
+                      Current price: $63.99
+                    </span>
+                     
+                    <span
+                      aria-label="List price: $67.99"
+                      class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
+                    >
+                      $67.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 4
+                      List price: $67.99
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+                  data-slot="card-content"
+                >
+                  <div
+                    class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
                   >
                     <div
                       class="h-10 flex items-start"
@@ -467,7 +608,7 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
                       </a>
                     </div>
                     <div
-                      class="h-8 flex items-center"
+                      class="h-8 flex items-end"
                     />
                   </div>
                   <div
@@ -489,15 +630,10 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
                         Sale
                       </span>
                     </div>
-                    <div
-                      class="text-card-foreground text-right font-semibold text-base leading-none relative"
-                    >
-                      $63.99
-                    </div>
                   </div>
                 </div>
                 <div
-                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center flex-1"
+                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
                   data-slot="card-header"
                 >
                   <div
@@ -599,11 +735,11 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
               class="w-full max-w-full min-w-0"
             >
               <div
-                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
+                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
                 data-slot="card"
               >
                 <div
-                  class="flex items-center [.border-t]:pt-6 px-6 pb-6 pt-6"
+                  class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
                   data-slot="card-footer"
                 >
                   <button
@@ -614,11 +750,50 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
                   </button>
                 </div>
                 <div
-                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-24"
+                  class="px-6"
                   data-slot="card-content"
                 >
                   <div
-                    class="flex flex-col gap-1.5 items-start justify-start relative flex-1 min-w-0 h-full"
+                    class="items-center gap-2 text-sm mt-2"
+                  >
+                    <span
+                      aria-label="Current price: $63.99"
+                      aria-live="polite"
+                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                    >
+                      $63.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 1
+                      Current price: $63.99
+                    </span>
+                     
+                    <span
+                      aria-label="List price: $67.99"
+                      class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
+                    >
+                      $67.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 1
+                      List price: $67.99
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+                  data-slot="card-content"
+                >
+                  <div
+                    class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
                   >
                     <div
                       class="h-10 flex items-start"
@@ -633,7 +808,7 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
                       </a>
                     </div>
                     <div
-                      class="h-8 flex items-center"
+                      class="h-8 flex items-end"
                     />
                   </div>
                   <div
@@ -655,15 +830,10 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
                         Sale
                       </span>
                     </div>
-                    <div
-                      class="text-card-foreground text-right font-semibold text-base leading-none relative"
-                    >
-                      $63.99
-                    </div>
                   </div>
                 </div>
                 <div
-                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center flex-1"
+                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
                   data-slot="card-header"
                 >
                   <div
@@ -731,11 +901,11 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
               class="w-full max-w-full min-w-0"
             >
               <div
-                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
+                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
                 data-slot="card"
               >
                 <div
-                  class="flex items-center [.border-t]:pt-6 px-6 pb-6 pt-6"
+                  class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
                   data-slot="card-footer"
                 >
                   <button
@@ -746,11 +916,50 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
                   </button>
                 </div>
                 <div
-                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-24"
+                  class="px-6"
                   data-slot="card-content"
                 >
                   <div
-                    class="flex flex-col gap-1.5 items-start justify-start relative flex-1 min-w-0 h-full"
+                    class="items-center gap-2 text-sm mt-2"
+                  >
+                    <span
+                      aria-label="Current price: $63.99"
+                      aria-live="polite"
+                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                    >
+                      $63.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 2
+                      Current price: $63.99
+                    </span>
+                     
+                    <span
+                      aria-label="List price: $67.99"
+                      class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
+                    >
+                      $67.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 2
+                      List price: $67.99
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+                  data-slot="card-content"
+                >
+                  <div
+                    class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
                   >
                     <div
                       class="h-10 flex items-start"
@@ -765,7 +974,7 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
                       </a>
                     </div>
                     <div
-                      class="h-8 flex items-center"
+                      class="h-8 flex items-end"
                     />
                   </div>
                   <div
@@ -787,15 +996,10 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
                         Sale
                       </span>
                     </div>
-                    <div
-                      class="text-card-foreground text-right font-semibold text-base leading-none relative"
-                    >
-                      $63.99
-                    </div>
                   </div>
                 </div>
                 <div
-                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center flex-1"
+                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
                   data-slot="card-header"
                 >
                   <div
@@ -863,11 +1067,11 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
               class="w-full max-w-full min-w-0"
             >
               <div
-                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
+                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
                 data-slot="card"
               >
                 <div
-                  class="flex items-center [.border-t]:pt-6 px-6 pb-6 pt-6"
+                  class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
                   data-slot="card-footer"
                 >
                   <button
@@ -878,11 +1082,50 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
                   </button>
                 </div>
                 <div
-                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-24"
+                  class="px-6"
                   data-slot="card-content"
                 >
                   <div
-                    class="flex flex-col gap-1.5 items-start justify-start relative flex-1 min-w-0 h-full"
+                    class="items-center gap-2 text-sm mt-2"
+                  >
+                    <span
+                      aria-label="Current price: $63.99"
+                      aria-live="polite"
+                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                    >
+                      $63.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 3
+                      Current price: $63.99
+                    </span>
+                     
+                    <span
+                      aria-label="List price: $67.99"
+                      class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
+                    >
+                      $67.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 3
+                      List price: $67.99
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+                  data-slot="card-content"
+                >
+                  <div
+                    class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
                   >
                     <div
                       class="h-10 flex items-start"
@@ -897,7 +1140,7 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
                       </a>
                     </div>
                     <div
-                      class="h-8 flex items-center"
+                      class="h-8 flex items-end"
                     />
                   </div>
                   <div
@@ -919,15 +1162,10 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
                         Sale
                       </span>
                     </div>
-                    <div
-                      class="text-card-foreground text-right font-semibold text-base leading-none relative"
-                    >
-                      $63.99
-                    </div>
                   </div>
                 </div>
                 <div
-                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center flex-1"
+                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
                   data-slot="card-header"
                 >
                   <div
@@ -995,11 +1233,11 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
               class="w-full max-w-full min-w-0"
             >
               <div
-                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
+                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
                 data-slot="card"
               >
                 <div
-                  class="flex items-center [.border-t]:pt-6 px-6 pb-6 pt-6"
+                  class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
                   data-slot="card-footer"
                 >
                   <button
@@ -1010,11 +1248,50 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
                   </button>
                 </div>
                 <div
-                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-24"
+                  class="px-6"
                   data-slot="card-content"
                 >
                   <div
-                    class="flex flex-col gap-1.5 items-start justify-start relative flex-1 min-w-0 h-full"
+                    class="items-center gap-2 text-sm mt-2"
+                  >
+                    <span
+                      aria-label="Current price: $63.99"
+                      aria-live="polite"
+                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                    >
+                      $63.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 4
+                      Current price: $63.99
+                    </span>
+                     
+                    <span
+                      aria-label="List price: $67.99"
+                      class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
+                    >
+                      $67.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 4
+                      List price: $67.99
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+                  data-slot="card-content"
+                >
+                  <div
+                    class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
                   >
                     <div
                       class="h-10 flex items-start"
@@ -1029,7 +1306,7 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
                       </a>
                     </div>
                     <div
-                      class="h-8 flex items-center"
+                      class="h-8 flex items-end"
                     />
                   </div>
                   <div
@@ -1051,15 +1328,10 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
                         Sale
                       </span>
                     </div>
-                    <div
-                      class="text-card-foreground text-right font-semibold text-base leading-none relative"
-                    >
-                      $63.99
-                    </div>
                   </div>
                 </div>
                 <div
-                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center flex-1"
+                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
                   data-slot="card-header"
                 >
                   <div
@@ -1175,11 +1447,11 @@ exports[`PaginatedProductCarousel stories snapshot > Desktop story renders and m
               class="w-full max-w-full min-w-0"
             >
               <div
-                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
+                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
                 data-slot="card"
               >
                 <div
-                  class="flex items-center [.border-t]:pt-6 px-6 pb-6 pt-6"
+                  class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
                   data-slot="card-footer"
                 >
                   <button
@@ -1190,11 +1462,50 @@ exports[`PaginatedProductCarousel stories snapshot > Desktop story renders and m
                   </button>
                 </div>
                 <div
-                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-24"
+                  class="px-6"
                   data-slot="card-content"
                 >
                   <div
-                    class="flex flex-col gap-1.5 items-start justify-start relative flex-1 min-w-0 h-full"
+                    class="items-center gap-2 text-sm mt-2"
+                  >
+                    <span
+                      aria-label="Current price: $63.99"
+                      aria-live="polite"
+                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                    >
+                      $63.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 1
+                      Current price: $63.99
+                    </span>
+                     
+                    <span
+                      aria-label="List price: $67.99"
+                      class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
+                    >
+                      $67.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 1
+                      List price: $67.99
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+                  data-slot="card-content"
+                >
+                  <div
+                    class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
                   >
                     <div
                       class="h-10 flex items-start"
@@ -1209,7 +1520,7 @@ exports[`PaginatedProductCarousel stories snapshot > Desktop story renders and m
                       </a>
                     </div>
                     <div
-                      class="h-8 flex items-center"
+                      class="h-8 flex items-end"
                     />
                   </div>
                   <div
@@ -1231,15 +1542,10 @@ exports[`PaginatedProductCarousel stories snapshot > Desktop story renders and m
                         Sale
                       </span>
                     </div>
-                    <div
-                      class="text-card-foreground text-right font-semibold text-base leading-none relative"
-                    >
-                      $63.99
-                    </div>
                   </div>
                 </div>
                 <div
-                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center flex-1"
+                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
                   data-slot="card-header"
                 >
                   <div
@@ -1307,11 +1613,11 @@ exports[`PaginatedProductCarousel stories snapshot > Desktop story renders and m
               class="w-full max-w-full min-w-0"
             >
               <div
-                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
+                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
                 data-slot="card"
               >
                 <div
-                  class="flex items-center [.border-t]:pt-6 px-6 pb-6 pt-6"
+                  class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
                   data-slot="card-footer"
                 >
                   <button
@@ -1322,11 +1628,50 @@ exports[`PaginatedProductCarousel stories snapshot > Desktop story renders and m
                   </button>
                 </div>
                 <div
-                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-24"
+                  class="px-6"
                   data-slot="card-content"
                 >
                   <div
-                    class="flex flex-col gap-1.5 items-start justify-start relative flex-1 min-w-0 h-full"
+                    class="items-center gap-2 text-sm mt-2"
+                  >
+                    <span
+                      aria-label="Current price: $63.99"
+                      aria-live="polite"
+                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                    >
+                      $63.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 2
+                      Current price: $63.99
+                    </span>
+                     
+                    <span
+                      aria-label="List price: $67.99"
+                      class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
+                    >
+                      $67.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 2
+                      List price: $67.99
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+                  data-slot="card-content"
+                >
+                  <div
+                    class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
                   >
                     <div
                       class="h-10 flex items-start"
@@ -1341,7 +1686,7 @@ exports[`PaginatedProductCarousel stories snapshot > Desktop story renders and m
                       </a>
                     </div>
                     <div
-                      class="h-8 flex items-center"
+                      class="h-8 flex items-end"
                     />
                   </div>
                   <div
@@ -1363,15 +1708,10 @@ exports[`PaginatedProductCarousel stories snapshot > Desktop story renders and m
                         Sale
                       </span>
                     </div>
-                    <div
-                      class="text-card-foreground text-right font-semibold text-base leading-none relative"
-                    >
-                      $63.99
-                    </div>
                   </div>
                 </div>
                 <div
-                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center flex-1"
+                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
                   data-slot="card-header"
                 >
                   <div
@@ -1439,11 +1779,11 @@ exports[`PaginatedProductCarousel stories snapshot > Desktop story renders and m
               class="w-full max-w-full min-w-0"
             >
               <div
-                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
+                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
                 data-slot="card"
               >
                 <div
-                  class="flex items-center [.border-t]:pt-6 px-6 pb-6 pt-6"
+                  class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
                   data-slot="card-footer"
                 >
                   <button
@@ -1454,11 +1794,50 @@ exports[`PaginatedProductCarousel stories snapshot > Desktop story renders and m
                   </button>
                 </div>
                 <div
-                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-24"
+                  class="px-6"
                   data-slot="card-content"
                 >
                   <div
-                    class="flex flex-col gap-1.5 items-start justify-start relative flex-1 min-w-0 h-full"
+                    class="items-center gap-2 text-sm mt-2"
+                  >
+                    <span
+                      aria-label="Current price: $63.99"
+                      aria-live="polite"
+                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                    >
+                      $63.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 3
+                      Current price: $63.99
+                    </span>
+                     
+                    <span
+                      aria-label="List price: $67.99"
+                      class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
+                    >
+                      $67.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 3
+                      List price: $67.99
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+                  data-slot="card-content"
+                >
+                  <div
+                    class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
                   >
                     <div
                       class="h-10 flex items-start"
@@ -1473,7 +1852,7 @@ exports[`PaginatedProductCarousel stories snapshot > Desktop story renders and m
                       </a>
                     </div>
                     <div
-                      class="h-8 flex items-center"
+                      class="h-8 flex items-end"
                     />
                   </div>
                   <div
@@ -1495,15 +1874,10 @@ exports[`PaginatedProductCarousel stories snapshot > Desktop story renders and m
                         Sale
                       </span>
                     </div>
-                    <div
-                      class="text-card-foreground text-right font-semibold text-base leading-none relative"
-                    >
-                      $63.99
-                    </div>
                   </div>
                 </div>
                 <div
-                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center flex-1"
+                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
                   data-slot="card-header"
                 >
                   <div
@@ -1571,11 +1945,11 @@ exports[`PaginatedProductCarousel stories snapshot > Desktop story renders and m
               class="w-full max-w-full min-w-0"
             >
               <div
-                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
+                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
                 data-slot="card"
               >
                 <div
-                  class="flex items-center [.border-t]:pt-6 px-6 pb-6 pt-6"
+                  class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
                   data-slot="card-footer"
                 >
                   <button
@@ -1586,11 +1960,50 @@ exports[`PaginatedProductCarousel stories snapshot > Desktop story renders and m
                   </button>
                 </div>
                 <div
-                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-24"
+                  class="px-6"
                   data-slot="card-content"
                 >
                   <div
-                    class="flex flex-col gap-1.5 items-start justify-start relative flex-1 min-w-0 h-full"
+                    class="items-center gap-2 text-sm mt-2"
+                  >
+                    <span
+                      aria-label="Current price: $63.99"
+                      aria-live="polite"
+                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                    >
+                      $63.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 4
+                      Current price: $63.99
+                    </span>
+                     
+                    <span
+                      aria-label="List price: $67.99"
+                      class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
+                    >
+                      $67.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 4
+                      List price: $67.99
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+                  data-slot="card-content"
+                >
+                  <div
+                    class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
                   >
                     <div
                       class="h-10 flex items-start"
@@ -1605,7 +2018,7 @@ exports[`PaginatedProductCarousel stories snapshot > Desktop story renders and m
                       </a>
                     </div>
                     <div
-                      class="h-8 flex items-center"
+                      class="h-8 flex items-end"
                     />
                   </div>
                   <div
@@ -1627,15 +2040,10 @@ exports[`PaginatedProductCarousel stories snapshot > Desktop story renders and m
                         Sale
                       </span>
                     </div>
-                    <div
-                      class="text-card-foreground text-right font-semibold text-base leading-none relative"
-                    >
-                      $63.99
-                    </div>
                   </div>
                 </div>
                 <div
-                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center flex-1"
+                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
                   data-slot="card-header"
                 >
                   <div
@@ -1751,11 +2159,11 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
               class="w-full max-w-full min-w-0"
             >
               <div
-                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
+                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
                 data-slot="card"
               >
                 <div
-                  class="flex items-center [.border-t]:pt-6 px-6 pb-6 pt-6"
+                  class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
                   data-slot="card-footer"
                 >
                   <button
@@ -1766,11 +2174,50 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
                   </button>
                 </div>
                 <div
-                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-24"
+                  class="px-6"
                   data-slot="card-content"
                 >
                   <div
-                    class="flex flex-col gap-1.5 items-start justify-start relative flex-1 min-w-0 h-full"
+                    class="items-center gap-2 text-sm mt-2"
+                  >
+                    <span
+                      aria-label="Current price: $63.99"
+                      aria-live="polite"
+                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                    >
+                      $63.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 1
+                      Current price: $63.99
+                    </span>
+                     
+                    <span
+                      aria-label="List price: $67.99"
+                      class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
+                    >
+                      $67.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 1
+                      List price: $67.99
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+                  data-slot="card-content"
+                >
+                  <div
+                    class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
                   >
                     <div
                       class="h-10 flex items-start"
@@ -1785,7 +2232,7 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
                       </a>
                     </div>
                     <div
-                      class="h-8 flex items-center"
+                      class="h-8 flex items-end"
                     />
                   </div>
                   <div
@@ -1807,15 +2254,10 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
                         Sale
                       </span>
                     </div>
-                    <div
-                      class="text-card-foreground text-right font-semibold text-base leading-none relative"
-                    >
-                      $63.99
-                    </div>
                   </div>
                 </div>
                 <div
-                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center flex-1"
+                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
                   data-slot="card-header"
                 >
                   <div
@@ -1883,11 +2325,11 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
               class="w-full max-w-full min-w-0"
             >
               <div
-                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
+                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
                 data-slot="card"
               >
                 <div
-                  class="flex items-center [.border-t]:pt-6 px-6 pb-6 pt-6"
+                  class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
                   data-slot="card-footer"
                 >
                   <button
@@ -1898,11 +2340,50 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
                   </button>
                 </div>
                 <div
-                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-24"
+                  class="px-6"
                   data-slot="card-content"
                 >
                   <div
-                    class="flex flex-col gap-1.5 items-start justify-start relative flex-1 min-w-0 h-full"
+                    class="items-center gap-2 text-sm mt-2"
+                  >
+                    <span
+                      aria-label="Current price: $63.99"
+                      aria-live="polite"
+                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                    >
+                      $63.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 2
+                      Current price: $63.99
+                    </span>
+                     
+                    <span
+                      aria-label="List price: $67.99"
+                      class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
+                    >
+                      $67.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 2
+                      List price: $67.99
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+                  data-slot="card-content"
+                >
+                  <div
+                    class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
                   >
                     <div
                       class="h-10 flex items-start"
@@ -1917,7 +2398,7 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
                       </a>
                     </div>
                     <div
-                      class="h-8 flex items-center"
+                      class="h-8 flex items-end"
                     />
                   </div>
                   <div
@@ -1939,15 +2420,10 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
                         Sale
                       </span>
                     </div>
-                    <div
-                      class="text-card-foreground text-right font-semibold text-base leading-none relative"
-                    >
-                      $63.99
-                    </div>
                   </div>
                 </div>
                 <div
-                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center flex-1"
+                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
                   data-slot="card-header"
                 >
                   <div
@@ -2015,11 +2491,11 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
               class="w-full max-w-full min-w-0"
             >
               <div
-                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
+                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
                 data-slot="card"
               >
                 <div
-                  class="flex items-center [.border-t]:pt-6 px-6 pb-6 pt-6"
+                  class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
                   data-slot="card-footer"
                 >
                   <button
@@ -2030,11 +2506,50 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
                   </button>
                 </div>
                 <div
-                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-24"
+                  class="px-6"
                   data-slot="card-content"
                 >
                   <div
-                    class="flex flex-col gap-1.5 items-start justify-start relative flex-1 min-w-0 h-full"
+                    class="items-center gap-2 text-sm mt-2"
+                  >
+                    <span
+                      aria-label="Current price: $63.99"
+                      aria-live="polite"
+                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                    >
+                      $63.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 3
+                      Current price: $63.99
+                    </span>
+                     
+                    <span
+                      aria-label="List price: $67.99"
+                      class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
+                    >
+                      $67.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 3
+                      List price: $67.99
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+                  data-slot="card-content"
+                >
+                  <div
+                    class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
                   >
                     <div
                       class="h-10 flex items-start"
@@ -2049,7 +2564,7 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
                       </a>
                     </div>
                     <div
-                      class="h-8 flex items-center"
+                      class="h-8 flex items-end"
                     />
                   </div>
                   <div
@@ -2071,15 +2586,10 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
                         Sale
                       </span>
                     </div>
-                    <div
-                      class="text-card-foreground text-right font-semibold text-base leading-none relative"
-                    >
-                      $63.99
-                    </div>
                   </div>
                 </div>
                 <div
-                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center flex-1"
+                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
                   data-slot="card-header"
                 >
                   <div
@@ -2147,11 +2657,11 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
               class="w-full max-w-full min-w-0"
             >
               <div
-                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
+                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
                 data-slot="card"
               >
                 <div
-                  class="flex items-center [.border-t]:pt-6 px-6 pb-6 pt-6"
+                  class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
                   data-slot="card-footer"
                 >
                   <button
@@ -2162,11 +2672,50 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
                   </button>
                 </div>
                 <div
-                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-24"
+                  class="px-6"
                   data-slot="card-content"
                 >
                   <div
-                    class="flex flex-col gap-1.5 items-start justify-start relative flex-1 min-w-0 h-full"
+                    class="items-center gap-2 text-sm mt-2"
+                  >
+                    <span
+                      aria-label="Current price: $63.99"
+                      aria-live="polite"
+                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                    >
+                      $63.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 4
+                      Current price: $63.99
+                    </span>
+                     
+                    <span
+                      aria-label="List price: $67.99"
+                      class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
+                    >
+                      $67.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 4
+                      List price: $67.99
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+                  data-slot="card-content"
+                >
+                  <div
+                    class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
                   >
                     <div
                       class="h-10 flex items-start"
@@ -2181,7 +2730,7 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
                       </a>
                     </div>
                     <div
-                      class="h-8 flex items-center"
+                      class="h-8 flex items-end"
                     />
                   </div>
                   <div
@@ -2203,15 +2752,10 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
                         Sale
                       </span>
                     </div>
-                    <div
-                      class="text-card-foreground text-right font-semibold text-base leading-none relative"
-                    >
-                      $63.99
-                    </div>
                   </div>
                 </div>
                 <div
-                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center flex-1"
+                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
                   data-slot="card-header"
                 >
                   <div
@@ -2327,11 +2871,11 @@ exports[`PaginatedProductCarousel stories snapshot > Mobile story renders and ma
               class="w-full max-w-full min-w-0"
             >
               <div
-                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
+                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
                 data-slot="card"
               >
                 <div
-                  class="flex items-center [.border-t]:pt-6 px-6 pb-6 pt-6"
+                  class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
                   data-slot="card-footer"
                 >
                   <button
@@ -2342,11 +2886,50 @@ exports[`PaginatedProductCarousel stories snapshot > Mobile story renders and ma
                   </button>
                 </div>
                 <div
-                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-24"
+                  class="px-6"
                   data-slot="card-content"
                 >
                   <div
-                    class="flex flex-col gap-1.5 items-start justify-start relative flex-1 min-w-0 h-full"
+                    class="items-center gap-2 text-sm mt-2"
+                  >
+                    <span
+                      aria-label="Current price: $63.99"
+                      aria-live="polite"
+                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                    >
+                      $63.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 1
+                      Current price: $63.99
+                    </span>
+                     
+                    <span
+                      aria-label="List price: $67.99"
+                      class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
+                    >
+                      $67.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 1
+                      List price: $67.99
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+                  data-slot="card-content"
+                >
+                  <div
+                    class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
                   >
                     <div
                       class="h-10 flex items-start"
@@ -2361,7 +2944,7 @@ exports[`PaginatedProductCarousel stories snapshot > Mobile story renders and ma
                       </a>
                     </div>
                     <div
-                      class="h-8 flex items-center"
+                      class="h-8 flex items-end"
                     />
                   </div>
                   <div
@@ -2383,15 +2966,10 @@ exports[`PaginatedProductCarousel stories snapshot > Mobile story renders and ma
                         Sale
                       </span>
                     </div>
-                    <div
-                      class="text-card-foreground text-right font-semibold text-base leading-none relative"
-                    >
-                      $63.99
-                    </div>
                   </div>
                 </div>
                 <div
-                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center flex-1"
+                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
                   data-slot="card-header"
                 >
                   <div
@@ -2459,11 +3037,11 @@ exports[`PaginatedProductCarousel stories snapshot > Mobile story renders and ma
               class="w-full max-w-full min-w-0"
             >
               <div
-                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
+                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
                 data-slot="card"
               >
                 <div
-                  class="flex items-center [.border-t]:pt-6 px-6 pb-6 pt-6"
+                  class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
                   data-slot="card-footer"
                 >
                   <button
@@ -2474,11 +3052,50 @@ exports[`PaginatedProductCarousel stories snapshot > Mobile story renders and ma
                   </button>
                 </div>
                 <div
-                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-24"
+                  class="px-6"
                   data-slot="card-content"
                 >
                   <div
-                    class="flex flex-col gap-1.5 items-start justify-start relative flex-1 min-w-0 h-full"
+                    class="items-center gap-2 text-sm mt-2"
+                  >
+                    <span
+                      aria-label="Current price: $63.99"
+                      aria-live="polite"
+                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                    >
+                      $63.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 2
+                      Current price: $63.99
+                    </span>
+                     
+                    <span
+                      aria-label="List price: $67.99"
+                      class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
+                    >
+                      $67.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 2
+                      List price: $67.99
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+                  data-slot="card-content"
+                >
+                  <div
+                    class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
                   >
                     <div
                       class="h-10 flex items-start"
@@ -2493,7 +3110,7 @@ exports[`PaginatedProductCarousel stories snapshot > Mobile story renders and ma
                       </a>
                     </div>
                     <div
-                      class="h-8 flex items-center"
+                      class="h-8 flex items-end"
                     />
                   </div>
                   <div
@@ -2515,15 +3132,10 @@ exports[`PaginatedProductCarousel stories snapshot > Mobile story renders and ma
                         Sale
                       </span>
                     </div>
-                    <div
-                      class="text-card-foreground text-right font-semibold text-base leading-none relative"
-                    >
-                      $63.99
-                    </div>
                   </div>
                 </div>
                 <div
-                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center flex-1"
+                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
                   data-slot="card-header"
                 >
                   <div
@@ -2591,11 +3203,11 @@ exports[`PaginatedProductCarousel stories snapshot > Mobile story renders and ma
               class="w-full max-w-full min-w-0"
             >
               <div
-                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
+                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
                 data-slot="card"
               >
                 <div
-                  class="flex items-center [.border-t]:pt-6 px-6 pb-6 pt-6"
+                  class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
                   data-slot="card-footer"
                 >
                   <button
@@ -2606,11 +3218,50 @@ exports[`PaginatedProductCarousel stories snapshot > Mobile story renders and ma
                   </button>
                 </div>
                 <div
-                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-24"
+                  class="px-6"
                   data-slot="card-content"
                 >
                   <div
-                    class="flex flex-col gap-1.5 items-start justify-start relative flex-1 min-w-0 h-full"
+                    class="items-center gap-2 text-sm mt-2"
+                  >
+                    <span
+                      aria-label="Current price: $63.99"
+                      aria-live="polite"
+                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                    >
+                      $63.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 3
+                      Current price: $63.99
+                    </span>
+                     
+                    <span
+                      aria-label="List price: $67.99"
+                      class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
+                    >
+                      $67.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 3
+                      List price: $67.99
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+                  data-slot="card-content"
+                >
+                  <div
+                    class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
                   >
                     <div
                       class="h-10 flex items-start"
@@ -2625,7 +3276,7 @@ exports[`PaginatedProductCarousel stories snapshot > Mobile story renders and ma
                       </a>
                     </div>
                     <div
-                      class="h-8 flex items-center"
+                      class="h-8 flex items-end"
                     />
                   </div>
                   <div
@@ -2647,15 +3298,10 @@ exports[`PaginatedProductCarousel stories snapshot > Mobile story renders and ma
                         Sale
                       </span>
                     </div>
-                    <div
-                      class="text-card-foreground text-right font-semibold text-base leading-none relative"
-                    >
-                      $63.99
-                    </div>
                   </div>
                 </div>
                 <div
-                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center flex-1"
+                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
                   data-slot="card-header"
                 >
                   <div
@@ -2723,11 +3369,11 @@ exports[`PaginatedProductCarousel stories snapshot > Mobile story renders and ma
               class="w-full max-w-full min-w-0"
             >
               <div
-                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
+                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
                 data-slot="card"
               >
                 <div
-                  class="flex items-center [.border-t]:pt-6 px-6 pb-6 pt-6"
+                  class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
                   data-slot="card-footer"
                 >
                   <button
@@ -2738,11 +3384,50 @@ exports[`PaginatedProductCarousel stories snapshot > Mobile story renders and ma
                   </button>
                 </div>
                 <div
-                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-24"
+                  class="px-6"
                   data-slot="card-content"
                 >
                   <div
-                    class="flex flex-col gap-1.5 items-start justify-start relative flex-1 min-w-0 h-full"
+                    class="items-center gap-2 text-sm mt-2"
+                  >
+                    <span
+                      aria-label="Current price: $63.99"
+                      aria-live="polite"
+                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                    >
+                      $63.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 4
+                      Current price: $63.99
+                    </span>
+                     
+                    <span
+                      aria-label="List price: $67.99"
+                      class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
+                    >
+                      $67.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 4
+                      List price: $67.99
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+                  data-slot="card-content"
+                >
+                  <div
+                    class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
                   >
                     <div
                       class="h-10 flex items-start"
@@ -2757,7 +3442,7 @@ exports[`PaginatedProductCarousel stories snapshot > Mobile story renders and ma
                       </a>
                     </div>
                     <div
-                      class="h-8 flex items-center"
+                      class="h-8 flex items-end"
                     />
                   </div>
                   <div
@@ -2779,15 +3464,10 @@ exports[`PaginatedProductCarousel stories snapshot > Mobile story renders and ma
                         Sale
                       </span>
                     </div>
-                    <div
-                      class="text-card-foreground text-right font-semibold text-base leading-none relative"
-                    >
-                      $63.99
-                    </div>
                   </div>
                 </div>
                 <div
-                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center flex-1"
+                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
                   data-slot="card-header"
                 >
                   <div
@@ -2903,11 +3583,11 @@ exports[`PaginatedProductCarousel stories snapshot > Tablet story renders and ma
               class="w-full max-w-full min-w-0"
             >
               <div
-                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
+                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
                 data-slot="card"
               >
                 <div
-                  class="flex items-center [.border-t]:pt-6 px-6 pb-6 pt-6"
+                  class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
                   data-slot="card-footer"
                 >
                   <button
@@ -2918,11 +3598,50 @@ exports[`PaginatedProductCarousel stories snapshot > Tablet story renders and ma
                   </button>
                 </div>
                 <div
-                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-24"
+                  class="px-6"
                   data-slot="card-content"
                 >
                   <div
-                    class="flex flex-col gap-1.5 items-start justify-start relative flex-1 min-w-0 h-full"
+                    class="items-center gap-2 text-sm mt-2"
+                  >
+                    <span
+                      aria-label="Current price: $63.99"
+                      aria-live="polite"
+                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                    >
+                      $63.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 1
+                      Current price: $63.99
+                    </span>
+                     
+                    <span
+                      aria-label="List price: $67.99"
+                      class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
+                    >
+                      $67.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 1
+                      List price: $67.99
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+                  data-slot="card-content"
+                >
+                  <div
+                    class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
                   >
                     <div
                       class="h-10 flex items-start"
@@ -2937,7 +3656,7 @@ exports[`PaginatedProductCarousel stories snapshot > Tablet story renders and ma
                       </a>
                     </div>
                     <div
-                      class="h-8 flex items-center"
+                      class="h-8 flex items-end"
                     />
                   </div>
                   <div
@@ -2959,15 +3678,10 @@ exports[`PaginatedProductCarousel stories snapshot > Tablet story renders and ma
                         Sale
                       </span>
                     </div>
-                    <div
-                      class="text-card-foreground text-right font-semibold text-base leading-none relative"
-                    >
-                      $63.99
-                    </div>
                   </div>
                 </div>
                 <div
-                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center flex-1"
+                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
                   data-slot="card-header"
                 >
                   <div
@@ -3035,11 +3749,11 @@ exports[`PaginatedProductCarousel stories snapshot > Tablet story renders and ma
               class="w-full max-w-full min-w-0"
             >
               <div
-                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
+                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
                 data-slot="card"
               >
                 <div
-                  class="flex items-center [.border-t]:pt-6 px-6 pb-6 pt-6"
+                  class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
                   data-slot="card-footer"
                 >
                   <button
@@ -3050,11 +3764,50 @@ exports[`PaginatedProductCarousel stories snapshot > Tablet story renders and ma
                   </button>
                 </div>
                 <div
-                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-24"
+                  class="px-6"
                   data-slot="card-content"
                 >
                   <div
-                    class="flex flex-col gap-1.5 items-start justify-start relative flex-1 min-w-0 h-full"
+                    class="items-center gap-2 text-sm mt-2"
+                  >
+                    <span
+                      aria-label="Current price: $63.99"
+                      aria-live="polite"
+                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                    >
+                      $63.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 2
+                      Current price: $63.99
+                    </span>
+                     
+                    <span
+                      aria-label="List price: $67.99"
+                      class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
+                    >
+                      $67.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 2
+                      List price: $67.99
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+                  data-slot="card-content"
+                >
+                  <div
+                    class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
                   >
                     <div
                       class="h-10 flex items-start"
@@ -3069,7 +3822,7 @@ exports[`PaginatedProductCarousel stories snapshot > Tablet story renders and ma
                       </a>
                     </div>
                     <div
-                      class="h-8 flex items-center"
+                      class="h-8 flex items-end"
                     />
                   </div>
                   <div
@@ -3091,15 +3844,10 @@ exports[`PaginatedProductCarousel stories snapshot > Tablet story renders and ma
                         Sale
                       </span>
                     </div>
-                    <div
-                      class="text-card-foreground text-right font-semibold text-base leading-none relative"
-                    >
-                      $63.99
-                    </div>
                   </div>
                 </div>
                 <div
-                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center flex-1"
+                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
                   data-slot="card-header"
                 >
                   <div
@@ -3167,11 +3915,11 @@ exports[`PaginatedProductCarousel stories snapshot > Tablet story renders and ma
               class="w-full max-w-full min-w-0"
             >
               <div
-                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
+                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
                 data-slot="card"
               >
                 <div
-                  class="flex items-center [.border-t]:pt-6 px-6 pb-6 pt-6"
+                  class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
                   data-slot="card-footer"
                 >
                   <button
@@ -3182,11 +3930,50 @@ exports[`PaginatedProductCarousel stories snapshot > Tablet story renders and ma
                   </button>
                 </div>
                 <div
-                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-24"
+                  class="px-6"
                   data-slot="card-content"
                 >
                   <div
-                    class="flex flex-col gap-1.5 items-start justify-start relative flex-1 min-w-0 h-full"
+                    class="items-center gap-2 text-sm mt-2"
+                  >
+                    <span
+                      aria-label="Current price: $63.99"
+                      aria-live="polite"
+                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                    >
+                      $63.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 3
+                      Current price: $63.99
+                    </span>
+                     
+                    <span
+                      aria-label="List price: $67.99"
+                      class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
+                    >
+                      $67.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 3
+                      List price: $67.99
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+                  data-slot="card-content"
+                >
+                  <div
+                    class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
                   >
                     <div
                       class="h-10 flex items-start"
@@ -3201,7 +3988,7 @@ exports[`PaginatedProductCarousel stories snapshot > Tablet story renders and ma
                       </a>
                     </div>
                     <div
-                      class="h-8 flex items-center"
+                      class="h-8 flex items-end"
                     />
                   </div>
                   <div
@@ -3223,15 +4010,10 @@ exports[`PaginatedProductCarousel stories snapshot > Tablet story renders and ma
                         Sale
                       </span>
                     </div>
-                    <div
-                      class="text-card-foreground text-right font-semibold text-base leading-none relative"
-                    >
-                      $63.99
-                    </div>
                   </div>
                 </div>
                 <div
-                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center flex-1"
+                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
                   data-slot="card-header"
                 >
                   <div
@@ -3299,11 +4081,11 @@ exports[`PaginatedProductCarousel stories snapshot > Tablet story renders and ma
               class="w-full max-w-full min-w-0"
             >
               <div
-                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
+                class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md h-auto"
                 data-slot="card"
               >
                 <div
-                  class="flex items-center [.border-t]:pt-6 px-6 pb-6 pt-6"
+                  class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
                   data-slot="card-footer"
                 >
                   <button
@@ -3314,11 +4096,50 @@ exports[`PaginatedProductCarousel stories snapshot > Tablet story renders and ma
                   </button>
                 </div>
                 <div
-                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-24"
+                  class="px-6"
                   data-slot="card-content"
                 >
                   <div
-                    class="flex flex-col gap-1.5 items-start justify-start relative flex-1 min-w-0 h-full"
+                    class="items-center gap-2 text-sm mt-2"
+                  >
+                    <span
+                      aria-label="Current price: $63.99"
+                      aria-live="polite"
+                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                    >
+                      $63.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 4
+                      Current price: $63.99
+                    </span>
+                     
+                    <span
+                      aria-label="List price: $67.99"
+                      class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
+                    >
+                      $67.99
+                    </span>
+                    <span
+                      aria-atomic="true"
+                      aria-live="polite"
+                      class="sr-only"
+                    >
+                      Laptop Briefcase with wheels (37L) 4
+                      List price: $67.99
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+                  data-slot="card-content"
+                >
+                  <div
+                    class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
                   >
                     <div
                       class="h-10 flex items-start"
@@ -3333,7 +4154,7 @@ exports[`PaginatedProductCarousel stories snapshot > Tablet story renders and ma
                       </a>
                     </div>
                     <div
-                      class="h-8 flex items-center"
+                      class="h-8 flex items-end"
                     />
                   </div>
                   <div
@@ -3355,15 +4176,10 @@ exports[`PaginatedProductCarousel stories snapshot > Tablet story renders and ma
                         Sale
                       </span>
                     </div>
-                    <div
-                      class="text-card-foreground text-right font-semibold text-base leading-none relative"
-                    >
-                      $63.99
-                    </div>
                   </div>
                 </div>
                 <div
-                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center flex-1"
+                  class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
                   data-slot="card-header"
                 >
                   <div
