@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import type { Json } from '+types/lang';
+import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -109,6 +110,37 @@ export function extractStatusCode(error: unknown): string | undefined {
         }
     }
     return undefined;
+}
+
+/**
+
+ * TODO: This method replaces the extractResponseError for the new scapi client. We may want to rename this once we remove extractResponseError
+ * Extracts error message from different error types
+ * @param error - The error to extract message from
+ * @returns A user-friendly error message
+ */
+export function getErrorMessage(error: unknown): string {
+    if (error instanceof ApiError) {
+        // Try to parse rawBody JSON string first
+        if (error.rawBody) {
+            try {
+                const parsedBody = JSON.parse(error.rawBody);
+                if (parsedBody.message) {
+                    return parsedBody.message;
+                }
+            } catch {
+                // Failed to parse, fall through to other options
+            }
+        }
+        // Fall back to body.detail or statusText
+        return error.body?.detail || error.statusText || 'An error occurred';
+    }
+
+    if (error instanceof Error) {
+        return error.message;
+    }
+
+    return 'An error occurred';
 }
 
 /**

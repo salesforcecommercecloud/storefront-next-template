@@ -2,6 +2,7 @@ import type { ReactElement } from 'react';
 import {
     redirect,
     Link,
+    useActionData,
     type LoaderFunctionArgs,
     type ActionFunctionArgs,
     type ClientActionFunctionArgs,
@@ -11,16 +12,23 @@ import { useTranslation } from 'react-i18next';
 import StandardLoginForm from '@/components/login/standard-login-form';
 import PasswordlessLoginForm from '@/components/login/passwordless-login-form';
 import { SocialLoginButtons } from '@/components/buttons/social-login-buttons';
-import { getAppOrigin, extractResponseError, isAbsoluteURL } from '@/lib/utils';
+import { getAppOrigin, isAbsoluteURL } from '@/lib/utils';
 import { getConfig } from '@/config';
+import { getTranslation } from '@/lib/i18next';
 
 // services
-import { getAuth, authorizePasswordless, flashAuth } from '@/middlewares/auth.server';
+import { getAuth, authorizePasswordless } from '@/middlewares/auth.server';
 import { updateAuth, getAuth as getClientAuth } from '@/middlewares/auth.client';
 import { updateBasket } from '@/middlewares/basket.client';
 import { loginRegisteredUser } from '@/lib/api/auth/standard-login';
 import { authorizeIDP } from '@/lib/api/auth/social-login';
 import { mergeBasket } from '@/lib/api/basket';
+
+type LoginActionResponse = {
+    error?: string;
+    redirectUrl?: string;
+    auth?: ReturnType<typeof getAuth>;
+};
 
 type LoginLoaderData = {
     error?: string;
@@ -56,6 +64,7 @@ export function loader({ request, context }: LoaderFunctionArgs) {
     const email = url.searchParams.get('email');
     const pendingAction = url.searchParams.get('action');
     const actionParams = url.searchParams.get('actionParams');
+    const error = url.searchParams.get('error');
 
     // Get runtime config to determine if passwordless login is enabled
     const config = getConfig(context);
@@ -65,7 +74,7 @@ export function loader({ request, context }: LoaderFunctionArgs) {
     const mode = url.searchParams.get('mode') || (isPasswordlessLoginEnabled ? 'passwordless' : 'password');
 
     return {
-        error: session.error,
+        error,
         passwordlessSent,
         email,
         mode,
@@ -83,46 +92,13 @@ export function loader({ request, context }: LoaderFunctionArgs) {
  * together with the client action to ensure a smooth login process.
  */
 // eslint-disable-next-line react-refresh/only-export-components, custom/no-server-actions
-export async function action({ request, context }: ActionFunctionArgs): Promise<[string, ReturnType<typeof getAuth>]> {
+export async function action({ request, context }: ActionFunctionArgs): Promise<LoginActionResponse> {
     const config = getConfig(context);
-    const resolve = (target: string): [string, ReturnType<typeof getAuth>] => [target, getAuth(context)];
+    const { t } = getTranslation(context);
+    const genericError = t('errors:genericTryAgain');
 
-    // Helper function to build login redirect with preserved params
-    // IMPORTANT: On POST requests, query params are not in request.url, so we need to read from formData
-    // Defined outside try block so it's accessible in catch block
-    const buildLoginRedirect = (mode: string, formData?: FormData, additionalParams?: Record<string, string>) => {
-        const url = new URL(request.url);
-
-        // Try to get params from formData first (POST request), then fall back to URL query params (GET request)
-        const returnUrl = formData?.get('returnUrl')?.toString() || url.searchParams.get('returnUrl');
-        const pendingAction = formData?.get('action')?.toString() || url.searchParams.get('action');
-        const actionParams = formData?.get('actionParams')?.toString() || url.searchParams.get('actionParams');
-
-        const params = new URLSearchParams();
-        params.set('mode', mode);
-        if (returnUrl) {
-            params.set('returnUrl', returnUrl);
-        }
-        if (pendingAction) {
-            params.set('action', pendingAction);
-        }
-        if (actionParams) {
-            params.set('actionParams', actionParams);
-        }
-        if (additionalParams) {
-            Object.entries(additionalParams).forEach(([key, value]) => {
-                params.set(key, value);
-            });
-        }
-
-        return `/login?${params.toString()}`;
-    };
-
-    // Store formData outside try block so it's accessible in catch block
-    // Request body can only be read once, so we need to store it
-    let formData: FormData | null = null;
     try {
-        formData = await request.formData();
+        const formData = await request.formData();
 
         const email = formData.get('email')?.toString();
         const password = formData.get('password')?.toString();
@@ -134,7 +110,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         if (loginMode === 'social') {
             // Social login flow
             if (!provider || !isSocialLoginEnabled) {
-                return resolve(buildLoginRedirect('password', formData));
+                return { error: genericError };
             }
             const socialCallback = config.site.features.socialLogin.callbackUri;
             const socialLoginRedirectURI = isAbsoluteURL(socialCallback)
@@ -148,15 +124,15 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                 redirectURI: finalRedirectURI,
             });
             if (result.success && result.redirectUrl) {
-                // Redirect to social login provider
-                return resolve(result.redirectUrl);
+                // Redirect to social login provider (auth happens in callback)
+                return { redirectUrl: result.redirectUrl };
             }
-            // Social login failed - redirect back with error, preserving params
-            return resolve(buildLoginRedirect('password', formData));
+            // Social login failed - redirect back with generic error
+            return { error: genericError };
         } else if (loginMode === 'passwordless') {
             // Passwordless login flow
             if (!email) {
-                return resolve(buildLoginRedirect('passwordless', formData));
+                return { error: genericError };
             }
 
             // Build redirectPath from returnUrl, action, and actionParams for passwordless flow
@@ -194,21 +170,19 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                 if (actionParams) {
                     params.set('actionParams', actionParams);
                 }
-                return resolve(`/login?${params.toString()}`);
-            } catch (error) {
-                const { responseMessage } = await extractResponseError(error);
-                flashAuth(context, responseMessage);
-                return resolve(buildLoginRedirect('passwordless', formData));
+                return { redirectUrl: `/login?${params.toString()}` };
+            } catch {
+                return { error: genericError };
             }
         } else {
             // Standard password login flow (default case - handles 'password' mode or undefined/null)
             if (!email || !password) {
-                return resolve(buildLoginRedirect('password', formData));
+                return { error: genericError };
             }
             const result = await loginRegisteredUser(context, { email, password });
             if (!result.success) {
-                // Return error redirect immediately, preserving all params
-                return resolve(buildLoginRedirect('password', formData));
+                // Return generic error - don't expose specific login failure reasons
+                return { error: genericError };
             }
 
             // Login successful - redirect to returnUrl if provided, otherwise home
@@ -238,18 +212,16 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                         returnUrlObj.searchParams.set('actionParams', actionParams);
                     }
                     // Return relative path with query params
-                    return resolve(returnUrlObj.pathname + returnUrlObj.search);
+                    return { redirectUrl: returnUrlObj.pathname + returnUrlObj.search, auth: getAuth(context) };
                 }
-                return resolve(returnUrl);
+                return { redirectUrl: returnUrl, auth: getAuth(context) };
             }
 
             // No returnUrl - redirect to home
-            return resolve('/');
+            return { redirectUrl: '/', auth: getAuth(context) };
         }
     } catch {
-        // Unexpected error - redirect back to login, preserving params if possible
-        // Use formData from outer scope if available, otherwise fall back to URL params only
-        return resolve(buildLoginRedirect('password', formData || undefined));
+        return { error: genericError };
     }
 }
 
@@ -260,41 +232,59 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
  */
 // eslint-disable-next-line react-refresh/only-export-components
 export async function clientAction({ context, serverAction }: ClientActionFunctionArgs) {
+    const { t } = getTranslation(context);
+    const genericError = t('errors:genericTryAgain');
     const prevAuth = getClientAuth(context);
 
-    const [target, session] = await serverAction<[string, ReturnType<typeof getAuth>]>();
+    const result = await serverAction<LoginActionResponse>();
 
-    updateAuth(context, () => session);
+    if (result.error) {
+        return result;
+    }
 
-    // Merge basket if transitioning from guest to registered user
-    if (prevAuth.userType === 'guest' && session.userType === 'registered') {
-        try {
-            const mergedBasket = await mergeBasket(context);
-            updateBasket(context, mergedBasket);
-        } catch (error) {
-            // Log but don't block redirect - user can still access their registered basket
-            // eslint-disable-next-line no-console
-            console.error('[Standard Login] Failed to merge basket:', error);
+    // Success - handle redirect and optionally update auth
+    const { redirectUrl, auth } = result;
+    if (!redirectUrl) {
+        return { error: genericError };
+    }
+
+    // Only update auth if it exists (standard login flow)
+    // Social and passwordless login don't return auth here - auth happens in their callback handlers
+    if (auth) {
+        updateAuth(context, () => auth);
+
+        // Merge basket if transitioning from guest to registered user
+        if (prevAuth.userType === 'guest' && auth.userType === 'registered') {
+            try {
+                const mergedBasket = await mergeBasket(context);
+                updateBasket(context, mergedBasket);
+            } catch (error) {
+                // Log but don't block redirect - user can still access their registered basket
+                // eslint-disable-next-line no-console
+                console.error('[Standard Login] Failed to merge basket:', error);
+            }
         }
     }
 
-    // If target is an absolute URL (e.g., OAuth authorize endpoint), use full-page navigation
+    // If redirectUrl is an absolute URL (e.g., OAuth authorize endpoint), use full-page navigation
     // This is necessary for external redirects like social login flows
-    if (typeof window !== 'undefined' && /^https?:\/\//.test(target)) {
-        window.location.assign(target);
+    if (typeof window !== 'undefined' && /^https?:\/\//.test(redirectUrl)) {
+        window.location.assign(redirectUrl);
         return null;
     }
 
     // Otherwise, use React Router redirect for internal paths
-    return redirect(target);
+    return redirect(redirectUrl);
 }
 
 clientAction.hydrate = true as const;
 
 export default function Login({ loaderData }: { loaderData: LoginLoaderData }): ReactElement {
     const { t } = useTranslation('login');
+    const actionData = useActionData<typeof action>();
+
     const {
-        error,
+        error: loaderError,
         passwordlessSent,
         email,
         mode,
@@ -304,6 +294,9 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
         action: pendingActionName,
         actionParams,
     } = loaderData;
+
+    // Prefer actionData error (from form submission) over loaderData error (from URL params)
+    const error = actionData?.error || loaderError || undefined;
 
     // Show passwordless success state
     if (passwordlessSent && email) {

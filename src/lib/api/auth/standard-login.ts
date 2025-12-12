@@ -1,7 +1,7 @@
 import type { ActionFunctionArgs } from 'react-router';
 import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
 import type { CustomQueryParameters } from '@/lib/api/types';
-import { flashAuth, updateAuth, loginRegisteredUser as authLoginRegisteredUser } from '@/middlewares/auth.server';
+import { updateAuth, loginRegisteredUser as authLoginRegisteredUser } from '@/middlewares/auth.server';
 import { getTranslation } from '@/lib/i18next';
 
 export const loginRegisteredUser = async (
@@ -44,9 +44,6 @@ export const loginRegisteredUser = async (
         console.error('[Standard Login] Error details:', errorDetails);
 
         const errorMessage = t('errors:loginFailed');
-
-        flashAuth(context, errorMessage);
-
         return {
             success: false,
             error: errorMessage,

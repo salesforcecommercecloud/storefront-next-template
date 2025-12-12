@@ -651,8 +651,8 @@ describe('auth middleware (server)', () => {
             const userid = 'test@example.com';
 
             const mockResponse = {
-                status: 200,
-                json: vi.fn(),
+                data: 'success',
+                response: new Response(null, { status: 200 }),
             };
 
             mockAuth.passwordless.authorize.mockResolvedValue(mockResponse);
@@ -662,7 +662,7 @@ describe('auth middleware (server)', () => {
             });
 
             expect(result).toBe(mockResponse);
-            expect(result.status).toBe(200);
+            expect(result.response.status).toBe(200);
             expect(mockAuth.passwordless.authorize).toHaveBeenCalledWith(
                 expect.objectContaining({
                     userId: userid,
@@ -678,8 +678,8 @@ describe('auth middleware (server)', () => {
             const redirectPath = '/dashboard';
 
             const mockResponse = {
-                status: 200,
-                json: vi.fn(),
+                data: 'success',
+                response: new Response(null, { status: 200 }),
             };
 
             mockAuth.passwordless.authorize.mockResolvedValue(mockResponse);
@@ -690,10 +690,10 @@ describe('auth middleware (server)', () => {
             });
 
             expect(result).toBe(mockResponse);
-            expect(result.status).toBe(200);
+            expect(result.response.status).toBe(200);
             expect(mockAuth.passwordless.authorize).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    callbackUri: expect.stringContaining('redirectUrl=/dashboard'),
+                    callbackUri: expect.stringContaining('redirectUrl=%2Fdashboard'),
                 })
             );
         });
@@ -713,15 +713,15 @@ describe('auth middleware (server)', () => {
             const userid = 'test@example.com';
 
             const mockResponse = {
-                status: 400,
-                json: vi.fn().mockResolvedValue({ message: 'Bad request' }),
+                data: 'error',
+                response: new Response(JSON.stringify({ message: 'Bad request' }), { status: 400 }),
             };
 
             mockAuth.passwordless.authorize.mockResolvedValue(mockResponse);
 
             const result = await authorizePasswordless(provider, { userid });
 
-            expect(result.status).toBe(400);
+            expect(result.response.status).toBe(400);
         });
     });
 

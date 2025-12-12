@@ -17,7 +17,7 @@ export default function PasswordlessLoginForm({
 }: PasswordlessLoginFormProps): ReactElement {
     const { t } = useTranslation('login');
     return (
-        <Form method="post" action="/login" className="space-y-6">
+        <Form method="post" className="space-y-6">
             {error && (
                 <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded">
                     {error}

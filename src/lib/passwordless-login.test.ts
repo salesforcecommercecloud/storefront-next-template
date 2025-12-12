@@ -6,9 +6,9 @@ import {
     handlePasswordlessLanding,
     resetMarketingCloudTokenCache,
 } from './passwordless-login';
-import { updateAuth, flashAuth, getPasswordLessAccessToken } from '@/middlewares/auth.server';
+import { updateAuth, getPasswordLessAccessToken } from '@/middlewares/auth.server';
 import { mergeBasket } from '@/lib/api/basket';
-import { getAppOrigin, extractResponseError } from '@/lib/utils';
+import { getAppOrigin, getErrorMessage } from '@/lib/utils';
 import { getTranslation } from '@/lib/i18next';
 
 const { t } = getTranslation();
@@ -39,7 +39,6 @@ vi.mock('jose', () => ({
 // Mock auth middleware
 vi.mock('@/middlewares/auth.server', () => ({
     updateAuth: vi.fn(),
-    flashAuth: vi.fn(),
     getPasswordLessAccessToken: vi.fn(),
 }));
 
@@ -51,7 +50,7 @@ vi.mock('@/lib/api/basket', () => ({
 // Mock utility functions
 vi.mock('@/lib/utils', () => ({
     getAppOrigin: vi.fn(),
-    extractResponseError: vi.fn(),
+    getErrorMessage: vi.fn(),
 }));
 
 // Mock config module
@@ -90,10 +89,9 @@ const mockCreateRemoteJWKSet = vi.mocked(createRemoteJWKSet);
 const mockJwtVerify = vi.mocked(jwtVerify);
 const mockGetPasswordLessAccessToken = vi.mocked(getPasswordLessAccessToken);
 const mockUpdateAuth = vi.mocked(updateAuth);
-const mockFlashAuth = vi.mocked(flashAuth);
 const mockMergeBasket = vi.mocked(mergeBasket);
 const mockGetAppOrigin = vi.mocked(getAppOrigin);
-const mockExtractResponseError = vi.mocked(extractResponseError);
+const mockGetErrorMessage = vi.mocked(getErrorMessage);
 
 const createMockHeaders = (slasCallbackToken?: string) => ({
     get: vi.fn((header: string) => {
@@ -121,13 +119,13 @@ describe('passwordless-login', () => {
         mockGetAppOrigin.mockReturnValue('https://example.com');
         mockRandomUUID.mockReturnValue('123456781234123412341234567');
 
-        // Mock extractResponseError to return the error message - for debugging let's see actual errors
-        mockExtractResponseError.mockImplementation((error) =>
-            Promise.resolve({
-                responseMessage: error instanceof Error ? error.message : String(error),
-                status_code: '500',
-            })
-        );
+        // Mock getErrorMessage to return error message string
+        mockGetErrorMessage.mockImplementation((error) => {
+            if (error instanceof Error) {
+                return error.message;
+            }
+            return String(error);
+        });
     });
 
     afterEach(() => {
@@ -463,8 +461,9 @@ describe('passwordless-login', () => {
                     params: {},
                 });
 
-                expect(mockFlashAuth).toHaveBeenCalledWith(mockContext, t('errors:passwordless.missingToken'));
-                expect(mockRedirect).toHaveBeenCalledWith('/login');
+                // Should redirect with error in URL parameter
+                const errorMessage = t('errors:passwordless.missingToken');
+                expect(mockRedirect).toHaveBeenCalledWith(`/login?error=${encodeURIComponent(errorMessage)}`);
                 expect(result).toBe('redirect-response');
             });
 
@@ -475,11 +474,10 @@ describe('passwordless-login', () => {
 
                 const mockError = new Error('Invalid token');
                 mockGetPasswordLessAccessToken.mockRejectedValue(mockError);
-                mockExtractResponseError.mockResolvedValue({
-                    responseMessage: 'Invalid token',
-                    status_code: '400',
-                });
                 mockRedirect.mockReturnValue('redirect-response' as any);
+
+                // Mock console.error to avoid test output noise
+                const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
                 const result = await handlePasswordlessLanding({
                     request: mockRequest,
@@ -487,9 +485,12 @@ describe('passwordless-login', () => {
                     params: {},
                 });
 
-                expect(mockFlashAuth).toHaveBeenCalledWith(mockContext, 'Invalid token');
-                expect(mockRedirect).toHaveBeenCalledWith('/login');
+                // Should redirect with error in URL parameter
+                const errorMessage = t('errors:genericTryAgain');
+                expect(mockRedirect).toHaveBeenCalledWith(`/login?error=${encodeURIComponent(errorMessage)}`);
                 expect(result).toBe('redirect-response');
+
+                consoleSpy.mockRestore();
             });
         });
     });

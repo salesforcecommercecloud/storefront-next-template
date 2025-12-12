@@ -1,7 +1,7 @@
 import { type ActionFunctionArgs, type LoaderFunctionArgs, redirect, type RouterContextProvider } from 'react-router';
-import { extractResponseError, getAppOrigin } from '@/lib/utils';
+import { getAppOrigin, getErrorMessage } from '@/lib/utils';
 import { getConfig } from '@/config';
-import { flashAuth, getPasswordLessAccessToken, updateAuth } from '@/middlewares/auth.server';
+import { getPasswordLessAccessToken, updateAuth } from '@/middlewares/auth.server';
 import { mergeBasket } from '@/lib/api/basket';
 import {
     resetMarketingCloudTokenCache,
@@ -82,10 +82,9 @@ export async function handlePasswordlessCallback({ request, context }: ActionFun
             data: result,
         };
     } catch (error) {
-        const { responseMessage } = await extractResponseError(error);
         return {
             success: false,
-            error: responseMessage,
+            error: getErrorMessage(error),
         };
     }
 }
@@ -103,9 +102,8 @@ export async function handlePasswordlessLanding({ request, context }: LoaderFunc
         const redirectUrl = url.searchParams.get('redirectUrl');
 
         if (!token) {
-            // Use existing flashAuth pattern for error handling
-            flashAuth(context, t('errors:passwordless.missingToken'));
-            return redirect('/login');
+            const errorMessage = t('errors:passwordless.missingToken');
+            return redirect(`/login?error=${encodeURIComponent(errorMessage)}`);
         }
 
         const tokenResponse = await getPasswordLessAccessToken(context, decodeURIComponent(token));
@@ -134,10 +132,9 @@ export async function handlePasswordlessLanding({ request, context }: LoaderFunc
         const redirectTo = redirectUrl ? decodeURIComponent(redirectUrl) : '/account';
         return redirect(redirectTo);
     } catch (error) {
-        const { responseMessage } = await extractResponseError(error);
-
-        // Use existing flashAuth pattern for error handling
-        flashAuth(context, responseMessage);
-        return redirect('/login');
+        // eslint-disable-next-line no-console
+        console.error('[Passwordless Login] Error during login:', error);
+        const errorMessage = t('errors:genericTryAgain');
+        return redirect(`/login?error=${encodeURIComponent(errorMessage)}`);
     }
 }

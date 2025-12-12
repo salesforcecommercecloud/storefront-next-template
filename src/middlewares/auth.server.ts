@@ -158,7 +158,7 @@ export async function authorizePasswordless(
     const callbackUri = parameters.callbackUri || passwordlessLoginCallbackUri;
 
     const finalCallbackUri = parameters.redirectPath
-        ? `${callbackUri}?redirectUrl=${parameters.redirectPath}`
+        ? `${callbackUri}?redirectUrl=${encodeURIComponent(parameters.redirectPath)}`
         : callbackUri;
 
     const usid = session.usid;

@@ -20,7 +20,6 @@ exports[`StandardLoginForm stories snapshot > Default story renders and matches 
       </p>
     </div>
     <form
-      action="/login"
       class="space-y-6"
       method="post"
     >
@@ -128,7 +127,6 @@ exports[`StandardLoginForm stories snapshot > Desktop story renders and matches 
       </p>
     </div>
     <form
-      action="/login"
       class="space-y-6"
       method="post"
     >
@@ -236,7 +234,6 @@ exports[`StandardLoginForm stories snapshot > Mobile story renders and matches s
       </p>
     </div>
     <form
-      action="/login"
       class="space-y-6"
       method="post"
     >
@@ -344,7 +341,6 @@ exports[`StandardLoginForm stories snapshot > PasswordVisibility story renders a
       </p>
     </div>
     <form
-      action="/login"
       class="space-y-6"
       method="post"
     >
@@ -452,7 +448,6 @@ exports[`StandardLoginForm stories snapshot > PasswordlessDisabled story renders
       </p>
     </div>
     <form
-      action="/login"
       class="space-y-6"
       method="post"
     >
@@ -550,7 +545,6 @@ exports[`StandardLoginForm stories snapshot > Tablet story renders and matches s
       </p>
     </div>
     <form
-      action="/login"
       class="space-y-6"
       method="post"
     >
@@ -658,7 +652,6 @@ exports[`StandardLoginForm stories snapshot > WithError story renders and matche
       </p>
     </div>
     <form
-      action="/login"
       class="space-y-6"
       method="post"
     >

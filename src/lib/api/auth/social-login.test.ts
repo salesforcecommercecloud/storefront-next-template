@@ -1,10 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router';
 import { authorizeIDP, loginIDPUser, handleSocialLoginLanding } from './social-login';
-import { flashAuth, getAuth, updateAuth } from '@/middlewares/auth.server';
+import { getAuth, updateAuth } from '@/middlewares/auth.server';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
 import { getConfig } from '@/config';
-import { extractResponseError } from '@/lib/utils';
 import { mergeBasket } from '@/lib/api/basket';
 import { getTranslation } from '@/lib/i18next';
 import { TrackingConsent } from '@/types/tracking-consent';
@@ -26,7 +25,6 @@ vi.mock('@/lib/api-clients', () => ({
 }));
 
 vi.mock('@/middlewares/auth.server', () => ({
-    flashAuth: vi.fn(),
     getAuth: vi.fn(() => ({ usid: 'session-usid', codeVerifier: 'stored-code-verifier' })),
     updateAuth: vi.fn(),
 }));
@@ -46,7 +44,7 @@ vi.mock('@/config', () => ({
 }));
 
 vi.mock('@/lib/utils', () => ({
-    extractResponseError: vi.fn((err?: any) => Promise.resolve({ responseMessage: (err && err.message) || 'error' })),
+    getErrorMessage: vi.fn((err?: any) => (err && err.message) || 'An error occurred'),
     getAppOrigin: vi.fn(() => 'https://example.com'),
     isAbsoluteURL: vi.fn((url: string) => url.startsWith('http')),
 }));
@@ -56,12 +54,10 @@ const mockIsTrackingConsentEnabled = vi.mocked(isTrackingConsentEnabled);
 describe('Social Login', () => {
     const mockContext = {} as unknown as ActionFunctionArgs['context'];
     const auth = {
-        flashAuth: vi.mocked(flashAuth),
         getAuth: vi.mocked(getAuth),
         updateAuth: vi.mocked(updateAuth),
     };
     const cfg = { getConfig: vi.mocked(getConfig) };
-    const utils = { extractResponseError: vi.mocked(extractResponseError) };
 
     beforeEach(() => {
         vi.clearAllMocks();
@@ -128,14 +124,12 @@ describe('Social Login', () => {
             expect(result.success).toBe(true);
         });
 
-        it('handles errors and flashes message', async () => {
+        it('handles errors and returns error message', async () => {
             const err = new Error('boom');
             mockAuthSocial.getAuthorizationUrl.mockRejectedValue(err);
-            utils.extractResponseError.mockResolvedValue({ responseMessage: 'boom' } as any);
 
             const result = await authorizeIDP(mockContext, { hint: 'Google' });
 
-            expect(auth.flashAuth).toHaveBeenCalledWith(mockContext, 'boom');
             expect(result).toEqual({ success: false, error: 'boom' });
         });
     });
@@ -275,30 +269,26 @@ describe('Social Login', () => {
             });
         });
 
-        it('handles missing codeVerifier by flashing error and returning failure', async () => {
+        it('handles missing codeVerifier and returns failure', async () => {
             auth.getAuth.mockReturnValue({ usid: 'session-usid', codeVerifier: undefined } as any);
-            utils.extractResponseError.mockResolvedValue({ responseMessage: 'Code verifier missing' } as any);
 
             const result = await loginIDPUser(mockContext, {
                 code: 'auth-code',
                 redirectURI: 'https://app.example/social-callback',
             });
 
-            expect(auth.flashAuth).toHaveBeenCalledWith(mockContext, expect.any(String));
             expect(result).toEqual({ success: false, error: expect.any(String) });
             expect(mockAuthSocial.exchangeCode).not.toHaveBeenCalled();
         });
 
-        it('handles helper error and flashes message', async () => {
+        it('handles helper error and returns error message', async () => {
             mockAuthSocial.exchangeCode.mockRejectedValue(new Error('login failed'));
-            utils.extractResponseError.mockResolvedValue({ responseMessage: 'login failed' } as any);
 
             const result = await loginIDPUser(mockContext, {
                 code: 'auth-code',
                 redirectURI: 'https://app.example/social-callback',
             });
 
-            expect(auth.flashAuth).toHaveBeenCalledWith(mockContext, 'login failed');
             expect(result).toEqual({ success: false, error: 'login failed' });
         });
     });
@@ -308,7 +298,6 @@ vi.mock('@/lib/api/basket', () => ({
     mergeBasket: vi.fn(),
 }));
 
-const mockFlashAuth = vi.mocked(flashAuth);
 const mockMergeBasket = vi.mocked(mergeBasket);
 const mockGetConfig = vi.mocked(getConfig);
 const mockGetAuth = vi.mocked(getAuth);
@@ -362,8 +351,9 @@ describe('handleSocialLoginCallback', () => {
             const loginCall = mockAuthSocial.exchangeCode.mock.calls[0]?.[0];
             expect(loginCall).toMatchObject({
                 code: 'auth_code_123',
+                codeVerifier: 'stored-code-verifier',
                 usid: 'user_session_id',
-                redirectUri: 'http://localhost:5173/social-callback',
+                redirectUri: 'https://example.com/social-callback',
             });
             expect(mockMergeBasket).toHaveBeenCalledWith(mockContext);
             expect(result).toBeInstanceOf(Response);
@@ -391,7 +381,7 @@ describe('handleSocialLoginCallback', () => {
             expect(loginCall).toMatchObject({
                 code: 'auth_code_123',
                 usid: 'session-usid',
-                redirectUri: 'http://localhost:5173/social-callback',
+                redirectUri: 'https://example.com/social-callback',
             });
             expect(result.status).toBe(302);
             expect(result.headers.get('Location')).toBe('/');
@@ -453,13 +443,13 @@ describe('handleSocialLoginCallback', () => {
             expect(loginCall).toMatchObject({
                 code: 'test',
                 usid: 'session-usid',
-                redirectUri: 'http://localhost:5173/custom-callback',
+                redirectUri: 'https://example.com/custom-callback',
             });
         });
     });
 
     describe('Failed Login', () => {
-        it('should redirect to login on failed IDP login', async () => {
+        it('should redirect to login with error param on failed IDP login', async () => {
             mockAuthSocial.exchangeCode.mockRejectedValue(new Error('Invalid code'));
 
             const mockRequest = new Request('http://localhost:5173/social-callback?code=invalid_code');
@@ -475,12 +465,14 @@ describe('handleSocialLoginCallback', () => {
             expect(mockAuthSocial.exchangeCode).toHaveBeenCalled();
             expect(mockMergeBasket).not.toHaveBeenCalled();
             expect(result.status).toBe(302);
-            expect(result.headers.get('Location')).toBe('/login');
+            // Should redirect with error in URL parameter
+            const location = result.headers.get('Location');
+            expect(location).toContain('/login?error=');
         });
     });
 
     describe('Error Handling', () => {
-        it('should redirect to login on error from social provider', async () => {
+        it('should redirect to login with error param on error from social provider', async () => {
             const mockRequest = new Request('http://localhost:5173/social-callback?error=access_denied');
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const args: LoaderFunctionArgs = {
@@ -491,13 +483,16 @@ describe('handleSocialLoginCallback', () => {
 
             const result = await handleSocialLoginLanding(args);
 
-            expect(mockFlashAuth).toHaveBeenCalledWith(mockContext, t('socialCallback:socialError'));
             expect(result).toBeInstanceOf(Response);
             expect(result.status).toBe(302);
-            expect(result.headers.get('Location')).toBe('/login');
+            // Should redirect with error in URL parameter
+            const location = result.headers.get('Location');
+            expect(location).toContain('/login?error=');
+            expect(location).toBeTruthy();
+            expect(decodeURIComponent(location as string)).toContain(t('socialCallback:socialError'));
         });
 
-        it('should redirect to login when no code or error provided', async () => {
+        it('should redirect to login with error param when no code or error provided', async () => {
             const mockRequest = new Request('http://localhost:5173/social-callback');
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const args: LoaderFunctionArgs = {
@@ -511,7 +506,9 @@ describe('handleSocialLoginCallback', () => {
             expect(mockAuthSocial.exchangeCode).not.toHaveBeenCalled();
             expect(mockMergeBasket).not.toHaveBeenCalled();
             expect(result.status).toBe(302);
-            expect(result.headers.get('Location')).toBe('/login');
+            // Should redirect with error in URL parameter
+            const location = result.headers.get('Location');
+            expect(location).toContain('/login?error=');
         });
     });
 });

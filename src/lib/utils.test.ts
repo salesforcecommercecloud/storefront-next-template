@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { resolveAssetUrl, isAbsoluteURL } from './utils';
+import { resolveAssetUrl, isAbsoluteURL, getErrorMessage } from './utils';
+import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 
 describe('isAbsoluteURL', () => {
     it('should return true for http URLs', () => {
@@ -217,6 +218,161 @@ describe('resolveAssetUrl', () => {
 
         it('should handle local asset paths from Page Designer', () => {
             expect(resolveAssetUrl('images/hero-cube.png')).toBe('/mobify/bundle/60/client/images/hero-cube.png');
+        });
+    });
+});
+
+describe('getErrorMessage', () => {
+    describe('with ApiError', () => {
+        it('should extract message from rawBody JSON when available', () => {
+            const error = new ApiError({
+                url: 'https://api.example.com/test',
+                method: 'POST',
+                status: 400,
+                statusText: 'Bad Request',
+                headers: new Headers(),
+                body: {
+                    type: 'https://api.commercecloud.salesforce.com/documentation/error/v1/errors/bad-request',
+                    title: 'Bad Request',
+                    detail: 'Error detail',
+                },
+                rawBody: JSON.stringify({ message: 'Invalid email format' }),
+            });
+
+            expect(getErrorMessage(error)).toBe('Invalid email format');
+        });
+
+        it('should fall back to body.detail when rawBody has no message', () => {
+            const error = new ApiError({
+                url: 'https://api.example.com/test',
+                method: 'POST',
+                status: 400,
+                statusText: 'Bad Request',
+                headers: new Headers(),
+                body: {
+                    type: 'https://api.commercecloud.salesforce.com/documentation/error/v1/errors/bad-request',
+                    title: 'Bad Request',
+                    detail: 'Detailed error description',
+                },
+                rawBody: JSON.stringify({ error: 'some error' }),
+            });
+
+            expect(getErrorMessage(error)).toBe('Detailed error description');
+        });
+
+        it('should fall back to statusText when rawBody has no message and body.detail is missing', () => {
+            const error = new ApiError({
+                url: 'https://api.example.com/test',
+                method: 'GET',
+                status: 401,
+                statusText: 'Unauthorized',
+                headers: new Headers(),
+                body: {
+                    type: 'https://api.commercecloud.salesforce.com/documentation/error/v1/errors/unauthorized',
+                    title: 'Unauthorized',
+                    detail: 'Unauthorized',
+                },
+                rawBody: JSON.stringify({ error: 'some error' }),
+            });
+
+            expect(getErrorMessage(error)).toBe('Unauthorized');
+        });
+
+        it('should return default message when all fallbacks fail', () => {
+            const error = new ApiError({
+                url: 'https://api.example.com/test',
+                method: 'GET',
+                status: 500,
+                statusText: '',
+                headers: new Headers(),
+                body: {
+                    type: 'https://api.commercecloud.salesforce.com/documentation/error/v1/errors/server-error',
+                    title: 'Server Error',
+                    detail: '',
+                },
+                rawBody: JSON.stringify({ error: 'some error' }),
+            });
+
+            expect(getErrorMessage(error)).toBe('An error occurred');
+        });
+
+        it('should handle invalid JSON in rawBody and fall back to body.detail', () => {
+            const error = new ApiError({
+                url: 'https://api.example.com/test',
+                method: 'POST',
+                status: 400,
+                statusText: 'Bad Request',
+                headers: new Headers(),
+                body: {
+                    type: 'https://api.commercecloud.salesforce.com/documentation/error/v1/errors/bad-request',
+                    title: 'Bad Request',
+                    detail: 'Detailed error from body',
+                },
+                rawBody: 'invalid json {',
+            });
+
+            expect(getErrorMessage(error)).toBe('Detailed error from body');
+        });
+
+        it('should handle invalid JSON in rawBody and fall back to statusText', () => {
+            const error = new ApiError({
+                url: 'https://api.example.com/test',
+                method: 'POST',
+                status: 400,
+                statusText: 'Bad Request',
+                headers: new Headers(),
+                body: {
+                    type: 'https://api.commercecloud.salesforce.com/documentation/error/v1/errors/bad-request',
+                    title: 'Bad Request',
+                    detail: '',
+                },
+                rawBody: 'invalid json {',
+            });
+
+            expect(getErrorMessage(error)).toBe('Bad Request');
+        });
+
+        it('should handle empty rawBody', () => {
+            const error = new ApiError({
+                url: 'https://api.example.com/test',
+                method: 'GET',
+                status: 404,
+                statusText: 'Not Found',
+                headers: new Headers(),
+                body: {
+                    type: 'https://api.commercecloud.salesforce.com/documentation/error/v1/errors/not-found',
+                    title: 'Not Found',
+                    detail: 'Resource not found',
+                },
+                rawBody: '',
+            });
+
+            expect(getErrorMessage(error)).toBe('Resource not found');
+        });
+
+        it('should handle rawBody with message as empty string', () => {
+            const error = new ApiError({
+                url: 'https://api.example.com/test',
+                method: 'POST',
+                status: 400,
+                statusText: 'Bad Request',
+                headers: new Headers(),
+                body: {
+                    type: 'https://api.commercecloud.salesforce.com/documentation/error/v1/errors/bad-request',
+                    title: 'Bad Request',
+                    detail: 'Fallback detail',
+                },
+                rawBody: JSON.stringify({ message: '' }),
+            });
+
+            expect(getErrorMessage(error)).toBe('Fallback detail');
+        });
+        it('should extract message from standard Error instance', () => {
+            const error = new Error('Something went wrong');
+            expect(getErrorMessage(error)).toBe('Something went wrong');
+        });
+        it('should return default message for unknown error type', () => {
+            expect(getErrorMessage(404)).toBe('An error occurred');
         });
     });
 });

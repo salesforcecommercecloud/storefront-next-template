@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { LoaderFunctionArgs, ActionFunctionArgs, ClientActionFunctionArgs } from 'react-router';
 import Login, { loader, action, clientAction } from './login';
 import { render, screen } from '@testing-library/react';
-import { getAuth, authorizePasswordless, flashAuth } from '@/middlewares/auth.server';
+import { getAuth, authorizePasswordless } from '@/middlewares/auth.server';
 import { getAuth as getClientAuth, updateAuth } from '@/middlewares/auth.client';
 import { updateBasket } from '@/middlewares/basket.client';
 import { loginRegisteredUser } from '@/lib/api/auth/standard-login';
@@ -13,7 +13,6 @@ import { getAppOrigin, isAbsoluteURL, extractResponseError } from '@/lib/utils';
 vi.mock('@/middlewares/auth.server', () => ({
     getAuth: vi.fn(),
     authorizePasswordless: vi.fn(),
-    flashAuth: vi.fn(),
 }));
 
 vi.mock('@/middlewares/auth.client', () => ({
@@ -61,6 +60,15 @@ vi.mock('@/components/buttons/social-login-buttons', () => ({
     SocialLoginButtons: () => <div data-testid="social-buttons" />,
 }));
 
+// Mock React Router hooks
+vi.mock('react-router', async () => {
+    const actual = await vi.importActual('react-router');
+    return {
+        ...actual,
+        useActionData: vi.fn(() => undefined),
+    };
+});
+
 vi.mock('@/config', () => ({
     getConfig: vi.fn(() => ({
         site: {
@@ -85,6 +93,17 @@ vi.mock('@/config', () => ({
     })),
 }));
 
+vi.mock('@/lib/i18next', () => ({
+    getTranslation: vi.fn(() => ({
+        t: vi.fn((key: string) => {
+            if (key === 'errors:genericTryAgain') {
+                return 'An error occurred. Please try again.';
+            }
+            return key;
+        }),
+    })),
+}));
+
 // Get mocked functions
 const mockGetAuth = vi.mocked(getAuth);
 const mockGetClientAuth = vi.mocked(getClientAuth);
@@ -97,7 +116,6 @@ const mockMergeBasket = vi.mocked(mergeBasket);
 const mockGetAppOrigin = vi.mocked(getAppOrigin);
 const mockIsAbsoluteURL = vi.mocked(isAbsoluteURL);
 const mockExtractResponseError = vi.mocked(extractResponseError);
-const mockFlashAuth = vi.mocked(flashAuth);
 
 describe('Login Route', () => {
     beforeEach(() => {
@@ -220,49 +238,6 @@ describe('Login Route', () => {
             }
         });
 
-        it('should include error from session', () => {
-            mockGetAuth.mockReturnValue({
-                userType: 'guest',
-                error: 'Invalid credentials',
-            });
-
-            const mockRequest = new Request('http://localhost:5173/login');
-            const mockContext = { get: vi.fn(), set: vi.fn() };
-            const args: LoaderFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-            } as any;
-
-            const result = loader(args);
-
-            if (!(result instanceof Response)) {
-                expect(result.error).toBe('Invalid credentials');
-            }
-        });
-
-        it('should parse returnUrl, action, and actionParams from URL', () => {
-            mockGetAuth.mockReturnValue({ userType: 'guest' });
-
-            const mockRequest = new Request(
-                'http://localhost:5173/login?returnUrl=/product/123&action=addToCart&actionParams=%7B%22productId%22%3A%22123%22%7D'
-            );
-            const mockContext = { get: vi.fn(), set: vi.fn() };
-            const args: LoaderFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-            } as any;
-
-            const result = loader(args);
-
-            if (!(result instanceof Response)) {
-                expect(result.returnUrl).toBe('/product/123');
-                expect(result.action).toBe('addToCart');
-                expect(result.actionParams).toBe('{"productId":"123"}');
-            }
-        });
-
         it('should include isSocialLoginEnabled in loader data', () => {
             mockGetAuth.mockReturnValue({ userType: 'guest' });
 
@@ -284,17 +259,25 @@ describe('Login Route', () => {
 
     describe('action - Standard Login', () => {
         it('should handle successful standard login', async () => {
-            mockGetAuth.mockReturnValue({ userType: 'guest' });
+            // Mock getAuth to return registered user auth after successful login
+            mockGetAuth.mockReturnValue({
+                userType: 'registered',
+                customer_id: 'test-customer-123',
+                access_token: 'test-token',
+            });
             mockLoginRegisteredUser.mockResolvedValue({ success: true });
 
-            const formData = new FormData();
+            const formData = new URLSearchParams();
             formData.append('email', 'test@example.com');
             formData.append('password', 'password123');
             formData.append('loginMode', 'password');
 
             const mockRequest = new Request('http://localhost:5173/login', {
                 method: 'POST',
-                body: formData,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const args: ActionFunctionArgs = {
@@ -305,8 +288,9 @@ describe('Login Route', () => {
 
             const result = await action(args);
 
-            expect(result).toBeInstanceOf(Array);
-            expect(result[0]).toBe('/');
+            expect(result).toHaveProperty('redirectUrl', '/');
+            expect(result).toHaveProperty('auth');
+            expect(result.auth).toMatchObject({ userType: 'registered' });
             expect(mockLoginRegisteredUser).toHaveBeenCalledWith(mockContext, {
                 email: 'test@example.com',
                 password: 'password123',
@@ -314,10 +298,14 @@ describe('Login Route', () => {
         });
 
         it('should redirect to returnUrl on successful login', async () => {
-            mockGetAuth.mockReturnValue({ userType: 'guest' });
+            mockGetAuth.mockReturnValue({
+                userType: 'registered',
+                customer_id: 'test-customer-123',
+                access_token: 'test-token',
+            });
             mockLoginRegisteredUser.mockResolvedValue({ success: true });
 
-            const formData = new FormData();
+            const formData = new URLSearchParams();
             formData.append('email', 'test@example.com');
             formData.append('password', 'password123');
             formData.append('loginMode', 'password');
@@ -325,7 +313,10 @@ describe('Login Route', () => {
 
             const mockRequest = new Request('http://localhost:5173/login', {
                 method: 'POST',
-                body: formData,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const args: ActionFunctionArgs = {
@@ -336,14 +327,19 @@ describe('Login Route', () => {
 
             const result = await action(args);
 
-            expect(result[0]).toBe('/product/123');
+            expect(result).toHaveProperty('redirectUrl', '/product/123');
+            expect(result).toHaveProperty('auth');
         });
 
         it('should preserve action and actionParams in returnUrl on successful login', async () => {
-            mockGetAuth.mockReturnValue({ userType: 'guest' });
+            mockGetAuth.mockReturnValue({
+                userType: 'registered',
+                customer_id: 'test-customer-123',
+                access_token: 'test-token',
+            });
             mockLoginRegisteredUser.mockResolvedValue({ success: true });
 
-            const formData = new FormData();
+            const formData = new URLSearchParams();
             formData.append('email', 'test@example.com');
             formData.append('password', 'password123');
             formData.append('loginMode', 'password');
@@ -353,7 +349,10 @@ describe('Login Route', () => {
 
             const mockRequest = new Request('http://localhost:5173/login', {
                 method: 'POST',
-                body: formData,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const args: ActionFunctionArgs = {
@@ -364,16 +363,17 @@ describe('Login Route', () => {
 
             const result = await action(args);
 
-            expect(result[0]).toContain('/product/123');
-            expect(result[0]).toContain('action=addToCart');
-            expect(result[0]).toContain('actionParams=');
+            expect(result.redirectUrl).toContain('/product/123');
+            expect(result.redirectUrl).toContain('action=addToCart');
+            expect(result.redirectUrl).toContain('actionParams=');
+            expect(result).toHaveProperty('auth');
         });
 
-        it('should preserve returnUrl, action, and actionParams on failed login', async () => {
+        it('should return error on failed login', async () => {
             mockGetAuth.mockReturnValue({ userType: 'guest' });
             mockLoginRegisteredUser.mockResolvedValue({ success: false });
 
-            const formData = new FormData();
+            const formData = new URLSearchParams();
             formData.append('email', 'test@example.com');
             formData.append('password', 'wrong-password');
             formData.append('loginMode', 'password');
@@ -383,7 +383,10 @@ describe('Login Route', () => {
 
             const mockRequest = new Request('http://localhost:5173/login', {
                 method: 'POST',
-                body: formData,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const args: ActionFunctionArgs = {
@@ -394,26 +397,24 @@ describe('Login Route', () => {
 
             const result = await action(args);
 
-            expect(result[0]).toContain('mode=password');
-            // URL params are encoded, so check for encoded version
-            expect(result[0]).toContain('returnUrl=');
-            expect(decodeURIComponent(result[0])).toContain('returnUrl=/product/123');
-            expect(result[0]).toContain('action=addToCart');
-            expect(result[0]).toContain('actionParams=');
+            expect(result).toHaveProperty('error', 'An error occurred. Please try again.');
         });
 
-        it('should redirect back to login on failed standard login', async () => {
+        it('should return error on failed standard login', async () => {
             mockGetAuth.mockReturnValue({ userType: 'guest' });
             mockLoginRegisteredUser.mockResolvedValue({ success: false });
 
-            const formData = new FormData();
+            const formData = new URLSearchParams();
             formData.append('email', 'test@example.com');
             formData.append('password', 'wrong-password');
             formData.append('loginMode', 'password');
 
             const mockRequest = new Request('http://localhost:5173/login', {
                 method: 'POST',
-                body: formData,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const args: ActionFunctionArgs = {
@@ -424,19 +425,22 @@ describe('Login Route', () => {
 
             const result = await action(args);
 
-            expect(result[0]).toBe('/login?mode=password');
+            expect(result).toHaveProperty('error', 'An error occurred. Please try again.');
         });
 
         it('should require both email and password for standard login', async () => {
             mockGetAuth.mockReturnValue({ userType: 'guest' });
 
-            const formData = new FormData();
+            const formData = new URLSearchParams();
             formData.append('email', 'test@example.com');
             // Missing password
 
             const mockRequest = new Request('http://localhost:5173/login', {
                 method: 'POST',
-                body: formData,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const args: ActionFunctionArgs = {
@@ -447,7 +451,7 @@ describe('Login Route', () => {
 
             const result = await action(args);
 
-            expect(result[0]).toBe('/login?mode=password');
+            expect(result).toHaveProperty('error', 'An error occurred. Please try again.');
             expect(mockLoginRegisteredUser).not.toHaveBeenCalled();
         });
     });
@@ -461,13 +465,16 @@ describe('Login Route', () => {
                     'http://localhost:5173/mobify/proxy/api/shopper/auth/v1/organizations/test/oauth2/authorize',
             });
 
-            const formData = new FormData();
+            const formData = new URLSearchParams();
             formData.append('loginMode', 'social');
             formData.append('provider', 'Google');
 
             const mockRequest = new Request('http://localhost:5173/login', {
                 method: 'POST',
-                body: formData,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const args: ActionFunctionArgs = {
@@ -478,7 +485,7 @@ describe('Login Route', () => {
 
             const result = await action(args);
 
-            expect(result[0]).toContain('oauth2/authorize');
+            expect(result.redirectUrl).toContain('oauth2/authorize');
             expect(mockAuthorizeIDP).toHaveBeenCalledWith(mockContext, {
                 hint: 'Google',
                 redirectURI: 'http://localhost:5173/social-callback',
@@ -492,13 +499,16 @@ describe('Login Route', () => {
                 redirectUrl: 'http://example.com/oauth',
             });
 
-            const formData = new FormData();
+            const formData = new URLSearchParams();
             formData.append('loginMode', 'social');
             formData.append('provider', 'Google');
 
             const mockRequest = new Request('http://localhost:5173/login', {
                 method: 'POST',
-                body: formData,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const args: ActionFunctionArgs = {
@@ -520,13 +530,16 @@ describe('Login Route', () => {
         it('should require provider for social login', async () => {
             mockGetAuth.mockReturnValue({ userType: 'guest' });
 
-            const formData = new FormData();
+            const formData = new URLSearchParams();
             formData.append('loginMode', 'social');
             // Missing provider
 
             const mockRequest = new Request('http://localhost:5173/login', {
                 method: 'POST',
-                body: formData,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const args: ActionFunctionArgs = {
@@ -537,21 +550,24 @@ describe('Login Route', () => {
 
             const result = await action(args);
 
-            expect(result[0]).toBe('/login?mode=password');
+            expect(result).toHaveProperty('error', 'An error occurred. Please try again.');
             expect(mockAuthorizeIDP).not.toHaveBeenCalled();
         });
 
-        it('should redirect back to login on failed social authorization', async () => {
+        it('should return error on failed social authorization', async () => {
             mockGetAuth.mockReturnValue({ userType: 'guest' });
             mockAuthorizeIDP.mockResolvedValue({ success: false });
 
-            const formData = new FormData();
+            const formData = new URLSearchParams();
             formData.append('loginMode', 'social');
             formData.append('provider', 'Google');
 
             const mockRequest = new Request('http://localhost:5173/login', {
                 method: 'POST',
-                body: formData,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const args: ActionFunctionArgs = {
@@ -562,22 +578,25 @@ describe('Login Route', () => {
 
             const result = await action(args);
 
-            expect(result[0]).toBe('/login?mode=password');
+            expect(result).toHaveProperty('error', 'An error occurred. Please try again.');
         });
     });
 
     describe('action - Passwordless Login', () => {
         it('should handle successful passwordless authorization', async () => {
             mockGetAuth.mockReturnValue({ userType: 'guest' });
-            mockAuthorizePasswordless.mockResolvedValue(new Response(null, { status: 202 }));
+            mockAuthorizePasswordless.mockResolvedValue(undefined as any);
 
-            const formData = new FormData();
+            const formData = new URLSearchParams();
             formData.append('loginMode', 'passwordless');
             formData.append('email', 'test@example.com');
 
             const mockRequest = new Request('http://localhost:5173/login', {
                 method: 'POST',
-                body: formData,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const args: ActionFunctionArgs = {
@@ -588,7 +607,7 @@ describe('Login Route', () => {
 
             const result = await action(args);
 
-            expect(result[0]).toBe('/login?passwordless=sent&email=test%40example.com');
+            expect(result.redirectUrl).toBe('/login?passwordless=sent&email=test%40example.com');
             expect(mockAuthorizePasswordless).toHaveBeenCalledWith(
                 mockContext,
                 expect.objectContaining({
@@ -600,13 +619,16 @@ describe('Login Route', () => {
         it('should require email for passwordless login', async () => {
             mockGetAuth.mockReturnValue({ userType: 'guest' });
 
-            const formData = new FormData();
+            const formData = new URLSearchParams();
             formData.append('loginMode', 'passwordless');
             // Missing email
 
             const mockRequest = new Request('http://localhost:5173/login', {
                 method: 'POST',
-                body: formData,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const args: ActionFunctionArgs = {
@@ -617,22 +639,25 @@ describe('Login Route', () => {
 
             const result = await action(args);
 
-            expect(result[0]).toBe('/login?mode=passwordless');
+            expect(result).toHaveProperty('error', 'An error occurred. Please try again.');
             expect(mockAuthorizePasswordless).not.toHaveBeenCalled();
         });
 
-        it('should redirect back to passwordless mode on failure', async () => {
+        it('should return error on passwordless failure', async () => {
             mockGetAuth.mockReturnValue({ userType: 'guest' });
             const error = new Error('failed to authorize');
             mockAuthorizePasswordless.mockRejectedValue(error);
 
-            const formData = new FormData();
+            const formData = new URLSearchParams();
             formData.append('loginMode', 'passwordless');
             formData.append('email', 'test@example.com');
 
             const mockRequest = new Request('http://localhost:5173/login', {
                 method: 'POST',
-                body: formData,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const args: ActionFunctionArgs = {
@@ -643,23 +668,22 @@ describe('Login Route', () => {
 
             const result = await action(args);
 
-            expect(result[0]).toBe('/login?mode=passwordless');
+            expect(result).toHaveProperty('error', 'An error occurred. Please try again.');
             expect(mockAuthorizePasswordless).toHaveBeenCalledWith(
                 mockContext,
                 expect.objectContaining({
                     userid: 'test@example.com',
                 })
             );
-            expect(mockExtractResponseError).toHaveBeenCalledWith(error);
-            expect(mockFlashAuth).toHaveBeenCalledWith(mockContext, 'error');
         });
     });
 
     describe('clientAction', () => {
         it('should update auth and redirect on successful login', async () => {
-            const mockServerAction = vi
-                .fn()
-                .mockResolvedValue(['/', { userType: 'registered', customer_id: 'test-123' }]);
+            const mockServerAction = vi.fn().mockResolvedValue({
+                redirectUrl: '/',
+                auth: { userType: 'registered', customer_id: 'test-123' },
+            });
             mockGetClientAuth.mockReturnValue({ userType: 'guest' });
 
             const mockContext = { get: vi.fn(), set: vi.fn() };
@@ -678,9 +702,10 @@ describe('Login Route', () => {
 
         it('should merge basket when transitioning from guest to registered', async () => {
             const mockBasket = { basketId: 'merged-basket', productItems: [] };
-            const mockServerAction = vi
-                .fn()
-                .mockResolvedValue(['/', { userType: 'registered', customer_id: 'test-123' }]);
+            const mockServerAction = vi.fn().mockResolvedValue({
+                redirectUrl: '/',
+                auth: { userType: 'registered', customer_id: 'test-123' },
+            });
             mockGetClientAuth.mockReturnValue({ userType: 'guest' });
             mockMergeBasket.mockResolvedValue(mockBasket);
 
@@ -699,9 +724,10 @@ describe('Login Route', () => {
         });
 
         it('should not merge basket if already registered', async () => {
-            const mockServerAction = vi
-                .fn()
-                .mockResolvedValue(['/', { userType: 'registered', customer_id: 'test-123' }]);
+            const mockServerAction = vi.fn().mockResolvedValue({
+                redirectUrl: '/',
+                auth: { userType: 'registered', customer_id: 'test-123' },
+            });
             mockGetClientAuth.mockReturnValue({ userType: 'registered' });
 
             const mockContext = { get: vi.fn(), set: vi.fn() };
@@ -718,9 +744,10 @@ describe('Login Route', () => {
         });
 
         it('should handle basket merge errors gracefully', async () => {
-            const mockServerAction = vi
-                .fn()
-                .mockResolvedValue(['/', { userType: 'registered', customer_id: 'test-123' }]);
+            const mockServerAction = vi.fn().mockResolvedValue({
+                redirectUrl: '/',
+                auth: { userType: 'registered', customer_id: 'test-123' },
+            });
             mockGetClientAuth.mockReturnValue({ userType: 'guest' });
             mockMergeBasket.mockRejectedValue(new Error('Basket merge failed'));
 
@@ -743,9 +770,10 @@ describe('Login Route', () => {
         });
 
         it('should use window.location.assign for absolute URLs', async () => {
-            const mockServerAction = vi
-                .fn()
-                .mockResolvedValue(['http://localhost:5173/mobify/proxy/api/oauth', { userType: 'guest' }]);
+            const mockServerAction = vi.fn().mockResolvedValue({
+                redirectUrl: 'http://localhost:5173/mobify/proxy/api/oauth',
+                auth: { userType: 'guest' },
+            });
             mockGetClientAuth.mockReturnValue({ userType: 'guest' });
 
             // Mock window.location.assign
@@ -770,7 +798,10 @@ describe('Login Route', () => {
         });
 
         it('should use React Router redirect for relative URLs', async () => {
-            const mockServerAction = vi.fn().mockResolvedValue(['/dashboard', { userType: 'registered' }]);
+            const mockServerAction = vi.fn().mockResolvedValue({
+                redirectUrl: '/dashboard',
+                auth: { userType: 'registered' },
+            });
             mockGetClientAuth.mockReturnValue({ userType: 'guest' });
 
             const mockContext = { get: vi.fn(), set: vi.fn() };
@@ -784,7 +815,7 @@ describe('Login Route', () => {
             const result = await clientAction(args);
 
             expect(result).toHaveProperty('status', 302);
-            if (result) {
+            if (result && result instanceof Response) {
                 expect(result.headers.get('Location')).toBe('/dashboard');
             }
         });
@@ -795,15 +826,11 @@ describe('Login Route', () => {
             render(
                 <Login
                     loaderData={{
-                        error: undefined,
                         passwordlessSent: false,
                         email: undefined,
                         mode: 'password',
                         isPasswordlessLoginEnabled: false,
                         isSocialLoginEnabled: true,
-                        returnUrl: null,
-                        action: null,
-                        actionParams: null,
                     }}
                 />
             );
@@ -814,7 +841,6 @@ describe('Login Route', () => {
 
         it('passes returnUrl, action, and actionParams to StandardLoginForm', () => {
             const loaderData = {
-                error: undefined,
                 passwordlessSent: false,
                 email: undefined,
                 mode: 'password',
@@ -834,15 +860,11 @@ describe('Login Route', () => {
             render(
                 <Login
                     loaderData={{
-                        error: undefined,
                         passwordlessSent: false,
                         email: undefined,
                         mode: 'passwordless',
                         isPasswordlessLoginEnabled: true,
                         isSocialLoginEnabled: true,
-                        returnUrl: null,
-                        action: null,
-                        actionParams: null,
                     }}
                 />
             );
@@ -855,15 +877,11 @@ describe('Login Route', () => {
             render(
                 <Login
                     loaderData={{
-                        error: undefined,
                         passwordlessSent: false,
                         email: undefined,
                         mode: 'password',
                         isPasswordlessLoginEnabled: false,
                         isSocialLoginEnabled: false,
-                        returnUrl: null,
-                        action: null,
-                        actionParams: null,
                     }}
                 />
             );
