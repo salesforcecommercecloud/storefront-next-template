@@ -1,6 +1,6 @@
 {
   "name": "@salesforce/storefront-next-dev",
-  "version": "0.0.1",
+  "version": "0.2.0-dev",
   "description": "Dev and build tools for SFCC Storefront Next",
   "private": true,
   "type": "module",

@@ -27,7 +27,7 @@ import { Node, Project } from "ts-morph";
 import prompts from "prompts";
 
 //#region package.json
-var version = "0.0.1";
+var version = "0.2.0-dev";
 
 //#endregion
 //#region src/utils/logger.ts
