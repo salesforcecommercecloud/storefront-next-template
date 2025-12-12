@@ -25940,6 +25940,8 @@ interface CommerceApiClientConfig extends ClientOptions {
   organizationId: string;
   /** Site ID - automatically merged into query parameters */
   siteId: string;
+  /** Locale - automatically merged into query parameters (optional) */
+  locale?: string;
   /** SLAS client ID - required for auth operations */
   clientId: string;
   /** SLAS client secret - required for private client auth operations */
@@ -25980,6 +25982,8 @@ interface GlobalRequestParameters {
   organizationId: string;
   /** Site ID to merge into query parameters */
   siteId: string;
+  /** Locale to merge into query parameters (optional) */
+  locale?: string;
 }
 /**
  * Create a proxied client with operation methods

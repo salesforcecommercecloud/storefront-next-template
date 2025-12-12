@@ -211,7 +211,7 @@ vi.mock('react-i18next', async () => {
                 return translations[normalizedKey] || key;
             },
             i18n: {
-                language: 'en',
+                language: 'en-US',
                 changeLanguage: vi.fn(),
             },
         }),

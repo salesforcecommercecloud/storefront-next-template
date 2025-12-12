@@ -125,8 +125,8 @@ export default defineConfig({
         // When updating these i18n properties, please also check that the middleware configurations are in sync
         // See src/middlewares/i18next.ts
         i18n: {
-            fallbackLng: 'en',
-            supportedLngs: ['es', 'en'], // Your supported languages, the fallback should be last
+            fallbackLng: 'en-US',
+            supportedLngs: ['en-US', 'es-MX'], // Your supported languages, the fallback should be last
         },
         global: {
             // TODO: Allow page specific customization while keeping global defaults, e.g.:

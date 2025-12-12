@@ -27,6 +27,8 @@ export interface GlobalRequestParameters {
     organizationId: string;
     /** Site ID to merge into query parameters */
     siteId: string;
+    /** Locale to merge into query parameters (optional) */
+    locale?: string;
 }
 
 /**
@@ -34,13 +36,13 @@ export interface GlobalRequestParameters {
  *
  * This function specifically places:
  * - organizationId into params.path
- * - siteId into params.query
+ * - siteId and locale into params.query
  *
  * Caller-provided values take precedence over global defaults, allowing
  * overrides when needed while reducing boilerplate for the common case.
  *
  * @param options - The options provided by the caller (may be undefined)
- * @param globalParams - The global request parameters containing organizationId and siteId
+ * @param globalParams - The global request parameters containing organizationId, siteId, and locale
  * @returns Options with global values applied as defaults
  */
 function buildRequestOptions(
@@ -61,6 +63,7 @@ function buildRequestOptions(
             },
             query: {
                 siteId: globalParams.siteId, // Global default
+                ...(globalParams.locale ? { locale: globalParams.locale } : {}), // Global default (if provided)
                 ...options?.params?.query, // Caller-provided overrides
             },
         },

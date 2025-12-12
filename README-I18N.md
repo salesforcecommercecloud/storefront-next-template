@@ -61,8 +61,8 @@ Languages are configured in two places that must be kept in sync:
 **1. `config.server.ts`** - Application-level configuration:
 ```typescript
 i18n: {
-    fallbackLng: 'en',
-    supportedLngs: ['es', 'en'], // Your supported languages
+    fallbackLng: 'en-US',
+    supportedLngs: ['es-MX', 'en-US'], // Your supported languages
 }
 ```
 
@@ -70,8 +70,8 @@ i18n: {
 ```typescript
 detection: {
     cookie: localeCookie,
-    fallbackLanguage: 'en',
-    supportedLanguages: ['es', 'en'], // Must match config.server.ts
+    fallbackLanguage: 'en-US',
+    supportedLanguages: ['es-MX', 'en-US'], // Must match config.server.ts
 }
 ```
 
@@ -188,10 +188,10 @@ export const action: ActionFunction = async ({ request }) => {
 ```
 src/locales/
 ├── index.ts                # Exports all language resources
-├── en/
+├── en-US/
 │   ├── index.ts            # Exports English translations
 │   └── translations.json   # All English translations (namespaced)
-└── es/
+└── es-MX/
     ├── index.ts            # Exports Spanish translations
     └── translations.json   # All Spanish translations (namespaced)
 
@@ -329,7 +329,7 @@ export function loader(args: LoaderFunctionArgs) {
     
     // Get the current locale for formatting (if needed)
     const i18nextData = args.context.get(i18nextContext);
-    const locale = i18nextData?.getLocale() ?? 'en';
+    const locale = i18nextData?.getLocale() ?? 'en-US';
     const date = new Date().toLocaleDateString(locale, {
         year: 'numeric',
         month: '2-digit',

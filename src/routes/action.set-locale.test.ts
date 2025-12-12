@@ -36,7 +36,7 @@ describe('action.set-locale', () => {
     });
 
     test('should handle different valid locale values', async () => {
-        const testCases = ['en', 'es', 'fr', 'de'];
+        const testCases = ['en-US', 'es-MX', 'fr-FR', 'de-DE'];
 
         for (const locale of testCases) {
             const formData = new FormData();

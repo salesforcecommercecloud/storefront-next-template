@@ -44,7 +44,7 @@ describe('i18next', () => {
             });
 
             it('should throw error when i18next data is not found in context', () => {
-                const context = createTestContext();
+                const context = createTestContext({ skipI18next: true });
                 // Don't set i18next data in context to simulate missing middleware
 
                 // Test behavior: throws meaningful error when middleware hasn't run

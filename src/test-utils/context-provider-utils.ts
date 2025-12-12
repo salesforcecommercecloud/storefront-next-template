@@ -73,8 +73,8 @@ export const mockBuildConfig: Config = {
             },
         },
         i18n: {
-            fallbackLng: 'en',
-            supportedLngs: ['en'],
+            fallbackLng: 'en-US',
+            supportedLngs: ['en-US'],
         },
         global: {
             branding: { name: 'Test Store', logoAlt: 'Home' },

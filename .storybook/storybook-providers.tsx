@@ -32,8 +32,8 @@ import resources from '../src/locales';
  * This ensures translations work properly in the Storybook UI
  */
 void i18next.use(initReactI18next).init({
-    lng: 'en',
-    fallbackLng: 'en',
+    lng: 'en-US',
+    fallbackLng: 'en-US',
     resources,
     interpolation: {
         escapeValue: false,

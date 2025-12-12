@@ -16,8 +16,8 @@ import resources from '@/locales';
 beforeAll(() => {
     if (!i18next.isInitialized) {
         void i18next.use(initReactI18next).init({
-            lng: 'en',
-            fallbackLng: 'en',
+            lng: 'en-US',
+            fallbackLng: 'en-US',
             resources,
             interpolation: {
                 escapeValue: false,
@@ -42,7 +42,7 @@ vi.mock('@/middlewares/i18next', async () => {
                 // Navigate nested object using dot notation
                 const keys = keyPath.split('.');
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                let value: any = resources.en[ns as keyof typeof resources.en];
+                let value: any = resources['en-US'][ns as keyof (typeof resources)['en-US']];
                 for (const k of keys) {
                     if (value && typeof value === 'object') {
                         value = value[k];
@@ -59,13 +59,13 @@ vi.mock('@/middlewares/i18next', async () => {
             }
             return key;
         },
-        language: 'en',
+        language: 'en-US',
     };
 
     return {
         ...actual,
         getI18nextInstance: () => mockI18next,
-        getLocale: () => 'en',
+        getLocale: () => 'en-US',
     };
 });
 

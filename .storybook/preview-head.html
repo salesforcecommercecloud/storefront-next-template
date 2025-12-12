@@ -1,4 +1,4 @@
-<!-- 
+<!--
   CRITICAL: Initialize window.__APP_CONFIG__ before other modules load
   This ensures getConfig() works during module initialization (e.g., AuthContext creation)
   We inline the config object directly to avoid ESM import issues in static builds
@@ -70,8 +70,8 @@
           },
         },
         i18n: {
-          fallbackLng: 'en',
-          supportedLngs: ['es', 'en'],
+          fallbackLng: 'en-US',
+          supportedLngs: ['es-MX', 'en-US'],
         },
         global: {
           branding: { name: 'Test Store', logoAlt: 'Home' },

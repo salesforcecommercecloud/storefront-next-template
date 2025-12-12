@@ -4,6 +4,8 @@ const { t } = getTranslation();
 import { render, screen } from '@testing-library/react';
 import { describe, expect, test } from 'vitest';
 import { createMemoryRouter, RouterProvider } from 'react-router';
+import { ConfigProvider } from '@/config';
+import { mockConfig } from '@/test-utils/config';
 import Footer from './index';
 
 // Helper function to render component with router context
@@ -12,7 +14,7 @@ const renderWithRouter = (component: React.ReactElement) => {
         [
             {
                 path: '/',
-                element: component,
+                element: <ConfigProvider config={mockConfig}>{component}</ConfigProvider>,
             },
         ],
         {
@@ -122,8 +124,8 @@ describe('Footer', () => {
         const localeSelects = screen.getAllByRole('combobox');
         expect(localeSelects).toHaveLength(2); // Theme and Locale selects
 
-        expect(screen.getByRole('option', { name: 'English' })).toBeInTheDocument();
-        expect(screen.getByRole('option', { name: 'Spanish' })).toBeInTheDocument();
+        expect(screen.getByRole('option', { name: 'English (US)' })).toBeInTheDocument();
+        expect(screen.getByRole('option', { name: 'Spanish (Mexico)' })).toBeInTheDocument();
     });
 
     test('renders copyright text with current year', () => {

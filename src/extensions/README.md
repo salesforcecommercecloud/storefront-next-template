@@ -68,9 +68,9 @@ src/extensions/
   my-extension/
     components/
     locales/
-      en/
+      en-US/
         translations.json
-      es/
+      es-MX/
         translations.json
     index.ts
 ```

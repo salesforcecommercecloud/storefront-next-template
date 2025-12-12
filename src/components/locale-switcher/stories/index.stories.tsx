@@ -42,8 +42,8 @@ function LocaleSwitcherMock(): ReactElement {
                 onChange={(e) => void handleLocaleChange(e)}
                 aria-label={t('ariaLabel')}
                 value={i18n.language}>
-                <option value="en">{t('english')}</option>
-                <option value="es">{t('spanish')}</option>
+                <option value="en-US">{t('locales.en-US')}</option>
+                <option value="es-MX">{t('locales.es-MX')}</option>
             </SelectNative>
         </div>
     );
@@ -77,7 +77,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
     render: () => {
         // Set English as the default language
-        void i18next.changeLanguage('en');
+        void i18next.changeLanguage('en-US');
         return <LocaleSwitcherMock />;
     },
     play: async ({ canvasElement }) => {
@@ -90,18 +90,18 @@ export const Default: Story = {
         await expect(selector).toHaveAttribute('aria-label');
 
         // Verify English is selected by default
-        await expect(selector).toHaveValue('en');
+        await expect(selector).toHaveValue('en-US');
 
         // Verify both language options are present
-        await expect(canvas.getByRole('option', { name: /english/i })).toBeInTheDocument();
-        await expect(canvas.getByRole('option', { name: /spanish/i })).toBeInTheDocument();
+        await expect(canvas.getByRole('option', { name: /english.*us/i })).toBeInTheDocument();
+        await expect(canvas.getByRole('option', { name: /spanish.*mexico/i })).toBeInTheDocument();
     },
 };
 
 export const SpanishSelected: Story = {
     render: () => {
         // Set Spanish as the current language
-        void i18next.changeLanguage('es');
+        void i18next.changeLanguage('es-MX');
         return <LocaleSwitcherMock />;
     },
     play: async ({ canvasElement }) => {
@@ -112,18 +112,18 @@ export const SpanishSelected: Story = {
         await expect(selector).toBeInTheDocument();
 
         // Verify Spanish is selected
-        await expect(selector).toHaveValue('es');
+        await expect(selector).toHaveValue('es-MX');
 
         // Verify both options are available
-        await expect(canvas.getByRole('option', { name: /inglés/i })).toBeInTheDocument();
-        await expect(canvas.getByRole('option', { name: /español/i })).toBeInTheDocument();
+        await expect(canvas.getByRole('option', { name: /inglés.*ee.*uu/i })).toBeInTheDocument();
+        await expect(canvas.getByRole('option', { name: /español.*méxico/i })).toBeInTheDocument();
     },
 };
 
 export const LanguageSwitch: Story = {
     render: () => {
         // Start with English
-        void i18next.changeLanguage('en');
+        void i18next.changeLanguage('en-US');
         return <LocaleSwitcherMock />;
     },
     play: async ({ canvasElement }) => {
@@ -131,18 +131,18 @@ export const LanguageSwitch: Story = {
         const canvas = within(canvasElement);
 
         const selector = canvas.getByRole('combobox');
-        await expect(selector).toHaveValue('en');
+        await expect(selector).toHaveValue('en-US');
 
         // Switch to Spanish
-        await userEvent.selectOptions(selector, 'es');
+        await userEvent.selectOptions(selector, 'es-MX');
 
         // Verify the language changed in i18next
         await waitFor(() => {
-            expect(i18next.language).toBe('es');
+            expect(i18next.language).toBe('es-MX');
         });
 
         // Verify the selector shows the new value
-        await expect(selector).toHaveValue('es');
+        await expect(selector).toHaveValue('es-MX');
 
         // Verify fetcher.submit was called with correct parameters
         await waitFor(() => {
@@ -153,7 +153,7 @@ export const LanguageSwitch: Story = {
         const formData = submitCall[0] as FormData;
         const options = submitCall[1];
 
-        await expect(formData.get('locale')).toBe('es');
+        await expect(formData.get('locale')).toBe('es-MX');
         await expect(options).toEqual({
             method: 'POST',
             action: '/action/set-locale',
@@ -164,7 +164,7 @@ export const LanguageSwitch: Story = {
 export const SpanishToEnglish: Story = {
     render: () => {
         // Start with Spanish
-        void i18next.changeLanguage('es');
+        void i18next.changeLanguage('es-MX');
         return <LocaleSwitcherMock />;
     },
     play: async ({ canvasElement }) => {
@@ -172,18 +172,18 @@ export const SpanishToEnglish: Story = {
         const canvas = within(canvasElement);
 
         const selector = canvas.getByRole('combobox');
-        await expect(selector).toHaveValue('es');
+        await expect(selector).toHaveValue('es-MX');
 
         // Switch to English
-        await userEvent.selectOptions(selector, 'en');
+        await userEvent.selectOptions(selector, 'en-US');
 
         // Verify the language changed in i18next
         await waitFor(() => {
-            expect(i18next.language).toBe('en');
+            expect(i18next.language).toBe('en-US');
         });
 
         // Verify the selector shows the new value
-        await expect(selector).toHaveValue('en');
+        await expect(selector).toHaveValue('en-US');
 
         // Verify server-side persistence was triggered
         await waitFor(() => {
@@ -194,7 +194,7 @@ export const SpanishToEnglish: Story = {
         const formData = submitCall[0] as FormData;
         const options = submitCall[1];
 
-        await expect(formData.get('locale')).toBe('en');
+        await expect(formData.get('locale')).toBe('en-US');
         await expect(options).toEqual({
             method: 'POST',
             action: '/action/set-locale',
@@ -204,7 +204,7 @@ export const SpanishToEnglish: Story = {
 
 export const KeyboardAccessible: Story = {
     render: () => {
-        void i18next.changeLanguage('en');
+        void i18next.changeLanguage('en-US');
         return <LocaleSwitcherMock />;
     },
     play: async ({ canvasElement }) => {
@@ -218,11 +218,11 @@ export const KeyboardAccessible: Story = {
         await expect(selector).toHaveFocus();
 
         // Change language using keyboard
-        await userEvent.selectOptions(selector, 'es');
+        await userEvent.selectOptions(selector, 'es-MX');
 
         // Verify the selection changed
         await waitFor(() => {
-            expect(selector).toHaveValue('es');
+            expect(selector).toHaveValue('es-MX');
         });
     },
 };

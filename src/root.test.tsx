@@ -33,8 +33,8 @@ vi.mock('@/lib/i18next.client', async () => {
         .use(initReactI18next)
         .use(mockBackend)
         .init({
-            lng: 'en',
-            fallbackLng: 'en',
+            lng: 'en-US',
+            fallbackLng: 'en-US',
             ns: [], // Start with no namespaces loaded
             interpolation: {
                 escapeValue: false,
@@ -154,8 +154,8 @@ vi.mock('@/middlewares/i18next', async () => {
     // Create a test i18n instance for server-side
     const testInstance = i18next.default.createInstance();
     void testInstance.use(initReactI18next).init({
-        lng: 'en',
-        fallbackLng: 'en',
+        lng: 'en-US',
+        fallbackLng: 'en-US',
         resources: resources.default,
         interpolation: {
             escapeValue: false,
@@ -204,6 +204,7 @@ describe('root.tsx', () => {
 
             const html = document.querySelector('html');
             expect(html).toBeInTheDocument();
+            // this is html lang attribute, it needs to be 'en', not 'en-US'
             expect(html).toHaveAttribute('lang', 'en');
 
             const title = document.querySelector('title');
@@ -372,8 +373,8 @@ describe('root.tsx', () => {
             const { initReactI18next } = await import('react-i18next');
             const testI18nInstance = i18next.default.createInstance();
             await testI18nInstance.use(initReactI18next).init({
-                lng: 'en',
-                fallbackLng: 'en',
+                lng: 'en-US',
+                fallbackLng: 'en-US',
                 resources: { en: { translation: {} } },
             });
 
@@ -392,7 +393,7 @@ describe('root.tsx', () => {
                         }),
                         basket: { basketId: 'test-basket', productItems: [] },
                         appConfig: mockConfig,
-                        locale: 'en',
+                        locale: 'en-US',
                         getI18next: () => testI18nInstance,
                     }),
                 },
@@ -477,8 +478,8 @@ describe('root.tsx', () => {
             const { initReactI18next } = await import('react-i18next');
             const testI18nInstance = i18next.default.createInstance();
             await testI18nInstance.use(initReactI18next).init({
-                lng: 'en',
-                fallbackLng: 'en',
+                lng: 'en-US',
+                fallbackLng: 'en-US',
                 resources: { en: { translation: {} } },
             });
 
@@ -497,7 +498,7 @@ describe('root.tsx', () => {
                                 userType: 'registered',
                             }) as any,
                         basket: { basketId: 'test-basket', productItems: [] },
-                        locale: 'en',
+                        locale: 'en-US',
                         getI18next: () => testI18nInstance,
                         // appConfig not in loader data
                     }),
@@ -643,8 +644,8 @@ describe('root.tsx', () => {
             // Set up i18next context
             const testInstance = i18next.default.createInstance();
             void testInstance.use(initReactI18next).init({
-                lng: 'en',
-                fallbackLng: 'en',
+                lng: 'en-US',
+                fallbackLng: 'en-US',
                 resources: resources.default,
                 interpolation: {
                     escapeValue: false,
@@ -654,7 +655,7 @@ describe('root.tsx', () => {
             const context = createTestContext();
             // Set up i18next context with bound functions
             context.set(i18nextContext, {
-                getLocale: () => 'en',
+                getLocale: () => 'en-US',
                 getI18nextInstance: () => testInstance,
             });
 
@@ -668,7 +669,7 @@ describe('root.tsx', () => {
             expect(result).toHaveProperty('getI18next');
             expect(typeof result.auth).toBe('function');
             expect(typeof result.getI18next).toBe('function');
-            expect(result.locale).toBe('en');
+            expect(result.locale).toBe('en-US');
 
             // Verify fetchCategory was called correctly
             expect(fetchCategory).toHaveBeenCalledWith(context, 'root', 1);
@@ -704,8 +705,8 @@ describe('root.tsx', () => {
             // Set up i18next context
             const testInstance = i18next.default.createInstance();
             void testInstance.use(initReactI18next).init({
-                lng: 'en',
-                fallbackLng: 'en',
+                lng: 'en-US',
+                fallbackLng: 'en-US',
                 resources: resources.default,
                 interpolation: {
                     escapeValue: false,
@@ -715,7 +716,7 @@ describe('root.tsx', () => {
             const context = createTestContext();
             // Set up i18next context with bound functions
             context.set(i18nextContext, {
-                getLocale: () => 'en',
+                getLocale: () => 'en-US',
                 getI18nextInstance: () => testInstance,
             });
 
@@ -748,8 +749,8 @@ describe('root.tsx', () => {
             // Set up i18next context
             const testInstance = i18next.default.createInstance();
             void testInstance.use(initReactI18next).init({
-                lng: 'en',
-                fallbackLng: 'en',
+                lng: 'en-US',
+                fallbackLng: 'en-US',
                 resources: resources.default,
                 interpolation: {
                     escapeValue: false,
@@ -759,7 +760,7 @@ describe('root.tsx', () => {
             const context = createTestContext();
             // Set up i18next context with bound functions
             context.set(i18nextContext, {
-                getLocale: () => 'en',
+                getLocale: () => 'en-US',
                 getI18nextInstance: () => testInstance,
             });
 
@@ -768,7 +769,7 @@ describe('root.tsx', () => {
             expect(getAuth).toHaveBeenCalledWith(context);
             expect(result.auth()).toEqual(mockSession);
             expect(result.appConfig).toBeDefined();
-            expect(result.locale).toBe('en');
+            expect(result.locale).toBe('en-US');
             expect(typeof result.getI18next).toBe('function');
         });
 
@@ -777,7 +778,7 @@ describe('root.tsx', () => {
 
             vi.mocked(fetchCategory).mockResolvedValue({ id: 'root', name: 'Root' });
 
-            const context = createTestContext();
+            const context = createTestContext({ skipI18next: true });
             // Do not set i18next context to simulate missing middleware
 
             expect(() => {

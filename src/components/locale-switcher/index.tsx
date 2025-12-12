@@ -11,11 +11,13 @@ import { useTranslation } from 'react-i18next';
 import { useFetcher } from 'react-router';
 
 import { SelectNative } from '@/components/ui/select-native';
+import { useConfig } from '@/config';
 
 export default function LocaleSwitcher(): ReactElement {
     const id = useId();
     const { t, i18n } = useTranslation('localeSwitcher');
     const fetcher = useFetcher();
+    const config = useConfig();
 
     const handleLocaleChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newLocale = e.target.value;
@@ -39,8 +41,11 @@ export default function LocaleSwitcher(): ReactElement {
                 onChange={(e) => void handleLocaleChange(e)}
                 aria-label={t('ariaLabel')}
                 value={i18n.language}>
-                <option value="en">{t('english')}</option>
-                <option value="es">{t('spanish')}</option>
+                {config.i18n.supportedLngs.map((locale) => (
+                    <option key={locale} value={locale}>
+                        {t(`locales.${locale}`)}
+                    </option>
+                ))}
             </SelectNative>
         </div>
     );

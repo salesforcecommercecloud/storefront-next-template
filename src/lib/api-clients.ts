@@ -7,6 +7,7 @@ import {
 import { authContext } from '@/middlewares/auth.utils';
 import { getConfig } from '@/config';
 import { getAppOrigin } from '@/lib/utils';
+import { getTranslation } from '@/lib/i18next';
 
 /**
  * Get the SLAS client secret from environment variable.
@@ -40,10 +41,15 @@ export function createApiClients(context: RouterContextProvider | Readonly<Route
           : `${appOrigin}${proxy}`;
     const redirectUri = `${appOrigin}${callback}`;
 
+    // Get current locale from i18next (already in SCAPI format like en-US, es-MX)
+    const { i18next } = getTranslation(context);
+    const locale = i18next.language ?? config.i18n.fallbackLng;
+
     const clients = createCommerceApiClients({
         baseUrl,
         organizationId,
         siteId,
+        locale,
         clientId,
         clientSecret: getSlasClientSecret(),
         redirectUri,

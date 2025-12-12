@@ -126,14 +126,14 @@ exports[`Footer stories snapshot > DarkBackground story renders and matches snap
                       id="_r_7_"
                     >
                       <option
-                        value="en"
+                        value="es-MX"
                       >
-                        English
+                        Spanish (Mexico)
                       </option>
                       <option
-                        value="es"
+                        value="en-US"
                       >
-                        Spanish
+                        English (US)
                       </option>
                     </select>
                     <span
@@ -468,14 +468,14 @@ exports[`Footer stories snapshot > Default story renders and matches snapshot 1`
                     id="_r_1_"
                   >
                     <option
-                      value="en"
+                      value="es-MX"
                     >
-                      English
+                      Spanish (Mexico)
                     </option>
                     <option
-                      value="es"
+                      value="en-US"
                     >
-                      Spanish
+                      English (US)
                     </option>
                   </select>
                   <span
@@ -896,14 +896,14 @@ exports[`Footer stories snapshot > LongPage story renders and matches snapshot 1
                       id="_r_3_"
                     >
                       <option
-                        value="en"
+                        value="es-MX"
                       >
-                        English
+                        Spanish (Mexico)
                       </option>
                       <option
-                        value="es"
+                        value="en-US"
                       >
-                        Spanish
+                        English (US)
                       </option>
                     </select>
                     <span
@@ -1238,14 +1238,14 @@ exports[`Footer stories snapshot > MobileView story renders and matches snapshot
                     id="_r_5_"
                   >
                     <option
-                      value="en"
+                      value="es-MX"
                     >
-                      English
+                      Spanish (Mexico)
                     </option>
                     <option
-                      value="es"
+                      value="en-US"
                     >
-                      Spanish
+                      English (US)
                     </option>
                   </select>
                   <span

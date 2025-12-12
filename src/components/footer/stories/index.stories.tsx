@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, userEvent, within } from 'storybook/test';
 import { action } from 'storybook/actions';
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
+import { ConfigProvider } from '@/config/context';
+import { mockConfig } from '@/test-utils/config';
 
 import Footer from '../index';
 
@@ -100,12 +102,14 @@ Site footer with support, account, company links, newsletter signup, social icon
     },
     decorators: [
         (Story) => (
-            <ActionLogger>
-                <div className="min-h-[60vh] flex flex-col">
-                    <div className="flex-1" />
-                    <Story />
-                </div>
-            </ActionLogger>
+            <ConfigProvider config={mockConfig}>
+                <ActionLogger>
+                    <div className="min-h-[60vh] flex flex-col">
+                        <div className="flex-1" />
+                        <Story />
+                    </div>
+                </ActionLogger>
+            </ConfigProvider>
         ),
     ],
 };
@@ -185,17 +189,19 @@ export const Default: Story = {
 
 export const LongPage: Story = {
     render: () => (
-        <div className="min-h-screen flex flex-col">
-            <main className="flex-1 container mx-auto px-4 py-16 space-y-4">
-                {(() => {
-                    const sections = Array.from({ length: 20 }, (_, idx) => `section-${idx + 1}`);
-                    return sections.map((label) => (
-                        <p key={label}>Sample content section {label.replace('section-', '')}</p>
-                    ));
-                })()}
-            </main>
-            <Footer />
-        </div>
+        <ConfigProvider config={mockConfig}>
+            <div className="min-h-screen flex flex-col">
+                <main className="flex-1 container mx-auto px-4 py-16 space-y-4">
+                    {(() => {
+                        const sections = Array.from({ length: 20 }, (_, idx) => `section-${idx + 1}`);
+                        return sections.map((label) => (
+                            <p key={label}>Sample content section {label.replace('section-', '')}</p>
+                        ));
+                    })()}
+                </main>
+                <Footer />
+            </div>
+        </ConfigProvider>
     ),
     parameters: {
         docs: {
@@ -335,10 +341,12 @@ export const MobileView: Story = {
 
 export const DarkBackground: Story = {
     render: () => (
-        <div className="min-h-[50vh] bg-foreground text-background flex flex-col">
-            <div className="flex-1 min-h-[20vh]" />
-            <Footer />
-        </div>
+        <ConfigProvider config={mockConfig}>
+            <div className="min-h-[50vh] bg-foreground text-background flex flex-col">
+                <div className="flex-1 min-h-[20vh]" />
+                <Footer />
+            </div>
+        </ConfigProvider>
     ),
     parameters: {
         docs: {

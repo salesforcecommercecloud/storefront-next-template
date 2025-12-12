@@ -1,4 +1,4 @@
-import type translations from '@/locales/en/translations.json';
+import type translations from '@/locales/en-US/translations.json';
 
 // Derive country codes from translations.json
 export type CountryCode = keyof typeof translations.countries;

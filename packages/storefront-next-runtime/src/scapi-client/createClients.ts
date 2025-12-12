@@ -33,6 +33,8 @@ export interface CommerceApiClientConfig extends ClientOptions {
     organizationId: string;
     /** Site ID - automatically merged into query parameters */
     siteId: string;
+    /** Locale - automatically merged into query parameters (optional) */
+    locale?: string;
     /** SLAS client ID - required for auth operations */
     clientId: string;
     /** SLAS client secret - required for private client auth operations */
@@ -84,6 +86,7 @@ export function createCommerceApiClients(config: CommerceApiClientConfig): Clien
         querySerializer,
         organizationId,
         siteId,
+        locale,
         clientId,
         clientSecret,
         redirectUri,
@@ -107,8 +110,12 @@ export function createCommerceApiClients(config: CommerceApiClientConfig): Clien
         ...rest,
     };
 
-    // Global request parameters to merge organizationId and siteId into all calls
-    const globalParams: GlobalRequestParameters = { organizationId, siteId };
+    // Global request parameters to merge organizationId, siteId, and locale into all calls
+    const globalParams: GlobalRequestParameters = {
+        organizationId,
+        siteId,
+        ...(locale ? { locale } : {}),
+    };
 
     // Create base clients and wrap with proxy for operation methods
     const shopperBasketsV1 = createClient(

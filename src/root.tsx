@@ -62,9 +62,11 @@ import { isProxyPath } from '@/extensions/hybrid-proxy/config';
 
 // On the client side, initialize i18next.
 // (On the server side, it's initialized elsewhere in middlewares/i18next.ts file)
-// Read the language from the server-rendered HTML to avoid language detection issues
+// Read the full locale from the server-rendered HTML data attribute
 const i18nextOnClient =
-    typeof window !== 'undefined' ? initI18next({ language: document.documentElement.lang || undefined }) : undefined;
+    typeof window !== 'undefined'
+        ? initI18next({ language: document.documentElement.dataset.locale || undefined })
+        : undefined;
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const middleware: MiddlewareFunction<Response>[] = [
@@ -194,8 +196,11 @@ export function Layout({ children }: PropsWithChildren) {
     const data = useRouteLoaderData<LoaderData>('root');
     const i18next = (typeof window === 'undefined' ? data?.getI18next?.() : i18nextOnClient) as i18n;
 
+    // Extract language code from locale (e.g., 'en-US' -> 'en', 'es-MX' -> 'es')
+    const languageCode = i18next.language.split('-')[0];
+
     return (
-        <html lang={i18next.language} dir={i18next.dir(i18next.language)}>
+        <html lang={languageCode} data-locale={i18next.language} dir={i18next.dir(i18next.language)}>
             <head>
                 <meta charSet="utf-8" />
                 <script
