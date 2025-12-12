@@ -2,6 +2,10 @@ import path, { resolve } from "node:path";
 import fs from "fs-extra";
 import path$1, { basename, dirname, extname, join, posix, relative, resolve as resolve$1 } from "path";
 import { URL as URL$1, fileURLToPath } from "url";
+import { parse } from "/home/runner/work/storefront-next/storefront-next/node_modules/.pnpm/@babel+parser@7.28.4/node_modules/@babel/parser/lib/index.js";
+import { isJSXAttribute, isJSXElement, isJSXIdentifier, isStringLiteral, jsxClosingElement, jsxElement, jsxIdentifier, jsxOpeningElement, jsxText, stringLiteral } from "/home/runner/work/storefront-next/storefront-next/node_modules/.pnpm/@babel+types@7.28.4/node_modules/@babel/types/lib/index.js";
+import { generate } from "@babel/generator";
+import traverseModule from "/home/runner/work/storefront-next/storefront-next/node_modules/.pnpm/@babel+traverse@7.28.4/node_modules/@babel/traverse/lib/index.js";
 import fs$1, { existsSync, readFileSync, writeFileSync } from "fs";
 import { glob } from "glob";
 import { Node, Project, ts } from "ts-morph";
@@ -251,6 +255,277 @@ const patchReactRouterPlugin = () => {
                     export { Scripts } from '@salesforce/storefront-next-dev/react-router/Scripts';
                 `;
 			return null;
+		}
+	};
+};
+
+//#endregion
+//#region src/extensibility/plugin-utils.ts
+const traverse = traverseModule.default || traverseModule;
+const PLUGIN_COMPONENT_TAG = "PluginComponent";
+const PLUGIN_ID_ATTRIBUTE = "pluginId";
+const COMPOSE_PROVIDERS_TAG = "ComposeProviders";
+/**
+* Find and replace the plugin component with the replacement code
+* @param componentName - the name of the component to replace
+* @param element - the AST element as the replacement candidate
+* @param pluginRegistry - the plugin registry
+* @returns the pluginId that was replaced, or null if no replacement was found
+*/
+function findAndReplace(componentName, element, pluginRegistry) {
+	let pluginIdReplaced = null;
+	if (isJSXIdentifier(element.node.openingElement.name, { name: componentName })) {
+		let replaced = false;
+		if (Array.isArray(element.node.openingElement.attributes)) {
+			const attr = element.node.openingElement.attributes.find((a) => isJSXAttribute(a) && isJSXIdentifier(a.name, { name: PLUGIN_ID_ATTRIBUTE }));
+			const pluginId = attr && isJSXAttribute(attr) && attr.value && "value" in attr.value ? attr.value.value : void 0;
+			if (pluginId == null) throw new Error(`PluginComponent must contain a pluginId attribute`);
+			if (pluginRegistry[pluginId] && pluginRegistry[pluginId].length > 0) {
+				element.replaceWith(jsxText(pluginRegistry[pluginId].map((pluginComponent) => `<${pluginComponent.componentName} />`).join("")));
+				pluginIdReplaced = pluginId;
+				replaced = true;
+			}
+		}
+		if (!replaced) if (element.node.children && element.node.children.length > 0) element.replaceWithMultiple(element.node.children);
+		else element.remove();
+	}
+	return pluginIdReplaced;
+}
+/**
+* Run a replacement pass on the AST
+* @param ast - the AST to traverse
+* @param tagName - the name of the tag to replace
+* @param pluginRegistry - the plugin registry
+* @returns a set of pluginIds that were replaced
+*/
+function runReplacementPass(ast, tagName, pluginRegistry) {
+	const pluginIdsReplaced = /* @__PURE__ */ new Set();
+	traverse(ast, {
+		VariableDeclaration(nodePath) {
+			const declarations = nodePath.node.declarations;
+			for (const declaration of declarations) if (isStringLiteral(declaration.init) && (/* @__PURE__ */ new RegExp(`<(${tagName})(\\s|\\/|>)`)).test(declaration.init.value)) {
+				const original = declaration.init.value;
+				const jsxAst = parse(`<>${original}</>`, {
+					sourceType: "module",
+					plugins: [
+						"typescript",
+						"jsx",
+						"decorators-legacy"
+					]
+				});
+				traverse(jsxAst, { JSXFragment(fragmentPath) {
+					fragmentPath.traverse({ JSXElement(inner) {
+						const pluginIdReplaced = findAndReplace(tagName, inner, pluginRegistry);
+						if (pluginIdReplaced) pluginIdsReplaced.add(pluginIdReplaced);
+					} });
+				} });
+				declaration.init = stringLiteral(generate(jsxAst).code);
+			}
+		},
+		ReturnStatement(nodePath) {
+			const arg = nodePath.node.argument;
+			if (!isJSXElement(arg)) return;
+			nodePath.traverse({ JSXElement(inner) {
+				const pluginIdReplaced = findAndReplace(tagName, inner, pluginRegistry);
+				if (pluginIdReplaced) pluginIdsReplaced.add(pluginIdReplaced);
+			} });
+		}
+	});
+	return pluginIdsReplaced;
+}
+/**
+* Build the import statements for the plugin components
+* @param pluginIds - the pluginIds that were replaced
+* @param pluginRegistry - the plugin registry
+* @returns the import statements
+*/
+function buildReplacementImportStatements(pluginIds, pluginRegistry) {
+	const importStatements = /* @__PURE__ */ new Set();
+	for (const pluginId of pluginIds) {
+		const pluginComponents = pluginRegistry[pluginId];
+		for (const pluginComponent of pluginComponents) importStatements.add(`import ${pluginComponent.componentName} from '@/${pluginComponent.path.replace(".tsx", "")}';`);
+	}
+	return Array.from(importStatements).join("\n");
+}
+/**
+* Transform the plugin component within the replacement code from the plugin registry
+* @param code - the code to transform
+* @param pluginRegistry - the plugin registry
+* @returns the transformed code, or null if no transformation was needed
+*/
+function transformPluginComponent(code, pluginRegistry) {
+	if (!code.includes(PLUGIN_COMPONENT_TAG)) return null;
+	const ast = parse(code, {
+		sourceType: "module",
+		plugins: [
+			"typescript",
+			"jsx",
+			"decorators-legacy"
+		]
+	});
+	const replacementImportStatements = buildReplacementImportStatements(runReplacementPass(ast, PLUGIN_COMPONENT_TAG, pluginRegistry), pluginRegistry);
+	traverse(ast, { ImportDeclaration(nodePath) {
+		if (nodePath.node.source.value.includes("@/plugins/plugin-components")) nodePath.replaceWith(jsxText(replacementImportStatements));
+	} });
+	return generate(ast).code;
+}
+/**
+* Inject the plugin context providers into the root component (root.tsx)
+* @param code - the code to inject the context providers into, typically root.tsx
+* @param contextProviders - the context providers to inject
+* @returns the code with the context providers injected, or null if no injection was needed
+*/
+function injectPluginContextproviders(code, contextProviders) {
+	if (contextProviders == null || contextProviders.length === 0 || !code.includes(COMPOSE_PROVIDERS_TAG)) return null;
+	const ast = parse(code, {
+		sourceType: "module",
+		plugins: [
+			"typescript",
+			"jsx",
+			"decorators-legacy"
+		]
+	});
+	const importStatements = /* @__PURE__ */ new Set();
+	for (const contextProvider of contextProviders) importStatements.add(`import ${contextProvider.componentName} from '@/${contextProvider.path.replace(".tsx", "")}';`);
+	const replacementImportStatements = Array.from(importStatements).join("\n");
+	ast.program.body.unshift(...parse(replacementImportStatements, {
+		sourceType: "module",
+		plugins: [
+			"typescript",
+			"jsx",
+			"decorators-legacy"
+		]
+	}).program.body);
+	traverse(ast, { ReturnStatement(nodePath) {
+		const arg = nodePath.node.argument;
+		if (!isJSXElement(arg)) return;
+		nodePath.traverse({ JSXElement(inner) {
+			if (isJSXIdentifier(inner.node.openingElement.name, { name: COMPOSE_PROVIDERS_TAG })) {
+				let nested = inner.node.children;
+				for (let i = contextProviders.length - 1; i >= 0; i--) {
+					const componentName = contextProviders[i].componentName;
+					nested = [jsxElement(jsxOpeningElement(jsxIdentifier(componentName), [], false), jsxClosingElement(jsxIdentifier(componentName)), nested, false)];
+				}
+				inner.node.children = nested;
+			}
+		} });
+	} });
+	return generate(ast).code;
+}
+/**
+* Build the plugin registry from the extension directories
+* @param rootDir - the root directory of the project
+* @param sourceDir - the source directory of the project
+* @returns the plugin registry
+*/
+function buildPluginRegistry(rootDir) {
+	const componentRegistry = {};
+	const contextProviders = [];
+	const extensionDirPath = path$1.join(rootDir, "extensions");
+	const extensionDirs = fs.readdirSync(extensionDirPath, { withFileTypes: true });
+	const getNamespaceAndComponentName = (dir, filePath) => {
+		const namespace = dir.name.split("-").map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join("");
+		return {
+			namespace,
+			componentName: `${namespace}_${(filePath.split("/").pop()?.replace(".tsx", ""))?.split("-").map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join("")}`
+		};
+	};
+	for (const dir of extensionDirs) if (dir.isDirectory()) {
+		const configPath = path$1.join(extensionDirPath, dir.name, "plugin-config.json");
+		if (fs.existsSync(configPath)) {
+			const pluginConfig = fs.readJsonSync(configPath);
+			if (pluginConfig && pluginConfig.components) for (const pluginComponent of pluginConfig.components) {
+				const { pluginId, path: componentPath, order = 0 } = pluginComponent;
+				if (pluginId && componentPath) {
+					if (!componentRegistry[pluginId]) componentRegistry[pluginId] = [];
+					const { namespace, componentName } = getNamespaceAndComponentName(dir, componentPath);
+					componentRegistry[pluginId].push({
+						pluginId,
+						path: componentPath,
+						order,
+						namespace,
+						componentName
+					});
+				}
+			}
+			if (pluginConfig && pluginConfig.contextProviders) for (const contextProvider of pluginConfig.contextProviders) {
+				const { path: providerPath, order = 0 } = contextProvider;
+				if (providerPath) {
+					const { namespace, componentName } = getNamespaceAndComponentName(dir, providerPath);
+					contextProviders.push({
+						path: providerPath,
+						namespace,
+						componentName,
+						order
+					});
+				}
+			}
+		}
+	}
+	for (const pluginId in componentRegistry) componentRegistry[pluginId].sort((a, b) => a.order - b.order);
+	contextProviders.sort((a, b) => a.order - b.order);
+	return {
+		componentRegistry,
+		contextProviders
+	};
+}
+
+//#endregion
+//#region src/plugins/transformPlugins.ts
+function transformPluginPlaceholderPlugin() {
+	let componentRegistry;
+	let contextProviders;
+	let sourceDir;
+	return {
+		name: "odyssey:transform-plugin-placeholder",
+		enforce: "pre",
+		configResolved(config) {
+			sourceDir = config.resolve.alias.find((alias) => alias.find === "@")?.replacement || path$1.join(process.cwd(), "src");
+		},
+		buildStart() {
+			({componentRegistry, contextProviders} = buildPluginRegistry(sourceDir));
+		},
+		transform(code, id) {
+			let transformedCode = null;
+			try {
+				if (id.includes(path$1.join(sourceDir, "root.tsx"))) transformedCode = injectPluginContextproviders(code, contextProviders);
+				else transformedCode = transformPluginComponent(code, componentRegistry);
+				if (transformedCode) return {
+					code: transformedCode,
+					map: null
+				};
+				return null;
+			} catch (err) {
+				console.error(`PluginComponent replace ERROR in ${id}: ${err instanceof Error ? err.stack : String(err)}`);
+				throw err;
+			}
+		}
+	};
+}
+
+//#endregion
+//#region src/plugins/watchConfigFiles.ts
+const watchConfigFilesPlugin = () => {
+	let viteConfig;
+	return {
+		name: "odyssey:watch-config-files",
+		configResolved(config) {
+			viteConfig = config;
+		},
+		configureServer(server) {
+			const aliases = viteConfig.resolve.alias;
+			const root = Object.values(aliases).find((alias) => alias.find === "@")?.replacement || "src";
+			const glob$1 = path$1.join(root, "/extensions/**/plugin-config.json");
+			server.watcher.add(glob$1);
+			const onChange = (file) => {
+				if (file.endsWith("plugin-config.json")) {
+					console.log(`🔁 plugin-config.json changed: ${file}`);
+					server.restart();
+				}
+			};
+			server.watcher.on("add", onChange);
+			server.watcher.on("change", onChange);
+			server.watcher.on("unlink", onChange);
 		}
 	};
 };
@@ -553,7 +828,9 @@ function storefrontNextPlugins(config = {}) {
 	const plugins = [
 		managedRuntimeBundlePlugin(),
 		fixReactRouterManifestUrlsPlugin(),
-		patchReactRouterPlugin()
+		patchReactRouterPlugin(),
+		transformPluginPlaceholderPlugin(),
+		watchConfigFilesPlugin()
 	];
 	if (staticRegistry?.componentPath && staticRegistry?.registryPath) plugins.push(staticRegistryPlugin(staticRegistry));
 	if (readableChunkNames) plugins.push(readableChunkFileNamesPlugin());

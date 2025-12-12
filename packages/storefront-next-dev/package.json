@@ -100,6 +100,7 @@
     "@serverless/event-mocks": "1.1.1",
     "@types/archiver": "^6.0.2",
     "@types/aws-lambda": "8.10.159",
+    "@types/babel__generator": "7.27.0",
     "@types/babel__traverse": "7.28.0",
     "@types/compressible": "2.0.3",
     "@types/compression": "^1.7.5",
@@ -131,6 +132,7 @@
     "vitest": "3.2.4"
   },
   "dependencies": {
+    "@babel/generator": "7.28.5",
     "@codegenie/serverless-express": "4.17.0",
     "@h4ad/serverless-adapter": "4.4.0",
     "@react-router/express": "7.9.2",

@@ -4,9 +4,8 @@ import Search from './search';
 import CartBadge from './cart-badge';
 import UserActions from './user-actions';
 import { useTranslation } from 'react-i18next';
-// @sfdc-extension-line SFDC_EXT_STORE_LOCATOR
-import StoreLocatorBadge from '@/extensions/store-locator/components/header/store-locator-badge';
 import logo from '/images/market-logo.svg';
+import { PluginComponent } from '@/plugins/plugin-components';
 
 export default function Header({ children }: PropsWithChildren): ReactElement {
     const { t } = useTranslation('header');
@@ -31,8 +30,7 @@ export default function Header({ children }: PropsWithChildren): ReactElement {
                     <div className="flex items-center space-x-4">
                         <Search key={`${location.pathname}${location.search}`} />
                         <UserActions />
-                        {/*  @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */}
-                        <StoreLocatorBadge />
+                        <PluginComponent pluginId="header.before.cart" />
                         <CartBadge />
                     </div>
                 </div>

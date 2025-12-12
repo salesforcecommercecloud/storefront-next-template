@@ -282,6 +282,9 @@ importers:
 
   packages/storefront-next-dev:
     dependencies:
+      '@babel/generator':
+        specifier: 7.28.5
+        version: 7.28.5
       '@codegenie/serverless-express':
         specifier: 4.17.0
         version: 4.17.0
@@ -367,6 +370,9 @@ importers:
       '@types/aws-lambda':
         specifier: 8.10.159
         version: 8.10.159
+      '@types/babel__generator':
+        specifier: 7.27.0
+        version: 7.27.0
       '@types/babel__traverse':
         specifier: 7.28.0
         version: 7.28.0
@@ -5055,6 +5061,11 @@ packages:
     engines: {node: '>=6'}
     hasBin: true
 
+  jsesc@3.1.0:
+    resolution: {integrity: sha512-/sM3dO2FOzXjKQhJuo0Q173wf2KOo8t4I8vHy6lF9poUp7bKT0/NHE8fPX23PwfhnykfqnC2xRxOnVw5XuGIaA==}
+    engines: {node: '>=6'}
+    hasBin: true
+
   json-buffer@3.0.1:
     resolution: {integrity: sha512-4bV5BfR2mqfQTJm+V5tPPdf+ZpuhiIvTuAB5g8kcrXOZpTT/QwwVRWBywX1ozr6lEuPdbHxwaJlm9G6mI2sfSQ==}
 
@@ -7177,7 +7188,7 @@ snapshots:
       '@babel/types': 7.28.5
       '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.31
-      jsesc: 3.0.2
+      jsesc: 3.1.0
 
   '@babel/helper-annotate-as-pure@7.27.3':
     dependencies:
@@ -12364,6 +12375,8 @@ snapshots:
       - utf-8-validate
 
   jsesc@3.0.2: {}
+
+  jsesc@3.1.0: {}
 
   json-buffer@3.0.1: {}
 

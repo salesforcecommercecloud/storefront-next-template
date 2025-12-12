@@ -3,6 +3,8 @@ import { fixReactRouterManifestUrlsPlugin } from './plugins/fixReactRouterManife
 import { readableChunkFileNamesPlugin } from './plugins/readableChunkFileNames';
 import { managedRuntimeBundlePlugin } from './plugins/managedRuntimeBundle';
 import { patchReactRouterPlugin } from './plugins/patchReactRouter';
+import { transformPluginPlaceholderPlugin } from './plugins/transformPlugins';
+import { watchConfigFilesPlugin } from './plugins/watchConfigFiles';
 import { staticRegistryPlugin, type StaticRegistryPluginConfig } from './plugins/staticRegistry';
 
 /**
@@ -78,6 +80,8 @@ export function storefrontNextPlugins(config: StorefrontNextPluginsConfig = {}):
         managedRuntimeBundlePlugin(),
         fixReactRouterManifestUrlsPlugin(),
         patchReactRouterPlugin(),
+        transformPluginPlaceholderPlugin(),
+        watchConfigFilesPlugin(),
     ];
 
     // Add static registry plugin if enabled

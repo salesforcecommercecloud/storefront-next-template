@@ -6,6 +6,47 @@ This folder contains **feature extensions** that allow you to enhance and custom
 
 The `extensions` directory is the central place for developing and managing reusable application extensions, such as UI widgets, backend integrations, or business logic add-ons. Files under each is self-contained and can be included individually, making it easy to add new features or integrations to your retail application. 
 
+## Extension Plugin
+
+### Component
+Extension components can be inserted into plugin points defined in the main application. These plugin points are marked with the `PluginComponent` element, each identified by a unique plugId. For example:
+
+```
+<PluginComponent pluginId='header.before.cart' />
+```
+
+To insert a component into a plugin point, configure the `plugin-config.json` file under `src/extensions/<your-extension>` folder. For example: 
+
+```
+{
+    "components": [
+        {
+            "pluginId": "header.before.cart",
+            "path": "extensions/store-locator/components/header/store-locator-badge.tsx",
+            "order": 0
+        }
+    ]
+}
+```
+When more than one components target the same pluginId, they'll be rendered in ascending order as specified.
+
+### Context provider
+
+Similarly, a custom context provider can also be inserted into the application root (root.tsx):
+
+```
+{
+  "contextProviders": [
+        {
+            "path": "extensions/store-locator/providers/store-locator.tsx",
+            "order": 0
+        }
+    ]
+}
+```
+
+### Route
+To add a custom route for an extension, simply create a new file under the `src/extensions/<your-extension>/routes` folder. Any file under this folder will be processed as a new route.
 
 ## Extension Integration
 This folder contains only "net-new" files related to an extention. Integration changes, i.e., additional code changes to the core application, are made in files outside the extension folder. They're marked by special comment markers to indicate the annotated code snippet is a part of an extension.

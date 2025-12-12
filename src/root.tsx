@@ -19,8 +19,6 @@ import {
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { type i18n } from 'i18next';
 import { I18nextProvider } from 'react-i18next';
-// @sfdc-extension-line SFDC_EXT_STORE_LOCATOR
-import StoreLocatorProvider from '@/extensions/store-locator/providers/store-locator';
 import authMiddlewareServer, { getAuth as getAuthServer } from '@/middlewares/auth.server';
 import authMiddlewareClient, { getAuth as getAuthClient } from '@/middlewares/auth.client';
 import AuthProvider, { bootstrapAuth } from '@/providers/auth';
@@ -321,8 +319,6 @@ export default function App({
                 [AuthProvider, { value: sessionData }],
                 [BasketProvider, { value: basket }],
                 [RecommendersProvider, { adapterName: EINSTEIN_ADAPTER_NAME }],
-                /* @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */
-                [StoreLocatorProvider, undefined],
             ] as const,
         [i18next, appConfig, sessionData, basket]
     );

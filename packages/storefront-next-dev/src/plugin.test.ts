@@ -5,7 +5,7 @@ describe('storefrontNextPlugins', () => {
     it('should return an array of plugins with default config', () => {
         const plugins = storefrontNextPlugins();
         expect(Array.isArray(plugins)).toBe(true);
-        expect(plugins.length).toBe(3); // managedRuntimeBundle, fixReactRouterManifestUrls, patchReactRouter
+        expect(plugins.length).toBe(5); // managedRuntimeBundle, fixReactRouterManifestUrls, patchReactRouter
         plugins.forEach((plugin) => {
             expect(plugin).toHaveProperty('name');
         });
@@ -14,19 +14,19 @@ describe('storefrontNextPlugins', () => {
     it('should return an array of plugins with empty config', () => {
         const plugins = storefrontNextPlugins({});
         expect(Array.isArray(plugins)).toBe(true);
-        expect(plugins.length).toBe(3);
+        expect(plugins.length).toBe(5);
     });
 
     it('should not include readableChunkFileNamesPlugin when readableChunkNames is false', () => {
         const plugins = storefrontNextPlugins({ readableChunkNames: false });
-        expect(plugins.length).toBe(3);
+        expect(plugins.length).toBe(5);
         const pluginNames = plugins.map((p) => p.name);
         expect(pluginNames).not.toContain('odyssey:readable-chunk-file-names');
     });
 
     it('should include readableChunkFileNamesPlugin when readableChunkNames is true', () => {
         const plugins = storefrontNextPlugins({ readableChunkNames: true });
-        expect(plugins.length).toBe(4); // Should have 4 plugins when readableChunkNames is enabled
+        expect(plugins.length).toBe(6); // Should have 6 plugins when readableChunkNames is enabled
         const pluginNames = plugins.map((p) => p.name);
         expect(pluginNames).toContain('odyssey:readable-chunk-file-names');
     });
@@ -39,7 +39,9 @@ describe('storefrontNextPlugins', () => {
         expect(pluginNames[0]).toBe('odyssey:managed-runtime-bundle');
         expect(pluginNames[1]).toBe('odyssey:fix-react-router-manifest-urls');
         expect(pluginNames[2]).toBe('odyssey:patch-react-router');
-        expect(pluginNames[3]).toBe('odyssey:readable-chunk-file-names');
+        expect(pluginNames[3]).toBe('odyssey:transform-plugin-placeholder');
+        expect(pluginNames[4]).toBe('odyssey:watch-config-files');
+        expect(pluginNames[5]).toBe('odyssey:readable-chunk-file-names');
     });
 
     it('should accept StorefrontNextPluginsConfig type with readableChunkNames', () => {
@@ -47,6 +49,6 @@ describe('storefrontNextPlugins', () => {
             readableChunkNames: true,
         };
         const plugins = storefrontNextPlugins(config);
-        expect(plugins.length).toBe(4);
+        expect(plugins.length).toBe(6);
     });
 });
