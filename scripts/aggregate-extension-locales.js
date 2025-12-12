@@ -9,6 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = join(__filename, '..');
 
 const SRC_DIR = join(__dirname, '..', 'src');
+const LOCALES_DIR = join(SRC_DIR, 'locales');
 const EXTENSIONS_DIR = join(SRC_DIR, 'extensions');
 const OUTPUT_DIR = join(EXTENSIONS_DIR, 'locales');
 
@@ -35,37 +36,16 @@ function toCamelCase(str) {
 }
 
 /**
- * Scan extensions directory to find all available locales
+ * Scan src/locales directory to find all available locales
  * @returns {Promise<Set<string>>} Set of locale codes
  */
 async function discoverLocales() {
     const locales = new Set();
-
-    try {
-        const extensions = await readdir(EXTENSIONS_DIR, { withFileTypes: true });
-
-        for (const extension of extensions) {
-            if (!extension.isDirectory()) continue;
-            if (extension.name === 'locales') continue; // Skip the output directory
-
-            const localesPath = join(EXTENSIONS_DIR, extension.name, 'locales');
-            if (!existsSync(localesPath)) continue;
-
-            const localeEntries = await readdir(localesPath, { withFileTypes: true });
-            for (const localeEntry of localeEntries) {
-                if (localeEntry.isDirectory()) {
-                    locales.add(localeEntry.name);
-                }
-            }
-        }
-    } catch (error) {
-        if (error.code === 'ENOENT') {
-            console.log('📁 No extensions directory found. Skipping locale generation.');
-            return locales;
-        }
-        throw error;
+    const localesEntries = await readdir(LOCALES_DIR, { withFileTypes: true });
+    for (const localeEntry of localesEntries) {
+        if (!localeEntry.isDirectory()) continue;
+        locales.add(localeEntry.name);
     }
-
     return locales;
 }
 
@@ -152,7 +132,7 @@ async function main() {
         const locales = await discoverLocales();
 
         if (locales.size === 0) {
-            console.log('📝 No locales found in extensions. Nothing to generate.');
+            console.log('📝 No locales found. Nothing to generate.');
             return;
         }
 
