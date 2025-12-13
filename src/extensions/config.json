@@ -7,14 +7,6 @@
             "uninstallationInstructions": "instructions/uninstall-store-locator.mdc",
             "folder": "store-locator"
         },
-        "SFDC_EXT_SOCIAL_LOGIN": {
-            "name": "Social Login",
-            "description": "Social login allows a shopper to sign in with their social media account."
-        },
-        "SFDC_EXT_WISHLIST": {
-            "name": "Wishlist",
-            "description": "Wishlist allows a shopper to add products to their wishlist."
-        },
         "SFDC_EXT_BOPIS": {
             "name": "Buy Online Pickup In Store",
             "description": "Buy Online Pickup In Store allows a shopper to pick up their order at a store. Requires the Store Locator extension to be installed.",
@@ -27,14 +19,16 @@
             "description": "Theme Switcher allows a developer to switch the theme of the store.",
             "installationInstructions": "instructions/install-theme-switcher.mdc",
             "uninstallationInstructions": "instructions/uninstall-theme-switcher.mdc",
-            "folder": "theme-switcher"
+            "folder": "theme-switcher",
+	    "defaultOn": false,
         },
         "SFDC_EXT_HYBRID_PROXY": {
             "name": "Hybrid Proxy",
             "description": "Proxies specific routes to an SFRA instance for hybrid deployments",
             "installationInstructions": "instructions/install-hybrid-proxy.mdc",
             "uninstallationInstructions": "instructions/uninstall-hybrid-proxy.mdc",
-            "folder": "hybrid-proxy"
+            "folder": "hybrid-proxy",
+	    "defaultOn": "false",
         }
     }
 }
