@@ -20,7 +20,7 @@
             "installationInstructions": "instructions/install-theme-switcher.mdc",
             "uninstallationInstructions": "instructions/uninstall-theme-switcher.mdc",
             "folder": "theme-switcher",
-	    "defaultOn": "false",
+	    "defaultOn": false
         },
         "SFDC_EXT_HYBRID_PROXY": {
             "name": "Hybrid Proxy",
@@ -28,7 +28,7 @@
             "installationInstructions": "instructions/install-hybrid-proxy.mdc",
             "uninstallationInstructions": "instructions/uninstall-hybrid-proxy.mdc",
             "folder": "hybrid-proxy",
-	    "defaultOn": "false",
+	    "defaultOn": false
         }
     }
 }
