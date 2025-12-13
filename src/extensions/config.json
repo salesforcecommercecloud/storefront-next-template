@@ -3,8 +3,6 @@
         "SFDC_EXT_STORE_LOCATOR": {
             "name": "Store Locator",
             "description": "Store Locator allows a shopper to find the closest store to them.",
-            "installationInstructions": "instructions/install-store-locator.mdc",
-            "uninstallationInstructions": "instructions/uninstall-store-locator.mdc",
             "folder": "store-locator"
         },
         "SFDC_EXT_BOPIS": {
