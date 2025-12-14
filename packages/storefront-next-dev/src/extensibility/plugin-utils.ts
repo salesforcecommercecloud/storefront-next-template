@@ -6,10 +6,14 @@ import {
     isStringLiteral,
     stringLiteral,
     isJSXElement,
+    isJSXFragment,
     jsxElement,
     jsxOpeningElement,
     jsxIdentifier,
     jsxClosingElement,
+    jsxFragment,
+    jsxOpeningFragment,
+    jsxClosingFragment,
     type JSXElement as BabelJSXElement,
     type JSXFragment as BabelJSXFragment,
     type File,
@@ -73,13 +77,22 @@ function findAndReplace(
                 throw new Error(`PluginComponent must contain a pluginId attribute`);
             }
             if (pluginRegistry[pluginId] && pluginRegistry[pluginId].length > 0) {
-                element.replaceWith(
-                    jsxText(
-                        pluginRegistry[pluginId]
-                            .map((pluginComponent: PluginComponentConfig) => `<${pluginComponent.componentName} />`)
-                            .join('')
-                    )
-                );
+                // Create JSX elements for each component
+                const components = pluginRegistry[pluginId].map((pluginComponent: PluginComponentConfig) => {
+                    return jsxElement(
+                        jsxOpeningElement(jsxIdentifier(pluginComponent.componentName), [], true),
+                        null,
+                        [],
+                        true
+                    );
+                });
+
+                // If multiple components, wrap in a fragment; otherwise use single component
+                if (components.length > 1) {
+                    element.replaceWith(jsxFragment(jsxOpeningFragment(), jsxClosingFragment(), components));
+                } else {
+                    element.replaceWith(components[0]);
+                }
                 pluginIdReplaced = pluginId;
                 replaced = true;
             }
@@ -107,39 +120,39 @@ function findAndReplace(
 function runReplacementPass(ast: File, tagName: string, pluginRegistry: PluginComponentRegistry): Set<string> {
     const pluginIdsReplaced = new Set<string>();
     traverse(ast, {
-        // look for string literal declarations that contains <PluginComponent .../>
+        // look for variable declarations that contains <PluginComponent .../> in JSX fragment
         VariableDeclaration(nodePath: NodePath<BabelVariableDeclaration>) {
-            const declarations = nodePath.node.declarations;
-            for (const declaration of declarations) {
-                if (
-                    isStringLiteral(declaration.init) &&
-                    new RegExp(`<(${tagName})(\\s|\\/|>)`).test(declaration.init.value)
-                ) {
-                    const original = declaration.init.value;
-                    const jsxAst = parse(`<>${original}</>`, {
-                        sourceType: 'module',
-                        plugins: ['typescript', 'jsx', 'decorators-legacy'],
-                    });
-                    traverse(jsxAst, {
-                        JSXFragment(fragmentPath: NodePath<BabelJSXFragment>) {
-                            fragmentPath.traverse({
-                                JSXElement(inner: NodePath<BabelJSXElement>) {
-                                    const pluginIdReplaced = findAndReplace(tagName, inner, pluginRegistry);
-                                    if (pluginIdReplaced) {
-                                        pluginIdsReplaced.add(pluginIdReplaced);
-                                    }
-                                },
-                            });
-                        },
-                    });
-                    declaration.init = stringLiteral(generate(jsxAst).code);
+            const declarationPaths = nodePath.get('declarations');
+            const declarationsArray = Array.isArray(declarationPaths) ? declarationPaths : [declarationPaths];
+
+            for (const declarationPath of declarationsArray) {
+                const initPath = declarationPath.get('init');
+                if (initPath && isJSXElement(initPath.node)) {
+                    const content = generate(initPath.node).code;
+                    if (new RegExp(`<(${tagName})(\\s|\\/|>)`).test(content)) {
+                        // Check if the init itself is the PluginComponent
+                        const pluginIdReplaced = findAndReplace(tagName, initPath as NodePath<BabelJSXElement>, pluginRegistry);
+                        if (pluginIdReplaced) {
+                            pluginIdsReplaced.add(pluginIdReplaced);
+                        }
+
+                        // Also traverse to find any nested PluginComponents
+                        initPath.traverse({
+                            JSXElement(inner: NodePath<BabelJSXElement>) {
+                                const nestedPluginIdReplaced = findAndReplace(tagName, inner, pluginRegistry);
+                                if (nestedPluginIdReplaced) {
+                                    pluginIdsReplaced.add(nestedPluginIdReplaced);
+                                }
+                            }
+                        });
+                    }
                 }
             }
         },
         // look for return statements that contains the tag
         ReturnStatement(nodePath: NodePath<BabelReturnStatement>) {
             const arg = nodePath.node.argument;
-            if (!isJSXElement(arg)) {
+            if (!isJSXElement(arg) && !isJSXFragment(arg)) {
                 return;
             }
             nodePath.traverse({
@@ -201,6 +214,9 @@ export function transformPluginComponent(code: string, pluginRegistry: PluginCom
         },
     });
 
+    console.log('\n============= tranformed code start =============\n');
+    console.log(generate(ast).code);
+    console.log('\n============= tranformed code end =============\n');
     return generate(ast).code;
 }
 

@@ -20,6 +20,7 @@ import { useCurrentVariant } from '@/hooks/product/use-current-variant';
 import { useTranslation } from 'react-i18next';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import DeliveryOptions from '@/extensions/bopis/components/delivery-options/delivery-options';
+import { PluginComponent } from '@/plugins/plugin-components';
 
 type ProductInfoBaseProps = {
     product: ShopperProducts.schemas['Product'];
@@ -101,6 +102,8 @@ export default function ProductInfo({
                     }}
                 />
             </div>
+
+            <PluginComponent pluginId="product.info.after.price" />
 
             {/* Inventory Status Message */}
             <InventoryMessage product={product} currentVariant={currentVariant} />

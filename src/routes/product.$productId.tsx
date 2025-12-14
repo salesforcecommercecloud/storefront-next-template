@@ -25,7 +25,7 @@ import {
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
 import PickupProvider from '@/extensions/bopis/context/pickup-context';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
-
+import { PluginComponent } from '@/plugins/plugin-components';
 @PageType({
     name: 'Product Detail Page',
     description: 'Product detail page with product information, images, and recommendations',
@@ -406,16 +406,23 @@ function ProductDetailView({ loaderData }: RouteComponentProps<ProductPageData>)
     };
 
     const content = (
+        <>
         <div className="min-h-screen bg-background">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">{renderPageContent(loaderData.page)}</div>
         </div>
+        </>
     );
 
     let finalContent = content;
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
     finalContent = <PickupProvider>{content}</PickupProvider>;
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
-    return finalContent;
+    return (
+        <>
+            {finalContent}
+            <PluginComponent pluginId='product.detail.after.content' />
+        </>
+    );
 }
 
 /**
