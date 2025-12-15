@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import fs from 'fs-extra';
 import path from 'path';
-import { manageExtensions } from './manage-extensions';
+import { manageExtensions, createExtension } from './manage-extensions';
 import { execSync } from 'child_process';
 import prompts from 'prompts';
 import trimExtensions from './trim-extensions';
@@ -44,16 +44,13 @@ describe('manageExtensions', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         // Sanity stub for fs
-        vi.spyOn(fs, 'existsSync').mockImplementation((filePath) => {
-            if (
-                filePath === getExtensionConfigPath('/test-project') ||
-                filePath === getExtensionConfigPath('/tmp/fake-temp-dir') ||
-                filePath === getExtensionConfigPath(`/tmp/sfnext-extensions-${MOCK_NOW}`)
-            ) {
-                return true;
-            }
-            return false;
-        });
+        const existngPaths = [
+            getExtensionConfigPath('/test-project'),
+            getExtensionConfigPath(path.join('/tmp', 'fake-temp-dir')),
+            getExtensionConfigPath(path.join('/tmp', `sfnext-extensions-${MOCK_NOW}`)),
+            path.join('/test-project', 'src', 'extensions', 'my-extension2'),
+        ];
+        vi.spyOn(fs, 'existsSync').mockImplementation((filePath) => existngPaths.includes(filePath as string));
         vi.spyOn(fs, 'readFileSync').mockImplementation((filePath) => {
             if (
                 filePath === getExtensionConfigPath('/test-project') ||
@@ -81,6 +78,7 @@ describe('manageExtensions', () => {
         });
         vi.spyOn(fs, 'readdirSync').mockReturnValue(['index.tsx'] as any);
         vi.spyOn(fs, 'writeFileSync').mockImplementation(() => {});
+        vi.spyOn(fs, 'mkdirSync').mockImplementation(() => '' as any);
     });
 
     it('should abort if install and uninstall are both provided', async () => {
@@ -259,13 +257,89 @@ describe('manageExtensions', () => {
 
     it('should error and exit if no config is found', async () => {
         vi.spyOn(fs, 'existsSync').mockReturnValue(false);
-        const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
         const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => {
             throw new Error('exit');
         });
         await expect(manageExtensions({ projectDirectory: '/not-exist' })).rejects.toThrow('exit');
-        expect(spy).toHaveBeenCalledWith(expect.stringContaining('Extension config file not found'));
+        expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Extension config file not found'));
         exitSpy.mockRestore();
-        spy.mockRestore();
+    });
+
+    it('should create an extension', async () => {
+        (prompts as unknown as { mockResolvedValueOnce: (value: any) => void }).mockResolvedValueOnce({
+            extensionName: 'My Extension',
+        });
+        (prompts as unknown as { mockResolvedValueOnce: (value: any) => void }).mockResolvedValueOnce({
+            extensionDescription: 'My Extension description',
+        });
+        await createExtension({ projectDirectory: '/test-project', name: '', description: '' });
+        expect(fs.mkdirSync).toHaveBeenCalledWith(
+            path.join('/test-project', 'src', 'extensions', 'my-extension', 'components'),
+            { recursive: true }
+        );
+        expect(fs.mkdirSync).toHaveBeenCalledWith(
+            path.join('/test-project', 'src', 'extensions', 'my-extension', 'locales'),
+            { recursive: true }
+        );
+        expect(fs.mkdirSync).toHaveBeenCalledWith(
+            path.join('/test-project', 'src', 'extensions', 'my-extension', 'hooks'),
+            { recursive: true }
+        );
+        expect(fs.mkdirSync).toHaveBeenCalledWith(
+            path.join('/test-project', 'src', 'extensions', 'my-extension', 'routes'),
+            { recursive: true }
+        );
+        expect(fs.writeFileSync).toHaveBeenCalledWith(
+            path.join('/test-project', 'src', 'extensions', 'my-extension', 'README.md'),
+            `# My Extension\n\nMy Extension description`
+        );
+
+        // Get the second call (config.json write)
+        const configWriteCall = (fs.writeFileSync as any).mock.calls[1];
+        expect(configWriteCall[0]).toBe(path.join('/test-project', 'src', 'extensions', 'config.json'));
+
+        // Parse and verify the JSON structure
+        const writtenConfig = JSON.parse(configWriteCall[1]);
+        expect(writtenConfig.extensions.SFDC_EXT_MY_EXTENSION).toEqual({
+            name: 'My Extension',
+            description: 'My Extension description',
+            installationInstructions: '',
+            uninstallationInstructions: '',
+            folder: 'my-extension',
+            dependencies: [],
+        });
+    });
+
+    it('should prevent invalid extension name', async () => {
+        await createExtension({
+            projectDirectory: '/test-project',
+            name: 'My Extension$',
+            description: 'My Extension description',
+        });
+        expect(console.error).toHaveBeenCalledWith(
+            expect.stringContaining(
+                'Extension name can only contain alphanumeric characters, spaces, dashes, or underscores'
+            )
+        );
+    });
+
+    it('should prevent extension name that already exists', async () => {
+        await createExtension({
+            projectDirectory: '/test-project',
+            name: 'Store Locator',
+            description: 'Store Locator description',
+        });
+        expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Extension "Store Locator" already exists'));
+    });
+
+    it('should prevent extension directory that already exists', async () => {
+        await createExtension({
+            projectDirectory: '/test-project',
+            name: 'My Extension2',
+            description: 'My Extension description',
+        });
+        expect(console.error).toHaveBeenCalledWith(
+            expect.stringContaining('Extension directory my-extension2 already exists')
+        );
     });
 });

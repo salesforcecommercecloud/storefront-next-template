@@ -25,6 +25,7 @@ import Handlebars from "handlebars";
 import { access, mkdir, readFile, readdir, rm, writeFile } from "fs/promises";
 import { Node, Project } from "ts-morph";
 import prompts from "prompts";
+import { z } from "zod";
 
 //#region package.json
 var version = "0.2.0-dev";
@@ -2196,6 +2197,12 @@ const CONFIG_PATH = [
 	"extensions",
 	"config.json"
 ];
+const EXTENSION_FOLDERS = [
+	"components",
+	"locales",
+	"hooks",
+	"routes"
+];
 const consoleLog = (message, type) => {
 	switch (type) {
 		case "error":
@@ -2369,6 +2376,64 @@ const manageExtensions = async (options) => {
 	if (operation === "uninstall") await handleUninstall(extensionConfig, options);
 	else await handleInstall(extensionConfig, options);
 };
+const getExtensionMarker = (val) => {
+	return `SFDC_EXT_${val.toUpperCase().replaceAll(" ", "_").replaceAll("-", "_")}`;
+};
+const getExtensionFolderName = (val) => {
+	return val.toLowerCase().replaceAll(" ", "-").trim();
+};
+const getExtensionNameSchema = (projectDirectory, extensionConfig) => {
+	return z.object({ name: z.string().regex(/^[a-zA-Z0-9 _-]+$/, { message: "Extension name can only contain alphanumeric characters, spaces, dashes, or underscores" }) }).superRefine((data, ctx) => {
+		if (extensionConfig[getExtensionMarker(data.name)]) ctx.addIssue({
+			code: z.ZodIssueCode.custom,
+			message: `Extension "${data.name}" already exists`
+		});
+		if (fs.existsSync(path.join(projectDirectory, "src", "extensions", getExtensionFolderName(data.name)))) ctx.addIssue({
+			code: z.ZodIssueCode.custom,
+			message: `Extension directory ${getExtensionFolderName(data.name)} already exists`
+		});
+	});
+};
+const createExtension = async (options) => {
+	const { projectDirectory, name, description } = options;
+	const extensionConfig = getExtensionConfig(projectDirectory);
+	let extensionName = name;
+	let extensionDescription = description;
+	if (extensionName == null || extensionName.trim() === "") extensionName = (await prompts({
+		type: "text",
+		name: "extensionName",
+		message: "What would you like to name the extension? (e.g., \"My Extension\")"
+	})).extensionName;
+	const result = getExtensionNameSchema(projectDirectory, extensionConfig).safeParse({ name: extensionName });
+	if (!result.success) {
+		const firstIssueMessage = result.error.issues?.[0]?.message;
+		consoleLog(firstIssueMessage, "error");
+		return;
+	}
+	if (extensionDescription == null || extensionDescription.trim() === "") extensionDescription = (await prompts({
+		type: "text",
+		name: "extensionDescription",
+		message: "How would you describe the extension?"
+	})).extensionDescription;
+	const folderName = getExtensionFolderName(extensionName);
+	const extensionFolderPath = path.join(projectDirectory, "src", "extensions", folderName);
+	fs.mkdirSync(extensionFolderPath, { recursive: true });
+	EXTENSION_FOLDERS.forEach((folder) => {
+		fs.mkdirSync(path.join(extensionFolderPath, folder), { recursive: true });
+	});
+	fs.writeFileSync(path.join(extensionFolderPath, "README.md"), `# ${extensionName}\n\n${extensionDescription}`);
+	const marker = getExtensionMarker(extensionName);
+	extensionConfig[marker] = {
+		name: extensionName,
+		description: extensionDescription,
+		installationInstructions: "",
+		uninstallationInstructions: "",
+		folder: folderName,
+		dependencies: []
+	};
+	fs.writeFileSync(path.join(projectDirectory, "src", "extensions", "config.json"), JSON.stringify({ extensions: extensionConfig }, null, 4));
+	consoleLog(`Extension "${extensionName}" scaffolding was created successfully.`, "success");
+};
 
 //#endregion
 //#region src/cli.ts
@@ -2525,6 +2590,13 @@ extensionsCommand.command("remove").description("Remove one or more installed ex
 		});
 	} catch (err) {
 		handleCommandError("extensions remove", err);
+	}
+});
+extensionsCommand.command("create").description("Create a new extension").option("-p, --project-directory <projectDirectory>", "Target project directory", process.cwd()).option("-n, --name <name>", "Name of the extension to create, e.g., \"My Extension\"").option("-d, --description <description>", "Description of the extension").action(async (options) => {
+	try {
+		await createExtension(options);
+	} catch (err) {
+		handleCommandError("extensions create", err);
 	}
 });
 program.command("generate-cartridge").description("Generate component cartridge metadata from decorated components").requiredOption("-d, --project-directory <dir>", "Project directory containing the source code").action(async (options) => {

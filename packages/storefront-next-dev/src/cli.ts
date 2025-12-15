@@ -17,7 +17,7 @@ import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
 import fs from 'fs-extra';
 import { createStorefront } from './create-storefront';
-import { manageExtensions } from './extensibility/manage-extensions';
+import { manageExtensions, createExtension } from './extensibility/manage-extensions';
 
 // Get the directory of this CLI file for resolving dw.json path
 const __filename = fileURLToPath(import.meta.url);
@@ -313,6 +313,20 @@ extensionsCommand
             });
         } catch (err) {
             handleCommandError('extensions remove', err);
+        }
+    });
+
+extensionsCommand
+    .command('create')
+    .description('Create a new extension')
+    .option('-p, --project-directory <projectDirectory>', 'Target project directory', process.cwd())
+    .option('-n, --name <name>', 'Name of the extension to create, e.g., "My Extension"')
+    .option('-d, --description <description>', 'Description of the extension')
+    .action(async (options) => {
+        try {
+            await createExtension(options);
+        } catch (err) {
+            handleCommandError('extensions create', err);
         }
     });
 

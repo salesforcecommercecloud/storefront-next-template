@@ -92,13 +92,6 @@ sfnext push --project-directory /path/to/your/project --project-slug mrt-project
 sfnext push --project-directory /path/to/your/project --build-directory /custom/build/path --project-slug mrt-project-id --target mrt-target-environment
 ```
 
-#### Manage extensions
-
-```bash
-# Manage Extensions allows you to enable or disable feature extensions in a template project by trimming files and code based on your extension configuration.
-sfnext manage-extensions --project-directory /path/to/your/project --extension-config /path/to/extension/config/file --extensions SFDC_EXT_STORE_LOCATOR,SFDC_EXT_THEME_SWITCHER
-```
-
 #### Generate extension instructions
 
 ```bash
@@ -151,6 +144,11 @@ Run `sfnex extensions remove` to remove existing extensions
 - `-d, --project-directory`: Target project directory (default: current directory)
 - `-e, --extensions`: Comma-separated list of extension marker values (e.g. SFDC_EXT_STORE_LOCATOR,SFDC_EXT_INTERNAL_THEME_SWITCHER)
 - `-v, --verbose`: Verbose mode
+
+Run `sfnext extensions create` to create a new extension scaffolding
+- `-p, --project-directory`: Target project directory (default: current directory)
+- `-n, --name`: New extension name (e.g., Store Locator)
+- `-d, --description`: Description for the extension
 
 #### Generate extension instructions
 

@@ -5,8 +5,10 @@ import type { ExtensionMeta } from './extension-config';
 import trimExtensions from './trim-extensions';
 import os from 'os';
 import { execSync } from 'child_process';
+import { z } from 'zod';
 
 const CONFIG_PATH = ['src', 'extensions', 'config.json'];
+const EXTENSION_FOLDERS = ['components', 'locales', 'hooks', 'routes'];
 
 const consoleLog = (message: string, type: 'error' | 'success' | 'info') => {
     switch (type) {
@@ -263,4 +265,88 @@ export const manageExtensions = async (options: {
     } else {
         await handleInstall(extensionConfig, options);
     }
+};
+
+const getExtensionMarker = (val: string) => {
+    return `SFDC_EXT_${val.toUpperCase().replaceAll(' ', '_').replaceAll('-', '_')}`;
+};
+
+const getExtensionFolderName = (val: string) => {
+    return val.toLowerCase().replaceAll(' ', '-').trim();
+};
+
+const getExtensionNameSchema = (projectDirectory: string, extensionConfig: Record<string, ExtensionMeta>) => {
+    return z
+        .object({
+            name: z.string().regex(/^[a-zA-Z0-9 _-]+$/, {
+                message: 'Extension name can only contain alphanumeric characters, spaces, dashes, or underscores',
+            }),
+        })
+        .superRefine((data: { name: string }, ctx: z.RefinementCtx) => {
+            if (extensionConfig[getExtensionMarker(data.name)]) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: `Extension "${data.name}" already exists`,
+                });
+            }
+            if (fs.existsSync(path.join(projectDirectory, 'src', 'extensions', getExtensionFolderName(data.name)))) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: `Extension directory ${getExtensionFolderName(data.name)} already exists`,
+                });
+            }
+        });
+};
+
+export const createExtension = async (options: { projectDirectory: string; name: string; description: string }) => {
+    const { projectDirectory, name, description } = options;
+    const extensionConfig: Record<string, ExtensionMeta> = getExtensionConfig(projectDirectory);
+    let extensionName = name;
+    let extensionDescription = description;
+    if (extensionName == null || extensionName.trim() === '') {
+        const value = await prompts({
+            type: 'text',
+            name: 'extensionName',
+            message: 'What would you like to name the extension? (e.g., "My Extension")',
+        });
+        extensionName = value.extensionName;
+    }
+    const extensionNameSchema = getExtensionNameSchema(projectDirectory, extensionConfig);
+    const result = extensionNameSchema.safeParse({ name: extensionName });
+    if (!result.success) {
+        const firstIssueMessage = result.error.issues?.[0]?.message;
+        consoleLog(firstIssueMessage, 'error');
+        return;
+    }
+    if (extensionDescription == null || extensionDescription.trim() === '') {
+        const value = await prompts({
+            type: 'text',
+            name: 'extensionDescription',
+            message: 'How would you describe the extension?',
+        });
+        extensionDescription = value.extensionDescription;
+    }
+    const folderName = getExtensionFolderName(extensionName);
+    // create the extension directory and a read me file
+    const extensionFolderPath = path.join(projectDirectory, 'src', 'extensions', folderName);
+    fs.mkdirSync(extensionFolderPath, { recursive: true });
+    EXTENSION_FOLDERS.forEach((folder) => {
+        fs.mkdirSync(path.join(extensionFolderPath, folder), { recursive: true });
+    });
+    fs.writeFileSync(path.join(extensionFolderPath, 'README.md'), `# ${extensionName}\n\n${extensionDescription}`);
+    // update the extension config.json file
+    const marker = getExtensionMarker(extensionName);
+    extensionConfig[marker] = {
+        name: extensionName,
+        description: extensionDescription,
+        installationInstructions: '',
+        uninstallationInstructions: '',
+        folder: folderName,
+        dependencies: [],
+    };
+    fs.writeFileSync(
+        path.join(projectDirectory, 'src', 'extensions', 'config.json'),
+        JSON.stringify({ extensions: extensionConfig }, null, 4)
+    );
+    consoleLog(`Extension "${extensionName}" scaffolding was created successfully.`, 'success');
 };
