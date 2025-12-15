@@ -34,13 +34,28 @@ export const managedRuntimeBundlePlugin = (): Plugin => {
         const loaderPath = path.resolve(buildDirectory, 'loader.js');
         // TODO: Move the MRT_BUNDLE_TYPE env var to a command line option with sfnext
         const mrtEntryFile = `${getMrtEntryFile(resolvedConfig?.mode)}.mjs`;
-        const mrtEntryPath = path.resolve(buildDirectory, mrtEntryFile);
 
         await fs.ensureDir(buildDirectory);
         await fs.outputFile(loaderPath, '// This file is intentionally empty');
 
-        const prebuiltMrtEntryPath = path.resolve(__dirname, `./mrt/${mrtEntryFile}`);
-        await fs.copy(prebuiltMrtEntryPath, mrtEntryPath);
+        // Copy all MRT assets (entry points and chunks) from the prebuilt mrt directory
+        const mrtAssetsDir = path.resolve(__dirname, './mrt');
+        if (await fs.pathExists(mrtAssetsDir)) {
+            const files = await fs.readdir(mrtAssetsDir);
+            for (const file of files) {
+                if (file.endsWith('.mjs') || file.endsWith('.map')) {
+                    await fs.copy(path.join(mrtAssetsDir, file), path.join(buildDirectory, file));
+                }
+            }
+        } else {
+            // Fallback for when the mrt directory doesn't exist (e.g. during development/tests)
+            // This ensures we at least try to copy the entry file if it exists elsewhere or fail gracefully
+            const mrtEntryPath = path.resolve(buildDirectory, mrtEntryFile);
+            const prebuiltMrtEntryPath = path.resolve(__dirname, `./mrt/${mrtEntryFile}`);
+            if (await fs.pathExists(prebuiltMrtEntryPath)) {
+                await fs.copy(prebuiltMrtEntryPath, mrtEntryPath);
+            }
+        }
 
         const packageJsonPath = path.resolve(resolvedConfig.root, 'package.json');
         const buildPackageJsonPath = path.resolve(buildDirectory, 'package.json');

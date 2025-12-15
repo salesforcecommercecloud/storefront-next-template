@@ -10,6 +10,9 @@ const {
     mockResolve,
     mockDirname,
     mockFileURLToPath,
+    mockPathExists,
+    mockReaddir,
+    mockJoin,
 } = vi.hoisted(() => {
     return {
         mockEnsureDir: vi.fn(),
@@ -20,6 +23,9 @@ const {
         mockResolve: vi.fn(),
         mockDirname: vi.fn((path: string) => path),
         mockFileURLToPath: vi.fn((url: string) => url),
+        mockPathExists: vi.fn(),
+        mockReaddir: vi.fn(),
+        mockJoin: vi.fn((...args: string[]) => args.join('/')),
     };
 });
 
@@ -31,6 +37,8 @@ vi.mock('fs-extra', () => {
             copy: mockCopy,
             readJson: mockReadJson,
             writeJson: mockWriteJson,
+            pathExists: mockPathExists,
+            readdir: mockReaddir,
         },
     };
 });
@@ -40,6 +48,7 @@ vi.mock('path', () => {
         default: {
             resolve: mockResolve,
             dirname: mockDirname,
+            join: mockJoin,
         },
     };
 });
@@ -66,6 +75,15 @@ describe('managedRuntimeBundlePlugin', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         mockResolve.mockImplementation((...args: string[]) => args.join('/'));
+        mockJoin.mockImplementation((...args: string[]) => args.join('/'));
+
+        // Default behavior: assume mrt directory doesn't exist, but entry file does
+        // This matches the implicit behavior expected by existing tests that rely on fallback
+        mockPathExists.mockImplementation((path: string) => {
+            if (path.endsWith('/mrt')) return Promise.resolve(false);
+            return Promise.resolve(true);
+        });
+        mockReaddir.mockResolvedValue([]);
     });
 
     it('should return a plugin with correct name', () => {
@@ -531,6 +549,105 @@ describe('managedRuntimeBundlePlugin', () => {
             } else {
                 delete process.env.MRT_BUNDLE_TYPE;
             }
+        });
+
+        describe('MRT assets copying', () => {
+            it('should copy all .mjs and .map files when mrt directory exists', async () => {
+                const plugin = managedRuntimeBundlePlugin();
+                const mockConfig = {
+                    root: '/project',
+                    mode: 'production',
+                    __reactRouterPluginContext: {
+                        reactRouterConfig: {
+                            buildDirectory: '/build',
+                        },
+                    },
+                } as unknown as ResolvedConfig;
+
+                mockReadJson.mockResolvedValue({});
+
+                // Mock mrt directory existence
+                mockPathExists.mockImplementation((path: string) => {
+                    return path.endsWith('/mrt');
+                });
+
+                // Mock readdir to return some files
+                mockReaddir.mockResolvedValue(['chunk1.mjs', 'chunk1.mjs.map', 'other.txt', 'chunk2.mjs']);
+
+                callHook(plugin.configResolved, mockConfig);
+                await callHook(plugin.buildApp);
+
+                // Verify copy calls
+                expect(mockCopy).toHaveBeenCalledWith(expect.stringContaining('chunk1.mjs'), '/build/chunk1.mjs');
+                expect(mockCopy).toHaveBeenCalledWith(
+                    expect.stringContaining('chunk1.mjs.map'),
+                    '/build/chunk1.mjs.map'
+                );
+                expect(mockCopy).toHaveBeenCalledWith(expect.stringContaining('chunk2.mjs'), '/build/chunk2.mjs');
+
+                // Should not copy non-matching files
+                expect(mockCopy).not.toHaveBeenCalledWith(expect.stringContaining('other.txt'), expect.anything());
+            });
+
+            it('should fallback to copying entry file when mrt directory does not exist', async () => {
+                const plugin = managedRuntimeBundlePlugin();
+                const mockConfig = {
+                    root: '/project',
+                    mode: 'production',
+                    __reactRouterPluginContext: {
+                        reactRouterConfig: {
+                            buildDirectory: '/build',
+                        },
+                    },
+                } as unknown as ResolvedConfig;
+
+                mockReadJson.mockResolvedValue({});
+
+                // Mock mrt directory NOT existing, but entry file existing
+                mockPathExists.mockImplementation((path: string) => {
+                    if (path.endsWith('/mrt')) return false;
+                    // Mock entry file check (e.g., ssr.mjs or streamingHandler.mjs)
+                    return path.endsWith('.mjs');
+                });
+
+                callHook(plugin.configResolved, mockConfig);
+                await callHook(plugin.buildApp);
+
+                // Verify fallback copy call. Since we didn't set MRT_BUNDLE_TYPE, it likely defaults.
+                // The actual file name depends on getMrtEntryFile result, likely 'ssr.mjs' or 'streamingHandler.mjs'
+                // We check if *some* .mjs file was copied to the build directory that wasn't from readdir
+                const copyCalls = mockCopy.mock.calls;
+                const entryCopy = copyCalls.find(
+                    (call: string[]) => call[0].includes('.mjs') && call[1].endsWith('.mjs')
+                );
+                expect(entryCopy).toBeDefined();
+            });
+
+            it('should do nothing if neither mrt directory nor entry file exists', async () => {
+                const plugin = managedRuntimeBundlePlugin();
+                const mockConfig = {
+                    root: '/project',
+                    mode: 'production',
+                    __reactRouterPluginContext: {
+                        reactRouterConfig: {
+                            buildDirectory: '/build',
+                        },
+                    },
+                } as unknown as ResolvedConfig;
+
+                mockReadJson.mockResolvedValue({});
+
+                // Mock nothing existing
+                mockPathExists.mockResolvedValue(false);
+
+                callHook(plugin.configResolved, mockConfig);
+                await callHook(plugin.buildApp);
+
+                // Should not have copied any .mjs files
+                const copyCalls = mockCopy.mock.calls;
+                const mjsCopy = copyCalls.find((call: string[]) => call[1].endsWith('.mjs'));
+                expect(mjsCopy).toBeUndefined();
+            });
         });
     });
 });

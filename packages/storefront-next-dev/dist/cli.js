@@ -483,6 +483,8 @@ const buildMrtConfig = (_buildDirectory, _projectDirectory) => {
 			"loader.js",
 			`${ssrEntryPoint}.{js,mjs,cjs}`,
 			`${ssrEntryPoint}.{js,mjs,cjs}.map`,
+			"*.mjs",
+			"*.mjs.map",
 			"!static/**/*",
 			"!**/*.stories.tsx",
 			"!**/*.stories.ts",

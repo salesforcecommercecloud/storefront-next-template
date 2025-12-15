@@ -41,6 +41,8 @@ export const buildMrtConfig = (_buildDirectory: string, _projectDirectory?: stri
         'loader.js', // SSR entry point
         `${ssrEntryPoint}.{js,mjs,cjs}`, // SSR entry point (supports CJS and ESM formats)
         `${ssrEntryPoint}.{js,mjs,cjs}.map`, // SSR source maps
+        '*.mjs', // Include all mjs chunks (e.g. chunk.mjs)
+        '*.mjs.map', // Include all mjs chunk maps
         '!static/**/*', // Exclude static assets from server
         // Exclude Storybook and test files
         '!**/*.stories.tsx',
