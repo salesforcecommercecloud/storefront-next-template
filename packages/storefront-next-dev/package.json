@@ -93,9 +93,6 @@
     "vite": ">=7.0.0"
   },
   "devDependencies": {
-    "@babel/parser": "^7.28.4",
-    "@babel/traverse": "^7.28.4",
-    "@babel/types": "7.28.4",
     "@react-router/dev": "7.9.2",
     "@serverless/event-mocks": "1.1.1",
     "@types/archiver": "^6.0.2",
@@ -132,6 +129,9 @@
     "vitest": "3.2.4"
   },
   "dependencies": {
+    "@babel/parser": "^7.28.4",
+    "@babel/traverse": "^7.28.4",
+    "@babel/types": "7.28.4",
     "@babel/generator": "7.28.5",
     "@codegenie/serverless-express": "4.17.0",
     "@h4ad/serverless-adapter": "4.4.0",
