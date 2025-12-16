@@ -24,8 +24,14 @@ pnpm test-storybook:snapshot:update
 # Run Interaction tests
 pnpm test-storybook:interaction
 
+# Run Interaction tests against static build
+pnpm test-storybook:static:interaction
+
 # Run A11y tests
 pnpm test-storybook:a11y
+
+# Run A11y tests against static build
+pnpm test-storybook:static:a11y
 ```
 
 **Storybook URL:** http://localhost:6006
@@ -38,8 +44,10 @@ pnpm test-storybook:a11y
 | `pnpm build-storybook` | Build static Storybook for production deployment |
 | `pnpm test-storybook:snapshot` | Run snapshot tests |
 | `pnpm test-storybook:snapshot:update` | Update Snapshot files locally and run tests |
-| `pnpm test-storybook:interaction` | Run Interaction tests |
-| `pnpm test-storybook:a11y` | Run A11y tests | 
+| `pnpm test-storybook:interaction` | Run Interaction tests against live Storybook server |
+| `pnpm test-storybook:static:interaction` | Run Interaction tests against static Storybook build |
+| `pnpm test-storybook:a11y` | Run A11y tests against live Storybook server |
+| `pnpm test-storybook:static:a11y` | Run A11y tests against static Storybook build | 
 
 ## Features & Addons
 

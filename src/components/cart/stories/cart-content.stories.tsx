@@ -151,21 +151,12 @@ function ActionLogger({ children }: { children: ReactNode }): ReactElement {
             }
         };
 
-        const originalSetTimeout = window.setTimeout;
-        window.setTimeout = ((handler: TimerHandler, timeout?: number, ...args: unknown[]) => {
-            if (typeof timeout === 'number' && timeout >= 700) {
-                return 0 as unknown as number;
-            }
-            return originalSetTimeout(handler, timeout, ...args);
-        }) as typeof window.setTimeout;
-
         root.addEventListener('click', handleClick, true);
         root.addEventListener('submit', handleSubmit, true);
         root.addEventListener('change', handleChange, true);
         document.addEventListener('click', handleGlobalClick, true);
 
         return () => {
-            window.setTimeout = originalSetTimeout;
             root.removeEventListener('click', handleClick, true);
             root.removeEventListener('submit', handleSubmit, true);
             root.removeEventListener('change', handleChange, true);
