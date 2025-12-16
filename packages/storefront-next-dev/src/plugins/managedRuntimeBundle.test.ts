@@ -290,9 +290,9 @@ describe('managedRuntimeBundlePlugin', () => {
             }
         });
 
-        it('should copy prebuilt streamingHandler.mjs file when MRT_BUNDLE_TYPE is stream', async () => {
+        it('should copy prebuilt streamingHandler.mjs file when MRT_BUNDLE_TYPE is streaming', async () => {
             const originalEnv = process.env.MRT_BUNDLE_TYPE;
-            process.env.MRT_BUNDLE_TYPE = 'stream';
+            process.env.MRT_BUNDLE_TYPE = 'streaming';
 
             const plugin = managedRuntimeBundlePlugin();
             const mockConfig = {

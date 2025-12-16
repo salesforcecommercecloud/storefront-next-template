@@ -156,14 +156,15 @@ const readableChunkFileNamesPlugin = () => {
 //#endregion
 //#region src/mrt/utils.ts
 const MRT_BUNDLE_TYPE_SSR = "ssr";
-const MRT_BUNDLE_TYPE_STREAMING = "streamingHandler";
+const MRT_STREAMING_ENTRY_FILE = "streamingHandler";
+const MRT_BUNDLE_TYPE_STREAMING = "streaming";
 /**
 * Gets the MRT entry file for the given mode
 * @param mode - The mode to get the MRT entry file for
 * @returns The MRT entry file for the given mode
 */
 const getMrtEntryFile = (mode) => {
-	return process.env.MRT_BUNDLE_TYPE === MRT_BUNDLE_TYPE_SSR || mode !== "production" ? MRT_BUNDLE_TYPE_SSR : MRT_BUNDLE_TYPE_STREAMING;
+	return process.env.MRT_BUNDLE_TYPE === MRT_BUNDLE_TYPE_STREAMING && mode === "production" ? MRT_STREAMING_ENTRY_FILE : MRT_BUNDLE_TYPE_SSR;
 };
 
 //#endregion

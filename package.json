@@ -4,7 +4,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "pnpm locales:aggregate-extensions && cross-env MRT_BUNDLE_TYPE=ssr react-router build",
+        "build": "pnpm locales:aggregate-extensions && react-router build",
         "bundlesize:test": "cross-env BUNDLES_SIZE_CHECK=true pnpm build",
         "bundlesize:analyze": "cross-env BUNDLES_SIZE_ANALYZE=true pnpm build",
         "dev": "pnpm locales:aggregate-extensions && sfnext dev",
@@ -12,7 +12,7 @@
         "locales:aggregate-extensions": "node scripts/aggregate-extension-locales.js",
         "start": "sfnext preview",
         "preview": "pnpm start",
-        "push": "cross-env MRT_BUNDLE_TYPE=ssr sfnext push --project-directory .",
+        "push": "sfnext push --project-directory .",
         "typecheck": "react-router typegen && tsc --noEmit",
         "generate:story-tests": "node scripts/generate-story-tests.js",
         "test": "vitest run --coverage",
