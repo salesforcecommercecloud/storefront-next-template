@@ -192,9 +192,9 @@ export default defineConfig({
             images: { quality: 80, formats: ['webp', 'jpeg'], lazyLoading: true },
             caching: { apiCacheTtl: 300, staticAssetCacheTtl: 31536000 },
             metrics: {
-                serverPerformanceMetricsEnabled: true,
+                serverPerformanceMetricsEnabled: false,
                 serverTimingHeaderEnabled: false,
-                clientPerformanceMetricsEnabled: true,
+                clientPerformanceMetricsEnabled: false,
             },
         },
         engagement: {
