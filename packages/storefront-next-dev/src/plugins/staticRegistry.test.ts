@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { vol } from 'memfs';
 import { staticRegistryPlugin } from './staticRegistry';
 import type { Plugin } from 'vite';
+import { normalizePath } from '../test-utils';
 
 // Global console mocking to prevent test output noise
 const originalConsole = {
@@ -945,9 +946,9 @@ export const registry = new ComponentRegistry();
                 server: mockServer,
             });
 
-            expect(mockServer.moduleGraph.getModuleById).toHaveBeenCalledWith(
-                '/test/project/src/lib/static-registry.ts'
-            );
+            // Use normalizePath for cross-platform comparison
+            const actualPath = normalizePath(mockServer.moduleGraph.getModuleById.mock.calls[0][0] as string);
+            expect(actualPath).toBe('/test/project/src/lib/static-registry.ts');
             expect(mockServer.reloadModule).toHaveBeenCalledWith(mockModule);
             expect(result).toEqual([]);
         });

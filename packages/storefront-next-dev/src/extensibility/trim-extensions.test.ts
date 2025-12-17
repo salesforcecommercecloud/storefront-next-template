@@ -9,6 +9,7 @@
 import { describe, it, beforeEach, afterEach, expect, vi } from 'vitest';
 import { Volume, type Volume as VolumeType } from 'memfs';
 import path from 'path';
+import { createPathRegex } from '../test-utils';
 
 // Mock extension config to simulate different extension states
 const mockedExtensionConfig: Record<string, { name: string; description: string; folder?: string }> = {
@@ -406,7 +407,10 @@ describe('trim-extensions', () => {
             trimExt('/mock/dir', { SFDC_EXT_featureA: false, SFDC_EXT_featureB: true }, mockedExtensionConfig, true);
             expect(fileExists('/mock/dir/src/routes/featureARoute.tsx')).toBe(false);
             expect(fileExists('/mock/dir/src/routes/featureBRoute.tsx')).toBe(true);
-            expect(console.log).toHaveBeenCalledWith(`Deleted file /mock/dir/src/routes/featureARoute.tsx`);
+            // Use regex to match both Unix (/) and Windows (\) path separators
+            expect(console.log).toHaveBeenCalledWith(
+                expect.stringMatching(createPathRegex('Deleted file /mock/dir/src/routes/featureARoute.tsx'))
+            );
             consoleSpy.mockRestore();
         });
 

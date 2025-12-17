@@ -408,8 +408,6 @@ describe('root.tsx', () => {
                 expect(getByTestId('config-provider')).toBeInTheDocument();
                 expect(getByTestId('auth-provider')).toBeInTheDocument();
                 expect(getByTestId('basket-provider')).toBeInTheDocument();
-                // @sfdc-extension-line SFDC_EXT_STORE_LOCATOR
-                expect(getByTestId('store-locator-provider')).toBeInTheDocument();
             });
         });
 

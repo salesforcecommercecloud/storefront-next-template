@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import express, { type Request, type Response } from 'express';
+import { normalizePath, createPathRegex } from '../../test-utils';
 
 // Mock express.static
 vi.mock('express', async () => {
@@ -61,15 +62,23 @@ describe('static middleware', () => {
 
         it('should call express.static with correct client build directory', () => {
             createStaticMiddleware('test-bundle', '/project/path');
-            expect(express.static).toHaveBeenCalledWith('/project/path/build/client', expect.any(Object));
+            // Use normalizePath for cross-platform comparison
+            const staticCall = vi.mocked(express.static).mock.calls[0];
+            expect(normalizePath(staticCall[0])).toBe('/project/path/build/client');
+            expect(staticCall[1]).toEqual(expect.any(Object));
         });
 
         it('should log the static serving configuration', () => {
             vi.mocked(getBundlePath).mockReturnValue('/mobify/bundle/test-123/client/');
             createStaticMiddleware('test-123', '/my/project');
 
+            // Use regex to match both Unix (/) and Windows (\) path separators
             expect(info).toHaveBeenCalledWith(
-                'Serving static assets from /my/project/build/client at /mobify/bundle/test-123/client/'
+                expect.stringMatching(
+                    createPathRegex(
+                        'Serving static assets from /my/project/build/client at /mobify/bundle/test-123/client/'
+                    )
+                )
             );
         });
 
@@ -128,7 +137,9 @@ describe('static middleware', () => {
                 createStaticMiddleware(bundleId, path);
 
                 expect(getBundlePath).toHaveBeenCalledWith(bundleId);
-                expect(express.static).toHaveBeenCalledWith(`${path}/build/client`, expect.any(Object));
+                // Use normalizePath for cross-platform comparison
+                const staticCall = vi.mocked(express.static).mock.calls[0];
+                expect(normalizePath(staticCall[0])).toBe(`${path}/build/client`);
             });
         });
 
@@ -139,7 +150,9 @@ describe('static middleware', () => {
                 vi.clearAllMocks();
                 createStaticMiddleware('bundle-id', projectPath);
 
-                expect(express.static).toHaveBeenCalledWith(`${projectPath}/build/client`, expect.any(Object));
+                // Use normalizePath for cross-platform comparison
+                const staticCall = vi.mocked(express.static).mock.calls[0];
+                expect(normalizePath(staticCall[0])).toBe(`${projectPath}/build/client`);
             });
         });
 
@@ -158,7 +171,8 @@ describe('static middleware', () => {
         it('should create middleware with correct root path for nested project structures', () => {
             const middleware = createStaticMiddleware('nested-bundle', '/deep/nested/project/structure') as any;
 
-            expect(middleware.root).toBe('/deep/nested/project/structure/build/client');
+            // Use normalizePath for cross-platform comparison
+            expect(normalizePath(middleware.root)).toBe('/deep/nested/project/structure/build/client');
         });
 
         it('should maintain immutability in Cache-Control header', () => {

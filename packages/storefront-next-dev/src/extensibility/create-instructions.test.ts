@@ -5,6 +5,7 @@
 import { describe, it, beforeEach, afterEach, expect, vi } from 'vitest';
 import { Volume, type Volume as VolumeType } from 'memfs';
 import path from 'path';
+import { normalizePath } from '../test-utils';
 
 const repo = 'https://github.com/SalesforceCommerceCloud/SFCC-Odyssey.git';
 const branch = 'main';
@@ -128,8 +129,10 @@ describe('create-instructions', () => {
         });
         const { getContext } = await reloadModule();
         const context = getContext(TEMPLATE_RETAIL_RSC_APP_DIR, markerValue, repo, branch, [], configPath);
-        expect(context.newFiles).toContain(newFileRel);
-        expect(context.copy.some((f: { dest: string }) => f.dest === newFileRel)).toBe(true);
+        // Use normalizePath for cross-platform comparison
+        const normalizedNewFiles = context.newFiles.map((f: string) => normalizePath(f));
+        expect(normalizedNewFiles).toContain(newFileRel);
+        expect(context.copy.some((f: { dest: string }) => normalizePath(f.dest) === newFileRel)).toBe(true);
     });
 
     it('getFilesToCopyContext marks directories correctly', async () => {

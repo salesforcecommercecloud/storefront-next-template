@@ -56,8 +56,8 @@ vi.mock('node:fs', () => ({
     existsSync: vi.fn(),
 }));
 
-vi.mock('tsx/esm/api', () => ({
-    tsImport: vi.fn(),
+vi.mock('./ts-import', () => ({
+    importTypescript: vi.fn(),
 }));
 
 // Import after mocks are set up
@@ -74,7 +74,7 @@ const { createLoggingMiddleware } = await import('./middleware/logging');
 const { patchReactRouterBuild } = await import('./utils');
 const { isRunnableDevEnvironment } = await import('vite');
 const { existsSync } = await import('node:fs');
-const { tsImport } = await import('tsx/esm/api');
+const { importTypescript } = await import('./ts-import');
 
 describe('server/index', () => {
     let mockExpressApp: {
@@ -120,7 +120,7 @@ describe('server/index', () => {
         vi.mocked(patchReactRouterBuild).mockReturnValue(mockBuild);
         vi.mocked(createRequestHandler).mockReturnValue(vi.fn() as any);
         vi.mocked(existsSync).mockReturnValue(false);
-        vi.mocked(tsImport).mockResolvedValue({});
+        vi.mocked(importTypescript).mockResolvedValue({});
 
         // Reset process.env
         delete process.env.BUNDLE_ID;
@@ -312,8 +312,8 @@ describe('server/index', () => {
                 // Mock existsSync to return true
                 vi.mocked(existsSync).mockReturnValue(true);
 
-                // Mock tsImport to return the registry
-                vi.mocked(tsImport).mockResolvedValue(mockRegistry);
+                // Mock importTypescript to return the registry
+                vi.mocked(importTypescript).mockResolvedValue(mockRegistry);
 
                 const options: ServerOptions = {
                     mode: 'development',
@@ -324,9 +324,9 @@ describe('server/index', () => {
                 await createServer(options);
 
                 expect(vi.mocked(existsSync)).toHaveBeenCalledWith(expect.stringContaining('middleware-registry.ts'));
-                expect(vi.mocked(tsImport)).toHaveBeenCalledWith(
+                expect(vi.mocked(importTypescript)).toHaveBeenCalledWith(
                     expect.stringContaining('middleware-registry.ts'),
-                    expect.objectContaining({ parentURL: expect.any(String) })
+                    expect.objectContaining({ projectDirectory: '/test/project' })
                 );
                 expect(mockExpressApp.use).toHaveBeenCalledWith(mockCustomMiddleware);
             });

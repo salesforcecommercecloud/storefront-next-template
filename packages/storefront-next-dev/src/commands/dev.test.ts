@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { Express } from 'express';
 import type { ViteDevServer } from 'vite';
 import type { ServerConfig } from '../server/config';
+import { pathsEqual } from '../test-utils';
 
 // Mock dependencies
 const mockViteServer = {
@@ -168,27 +169,35 @@ describe('dev command', () => {
             await dev({ projectDirectory: customDir });
 
             // Verify Vite server was created with custom directory
-            expect(mockCreateViteServer).toHaveBeenCalledWith({
-                root: customDir,
-                server: {
-                    middlewareMode: true,
-                },
-            });
+            expect(mockCreateViteServer).toHaveBeenCalled();
+            const viteCall = (
+                mockCreateViteServer.mock.calls[0] as unknown as [{ root: string; server: { middlewareMode: boolean } }]
+            )[0];
+            expect(pathsEqual(viteCall.root, customDir)).toBe(true);
+            expect(viteCall.server).toEqual({ middlewareMode: true });
 
             // Verify loadEnvFile was called with custom directory
-            expect(mockLoadEnvFile).toHaveBeenCalledWith(customDir);
+            expect(mockLoadEnvFile).toHaveBeenCalled();
+            const envFileCall = mockLoadEnvFile.mock.calls[0] as unknown as [string];
+            expect(pathsEqual(envFileCall[0], customDir)).toBe(true);
 
             // Verify loadProjectConfig was called with custom directory
-            expect(mockLoadProjectConfig).toHaveBeenCalledWith(customDir);
+            expect(mockLoadProjectConfig).toHaveBeenCalled();
+            const configCall = mockLoadProjectConfig.mock.calls[0] as unknown as [string];
+            expect(pathsEqual(configCall[0], customDir)).toBe(true);
 
             // Verify createServer was called with custom directory
-            expect(mockCreateServer).toHaveBeenCalledWith({
-                mode: 'development',
-                projectDirectory: customDir,
-                config: mockConfig,
-                port: 5173,
-                vite: mockViteServer,
-            });
+            expect(mockCreateServer).toHaveBeenCalled();
+            const serverCall = (
+                mockCreateServer.mock.calls[0] as unknown as [
+                    { mode: string; projectDirectory: string; config: ServerConfig; port: number; vite: ViteDevServer },
+                ]
+            )[0];
+            expect(serverCall.mode).toBe('development');
+            expect(pathsEqual(serverCall.projectDirectory, customDir)).toBe(true);
+            expect(serverCall.config).toEqual(mockConfig);
+            expect(serverCall.port).toBe(5173);
+            expect(serverCall.vite).toBe(mockViteServer);
         });
 
         it('should set NODE_ENV to development if not already set', async () => {
@@ -305,7 +314,9 @@ describe('dev command', () => {
             await dev({});
 
             // Verify loadProjectConfig was called with current working directory
-            expect(mockLoadProjectConfig).toHaveBeenCalledWith('/mock/cwd');
+            expect(mockLoadProjectConfig).toHaveBeenCalled();
+            const firstCall = mockLoadProjectConfig.mock.calls[0] as unknown as [string];
+            expect(pathsEqual(firstCall[0], '/mock/cwd')).toBe(true);
 
             cwdSpy.mockRestore();
         });

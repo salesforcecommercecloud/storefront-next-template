@@ -4,6 +4,7 @@ import type { Express } from 'express';
 import type { ServerBuild } from 'react-router';
 import type { ServerConfig } from '../server/config';
 import path from 'path';
+import { normalizePath, pathsEqual } from '../test-utils';
 
 // Mock dependencies
 const mockApp = {
@@ -201,22 +202,32 @@ describe('preview command', () => {
             await preview({ projectDirectory: customDir });
 
             // Verify loadEnvFile was called with custom directory
-            expect(mockLoadEnvFile).toHaveBeenCalledWith(customDir);
+            expect(mockLoadEnvFile).toHaveBeenCalled();
+            const envFileCall = mockLoadEnvFile.mock.calls[0] as unknown as [string];
+            expect(pathsEqual(envFileCall[0], customDir)).toBe(true);
 
             // Verify loadProjectConfig was called with custom directory
-            expect(mockLoadProjectConfig).toHaveBeenCalledWith(customDir);
+            expect(mockLoadProjectConfig).toHaveBeenCalled();
+            const configCall = mockLoadProjectConfig.mock.calls[0] as unknown as [string];
+            expect(pathsEqual(configCall[0], customDir)).toBe(true);
 
             // Verify createServer was called with custom directory
-            expect(mockCreateServer).toHaveBeenCalledWith({
-                mode: 'preview',
-                projectDirectory: customDir,
-                config: mockConfig,
-                port: 3000,
-                build: mockBuild,
-            });
+            expect(mockCreateServer).toHaveBeenCalled();
+            const serverCall = (
+                mockCreateServer.mock.calls[0] as unknown as [
+                    { mode: string; projectDirectory: string; config: ServerConfig; port: number; build: ServerBuild },
+                ]
+            )[0];
+            expect(serverCall.mode).toBe('preview');
+            expect(pathsEqual(serverCall.projectDirectory, customDir)).toBe(true);
+            expect(serverCall.config).toEqual(mockConfig);
+            expect(serverCall.port).toBe(3000);
+            expect(serverCall.build).toBe(mockBuild);
 
             // Verify build path check uses custom directory
-            expect(mockExistsSync).toHaveBeenCalledWith(path.join(customDir, 'build', 'server', 'index.js'));
+            expect(mockExistsSync).toHaveBeenCalled();
+            const existsCall = mockExistsSync.mock.calls[0] as unknown as [string];
+            expect(pathsEqual(existsCall[0], path.join(customDir, 'build', 'server', 'index.js'))).toBe(true);
         });
 
         it('should set NODE_ENV to production if not already set', async () => {
@@ -402,7 +413,11 @@ describe('preview command', () => {
             await preview({});
 
             // Verify loadProjectConfig was called with current working directory
-            expect(mockLoadProjectConfig).toHaveBeenCalledWith('/mock/cwd');
+            // Use normalizePath for cross-platform comparison
+            expect(mockLoadProjectConfig).toHaveBeenCalled();
+            const firstCall = mockLoadProjectConfig.mock.calls[0] as unknown as [string];
+            const actualPath = normalizePath(firstCall[0]);
+            expect(actualPath).toBe('/mock/cwd');
 
             cwdSpy.mockRestore();
         });

@@ -5,6 +5,7 @@ import type { ViteDevServer } from 'vite';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { loadConfigFromEnv, type ServerConfig } from './config';
+import { importTypescript } from './ts-import';
 import { createCommerceProxyMiddleware } from './middleware/proxy';
 import { createStaticMiddleware } from './middleware/static';
 import { createCompressionMiddleware } from './middleware/compression';
@@ -93,10 +94,12 @@ export async function createServer(options: ServerOptions): Promise<Express> {
     // This allows extensions to inject middleware (e.g. Hybrid Proxy)
     const middlewareRegistryPath = resolve(projectDirectory, 'src/server/middleware-registry.ts');
     if (existsSync(middlewareRegistryPath)) {
-        // We must dynamically import because this file only exists in the consumer app
-        const { tsImport } = await import('tsx/esm/api');
-        const registry = await tsImport(middlewareRegistryPath, {
-            parentURL: import.meta.url,
+        interface MiddlewareRegistry {
+            customMiddlewares?: express.RequestHandler[];
+        }
+
+        const registry = await importTypescript<MiddlewareRegistry>(middlewareRegistryPath, {
+            projectDirectory,
         });
 
         if (registry.customMiddlewares && Array.isArray(registry.customMiddlewares)) {

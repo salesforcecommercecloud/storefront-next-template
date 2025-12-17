@@ -5,6 +5,7 @@ import { manageExtensions, createExtension, listExtensions } from './manage-exte
 import { execSync } from 'child_process';
 import prompts from 'prompts';
 import trimExtensions from './trim-extensions';
+import { createPathRegex, pathsEqual } from '../test-utils';
 
 const SOURCE_GIT_URL = 'https://github.com/SalesforceCommerceCloud/storefront-next-template.git';
 const MOCK_NOW = 1731273600000;
@@ -72,7 +73,8 @@ describe('manageExtensions', () => {
         });
         vi.spyOn(fs, 'mkdtempSync').mockReturnValue(`/tmp/sfnext-extensions-${MOCK_NOW}`);
         vi.spyOn(fs, 'readdirSync').mockImplementationOnce((dir, options) => {
-            if (dir === '/test-project/src' && options?.recursive) {
+            // Use pathsEqual for cross-platform path comparison
+            if (pathsEqual(dir as string, '/test-project/src') && options?.recursive) {
                 return ['index.tsx.original'] as any;
             }
             return ['index.tsx'] as any;
@@ -179,9 +181,12 @@ describe('manageExtensions', () => {
             install: true,
             sourceGitUrl: SOURCE_GIT_URL,
         });
+        // Use regex to match both Unix (/) and Windows (\) path separators
         expect(console.error).toHaveBeenCalledWith(
-            expect.stringContaining(
-                'No extensions found in the source project, please check src/extensions/config.json exists'
+            expect.stringMatching(
+                createPathRegex(
+                    'No extensions found in the source project, please check src/extensions/config.json exists'
+                )
             )
         );
     });
@@ -221,10 +226,11 @@ describe('manageExtensions', () => {
             `cursor-agent -p --force 'Execute the steps specified in the installation instructions file: instructions/install-store-locator.mdc' --output-format text`,
             { cwd: '/test-project', stdio: 'inherit' }
         );
-        expect(fs.rmSync).toHaveBeenCalledWith(path.join(`/tmp`, `sfnext-extensions-${MOCK_NOW}`), {
-            recursive: true,
-            force: true,
-        });
+        // Use pathsEqual for cross-platform path comparison
+        const rmSyncCalls = (fs.rmSync as any).mock.calls;
+        expect(rmSyncCalls.length).toBe(1);
+        expect(pathsEqual(rmSyncCalls[0][0], `/tmp/sfnext-extensions-${MOCK_NOW}`)).toBe(true);
+        expect(rmSyncCalls[0][1]).toEqual({ recursive: true, force: true });
         // verify success message is logged
         expect(console.log).toHaveBeenCalledWith(
             expect.stringContaining('✅ Store Locator was installed successfully.')

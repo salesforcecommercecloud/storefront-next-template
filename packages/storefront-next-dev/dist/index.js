@@ -17,8 +17,7 @@ import dotenv from "dotenv";
 import chalk from "chalk";
 import express from "express";
 import { createRequestHandler } from "@react-router/express";
-import { existsSync as existsSync$1 } from "node:fs";
-import { pathToFileURL } from "node:url";
+import { existsSync as existsSync$1, readFileSync as readFileSync$1 } from "node:fs";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import compression from "compression";
 import zlib from "node:zlib";
@@ -522,7 +521,7 @@ const watchConfigFilesPlugin = () => {
 		configureServer(server) {
 			const aliases = viteConfig.resolve.alias;
 			const root = Object.values(aliases).find((alias) => alias.find === "@")?.replacement || "src";
-			const glob$1 = path$1.join(root, "/extensions/**/plugin-config.json");
+			const glob$1 = path$1.posix.join(root, "extensions", "**", "plugin-config.json");
 			server.watcher.add(glob$1);
 			const onChange = (file) => {
 				if (file.endsWith("plugin-config.json")) {
@@ -1286,6 +1285,55 @@ async function push(options) {
 }
 
 //#endregion
+//#region src/server/ts-import.ts
+/**
+* Parse TypeScript paths from tsconfig.json and convert to jiti alias format.
+*
+* @param tsconfigPath - Path to tsconfig.json
+* @param projectDirectory - Project root directory for resolving relative paths
+* @returns Record of alias mappings for jiti
+*
+* @example
+* // tsconfig.json: { "compilerOptions": { "paths": { "@/*": ["./src/*"] } } }
+* // Returns: { "@/": "/absolute/path/to/src/" }
+*/
+function parseTsconfigPaths(tsconfigPath, projectDirectory) {
+	const alias = {};
+	if (!existsSync$1(tsconfigPath)) return alias;
+	try {
+		const tsconfigContent = readFileSync$1(tsconfigPath, "utf-8");
+		const tsconfig = JSON.parse(tsconfigContent);
+		const paths = tsconfig.compilerOptions?.paths;
+		const baseUrl = tsconfig.compilerOptions?.baseUrl || ".";
+		if (paths) {
+			for (const [key, values] of Object.entries(paths)) if (values && values.length > 0) {
+				const aliasKey = key.replace(/\/\*$/, "/");
+				alias[aliasKey] = resolve(projectDirectory, baseUrl, values[0].replace(/\/\*$/, "/").replace(/^\.\//, ""));
+			}
+		}
+	} catch {}
+	return alias;
+}
+/**
+* Import a TypeScript file using jiti with proper path alias resolution.
+* This is a cross-platform alternative to tsx that works on Windows.
+*
+* @param filePath - Absolute path to the TypeScript file to import
+* @param options - Import options including project directory
+* @returns The imported module
+*/
+async function importTypescript(filePath, options) {
+	const { projectDirectory, tsconfigPath = resolve(projectDirectory, "tsconfig.json") } = options;
+	const { createJiti } = await import("jiti");
+	const alias = parseTsconfigPaths(tsconfigPath, projectDirectory);
+	return createJiti(import.meta.url, {
+		fsCache: false,
+		interopDefault: true,
+		alias
+	}).import(filePath);
+}
+
+//#endregion
 //#region src/server/config.ts
 /**
 * This is a temporary function before we move the config implementation from
@@ -1324,11 +1372,9 @@ async function loadProjectConfig(projectDirectory) {
 	const configPath = resolve(projectDirectory, "config.server.ts");
 	const tsconfigPath = resolve(projectDirectory, "tsconfig.json");
 	if (!existsSync$1(configPath)) throw new Error(`config.server.ts not found at ${configPath}.\nPlease ensure config.server.ts exists in your project root.`);
-	const { tsImport } = await import("tsx/esm/api");
-	const configUrl = pathToFileURL(configPath).href;
-	const config = (await tsImport(configUrl, {
-		parentURL: import.meta.url,
-		tsconfig: existsSync$1(tsconfigPath) ? tsconfigPath : void 0
+	const config = (await importTypescript(configPath, {
+		projectDirectory,
+		tsconfigPath
 	})).default;
 	if (!config?.app?.commerce?.api) throw new Error("Invalid config.server.ts: missing app.commerce.api configuration.\nPlease ensure your config.server.ts has the commerce API configuration.");
 	const api = config.app.commerce.api;
@@ -1544,8 +1590,7 @@ async function createServer(options) {
 	}
 	const middlewareRegistryPath = resolve(projectDirectory, "src/server/middleware-registry.ts");
 	if (existsSync$1(middlewareRegistryPath)) {
-		const { tsImport } = await import("tsx/esm/api");
-		const registry = await tsImport(middlewareRegistryPath, { parentURL: import.meta.url });
+		const registry = await importTypescript(middlewareRegistryPath, { projectDirectory });
 		if (registry.customMiddlewares && Array.isArray(registry.customMiddlewares)) registry.customMiddlewares.forEach((middleware) => {
 			app.use(middleware);
 		});

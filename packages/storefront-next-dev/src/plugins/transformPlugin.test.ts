@@ -3,6 +3,7 @@ import { join } from 'path';
 import type { ResolvedConfig } from 'vite';
 
 import { transformPluginPlaceholderPlugin } from './transformPlugins';
+import { pathEndsWith } from '../test-utils';
 
 // mock vite config
 const viteConfig = {
@@ -80,7 +81,9 @@ describe('transformPluginPlaceholderPlugin', () => {
         } as unknown as ResolvedConfig;
         plugin.configResolved(viteConfig2);
         plugin.buildStart();
-        expect(buildPluginRegistryMock).toHaveBeenCalledWith(expect.stringContaining('/src'));
+        // Use pathEndsWith for cross-platform path comparison (handles Windows absolute paths)
+        const actualPath = buildPluginRegistryMock.mock.calls[0][0] as string;
+        expect(pathEndsWith(actualPath, '/src')).toBe(true);
     });
 
     it('should build registry at buildStart()', () => {
