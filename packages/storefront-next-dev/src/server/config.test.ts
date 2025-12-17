@@ -1,16 +1,15 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { resolve } from 'node:path';
 
 // Mock dependencies
 const mockExistsSync = vi.fn();
-const mockTsImport = vi.fn();
+const mockImportTypescript = vi.fn();
 
 vi.mock('node:fs', () => ({
     existsSync: mockExistsSync,
 }));
 
-vi.mock('tsx/esm/api', () => ({
-    tsImport: mockTsImport,
+vi.mock('./ts-import', () => ({
+    importTypescript: mockImportTypescript,
 }));
 
 // Import after mocks are set up
@@ -120,7 +119,7 @@ describe('server config', () => {
 
         it('should successfully load config from config.server.ts', async () => {
             mockExistsSync.mockReturnValue(true);
-            mockTsImport.mockResolvedValue({
+            mockImportTypescript.mockResolvedValue({
                 default: {
                     app: {
                         commerce: {
@@ -150,15 +149,18 @@ describe('server config', () => {
                 },
             });
 
-            expect(mockTsImport).toHaveBeenCalledWith(expect.stringMatching(/^file:\/\//), {
-                parentURL: expect.any(String),
-                tsconfig: resolve('/test/project', 'tsconfig.json'),
-            });
+            expect(mockImportTypescript).toHaveBeenCalledWith(
+                expect.stringContaining('config.server.ts'),
+                expect.objectContaining({
+                    projectDirectory: '/test/project',
+                    tsconfigPath: expect.stringContaining('tsconfig.json'),
+                })
+            );
         });
 
         it('should use default proxy when not provided in config', async () => {
             mockExistsSync.mockReturnValue(true);
-            mockTsImport.mockResolvedValue({
+            mockImportTypescript.mockResolvedValue({
                 default: {
                     app: {
                         commerce: {
@@ -178,42 +180,9 @@ describe('server config', () => {
             expect(config.commerce.api.proxy).toBe('/mobify/proxy/api');
         });
 
-        it('should handle missing tsconfig.json', async () => {
-            mockExistsSync.mockImplementation((path) => {
-                if (typeof path === 'string' && path.endsWith('config.server.ts')) {
-                    return true;
-                }
-                return false;
-            });
-
-            mockTsImport.mockResolvedValue({
-                default: {
-                    app: {
-                        commerce: {
-                            api: {
-                                shortCode: 'config-short-code',
-                                organizationId: 'config-org-id',
-                                clientId: 'config-client-id',
-                                siteId: 'config-site-id',
-                            },
-                        },
-                    },
-                },
-            });
-
-            await loadProjectConfig('/test/project');
-
-            expect(mockTsImport).toHaveBeenCalledWith(
-                expect.any(String),
-                expect.objectContaining({
-                    tsconfig: undefined,
-                })
-            );
-        });
-
         it('should throw error when config.server.ts is missing commerce.api', async () => {
             mockExistsSync.mockReturnValue(true);
-            mockTsImport.mockResolvedValue({
+            mockImportTypescript.mockResolvedValue({
                 default: {
                     app: {},
                 },
@@ -226,7 +195,7 @@ describe('server config', () => {
 
         it('should throw error when config.server.ts has no default export', async () => {
             mockExistsSync.mockReturnValue(true);
-            mockTsImport.mockResolvedValue({});
+            mockImportTypescript.mockResolvedValue({});
 
             await expect(loadProjectConfig('/test/project')).rejects.toThrow(
                 'Invalid config.server.ts: missing app.commerce.api configuration'
@@ -235,7 +204,7 @@ describe('server config', () => {
 
         it('should throw error when shortCode is missing', async () => {
             mockExistsSync.mockReturnValue(true);
-            mockTsImport.mockResolvedValue({
+            mockImportTypescript.mockResolvedValue({
                 default: {
                     app: {
                         commerce: {
@@ -256,7 +225,7 @@ describe('server config', () => {
 
         it('should throw error when organizationId is missing', async () => {
             mockExistsSync.mockReturnValue(true);
-            mockTsImport.mockResolvedValue({
+            mockImportTypescript.mockResolvedValue({
                 default: {
                     app: {
                         commerce: {
@@ -277,7 +246,7 @@ describe('server config', () => {
 
         it('should throw error when clientId is missing', async () => {
             mockExistsSync.mockReturnValue(true);
-            mockTsImport.mockResolvedValue({
+            mockImportTypescript.mockResolvedValue({
                 default: {
                     app: {
                         commerce: {
@@ -298,7 +267,7 @@ describe('server config', () => {
 
         it('should throw error when siteId is missing', async () => {
             mockExistsSync.mockReturnValue(true);
-            mockTsImport.mockResolvedValue({
+            mockImportTypescript.mockResolvedValue({
                 default: {
                     app: {
                         commerce: {

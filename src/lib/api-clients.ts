@@ -77,7 +77,17 @@ export function createApiClients(context: RouterContextProvider | Readonly<Route
         },
     };
 
+    // Provide compatibility with (previously) proxied requests and identify the source of requests
+    // to SCAPI
+    const identifyingHeadersMiddleware: Middleware = {
+        onRequest({ request }) {
+            request.headers.set('x-mobify', 'true');
+            return request;
+        },
+    };
+
     clients.use(authMiddleware);
+    clients.use(identifyingHeadersMiddleware);
 
     return clients;
 }

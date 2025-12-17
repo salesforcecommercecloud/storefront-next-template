@@ -34,6 +34,7 @@ export interface DesignState extends DragInteraction, ScrollInteraction {
     nodeToTargetMap: WeakMap<Element, NodeToTargetMapEntry>;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const DesignStateContext = React.createContext<DesignState>(null as unknown as DesignState);
 
 export const DesignStateProvider = ({ children }: { children: React.ReactNode }): React.JSX.Element => {

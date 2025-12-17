@@ -5,6 +5,7 @@ import { transformPluginComponent, injectPluginContextproviders, buildPluginRegi
 
 describe('plugin-utils', () => {
     describe('transformPluginComponent', () => {
+        // PluginComponent as part of the JSX return
         const code = `
             import React from "react";
             import { PluginComponent } from '@/plugins/plugin-components';
@@ -19,16 +20,38 @@ describe('plugin-utils', () => {
                 );
             }
             `;
-        const codeWithVariableDeclaration = `
+        // PluginComponent as part of the variable declaration
+        const codeWithJSXElementDeclaration = `
             import React from "react";
             import { PluginComponent } from '@/plugins/plugin-components';
             export default function Test() {
-                const test = '<PluginComponent pluginId="test.plugin" />';
+                const test = <div><PluginComponent pluginId="test.plugin" /></div>;
                 return (
                 <div>{test}</div>
                 );
             }
             `;
+        // PluginComponent as a variable declaration
+        const codeWithPluginComponentAsVariable = `
+            import React from "react";
+            import { PluginComponent } from '@/plugins/plugin-components';
+            export default function Test() {
+                const test = <PluginComponent pluginId="test.plugin" />;
+                return (
+                <div>{test}</div>
+                );
+            }
+            `;
+        // PluginComponent as part of the JSXFragment
+        const codeWithJSXElementReturn = `
+            import React from "react";
+            import { PluginComponent } from '@/plugins/plugin-components';
+            export default function Test() {
+                const content = <div>content</div>;
+                return <>{content}<PluginComponent pluginId="test.plugin" /></>;
+            }
+            `;
+        // PluginComponent has no attribute (error condition)
         const codeWithPluginComponentWithoutAttr = `
             import React from "react";
             import { PluginComponent } from '@/plugins/plugin-components';
@@ -38,6 +61,7 @@ describe('plugin-utils', () => {
                 );
             }
             `;
+        // No PluginComponent present
         const codeWithoutPluginComponent = `
             import React from "react";
             export default function Test() {
@@ -46,6 +70,7 @@ describe('plugin-utils', () => {
                 );
             }
             `;
+        // test data for multiple plugin components targeting a pluginId
         const pluginRegistry = {
             'test.plugin': [
                 {
@@ -71,6 +96,37 @@ describe('plugin-utils', () => {
                 },
             ],
         };
+        // test data for a single plugin component targeting a pluginId
+        const singlePluginRegistry = {
+            'test.plugin': [
+                {
+                    pluginId: 'test.plugin',
+                    path: 'extensions/store-locator/components/single-comp.tsx',
+                    namespace: 'Bar',
+                    componentName: 'Bar_FooSingle',
+                    order: 0,
+                },
+            ],
+        };
+
+        it('should replace a single <PluginComponent /> with the correct registered component', () => {
+            const transformed = transformPluginComponent(code, singlePluginRegistry);
+            // // Should import the registered component and replace the PluginComponent tag
+            expect(transformed).toContain(
+                `import Bar_FooSingle from '@/extensions/store-locator/components/single-comp';`
+            );
+            expect(transformed).not.toContain('PluginComponent');
+            expect(transformed).toContain('<Bar_FooSingle />');
+        });
+
+        it('should replace PluginComponent with corresponding registry component in variable declaration', () => {
+            const output = transformPluginComponent(codeWithPluginComponentAsVariable, pluginRegistry);
+            expect(output).toContain('<Bar_Foo1 /><Bar_Foo2 /><Bar_Foo3 />');
+            expect(output).not.toContain('PluginComponent');
+            expect(output).toContain(`import Bar_Foo1 from '@/extensions/foo1';`);
+            expect(output).toContain(`import Bar_Foo2 from '@/extensions/foo2';`);
+            expect(output).toContain(`import Bar_Foo3 from '@/extensions/foo3';`);
+        });
 
         it('should replace PluginComponent with corresponding registry component', () => {
             const output = transformPluginComponent(code, pluginRegistry);
@@ -81,8 +137,14 @@ describe('plugin-utils', () => {
             expect(output).toContain("import Bar_Foo3 from '@/extensions/foo3';");
         });
 
-        it('should replace PluginComponent with corresponding registry component in variable declaration', () => {
-            const output = transformPluginComponent(codeWithVariableDeclaration, pluginRegistry);
+        it('should replace PluginComponent with corresponding registry component in JSX element declaration', () => {
+            const output = transformPluginComponent(codeWithJSXElementDeclaration, pluginRegistry);
+            expect(output).toContain('<Bar_Foo1 /><Bar_Foo2 /><Bar_Foo3 />');
+            expect(output).not.toContain('PluginComponent');
+        });
+
+        it('should replace PluginComponent with corresponding registry component in JSX element return', () => {
+            const output = transformPluginComponent(codeWithJSXElementReturn, pluginRegistry);
             expect(output).toContain('<Bar_Foo1 /><Bar_Foo2 /><Bar_Foo3 />');
             expect(output).not.toContain('PluginComponent');
         });

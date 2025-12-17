@@ -5,9 +5,16 @@ import type { ExtensionMeta } from './extension-config';
 import trimExtensions from './trim-extensions';
 import os from 'os';
 import { execSync } from 'child_process';
+import { z } from 'zod';
 
 const CONFIG_PATH = ['src', 'extensions', 'config.json'];
+const EXTENSION_FOLDERS = ['components', 'locales', 'hooks', 'routes'];
 
+/**
+ * Console log a message with a specific type
+ * @param message string
+ * @param type
+ */
 const consoleLog = (message: string, type: 'error' | 'success' | 'info') => {
     switch (type) {
         case 'error':
@@ -53,23 +60,27 @@ const getExtensionConfig = (projectDirectory: string): Record<string, ExtensionM
  * @param extensionConfig Record<string, ExtensionMeta>
  * @param message string
  * @param installedExtensions string[]
+ * @param excludeExtensions string[] extensions to exclude from the list, so we can filter out extensions that are already installed
  * @returns string[]
  */
 const getExtensionSelection = async (
     type: 'multiselect' | 'select',
     extensionConfig: Record<string, ExtensionMeta>,
     message: string,
-    installedExtensions: string[]
+    installedExtensions: string[],
+    excludeExtensions: string[] = []
 ) => {
     consoleLog('\n', 'info');
     const { selectedExtensions } = await prompts({
         type,
         name: 'selectedExtensions',
         message,
-        choices: installedExtensions.map((extensionKey: string) => ({
-            title: `${extensionConfig[extensionKey].name} - ${extensionConfig[extensionKey].description}`,
-            value: extensionKey,
-        })),
+        choices: installedExtensions
+            .filter((extensionKey: string) => !excludeExtensions.includes(extensionKey))
+            .map((extensionKey: string) => ({
+                title: `${extensionConfig[extensionKey].name} - ${extensionConfig[extensionKey].description}`,
+                value: extensionKey,
+            })),
         instructions: false,
     });
     return type === 'multiselect' ? selectedExtensions : [selectedExtensions];
@@ -110,6 +121,16 @@ const handleUninstall = async (
         consoleLog('\n Please select at least one extension to uninstall.', 'error');
         return;
     }
+    // delete the extension folders
+    selectedExtensions.forEach((ext: string) => {
+        if (extensionConfig[ext].folder) {
+            fs.rmSync(path.join(options.projectDirectory, 'src', 'extensions', extensionConfig[ext].folder), {
+                recursive: true,
+                force: true,
+            });
+        }
+    });
+    // trim the extensions in source project
     installedExtensions = installedExtensions.filter((ext) => !selectedExtensions.includes(ext));
     trimExtensions(
         options.projectDirectory,
@@ -117,7 +138,7 @@ const handleUninstall = async (
         { extensions: extensionConfig },
         options.verbose ?? false
     );
-    consoleLog('\n Extensions uninstalled.', 'success');
+    consoleLog(' Extensions uninstalled.', 'success');
 };
 
 /**
@@ -140,16 +161,6 @@ const handleInstall = async (
         verbose?: boolean;
     }
 ) => {
-    // check if cursor cli is installed
-    try {
-        execSync('cursor-agent -v', { stdio: 'ignore' });
-    } catch (e) {
-        consoleLog(
-            `Cursor cli is not installed. Please install it (https://cursor.com/docs/cli/overview) and try again. ${(e as Error).message}`,
-            'error'
-        );
-        return;
-    }
     const { sourceGitUrl } = await prompts({
         type: 'text',
         name: 'sourceGitUrl',
@@ -172,10 +183,11 @@ const handleInstall = async (
               'select',
               srcExtensionConfig,
               '🔌 Which extension would you like to install?',
-              Object.keys(srcExtensionConfig)
+              Object.keys(srcExtensionConfig),
+              Object.keys(extensionConfig)
           );
     if (selectedExtensions == null || selectedExtensions.length !== 1 || selectedExtensions[0] == null) {
-        consoleLog('\n Please select extactly one extension to install.', 'error');
+        consoleLog('Please select extactly one extension to install.', 'error');
         return;
     }
     let hasError = false;
@@ -183,32 +195,46 @@ const handleInstall = async (
         const extensionKey = selectedExtensions[0];
         const extension = srcExtensionConfig[extensionKey];
         if (extension.installationInstructions) {
+            // check if cursor cli is installed
+            try {
+                execSync('cursor-agent -v', { stdio: 'ignore' });
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            } catch (e) {
+                consoleLog(
+                    'This extension contains LLM instructions, please install cursor cli and try again. (https://cursor.com/docs/cli/overview)',
+                    'error'
+                );
+                return;
+            }
+        }
+        const startTime = Date.now();
+        // copy the extension folder to the project directory
+        if (extension.folder) {
+            fs.copySync(
+                path.join(tmpDir, 'src', 'extensions', extension.folder),
+                path.join(options.projectDirectory, 'src', 'extensions', extension.folder)
+            );
+        }
+        if (extension.installationInstructions) {
             // eslint-disable-next-line no-console
             console.log(`\n⏳ Installing ${extension.name}, this will take a few minutes...`);
-            const startTime = Date.now();
             try {
                 execSync(
-                    `cursor-agent -p --force 'Execute the steps specified in the installation instructions file: ${extension.installationInstructions}' --model "gpt-5" --output-format text`,
+                    `cursor-agent -p --force 'Execute the steps specified in the installation instructions file: ${extension.installationInstructions}' --output-format text`,
                     { cwd: options.projectDirectory, stdio: 'inherit' }
                 );
-                // update config.json to include the installed extension
-                extensionConfig[extensionKey] = extension;
-                fs.writeFileSync(
-                    getExtensionConfigPath(options.projectDirectory),
-                    JSON.stringify({ extensions: extensionConfig }, null, 4)
-                );
-                consoleLog(`${extension.name} was installed successfully. (${Date.now() - startTime}ms)`, 'success');
             } catch (e) {
                 consoleLog(`Error installing ${extension.name}. ${(e as Error).message}`, 'error');
                 hasError = true;
             }
-        } else {
-            consoleLog(
-                `${extension.name} has no installation instructions, pleae contact the extension author to get the instructions.`,
-                'error'
-            );
-            hasError = true;
         }
+        // update config.json to include the installed extension
+        extensionConfig[extensionKey] = extension;
+        fs.writeFileSync(
+            getExtensionConfigPath(options.projectDirectory),
+            JSON.stringify({ extensions: extensionConfig }, null, 4)
+        );
+        consoleLog(`${extension.name} was installed successfully. (${Date.now() - startTime}ms)`, 'success');
     } finally {
         fs.rmSync(tmpDir, { recursive: true, force: true });
     }
@@ -263,4 +289,96 @@ export const manageExtensions = async (options: {
     } else {
         await handleInstall(extensionConfig, options);
     }
+};
+
+const getExtensionMarker = (val: string) => {
+    return `SFDC_EXT_${val.toUpperCase().replaceAll(' ', '_').replaceAll('-', '_')}`;
+};
+
+const getExtensionFolderName = (val: string) => {
+    return val.toLowerCase().replaceAll(' ', '-').trim();
+};
+
+const getExtensionNameSchema = (projectDirectory: string, extensionConfig: Record<string, ExtensionMeta>) => {
+    return z
+        .object({
+            name: z.string().regex(/^[a-zA-Z0-9 _-]+$/, {
+                message: 'Extension name can only contain alphanumeric characters, spaces, dashes, or underscores',
+            }),
+        })
+        .superRefine((data: { name: string }, ctx: z.RefinementCtx) => {
+            if (extensionConfig[getExtensionMarker(data.name)]) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: `Extension "${data.name}" already exists`,
+                });
+            }
+            if (fs.existsSync(path.join(projectDirectory, 'src', 'extensions', getExtensionFolderName(data.name)))) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: `Extension directory ${getExtensionFolderName(data.name)} already exists`,
+                });
+            }
+        });
+};
+
+export const listExtensions = (options: { projectDirectory: string }) => {
+    const extensionConfig: Record<string, ExtensionMeta> = getExtensionConfig(options.projectDirectory);
+    consoleLog('The following extensions are installed:', 'info');
+    Object.keys(extensionConfig).forEach((key) => {
+        consoleLog(`- ${extensionConfig[key].name}: ${extensionConfig[key].description}`, 'info');
+    });
+};
+
+export const createExtension = async (options: { projectDirectory: string; name: string; description: string }) => {
+    const { projectDirectory, name, description } = options;
+    const extensionConfig: Record<string, ExtensionMeta> = getExtensionConfig(projectDirectory);
+    let extensionName = name;
+    let extensionDescription = description;
+    if (extensionName == null || extensionName.trim() === '') {
+        const value = await prompts({
+            type: 'text',
+            name: 'extensionName',
+            message: 'What would you like to name the extension? (e.g., "My Extension")',
+        });
+        extensionName = value.extensionName;
+    }
+    const extensionNameSchema = getExtensionNameSchema(projectDirectory, extensionConfig);
+    const result = extensionNameSchema.safeParse({ name: extensionName });
+    if (!result.success) {
+        const firstIssueMessage = result.error.issues?.[0]?.message;
+        consoleLog(firstIssueMessage, 'error');
+        return;
+    }
+    if (extensionDescription == null || extensionDescription.trim() === '') {
+        const value = await prompts({
+            type: 'text',
+            name: 'extensionDescription',
+            message: 'How would you describe the extension?',
+        });
+        extensionDescription = value.extensionDescription;
+    }
+    const folderName = getExtensionFolderName(extensionName);
+    // create the extension directory and a read me file
+    const extensionFolderPath = path.join(projectDirectory, 'src', 'extensions', folderName);
+    fs.mkdirSync(extensionFolderPath, { recursive: true });
+    EXTENSION_FOLDERS.forEach((folder) => {
+        fs.mkdirSync(path.join(extensionFolderPath, folder), { recursive: true });
+    });
+    fs.writeFileSync(path.join(extensionFolderPath, 'README.md'), `# ${extensionName}\n\n${extensionDescription}`);
+    // update the extension config.json file
+    const marker = getExtensionMarker(extensionName);
+    extensionConfig[marker] = {
+        name: extensionName,
+        description: extensionDescription,
+        installationInstructions: '',
+        uninstallationInstructions: '',
+        folder: folderName,
+        dependencies: [],
+    };
+    fs.writeFileSync(
+        path.join(projectDirectory, 'src', 'extensions', 'config.json'),
+        JSON.stringify({ extensions: extensionConfig }, null, 4)
+    );
+    consoleLog(`Extension "${extensionName}" scaffolding was created successfully.`, 'success');
 };

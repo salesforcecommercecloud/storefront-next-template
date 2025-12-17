@@ -534,7 +534,6 @@ export const staticRegistryPlugin = (config: StaticRegistryPluginConfig = {}): P
 
                 return [];
             }
-            return;
         },
     };
 };

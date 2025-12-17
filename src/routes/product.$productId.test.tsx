@@ -9,7 +9,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render } from '@testing-library/react';
 import { use } from 'react';
 import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
-import { shouldRevalidate } from './product.$productId';
+import { shouldRevalidate, type ProductPageData } from './product.$productId';
 
 // Mock the components and utilities
 vi.mock('@/components/product-skeleton', () => ({
@@ -302,7 +302,7 @@ describe('Product Detail Route', () => {
             };
 
             // Render the page component to exercise ProductDetailView
-            render(<ProductPage loaderData={mockLoaderData} />);
+            render(<ProductPage loaderData={mockLoaderData as unknown as ProductPageData} />);
 
             // Component should handle missing shortDescription
             expect(productWithoutDescription.shortDescription).toBeUndefined();
@@ -326,7 +326,7 @@ describe('Product Detail Route', () => {
             };
 
             // Render the page component to exercise ProductDetailView
-            render(<ProductPage loaderData={mockLoaderData} />);
+            render(<ProductPage loaderData={mockLoaderData as unknown as ProductPageData} />);
 
             // Component should handle shortDescription
             expect(productWithDescription.shortDescription).toBe('Test description');
@@ -345,7 +345,7 @@ describe('Product Detail Route', () => {
             };
 
             // Render the page component to exercise ProductDetailView with product set
-            render(<ProductPage loaderData={mockLoaderData} />);
+            render(<ProductPage loaderData={mockLoaderData as unknown as ProductPageData} />);
         });
 
         test('should render ProductDetailView with product bundle', async () => {
@@ -361,7 +361,7 @@ describe('Product Detail Route', () => {
             };
 
             // Render the page component to exercise ProductDetailView with product bundle
-            render(<ProductPage loaderData={mockLoaderData} />);
+            render(<ProductPage loaderData={mockLoaderData as unknown as ProductPageData} />);
         });
     });
 
@@ -380,7 +380,7 @@ describe('Product Detail Route', () => {
             };
 
             // Render the page component to exercise RecommendationsContent with empty array
-            render(<ProductPage loaderData={mockLoaderData} />);
+            render(<ProductPage loaderData={mockLoaderData as unknown as ProductPageData} />);
         });
 
         test('should render recommendations with data', async () => {
@@ -396,7 +396,7 @@ describe('Product Detail Route', () => {
             };
 
             // Render the page component to exercise RecommendationsContent with data
-            render(<ProductPage loaderData={mockLoaderData} />);
+            render(<ProductPage loaderData={mockLoaderData as unknown as ProductPageData} />);
         });
 
         test('should handle multiple recommendation carousels', () => {
@@ -452,7 +452,7 @@ describe('Product Detail Route', () => {
             };
 
             // Render the page component to exercise RecommendationsContent with null data
-            render(<ProductPage loaderData={mockLoaderData} />);
+            render(<ProductPage loaderData={mockLoaderData as unknown as ProductPageData} />);
         });
     });
 

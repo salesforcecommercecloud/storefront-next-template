@@ -21,7 +21,6 @@ export function PageRegistration({
     const { isDesignMode } = usePageDesignerMode();
 
     useEffect(() => {
-        // Only register if no page is already registered
         if (isDesignMode) {
             setClientPage(page);
         }

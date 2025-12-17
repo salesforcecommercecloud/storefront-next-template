@@ -76,7 +76,7 @@ describe('create-storefront', () => {
         expect(exitMock).toHaveBeenCalledWith(1);
         expect(console.log).toHaveBeenCalledWith(
             expect.stringContaining(
-                'git is not installed or not found in your PATH. Please install git before running this command'
+                `git isn't installed or found in your PATH. Install git before running this command`
             )
         );
     });

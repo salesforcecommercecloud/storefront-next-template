@@ -1,10 +1,14 @@
 import { n as usePageDesignerMode, t as PageDesignerProvider } from "./PageDesignerProvider.js";
+import { i as useRegionContext, n as useComponentContext, r as RegionContext, t as ComponentContext } from "./ComponentContext.js";
 import { lazy } from "react";
 import { Fragment, jsx } from "react/jsx-runtime";
 
-//#region src/design/react/core/PageDesignerPage.tsx
+//#region src/design/react/core/PageDesignerPageMetadataProvider.tsx
 const LazyPageRegistration = lazy(() => import("./PageRegistration.js").then((module) => ({ default: module.PageRegistration })));
-function PageDesignerPage({ page, children }) {
+/**
+* Provides the page metadata for Page Designer.
+*/
+function PageDesignerPageMetadataProvider({ page, children }) {
 	const { isDesignMode } = usePageDesignerMode();
 	if (!isDesignMode) return /* @__PURE__ */ jsx(Fragment, { children });
 	return /* @__PURE__ */ jsx(LazyPageRegistration, {
@@ -14,5 +18,5 @@ function PageDesignerPage({ page, children }) {
 }
 
 //#endregion
-export { PageDesignerPage, PageDesignerProvider, usePageDesignerMode };
+export { ComponentContext, PageDesignerPageMetadataProvider, PageDesignerProvider, RegionContext, useComponentContext, usePageDesignerMode, useRegionContext };
 //# sourceMappingURL=design-react-core.js.map

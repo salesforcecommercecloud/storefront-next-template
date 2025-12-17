@@ -2,15 +2,16 @@ import { Suspense, type ReactNode } from 'react';
 import { Await } from 'react-router';
 import { Component } from './component';
 import { RegionWrapper } from './region-wrapper';
-import type { RegionDefinitionConfig } from '@/lib/decorators';
 import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
-import { PageDesignerPage } from '@salesforce/storefront-next-runtime/design/react/core';
+import {
+    PageDesignerPageMetadataProvider,
+    useRegionContext,
+} from '@salesforce/storefront-next-runtime/design/react/core';
 
 interface RegionProps extends React.HTMLAttributes<HTMLDivElement> {
-    page: Promise<ShopperExperience.schemas['Page']>;
+    page: Promise<ShopperExperience.schemas['Page'] | ShopperExperience.schemas['Component']>;
     regionId: string;
     componentData?: Promise<Record<string, Promise<unknown>>>;
-    metadata?: RegionDefinitionConfig;
     fallback?: ReactNode;
     suspenseFallback?: ReactNode;
 }
@@ -37,16 +38,8 @@ interface RegionProps extends React.HTMLAttributes<HTMLDivElement> {
  */
 
 export function Region(props: RegionProps) {
-    const {
-        page,
-        regionId,
-        className = '',
-        componentData,
-        metadata,
-        fallback,
-        suspenseFallback = <div />,
-        ...rest
-    } = props;
+    const { page, regionId, className = '', componentData, fallback, suspenseFallback = <div />, ...rest } = props;
+    const regionContext = useRegionContext();
 
     return (
         <Suspense fallback={suspenseFallback}>
@@ -54,6 +47,7 @@ export function Region(props: RegionProps) {
                 {(resolvedPage) => {
                     // Find the region within the page
                     const region = resolvedPage.regions?.find((r) => r.id === regionId);
+                    const metadata = resolvedPage.designMetadata?.regionDefinitions?.find((r) => r.id === regionId);
 
                     // If region not found, return fallback
                     if (!region) {
@@ -62,14 +56,18 @@ export function Region(props: RegionProps) {
 
                     return (
                         <>
-                            <PageDesignerPage page={resolvedPage} />
+                            {/* Only register page metadata if we are at the root of the page
+                                The provider will dedupe strictly equal object */}
+                            {!regionContext && <PageDesignerPageMetadataProvider page={resolvedPage} />}
                             <RegionWrapper
                                 region={region}
                                 className={className}
                                 designMetadata={{
                                     id: region.id,
-                                    componentTypeExclusions: metadata?.componentTypeExclusions ?? [],
-                                    componentTypeInclusions: metadata?.componentTypeInclusions ?? [],
+                                    componentTypeExclusions:
+                                        metadata?.componentTypeExclusions?.map((c) => c.typeId) ?? [],
+                                    componentTypeInclusions:
+                                        metadata?.componentTypeInclusions?.map((c) => c.typeId) ?? [],
                                 }}
                                 {...rest}>
                                 {region.components?.map(
@@ -80,11 +78,7 @@ export function Region(props: RegionProps) {
                                                 component={component}
                                                 componentData={componentData}
                                                 regionId={region.id}
-                                                page={Promise.resolve({
-                                                    id: component.id,
-                                                    typeId: component.typeId,
-                                                    regions: component.regions || [],
-                                                } as ShopperExperience.schemas['Page'])}
+                                                page={Promise.resolve(component)}
                                             />
                                         )
                                 )}

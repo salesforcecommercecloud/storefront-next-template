@@ -8,7 +8,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import AddressCard from './index';
+import AddressCard from '../index';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { action } from 'storybook/actions';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';

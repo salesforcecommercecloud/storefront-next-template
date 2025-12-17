@@ -35,6 +35,11 @@ let skippedCount = 0;
 function processStoriesDir(dir, baseDir, dirLabel, isExtensions = false) {
     walk(dir, (file) => {
         if (file.endsWith('.stories.tsx')) {
+            // Stories MUST be in a /stories/ subdirectory
+            if (!file.includes(path.sep + 'stories' + path.sep)) {
+                return;
+            }
+
             // For extensions, only include stories in components/ folders
             if (isExtensions) {
                 const rel = path.relative(baseDir, file);

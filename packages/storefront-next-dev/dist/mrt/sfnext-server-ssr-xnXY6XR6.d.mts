@@ -4,4 +4,4 @@ import { APIGatewayProxyHandler } from "aws-lambda";
 declare const get: APIGatewayProxyHandler;
 //#endregion
 export { get };
-//# sourceMappingURL=ssr.d.ts.map
+//# sourceMappingURL=sfnext-server-ssr-xnXY6XR6.d.mts.map

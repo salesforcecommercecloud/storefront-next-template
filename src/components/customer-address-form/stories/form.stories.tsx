@@ -9,8 +9,8 @@ import { useState, useEffect, useRef, type ReactNode, type ReactElement } from '
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { CustomerAddressForm } from './form';
-import type { CustomerAddressFormData } from './types';
+import { CustomerAddressForm } from '../form';
+import type { CustomerAddressFormData } from '../types';
 import type { ScapiFetcher } from '@/hooks/use-scapi-fetcher';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { action } from 'storybook/actions';

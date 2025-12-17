@@ -104,9 +104,9 @@ export const getMrtConfig = (
     // Fail fast if project cannot be determined
     if (!defaultMrtProject || defaultMrtProject.trim() === '') {
         throw new Error(
-            'Project name could not be determined. Please either:\n' +
+            "Project name couldn't be determined. Do one of these options:\n" +
                 '  1. Set MRT_PROJECT in your .env file, or\n' +
-                '  2. Ensure package.json has a valid "name" field'
+                '  2. Ensure package.json has a valid "name" field.'
         );
     }
 

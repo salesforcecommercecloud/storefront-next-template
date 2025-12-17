@@ -28,4 +28,7 @@ export function createReactComponentRegistry<TProps>() {
  * - Static component registration via Vite plugin (no dynamic discovery needed)
  * - Component metadata handled via API (not stored in registry)
  */
-export const registry = createReactComponentRegistry<Record<string, unknown>>();
+// We don't care about the type of props of the components.
+// Just ignore them or else any combination of props won't be allowed.
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+export const registry = createReactComponentRegistry<any>();

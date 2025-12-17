@@ -15,9 +15,7 @@ export const createStorefront = async (options: { verbose?: boolean }) => {
     try {
         execSync('git --version', { stdio: 'ignore' });
     } catch (e) {
-        error(
-            `❌ git is not installed or not found in your PATH. Please install git before running this command: ${String(e)}`
-        );
+        error(`❌ git isn't installed or found in your PATH. Install git before running this command: ${String(e)}`);
         process.exit(1);
     }
     const { storefront } = await prompts({
@@ -27,7 +25,7 @@ export const createStorefront = async (options: { verbose?: boolean }) => {
         initial: DEFAULT_STOREFRONT,
     });
     if (!storefront) {
-        error('Storefront name is required');
+        error('Storefront name is required.');
         process.exit(1);
     }
     // eslint-disable-next-line no-console
@@ -37,7 +35,7 @@ export const createStorefront = async (options: { verbose?: boolean }) => {
         name: 'template',
         message: '📄 Which template would you like to use for your storefront?\n',
         choices: [
-            { title: 'Salesforce Commerce Cloud Retail Storefront', value: STOREFRONT_NEXT_GITHUB_URL },
+            { title: 'Salesforce B2C Commerce Retail Storefront', value: STOREFRONT_NEXT_GITHUB_URL },
             { title: 'A different template (I will provide the Github URL)', value: 'custom' },
         ],
     });
@@ -50,7 +48,7 @@ export const createStorefront = async (options: { verbose?: boolean }) => {
             message: '🌐 What is the Github URL for your template?\n',
         });
         if (!githubUrl) {
-            error('Github URL is required');
+            error('Github URL is required.');
             process.exit(1);
         }
         template = githubUrl;
@@ -73,13 +71,13 @@ export const createStorefront = async (options: { verbose?: boolean }) => {
                 type: 'multiselect',
                 name: 'selectedExtensions',
                 message:
-                    '🔌 Which extension would you like to enable? (use arrow keys to select, space to toggle, enter to confirm)\n',
+                    '🔌 Which extension would you like to enable? (Use arrow keys to select, space to toggle, and enter to confirm.)\n',
                 choices: Object.keys(extensionConfig.extensions).map((extension) => ({
                     title: `${extensionConfig.extensions[extension].name} - ${
                         extensionConfig.extensions[extension].description
                     }`,
                     value: extension,
-                    selected: true,
+                    selected: extensionConfig.extensions[extension].defaultOn ?? true,
                 })),
                 instructions: false,
             });
@@ -102,7 +100,7 @@ export const createStorefront = async (options: { verbose?: boolean }) => {
         envDefaultValues = result;
     }
     // eslint-disable-next-line no-console
-    console.log('\n⚙️ We will now configure your storefront before it is ready to run.\n');
+    console.log('\n⚙️ We will now configure your storefront before it will be ready to run.\n');
     const configOverrides: Record<string, string> = {};
     for (const config of configMeta.configs) {
         const answer = await prompts({

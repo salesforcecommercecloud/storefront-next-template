@@ -23,6 +23,7 @@ export function useThrottledCallback<TArgs extends unknown[], TReturn>(
                 callback(...args);
             }
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [callback, interval, ...deps]
     );
 }

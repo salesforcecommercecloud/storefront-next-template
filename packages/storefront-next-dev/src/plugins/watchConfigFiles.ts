@@ -11,8 +11,8 @@ export const watchConfigFilesPlugin = () => {
         configureServer(server: ViteDevServer) {
             const aliases = viteConfig.resolve.alias;
             const root = Object.values(aliases).find((alias) => alias.find === '@')?.replacement || 'src';
-            // Use Vite's chokidar watcher; it supports glob patterns
-            const glob = path.join(root, '/extensions/**/plugin-config.json');
+            // Use path.posix.join to ensure forward slashes for glob patterns (required even on Windows)
+            const glob = path.posix.join(root, 'extensions', '**', 'plugin-config.json');
             server.watcher.add(glob);
 
             const onChange = (file: string) => {

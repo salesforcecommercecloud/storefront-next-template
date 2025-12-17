@@ -6,7 +6,10 @@ const LazyPageRegistration = lazy(() =>
     import('../components/PageRegistration').then((module) => ({ default: module.PageRegistration }))
 );
 
-export function PageDesignerPage({
+/**
+ * Provides the page metadata for Page Designer.
+ */
+export function PageDesignerPageMetadataProvider({
     page,
     children,
 }: React.PropsWithChildren<{ page: ShopperExperience.schemas['Page'] }>) {

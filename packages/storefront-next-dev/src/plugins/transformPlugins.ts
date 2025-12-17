@@ -23,7 +23,7 @@ export function transformPluginPlaceholderPlugin() {
             // extract source directory from vite config
             sourceDir =
                 config.resolve.alias.find((alias) => alias.find === '@')?.replacement ||
-                path.join(process.cwd(), 'src');
+                path.resolve(__dirname, './src');
         },
         buildStart() {
             // Build the registry once at the start of the build

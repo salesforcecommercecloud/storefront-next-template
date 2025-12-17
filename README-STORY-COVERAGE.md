@@ -34,10 +34,10 @@ The workflow uses the `generate:story-tests:coverage` npm script which:
 - Scans all `*.tsx` files in `src/components/` and `src/extensions/*/components/` (excluding test files, snapshot files, story files themselves, and the `ui/` folder)
 - **For extensions**: Only includes components from `components/` folders within each extension (excludes hooks, contexts, providers, etc. in other folders)
 - **Excludes `src/components/ui/`**: The `ui` folder contains shadcn components and is excluded from both test generation and code coverage
-- Checks for matching `*.stories.tsx` files using flexible matching rules:
-  - Exact name match (e.g., `cart/cart-content.tsx` matches `cart/cart-content.stories.tsx`)
-  - Story in `stories/` subdirectory (e.g., `cart/cart-content.tsx` matches `cart/stories/cart-content.stories.tsx`)
+- Checks for matching `*.stories.tsx` files in `stories/` subdirectories:
+  - Stories MUST be in a `stories/` subdirectory (e.g., `cart/cart-content.tsx` matches `cart/stories/cart-content.stories.tsx`)
   - Index story for directory (e.g., `cart/index.tsx` matches `cart/stories/index.stories.tsx`)
+  - Named component story (e.g., `customer-address-form/form.tsx` matches `customer-address-form/stories/form.stories.tsx`)
 - Excludes certain components that don't require stories (simple icons, internal sub-components) as defined in `EXCLUDED_COMPONENTS`
 
 **Metrics tracked:**
@@ -240,7 +240,7 @@ node scripts/generate-story-tests.js
 **What it does:**
 - Scans `src/components/` and `src/extensions/*/components/` for all component files (`*.tsx`)
 - **For extensions**: Only includes components from `components/` folders within each extension
-- Identifies matching story files using flexible matching rules
+- Identifies matching story files in `stories/` subdirectories (stories MUST be in `stories/` folders)
 - Calculates story coverage percentage
 - Merges Vitest code coverage data (if available)
 - Generates:
@@ -278,7 +278,7 @@ The story coverage and code quality enforcement system provides:
 ✅ **Visual badges** for quick status assessment  
 ✅ **PR comments** for immediate visibility  
 ✅ **Artifact storage** for detailed analysis  
-✅ **Flexible matching** for various component/story structures  
+✅ **Standardized structure**: Stories must be in `stories/` subdirectories  
 ✅ **Configurable exclusions** for components that don't need stories  
 
 This ensures that component documentation (via Storybook) and test coverage remain high quality throughout the development lifecycle.

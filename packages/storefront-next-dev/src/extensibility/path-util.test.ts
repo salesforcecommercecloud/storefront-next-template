@@ -5,6 +5,7 @@
 import { describe, it, beforeEach, expect, vi } from 'vitest';
 import { Volume } from 'memfs';
 import path from 'path';
+import { normalizePath } from '../test-utils';
 
 let vol: any;
 let resolvePathFromAlias: (p: string, root: string) => string;
@@ -70,17 +71,17 @@ describe('path-util', () => {
 
         it('resolves a simple alias with wildcard', () => {
             const result = resolvePathFromAlias('@/components/CompA', mockProjectRoot);
-            expect(result).toContain('src/components/CompA.tsx');
+            expect(normalizePath(result)).toContain('src/components/CompA.tsx');
         });
 
         it('resolves a simple alias with leading +types', () => {
             const result = resolvePathFromAlias('+types/components/CompA', mockProjectRoot);
-            expect(result).toContain('types/components/CompA.ts');
+            expect(normalizePath(result)).toContain('types/components/CompA.ts');
         });
 
         it('resolves an alias without wildcard', () => {
             const result = resolvePathFromAlias('@alias/CompB', mockProjectRoot);
-            expect(result).toContain('src/components/CompB/index.tsx');
+            expect(normalizePath(result)).toContain('src/components/CompB/index.tsx');
         });
 
         it('returns the original path if no tsconfig.json exists', async () => {
@@ -118,7 +119,7 @@ describe('path-util', () => {
             await loadModuleWithFs(files);
             vol.mkdirSync(`${mockProjectRoot}/src/components/CompB`, { recursive: true });
             const result = resolvePathFromAlias('@alias/CompB', mockProjectRoot);
-            expect(result).toContain('src/components/CompB');
+            expect(normalizePath(result)).toContain('src/components/CompB');
         });
 
         it('handles tsconfig.json with comments', async () => {
@@ -131,7 +132,7 @@ describe('path-util', () => {
             files[`${mockProjectRoot}/src/foo/Bar.tsx`] = 'export {}';
             await loadModuleWithFs(files);
             const result = resolvePathFromAlias('@foo/Bar', mockProjectRoot);
-            expect(result).toContain('src/foo/Bar.tsx');
+            expect(normalizePath(result)).toContain('src/foo/Bar.tsx');
         });
 
         it('uses cache when same projectRoot is queried multiple times', async () => {
@@ -144,12 +145,12 @@ describe('path-util', () => {
 
             // First call - should load and cache
             const result1 = resolvePathFromAlias('@/components/CompA', mockProjectRoot);
-            expect(result1).toContain('src/components/CompA.tsx');
+            expect(normalizePath(result1)).toContain('src/components/CompA.tsx');
 
             // Second call with same projectRoot - should use cache
             // Note: This works because we don't reset modules between calls in the same test
             const result2 = resolvePathFromAlias('@/components/CompA', mockProjectRoot);
-            expect(result2).toContain('src/components/CompA.tsx');
+            expect(normalizePath(result2)).toContain('src/components/CompA.tsx');
         });
 
         it('handles paths that are not an object (null or string)', async () => {
@@ -181,7 +182,7 @@ describe('path-util', () => {
             files[`${mockProjectRoot}/src/components/Single.tsx`] = 'export {}';
             await loadModuleWithFs(files);
             const result = resolvePathFromAlias('@single', mockProjectRoot);
-            expect(result).toContain('src/components/Single.tsx');
+            expect(normalizePath(result)).toContain('src/components/Single.tsx');
         });
     });
 });

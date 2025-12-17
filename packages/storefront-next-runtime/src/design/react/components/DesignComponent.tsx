@@ -11,8 +11,8 @@ import { useDesignState } from '../hooks/useDesignState';
 import { useFocusedComponentHandler } from '../hooks/useFocusedComponentHandler';
 import { useNodeToTargetStore } from '../hooks/useNodeToTargetStore';
 import { DesignFrame } from './DesignFrame';
-import { useRegionContext } from '../context/RegionContext';
-import { ComponentContext, useComponentContext, type ComponentContextType } from '../context/ComponentContext';
+import { useRegionContext } from '../core/RegionContext';
+import { ComponentContext, useComponentContext, type ComponentContextType } from '../core/ComponentContext';
 import { useComponentDiscovery } from '../hooks/useComponentDiscovery';
 import { useComponentType } from '../hooks/useComponentType';
 

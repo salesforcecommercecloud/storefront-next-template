@@ -2,7 +2,7 @@ import { type ComponentPropsWithoutRef, type CSSProperties, type ReactNode, forw
 import { cn } from '@/lib/utils';
 import { Component } from '@/lib/decorators/component';
 import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
-import { RegionDefinition, getRegionDefinition } from '@/lib/decorators';
+import { RegionDefinition } from '@/lib/decorators';
 import { Region } from '@/components/region';
 import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 
@@ -127,13 +127,7 @@ const Grid = forwardRef<HTMLDivElement, GridProps>(
         return (
             <ComponentElement ref={ref} className={classes} style={gridStyles} data-slot="grid" {...props}>
                 {page ? (
-                    <Region
-                        page={page}
-                        regionId="main"
-                        metadata={getRegionDefinition(GridMetadata, 'main')}
-                        componentData={componentData}
-                        fallback={children}
-                    />
+                    <Region page={page} regionId="main" componentData={componentData} fallback={children} />
                 ) : (
                     children
                 )}

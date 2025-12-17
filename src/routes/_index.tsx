@@ -10,7 +10,7 @@ import ContentCard from '@/components/content-card';
 import { Button } from '@/components/ui/button';
 import { getConfig } from '@/config';
 import { PageType } from '@/lib/decorators/page-type';
-import { getRegionDefinition, RegionDefinition } from '@/lib/decorators/region-definition';
+import { RegionDefinition } from '@/lib/decorators/region-definition';
 
 import { collectComponentDataPromises, fetchPageFromLoader } from '@/lib/util/pageLoader';
 
@@ -137,7 +137,6 @@ function HomeView({ loaderData }: RouteComponentProps<HomePageData>) {
                     <Region
                         page={loaderData.page}
                         regionId="headerbanner"
-                        metadata={getRegionDefinition(HomePageMetadata, 'headerbanner')}
                         componentData={loaderData.componentData}
                         fallback={
                             <>
@@ -191,7 +190,6 @@ function HomeView({ loaderData }: RouteComponentProps<HomePageData>) {
                     <Region
                         page={loaderData.page}
                         regionId="main"
-                        metadata={getRegionDefinition(HomePageMetadata, 'main')}
                         componentData={loaderData.componentData}
                         fallback={
                             <>

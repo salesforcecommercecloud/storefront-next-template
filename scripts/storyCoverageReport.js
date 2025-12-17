@@ -119,10 +119,15 @@ function generateCoverage() {
     const stories = new Set();
 
     // Helper function to collect stories from a directory
+    // Stories MUST be in a /stories/ subdirectory
     function collectStories(dir, baseDir, isExtensions = false) {
         if (!fs.existsSync(dir)) return;
         walk(dir, (file) => {
             if (file.endsWith('.stories.tsx')) {
+                // Stories MUST be in a /stories/ subdirectory
+                if (!file.includes(path.sep + 'stories' + path.sep)) {
+                    return;
+                }
                 // For extensions, only include stories in components/ folders
                 if (isExtensions) {
                     const rel = path.relative(baseDir, file);
@@ -132,7 +137,22 @@ function generateCoverage() {
                         return;
                     }
                 }
-                const componentName = getComponentName(file, baseDir).replace(/\.stories$/, '');
+                // Extract component name from story path
+                // e.g., "components/cart/stories/cart-content.stories.tsx" -> "cart/cart-content"
+                const rel = path.relative(baseDir, file);
+                const parts = rel.split(path.sep);
+                const storiesIndex = parts.indexOf('stories');
+                if (storiesIndex === -1) return;
+
+                // Get the component directory path (everything before "stories")
+                const componentDir = parts.slice(0, storiesIndex).join('/');
+                // Get the story file name without extension
+                const storyName = parts[storiesIndex + 1].replace(/\.stories\.tsx$/, '');
+
+                // Build component name: if story is "index.stories.tsx", use the directory name
+                // Otherwise use the story name
+                const componentName = storyName === 'index' ? componentDir : `${componentDir}/${storyName}`;
+
                 stories.add(componentName);
             }
         });
@@ -191,18 +211,12 @@ function generateCoverage() {
             continue;
         }
         // Check if there's a matching story
+        // Stories MUST be in a /stories/ subdirectory
         // A story can match by:
-        // 1. Exact name match (e.g., "cart/cart-content" matches "cart/cart-content.stories.tsx")
-        // 2. Story in stories/ subdirectory (e.g., "cart/cart-content" matches "cart/stories/cart-content")
-        // 3. Story in same directory (e.g., "customer-address-form/form" matches "customer-address-form/form.stories.tsx")
-        // 4. Index story for directory (e.g., "cart/index" matches "cart/stories/index")
-        const baseName = path.basename(componentName);
+        // 1. Component "cart/cart-content" matches story "cart/cart-content" (from "cart/stories/cart-content.stories.tsx")
+        // 2. Component "cart/index" matches story "cart" (from "cart/stories/index.stories.tsx")
         const dirName = path.dirname(componentName);
-        const hasStory =
-            stories.has(componentName) ||
-            stories.has(`${dirName}/stories/${baseName}`) ||
-            stories.has(`${dirName}/${baseName}`) ||
-            (componentName.endsWith('/index') && stories.has(`${dirName}/stories/index`));
+        const hasStory = stories.has(componentName) || (componentName.endsWith('/index') && stories.has(dirName));
         if (!hasStory) {
             const ownership = getComponentOwnership(componentName);
             missing.push({

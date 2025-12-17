@@ -3,6 +3,7 @@ import { join } from 'path';
 import type { ResolvedConfig } from 'vite';
 
 import { transformPluginPlaceholderPlugin } from './transformPlugins';
+import { pathEndsWith } from '../test-utils';
 
 // mock vite config
 const viteConfig = {
@@ -70,6 +71,19 @@ describe('transformPluginPlaceholderPlugin', () => {
 
     afterEach(() => {
         vi.resetAllMocks();
+    });
+
+    it('should use src as default when no alias is found in the vite config', () => {
+        const viteConfig2 = {
+            resolve: {
+                alias: [{ find: '+', replacement: 'foobar' }],
+            },
+        } as unknown as ResolvedConfig;
+        plugin.configResolved(viteConfig2);
+        plugin.buildStart();
+        // Use pathEndsWith for cross-platform path comparison (handles Windows absolute paths)
+        const actualPath = buildPluginRegistryMock.mock.calls[0][0] as string;
+        expect(pathEndsWith(actualPath, '/src')).toBe(true);
     });
 
     it('should build registry at buildStart()', () => {

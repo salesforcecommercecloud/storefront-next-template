@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { Region } from '@/components/region';
 import { PageType } from '@/lib/decorators/page-type';
-import { getRegionDefinition, RegionDefinition } from '@/lib/decorators/region-definition';
+import { RegionDefinition } from '@/lib/decorators/region-definition';
 import { collectComponentDataPromises, fetchPageFromLoader } from '@/lib/util/pageLoader';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import {
@@ -47,7 +47,7 @@ import { PluginComponent } from '@/plugins/plugin-components';
 ])
 export class ProductPageMetadata {}
 
-type ProductPageData = {
+export type ProductPageData = {
     product: Promise<ShopperProducts.schemas['Product']>;
     category: Promise<ShopperProducts.schemas['Category'] | undefined>;
     page: Promise<ShopperExperience.schemas['Page']>;
@@ -255,19 +255,6 @@ export function shouldRevalidate({
 }
 
 /**
- * Processes page data to extract regions and metadata for rendering
- */
-function processPageData() {
-    const promoContentDesignMetadata = getRegionDefinition(ProductPageMetadata, 'promoContent');
-    const engagementContentDesignMetadata = getRegionDefinition(ProductPageMetadata, 'engagementContent');
-
-    return {
-        promoContentDesignMetadata,
-        engagementContentDesignMetadata,
-    };
-}
-
-/**
  * Product Recommendations Section
  * Displays 3 Einstein recommenders: You might also like, Complete the look, and Recently viewed
  */
@@ -359,8 +346,6 @@ function ProductDetailView({ loaderData }: RouteComponentProps<ProductPageData>)
      * Renders the page content based on Page Designer regions
      */
     const renderPageContent = (page: Promise<ShopperExperience.schemas['Page']>) => {
-        const { promoContentDesignMetadata, engagementContentDesignMetadata } = processPageData();
-
         return (
             <>
                 {/* Promo Content Region - Promotional content above main product */}
@@ -369,7 +354,6 @@ function ProductDetailView({ loaderData }: RouteComponentProps<ProductPageData>)
                         <Region
                             page={page}
                             regionId="promoContent"
-                            metadata={promoContentDesignMetadata}
                             componentData={loaderData.componentData}
                             fallback={<div />}
                         />
@@ -396,7 +380,6 @@ function ProductDetailView({ loaderData }: RouteComponentProps<ProductPageData>)
                     <Region
                         page={page}
                         regionId="engagementContent"
-                        metadata={engagementContentDesignMetadata}
                         componentData={loaderData.componentData}
                         fallback={<ProductRecommendationsSection product={productData} />}
                     />

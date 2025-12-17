@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { ResolvedConfig } from 'vite';
+import { normalizePath, createPathRegex } from '../test-utils';
 
 const { mockReadFileSync, mockWriteFileSync, mockExistsSync, mockReaddirSync } = vi.hoisted(() => {
     return {
@@ -112,7 +113,10 @@ describe('fixReactRouterManifestUrlsPlugin', () => {
             expect(mockReaddirSync).toHaveBeenCalledWith('/build', { withFileTypes: true });
             expect(mockReadFileSync).toHaveBeenCalled();
             expect(consoleLogSpy).toHaveBeenCalledTimes(1);
-            expect(consoleLogSpy).toHaveBeenCalledWith('patched /assets/ references in /build/manifest-abc123.js');
+            // Use regex to match both Unix (/) and Windows (\) path separators
+            expect(consoleLogSpy).toHaveBeenCalledWith(
+                expect.stringMatching(createPathRegex('patched /assets/ references in /build/manifest-abc123.js'))
+            );
         });
 
         it('should transform double-quoted asset URLs', () => {
@@ -138,13 +142,15 @@ describe('fixReactRouterManifestUrlsPlugin', () => {
             callHook(plugin.configResolved, mockConfig);
             callHook(plugin.closeBundle);
 
-            expect(mockWriteFileSync).toHaveBeenCalledWith(
-                '/build/manifest-abc.js',
-                'const url = (window._BUNDLE_PATH || "/") + "assets/file.js";'
-            );
+            // Use normalizePath for cross-platform comparison
+            const [actualPath, actualContent] = mockWriteFileSync.mock.calls[0];
+            expect(normalizePath(actualPath)).toBe('/build/manifest-abc.js');
+            expect(actualContent).toBe('const url = (window._BUNDLE_PATH || "/") + "assets/file.js";');
 
             expect(consoleLogSpy).toHaveBeenCalledTimes(1);
-            expect(consoleLogSpy).toHaveBeenCalledWith('patched /assets/ references in /build/manifest-abc.js');
+            expect(consoleLogSpy).toHaveBeenCalledWith(
+                expect.stringMatching(createPathRegex('patched /assets/ references in /build/manifest-abc.js'))
+            );
         });
 
         it('should transform single-quoted asset URLs', () => {
@@ -171,13 +177,15 @@ describe('fixReactRouterManifestUrlsPlugin', () => {
             callHook(plugin.closeBundle);
 
             // Note: regex only replaces opening quote+/assets/, leaving closing quote intact
-            expect(mockWriteFileSync).toHaveBeenCalledWith(
-                '/build/manifest-xyz.js',
-                'const url = (window._BUNDLE_PATH || "/") + "assets/style.css\';'
-            );
+            // Use normalizePath for cross-platform comparison
+            const [actualPath, actualContent] = mockWriteFileSync.mock.calls[0];
+            expect(normalizePath(actualPath)).toBe('/build/manifest-xyz.js');
+            expect(actualContent).toBe('const url = (window._BUNDLE_PATH || "/") + "assets/style.css\';');
 
             expect(consoleLogSpy).toHaveBeenCalledTimes(1);
-            expect(consoleLogSpy).toHaveBeenCalledWith('patched /assets/ references in /build/manifest-xyz.js');
+            expect(consoleLogSpy).toHaveBeenCalledWith(
+                expect.stringMatching(createPathRegex('patched /assets/ references in /build/manifest-xyz.js'))
+            );
         });
 
         it('should transform multiple asset URLs in same file', () => {
@@ -203,13 +211,17 @@ describe('fixReactRouterManifestUrlsPlugin', () => {
             callHook(plugin.configResolved, mockConfig);
             callHook(plugin.closeBundle);
 
-            expect(mockWriteFileSync).toHaveBeenCalledWith(
-                '/build/manifest-multi.js',
+            // Use normalizePath for cross-platform comparison
+            const [actualPath, actualContent] = mockWriteFileSync.mock.calls[0];
+            expect(normalizePath(actualPath)).toBe('/build/manifest-multi.js');
+            expect(actualContent).toBe(
                 '(window._BUNDLE_PATH || "/") + "assets/a.js" and (window._BUNDLE_PATH || "/") + "assets/b.css"'
             );
 
             expect(consoleLogSpy).toHaveBeenCalledTimes(1);
-            expect(consoleLogSpy).toHaveBeenCalledWith('patched /assets/ references in /build/manifest-multi.js');
+            expect(consoleLogSpy).toHaveBeenCalledWith(
+                expect.stringMatching(createPathRegex('patched /assets/ references in /build/manifest-multi.js'))
+            );
         });
 
         it('should not write file if no asset URLs found', () => {
@@ -267,14 +279,21 @@ describe('fixReactRouterManifestUrlsPlugin', () => {
 
             expect(mockReaddirSync).toHaveBeenCalledTimes(2);
             expect(mockReaddirSync).toHaveBeenCalledWith('/build', { withFileTypes: true });
-            expect(mockReaddirSync).toHaveBeenCalledWith('/build/subdir', { withFileTypes: true });
+            // Use normalizePath for cross-platform comparison
+            const secondCallPath = normalizePath(mockReaddirSync.mock.calls[1][0]);
+            expect(secondCallPath).toBe('/build/subdir');
 
             expect(consoleLogSpy).toHaveBeenCalledTimes(2);
             expect(consoleLogSpy).toHaveBeenNthCalledWith(
                 1,
-                'patched /assets/ references in /build/subdir/manifest-nested.js'
+                expect.stringMatching(
+                    createPathRegex('patched /assets/ references in /build/subdir/manifest-nested.js')
+                )
             );
-            expect(consoleLogSpy).toHaveBeenNthCalledWith(2, 'patched /assets/ references in /build/manifest-root.js');
+            expect(consoleLogSpy).toHaveBeenNthCalledWith(
+                2,
+                expect.stringMatching(createPathRegex('patched /assets/ references in /build/manifest-root.js'))
+            );
         });
 
         it('should only process files with /assets/ references and .js extension', () => {
@@ -310,9 +329,19 @@ describe('fixReactRouterManifestUrlsPlugin', () => {
             expect(mockReadFileSync).toHaveBeenCalledTimes(3);
 
             expect(consoleLogSpy).toHaveBeenCalledTimes(3);
-            expect(consoleLogSpy).toHaveBeenNthCalledWith(1, 'patched /assets/ references in /build/manifest-valid.js');
-            expect(consoleLogSpy).toHaveBeenNthCalledWith(2, 'patched /assets/ references in /build/other-file.js');
-            expect(consoleLogSpy).toHaveBeenNthCalledWith(3, 'patched /assets/ references in /build/manifest.js');
+            // Use regex to match both Unix (/) and Windows (\) path separators
+            expect(consoleLogSpy).toHaveBeenNthCalledWith(
+                1,
+                expect.stringMatching(createPathRegex('patched /assets/ references in /build/manifest-valid.js'))
+            );
+            expect(consoleLogSpy).toHaveBeenNthCalledWith(
+                2,
+                expect.stringMatching(createPathRegex('patched /assets/ references in /build/other-file.js'))
+            );
+            expect(consoleLogSpy).toHaveBeenNthCalledWith(
+                3,
+                expect.stringMatching(createPathRegex('patched /assets/ references in /build/manifest.js'))
+            );
         });
     });
 });

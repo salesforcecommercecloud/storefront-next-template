@@ -173,6 +173,234 @@ components:
         - $ref: '#/components/schemas/LanguageCountry'
         - $ref: '#/components/schemas/LanguageCode'
         - $ref: '#/components/schemas/DefaultFallback'
+        
+    ComponentType:
+      type: object
+      description: Represents a component type for content management
+      allOf:
+        - $ref: '#/components/schemas/BaseType'
+        - type: object
+          properties:
+            group:
+              type: string
+              description: A grouping identifier for display purposes
+
+    PageType:
+      type: object
+      description: Represents a page type for content management
+      allOf: 
+        - $ref: '#/components/schemas/BaseType'
+        - type: object
+          properties:
+            route:
+              type: string
+              description: Route of a page that this page type is used for
+            supportedAspectTypes:
+              type: array
+              description: The IDs of the aspect types this page supports
+              items:
+                type: string
+
+    BaseType:
+      type: object
+      description: Base type for a page or component type
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the page type
+        name:
+          type: string
+          description: Name of the page type for display purposes
+        description:
+          type: string
+          description: Description of the page type for display purposes
+        archType:
+          type: string
+          description: Architecture type identifier
+          enum:
+            - headless
+            - controller
+        regionDefinitions:
+          type: array
+          description: The regions where components can be plugged into
+          items:
+            $ref: '#/components/schemas/RegionDefinition'
+        attributeDefinitionGroups:
+          type: array
+          description: Attribute groups that provide the content attributes
+          items:
+            $ref: '#/components/schemas/AttributeDefinitionGroup'
+      required:
+        - id
+
+    RegionDefinition:
+      type: object
+      description: Represents a region used by pages and components for structuring content hierarchically
+      properties:
+        id:
+          type: string
+          description: The ID of the region (unique within respective page/component type)
+        name:
+          type: string
+          description: The name of the region for display purposes
+        maxComponents:
+          type: integer
+          description: The maximum number of components that can be visible within this region during rendering
+        componentTypeExclusions:
+          type: array
+          description: The component types to be excluded from this region
+          items:
+            $ref: '#/components/schemas/ComponentTypeExclusion'
+        componentTypeInclusions:
+          type: array
+          description: The component types to be included in this region
+          items:
+            $ref: '#/components/schemas/ComponentTypeInclusion'
+        defaultComponentConstructors:
+          type: array
+          description: The constructors for the components the region will be filled with on creation
+          items:
+            $ref: '#/components/schemas/ComponentConstructor'
+      required:
+        - id
+
+    AttributeDefinitionGroup:
+      type: object
+      description: Represents the definition of a content attribute group for representing component content attributes in a grouped manner
+      properties:
+        id:
+          type: string
+          description: The ID of the attribute group (unique within respective component type)
+        name:
+          type: string
+          description: Name of the attribute group for display purposes
+        description:
+          type: string
+          description: Description of the attribute group for display purposes
+        attributeDefinitions:
+          type: array
+          description: The attribute definitions that belong to this group
+          items:
+            $ref: '#/components/schemas/AttributeDefinition'
+      required:
+        - id
+
+    AttributeDefinition:
+      type: object
+      description: Represents the definition of a content attribute used for representing the content of components
+      properties:
+        id:
+          type: string
+          description: The ID of the attribute (unique within respective component type)
+        name:
+          type: string
+          description: Name of the attribute for display purposes
+        description:
+          type: string
+          description: Description of the attribute for display purposes
+        type:
+          type: string
+          enum:
+            - string
+            - text
+            - markup
+            - product
+            - category
+            - file
+            - boolean
+            - integer
+            - enum
+            - page
+            - image
+            - url
+            - custom
+            - cms_record
+          description: The type of value the attribute can hold
+        editorDefinition:
+          type: object
+          additionalProperties: true
+          description: The definition of the editor for this attribute
+        values:
+          type: array
+          description: The valid values for enum type attributes
+          items:
+            type: object
+        required:
+          type: boolean
+          description: Whether the attribute is required to be set for its component
+          default: true
+        defaultValue:
+          type: object
+          description: The fallback value if no value was set explicitly
+        dynamicLookup:
+          $ref: '#/components/schemas/DynamicAttributeLookup'
+      required:
+        - id
+        - type
+
+    ComponentTypeExclusion:
+      type: object
+      description: Describes the rule for a component type exclusion, commonly used per RegionDefinition
+      properties:
+        typeId:
+          type: string
+          description: The ID of the component type to be excluded
+      required:
+        - typeId
+
+    ComponentTypeInclusion:
+      type: object
+      description: Describes the rule for a component type inclusion, commonly used per RegionDefinition
+      properties:
+        typeId:
+          type: string
+          description: The ID of the component type to be included
+      required:
+        - typeId
+
+    ComponentConstructor:
+      type: object
+      description: Describes the rule for component creation, commonly used per RegionDefinition
+      properties:
+        typeId:
+          type: string
+          description: The ID of the component type used for component creation
+        name:
+          type: string
+          description: Name of the component
+        regionComponentConstructors:
+          type: array
+          description: The component constructors per region
+          items:
+            $ref: '#/components/schemas/RegionComponentConstructor'
+      required:
+        - typeId
+
+    RegionComponentConstructor:
+      type: object
+      description: Describes the rule for component creation per region, used by ComponentConstructor
+      properties:
+        regionId:
+          type: string
+          description: The ID of the region the component constructors are targeted for
+        componentConstructors:
+          type: array
+          description: The component constructors for the region
+          items:
+            $ref: '#/components/schemas/ComponentConstructor'
+      required:
+        - regionId
+
+    DynamicAttributeLookup:
+      type: object
+      description: Represents the definition of dynamic attribute lookup, currently only to aspect attributes based on attribute ID aliasing
+      properties:
+        aspectAttributeAlias:
+          type: string
+          description: The ID of the referenced aspect attribute
+      required:
+        - aspectAttributeAlias
+
     Region:
       properties:
         id:
@@ -219,7 +447,7 @@ components:
             title: Topseller
             category: topseller
           type: object
-          additionalProperties: false
+          additionalProperties: true 
         localized:
           title: Localized
           description: Whether the compononent has been localized in the current locale.
@@ -238,7 +466,7 @@ components:
           type: object
           additionalProperties: false
         designMetadata:
-          $ref: '#/components/schemas/ComponentDesignMetadata'
+          $ref: '#/components/schemas/ComponentType'
         regions:
           title: Regions
           description: The regions (and their assigned components) for the component.
@@ -260,28 +488,6 @@ components:
         - id
         - typeId
       type: object
-    ComponentDesignMetadata:
-      properties:
-        name:
-          title: Name
-          description: The name of the component.
-          example: Hero
-          type: string
-        type:
-          title: Type
-          description: The type of the component.
-          example: commerce_assets.banner
-          type: string
-        description:
-          title: Description
-          description: The description of the component.
-          example: Hero banner component
-          type: string
-        isFragment:
-          title: Is Fragment
-          description: Whether the component is a fragment.
-          example: false
-          type: boolean
     Page:
       properties:
         id:
@@ -338,7 +544,9 @@ components:
           example:
             thumbnail: myshop.jpg
           type: object
-          additionalProperties: false
+          additionalProperties: true 
+        designMetadata:
+          $ref: '#/components/schemas/PageType'
         custom:
           title: Custom Page Data
           description: Any custom data added by the custom code for the page type.

@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { vol } from 'memfs';
 import { glob } from 'glob';
 import { staticRegistryPlugin } from './staticRegistry';
+import { normalizePath } from '../test-utils';
 
 // Mock glob
 vi.mock('glob', () => ({
@@ -98,7 +99,8 @@ describe('staticRegistryPlugin Integration', () => {
 
             expect(mockWriteFileSync).toHaveBeenCalledTimes(1);
             const [filePath, content] = mockWriteFileSync.mock.calls[0];
-            expect(filePath).toBe('/test/project/src/lib/static-registry.ts');
+            // Use normalizePath for cross-platform comparison
+            expect(normalizePath(filePath as string)).toBe('/test/project/src/lib/static-registry.ts');
             expect(content).toContain("targetRegistry.registerImporter('layouts.hero'");
         });
 

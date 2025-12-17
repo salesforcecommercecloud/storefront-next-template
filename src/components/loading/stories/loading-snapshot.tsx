@@ -1,7 +1,7 @@
 import { vi, expect, test, describe, afterEach } from 'vitest';
 import { composeStories } from '@storybook/react-vite';
 
-import * as LoadingStories from './loading.stories';
+import * as LoadingStories from './index.stories';
 import { render, cleanup } from '@testing-library/react';
 
 const fetcherMock = {

@@ -54,6 +54,9 @@ const createMockPage = (regions: any[] = []): ShopperExperience.schemas['Page'] 
     ({
         id: 'plp',
         typeId: 'plp',
+        designMetadata: {
+            regionDefinitions: regions.map((region) => ({ id: region.id })),
+        },
         regions,
     }) as ShopperExperience.schemas['Page'];
 
@@ -147,7 +150,7 @@ vi.mock('@/hooks/use-analytics', () => ({
 
 // Mock config
 vi.mock('@/config', async (importOriginal) => {
-    const actual = await importOriginal();
+    const actual = await importOriginal<object>();
     const mockConfigValue = {
         global: {
             productListing: {
@@ -268,12 +271,12 @@ describe('SearchPage', () => {
 
     describe('clientLoader', () => {
         test('should fetch search data on client side', () => {
-            const args: ClientLoaderFunctionArgs = {
+            const args: Partial<ClientLoaderFunctionArgs> = {
                 request: new Request('https://example.com/search?q=sneakers'),
                 params: {},
             };
 
-            const result = clientLoader(args);
+            const result = clientLoader(args as ClientLoaderFunctionArgs);
 
             expect(fetchSearchProducts).toHaveBeenCalled();
             expect(result.searchTerm).toBe('sneakers');

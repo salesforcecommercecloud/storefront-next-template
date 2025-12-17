@@ -1,10 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import fs from 'fs-extra';
 import path from 'path';
-import { manageExtensions } from './manage-extensions';
+import { manageExtensions, createExtension, listExtensions } from './manage-extensions';
 import { execSync } from 'child_process';
 import prompts from 'prompts';
 import trimExtensions from './trim-extensions';
+import { createPathRegex, pathsEqual } from '../test-utils';
 
 const SOURCE_GIT_URL = 'https://github.com/SalesforceCommerceCloud/storefront-next-template.git';
 const MOCK_NOW = 1731273600000;
@@ -44,16 +45,13 @@ describe('manageExtensions', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         // Sanity stub for fs
-        vi.spyOn(fs, 'existsSync').mockImplementation((filePath) => {
-            if (
-                filePath === getExtensionConfigPath('/test-project') ||
-                filePath === getExtensionConfigPath('/tmp/fake-temp-dir') ||
-                filePath === getExtensionConfigPath(`/tmp/sfnext-extensions-${MOCK_NOW}`)
-            ) {
-                return true;
-            }
-            return false;
-        });
+        const existngPaths = [
+            getExtensionConfigPath('/test-project'),
+            getExtensionConfigPath(path.join('/tmp', 'fake-temp-dir')),
+            getExtensionConfigPath(path.join('/tmp', `sfnext-extensions-${MOCK_NOW}`)),
+            path.join('/test-project', 'src', 'extensions', 'my-extension2'),
+        ];
+        vi.spyOn(fs, 'existsSync').mockImplementation((filePath) => existngPaths.includes(filePath as string));
         vi.spyOn(fs, 'readFileSync').mockImplementation((filePath) => {
             if (
                 filePath === getExtensionConfigPath('/test-project') ||
@@ -66,6 +64,7 @@ describe('manageExtensions', () => {
                             description: 'Store Locator allows a shopper to find the closest store to them.',
                             installationInstructions: 'instructions/install-store-locator.mdc',
                             uninstallationInstructions: 'instructions/uninstall-store-locator.mdc',
+                            folder: 'store-locator',
                         },
                     },
                 });
@@ -74,13 +73,17 @@ describe('manageExtensions', () => {
         });
         vi.spyOn(fs, 'mkdtempSync').mockReturnValue(`/tmp/sfnext-extensions-${MOCK_NOW}`);
         vi.spyOn(fs, 'readdirSync').mockImplementationOnce((dir, options) => {
-            if (dir === '/test-project/src' && options?.recursive) {
+            // Use pathsEqual for cross-platform path comparison
+            if (pathsEqual(dir as string, '/test-project/src') && options?.recursive) {
                 return ['index.tsx.original'] as any;
             }
             return ['index.tsx'] as any;
         });
         vi.spyOn(fs, 'readdirSync').mockReturnValue(['index.tsx'] as any);
         vi.spyOn(fs, 'writeFileSync').mockImplementation(() => {});
+        vi.spyOn(fs, 'mkdirSync').mockImplementation(() => '' as any);
+        vi.spyOn(fs, 'copySync').mockImplementation(() => {});
+        vi.spyOn(fs, 'rmSync').mockImplementation(() => {});
     });
 
     it('should abort if install and uninstall are both provided', async () => {
@@ -140,6 +143,7 @@ describe('manageExtensions', () => {
                         description: 'Store Locator allows a shopper to find the closest store to them.',
                         installationInstructions: 'instructions/install-store-locator.mdc',
                         uninstallationInstructions: 'instructions/uninstall-store-locator.mdc',
+                        folder: 'store-locator',
                     },
                 },
             },
@@ -149,19 +153,21 @@ describe('manageExtensions', () => {
     });
 
     /** Install test cases starts here */
-    it('should abort if cursor-agent is not installed', async () => {
-        (execSync as any).mockImplementationOnce(() => {
-            throw new Error('not installed');
+    it('should abort if cursor-agent is not installed and extension contains LLM instructions', async () => {
+        (execSync as any).mockImplementation((command: string) => {
+            if (command.indexOf('cursor-agent -v') !== -1) {
+                throw new Error('not installed');
+            }
+            return '';
         });
         await manageExtensions({
             projectDirectory: '/test-project',
             install: true,
             sourceGitUrl: SOURCE_GIT_URL,
+            extensions: ['SFDC_EXT_STORE_LOCATOR'],
         });
         expect(console.error).toHaveBeenCalledWith(
-            expect.stringContaining(
-                'Cursor cli is not installed. Please install it (https://cursor.com/docs/cli/overview) and try again. not installed'
-            )
+            expect.stringContaining('This extension contains LLM instructions, please install cursor cli and try again')
         );
     });
 
@@ -175,9 +181,12 @@ describe('manageExtensions', () => {
             install: true,
             sourceGitUrl: SOURCE_GIT_URL,
         });
+        // Use regex to match both Unix (/) and Windows (\) path separators
         expect(console.error).toHaveBeenCalledWith(
-            expect.stringContaining(
-                'No extensions found in the source project, please check src/extensions/config.json exists'
+            expect.stringMatching(
+                createPathRegex(
+                    'No extensions found in the source project, please check src/extensions/config.json exists'
+                )
             )
         );
     });
@@ -200,18 +209,29 @@ describe('manageExtensions', () => {
     it('should run install based on -i flag', async () => {
         (prompts as unknown as { mockResolvedValueOnce: (value: any) => void }).mockResolvedValueOnce({
             operation: 'install',
-            extensions: ['SFDC_EXT_STORE_LOCATOR'],
         });
+        (execSync as any).mockImplementation(() => {});
         await manageExtensions({
             projectDirectory: '/test-project',
-            install: true,
             sourceGitUrl: SOURCE_GIT_URL,
             extensions: ['SFDC_EXT_STORE_LOCATOR'],
         });
+        // verify the extension folder is copied to the project directory
+        expect(fs.copySync).toHaveBeenCalledWith(
+            path.join(`/tmp`, `sfnext-extensions-${MOCK_NOW}`, 'src', 'extensions', 'store-locator'),
+            path.join(`/test-project`, 'src', 'extensions', 'store-locator')
+        );
+        // verify the cursor-agent command is executed
         expect(execSync).toHaveBeenCalledWith(
-            `cursor-agent -p --force 'Execute the steps specified in the installation instructions file: instructions/install-store-locator.mdc' --model "gpt-5" --output-format text`,
+            `cursor-agent -p --force 'Execute the steps specified in the installation instructions file: instructions/install-store-locator.mdc' --output-format text`,
             { cwd: '/test-project', stdio: 'inherit' }
         );
+        // Use pathsEqual for cross-platform path comparison
+        const rmSyncCalls = (fs.rmSync as any).mock.calls;
+        expect(rmSyncCalls.length).toBe(1);
+        expect(pathsEqual(rmSyncCalls[0][0], `/tmp/sfnext-extensions-${MOCK_NOW}`)).toBe(true);
+        expect(rmSyncCalls[0][1]).toEqual({ recursive: true, force: true });
+        // verify success message is logged
         expect(console.log).toHaveBeenCalledWith(
             expect.stringContaining('✅ Store Locator was installed successfully.')
         );
@@ -222,6 +242,16 @@ describe('manageExtensions', () => {
         );
         expect(console.log).toHaveBeenCalledWith(expect.stringContaining('- index.tsx'));
         expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Installation completed successfully.'));
+    });
+
+    it('should honor the defaultOn flag', async () => {
+        (prompts as unknown as { mockResolvedValueOnce: (value: any) => void }).mockResolvedValueOnce({
+            operation: 'install',
+        });
+        (execSync as any).mockImplementation(() => {});
+        await manageExtensions({
+            projectDirectory: '/test-project',
+        });
     });
 
     it('should error and exit if error occurs during installation', async () => {
@@ -240,7 +270,7 @@ describe('manageExtensions', () => {
         expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Error installing Store Locator. error'));
     });
 
-    it('should error and exit if no installation instructions are found', async () => {
+    it('should skip LLM instructions if no installation instructions are found', async () => {
         vi.spyOn(fs, 'readFileSync').mockReturnValue(
             '{"extensions": { "SFDC_EXT_STORE_LOCATOR": { "name": "Store Locator", "description": "Store Locator allows a shopper to find the closest store to them." } }}'
         );
@@ -250,22 +280,100 @@ describe('manageExtensions', () => {
             sourceGitUrl: SOURCE_GIT_URL,
             extensions: ['SFDC_EXT_STORE_LOCATOR'],
         });
-        expect(console.error).toHaveBeenCalledWith(
-            expect.stringContaining(
-                'Store Locator has no installation instructions, pleae contact the extension author to get the instructions.'
-            )
-        );
+        expect(execSync).not.toHaveBeenCalledWith(expect.stringContaining('cursor-agent -p --force'));
     });
 
     it('should error and exit if no config is found', async () => {
         vi.spyOn(fs, 'existsSync').mockReturnValue(false);
-        const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
         const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => {
             throw new Error('exit');
         });
         await expect(manageExtensions({ projectDirectory: '/not-exist' })).rejects.toThrow('exit');
-        expect(spy).toHaveBeenCalledWith(expect.stringContaining('Extension config file not found'));
+        expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Extension config file not found'));
         exitSpy.mockRestore();
-        spy.mockRestore();
+    });
+
+    it('should create an extension', async () => {
+        (prompts as unknown as { mockResolvedValueOnce: (value: any) => void }).mockResolvedValueOnce({
+            extensionName: 'My Extension',
+        });
+        (prompts as unknown as { mockResolvedValueOnce: (value: any) => void }).mockResolvedValueOnce({
+            extensionDescription: 'My Extension description',
+        });
+        await createExtension({ projectDirectory: '/test-project', name: '', description: '' });
+        expect(fs.mkdirSync).toHaveBeenCalledWith(
+            path.join('/test-project', 'src', 'extensions', 'my-extension', 'components'),
+            { recursive: true }
+        );
+        expect(fs.mkdirSync).toHaveBeenCalledWith(
+            path.join('/test-project', 'src', 'extensions', 'my-extension', 'locales'),
+            { recursive: true }
+        );
+        expect(fs.mkdirSync).toHaveBeenCalledWith(
+            path.join('/test-project', 'src', 'extensions', 'my-extension', 'hooks'),
+            { recursive: true }
+        );
+        expect(fs.mkdirSync).toHaveBeenCalledWith(
+            path.join('/test-project', 'src', 'extensions', 'my-extension', 'routes'),
+            { recursive: true }
+        );
+        expect(fs.writeFileSync).toHaveBeenCalledWith(
+            path.join('/test-project', 'src', 'extensions', 'my-extension', 'README.md'),
+            `# My Extension\n\nMy Extension description`
+        );
+
+        // Get the second call (config.json write)
+        const configWriteCall = (fs.writeFileSync as any).mock.calls[1];
+        expect(configWriteCall[0]).toBe(path.join('/test-project', 'src', 'extensions', 'config.json'));
+
+        // Parse and verify the JSON structure
+        const writtenConfig = JSON.parse(configWriteCall[1]);
+        expect(writtenConfig.extensions.SFDC_EXT_MY_EXTENSION).toEqual({
+            name: 'My Extension',
+            description: 'My Extension description',
+            installationInstructions: '',
+            uninstallationInstructions: '',
+            folder: 'my-extension',
+            dependencies: [],
+        });
+    });
+
+    it('should prevent invalid extension name', async () => {
+        await createExtension({
+            projectDirectory: '/test-project',
+            name: 'My Extension$',
+            description: 'My Extension description',
+        });
+        expect(console.error).toHaveBeenCalledWith(
+            expect.stringContaining(
+                'Extension name can only contain alphanumeric characters, spaces, dashes, or underscores'
+            )
+        );
+    });
+
+    it('should prevent extension name that already exists', async () => {
+        await createExtension({
+            projectDirectory: '/test-project',
+            name: 'Store Locator',
+            description: 'Store Locator description',
+        });
+        expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Extension "Store Locator" already exists'));
+    });
+
+    it('should prevent extension directory that already exists', async () => {
+        await createExtension({
+            projectDirectory: '/test-project',
+            name: 'My Extension2',
+            description: 'My Extension description',
+        });
+        expect(console.error).toHaveBeenCalledWith(
+            expect.stringContaining('Extension directory my-extension2 already exists')
+        );
+    });
+
+    /** List extensions test cases starts here */
+    it('should list installed extensions', () => {
+        listExtensions({ projectDirectory: '/test-project' });
+        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Store Locator'));
     });
 });

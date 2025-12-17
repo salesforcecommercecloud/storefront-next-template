@@ -10,8 +10,8 @@ import { useRegionDecoratorClasses } from '../hooks/useRegionDecoratorClasses';
 import { useNodeToTargetStore } from '../hooks/useNodeToTargetStore';
 import { DesignFrame } from './DesignFrame';
 import { useLabels } from '../hooks/useLabels';
-import { RegionContext, type RegionContextType } from '../context/RegionContext';
-import { useComponentContext } from '../context/ComponentContext';
+import { RegionContext, type RegionContextType } from '../core/RegionContext';
+import { useComponentContext } from '../core/ComponentContext';
 import { useDesignState } from '../hooks/useDesignState';
 import { isComponentTypeAllowedInRegion } from '../utils/regionUtils';
 

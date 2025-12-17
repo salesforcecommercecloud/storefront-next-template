@@ -123,7 +123,8 @@ describe('createApiClients', () => {
         it('should add authentication middleware', () => {
             createApiClients(mockContextProvider);
 
-            expect(mockUse).toHaveBeenCalledTimes(1);
+            // Two middlewares in use, both request middleware
+            expect(mockUse).toHaveBeenCalledTimes(2);
             expect(mockUse).toHaveBeenCalledWith(
                 expect.objectContaining({
                     onRequest: expect.any(Function),

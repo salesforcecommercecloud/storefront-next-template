@@ -5,6 +5,7 @@ export type ExtensionMeta = {
     uninstallationInstructions: string;
     folder: string;
     dependencies: string[];
+    defaultOn?: boolean;
 };
 
 declare const ExtensionConfig: {

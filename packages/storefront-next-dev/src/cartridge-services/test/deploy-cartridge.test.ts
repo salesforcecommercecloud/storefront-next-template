@@ -1,5 +1,6 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import fs from 'fs';
+import { normalizePath } from '../../test-utils';
 
 // Mock the outgoing requests
 vi.mock('../sfcc-client', () => ({
@@ -136,7 +137,8 @@ describe('Core Functions', () => {
             expect(fs.unlinkSync).toHaveBeenCalled();
 
             // Verify fs.createReadStream was called with full file path (not just filename)
-            const callArgs = createReadStreamSpy.mock.calls[0][0];
+            // Use normalizePath for cross-platform comparison
+            const callArgs = normalizePath(createReadStreamSpy.mock.calls[0][0] as string);
             expect(callArgs).toContain('/tmp/metadata-');
             expect(callArgs).toContain('.zip');
             expect(result.version).toBeDefined();

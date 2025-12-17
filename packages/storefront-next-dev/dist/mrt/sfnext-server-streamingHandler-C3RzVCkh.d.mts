@@ -7,4 +7,4 @@ type BuildHandler = (responseStream: Writable) => AsyncHandlerFunction;
 declare const buildHandler: BuildHandler;
 //#endregion
 export { buildHandler };
-//# sourceMappingURL=streamingHandler.d.ts.map
+//# sourceMappingURL=sfnext-server-streamingHandler-C3RzVCkh.d.mts.map

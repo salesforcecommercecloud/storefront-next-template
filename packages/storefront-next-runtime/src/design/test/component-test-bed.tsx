@@ -13,8 +13,8 @@ import type {
 import { PageDesignerProvider } from '../react/core/PageDesignerProvider';
 import { createTestBed } from './test-bed';
 import { createReactRegionDesignDecorator } from '../react/components/RegionDecorator';
-import { ComponentContext } from '../react/context/ComponentContext';
-import { PageDesignerPage } from '../react/core/PageDesignerPage';
+import { ComponentContext } from '../react/core/ComponentContext';
+import { PageDesignerPageMetadataProvider } from '../react/core/PageDesignerPageMetadataProvider';
 import { beforeEach, expect, afterEach } from 'vitest';
 import type { RecursivePartial } from './types';
 
@@ -115,7 +115,7 @@ export function createComponentTestBed<TState extends Record<string, unknown>>(s
 
             const result = tlRender(
                 <PageDesignerProvider clientId="test1" targetOrigin="*">
-                    <PageDesignerPage page={TEST_PAGE}>
+                    <PageDesignerPageMetadataProvider page={TEST_PAGE}>
                         <ComponentContext.Provider value={{ componentId: 'test-parent' }}>
                             <DecoratedRegion designMetadata={regionMetadata as RegionDesignMetadata}>
                                 <DecoratedComponent {...(props as unknown as ComponentDecoratorProps<object>)}>
@@ -140,7 +140,7 @@ export function createComponentTestBed<TState extends Record<string, unknown>>(s
                                 />
                             </DecoratedRegion>
                         </ComponentContext.Provider>
-                    </PageDesignerPage>
+                    </PageDesignerPageMetadataProvider>
                 </PageDesignerProvider>
             );
 

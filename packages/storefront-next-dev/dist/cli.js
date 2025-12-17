@@ -13,9 +13,8 @@ import { URL as URL$1, fileURLToPath, pathToFileURL } from "url";
 import { createServer } from "vite";
 import express from "express";
 import { createRequestHandler } from "@react-router/express";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve as resolve$1 } from "node:path";
-import { pathToFileURL as pathToFileURL$1 } from "node:url";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import compression from "compression";
 import zlib from "node:zlib";
@@ -25,6 +24,7 @@ import Handlebars from "handlebars";
 import { access, mkdir, readFile, readdir, rm, writeFile } from "fs/promises";
 import { Node, Project } from "ts-morph";
 import prompts from "prompts";
+import { z } from "zod";
 
 //#region package.json
 var version = "0.2.0-dev";
@@ -179,7 +179,7 @@ const getMrtConfig = (projectDir) => {
 	loadEnvFile(projectDir);
 	const pkg = getProjectPkg(projectDir);
 	const defaultMrtProject = process.env.MRT_PROJECT ?? pkg.name;
-	if (!defaultMrtProject || defaultMrtProject.trim() === "") throw new Error("Project name could not be determined. Please either:\n  1. Set MRT_PROJECT in your .env file, or\n  2. Ensure package.json has a valid \"name\" field");
+	if (!defaultMrtProject || defaultMrtProject.trim() === "") throw new Error("Project name couldn't be determined. Do one of these options:\n  1. Set MRT_PROJECT in your .env file, or\n  2. Ensure package.json has a valid \"name\" field.");
 	const defaultMrtTarget = process.env.MRT_TARGET ?? void 0;
 	debug("MRT configuration resolved", {
 		projectDir,
@@ -435,14 +435,15 @@ var CloudAPIClient = class {
 //#endregion
 //#region src/mrt/utils.ts
 const MRT_BUNDLE_TYPE_SSR = "ssr";
-const MRT_BUNDLE_TYPE_STREAMING = "streamingHandler";
+const MRT_STREAMING_ENTRY_FILE = "streamingHandler";
+const MRT_BUNDLE_TYPE_STREAMING = "streaming";
 /**
 * Gets the MRT entry file for the given mode
 * @param mode - The mode to get the MRT entry file for
 * @returns The MRT entry file for the given mode
 */
 const getMrtEntryFile = (mode) => {
-	return process.env.MRT_BUNDLE_TYPE === MRT_BUNDLE_TYPE_SSR || mode !== "production" ? MRT_BUNDLE_TYPE_SSR : MRT_BUNDLE_TYPE_STREAMING;
+	return process.env.MRT_BUNDLE_TYPE === MRT_BUNDLE_TYPE_STREAMING && mode === "production" ? MRT_STREAMING_ENTRY_FILE : MRT_BUNDLE_TYPE_SSR;
 };
 
 //#endregion
@@ -483,6 +484,7 @@ const buildMrtConfig = (_buildDirectory, _projectDirectory) => {
 			`${ssrEntryPoint}.{js,mjs,cjs}`,
 			`${ssrEntryPoint}.{js,mjs,cjs}.map`,
 			"!static/**/*",
+			"sfnext-server-*.mjs",
 			"!**/*.stories.tsx",
 			"!**/*.stories.ts",
 			"!**/*-snapshot.tsx",
@@ -584,6 +586,55 @@ async function push(options) {
 }
 
 //#endregion
+//#region src/server/ts-import.ts
+/**
+* Parse TypeScript paths from tsconfig.json and convert to jiti alias format.
+*
+* @param tsconfigPath - Path to tsconfig.json
+* @param projectDirectory - Project root directory for resolving relative paths
+* @returns Record of alias mappings for jiti
+*
+* @example
+* // tsconfig.json: { "compilerOptions": { "paths": { "@/*": ["./src/*"] } } }
+* // Returns: { "@/": "/absolute/path/to/src/" }
+*/
+function parseTsconfigPaths(tsconfigPath, projectDirectory) {
+	const alias = {};
+	if (!existsSync(tsconfigPath)) return alias;
+	try {
+		const tsconfigContent = readFileSync(tsconfigPath, "utf-8");
+		const tsconfig = JSON.parse(tsconfigContent);
+		const paths = tsconfig.compilerOptions?.paths;
+		const baseUrl = tsconfig.compilerOptions?.baseUrl || ".";
+		if (paths) {
+			for (const [key, values] of Object.entries(paths)) if (values && values.length > 0) {
+				const aliasKey = key.replace(/\/\*$/, "/");
+				alias[aliasKey] = resolve$1(projectDirectory, baseUrl, values[0].replace(/\/\*$/, "/").replace(/^\.\//, ""));
+			}
+		}
+	} catch {}
+	return alias;
+}
+/**
+* Import a TypeScript file using jiti with proper path alias resolution.
+* This is a cross-platform alternative to tsx that works on Windows.
+*
+* @param filePath - Absolute path to the TypeScript file to import
+* @param options - Import options including project directory
+* @returns The imported module
+*/
+async function importTypescript(filePath, options) {
+	const { projectDirectory, tsconfigPath = resolve$1(projectDirectory, "tsconfig.json") } = options;
+	const { createJiti } = await import("jiti");
+	const alias = parseTsconfigPaths(tsconfigPath, projectDirectory);
+	return createJiti(import.meta.url, {
+		fsCache: false,
+		interopDefault: true,
+		alias
+	}).import(filePath);
+}
+
+//#endregion
 //#region src/server/config.ts
 /**
 * This is a temporary function before we move the config implementation from
@@ -622,11 +673,9 @@ async function loadProjectConfig(projectDirectory) {
 	const configPath = resolve$1(projectDirectory, "config.server.ts");
 	const tsconfigPath = resolve$1(projectDirectory, "tsconfig.json");
 	if (!existsSync(configPath)) throw new Error(`config.server.ts not found at ${configPath}.\nPlease ensure config.server.ts exists in your project root.`);
-	const { tsImport } = await import("tsx/esm/api");
-	const configUrl = pathToFileURL$1(configPath).href;
-	const config = (await tsImport(configUrl, {
-		parentURL: import.meta.url,
-		tsconfig: existsSync(tsconfigPath) ? tsconfigPath : void 0
+	const config = (await importTypescript(configPath, {
+		projectDirectory,
+		tsconfigPath
 	})).default;
 	if (!config?.app?.commerce?.api) throw new Error("Invalid config.server.ts: missing app.commerce.api configuration.\nPlease ensure your config.server.ts has the commerce API configuration.");
 	const api = config.app.commerce.api;
@@ -842,8 +891,7 @@ async function createServer$1(options) {
 	}
 	const middlewareRegistryPath = resolve$1(projectDirectory, "src/server/middleware-registry.ts");
 	if (existsSync(middlewareRegistryPath)) {
-		const { tsImport } = await import("tsx/esm/api");
-		const registry = await tsImport(middlewareRegistryPath, { parentURL: import.meta.url });
+		const registry = await importTypescript(middlewareRegistryPath, { projectDirectory });
 		if (registry.customMiddlewares && Array.isArray(registry.customMiddlewares)) registry.customMiddlewares.forEach((middleware) => {
 			app.use(middleware);
 		});
@@ -2094,7 +2142,7 @@ const createStorefront = async (options) => {
 	try {
 		execSync("git --version", { stdio: "ignore" });
 	} catch (e) {
-		error(`❌ git is not installed or not found in your PATH. Please install git before running this command: ${String(e)}`);
+		error(`❌ git isn't installed or found in your PATH. Install git before running this command: ${String(e)}`);
 		process.exit(1);
 	}
 	const { storefront } = await prompts({
@@ -2104,7 +2152,7 @@ const createStorefront = async (options) => {
 		initial: DEFAULT_STOREFRONT
 	});
 	if (!storefront) {
-		error("Storefront name is required");
+		error("Storefront name is required.");
 		process.exit(1);
 	}
 	console.log("\n");
@@ -2113,7 +2161,7 @@ const createStorefront = async (options) => {
 		name: "template",
 		message: "📄 Which template would you like to use for your storefront?\n",
 		choices: [{
-			title: "Salesforce Commerce Cloud Retail Storefront",
+			title: "Salesforce B2C Commerce Retail Storefront",
 			value: STOREFRONT_NEXT_GITHUB_URL
 		}, {
 			title: "A different template (I will provide the Github URL)",
@@ -2128,7 +2176,7 @@ const createStorefront = async (options) => {
 			message: "🌐 What is the Github URL for your template?\n"
 		});
 		if (!githubUrl) {
-			error("Github URL is required");
+			error("Github URL is required.");
 			process.exit(1);
 		}
 		template = githubUrl;
@@ -2147,11 +2195,11 @@ const createStorefront = async (options) => {
 			const { selectedExtensions } = await prompts({
 				type: "multiselect",
 				name: "selectedExtensions",
-				message: "🔌 Which extension would you like to enable? (use arrow keys to select, space to toggle, enter to confirm)\n",
+				message: "🔌 Which extension would you like to enable? (Use arrow keys to select, space to toggle, and enter to confirm.)\n",
 				choices: Object.keys(extensionConfig.extensions).map((extension) => ({
 					title: `${extensionConfig.extensions[extension].name} - ${extensionConfig.extensions[extension].description}`,
 					value: extension,
-					selected: true
+					selected: extensionConfig.extensions[extension].defaultOn ?? true
 				})),
 				instructions: false
 			});
@@ -2162,7 +2210,7 @@ const createStorefront = async (options) => {
 	const envDefaultPath = path.join(storefront, ".env.default");
 	let envDefaultValues = {};
 	if (fs.existsSync(envDefaultPath)) envDefaultValues = dotenv.parse(fs.readFileSync(envDefaultPath, "utf8"));
-	console.log("\n⚙️ We will now configure your storefront before it is ready to run.\n");
+	console.log("\n⚙️ We will now configure your storefront before it will be ready to run.\n");
 	const configOverrides = {};
 	for (const config of configMeta.configs) {
 		const answer = await prompts({
@@ -2196,6 +2244,17 @@ const CONFIG_PATH = [
 	"extensions",
 	"config.json"
 ];
+const EXTENSION_FOLDERS = [
+	"components",
+	"locales",
+	"hooks",
+	"routes"
+];
+/**
+* Console log a message with a specific type
+* @param message string
+* @param type
+*/
 const consoleLog = (message, type) => {
 	switch (type) {
 		case "error":
@@ -2232,15 +2291,16 @@ const getExtensionConfig = (projectDirectory) => {
 * @param extensionConfig Record<string, ExtensionMeta>
 * @param message string
 * @param installedExtensions string[]
+* @param excludeExtensions string[] extensions to exclude from the list, so we can filter out extensions that are already installed
 * @returns string[]
 */
-const getExtensionSelection = async (type, extensionConfig, message, installedExtensions) => {
+const getExtensionSelection = async (type, extensionConfig, message, installedExtensions, excludeExtensions = []) => {
 	consoleLog("\n", "info");
 	const { selectedExtensions } = await prompts({
 		type,
 		name: "selectedExtensions",
 		message,
-		choices: installedExtensions.map((extensionKey) => ({
+		choices: installedExtensions.filter((extensionKey) => !excludeExtensions.includes(extensionKey)).map((extensionKey) => ({
 			title: `${extensionConfig[extensionKey].name} - ${extensionConfig[extensionKey].description}`,
 			value: extensionKey
 		})),
@@ -2269,9 +2329,15 @@ const handleUninstall = async (extensionConfig, options) => {
 		consoleLog("\n Please select at least one extension to uninstall.", "error");
 		return;
 	}
+	selectedExtensions.forEach((ext) => {
+		if (extensionConfig[ext].folder) fs.rmSync(path.join(options.projectDirectory, "src", "extensions", extensionConfig[ext].folder), {
+			recursive: true,
+			force: true
+		});
+	});
 	installedExtensions = installedExtensions.filter((ext) => !selectedExtensions.includes(ext));
 	trimExtensions(options.projectDirectory, Object.fromEntries(installedExtensions.map((ext) => [ext, true])), { extensions: extensionConfig }, options.verbose ?? false);
-	consoleLog("\n Extensions uninstalled.", "success");
+	consoleLog(" Extensions uninstalled.", "success");
 };
 /**
 * Handle the installation of extensions
@@ -2285,12 +2351,6 @@ verbose?: boolean;
 * @returns 
 */
 const handleInstall = async (extensionConfig, options) => {
-	try {
-		execSync("cursor-agent -v", { stdio: "ignore" });
-	} catch (e) {
-		consoleLog(`Cursor cli is not installed. Please install it (https://cursor.com/docs/cli/overview) and try again. ${e.message}`, "error");
-		return;
-	}
 	const { sourceGitUrl } = await prompts({
 		type: "text",
 		name: "sourceGitUrl",
@@ -2304,34 +2364,38 @@ const handleInstall = async (extensionConfig, options) => {
 		consoleLog(`No extensions found in the source project, please check ${path.join(...CONFIG_PATH)} exists in ${sourceGitUrl} and contains at least one extension.`, "error");
 		return;
 	}
-	const selectedExtensions = options.extensions ? options.extensions : await getExtensionSelection("select", srcExtensionConfig, "🔌 Which extension would you like to install?", Object.keys(srcExtensionConfig));
+	const selectedExtensions = options.extensions ? options.extensions : await getExtensionSelection("select", srcExtensionConfig, "🔌 Which extension would you like to install?", Object.keys(srcExtensionConfig), Object.keys(extensionConfig));
 	if (selectedExtensions == null || selectedExtensions.length !== 1 || selectedExtensions[0] == null) {
-		consoleLog("\n Please select extactly one extension to install.", "error");
+		consoleLog("Please select extactly one extension to install.", "error");
 		return;
 	}
 	let hasError = false;
 	try {
 		const extensionKey = selectedExtensions[0];
 		const extension = srcExtensionConfig[extensionKey];
+		if (extension.installationInstructions) try {
+			execSync("cursor-agent -v", { stdio: "ignore" });
+		} catch (e) {
+			consoleLog("This extension contains LLM instructions, please install cursor cli and try again. (https://cursor.com/docs/cli/overview)", "error");
+			return;
+		}
+		const startTime = Date.now();
+		if (extension.folder) fs.copySync(path.join(tmpDir, "src", "extensions", extension.folder), path.join(options.projectDirectory, "src", "extensions", extension.folder));
 		if (extension.installationInstructions) {
 			console.log(`\n⏳ Installing ${extension.name}, this will take a few minutes...`);
-			const startTime = Date.now();
 			try {
-				execSync(`cursor-agent -p --force 'Execute the steps specified in the installation instructions file: ${extension.installationInstructions}' --model "gpt-5" --output-format text`, {
+				execSync(`cursor-agent -p --force 'Execute the steps specified in the installation instructions file: ${extension.installationInstructions}' --output-format text`, {
 					cwd: options.projectDirectory,
 					stdio: "inherit"
 				});
-				extensionConfig[extensionKey] = extension;
-				fs.writeFileSync(getExtensionConfigPath(options.projectDirectory), JSON.stringify({ extensions: extensionConfig }, null, 4));
-				consoleLog(`${extension.name} was installed successfully. (${Date.now() - startTime}ms)`, "success");
 			} catch (e) {
 				consoleLog(`Error installing ${extension.name}. ${e.message}`, "error");
 				hasError = true;
 			}
-		} else {
-			consoleLog(`${extension.name} has no installation instructions, pleae contact the extension author to get the instructions.`, "error");
-			hasError = true;
 		}
+		extensionConfig[extensionKey] = extension;
+		fs.writeFileSync(getExtensionConfigPath(options.projectDirectory), JSON.stringify({ extensions: extensionConfig }, null, 4));
+		consoleLog(`${extension.name} was installed successfully. (${Date.now() - startTime}ms)`, "success");
 	} finally {
 		fs.rmSync(tmpDir, {
 			recursive: true,
@@ -2369,17 +2433,82 @@ const manageExtensions = async (options) => {
 	if (operation === "uninstall") await handleUninstall(extensionConfig, options);
 	else await handleInstall(extensionConfig, options);
 };
+const getExtensionMarker = (val) => {
+	return `SFDC_EXT_${val.toUpperCase().replaceAll(" ", "_").replaceAll("-", "_")}`;
+};
+const getExtensionFolderName = (val) => {
+	return val.toLowerCase().replaceAll(" ", "-").trim();
+};
+const getExtensionNameSchema = (projectDirectory, extensionConfig) => {
+	return z.object({ name: z.string().regex(/^[a-zA-Z0-9 _-]+$/, { message: "Extension name can only contain alphanumeric characters, spaces, dashes, or underscores" }) }).superRefine((data, ctx) => {
+		if (extensionConfig[getExtensionMarker(data.name)]) ctx.addIssue({
+			code: z.ZodIssueCode.custom,
+			message: `Extension "${data.name}" already exists`
+		});
+		if (fs.existsSync(path.join(projectDirectory, "src", "extensions", getExtensionFolderName(data.name)))) ctx.addIssue({
+			code: z.ZodIssueCode.custom,
+			message: `Extension directory ${getExtensionFolderName(data.name)} already exists`
+		});
+	});
+};
+const listExtensions = (options) => {
+	const extensionConfig = getExtensionConfig(options.projectDirectory);
+	consoleLog("The following extensions are installed:", "info");
+	Object.keys(extensionConfig).forEach((key) => {
+		consoleLog(`- ${extensionConfig[key].name}: ${extensionConfig[key].description}`, "info");
+	});
+};
+const createExtension = async (options) => {
+	const { projectDirectory, name, description } = options;
+	const extensionConfig = getExtensionConfig(projectDirectory);
+	let extensionName = name;
+	let extensionDescription = description;
+	if (extensionName == null || extensionName.trim() === "") extensionName = (await prompts({
+		type: "text",
+		name: "extensionName",
+		message: "What would you like to name the extension? (e.g., \"My Extension\")"
+	})).extensionName;
+	const result = getExtensionNameSchema(projectDirectory, extensionConfig).safeParse({ name: extensionName });
+	if (!result.success) {
+		const firstIssueMessage = result.error.issues?.[0]?.message;
+		consoleLog(firstIssueMessage, "error");
+		return;
+	}
+	if (extensionDescription == null || extensionDescription.trim() === "") extensionDescription = (await prompts({
+		type: "text",
+		name: "extensionDescription",
+		message: "How would you describe the extension?"
+	})).extensionDescription;
+	const folderName = getExtensionFolderName(extensionName);
+	const extensionFolderPath = path.join(projectDirectory, "src", "extensions", folderName);
+	fs.mkdirSync(extensionFolderPath, { recursive: true });
+	EXTENSION_FOLDERS.forEach((folder) => {
+		fs.mkdirSync(path.join(extensionFolderPath, folder), { recursive: true });
+	});
+	fs.writeFileSync(path.join(extensionFolderPath, "README.md"), `# ${extensionName}\n\n${extensionDescription}`);
+	const marker = getExtensionMarker(extensionName);
+	extensionConfig[marker] = {
+		name: extensionName,
+		description: extensionDescription,
+		installationInstructions: "",
+		uninstallationInstructions: "",
+		folder: folderName,
+		dependencies: []
+	};
+	fs.writeFileSync(path.join(projectDirectory, "src", "extensions", "config.json"), JSON.stringify({ extensions: extensionConfig }, null, 4));
+	consoleLog(`Extension "${extensionName}" scaffolding was created successfully.`, "success");
+};
 
 //#endregion
 //#region src/cli.ts
 const __dirname = dirname(fileURLToPath(import.meta.url));
 function validateAndBuildPaths(options) {
 	if (!options.projectDirectory) {
-		error("--project-directory is required");
+		error("--project-directory is required.");
 		process.exit(1);
 	}
 	if (!fs.existsSync(options.projectDirectory)) {
-		error(`Project directory does not exist: ${options.projectDirectory}`);
+		error(`Project directory doesn't exist: ${options.projectDirectory}`);
 		process.exit(1);
 	}
 	const cartridgeBaseDir = path.join(options.projectDirectory, CARTRIDGES_BASE_DIR);
@@ -2408,15 +2537,15 @@ async function runGenerateCartridge(projectDirectory) {
 */
 async function runDeployCartridge(projectDirectory) {
 	const dwJsonPath = path.join(__dirname, "..", "dw.json");
-	if (!fs.existsSync(dwJsonPath)) throw new Error(`dw.json file not found in storefront-next-dev directory. Please ensure dw.json exists at ${dwJsonPath}`);
+	if (!fs.existsSync(dwJsonPath)) throw new Error(`The dw.json file not found in storefront-next-dev directory. Make sure dw.json exists at ${dwJsonPath}`);
 	const dwConfig = JSON.parse(fs.readFileSync(dwJsonPath, "utf8"));
 	const { cartridgeBaseDir, metadataDir } = validateAndBuildPaths({ projectDirectory });
-	if (!fs.existsSync(metadataDir)) throw new Error(`Metadata directory does not exist: ${metadataDir}. Run 'generate-cartridge' first.`);
-	if (!dwConfig.username || !dwConfig.password) throw new Error("Username and password are required in dw.json file.");
+	if (!fs.existsSync(metadataDir)) throw new Error(`Metadata directory doesn't exist: ${metadataDir}. Run 'generate-cartridge' first.`);
+	if (!dwConfig.username || !dwConfig.password) throw new Error("Username and password are required in the dw.json file.");
 	const instance = dwConfig.hostname;
-	if (!instance) throw new Error("Instance is required. Add \"hostname\" to dw.json file.");
+	if (!instance) throw new Error("Instance is required. Add \"hostname\" to the dw.json file.");
 	const codeVersion = dwConfig["code-version"];
-	if (!codeVersion) throw new Error("Code version is required. Add \"code-version\" to dw.json file.");
+	if (!codeVersion) throw new Error("Code version is required. Add \"code-version\" to the dw.json file.");
 	const credentials = `${dwConfig.username}:${dwConfig.password}`;
 	success(`Code deployed to version "${(await deployCode(instance, codeVersion, cartridgeBaseDir, Buffer.from(credentials).toString("base64"))).version}" successfully!`);
 }
@@ -2432,15 +2561,15 @@ const handleCommandError = (label, err) => {
 	}
 	process.exit(1);
 };
-program.name("sfnext").description("Dev and build tools for SFCC Storefront Next").version(version);
-program.command("create-storefront").description("Create a new storefront project").option("-v --verbose", "Verbose mode").action(async (options) => {
+program.name("sfnext").description("Dev and build tools for Storefront Next.").version(version);
+program.command("create-storefront").description("Create a storefront project.").option("-v --verbose", "Verbose mode").action(async (options) => {
 	try {
 		await createStorefront({ verbose: options.verbose });
 	} catch (err) {
 		handleCommandError("create-storefront", err);
 	}
 });
-program.command("push").description("Create and push bundle to Managed Runtime").requiredOption("-d, --project-directory <dir>", "Project directory").option("-b, --build-directory <dir>", "Build directory to push (default: auto-detected)").option("-m, --message <message>", "Bundle message (default: git branch:commit)").option("-s, --project-slug <slug>", "Project slug - the unique identifier for your project on Managed Runtime (default: from .env MRT_PROJECT or package.json name)").option("-t, --target <target>", "Deploy target environment (default: from .env MRT_TARGET)").option("-w, --wait", "Wait for deployment to complete", false).option("--cloud-origin <origin>", "API origin", DEFAULT_CLOUD_ORIGIN).option("-c, --credentials-file <file>", "Credentials file location").option("-u, --user <email>", "User email for Managed Runtime").option("-k, --key <api-key>", "API key for Managed Runtime").action(async (options) => {
+program.command("push").description("Create and push bundle to Managed Runtime.").requiredOption("-d, --project-directory <dir>", "Project directory").option("-b, --build-directory <dir>", "Build directory to push (default: auto-detected)").option("-m, --message <message>", "Bundle message (default: git branch:commit)").option("-s, --project-slug <slug>", "Project slug - the unique identifier for your project on Managed Runtime (default: from .env MRT_PROJECT or package.json name.)").option("-t, --target <target>", "Deploy target environment (default: from .env MRT_TARGET).").option("-w, --wait", "Wait for deployment to complete.", false).option("--cloud-origin <origin>", "API origin", DEFAULT_CLOUD_ORIGIN).option("-c, --credentials-file <file>", "Credentials file location.").option("-u, --user <email>", "User email for Managed Runtime.").option("-k, --key <api-key>", "API key for Managed Runtime.").action(async (options) => {
 	try {
 		if (GENERATE_AND_DEPLOY_CARTRIDGE_ON_MRT_PUSH) try {
 			info("Generating cartridge metadata before MRT push...");
@@ -2450,7 +2579,7 @@ program.command("push").description("Create and push bundle to Managed Runtime")
 			await runDeployCartridge(options.projectDirectory);
 			success("Cartridge deployed successfully!");
 		} catch (cartridgeError) {
-			error(`Warning: Failed to generate/deploy cartridge: ${cartridgeError.message}`);
+			error(`Warning: Failed to generate or deploy cartridge: ${cartridgeError.message}`);
 		}
 		await push({
 			projectDirectory: options.projectDirectory,
@@ -2469,7 +2598,7 @@ program.command("push").description("Create and push bundle to Managed Runtime")
 		handleCommandError("Push", err);
 	}
 });
-program.command("dev").description("Start Vite development server with SSR").option("-d, --project-directory <dir>", "Project directory (default: current directory)").option("-p, --port <port>", "Port number (default: 5173)", (val) => parseInt(val, 10)).action(async (options) => {
+program.command("dev").description("Start Vite development server with SSR.").option("-d, --project-directory <dir>", "Project directory (default: current directory).").option("-p, --port <port>", "Port number (default: 5173)", (val) => parseInt(val, 10)).action(async (options) => {
 	try {
 		await dev({
 			projectDirectory: options.projectDirectory,
@@ -2479,7 +2608,7 @@ program.command("dev").description("Start Vite development server with SSR").opt
 		handleCommandError("Dev", err);
 	}
 });
-program.command("preview").description("Start preview server with production build (auto-builds if needed)").option("-d, --project-directory <dir>", "Project directory (default: current directory)").option("-p, --port <port>", "Port number (default: 3000)", (val) => parseInt(val, 10)).action(async (options) => {
+program.command("preview").description("Start preview server with production build (auto-builds if needed).").option("-d, --project-directory <dir>", "Project directory (default: current directory).").option("-p, --port <port>", "Port number (default: 3000)", (val) => parseInt(val, 10)).action(async (options) => {
 	try {
 		await preview({
 			projectDirectory: options.projectDirectory,
@@ -2489,7 +2618,7 @@ program.command("preview").description("Start preview server with production bui
 		handleCommandError("Serve", err);
 	}
 });
-program.command("create-instructions").description("Generate LLM instructions using prompt templating for installing and uninstalling Storefront Next feature extensions").requiredOption("-d, --project-directory <dir>", "Project directory").requiredOption("-c, --extension-config <config>", "Extension config JSON file location").requiredOption("-e, --extension <extension>", "Extension marker value (e.g. SFDC_EXT_featureA)").option("-p, --template-repo <repo>", "Storefront template repo URL (default: https://github.com/SalesforceCommerceCloud/storefront-next-template.git)").option("-b, --branch <branch>", "Storefront template repo branch (default: main)").option("-f, --files <files...>", "Specific files to include (relative to project directory)").option("-o, --output-dir <dir>", "Output directory (default: ./instructions)").action((options) => {
+program.command("create-instructions").description("Generate LLM instructions using prompt templating for installing and uninstalling Storefront Next feature extensions.").requiredOption("-d, --project-directory <dir>", "Project directory.").requiredOption("-c, --extension-config <config>", "Extension config JSON file location.").requiredOption("-e, --extension <extension>", "Extension marker value (e.g. SFDC_EXT_featureA).").option("-p, --template-repo <repo>", "Storefront template repo URL (default: https://github.com/SalesforceCommerceCloud/storefront-next-template.git)").option("-b, --branch <branch>", "Storefront template repo branch (default: main).").option("-f, --files <files...>", "Specific files to include (relative to project directory).").option("-o, --output-dir <dir>", "Output directory (default: ./instructions).").action((options) => {
 	try {
 		const baseDir = process.cwd();
 		const projectDirectory = path.resolve(baseDir, options.projectDirectory);
@@ -2501,8 +2630,15 @@ program.command("create-instructions").description("Generate LLM instructions us
 		handleCommandError("create-instructions", err);
 	}
 });
-const extensionsCommand = program.command("extensions").description("Manage features extensions for a storefront project");
-extensionsCommand.command("install").description("Install a new extension").option("-d, --project-directory <dir>", "Target project directory", process.cwd()).option("-e, --extension <extension>", "Extension marker value (e.g. SFDC_EXT_STORE_LOCATOR)").option("-s, --source-git-url <url>", "Git URL of the source template project", DEFAULT_TEMPLATE_GIT_URL).option("-v, --verbose", "Verbose mode").action(async (options) => {
+const extensionsCommand = program.command("extensions").description("Manage features extensions for a storefront project.");
+extensionsCommand.command("list").description("List all installed extensions.").option("-d, --project-directory <dir>", "Target project directory", process.cwd()).action((options) => {
+	try {
+		listExtensions(options);
+	} catch (err) {
+		handleCommandError("extensions list", err);
+	}
+});
+extensionsCommand.command("install").description("Install an extension.").option("-d, --project-directory <dir>", "Target project directory.", process.cwd()).option("-e, --extension <extension>", "Extension marker value (e.g. SFDC_EXT_STORE_LOCATOR).").option("-s, --source-git-url <url>", "Git URL of the source template project", DEFAULT_TEMPLATE_GIT_URL).option("-v, --verbose", "Verbose mode.").action(async (options) => {
 	try {
 		await manageExtensions({
 			projectDirectory: options.projectDirectory,
@@ -2515,7 +2651,7 @@ extensionsCommand.command("install").description("Install a new extension").opti
 		handleCommandError("extensions install", err);
 	}
 });
-extensionsCommand.command("remove").description("Remove one or more installed extensions").option("-d, --project-directory <dir>", "Target project directory", process.cwd()).option("-e, --extensions <extensions>", "Comma-separated list of extension marker values (e.g. SFDC_EXT_STORE_LOCATOR,SFDC_EXT_INTERNAL_THEME_SWITCHER)").option("-v, --verbose", "Verbose mode").action(async (options) => {
+extensionsCommand.command("remove").description("Remove one or more installed extensions.").option("-d, --project-directory <dir>", "Target project directory", process.cwd()).option("-e, --extensions <extensions>", "Comma-separated list of extension marker values (e.g. SFDC_EXT_STORE_LOCATOR,SFDC_EXT_INTERNAL_THEME_SWITCHER).").option("-v, --verbose", "Verbose mode.").action(async (options) => {
 	try {
 		await manageExtensions({
 			projectDirectory: options.projectDirectory,
@@ -2527,7 +2663,14 @@ extensionsCommand.command("remove").description("Remove one or more installed ex
 		handleCommandError("extensions remove", err);
 	}
 });
-program.command("generate-cartridge").description("Generate component cartridge metadata from decorated components").requiredOption("-d, --project-directory <dir>", "Project directory containing the source code").action(async (options) => {
+extensionsCommand.command("create").description("Create an extension.").option("-p, --project-directory <projectDirectory>", "Target project directory", process.cwd()).option("-n, --name <name>", "Name of the extension to create, e.g., \"My Extension\".").option("-d, --description <description>", "Description of the extension.").action(async (options) => {
+	try {
+		await createExtension(options);
+	} catch (err) {
+		handleCommandError("extensions create", err);
+	}
+});
+program.command("generate-cartridge").description("Generate component cartridge metadata from decorated components.").requiredOption("-d, --project-directory <dir>", "Project directory containing the source code.").action(async (options) => {
 	try {
 		await runGenerateCartridge(options.projectDirectory);
 		process.exit(0);
@@ -2536,7 +2679,7 @@ program.command("generate-cartridge").description("Generate component cartridge 
 		process.exit(1);
 	}
 });
-program.command("deploy-cartridge").description("Deploy a cartridge to Commerce Cloud (zips and uploads the metadata directory)").requiredOption("-d, --project-directory <dir>", "Project directory containing the source code").action(async (options) => {
+program.command("deploy-cartridge").description("Deploy a cartridge to Commerce Cloud (zips and uploads the metadata directory).").requiredOption("-d, --project-directory <dir>", "Project directory containing the source code.").action(async (options) => {
 	try {
 		await runDeployCartridge(options.projectDirectory);
 		process.exit(0);

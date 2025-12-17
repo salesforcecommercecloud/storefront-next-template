@@ -134,7 +134,7 @@ vi.mock('@/components/home/skeleton', () => ({
 }));
 
 vi.mock('react-router', async (importOriginal) => {
-    const actual = await importOriginal();
+    const actual = await importOriginal<object>();
     return {
         ...actual,
         Await: ({ resolve, children }: any) => {
@@ -242,7 +242,7 @@ vi.mock('@/lib/api/categories', () => ({
 }));
 
 vi.mock('@/config', async (importOriginal) => {
-    const actual = await importOriginal();
+    const actual = await importOriginal<object>();
     return {
         ...actual,
         getConfig: vi.fn(),

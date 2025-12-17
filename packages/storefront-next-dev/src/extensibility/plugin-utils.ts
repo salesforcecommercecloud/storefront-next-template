@@ -3,8 +3,6 @@ import {
     isJSXIdentifier,
     isJSXAttribute,
     jsxText,
-    isStringLiteral,
-    stringLiteral,
     isJSXElement,
     isJSXFragment,
     jsxElement,
@@ -15,7 +13,6 @@ import {
     jsxOpeningFragment,
     jsxClosingFragment,
     type JSXElement as BabelJSXElement,
-    type JSXFragment as BabelJSXFragment,
     type File,
     type VariableDeclaration as BabelVariableDeclaration,
     type ReturnStatement as BabelReturnStatement,
@@ -131,11 +128,14 @@ function runReplacementPass(ast: File, tagName: string, pluginRegistry: PluginCo
                     const content = generate(initPath.node).code;
                     if (new RegExp(`<(${tagName})(\\s|\\/|>)`).test(content)) {
                         // Check if the init itself is the PluginComponent
-                        const pluginIdReplaced = findAndReplace(tagName, initPath as NodePath<BabelJSXElement>, pluginRegistry);
+                        const pluginIdReplaced = findAndReplace(
+                            tagName,
+                            initPath as NodePath<BabelJSXElement>,
+                            pluginRegistry
+                        );
                         if (pluginIdReplaced) {
                             pluginIdsReplaced.add(pluginIdReplaced);
                         }
-
                         // Also traverse to find any nested PluginComponents
                         initPath.traverse({
                             JSXElement(inner: NodePath<BabelJSXElement>) {
@@ -143,7 +143,7 @@ function runReplacementPass(ast: File, tagName: string, pluginRegistry: PluginCo
                                 if (nestedPluginIdReplaced) {
                                     pluginIdsReplaced.add(nestedPluginIdReplaced);
                                 }
-                            }
+                            },
                         });
                     }
                 }

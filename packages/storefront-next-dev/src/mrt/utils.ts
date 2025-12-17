@@ -1,6 +1,7 @@
 const MRT_BUNDLE_TYPE_SSR = 'ssr' as const;
-const MRT_BUNDLE_TYPE_STREAMING = 'streamingHandler' as const;
-export type MrtBundleType = typeof MRT_BUNDLE_TYPE_SSR | typeof MRT_BUNDLE_TYPE_STREAMING;
+const MRT_STREAMING_ENTRY_FILE = 'streamingHandler' as const;
+const MRT_BUNDLE_TYPE_STREAMING = 'streaming' as const;
+export type MrtBundleType = typeof MRT_BUNDLE_TYPE_SSR | typeof MRT_STREAMING_ENTRY_FILE;
 /**
  * Gets the MRT entry file for the given mode
  * @param mode - The mode to get the MRT entry file for
@@ -8,6 +9,6 @@ export type MrtBundleType = typeof MRT_BUNDLE_TYPE_SSR | typeof MRT_BUNDLE_TYPE_
  */
 export const getMrtEntryFile = (mode: string): MrtBundleType => {
     // TODO: Move the MRT_BUNDLE_TYPE env var to a command line option with sfnext
-    const disableStreaming = process.env.MRT_BUNDLE_TYPE === MRT_BUNDLE_TYPE_SSR || mode !== 'production';
-    return disableStreaming ? MRT_BUNDLE_TYPE_SSR : MRT_BUNDLE_TYPE_STREAMING;
+    const enableStreaming = process.env.MRT_BUNDLE_TYPE === MRT_BUNDLE_TYPE_STREAMING && mode === 'production';
+    return enableStreaming ? MRT_STREAMING_ENTRY_FILE : MRT_BUNDLE_TYPE_SSR;
 };

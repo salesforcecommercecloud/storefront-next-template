@@ -1,5 +1,6 @@
 import { a as isComponentTypeAllowedInRegion, i as useDesignState, o as useComponentDiscovery, r as useDesignContext } from "./DesignContext.js";
 import { n as usePageDesignerMode } from "./PageDesignerProvider.js";
+import { i as useRegionContext, n as useComponentContext, r as RegionContext, t as ComponentContext } from "./ComponentContext.js";
 import React, { useCallback, useMemo, useRef } from "react";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 
@@ -218,16 +219,6 @@ DesignFrame.defaultProps = {
 	regionId: void 0,
 	showFrame: false
 };
-
-//#endregion
-//#region src/design/react/context/RegionContext.tsx
-const RegionContext = React.createContext(null);
-const useRegionContext = () => React.useContext(RegionContext);
-
-//#endregion
-//#region src/design/react/context/ComponentContext.tsx
-const ComponentContext = React.createContext(null);
-const useComponentContext = () => React.useContext(ComponentContext);
 
 //#endregion
 //#region src/design/react/components/DesignComponent.tsx

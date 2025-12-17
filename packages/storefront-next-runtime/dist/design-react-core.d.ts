@@ -1,6 +1,6 @@
 import { r as ShopperExperience } from "./types.js";
 import { g as IsomorphicConfiguration } from "./index2.js";
-import "react";
+import React$1 from "react";
 import * as react_jsx_runtime0 from "react/jsx-runtime";
 
 //#region src/design/react/core/PageDesignerProvider.d.ts
@@ -38,13 +38,32 @@ declare const PageDesignerProvider: {
   };
 };
 //#endregion
-//#region src/design/react/core/PageDesignerPage.d.ts
-declare function PageDesignerPage({
+//#region src/design/react/core/PageDesignerPageMetadataProvider.d.ts
+/**
+ * Provides the page metadata for Page Designer.
+ */
+declare function PageDesignerPageMetadataProvider({
   page,
   children
 }: React.PropsWithChildren<{
   page: ShopperExperience.schemas['Page'];
 }>): react_jsx_runtime0.JSX.Element;
 //#endregion
-export { PageDesignerPage, PageDesignerProvider, usePageDesignerMode };
+//#region src/design/react/core/RegionContext.d.ts
+interface RegionContextType {
+  regionId: string;
+  componentIds: string[];
+}
+declare const RegionContext: React$1.Context<RegionContextType | null>;
+declare const useRegionContext: () => RegionContextType | null;
+//#endregion
+//#region src/design/react/core/ComponentContext.d.ts
+interface ComponentContextType {
+  componentId: string;
+  name?: string;
+}
+declare const ComponentContext: React$1.Context<ComponentContextType | null>;
+declare const useComponentContext: () => ComponentContextType | null;
+//#endregion
+export { ComponentContext, PageDesignerPageMetadataProvider, PageDesignerProvider, RegionContext, useComponentContext, usePageDesignerMode, useRegionContext };
 //# sourceMappingURL=design-react-core.d.ts.map

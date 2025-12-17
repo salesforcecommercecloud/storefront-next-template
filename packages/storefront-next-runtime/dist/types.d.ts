@@ -9707,6 +9707,121 @@ interface components$2 {
     DefaultFallback: "default";
     /** @description A descriptor for a geographical region by both a language and country code. By combining these two, regional differences in a language can be addressed, such as with the request header parameter `Accept-Language` following [RFC 2616](https://tools.ietf.org/html/rfc2616) & [RFC 1766](https://tools.ietf.org/html/rfc1766). This can also just refer to a language code, also RFC 2616/1766 compliant, as a default if there is no specific match for a country. Finally, can also be used to define default behavior if there is no locale specified. */
     LocaleCode: components$2["schemas"]["LanguageCountry"] | components$2["schemas"]["LanguageCode"] | components$2["schemas"]["DefaultFallback"];
+    /** @description Represents a component type for content management */
+    ComponentType: components$2["schemas"]["BaseType"] & {
+      /** @description A grouping identifier for display purposes */
+      group?: string;
+    };
+    /** @description Represents a page type for content management */
+    PageType: components$2["schemas"]["BaseType"] & {
+      /** @description Route of a page that this page type is used for */
+      route?: string;
+      /** @description The IDs of the aspect types this page supports */
+      supportedAspectTypes?: string[];
+    };
+    /** @description Base type for a page or component type */
+    BaseType: {
+      /** @description Unique identifier of the page type */
+      id: string;
+      /** @description Name of the page type for display purposes */
+      name?: string;
+      /** @description Description of the page type for display purposes */
+      description?: string;
+      /**
+       * @description Architecture type identifier
+       * @enum {string}
+       */
+      archType?: "headless" | "controller";
+      /** @description The regions where components can be plugged into */
+      regionDefinitions?: components$2["schemas"]["RegionDefinition"][];
+      /** @description Attribute groups that provide the content attributes */
+      attributeDefinitionGroups?: components$2["schemas"]["AttributeDefinitionGroup"][];
+    };
+    /** @description Represents a region used by pages and components for structuring content hierarchically */
+    RegionDefinition: {
+      /** @description The ID of the region (unique within respective page/component type) */
+      id: string;
+      /** @description The name of the region for display purposes */
+      name?: string;
+      /** @description The maximum number of components that can be visible within this region during rendering */
+      maxComponents?: number;
+      /** @description The component types to be excluded from this region */
+      componentTypeExclusions?: components$2["schemas"]["ComponentTypeExclusion"][];
+      /** @description The component types to be included in this region */
+      componentTypeInclusions?: components$2["schemas"]["ComponentTypeInclusion"][];
+      /** @description The constructors for the components the region will be filled with on creation */
+      defaultComponentConstructors?: components$2["schemas"]["ComponentConstructor"][];
+    };
+    /** @description Represents the definition of a content attribute group for representing component content attributes in a grouped manner */
+    AttributeDefinitionGroup: {
+      /** @description The ID of the attribute group (unique within respective component type) */
+      id: string;
+      /** @description Name of the attribute group for display purposes */
+      name?: string;
+      /** @description Description of the attribute group for display purposes */
+      description?: string;
+      /** @description The attribute definitions that belong to this group */
+      attributeDefinitions?: components$2["schemas"]["AttributeDefinition"][];
+    };
+    /** @description Represents the definition of a content attribute used for representing the content of components */
+    AttributeDefinition: {
+      /** @description The ID of the attribute (unique within respective component type) */
+      id: string;
+      /** @description Name of the attribute for display purposes */
+      name?: string;
+      /** @description Description of the attribute for display purposes */
+      description?: string;
+      /**
+       * @description The type of value the attribute can hold
+       * @enum {string}
+       */
+      type: "string" | "text" | "markup" | "product" | "category" | "file" | "boolean" | "integer" | "enum" | "page" | "image" | "url" | "custom" | "cms_record";
+      /** @description The definition of the editor for this attribute */
+      editorDefinition?: {
+        [key: string]: unknown;
+      };
+      /** @description The valid values for enum type attributes */
+      values?: Record<string, never>[];
+      /**
+       * @description Whether the attribute is required to be set for its component
+       * @default true
+       */
+      required: boolean;
+      /** @description The fallback value if no value was set explicitly */
+      defaultValue?: Record<string, never>;
+      dynamicLookup?: components$2["schemas"]["DynamicAttributeLookup"];
+    };
+    /** @description Describes the rule for a component type exclusion, commonly used per RegionDefinition */
+    ComponentTypeExclusion: {
+      /** @description The ID of the component type to be excluded */
+      typeId: string;
+    };
+    /** @description Describes the rule for a component type inclusion, commonly used per RegionDefinition */
+    ComponentTypeInclusion: {
+      /** @description The ID of the component type to be included */
+      typeId: string;
+    };
+    /** @description Describes the rule for component creation, commonly used per RegionDefinition */
+    ComponentConstructor: {
+      /** @description The ID of the component type used for component creation */
+      typeId: string;
+      /** @description Name of the component */
+      name?: string;
+      /** @description The component constructors per region */
+      regionComponentConstructors?: components$2["schemas"]["RegionComponentConstructor"][];
+    };
+    /** @description Describes the rule for component creation per region, used by ComponentConstructor */
+    RegionComponentConstructor: {
+      /** @description The ID of the region the component constructors are targeted for */
+      regionId: string;
+      /** @description The component constructors for the region */
+      componentConstructors?: components$2["schemas"]["ComponentConstructor"][];
+    };
+    /** @description Represents the definition of dynamic attribute lookup, currently only to aspect attributes based on attribute ID aliasing */
+    DynamicAttributeLookup: {
+      /** @description The ID of the referenced aspect attribute */
+      aspectAttributeAlias: string;
+    };
     Region: {
       /**
        * ID
@@ -9754,7 +9869,9 @@ interface components$2 {
        *       "category": "topseller"
        *     }
        */
-      data?: Record<string, never>;
+      data?: {
+        [key: string]: unknown;
+      };
       /**
        * Localized
        * @description Whether the compononent has been localized in the current locale.
@@ -9775,7 +9892,7 @@ interface components$2 {
        *     }
        */
       custom?: Record<string, never>;
-      designMetadata?: components$2["schemas"]["ComponentDesignMetadata"];
+      designMetadata?: components$2["schemas"]["ComponentType"];
       /**
        * Regions
        * @description The regions (and their assigned components) for the component.
@@ -9802,32 +9919,6 @@ interface components$2 {
        *     ]
        */
       regions?: components$2["schemas"]["Region"][];
-    };
-    ComponentDesignMetadata: {
-      /**
-       * Name
-       * @description The name of the component.
-       * @example Hero
-       */
-      name?: string;
-      /**
-       * Type
-       * @description The type of the component.
-       * @example commerce_assets.banner
-       */
-      type?: string;
-      /**
-       * Description
-       * @description The description of the component.
-       * @example Hero banner component
-       */
-      description?: string;
-      /**
-       * Is Fragment
-       * @description Whether the component is a fragment.
-       * @example false
-       */
-      isFragment?: boolean;
     };
     Page: {
       /**
@@ -9885,7 +9976,10 @@ interface components$2 {
        *       "thumbnail": "myshop.jpg"
        *     }
        */
-      data?: Record<string, never>;
+      data?: {
+        [key: string]: unknown;
+      };
+      designMetadata?: components$2["schemas"]["PageType"];
       /**
        * Custom Page Data
        * @description Any custom data added by the custom code for the page type.

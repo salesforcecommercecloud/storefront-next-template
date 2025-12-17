@@ -1,6 +1,9 @@
 import type { StoryObj } from '@storybook/react-vite';
 import React from 'react';
-import { PageDesignerProvider, PageDesignerPage } from '@salesforce/storefront-next-runtime/design/react/core';
+import {
+    PageDesignerProvider,
+    PageDesignerPageMetadataProvider,
+} from '@salesforce/storefront-next-runtime/design/react/core';
 import {
     createReactComponentDesignDecorator,
     type ComponentDesignMetadata,
@@ -394,7 +397,7 @@ function DesignLayerStory({
     description?: string;
 }) {
     return (
-        <PageDesignerPage page={pageData}>
+        <PageDesignerPageMetadataProvider page={pageData}>
             <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
                 <h1 style={{ marginBottom: '2rem', fontSize: '1.5rem', fontWeight: 'bold' }}>{title}</h1>
                 {description && <p style={{ marginBottom: '2rem', color: '#666' }}>{description}</p>}
@@ -427,7 +430,7 @@ function DesignLayerStory({
                                         <DecoratedPlaceholderComponent
                                             key={component.id}
                                             designMetadata={designMetadata}
-                                            title={component.data?.title || `Component ${component.id}`}
+                                            title={(component.data?.title as string) || `Component ${component.id}`}
                                             description={`Component ID: ${component.id} | Type: ${component.typeId}`}
                                             typeId={component.typeId}
                                         />
@@ -450,7 +453,7 @@ function DesignLayerStory({
                     </div>
                 ))}
             </div>
-        </PageDesignerPage>
+        </PageDesignerPageMetadataProvider>
     );
 }
 

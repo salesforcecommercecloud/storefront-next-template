@@ -2,10 +2,10 @@ import path, { resolve } from "node:path";
 import fs from "fs-extra";
 import path$1, { basename, dirname, extname, join, posix, relative, resolve as resolve$1 } from "path";
 import { URL as URL$1, fileURLToPath } from "url";
-import { parse } from "/home/runner/work/storefront-next/storefront-next/node_modules/.pnpm/@babel+parser@7.28.4/node_modules/@babel/parser/lib/index.js";
-import { isJSXAttribute, isJSXElement, isJSXIdentifier, isStringLiteral, jsxClosingElement, jsxElement, jsxIdentifier, jsxOpeningElement, jsxText, stringLiteral } from "/home/runner/work/storefront-next/storefront-next/node_modules/.pnpm/@babel+types@7.28.4/node_modules/@babel/types/lib/index.js";
+import { parse } from "@babel/parser";
+import { isJSXAttribute, isJSXElement, isJSXFragment, isJSXIdentifier, jsxClosingElement, jsxClosingFragment, jsxElement, jsxFragment, jsxIdentifier, jsxOpeningElement, jsxOpeningFragment, jsxText } from "@babel/types";
 import { generate } from "@babel/generator";
-import traverseModule from "/home/runner/work/storefront-next/storefront-next/node_modules/.pnpm/@babel+traverse@7.28.4/node_modules/@babel/traverse/lib/index.js";
+import traverseModule from "@babel/traverse";
 import fs$1, { existsSync, readFileSync, writeFileSync } from "fs";
 import { glob } from "glob";
 import { Node, Project, ts } from "ts-morph";
@@ -17,8 +17,7 @@ import dotenv from "dotenv";
 import chalk from "chalk";
 import express from "express";
 import { createRequestHandler } from "@react-router/express";
-import { existsSync as existsSync$1 } from "node:fs";
-import { pathToFileURL } from "node:url";
+import { existsSync as existsSync$1, readFileSync as readFileSync$1 } from "node:fs";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import compression from "compression";
 import zlib from "node:zlib";
@@ -156,19 +155,20 @@ const readableChunkFileNamesPlugin = () => {
 //#endregion
 //#region src/mrt/utils.ts
 const MRT_BUNDLE_TYPE_SSR = "ssr";
-const MRT_BUNDLE_TYPE_STREAMING = "streamingHandler";
+const MRT_STREAMING_ENTRY_FILE = "streamingHandler";
+const MRT_BUNDLE_TYPE_STREAMING = "streaming";
 /**
 * Gets the MRT entry file for the given mode
 * @param mode - The mode to get the MRT entry file for
 * @returns The MRT entry file for the given mode
 */
 const getMrtEntryFile = (mode) => {
-	return process.env.MRT_BUNDLE_TYPE === MRT_BUNDLE_TYPE_SSR || mode !== "production" ? MRT_BUNDLE_TYPE_SSR : MRT_BUNDLE_TYPE_STREAMING;
+	return process.env.MRT_BUNDLE_TYPE === MRT_BUNDLE_TYPE_STREAMING && mode === "production" ? MRT_STREAMING_ENTRY_FILE : MRT_BUNDLE_TYPE_SSR;
 };
 
 //#endregion
 //#region src/plugins/managedRuntimeBundle.ts
-const __dirname = path$1.dirname(fileURLToPath(import.meta.url));
+const __dirname$1 = path$1.dirname(fileURLToPath(import.meta.url));
 /**
 * This is a Vite plugin specifically for building the Managed Runtime production bundle.
 * This plugin relies on the @react-router/dev/vite plugin to work.
@@ -193,8 +193,13 @@ const managedRuntimeBundlePlugin = () => {
 		const mrtEntryPath = path$1.resolve(buildDirectory, mrtEntryFile);
 		await fs.ensureDir(buildDirectory);
 		await fs.outputFile(loaderPath, "// This file is intentionally empty");
-		const prebuiltMrtEntryPath = path$1.resolve(__dirname, `./mrt/${mrtEntryFile}`);
+		const prebuiltMrtEntryPath = path$1.resolve(__dirname$1, `./mrt/${mrtEntryFile}`);
 		await fs.copy(prebuiltMrtEntryPath, mrtEntryPath);
+		const mrtDir = path$1.resolve(__dirname$1, "./mrt");
+		if (await fs.pathExists(mrtDir)) {
+			const files = await fs.readdir(mrtDir);
+			for (const file of files) if (file.startsWith("sfnext-server-") && file.endsWith(".mjs")) await fs.copy(path$1.join(mrtDir, file), path$1.resolve(buildDirectory, file));
+		}
 		const packageJsonPath = path$1.resolve(resolvedConfig.root, "package.json");
 		const buildPackageJsonPath = path$1.resolve(buildDirectory, "package.json");
 		const packageJson = await fs.readJson(packageJsonPath);
@@ -281,7 +286,11 @@ function findAndReplace(componentName, element, pluginRegistry) {
 			const pluginId = attr && isJSXAttribute(attr) && attr.value && "value" in attr.value ? attr.value.value : void 0;
 			if (pluginId == null) throw new Error(`PluginComponent must contain a pluginId attribute`);
 			if (pluginRegistry[pluginId] && pluginRegistry[pluginId].length > 0) {
-				element.replaceWith(jsxText(pluginRegistry[pluginId].map((pluginComponent) => `<${pluginComponent.componentName} />`).join("")));
+				const components = pluginRegistry[pluginId].map((pluginComponent) => {
+					return jsxElement(jsxOpeningElement(jsxIdentifier(pluginComponent.componentName), [], true), null, [], true);
+				});
+				if (components.length > 1) element.replaceWith(jsxFragment(jsxOpeningFragment(), jsxClosingFragment(), components));
+				else element.replaceWith(components[0]);
 				pluginIdReplaced = pluginId;
 				replaced = true;
 			}
@@ -302,29 +311,26 @@ function runReplacementPass(ast, tagName, pluginRegistry) {
 	const pluginIdsReplaced = /* @__PURE__ */ new Set();
 	traverse(ast, {
 		VariableDeclaration(nodePath) {
-			const declarations = nodePath.node.declarations;
-			for (const declaration of declarations) if (isStringLiteral(declaration.init) && (/* @__PURE__ */ new RegExp(`<(${tagName})(\\s|\\/|>)`)).test(declaration.init.value)) {
-				const original = declaration.init.value;
-				const jsxAst = parse(`<>${original}</>`, {
-					sourceType: "module",
-					plugins: [
-						"typescript",
-						"jsx",
-						"decorators-legacy"
-					]
-				});
-				traverse(jsxAst, { JSXFragment(fragmentPath) {
-					fragmentPath.traverse({ JSXElement(inner) {
-						const pluginIdReplaced = findAndReplace(tagName, inner, pluginRegistry);
+			const declarationPaths = nodePath.get("declarations");
+			const declarationsArray = Array.isArray(declarationPaths) ? declarationPaths : [declarationPaths];
+			for (const declarationPath of declarationsArray) {
+				const initPath = declarationPath.get("init");
+				if (initPath && isJSXElement(initPath.node)) {
+					const content = generate(initPath.node).code;
+					if ((/* @__PURE__ */ new RegExp(`<(${tagName})(\\s|\\/|>)`)).test(content)) {
+						const pluginIdReplaced = findAndReplace(tagName, initPath, pluginRegistry);
 						if (pluginIdReplaced) pluginIdsReplaced.add(pluginIdReplaced);
-					} });
-				} });
-				declaration.init = stringLiteral(generate(jsxAst).code);
+						initPath.traverse({ JSXElement(inner) {
+							const nestedPluginIdReplaced = findAndReplace(tagName, inner, pluginRegistry);
+							if (nestedPluginIdReplaced) pluginIdsReplaced.add(nestedPluginIdReplaced);
+						} });
+					}
+				}
 			}
 		},
 		ReturnStatement(nodePath) {
 			const arg = nodePath.node.argument;
-			if (!isJSXElement(arg)) return;
+			if (!isJSXElement(arg) && !isJSXFragment(arg)) return;
 			nodePath.traverse({ JSXElement(inner) {
 				const pluginIdReplaced = findAndReplace(tagName, inner, pluginRegistry);
 				if (pluginIdReplaced) pluginIdsReplaced.add(pluginIdReplaced);
@@ -480,7 +486,7 @@ function transformPluginPlaceholderPlugin() {
 		name: "odyssey:transform-plugin-placeholder",
 		enforce: "pre",
 		configResolved(config) {
-			sourceDir = config.resolve.alias.find((alias) => alias.find === "@")?.replacement || path$1.join(process.cwd(), "src");
+			sourceDir = config.resolve.alias.find((alias) => alias.find === "@")?.replacement || path$1.resolve(__dirname, "./src");
 		},
 		buildStart() {
 			({componentRegistry, contextProviders} = buildPluginRegistry(sourceDir));
@@ -515,7 +521,7 @@ const watchConfigFilesPlugin = () => {
 		configureServer(server) {
 			const aliases = viteConfig.resolve.alias;
 			const root = Object.values(aliases).find((alias) => alias.find === "@")?.replacement || "src";
-			const glob$1 = path$1.join(root, "/extensions/**/plugin-config.json");
+			const glob$1 = path$1.posix.join(root, "extensions", "**", "plugin-config.json");
 			server.watcher.add(glob$1);
 			const onChange = (file) => {
 				if (file.endsWith("plugin-config.json")) {
@@ -922,7 +928,7 @@ const getMrtConfig = (projectDir) => {
 	loadEnvFile(projectDir);
 	const pkg = getProjectPkg(projectDir);
 	const defaultMrtProject = process.env.MRT_PROJECT ?? pkg.name;
-	if (!defaultMrtProject || defaultMrtProject.trim() === "") throw new Error("Project name could not be determined. Please either:\n  1. Set MRT_PROJECT in your .env file, or\n  2. Ensure package.json has a valid \"name\" field");
+	if (!defaultMrtProject || defaultMrtProject.trim() === "") throw new Error("Project name couldn't be determined. Do one of these options:\n  1. Set MRT_PROJECT in your .env file, or\n  2. Ensure package.json has a valid \"name\" field.");
 	const defaultMrtTarget = process.env.MRT_TARGET ?? void 0;
 	debug("MRT configuration resolved", {
 		projectDir,
@@ -1177,6 +1183,7 @@ const buildMrtConfig = (_buildDirectory, _projectDirectory) => {
 			`${ssrEntryPoint}.{js,mjs,cjs}`,
 			`${ssrEntryPoint}.{js,mjs,cjs}.map`,
 			"!static/**/*",
+			"sfnext-server-*.mjs",
 			"!**/*.stories.tsx",
 			"!**/*.stories.ts",
 			"!**/*-snapshot.tsx",
@@ -1278,6 +1285,55 @@ async function push(options) {
 }
 
 //#endregion
+//#region src/server/ts-import.ts
+/**
+* Parse TypeScript paths from tsconfig.json and convert to jiti alias format.
+*
+* @param tsconfigPath - Path to tsconfig.json
+* @param projectDirectory - Project root directory for resolving relative paths
+* @returns Record of alias mappings for jiti
+*
+* @example
+* // tsconfig.json: { "compilerOptions": { "paths": { "@/*": ["./src/*"] } } }
+* // Returns: { "@/": "/absolute/path/to/src/" }
+*/
+function parseTsconfigPaths(tsconfigPath, projectDirectory) {
+	const alias = {};
+	if (!existsSync$1(tsconfigPath)) return alias;
+	try {
+		const tsconfigContent = readFileSync$1(tsconfigPath, "utf-8");
+		const tsconfig = JSON.parse(tsconfigContent);
+		const paths = tsconfig.compilerOptions?.paths;
+		const baseUrl = tsconfig.compilerOptions?.baseUrl || ".";
+		if (paths) {
+			for (const [key, values] of Object.entries(paths)) if (values && values.length > 0) {
+				const aliasKey = key.replace(/\/\*$/, "/");
+				alias[aliasKey] = resolve(projectDirectory, baseUrl, values[0].replace(/\/\*$/, "/").replace(/^\.\//, ""));
+			}
+		}
+	} catch {}
+	return alias;
+}
+/**
+* Import a TypeScript file using jiti with proper path alias resolution.
+* This is a cross-platform alternative to tsx that works on Windows.
+*
+* @param filePath - Absolute path to the TypeScript file to import
+* @param options - Import options including project directory
+* @returns The imported module
+*/
+async function importTypescript(filePath, options) {
+	const { projectDirectory, tsconfigPath = resolve(projectDirectory, "tsconfig.json") } = options;
+	const { createJiti } = await import("jiti");
+	const alias = parseTsconfigPaths(tsconfigPath, projectDirectory);
+	return createJiti(import.meta.url, {
+		fsCache: false,
+		interopDefault: true,
+		alias
+	}).import(filePath);
+}
+
+//#endregion
 //#region src/server/config.ts
 /**
 * This is a temporary function before we move the config implementation from
@@ -1316,11 +1372,9 @@ async function loadProjectConfig(projectDirectory) {
 	const configPath = resolve(projectDirectory, "config.server.ts");
 	const tsconfigPath = resolve(projectDirectory, "tsconfig.json");
 	if (!existsSync$1(configPath)) throw new Error(`config.server.ts not found at ${configPath}.\nPlease ensure config.server.ts exists in your project root.`);
-	const { tsImport } = await import("tsx/esm/api");
-	const configUrl = pathToFileURL(configPath).href;
-	const config = (await tsImport(configUrl, {
-		parentURL: import.meta.url,
-		tsconfig: existsSync$1(tsconfigPath) ? tsconfigPath : void 0
+	const config = (await importTypescript(configPath, {
+		projectDirectory,
+		tsconfigPath
 	})).default;
 	if (!config?.app?.commerce?.api) throw new Error("Invalid config.server.ts: missing app.commerce.api configuration.\nPlease ensure your config.server.ts has the commerce API configuration.");
 	const api = config.app.commerce.api;
@@ -1536,8 +1590,7 @@ async function createServer(options) {
 	}
 	const middlewareRegistryPath = resolve(projectDirectory, "src/server/middleware-registry.ts");
 	if (existsSync$1(middlewareRegistryPath)) {
-		const { tsImport } = await import("tsx/esm/api");
-		const registry = await tsImport(middlewareRegistryPath, { parentURL: import.meta.url });
+		const registry = await importTypescript(middlewareRegistryPath, { projectDirectory });
 		if (registry.customMiddlewares && Array.isArray(registry.customMiddlewares)) registry.customMiddlewares.forEach((middleware) => {
 			app.use(middleware);
 		});

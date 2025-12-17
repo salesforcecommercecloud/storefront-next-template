@@ -52,6 +52,11 @@ export default defineConfig([
                 dts: '.d.ts',
             };
         },
+        // We use a custom chunk file name so we can identify our own shared chunks
+        // vs customer's chunks.
+        outputOptions: {
+            chunkFileNames: 'sfnext-server-[name]-[hash].mjs',
+        },
         dts: true,
         outDir: 'dist/mrt',
         // This is the react-router server build entry point, it is created from the user land when running `vite build`
@@ -75,6 +80,11 @@ export default defineConfig([
                 js: '.mjs',
                 dts: '.d.ts',
             };
+        },
+        // We use a custom chunk file name so we can identify our own shared chunks
+        // vs customer's chunks.
+        outputOptions: {
+            chunkFileNames: 'sfnext-server-[name]-[hash].mjs',
         },
         dts: true,
         outDir: 'dist/mrt',

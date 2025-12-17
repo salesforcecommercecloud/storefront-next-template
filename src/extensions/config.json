@@ -15,8 +15,10 @@
         "SFDC_EXT_INTERNAL_THEME_SWITCHER": {
             "name": "Theme Switcher",
             "description": "Theme Switcher allows a developer to switch the theme of the store.",
+            "installationInstructions": "instructions/install-theme-switcher.mdc",
+            "uninstallationInstructions": "instructions/uninstall-theme-switcher.mdc",
             "folder": "theme-switcher",
-	        "defaultOn": false
+            "defaultOn": false
         },
         "SFDC_EXT_HYBRID_PROXY": {
             "name": "Hybrid Proxy",

@@ -11,7 +11,7 @@ import ProductGrid from '@/components/product-grid';
 import { useTranslation } from 'react-i18next';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { PageType } from '@/lib/decorators/page-type';
-import { getRegionDefinition, RegionDefinition } from '@/lib/decorators/region-definition';
+import { RegionDefinition } from '@/lib/decorators/region-definition';
 import { Region } from '@/components/region';
 import { collectComponentDataPromises, fetchPageFromLoader } from '@/lib/util/pageLoader';
 
@@ -42,7 +42,7 @@ import { collectComponentDataPromises, fetchPageFromLoader } from '@/lib/util/pa
 ])
 export class SearchPageMetadata {}
 
-type SearchPageData = {
+export type SearchPageData = {
     searchTerm: string;
     refinements: Promise<ShopperSearch.schemas['ProductSearchResult']>;
     searchResult: Promise<ShopperSearch.schemas['ProductSearchResult']>;
@@ -171,13 +171,7 @@ export default function SearchPage({
 
                 {/* plpTopFullWidth */}
                 <div className="mb-8">
-                    <Region
-                        page={page}
-                        regionId="plpTopFullWidth"
-                        metadata={getRegionDefinition(SearchPageMetadata, 'plpTopFullWidth')}
-                        componentData={componentData}
-                        fallback={<div />}
-                    />
+                    <Region page={page} regionId="plpTopFullWidth" componentData={componentData} fallback={<div />} />
                 </div>
 
                 <div className="flex flex-col lg:flex-row gap-8">
@@ -195,7 +189,6 @@ export default function SearchPage({
                             <Region
                                 page={page}
                                 regionId="plpTopContent"
-                                metadata={getRegionDefinition(SearchPageMetadata, 'plpTopContent')}
                                 componentData={componentData}
                                 fallback={<div />}
                             />
@@ -220,13 +213,7 @@ export default function SearchPage({
 
                         {/* plpBottom */}
                         <div className="mt-8">
-                            <Region
-                                page={page}
-                                regionId="plpBottom"
-                                metadata={getRegionDefinition(SearchPageMetadata, 'plpBottom')}
-                                componentData={componentData}
-                                fallback={<div />}
-                            />
+                            <Region page={page} regionId="plpBottom" componentData={componentData} fallback={<div />} />
                         </div>
                     </div>
                 </div>

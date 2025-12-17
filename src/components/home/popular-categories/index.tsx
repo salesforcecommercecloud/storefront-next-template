@@ -5,7 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Typography } from '@/components/typography';
 import { Component } from '@/lib/decorators/component';
 import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
-import { RegionDefinition, getRegionDefinition } from '@/lib/decorators';
+import { RegionDefinition } from '@/lib/decorators';
 import { useTranslation } from 'react-i18next';
 import { loader as loaders } from './loaders';
 import PopularCategory from '@/components/home/popular-category';
@@ -219,7 +219,6 @@ function CategoryGridContent({
                                 <Region
                                     page={Promise.resolve(resolvedPage)}
                                     regionId="categories"
-                                    metadata={getRegionDefinition(PopularCategoriesMetadata, 'categories')}
                                     componentData={componentData}
                                 />
                             </div>
