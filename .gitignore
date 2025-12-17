@@ -51,6 +51,6 @@ Thumbs.db
 # Workspace configuration and packages (monorepo only - included in mirror repo)
 # In monorepo: Ignored (created temporarily for syncing)
 # In mirror repo: Tracked (needed for standalone workspace)
-packages/
 pnpm-workspace.yaml
 
+packages/

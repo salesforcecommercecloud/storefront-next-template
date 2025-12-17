@@ -1,0 +1,14 @@
+{
+    "components": [
+        {
+            "pluginId": "product.info.after.price",
+            "path": "extensions/product-review/components/product-ratings/index.tsx",
+            "order": 0
+        }, 
+        {
+            "pluginId": "product.detail.after.content",
+            "path": "extensions/product-review/components/review-section/index.tsx",
+            "order": 0
+        }
+    ]
+}

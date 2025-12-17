@@ -16,7 +16,7 @@
             "name": "Theme Switcher",
             "description": "Theme Switcher allows a developer to switch the theme of the store.",
             "folder": "theme-switcher",
-	    "defaultOn": false
+	        "defaultOn": false
         },
         "SFDC_EXT_HYBRID_PROXY": {
             "name": "Hybrid Proxy",
@@ -24,7 +24,15 @@
             "installationInstructions": "instructions/install-hybrid-proxy.mdc",
             "uninstallationInstructions": "instructions/uninstall-hybrid-proxy.mdc",
             "folder": "hybrid-proxy",
-	    "defaultOn": false
+            "defaultOn": false
+        },
+        "SFDC_EXT_PRODUCT_REVIEW": {
+            "name": "Product Review",
+            "description": "Product ratings, review and submission",
+            "installationInstructions": "",
+            "uninstallationInstructions": "",
+            "folder": "product-review",
+            "dependencies": []
         }
     }
 }
