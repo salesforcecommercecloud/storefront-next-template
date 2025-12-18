@@ -102,3 +102,27 @@ export function createBasicAuthHeader(clientId: string, clientSecret: string): s
     const encoded = btoa(credentials);
     return `Basic ${encoded}`;
 }
+
+/**
+ * Extract a cookie value from the Set-Cookie response header.
+ *
+ * @param response - The fetch Response object
+ * @param cookieName - The name of the cookie to extract
+ * @returns The cookie value if found, undefined otherwise
+ *
+ * @example
+ * ```typescript
+ * const dwsid = extractCookieFromResponse(response, 'dwsid');
+ * ```
+ */
+export function extractCookieFromResponse(response: Response, cookieName: string): string | undefined {
+    // Headers.get() is case-insensitive per the Fetch API spec
+    // (handles Set-Cookie, set-cookie, SET-COOKIE, etc.)
+    const setCookieHeader = response.headers.get('set-cookie');
+    if (!setCookieHeader) return undefined;
+
+    // Parse Set-Cookie header for the specified cookie (format: "name=value; Path=/; ...")
+    const regex = new RegExp(`${cookieName}=([^;]+)`);
+    const match = setCookieHeader.match(regex);
+    return match?.[1];
+}

@@ -98,7 +98,8 @@ export const loginIDPUser = async (
             }
         }
 
-        const res = await clients.auth.social.exchangeCode({
+        // SDK automatically extracts dwsid from Set-Cookie header
+        const result = await clients.auth.social.exchangeCode({
             code,
             codeVerifier,
             redirectUri: parameters.redirectURI,
@@ -107,7 +108,8 @@ export const loginIDPUser = async (
         });
 
         // Update session with user tokens and info (similar to standard login)
-        updateAuth(context, res);
+        // result already includes dwsid extracted from response headers by SDK
+        updateAuth(context, result);
         updateAuth(context, (current) => {
             // Delete the code verifier once the user has logged in
             // eslint-disable-next-line @typescript-eslint/no-unused-vars

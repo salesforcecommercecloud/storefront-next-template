@@ -25,6 +25,7 @@ import {
     COOKIE_CUSTOMER_ID,
     COOKIE_IDP_ACCESS_TOKEN,
     COOKIE_TRACKING_CONSENT,
+    COOKIE_DWSID,
     // Note: COOKIE_CODE_VERIFIER is NOT imported - it's httpOnly and server-only
 } from '@/middlewares/auth.utils';
 import { PERFORMANCE_MARKS, performanceTimerContext } from '@/middlewares/performance-metrics';
@@ -82,6 +83,7 @@ export function getAuthDataFromCookies(): Partial<AuthStorageData> | undefined {
     const usid = allCookies[getCookieNameWithSiteId(COOKIE_USID)] || '';
     const customerId = allCookies[getCookieNameWithSiteId(COOKIE_CUSTOMER_ID)] || '';
     const idpAccessToken = allCookies[getCookieNameWithSiteId(COOKIE_IDP_ACCESS_TOKEN)] || '';
+    const dwsid = allCookies[getCookieNameWithSiteId(COOKIE_DWSID)] || '';
     // Read tracking consent cookie directly as TrackingConsent enum (values match)
     const trackingConsentCookieValue = allCookies[getCookieNameWithSiteId(COOKIE_TRACKING_CONSENT)] || null;
     let trackingConsent: TrackingConsent | undefined =
@@ -120,6 +122,7 @@ export function getAuthDataFromCookies(): Partial<AuthStorageData> | undefined {
         customer_id: customerId || undefined,
         userType,
         idp_access_token: idpAccessToken || undefined,
+        dwsid: dwsid || undefined,
     };
 
     // Inject access_token_expiry from JWT (source of truth) for fast runtime checks
@@ -323,6 +326,7 @@ export const populateAuthStorage = (
     if (authData.customer_id) storage.set('customer_id', authData.customer_id);
     if (authData.idp_access_token) storage.set('idp_access_token', authData.idp_access_token);
     if (authData.userType) storage.set('userType', authData.userType);
+    if (authData.dwsid) storage.set('dwsid', authData.dwsid);
     // Always set tracking consent value (even if undefined) to reflect cookie state
     // This ensures deleted cookies are reflected in storage
     if (authData.trackingConsent !== undefined) {
@@ -562,14 +566,20 @@ export const clearInvalidSessionAndRestoreGuest = async (context: Readonly<Route
         throw new Error('clearInvalidSessionAndRestoreGuest must be used within the Commerce API middleware');
     }
 
-    // These cookies are invalid since the customer_id doesn't exist in Commerce Cloud
-    removeCookie(COOKIE_REFRESH_TOKEN_GUEST);
-    removeCookie(COOKIE_REFRESH_TOKEN_REGISTERED);
-    removeCookie(COOKIE_ACCESS_TOKEN);
-    removeCookie(COOKIE_USID);
-    removeCookie(COOKIE_CUSTOMER_ID);
-    removeCookie(COOKIE_IDP_ACCESS_TOKEN);
-    removeCookie(COOKIE_TRACKING_CONSENT);
+    const cookiesToRemove = [
+        COOKIE_REFRESH_TOKEN_GUEST,
+        COOKIE_REFRESH_TOKEN_REGISTERED,
+        COOKIE_ACCESS_TOKEN,
+        COOKIE_USID,
+        COOKIE_CUSTOMER_ID,
+        COOKIE_IDP_ACCESS_TOKEN,
+        COOKIE_TRACKING_CONSENT,
+        COOKIE_DWSID,
+    ];
+
+    cookiesToRemove.forEach((cookie) => {
+        removeCookie(cookie);
+    });
 
     // Clear react-router auth storage context and cache
     clearStorage(storage);

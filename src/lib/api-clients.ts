@@ -10,6 +10,11 @@ import { getAppOrigin } from '@/lib/utils';
 import { getTranslation } from '@/lib/i18next';
 
 /**
+ * Header name for SFCC Session ID.
+ */
+const DWSID_HEADER = 'sfdc_dwsid';
+
+/**
  * Get the SLAS client secret from environment variable.
  * Only returns the secret on the server - client secrets must never reach client code.
  */
@@ -73,6 +78,9 @@ export function createApiClients(context: RouterContextProvider | Readonly<Route
                 throw new Error('No session found');
             }
             request.headers.set('Authorization', `Bearer ${session.access_token}`);
+            if (session.dwsid) {
+                request.headers.set(DWSID_HEADER, session.dwsid);
+            }
             return request;
         },
     };

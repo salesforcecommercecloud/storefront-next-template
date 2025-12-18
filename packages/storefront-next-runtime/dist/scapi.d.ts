@@ -24923,9 +24923,20 @@ declare const operations$7: {
 //#region src/scapi-client/auth/types.d.ts
 /**
  * Re-export TokenResponse from the generated SLAS types for convenience.
- * This is the response structure returned by all auth methods.
+ * This is the base response structure from SLAS token endpoints.
  */
 type TokenResponse = ShopperLogin.schemas['TokenResponse'];
+/**
+ * Authentication response returned by all auth methods.
+ *
+ * Extends TokenResponse with the dwsid (DemandWare Session ID) which is
+ * automatically extracted from the Set-Cookie response header. The dwsid
+ * is used by hybrid storefronts for session management.
+ */
+type AuthResponse = TokenResponse & {
+  /** DemandWare Session ID extracted from Set-Cookie header (for hybrid storefronts) */
+  dwsid?: string;
+};
 /**
  * The ShopperLogin client type used internally by auth helpers.
  */
@@ -25109,7 +25120,7 @@ interface SocialNamespace {
    * Requires the code verifier that was returned from getAuthorizationUrl().
    *
    * @param options - The authorization code, code verifier, and redirect URI
-   * @returns Promise resolving to TokenResponse with access and refresh tokens
+   * @returns Promise resolving to AuthResponse with access tokens and dwsid
    *
    * @example
    * ```typescript
@@ -25118,9 +25129,10 @@ interface SocialNamespace {
    *   codeVerifier: storedCodeVerifier,
    *   redirectUri: 'https://example.com/social-callback',
    * });
+   * console.log(tokens.access_token, tokens.dwsid);
    * ```
    */
-  exchangeCode(options: SocialExchangeCodeOptions): Promise<TokenResponse>;
+  exchangeCode(options: SocialExchangeCodeOptions): Promise<AuthResponse>;
 }
 /**
  * Passwordless login namespace.
@@ -25137,13 +25149,10 @@ interface PasswordlessNamespace {
   /**
    * Exchange a passwordless login token for access tokens.
    *
-   * Similar to social.exchangeCode(), this returns the unwrapped TokenResponse
-   * for direct use with session management (e.g., updateAuth).
-   *
    * @param options - The passwordless token and optional parameters
-   * @returns Promise resolving to TokenResponse with access and refresh tokens
+   * @returns Promise resolving to AuthResponse with access tokens and dwsid
    */
-  exchangeToken(options: PasswordlessExchangeTokenOptions): Promise<TokenResponse>;
+  exchangeToken(options: PasswordlessExchangeTokenOptions): Promise<AuthResponse>;
 }
 /**
  * Password management namespace.
@@ -25175,7 +25184,8 @@ interface PasswordNamespace {
  * - Passwordless login (via `passwordless` sub-namespace)
  * - Password reset (via `password` sub-namespace)
  *
- * All methods that complete login return a TokenResponse containing access_token, refresh_token, etc.
+ * All methods that complete login return an AuthResponse containing access_token, refresh_token,
+ * and dwsid (automatically extracted from the Set-Cookie response header for hybrid storefronts).
  */
 interface AuthNamespace {
   /**
@@ -25185,18 +25195,19 @@ interface AuthNamespace {
    * For private SLAS clients (with clientSecret), uses client_credentials grant.
    *
    * @param options - Optional parameters for guest login
-   * @returns Promise resolving to TokenResponse with access and refresh tokens
+   * @returns Promise resolving to AuthResponse with access tokens and dwsid
    *
    * @example
    * ```typescript
    * // Simple guest login
    * const tokens = await clients.auth.loginAsGuest();
+   * console.log(tokens.access_token, tokens.dwsid);
    *
    * // With session linking
    * const tokens = await clients.auth.loginAsGuest({ usid: 'previous-session-id' });
    * ```
    */
-  loginAsGuest(options?: LoginAsGuestOptions): Promise<TokenResponse>;
+  loginAsGuest(options?: LoginAsGuestOptions): Promise<AuthResponse>;
   /**
    * Login with username and password credentials.
    *
@@ -25204,7 +25215,7 @@ interface AuthNamespace {
    * For private SLAS clients, the client secret is used for enhanced security.
    *
    * @param credentials - User credentials and optional parameters
-   * @returns Promise resolving to TokenResponse with access and refresh tokens
+   * @returns Promise resolving to AuthResponse with access tokens and dwsid
    *
    * @example
    * ```typescript
@@ -25212,9 +25223,10 @@ interface AuthNamespace {
    *   username: 'user@example.com',
    *   password: 'password123'
    * });
+   * console.log(tokens.access_token, tokens.dwsid);
    * ```
    */
-  loginWithCredentials(credentials: LoginWithCredentialsOptions): Promise<TokenResponse>;
+  loginWithCredentials(credentials: LoginWithCredentialsOptions): Promise<AuthResponse>;
   /**
    * Refresh an access token using a refresh token.
    *
@@ -25222,16 +25234,17 @@ interface AuthNamespace {
    * The refresh token has a longer lifetime (typically 30 days).
    *
    * @param options - The refresh token and optional parameters
-   * @returns Promise resolving to TokenResponse with new tokens
+   * @returns Promise resolving to AuthResponse with new tokens and dwsid
    *
    * @example
    * ```typescript
    * const newTokens = await clients.auth.refreshToken({
    *   refreshToken: storedRefreshToken
    * });
+   * console.log(newTokens.access_token, newTokens.dwsid);
    * ```
    */
-  refreshToken(options: RefreshTokenOptions): Promise<TokenResponse>;
+  refreshToken(options: RefreshTokenOptions): Promise<AuthResponse>;
   /**
    * Logout a shopper and revoke tokens.
    *
@@ -25268,6 +25281,7 @@ interface AuthNamespace {
    *   codeVerifier: storedCodeVerifier,
    *   redirectUri: 'https://example.com/social-callback',
    * });
+   * console.log(tokens.access_token, tokens.dwsid);
    * ```
    */
   social: SocialNamespace;
@@ -25288,6 +25302,7 @@ interface AuthNamespace {
    * const tokens = await clients.auth.passwordless.exchangeToken({
    *   pwdlessLoginToken: tokenFromUrl
    * });
+   * console.log(tokens.access_token, tokens.dwsid);
    * ```
    */
   passwordless: PasswordlessNamespace;
@@ -26270,5 +26285,5 @@ declare class ApiError extends Error {
  */
 declare const SLAS_AUTH_ENDPOINTS: readonly ["/oauth2/token", "/oauth2/authorize", "/oauth2/logout", "/oauth2/login", "/oauth2/passwordless", "/oauth2/password", "/oauth2/session-bridge", "/oauth2/trusted-agent", "/oauth2/trusted-system", "/oauth2/revoke", "/oauth2/introspect"];
 //#endregion
-export { ApiError, type AuthConfig, type AuthNamespace, Clients, CommerceApiClientConfig, type ErrorDetail, GlobalRequestParameters, type LoginAsGuestOptions, type LoginWithCredentialsOptions, type LogoutOptions, type OperationMethodsOnly, type PasswordRequestResetOptions, type PasswordResetOptions, type PasswordlessAuthorizeOptions, type PasswordlessExchangeTokenOptions, type RefreshTokenOptions, SLAS_AUTH_ENDPOINTS, ShopperBasketsV1, ShopperBasketsV2, ShopperConsents, ShopperContext, ShopperCustomers, ShopperExperience, ShopperGiftCertificates, ShopperLogin, ShopperOrders, ShopperProducts, ShopperPromotions, ShopperSearch, ShopperSeo, ShopperStores, type SocialAuthorizationUrlResult, type SocialExchangeCodeOptions, type SocialGetAuthorizationUrlOptions, type TokenResponse, createClient, createCommerceApiClients };
+export { ApiError, type AuthConfig, type AuthNamespace, type AuthResponse, Clients, CommerceApiClientConfig, type ErrorDetail, GlobalRequestParameters, type LoginAsGuestOptions, type LoginWithCredentialsOptions, type LogoutOptions, type OperationMethodsOnly, type PasswordRequestResetOptions, type PasswordResetOptions, type PasswordlessAuthorizeOptions, type PasswordlessExchangeTokenOptions, type RefreshTokenOptions, SLAS_AUTH_ENDPOINTS, ShopperBasketsV1, ShopperBasketsV2, ShopperConsents, ShopperContext, ShopperCustomers, ShopperExperience, ShopperGiftCertificates, ShopperLogin, ShopperOrders, ShopperProducts, ShopperPromotions, ShopperSearch, ShopperSeo, ShopperStores, type SocialAuthorizationUrlResult, type SocialExchangeCodeOptions, type SocialGetAuthorizationUrlOptions, type TokenResponse, createClient, createCommerceApiClients };
 //# sourceMappingURL=scapi.d.ts.map

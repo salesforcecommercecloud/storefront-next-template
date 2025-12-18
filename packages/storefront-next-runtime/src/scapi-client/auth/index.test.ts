@@ -17,6 +17,13 @@ vi.mock('./utils', () => ({
         };
     }),
     createBasicAuthHeader: vi.fn((clientId: string, secret: string) => `Basic ${btoa(`${clientId}:${secret}`)}`),
+    extractCookieFromResponse: vi.fn((response: Response, cookieName: string) => {
+        const setCookie = response.headers.get('set-cookie');
+        if (!setCookie) return undefined;
+        const regex = new RegExp(`${cookieName}=([^;]+)`);
+        const match = setCookie.match(regex);
+        return match?.[1];
+    }),
 }));
 
 describe('createAuthHelpers', () => {

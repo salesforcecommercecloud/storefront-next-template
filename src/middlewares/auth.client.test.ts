@@ -959,7 +959,8 @@ describe('auth middleware (client)', () => {
             expect(removeCookie).toHaveBeenCalledWith('customerId');
             expect(removeCookie).toHaveBeenCalledWith('cc-idp-at');
             expect(removeCookie).toHaveBeenCalledWith('dw_dnt');
-            expect(removeCookie).toHaveBeenCalledTimes(7);
+            expect(removeCookie).toHaveBeenCalledWith('dwsid');
+            expect(removeCookie).toHaveBeenCalledTimes(8);
 
             // Verify guest login API was called correctly
             expect(fetch).toHaveBeenCalledWith('/resource/auth/login-guest', {

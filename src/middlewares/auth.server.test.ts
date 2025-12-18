@@ -107,6 +107,17 @@ function getMockTokenResponse(): ShopperLogin.schemas['TokenResponse'] {
     };
 }
 
+/**
+ * Creates a mock AuthResponse (token data with dwsid included).
+ * This matches the SDK's new simplified API that extracts dwsid internally.
+ */
+function getMockAuthResponse(tokenResponse?: ShopperLogin.schemas['TokenResponse'], dwsid?: string) {
+    return {
+        ...(tokenResponse ?? getMockTokenResponse()),
+        dwsid,
+    };
+}
+
 function mockContext(
     data: AuthStorageData = {},
     isSlasPrivate = false
@@ -270,14 +281,14 @@ describe('auth middleware (server)', () => {
             const mockTokenResponse = getMockTokenResponse();
             const refreshToken = 'refresh-token-456';
 
-            mockAuth.refreshToken.mockResolvedValue(mockTokenResponse);
+            mockAuth.refreshToken.mockResolvedValue(getMockAuthResponse(mockTokenResponse, 'test-dwsid'));
 
             const result = await refreshAccessToken(provider, refreshToken);
 
             expect(mockAuth.refreshToken).toHaveBeenCalledWith({
                 refreshToken,
             });
-            expect(result).toEqual(mockTokenResponse);
+            expect(result).toEqual({ ...mockTokenResponse, dwsid: 'test-dwsid' });
         });
 
         it('should include client secret when SLAS is private', async () => {
@@ -285,7 +296,7 @@ describe('auth middleware (server)', () => {
             const mockTokenResponse = getMockTokenResponse();
             const refreshToken = 'refresh-token-456';
 
-            mockAuth.refreshToken.mockResolvedValue(mockTokenResponse);
+            mockAuth.refreshToken.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             const result = await refreshAccessToken(provider, refreshToken);
 
@@ -293,7 +304,7 @@ describe('auth middleware (server)', () => {
             expect(mockAuth.refreshToken).toHaveBeenCalledWith({
                 refreshToken,
             });
-            expect(result).toEqual(mockTokenResponse);
+            expect(result).toEqual({ ...mockTokenResponse, dwsid: undefined });
         });
 
         it('should handle refresh token failure', async () => {
@@ -311,7 +322,7 @@ describe('auth middleware (server)', () => {
             const mockTokenResponse = getMockTokenResponse();
             const refreshToken = 'refresh-token-456';
 
-            mockAuth.refreshToken.mockResolvedValue(mockTokenResponse);
+            mockAuth.refreshToken.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             const result = await refreshAccessToken(provider, refreshToken, {
                 trackingConsent: TrackingConsent.Declined,
@@ -321,7 +332,7 @@ describe('auth middleware (server)', () => {
                 refreshToken,
                 dnt: true, // TrackingConsent.Declined converts to true
             });
-            expect(result).toEqual(mockTokenResponse);
+            expect(result).toEqual({ ...mockTokenResponse, dwsid: undefined });
         });
 
         it('should include DNT value from auth context when feature is enabled and not provided in options', async () => {
@@ -343,7 +354,7 @@ describe('auth middleware (server)', () => {
             const mockTokenResponse = getMockTokenResponse();
             const refreshToken = 'refresh-token-456';
 
-            mockAuth.refreshToken.mockResolvedValue(mockTokenResponse);
+            mockAuth.refreshToken.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             const result = await refreshAccessToken(provider, refreshToken);
 
@@ -351,7 +362,7 @@ describe('auth middleware (server)', () => {
                 refreshToken,
                 dnt: true, // TrackingConsent.Declined converts to true
             });
-            expect(result).toEqual(mockTokenResponse);
+            expect(result).toEqual({ ...mockTokenResponse, dwsid: undefined });
         });
 
         it('should prioritize DNT from options over auth context', async () => {
@@ -373,7 +384,7 @@ describe('auth middleware (server)', () => {
             const mockTokenResponse = getMockTokenResponse();
             const refreshToken = 'refresh-token-456';
 
-            mockAuth.refreshToken.mockResolvedValue(mockTokenResponse);
+            mockAuth.refreshToken.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             // Pass Accepted in options, should override context value
             const result = await refreshAccessToken(provider, refreshToken, {
@@ -384,7 +395,7 @@ describe('auth middleware (server)', () => {
                 refreshToken,
                 dnt: false, // TrackingConsent.Accepted converts to false
             });
-            expect(result).toEqual(mockTokenResponse);
+            expect(result).toEqual({ ...mockTokenResponse, dwsid: undefined });
         });
 
         it('should not include DNT when feature is disabled', async () => {
@@ -403,7 +414,7 @@ describe('auth middleware (server)', () => {
             const mockTokenResponse = getMockTokenResponse();
             const refreshToken = 'refresh-token-456';
 
-            mockAuth.refreshToken.mockResolvedValue(mockTokenResponse);
+            mockAuth.refreshToken.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             const result = await refreshAccessToken(provider, refreshToken);
 
@@ -411,7 +422,7 @@ describe('auth middleware (server)', () => {
                 refreshToken,
                 // No dnt parameter when feature is disabled
             });
-            expect(result).toEqual(mockTokenResponse);
+            expect(result).toEqual({ ...mockTokenResponse, dwsid: undefined });
         });
     });
 
@@ -420,14 +431,14 @@ describe('auth middleware (server)', () => {
             const { provider } = mockContext();
             const mockTokenResponse = getMockTokenResponse();
 
-            mockAuth.loginAsGuest.mockResolvedValue(mockTokenResponse);
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse, 'guest-dwsid'));
 
             const result = await loginGuestUser(provider);
 
             expect(mockAuth.loginAsGuest).toHaveBeenCalledWith({
                 usid: undefined,
             });
-            expect(result).toEqual(mockTokenResponse);
+            expect(result).toEqual({ ...mockTokenResponse, dwsid: 'guest-dwsid' });
         });
 
         it('should login guest user with usid', async () => {
@@ -435,21 +446,21 @@ describe('auth middleware (server)', () => {
             const mockTokenResponse = getMockTokenResponse();
             const usid = 'existing-usid';
 
-            mockAuth.loginAsGuest.mockResolvedValue(mockTokenResponse);
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             const result = await loginGuestUser(provider, { usid });
 
             expect(mockAuth.loginAsGuest).toHaveBeenCalledWith({
                 usid,
             });
-            expect(result).toEqual(mockTokenResponse);
+            expect(result).toEqual({ ...mockTokenResponse, dwsid: undefined });
         });
 
         it('should use loginGuestUserPrivate when SLAS is private', async () => {
             const { provider } = mockContext({}, true);
             const mockTokenResponse = getMockTokenResponse();
 
-            mockAuth.loginAsGuest.mockResolvedValue(mockTokenResponse);
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             const result = await loginGuestUser(provider);
 
@@ -457,7 +468,7 @@ describe('auth middleware (server)', () => {
             expect(mockAuth.loginAsGuest).toHaveBeenCalledWith({
                 usid: undefined,
             });
-            expect(result).toEqual(mockTokenResponse);
+            expect(result).toEqual({ ...mockTokenResponse, dwsid: undefined });
         });
 
         it('should handle guest login failure', async () => {
@@ -480,7 +491,7 @@ describe('auth middleware (server)', () => {
             const email = 'test@example.com';
             const password = 'password123';
 
-            mockAuth.loginWithCredentials.mockResolvedValue(mockTokenResponse);
+            mockAuth.loginWithCredentials.mockResolvedValue(getMockAuthResponse(mockTokenResponse, 'registered-dwsid'));
 
             const result = await loginRegisteredUser(provider, email, password);
 
@@ -489,7 +500,7 @@ describe('auth middleware (server)', () => {
                 password,
                 usid: 'usid',
             });
-            expect(result).toEqual(mockTokenResponse);
+            expect(result).toEqual({ ...mockTokenResponse, dwsid: 'registered-dwsid' });
         });
 
         it('should login registered user with custom parameters', async () => {
@@ -502,7 +513,7 @@ describe('auth middleware (server)', () => {
             const password = 'password123';
             const customParameters = { c_customField: 'value' };
 
-            mockAuth.loginWithCredentials.mockResolvedValue(mockTokenResponse);
+            mockAuth.loginWithCredentials.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             const result = await loginRegisteredUser(provider, email, password, { customParameters });
 
@@ -512,7 +523,7 @@ describe('auth middleware (server)', () => {
                 password,
                 usid: 'usid',
             });
-            expect(result).toEqual(mockTokenResponse);
+            expect(result).toEqual({ ...mockTokenResponse, dwsid: undefined });
         });
 
         it('should include client secret when SLAS is private', async () => {
@@ -524,7 +535,7 @@ describe('auth middleware (server)', () => {
             const email = 'test@example.com';
             const password = 'password123';
 
-            mockAuth.loginWithCredentials.mockResolvedValue(mockTokenResponse);
+            mockAuth.loginWithCredentials.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             const result = await loginRegisteredUser(provider, email, password);
 
@@ -534,7 +545,7 @@ describe('auth middleware (server)', () => {
                 password,
                 usid: 'usid',
             });
-            expect(result).toEqual(mockTokenResponse);
+            expect(result).toEqual({ ...mockTokenResponse, dwsid: undefined });
         });
 
         it('should handle login failure with invalid credentials', async () => {
@@ -568,7 +579,7 @@ describe('auth middleware (server)', () => {
             const email = 'test@example.com';
             const password = 'password123';
 
-            mockAuth.loginWithCredentials.mockResolvedValue(mockTokenResponse);
+            mockAuth.loginWithCredentials.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             const result = await loginRegisteredUser(provider, email, password);
 
@@ -578,7 +589,7 @@ describe('auth middleware (server)', () => {
                 usid: 'usid',
                 dnt: true, // TrackingConsent.Declined converts to true
             });
-            expect(result).toEqual(mockTokenResponse);
+            expect(result).toEqual({ ...mockTokenResponse, dwsid: undefined });
         });
 
         it('should not include DNT when feature is disabled', async () => {
@@ -598,7 +609,7 @@ describe('auth middleware (server)', () => {
             const email = 'test@example.com';
             const password = 'password123';
 
-            mockAuth.loginWithCredentials.mockResolvedValue(mockTokenResponse);
+            mockAuth.loginWithCredentials.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             const result = await loginRegisteredUser(provider, email, password);
 
@@ -608,7 +619,7 @@ describe('auth middleware (server)', () => {
                 usid: 'usid',
                 // No dnt parameter when feature is disabled
             });
-            expect(result).toEqual(mockTokenResponse);
+            expect(result).toEqual({ ...mockTokenResponse, dwsid: undefined });
         });
 
         it('should use DNT value false when provided', async () => {
@@ -631,7 +642,7 @@ describe('auth middleware (server)', () => {
             const email = 'test@example.com';
             const password = 'password123';
 
-            mockAuth.loginWithCredentials.mockResolvedValue(mockTokenResponse);
+            mockAuth.loginWithCredentials.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             const result = await loginRegisteredUser(provider, email, password);
 
@@ -641,7 +652,7 @@ describe('auth middleware (server)', () => {
                 usid: 'usid',
                 dnt: false, // TrackingConsent.Accepted converts to false
             });
-            expect(result).toEqual(mockTokenResponse);
+            expect(result).toEqual({ ...mockTokenResponse, dwsid: undefined });
         });
     });
 
@@ -734,7 +745,9 @@ describe('auth middleware (server)', () => {
             const mockTokenResponse = getMockTokenResponse();
             const token = 'passwordless-token-123';
 
-            mockAuth.passwordless.exchangeToken.mockResolvedValue(mockTokenResponse);
+            mockAuth.passwordless.exchangeToken.mockResolvedValue(
+                getMockAuthResponse(mockTokenResponse, 'pwdless-dwsid')
+            );
 
             const result = await getPasswordLessAccessToken(provider, token);
 
@@ -742,7 +755,7 @@ describe('auth middleware (server)', () => {
                 pwdlessLoginToken: token,
                 usid: 'usid',
             });
-            expect(result).toEqual(mockTokenResponse);
+            expect(result).toEqual({ ...mockTokenResponse, dwsid: 'pwdless-dwsid' });
         });
 
         it('should include DNT value when feature is enabled and DNT exists in auth context', async () => {
@@ -764,7 +777,7 @@ describe('auth middleware (server)', () => {
             const mockTokenResponse = getMockTokenResponse();
             const token = 'passwordless-token-123';
 
-            mockAuth.passwordless.exchangeToken.mockResolvedValue(mockTokenResponse);
+            mockAuth.passwordless.exchangeToken.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             const result = await getPasswordLessAccessToken(provider, token);
 
@@ -773,7 +786,7 @@ describe('auth middleware (server)', () => {
                 usid: 'usid',
                 dnt: true, // TrackingConsent.Declined converts to true
             });
-            expect(result).toEqual(mockTokenResponse);
+            expect(result).toEqual({ ...mockTokenResponse, dwsid: undefined });
         });
 
         it('should not include DNT when feature is disabled', async () => {
@@ -792,7 +805,7 @@ describe('auth middleware (server)', () => {
             const mockTokenResponse = getMockTokenResponse();
             const token = 'passwordless-token-123';
 
-            mockAuth.passwordless.exchangeToken.mockResolvedValue(mockTokenResponse);
+            mockAuth.passwordless.exchangeToken.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             const result = await getPasswordLessAccessToken(provider, token);
 
@@ -801,7 +814,7 @@ describe('auth middleware (server)', () => {
                 usid: 'usid',
                 // No dnt parameter when feature is disabled
             });
-            expect(result).toEqual(mockTokenResponse);
+            expect(result).toEqual({ ...mockTokenResponse, dwsid: undefined });
         });
 
         it('should not include DNT when it does not exist in auth context', async () => {
@@ -823,7 +836,7 @@ describe('auth middleware (server)', () => {
             const mockTokenResponse = getMockTokenResponse();
             const token = 'passwordless-token-123';
 
-            mockAuth.passwordless.exchangeToken.mockResolvedValue(mockTokenResponse);
+            mockAuth.passwordless.exchangeToken.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             const result = await getPasswordLessAccessToken(provider, token);
 
@@ -832,7 +845,7 @@ describe('auth middleware (server)', () => {
                 usid: 'usid',
                 // No dnt parameter when trackingConsent is not set
             });
-            expect(result).toEqual(mockTokenResponse);
+            expect(result).toEqual({ ...mockTokenResponse, dwsid: undefined });
         });
 
         it('should use DNT value false when trackingConsent is Accepted', async () => {
@@ -854,7 +867,7 @@ describe('auth middleware (server)', () => {
             const mockTokenResponse = getMockTokenResponse();
             const token = 'passwordless-token-123';
 
-            mockAuth.passwordless.exchangeToken.mockResolvedValue(mockTokenResponse);
+            mockAuth.passwordless.exchangeToken.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             const result = await getPasswordLessAccessToken(provider, token);
 
@@ -863,7 +876,7 @@ describe('auth middleware (server)', () => {
                 usid: 'usid',
                 dnt: false, // TrackingConsent.Accepted converts to false
             });
-            expect(result).toEqual(mockTokenResponse);
+            expect(result).toEqual({ ...mockTokenResponse, dwsid: undefined });
         });
 
         it('should handle invalid passwordless token', async () => {
@@ -1119,7 +1132,7 @@ describe('auth middleware (server)', () => {
 
         it('should parse cookies and reconstruct auth data from separate cookies', async () => {
             const mockTokenResponse = getMockTokenResponse();
-            mockAuth.loginAsGuest.mockResolvedValue(mockTokenResponse);
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             // Create valid JWT with expiry
             const now = Math.floor(Date.now() / 1000);
@@ -1164,7 +1177,7 @@ describe('auth middleware (server)', () => {
 
         it('should determine user type from refresh token cookie presence - guest', async () => {
             const mockTokenResponse = getMockTokenResponse();
-            mockAuth.loginAsGuest.mockResolvedValue(mockTokenResponse);
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             // Mock guest refresh token cookie only
             mockParseAllCookies.mockReturnValue({
@@ -1205,7 +1218,7 @@ describe('auth middleware (server)', () => {
 
         it('should determine user type from refresh token cookie presence - registered', async () => {
             const mockTokenResponse = getMockTokenResponse();
-            mockAuth.refreshToken.mockResolvedValue(mockTokenResponse);
+            mockAuth.refreshToken.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             // Create valid JWT with expiry
             const now = Math.floor(Date.now() / 1000);
@@ -1318,10 +1331,14 @@ describe('auth middleware (server)', () => {
             expect(expiry).toBe(exp * 1000); // Should be in milliseconds
         });
 
-        it('should destroy all 7 cookies when isDestroyed is set', async () => {
+        it('should destroy all 9 cookies when isDestroyed is set', async () => {
             mockParseAllCookies.mockReturnValue({
                 'cc-nx-g': 'guest-refresh-token',
             });
+
+            // Mock guest login for when middleware falls back to guest auth
+            const mockTokenResponse = getMockTokenResponse();
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             const request = new Request('https://example.com/test');
 
@@ -1351,9 +1368,9 @@ describe('auth middleware (server)', () => {
 
             await authMiddleware({ request, context, params: {} }, next);
 
-            // Verify all 8 cookies were deleted:
-            // cc-nx-g, cc-nx, cc-at, usid, customerId, cc-idp-at, cc-cv, tc
-            expect(mockSerialize).toHaveBeenCalledTimes(8);
+            // Verify all 9 cookies were deleted:
+            // cc-nx-g, cc-nx, cc-at, usid, customerId, cc-idp-at, dwsid, cc-cv, tc
+            expect(mockSerialize).toHaveBeenCalledTimes(9);
             expect(mockSerialize).toHaveBeenCalledWith(
                 '',
                 expect.objectContaining({
@@ -1394,12 +1411,12 @@ describe('auth middleware (server)', () => {
 
             // Mock token response to control what gets written after refresh
             const mockTokenResponse = getMockTokenResponse();
-            mockAuth.refreshToken.mockResolvedValue(mockTokenResponse);
+            mockAuth.refreshToken.mockResolvedValue(getMockAuthResponse(mockTokenResponse, 'refresh-dwsid'));
 
             await authMiddleware({ request, context, params: {} }, next);
 
             // Verify serialize was called multiple times
-            // Cookies: refresh_token, access_token, usid, customer_id, idp_access_token,
+            // Cookies: refresh_token, access_token, usid, customer_id, idp_access_token, dwsid,
             // delete other refresh token, delete code verifier
             expect(mockSerialize).toHaveBeenCalled();
             expect(mockSerialize.mock.calls.length).toBeGreaterThanOrEqual(6);
@@ -1410,10 +1427,15 @@ describe('auth middleware (server)', () => {
             expect(mockSerialize).toHaveBeenCalledWith('usid-abc', expect.any(Object));
             expect(mockSerialize).toHaveBeenCalledWith('customer-789', expect.any(Object));
             expect(mockSerialize).toHaveBeenCalledWith('idp-access-token-123', expect.any(Object));
+            expect(mockSerialize).toHaveBeenCalledWith('refresh-dwsid', expect.any(Object));
         });
 
         it('should delete other refresh token cookie when switching user types', async () => {
             mockParseAllCookies.mockReturnValue({});
+
+            // Mock guest login for when middleware falls back to guest auth
+            const mockTokenResponse = getMockTokenResponse();
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             const request = new Request('https://example.com/test');
 
@@ -1462,6 +1484,10 @@ describe('auth middleware (server)', () => {
                 'cc-nx-g': 'guest-refresh-token',
             });
 
+            // Mock guest login for when middleware falls back to guest auth
+            const mockTokenResponse = getMockTokenResponse();
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
+
             const request = new Request('https://example.com/test');
 
             const context = new RouterContextProvider();
@@ -1490,13 +1516,18 @@ describe('auth middleware (server)', () => {
 
             await authMiddleware({ request, context, params: {} }, next);
 
-            // Verify all 8 cookies were deleted due to error
-            expect(mockSerialize).toHaveBeenCalledTimes(8);
+            // Verify all 9 cookies were deleted due to error
+            // cc-nx-g, cc-nx, cc-at, usid, customerId, cc-idp-at, dwsid, cc-cv, tc
+            expect(mockSerialize).toHaveBeenCalledTimes(9);
         });
 
         it('should use getCookieNameWithSiteId to get cookie names', async () => {
             mockParseAllCookies.mockReturnValue({});
             mockgetCookieNameWithSiteId.mockImplementation((name: string) => `namespace_${name}`);
+
+            // Mock guest login for when middleware falls back to guest auth
+            const mockTokenResponse = getMockTokenResponse();
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             const request = new Request('https://example.com/test', {
                 headers: {
@@ -1531,7 +1562,7 @@ describe('auth middleware (server)', () => {
             mockParseAllCookies.mockReturnValue({});
 
             const mockTokenResponse = getMockTokenResponse();
-            mockAuth.loginAsGuest.mockResolvedValue(mockTokenResponse);
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             const request = new Request('https://example.com/test');
 
@@ -1560,7 +1591,7 @@ describe('auth middleware (server)', () => {
             });
 
             const mockTokenResponse = getMockTokenResponse();
-            mockAuth.refreshToken.mockResolvedValue(mockTokenResponse);
+            mockAuth.refreshToken.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             const request = new Request('https://example.com/test', {
                 headers: {
@@ -1595,7 +1626,7 @@ describe('auth middleware (server)', () => {
 
         it('should read and reconstruct IDP access token from cookies', async () => {
             const mockTokenResponse = getMockTokenResponse();
-            mockAuth.loginAsGuest.mockResolvedValue(mockTokenResponse);
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             // Create valid JWT with expiry
             const now = Math.floor(Date.now() / 1000);
@@ -1641,7 +1672,7 @@ describe('auth middleware (server)', () => {
 
         it('should read and reconstruct code verifier from cookie', async () => {
             const mockTokenResponse = getMockTokenResponse();
-            mockAuth.loginAsGuest.mockResolvedValue(mockTokenResponse);
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             // Create valid JWT with expiry
             const now = Math.floor(Date.now() / 1000);
@@ -1687,6 +1718,10 @@ describe('auth middleware (server)', () => {
 
         it('should delete code verifier cookie when not present in storage', async () => {
             mockParseAllCookies.mockReturnValue({});
+
+            // Mock guest login for when middleware falls back to guest auth
+            const mockTokenResponse = getMockTokenResponse();
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             const request = new Request('https://example.com/test');
 

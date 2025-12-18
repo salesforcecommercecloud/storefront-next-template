@@ -8,7 +8,9 @@
 import type {
     AuthConfig,
     AuthNamespace,
+    AuthResponse,
     TokenResponse,
+    RawTokenResult,
     LoginAsGuestOptions,
     LoginWithCredentialsOptions,
     RefreshTokenOptions,
@@ -21,13 +23,22 @@ import type {
     SocialAuthorizationUrlResult,
     SocialExchangeCodeOptions,
 } from './types';
-import { createCodeVerifier, generateCodeChallenge, getCodeAndUsidFromUrl, createBasicAuthHeader } from './utils';
+import {
+    createCodeVerifier,
+    generateCodeChallenge,
+    getCodeAndUsidFromUrl,
+    createBasicAuthHeader,
+    extractCookieFromResponse,
+} from './utils';
 
 // Content-Type header for form-urlencoded endpoints (required by openapi-fetch for proper serialization)
 const FORM_URLENCODED_HEADER = { 'Content-Type': 'application/x-www-form-urlencoded' };
 
+// Cookie name for DemandWare Session ID (used for hybrid storefront session bridge)
+const COOKIE_DWSID = 'dwsid';
+
 // Re-export types for convenience
-export type { AuthConfig, AuthNamespace, TokenResponse } from './types';
+export type { AuthConfig, AuthNamespace, AuthResponse, TokenResponse } from './types';
 export type { LoginAsGuestOptions, LoginWithCredentialsOptions, RefreshTokenOptions, LogoutOptions } from './types';
 export type { PasswordlessAuthorizeOptions, PasswordlessExchangeTokenOptions } from './types';
 export type { PasswordRequestResetOptions, PasswordResetOptions } from './types';
@@ -69,9 +80,17 @@ export function createAuthHelpers(config: AuthConfig): AuthNamespace {
     const isPrivateClient = !!clientSecret;
 
     /**
+     * Adds the dwsid value to TokenResponse (extracted from Set-Cookie header).
+     */
+    function addDwsidToTokenData(result: RawTokenResult): AuthResponse {
+        const dwsid = extractCookieFromResponse(result.response, COOKIE_DWSID);
+        return { ...result.data, dwsid };
+    }
+
+    /**
      * Guest login for private SLAS client using client_credentials grant.
      */
-    async function loginGuestPrivate(options: LoginAsGuestOptions = {}): Promise<TokenResponse> {
+    async function loginGuestPrivate(options: LoginAsGuestOptions = {}): Promise<RawTokenResult> {
         const { usid, dnt } = options;
 
         if (!clientSecret) {
@@ -93,13 +112,13 @@ export function createAuthHelpers(config: AuthConfig): AuthNamespace {
             },
         });
 
-        return result.data;
+        return { data: result.data, response: result.response };
     }
 
     /**
      * Guest login for public SLAS client using PKCE flow.
      */
-    async function loginGuestPublic(options: LoginAsGuestOptions = {}): Promise<TokenResponse> {
+    async function loginGuestPublic(options: LoginAsGuestOptions = {}): Promise<RawTokenResult> {
         const { usid, dnt } = options;
 
         // Step 1: Generate PKCE code verifier and challenge
@@ -150,7 +169,7 @@ export function createAuthHelpers(config: AuthConfig): AuthNamespace {
             },
         });
 
-        return tokenResult.data;
+        return { data: tokenResult.data, response: tokenResult.response };
     }
 
     return {
@@ -158,18 +177,16 @@ export function createAuthHelpers(config: AuthConfig): AuthNamespace {
          * Login as a guest user.
          * Automatically uses the appropriate flow based on whether a client secret is configured.
          */
-        async loginAsGuest(options: LoginAsGuestOptions = {}): Promise<TokenResponse> {
-            if (isPrivateClient) {
-                return loginGuestPrivate(options);
-            }
-            return loginGuestPublic(options);
+        loginAsGuest: async (options: LoginAsGuestOptions = {}): Promise<AuthResponse> => {
+            const result = isPrivateClient ? await loginGuestPrivate(options) : await loginGuestPublic(options);
+            return addDwsidToTokenData(result);
         },
 
         /**
          * Login with username and password credentials.
          * Uses the B2C registered user login flow with PKCE.
          */
-        async loginWithCredentials(credentials: LoginWithCredentialsOptions): Promise<TokenResponse> {
+        loginWithCredentials: async (credentials: LoginWithCredentialsOptions): Promise<AuthResponse> => {
             const { username, password, usid, dnt } = credentials;
 
             // Step 1: Generate PKCE code verifier and challenge
@@ -229,7 +246,7 @@ export function createAuthHelpers(config: AuthConfig): AuthNamespace {
                     headers: FORM_URLENCODED_HEADER,
                     body: tokenBody,
                 });
-                return tokenResult.data;
+                return addDwsidToTokenData({ data: tokenResult.data, response: tokenResult.response });
             }
 
             // For public client, no auth header needed
@@ -238,13 +255,13 @@ export function createAuthHelpers(config: AuthConfig): AuthNamespace {
                 headers: FORM_URLENCODED_HEADER,
                 body: tokenBody,
             });
-            return tokenResult.data;
+            return addDwsidToTokenData({ data: tokenResult.data, response: tokenResult.response });
         },
 
         /**
          * Refresh an access token using a refresh token.
          */
-        async refreshToken(options: RefreshTokenOptions): Promise<TokenResponse> {
+        refreshToken: async (options: RefreshTokenOptions): Promise<AuthResponse> => {
             const { refreshToken, dnt } = options;
 
             const body = {
@@ -266,7 +283,7 @@ export function createAuthHelpers(config: AuthConfig): AuthNamespace {
                     headers: FORM_URLENCODED_HEADER,
                     body,
                 });
-                return result.data;
+                return addDwsidToTokenData({ data: result.data, response: result.response });
             }
 
             // For public client, no auth header needed
@@ -275,13 +292,13 @@ export function createAuthHelpers(config: AuthConfig): AuthNamespace {
                 headers: FORM_URLENCODED_HEADER,
                 body,
             });
-            return result.data;
+            return addDwsidToTokenData({ data: result.data, response: result.response });
         },
 
         /**
          * Logout a shopper and revoke tokens.
          */
-        async logout(options: LogoutOptions): Promise<TokenResponse> {
+        logout: async (options: LogoutOptions): Promise<TokenResponse> => {
             const { accessToken, refreshToken } = options;
 
             const result = await shopperLoginClient.logoutCustomer({
@@ -305,9 +322,9 @@ export function createAuthHelpers(config: AuthConfig): AuthNamespace {
          * Provides methods for social login via Google, Facebook, Apple, etc.
          */
         social: {
-            async getAuthorizationUrl(
+            getAuthorizationUrl: async (
                 options: SocialGetAuthorizationUrlOptions
-            ): Promise<SocialAuthorizationUrlResult> {
+            ): Promise<SocialAuthorizationUrlResult> => {
                 const { hint, redirectUri: overrideRedirectUri, usid } = options;
 
                 // Generate PKCE code verifier and challenge
@@ -339,7 +356,7 @@ export function createAuthHelpers(config: AuthConfig): AuthNamespace {
                 };
             },
 
-            async exchangeCode(options: SocialExchangeCodeOptions): Promise<TokenResponse> {
+            exchangeCode: async (options: SocialExchangeCodeOptions): Promise<AuthResponse> => {
                 const { code, codeVerifier, redirectUri: callbackRedirectUri, usid, dnt } = options;
 
                 const tokenBody = {
@@ -364,7 +381,7 @@ export function createAuthHelpers(config: AuthConfig): AuthNamespace {
                         headers: FORM_URLENCODED_HEADER,
                         body: tokenBody,
                     });
-                    return tokenResult.data;
+                    return addDwsidToTokenData({ data: tokenResult.data, response: tokenResult.response });
                 }
 
                 // For public client, no auth header needed
@@ -373,7 +390,7 @@ export function createAuthHelpers(config: AuthConfig): AuthNamespace {
                     headers: FORM_URLENCODED_HEADER,
                     body: tokenBody,
                 });
-                return tokenResult.data;
+                return addDwsidToTokenData({ data: tokenResult.data, response: tokenResult.response });
             },
         },
 
@@ -382,7 +399,7 @@ export function createAuthHelpers(config: AuthConfig): AuthNamespace {
          * Only available when clientSecret is configured (private SLAS client).
          */
         passwordless: {
-            async authorize(options: PasswordlessAuthorizeOptions) {
+            authorize: async (options: PasswordlessAuthorizeOptions) => {
                 const { userId, callbackUri, usid, mode = 'callback' } = options;
 
                 if (!clientSecret) {
@@ -406,7 +423,7 @@ export function createAuthHelpers(config: AuthConfig): AuthNamespace {
                 });
             },
 
-            async exchangeToken(options: PasswordlessExchangeTokenOptions) {
+            exchangeToken: async (options: PasswordlessExchangeTokenOptions): Promise<AuthResponse> => {
                 const { pwdlessLoginToken, usid, dnt } = options;
 
                 if (!clientSecret) {
@@ -432,7 +449,7 @@ export function createAuthHelpers(config: AuthConfig): AuthNamespace {
                     },
                 });
 
-                return result.data;
+                return addDwsidToTokenData({ data: result.data, response: result.response });
             },
         },
 
@@ -440,7 +457,7 @@ export function createAuthHelpers(config: AuthConfig): AuthNamespace {
          * Password management namespace.
          */
         password: {
-            async requestReset(options: PasswordRequestResetOptions) {
+            requestReset: async (options: PasswordRequestResetOptions) => {
                 const { userId, callbackUri } = options;
 
                 const headers: Record<string, string> = {
@@ -466,7 +483,7 @@ export function createAuthHelpers(config: AuthConfig): AuthNamespace {
                 });
             },
 
-            async reset(options: PasswordResetOptions) {
+            reset: async (options: PasswordResetOptions) => {
                 const { userId, token, newPassword } = options;
 
                 // The OpenAPI spec for SLAS resetPassword is inaccurate:

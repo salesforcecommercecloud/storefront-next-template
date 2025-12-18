@@ -7,6 +7,7 @@ export { SLAS_AUTH_ENDPOINTS } from './constants';
 export type {
     AuthNamespace,
     AuthConfig,
+    AuthResponse,
     TokenResponse,
     LoginAsGuestOptions,
     LoginWithCredentialsOptions,

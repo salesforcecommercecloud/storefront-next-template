@@ -277,6 +277,24 @@ describe('createApiClients', () => {
                 expect(result.headers.get('Authorization')).toBe('Bearer test-access-token-123');
             });
 
+            it('should add dwsid header when present in session', async () => {
+                const mockRequest = new Request('https://api.example.com/test');
+                const mockSession: SessionData = {
+                    access_token: 'test-access-token-123',
+                    customer_id: 'test-customer',
+                    userType: 'registered',
+                    dwsid: 'test-dwsid-value',
+                };
+
+                mockContextProvider.set(authContext, {
+                    ref: Promise.resolve(mockSession),
+                });
+
+                const result = await authMiddleware.onRequest({ request: mockRequest });
+
+                expect(result.headers.get('sfdc_dwsid')).toBe('test-dwsid-value');
+            });
+
             it('should retrieve auth session from context', async () => {
                 const mockRequest = new Request('https://api.example.com/test');
                 const mockSession: SessionData = {
@@ -325,6 +343,7 @@ describe('createApiClients', () => {
                     access_token: 'test-token',
                     customer_id: 'test-customer',
                     userType: 'registered',
+                    dwsid: 'session-id-123',
                 };
 
                 mockContextProvider.set(authContext, {
@@ -336,6 +355,7 @@ describe('createApiClients', () => {
                 expect(result.headers.get('Content-Type')).toBe('application/json');
                 expect(result.headers.get('X-Custom-Header')).toBe('custom-value');
                 expect(result.headers.get('Authorization')).toBe('Bearer test-token');
+                expect(result.headers.get('sfdc_dwsid')).toBe('session-id-123');
             });
 
             it('should handle auth promise rejection', async () => {
@@ -367,6 +387,28 @@ describe('createApiClients', () => {
 
                 expect(result).toBeInstanceOf(Request);
                 expect(result.url).toBe(mockRequest.url);
+            });
+
+            it('should skip adding headers for SLAS auth endpoints', async () => {
+                const mockRequest = new Request(
+                    'https://api.example.com/shopper/auth/v1/organizations/test/oauth2/token'
+                );
+                const mockSession: SessionData = {
+                    access_token: 'test-token',
+                    customer_id: 'test-customer',
+                    userType: 'registered',
+                    dwsid: 'test-dwsid',
+                };
+
+                mockContextProvider.set(authContext, {
+                    ref: Promise.resolve(mockSession),
+                });
+
+                const result = await authMiddleware.onRequest({ request: mockRequest });
+
+                // Headers should not be added for SLAS auth endpoints
+                expect(result.headers.get('Authorization')).toBeNull();
+                expect(result.headers.get('sfdc_dwsid')).toBeNull();
             });
         });
     });
