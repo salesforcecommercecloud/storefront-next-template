@@ -9,7 +9,7 @@ import { registry } from '@/lib/registry';
  * 
  * DO NOT EDIT THIS FUNCTION MANUALLY - it will be overwritten on next build.
  * 
- * Components registered: odyssey_base.contentCard, odyssey_base.grid, odyssey_base.hero, odyssey_base.heroCarousel, odyssey_base.popularCategories, odyssey_base.popularCategory, odyssey_base.productCarousel
+ * Components registered: odyssey_base.contentCard, odyssey_base.grid, odyssey_base.hero, odyssey_base.heroCarousel, odyssey_base.popularCategories, odyssey_base.popularCategory, odyssey_base.productCarousel, odyssey_base.productRecommendations
  */
 export function initializeRegistry(targetRegistry = registry): void {
     targetRegistry.registerImporter('odyssey_base.contentCard', () => import('../components/content-card/index'));
@@ -19,6 +19,7 @@ export function initializeRegistry(targetRegistry = registry): void {
     targetRegistry.registerImporter('odyssey_base.popularCategories', () => import('../components/home/popular-categories/index'), { loader: 'loader', clientLoader: 'clientLoader' });
     targetRegistry.registerImporter('odyssey_base.popularCategory', () => import('../components/home/popular-category/index'), { loader: 'loader', clientLoader: 'clientLoader' });
     targetRegistry.registerImporter('odyssey_base.productCarousel', () => import('../components/product-carousel/index'), { loader: 'loader', fallback: 'fallback' });
+    targetRegistry.registerImporter('odyssey_base.productRecommendations', () => import('../components/product-recommendations/index'));
 }
 
 // STATIC_REGISTRY_END

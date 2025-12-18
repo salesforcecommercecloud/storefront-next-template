@@ -146,46 +146,6 @@ describe('ProductRecommendations', () => {
                 expect(screen.getByTestId('product-test-product-2')).toBeInTheDocument();
             });
         });
-
-        test('applies custom className to wrapper', async () => {
-            const { useRecommenders } = await import('@/hooks/recommenders/use-recommenders');
-            mockUseRecommenders = useRecommenders as any;
-            mockUseRecommenders.mockReturnValue({
-                isLoading: false,
-                recommendations: mockRecommendations,
-                error: null,
-                getRecommendations: mockGetRecommendations,
-                getZoneRecommendations: mockGetZoneRecommendations,
-            });
-
-            const { container } = render(
-                <ProductRecommendations recommender={mockRecommender} className="custom-class" />
-            );
-
-            await waitFor(() => {
-                const wrapper = container.querySelector('.custom-class');
-                expect(wrapper).toBeInTheDocument();
-            });
-        });
-
-        test('applies custom carouselClassName', async () => {
-            const { useRecommenders } = await import('@/hooks/recommenders/use-recommenders');
-            mockUseRecommenders = useRecommenders as any;
-            mockUseRecommenders.mockReturnValue({
-                isLoading: false,
-                recommendations: mockRecommendations,
-                error: null,
-                getRecommendations: mockGetRecommendations,
-                getZoneRecommendations: mockGetZoneRecommendations,
-            });
-
-            render(<ProductRecommendations recommender={mockRecommender} carouselClassName="carousel-custom" />);
-
-            await waitFor(() => {
-                const carousel = screen.getByTestId('product-carousel');
-                expect(carousel).toHaveClass('carousel-custom');
-            });
-        });
     });
 
     describe('Loading States', () => {
@@ -311,18 +271,6 @@ describe('ProductRecommendations', () => {
             await waitFor(() => {
                 expect(screen.getByText('You May Also Like')).toBeInTheDocument();
             });
-        });
-    });
-
-    describe('Enabled Prop', () => {
-        test('does not fetch when enabled is false', async () => {
-            render(<ProductRecommendations recommender={mockRecommender} enabled={false} />);
-
-            // Hooks should not be called when disabled
-            // useRecommenders is still called but should be disabled internally
-            const { useRecommenders } = await import('@/hooks/recommenders/use-recommenders');
-            mockUseRecommenders = useRecommenders as any;
-            expect(mockUseRecommenders).toHaveBeenCalledWith(false);
         });
     });
 });

@@ -1,4 +1,4 @@
-import { use, useEffect, useRef } from 'react';
+import { use, useEffect, useRef, useMemo } from 'react';
 import { type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from 'react-router';
 import { type ShopperProducts, type ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import { createApiClients } from '@/lib/api-clients';
@@ -13,6 +13,7 @@ import { EINSTEIN_RECOMMENDERS } from '@/adapters/einstein';
 import { useTranslation } from 'react-i18next';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { Region } from '@/components/region';
+import { ProductProvider } from '@/providers/product-context';
 import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 import { collectComponentDataPromises, fetchPageFromLoader } from '@/lib/util/pageLoader';
@@ -254,37 +255,40 @@ export function shouldRevalidate({
     return false;
 }
 
-/**
- * Product Recommendations Section
- * Displays 3 Einstein recommenders: You might also like, Complete the look, and Recently viewed
- */
 // eslint-disable-next-line react-refresh/only-export-components
-function ProductRecommendationsSection({ product }: { product: ShopperProducts.schemas['Product'] }) {
+function ProductRecommendationsSection() {
     const { t } = useTranslation('product');
+
+    // Memoize recommender configs to prevent unnecessary re-renders
+    const completeSetRecommender = useMemo(
+        () => ({
+            name: EINSTEIN_RECOMMENDERS.PDP_COMPLETE_SET,
+            title: t('recommendations.completeTheLook'),
+        }),
+        [t]
+    );
+
+    const mightAlsoLikeRecommender = useMemo(
+        () => ({
+            name: EINSTEIN_RECOMMENDERS.PDP_MIGHT_ALSO_LIKE,
+            title: t('recommendations.youMightAlsoLike'),
+        }),
+        [t]
+    );
+
+    const recentlyViewedRecommender = useMemo(
+        () => ({
+            name: EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED,
+            title: t('recommendations.recentlyViewed'),
+        }),
+        [t]
+    );
 
     return (
         <div className="mt-16 space-y-16">
-            <ProductRecommendations
-                recommender={{
-                    name: EINSTEIN_RECOMMENDERS.PDP_COMPLETE_SET,
-                    title: t('recommendations.completeTheLook'),
-                }}
-                products={[product]}
-            />
-            <ProductRecommendations
-                recommender={{
-                    name: EINSTEIN_RECOMMENDERS.PDP_MIGHT_ALSO_LIKE,
-                    title: t('recommendations.youMightAlsoLike'),
-                }}
-                products={[product]}
-            />
-            <ProductRecommendations
-                recommender={{
-                    name: EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED,
-                    title: t('recommendations.recentlyViewed'),
-                }}
-                products={[product]}
-            />
+            <ProductRecommendations recommender={completeSetRecommender} />
+            <ProductRecommendations recommender={mightAlsoLikeRecommender} />
+            <ProductRecommendations recommender={recentlyViewedRecommender} />
         </div>
     );
 }
@@ -381,17 +385,20 @@ function ProductDetailView({ loaderData }: RouteComponentProps<ProductPageData>)
                         page={page}
                         regionId="engagementContent"
                         componentData={loaderData.componentData}
-                        fallback={<ProductRecommendationsSection product={productData} />}
+                        fallback={<ProductRecommendationsSection />}
                     />
                 </div>
             </>
         );
     };
 
+    // Wrap entire page content with ProductProvider so components can access product from context
     const content = (
-        <div className="min-h-screen bg-background">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">{renderPageContent(loaderData.page)}</div>
-        </div>
+        <ProductProvider product={productData}>
+            <div className="min-h-screen bg-background">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">{renderPageContent(loaderData.page)}</div>
+            </div>
+        </ProductProvider>
     );
 
     let finalContent = content;
