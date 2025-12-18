@@ -38,6 +38,33 @@ interface StaticRegistryPluginConfig {
   verbose?: boolean;
 }
 //#endregion
+//#region src/plugins/eventInstrumentationValidator.d.ts
+/**
+ * Configuration options for the event instrumentation validator plugin
+ */
+interface EventInstrumentationValidatorConfig {
+  /**
+   * Path to config module relative to project root
+   * @default 'config.server.ts'
+   */
+  configPath?: string;
+  /**
+   * Directories to scan for trackEvent calls relative to project root
+   * @default ['src']
+   */
+  scanPaths?: string[];
+  /**
+   * Whether to fail the build on missing instrumentation
+   * @default false (warning only)
+   */
+  failOnMissing?: boolean;
+  /**
+   * Enable verbose logging
+   * @default false
+   */
+  verbose?: boolean;
+}
+//#endregion
 //#region src/plugin.d.ts
 /**
  * Configuration options for the Storefront Next Vite plugin.
@@ -76,6 +103,15 @@ interface StorefrontNextPluginsConfig {
    * @default { componentPath: 'src/components', registryPath: 'src/lib/registry.ts' }
    */
   staticRegistry?: StaticRegistryPluginConfig;
+  /**
+   * Configuration for the event instrumentation validator plugin that validates
+   * all enabled analytics event toggles have corresponding trackEvent() calls.
+   *
+   * Set to `false` to disable the validator entirely.
+   *
+   * @default { configPath: 'config.server.ts', scanPaths: ['src'], failOnMissing: false }
+   */
+  eventInstrumentationValidator?: EventInstrumentationValidatorConfig | false;
 }
 /**
  * Storefront Next Vite plugin that powers the React Router RSC app.
@@ -99,7 +135,6 @@ interface StorefrontNextPluginsConfig {
 declare function storefrontNextPlugins(config?: StorefrontNextPluginsConfig): Plugin[];
 //#endregion
 //#region src/types.d.ts
-
 interface PushOptions {
   projectDirectory: string;
   buildDirectory?: string;

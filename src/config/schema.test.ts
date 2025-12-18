@@ -50,15 +50,16 @@ describe('Config Schema Helpers', () => {
     });
 
     describe('defineConfig', () => {
+        // Helper to get clean env without PUBLIC__ vars (especially engagement which is protected)
+        const getCleanEnv = () =>
+            Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.startsWith('PUBLIC__')));
+
         it('should return config with structure preserved', () => {
             // Store original env
             const originalEnv = process.env;
 
             // Clear PUBLIC__ env vars to test with mock config defaults
-            const cleanEnv = Object.fromEntries(
-                Object.entries(originalEnv).filter(([key]) => !key.startsWith('PUBLIC__'))
-            );
-            process.env = cleanEnv;
+            process.env = getCleanEnv();
 
             const result = defineConfig(mockBuildConfig);
 
@@ -70,12 +71,19 @@ describe('Config Schema Helpers', () => {
         });
 
         it('should preserve all config sections', () => {
+            // Store original env and clear PUBLIC__ vars (engagement paths are protected)
+            const originalEnv = process.env;
+            process.env = getCleanEnv();
+
             const config = defineConfig(mockBuildConfig);
 
             expect(config.metadata).toBeDefined();
             expect(config.metadata.projectName).toBe('Test Project');
             expect(config.runtime).toBeDefined();
             expect(config.app).toBeDefined();
+
+            // Restore original env
+            process.env = originalEnv;
         });
 
         it('should provide type safety and return correct values', () => {
@@ -83,10 +91,7 @@ describe('Config Schema Helpers', () => {
             const originalEnv = process.env;
 
             // Clear PUBLIC__ env vars to test with mock config defaults
-            const cleanEnv = Object.fromEntries(
-                Object.entries(originalEnv).filter(([key]) => !key.startsWith('PUBLIC__'))
-            );
-            process.env = cleanEnv;
+            process.env = getCleanEnv();
 
             const config = defineConfig(mockBuildConfig);
 
@@ -103,9 +108,9 @@ describe('Config Schema Helpers', () => {
             // Store original env
             const originalEnv = process.env;
 
-            // Set test env vars
+            // Start with clean env (no PUBLIC__ vars), then add test-specific overrides
             process.env = {
-                ...originalEnv,
+                ...getCleanEnv(),
                 PUBLIC__app__pages__cart__quantityUpdateDebounce: '1000',
                 PUBLIC__app__pages__cart__maxQuantityPerItem: '500',
             };
@@ -123,9 +128,9 @@ describe('Config Schema Helpers', () => {
             // Store original env
             const originalEnv = process.env;
 
-            // Set test env vars
+            // Start with clean env (no PUBLIC__ vars), then add test-specific overrides
             process.env = {
-                ...originalEnv,
+                ...getCleanEnv(),
                 PUBLIC__app__site__features__socialLogin__providers: '["Apple","Facebook","Twitter"]',
             };
 
@@ -141,9 +146,9 @@ describe('Config Schema Helpers', () => {
             // Store original env
             const originalEnv = process.env;
 
-            // Set test env var for only one nested value
+            // Start with clean env (no PUBLIC__ vars), then add test-specific overrides
             process.env = {
-                ...originalEnv,
+                ...getCleanEnv(),
                 PUBLIC__app__pages__cart__quantityUpdateDebounce: '2000',
             };
 

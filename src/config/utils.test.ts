@@ -624,6 +624,80 @@ describe('mergeEnvConfig - Conflict Detection', () => {
     });
 });
 
+describe('mergeEnvConfig - Protected Paths', () => {
+    const baseConfig = {
+        app: {
+            engagement: {
+                adapters: {
+                    einstein: {
+                        enabled: true,
+                        eventToggles: {
+                            view_page: true,
+                        },
+                    },
+                },
+                analytics: {
+                    pageViewsBlocklist: ['/action'],
+                },
+            },
+            site: {
+                locale: 'en-US',
+            },
+        },
+    };
+
+    it('should throw error when trying to override engagement config', () => {
+        const env = {
+            PUBLIC__app__engagement__adapters__einstein__enabled: 'false',
+        };
+
+        expect(() => mergeEnvConfig(env, baseConfig)).toThrow('attempts to override protected config path');
+    });
+
+    it('should throw error for any path under app__engagement', () => {
+        const testCases = [
+            'PUBLIC__app__engagement__adapters__einstein__eventToggles__view_page',
+            'PUBLIC__app__engagement__analytics__pageViewsBlocklist',
+            'PUBLIC__APP__ENGAGEMENT__ADAPTERS__EINSTEIN__ENABLED', // Case insensitive
+        ];
+
+        for (const varName of testCases) {
+            const env = { [varName]: 'some-value' };
+            expect(() => mergeEnvConfig(env, baseConfig)).toThrow(
+                'engagement configuration cannot be overridden via environment variables'
+            );
+        }
+    });
+
+    it('should throw error when trying to override entire engagement block', () => {
+        const env = {
+            PUBLIC__app__engagement: '{"adapters":{}}',
+        };
+
+        expect(() => mergeEnvConfig(env, baseConfig)).toThrow('attempts to override protected config path');
+    });
+
+    it('should allow overriding non-engagement paths', () => {
+        const env = {
+            PUBLIC__app__site__locale: 'fr-FR',
+        };
+
+        // Should not throw
+        const result = mergeEnvConfig(env, baseConfig);
+        expect(result.app.site.locale).toBe('fr-FR');
+    });
+
+    it('should provide helpful error message for protected paths', () => {
+        const env = {
+            PUBLIC__app__engagement__adapters__einstein__enabled: 'false',
+        };
+
+        expect(() => mergeEnvConfig(env, baseConfig)).toThrow(
+            'Update config.server.ts directly to change engagement settings'
+        );
+    });
+});
+
 describe('mergeEnvConfig - Validation and Case Sensitivity', () => {
     const baseConfig = {
         app: {

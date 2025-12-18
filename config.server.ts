@@ -201,11 +201,11 @@ export default defineConfig({
             adapters: {
                 einstein: {
                     enabled: true,
-                    host: '',
-                    einsteinId: '',
+                    host: 'https://api.cquotient.com',
+                    einsteinId: '1ea06c6e-c936-4324-bcf0-fada93f83bb1',
                     isProduction: false,
-                    realm: '',
-                    siteId: '',
+                    realm: 'aaij',
+                    siteId: 'MobileFirst',
                     eventToggles: {
                         view_page: true,
                         view_product: true,
@@ -222,8 +222,8 @@ export default defineConfig({
                 },
                 dataCloud: {
                     enabled: false,
-                    appSourceId: '',
-                    tenantId: '',
+                    appSourceId: '7ae070a6-f4ec-4def-a383-d9cacc3f20a1',
+                    tenantId: 'g82wgnrvm-ywk9dggrrw8mtggy.pc-rnd',
                     siteId: '',
                     eventToggles: {
                         view_page: true,
@@ -241,10 +241,10 @@ export default defineConfig({
                 },
                 activeData: {
                     enabled: true,
-                    host: '',
-                    siteId: '',
-                    locale: '',
-                    siteUUID: '',
+                    host: 'https://zzrf-001.dx.commercecloud.salesforce.com',
+                    siteId: 'RefArchGlobal',
+                    locale: 'en_US',
+                    siteUUID: '8bb1ea1b04ac3454d36b83a888',
                     eventToggles: {
                         view_page: true,
                         view_product: true,

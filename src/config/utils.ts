@@ -258,9 +258,24 @@ export const mergeEnvConfig = (
             );
         }
 
+        // Protected paths that cannot be overridden by environment variables
+        // The engagement config must be set in config.server.ts for build-time validation
+        const PROTECTED_PATHS = ['app__engagement'];
+        const normalizedPath = path.toLowerCase();
+        const isProtected = PROTECTED_PATHS.some(
+            (protectedPath) => normalizedPath === protectedPath || normalizedPath.startsWith(`${protectedPath}__`)
+        );
+
+        if (isProtected) {
+            throw new Error(
+                `Environment variable "${varName}" attempts to override protected config path "${path}".\n\n` +
+                    `The engagement configuration cannot be overridden via environment variables. ` +
+                    `Update config.server.ts directly to change engagement settings.`
+            );
+        }
+
         // Validate path exists in base config (strict mode)
         if (baseConfig && validPaths.length > 0) {
-            const normalizedPath = path.toLowerCase();
             if (!validPaths.includes(normalizedPath)) {
                 throw new Error(
                     `Invalid environment variable "${varName}": Config path "${path}" does not exist in config.server.ts.\n\n` +

@@ -6,6 +6,15 @@ import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import resources from '@/locales';
 
+// Clear engagement-related PUBLIC__ env vars before any modules load
+// The engagement config is protected from env var overrides, so these must be cleared
+// to prevent defineConfig from throwing during module initialization
+for (const key of Object.keys(process.env)) {
+    if (key.startsWith('PUBLIC__') && key.toLowerCase().includes('engagement')) {
+        delete process.env[key];
+    }
+}
+
 // Set window.__APP_CONFIG__ before any modules are imported
 // This ensures getConfig() works during module initialization in tests where it is used before the config provider is rendered.
 // to initialize AuthContext for hydration.

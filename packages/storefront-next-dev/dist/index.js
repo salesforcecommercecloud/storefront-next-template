@@ -1,7 +1,7 @@
 import path, { resolve } from "node:path";
 import fs from "fs-extra";
 import path$1, { basename, dirname, extname, join, posix, relative, resolve as resolve$1 } from "path";
-import { URL as URL$1, fileURLToPath } from "url";
+import { URL as URL$1, fileURLToPath, pathToFileURL } from "url";
 import { parse } from "@babel/parser";
 import { isJSXAttribute, isJSXElement, isJSXFragment, isJSXIdentifier, jsxClosingElement, jsxClosingFragment, jsxElement, jsxFragment, jsxIdentifier, jsxOpeningElement, jsxOpeningFragment, jsxText } from "@babel/types";
 import { generate } from "@babel/generator";
@@ -805,6 +805,155 @@ const staticRegistryPlugin = (config = {}) => {
 };
 
 //#endregion
+//#region src/plugins/configLoader.ts
+/**
+* Load the engagement config from config.server.ts
+*/
+async function loadEngagementConfig(projectRoot, configPath, verbose$1) {
+	const absoluteConfigPath = resolve$1(projectRoot, configPath);
+	try {
+		const config = (await import(pathToFileURL(absoluteConfigPath).href)).default;
+		if (verbose$1) console.log(`  📄 Loaded config from ${configPath}`);
+		const engagement = config?.app?.engagement;
+		if (!engagement) {
+			if (verbose$1) console.log(`  ⚠️  No engagement config found in ${configPath}`);
+			return null;
+		}
+		return engagement;
+	} catch (error$1) {
+		if (verbose$1) console.warn(`  ⚠️  Could not load config from ${configPath}: ${error$1.message}`);
+		return null;
+	}
+}
+
+//#endregion
+//#region src/plugins/eventInstrumentationValidator.ts
+/**
+* Extract all trackEvent calls from source files and return the event types found
+*/
+async function scanForInstrumentedEvents(projectRoot, scanPaths, verbose$1) {
+	const instrumentedEvents = /* @__PURE__ */ new Set();
+	const trackEventPattern = /trackEvent\s*\([^,]+,[^,]+,[^,]+,\s*['"]([^'"]+)['"]/g;
+	const sendViewPagePattern = /sendViewPageEvent\s*\(/g;
+	const createEventPattern = /createEvent\s*\(\s*['"]([^'"]+)['"]/g;
+	for (const scanPath of scanPaths) {
+		const files = await glob(join(resolve$1(projectRoot, scanPath), "**/*.{ts,tsx}"), { ignore: [
+			"**/*.test.ts",
+			"**/*.test.tsx",
+			"**/*.spec.ts",
+			"**/*.spec.tsx",
+			"**/node_modules/**"
+		] });
+		if (verbose$1) console.log(`  📂 Scanning ${files.length} files in ${scanPath}...`);
+		for (const file of files) try {
+			const content = readFileSync(file, "utf-8");
+			let match;
+			while ((match = trackEventPattern.exec(content)) !== null) {
+				const eventType = match[1];
+				instrumentedEvents.add(eventType);
+				if (verbose$1) console.log(`    ✓ Found trackEvent('${eventType}') in ${file}`);
+			}
+			if (sendViewPagePattern.test(content)) {
+				instrumentedEvents.add("view_page");
+				if (verbose$1) console.log(`    ✓ Found sendViewPageEvent() in ${file}`);
+			}
+			while ((match = createEventPattern.exec(content)) !== null) {
+				const eventType = match[1];
+				instrumentedEvents.add(eventType);
+				if (verbose$1) console.log(`    ✓ Found createEvent('${eventType}') in ${file}`);
+			}
+			trackEventPattern.lastIndex = 0;
+			sendViewPagePattern.lastIndex = 0;
+			createEventPattern.lastIndex = 0;
+		} catch (error$1) {
+			if (verbose$1) console.warn(`    ⚠️  Could not read ${file}: ${error$1.message}`);
+		}
+	}
+	return instrumentedEvents;
+}
+/**
+* Extract enabled event toggles per adapter
+* Dynamically iterates over all keys in eventToggles - supports custom event types
+*/
+function extractEnabledEvents(engagement) {
+	const adapterEvents = /* @__PURE__ */ new Map();
+	if (!engagement.adapters) return adapterEvents;
+	for (const [adapterName, adapterConfig] of Object.entries(engagement.adapters)) {
+		if (!adapterConfig.enabled) continue;
+		const enabledEvents = /* @__PURE__ */ new Set();
+		if (adapterConfig.eventToggles) {
+			for (const [eventType, isEnabled] of Object.entries(adapterConfig.eventToggles)) if (isEnabled === true) enabledEvents.add(eventType);
+		}
+		if (enabledEvents.size > 0) adapterEvents.set(adapterName, enabledEvents);
+	}
+	return adapterEvents;
+}
+/**
+* Vite plugin that validates event instrumentation at build time.
+*
+* This plugin scans source files for trackEvent() calls and validates that
+* all enabled event toggles in config.server.ts have corresponding instrumentation.
+*
+* @param config - Configuration options for the plugin
+* @returns A Vite plugin that validates event instrumentation
+*
+* @example
+* // In vite.config.ts
+* export default defineConfig({
+*   plugins: [
+*     eventInstrumentationValidatorPlugin({
+*       configPath: 'config.server.ts',
+*       scanPaths: ['src'],
+*       verbose: true
+*     })
+*   ]
+* })
+*/
+const eventInstrumentationValidatorPlugin = (config = {}) => {
+	const { configPath = "config.server.ts", scanPaths = ["src"], failOnMissing = false, verbose: verbose$1 = false } = config;
+	let resolvedConfig;
+	return {
+		name: "storefrontnext:event-instrumentation-validator",
+		apply: "build",
+		configResolved(viteConfig) {
+			resolvedConfig = viteConfig;
+		},
+		async buildStart() {
+			const projectRoot = resolvedConfig.root;
+			if (verbose$1) console.log("\n🔍 [event-instrumentation] Validating event instrumentation...");
+			const engagement = await loadEngagementConfig(projectRoot, configPath, verbose$1);
+			if (!engagement) {
+				if (verbose$1) console.log("  ℹ️  Skipping validation - no engagement config found\n");
+				return;
+			}
+			const adapterEvents = extractEnabledEvents(engagement);
+			if (adapterEvents.size === 0) {
+				if (verbose$1) console.log("  ℹ️  No enabled adapters with event toggles found\n");
+				return;
+			}
+			const instrumentedEvents = await scanForInstrumentedEvents(projectRoot, scanPaths, verbose$1);
+			if (verbose$1) {
+				console.log(`\n  🔎 Found ${instrumentedEvents.size} instrumented event types:`);
+				for (const event of instrumentedEvents) console.log(`     - ${event}`);
+			}
+			const missingInstrumentation = [];
+			for (const [adapterName, enabledEvents] of adapterEvents) for (const eventType of enabledEvents) if (!instrumentedEvents.has(eventType)) missingInstrumentation.push({
+				adapter: adapterName,
+				event: eventType
+			});
+			if (missingInstrumentation.length === 0) {
+				if (verbose$1) console.log("\n  ✅ All enabled events are instrumented\n");
+				return;
+			}
+			console.log("\n");
+			for (const { adapter, event } of missingInstrumentation) console.warn(`  ⚠️  [event-instrumentation] ${adapter}.${event} is enabled but '${event}' is never instrumented`);
+			console.log("\n");
+			if (failOnMissing) throw new Error(`[event-instrumentation] ${missingInstrumentation.length} event(s) are enabled but not instrumented. Either add instrumentation or disable the event toggles in config.server.ts.`);
+		}
+	};
+};
+
+//#endregion
 //#region src/plugin.ts
 /**
 * Storefront Next Vite plugin that powers the React Router RSC app.
@@ -830,6 +979,11 @@ function storefrontNextPlugins(config = {}) {
 		componentPath: "",
 		registryPath: "",
 		verbose: false
+	}, eventInstrumentationValidator = {
+		configPath: "config.server.ts",
+		scanPaths: ["src"],
+		failOnMissing: false,
+		verbose: false
 	} } = config;
 	const plugins = [
 		managedRuntimeBundlePlugin(),
@@ -839,6 +993,7 @@ function storefrontNextPlugins(config = {}) {
 		watchConfigFilesPlugin()
 	];
 	if (staticRegistry?.componentPath && staticRegistry?.registryPath) plugins.push(staticRegistryPlugin(staticRegistry));
+	if (eventInstrumentationValidator !== false) plugins.push(eventInstrumentationValidatorPlugin(eventInstrumentationValidator));
 	if (readableChunkNames) plugins.push(readableChunkFileNamesPlugin());
 	return plugins;
 }

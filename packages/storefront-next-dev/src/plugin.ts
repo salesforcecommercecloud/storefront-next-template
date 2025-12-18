@@ -6,6 +6,10 @@ import { patchReactRouterPlugin } from './plugins/patchReactRouter';
 import { transformPluginPlaceholderPlugin } from './plugins/transformPlugins';
 import { watchConfigFilesPlugin } from './plugins/watchConfigFiles';
 import { staticRegistryPlugin, type StaticRegistryPluginConfig } from './plugins/staticRegistry';
+import {
+    eventInstrumentationValidatorPlugin,
+    type EventInstrumentationValidatorConfig,
+} from './plugins/eventInstrumentationValidator';
 
 /**
  * Configuration options for the Storefront Next Vite plugin.
@@ -45,6 +49,16 @@ export interface StorefrontNextPluginsConfig {
      * @default { componentPath: 'src/components', registryPath: 'src/lib/registry.ts' }
      */
     staticRegistry?: StaticRegistryPluginConfig;
+
+    /**
+     * Configuration for the event instrumentation validator plugin that validates
+     * all enabled analytics event toggles have corresponding trackEvent() calls.
+     *
+     * Set to `false` to disable the validator entirely.
+     *
+     * @default { configPath: 'config.server.ts', scanPaths: ['src'], failOnMissing: false }
+     */
+    eventInstrumentationValidator?: EventInstrumentationValidatorConfig | false;
 }
 
 /**
@@ -74,6 +88,12 @@ export function storefrontNextPlugins(config: StorefrontNextPluginsConfig = {}):
             registryPath: '',
             verbose: false,
         },
+        eventInstrumentationValidator = {
+            configPath: 'config.server.ts',
+            scanPaths: ['src'],
+            failOnMissing: false,
+            verbose: false,
+        },
     } = config;
 
     const plugins: Plugin[] = [
@@ -87,6 +107,11 @@ export function storefrontNextPlugins(config: StorefrontNextPluginsConfig = {}):
     // Add static registry plugin if enabled
     if (staticRegistry?.componentPath && staticRegistry?.registryPath) {
         plugins.push(staticRegistryPlugin(staticRegistry));
+    }
+
+    // Add event instrumentation validator plugin if not explicitly disabled
+    if (eventInstrumentationValidator !== false) {
+        plugins.push(eventInstrumentationValidatorPlugin(eventInstrumentationValidator));
     }
 
     if (readableChunkNames) {

@@ -5,7 +5,9 @@ describe('storefrontNextPlugins', () => {
     it('should return an array of plugins with default config', () => {
         const plugins = storefrontNextPlugins();
         expect(Array.isArray(plugins)).toBe(true);
-        expect(plugins.length).toBe(5); // managedRuntimeBundle, fixReactRouterManifestUrls, patchReactRouter
+        // Base plugins: managedRuntimeBundle, fixReactRouterManifestUrls, patchReactRouter,
+        // transformPluginPlaceholder, watchConfigFiles, eventInstrumentationValidator
+        expect(plugins.length).toBe(6);
         plugins.forEach((plugin) => {
             expect(plugin).toHaveProperty('name');
         });
@@ -14,19 +16,19 @@ describe('storefrontNextPlugins', () => {
     it('should return an array of plugins with empty config', () => {
         const plugins = storefrontNextPlugins({});
         expect(Array.isArray(plugins)).toBe(true);
-        expect(plugins.length).toBe(5);
+        expect(plugins.length).toBe(6);
     });
 
     it('should not include readableChunkFileNamesPlugin when readableChunkNames is false', () => {
         const plugins = storefrontNextPlugins({ readableChunkNames: false });
-        expect(plugins.length).toBe(5);
+        expect(plugins.length).toBe(6);
         const pluginNames = plugins.map((p) => p.name);
         expect(pluginNames).not.toContain('odyssey:readable-chunk-file-names');
     });
 
     it('should include readableChunkFileNamesPlugin when readableChunkNames is true', () => {
         const plugins = storefrontNextPlugins({ readableChunkNames: true });
-        expect(plugins.length).toBe(6); // Should have 6 plugins when readableChunkNames is enabled
+        expect(plugins.length).toBe(7); // Should have 7 plugins when readableChunkNames is enabled
         const pluginNames = plugins.map((p) => p.name);
         expect(pluginNames).toContain('odyssey:readable-chunk-file-names');
     });
@@ -41,7 +43,8 @@ describe('storefrontNextPlugins', () => {
         expect(pluginNames[2]).toBe('odyssey:patch-react-router');
         expect(pluginNames[3]).toBe('odyssey:transform-plugin-placeholder');
         expect(pluginNames[4]).toBe('odyssey:watch-config-files');
-        expect(pluginNames[5]).toBe('odyssey:readable-chunk-file-names');
+        expect(pluginNames[5]).toBe('storefrontnext:event-instrumentation-validator');
+        expect(pluginNames[6]).toBe('odyssey:readable-chunk-file-names');
     });
 
     it('should accept StorefrontNextPluginsConfig type with readableChunkNames', () => {
@@ -49,6 +52,13 @@ describe('storefrontNextPlugins', () => {
             readableChunkNames: true,
         };
         const plugins = storefrontNextPlugins(config);
-        expect(plugins.length).toBe(6);
+        expect(plugins.length).toBe(7);
+    });
+
+    it('should not include eventInstrumentationValidator when explicitly disabled', () => {
+        const plugins = storefrontNextPlugins({ eventInstrumentationValidator: false });
+        expect(plugins.length).toBe(5); // One less than default
+        const pluginNames = plugins.map((p) => p.name);
+        expect(pluginNames).not.toContain('storefrontnext:event-instrumentation-validator');
     });
 });
