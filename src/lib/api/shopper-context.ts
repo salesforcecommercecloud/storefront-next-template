@@ -47,19 +47,32 @@ export async function createShopperContext(
         throw new Error('Body is required and must be a plain object');
     }
 
-    const config = getConfig(context);
-    const clients = createApiClients(context);
+    // Validate body is not empty (at least one field should be set)
+    if (Object.keys(body).length === 0) {
+        throw new Error('Body must contain at least one field');
+    }
 
-    await clients.shopperContext.createShopperContext({
-        params: {
-            path: {
-                organizationId: config.commerce.api.organizationId,
-                usid,
+    try {
+        const config = getConfig(context);
+        const clients = createApiClients(context);
+
+        await clients.shopperContext.createShopperContext({
+            params: {
+                path: {
+                    organizationId: config.commerce.api.organizationId,
+                    usid,
+                },
+                query: {
+                    siteId: config.commerce.api.siteId,
+                },
             },
-            query: {
-                siteId: config.commerce.api.siteId,
-            },
-        },
-        body,
-    });
+            body,
+        });
+    } catch (error) {
+        const wrappedError = new Error(
+            `An unexpected error occurred in createShopperContext: ${error instanceof Error ? error.message : String(error)}`
+        );
+        wrappedError.cause = error; // Preserve original error
+        throw wrappedError;
+    }
 }

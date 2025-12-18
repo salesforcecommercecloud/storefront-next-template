@@ -218,7 +218,7 @@ describe('shopper-context.client', () => {
             const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
             vi.mocked(createShopperContext).mockRejectedValue(new Error('API Error'));
             mockWindow.location.href = 'https://example.com?src=email';
-            vi.mocked(getCookie).mockReturnValue({});
+            vi.mocked(getCookie).mockReturnValue('');
 
             await shopperContextMiddleware(
                 { context: mockContext, params: {}, request: new Request('https://example.com') },
@@ -226,7 +226,12 @@ describe('shopper-context.client', () => {
             );
 
             expect(mockNext).toHaveBeenCalledOnce();
-            expect(consoleErrorSpy).toHaveBeenCalledWith('Shopper context middleware error:', expect.any(Error));
+            // Error is caught and logged with structured object
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Shopper context client middleware error:', {
+                error: 'API Error',
+                usid: 'test-usid',
+                url: 'https://example.com?src=email',
+            });
 
             consoleErrorSpy.mockRestore();
         });
@@ -236,6 +241,7 @@ describe('shopper-context.client', () => {
             vi.mocked(getCookie).mockImplementation(() => {
                 throw new Error('Cookie read error');
             });
+            mockWindow.location.href = 'https://example.com?src=email';
 
             await shopperContextMiddleware(
                 { context: mockContext, params: {}, request: new Request('https://example.com') },
@@ -243,7 +249,61 @@ describe('shopper-context.client', () => {
             );
 
             expect(mockNext).toHaveBeenCalledOnce();
-            expect(consoleErrorSpy).toHaveBeenCalledWith('Shopper context middleware error:', expect.any(Error));
+            // Error is caught and logged with structured object
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Shopper context client middleware error:', {
+                error: 'Cookie read error',
+                usid: 'test-usid',
+                url: 'https://example.com?src=email',
+            });
+
+            consoleErrorSpy.mockRestore();
+        });
+
+        test('should handle errors in processShopperContext gracefully', async () => {
+            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+            // Mock createShopperContext to throw an error
+            vi.mocked(createShopperContext).mockRejectedValue(new Error('API Error'));
+            mockWindow.location.href = 'https://example.com?src=email';
+            vi.mocked(getCookie).mockReturnValue('');
+
+            await shopperContextMiddleware(
+                { context: mockContext, params: {}, request: new Request('https://example.com') },
+                mockNext
+            );
+
+            expect(mockNext).toHaveBeenCalledOnce();
+            // When API fails, error propagates and cookies are not set (error caught by middleware catch block)
+            // The error is logged by the middleware catch block
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Shopper context client middleware error:', {
+                error: 'API Error',
+                usid: 'test-usid',
+                url: 'https://example.com?src=email',
+            });
+            // Cookies are not set when API call throws (error propagates before cookie setting)
+            expect(setNamespacedCookie).not.toHaveBeenCalled();
+
+            consoleErrorSpy.mockRestore();
+        });
+
+        test('should handle cookie setting errors gracefully', async () => {
+            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+            vi.mocked(setNamespacedCookie).mockImplementation(() => {
+                throw new Error('Failed to set cookie');
+            });
+            mockWindow.location.href = 'https://example.com?src=email';
+            vi.mocked(getCookie).mockReturnValue('');
+
+            await shopperContextMiddleware(
+                { context: mockContext, params: {}, request: new Request('https://example.com') },
+                mockNext
+            );
+
+            expect(mockNext).toHaveBeenCalledOnce();
+            // Cookie setting error should be logged but not break the request
+            expect(consoleErrorSpy).toHaveBeenCalledWith(
+                'Failed to set shopper context cookie at client side:',
+                'Failed to set cookie'
+            );
 
             consoleErrorSpy.mockRestore();
         });

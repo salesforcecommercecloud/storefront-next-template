@@ -12,10 +12,11 @@ import {
     extractQualifiersFromUrl,
     computeEffectiveShopperContext,
     buildShopperContextBody,
+    safeParseCookie,
 } from '@/lib/shopper-context-utils';
 
 /**
- * Process shopper context update
+ * Process shopper context update with comprehensive error handling
  */
 async function processShopperContext(
     context: Readonly<RouterContextProvider>,
@@ -27,17 +28,13 @@ async function processShopperContext(
     // Get cookie names with suffix
     const contextCookieName = getShopperContextCookieName(session.usid);
     const sourceCodeCookieName = getSourceCodeCookieName(context);
-    // Read existing cookies and parse JSON
+
+    // Read existing cookies and parse JSON with error handling
     const currentSourceCodeContextValue = getCookie(sourceCodeCookieName);
     const currentShopperContextValue = getCookie(contextCookieName);
 
-    const currentShopperContext: Record<string, string> = currentShopperContextValue
-        ? JSON.parse(currentShopperContextValue)
-        : {};
-
-    const currentSourceCodeContext: Record<string, string> = currentSourceCodeContextValue
-        ? JSON.parse(currentSourceCodeContextValue)
-        : {};
+    const currentShopperContext = safeParseCookie(currentShopperContextValue);
+    const currentSourceCodeContext = safeParseCookie(currentSourceCodeContextValue);
 
     const { effectiveShopperContext, effectiveSourceCodeContext } = computeEffectiveShopperContext(
         newShopperContext,
@@ -49,22 +46,34 @@ async function processShopperContext(
     const hasNewContext = Object.keys(newShopperContext).length > 0;
     const hasNewSourceCodeContext = Object.keys(newSourceCodeContext).length > 0;
 
+    // Only call API if there's new context to update
     if (hasNewContext || hasNewSourceCodeContext) {
         const shopperContextBody = buildShopperContextBody(effectiveShopperContext, effectiveSourceCodeContext);
         await createShopperContext(context, session.usid, shopperContextBody);
     }
 
-    if (hasNewSourceCodeContext) {
-        setNamespacedCookie(sourceCodeCookieName, JSON.stringify(effectiveSourceCodeContext), {
-            expires: new Date(Date.now() + SOURCE_CODE_COOKIE_EXPIRY_SECONDS * 1000),
-        });
-    }
+    // Update cookies even if API call failed (graceful degradation)
+    // This ensures context is preserved locally even if API is temporarily unavailable
+    try {
+        if (hasNewSourceCodeContext) {
+            setNamespacedCookie(sourceCodeCookieName, JSON.stringify(effectiveSourceCodeContext), {
+                expires: new Date(Date.now() + SOURCE_CODE_COOKIE_EXPIRY_SECONDS * 1000),
+            });
+        }
 
-    if (hasNewContext) {
-        // Store the entire effectiveShopperContext object as JSON string, including customQualifiers
-        setNamespacedCookie(contextCookieName, JSON.stringify(effectiveShopperContext), {
-            expires: new Date(Date.now() + SHOPPER_CONTEXT_COOKIE_EXPIRY_SECONDS * 1000),
-        });
+        if (hasNewContext) {
+            // Store the entire effectiveShopperContext object as JSON string, including customQualifiers
+            setNamespacedCookie(contextCookieName, JSON.stringify(effectiveShopperContext), {
+                expires: new Date(Date.now() + SHOPPER_CONTEXT_COOKIE_EXPIRY_SECONDS * 1000),
+            });
+        }
+    } catch (cookieError) {
+        // Cookie setting failed - log but don't throw
+        // eslint-disable-next-line no-console
+        console.error(
+            'Failed to set shopper context cookie at client side:',
+            cookieError instanceof Error ? cookieError.message : String(cookieError)
+        );
     }
 }
 
@@ -91,13 +100,17 @@ const shopperContextMiddleware: MiddlewareFunction<Record<string, DataStrategyRe
         return await next();
     }
 
-    // Update shopper context - errors won't break the request
-    try {
-        await processShopperContext(context, { usid: session.usid });
-    } catch (error) {
+    // Update shopper context - errors are handled internally and won't break the request
+    // processShopperContext handles all errors internally for graceful degradation
+    await processShopperContext(context, { usid: session.usid }).catch((error) => {
+        // Final safety net - log any unhandled errors
         // eslint-disable-next-line no-console
-        console.error('Shopper context middleware error:', error);
-    }
+        console.error('Shopper context client middleware error:', {
+            error: error instanceof Error ? error.message : String(error),
+            usid: session.usid,
+            url: window.location.href,
+        });
+    });
 
     // Execute handler (loader/action/render)
     await next();

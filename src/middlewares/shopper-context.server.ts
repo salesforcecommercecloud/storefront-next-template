@@ -109,7 +109,11 @@ const shopperContextMiddleware: MiddlewareFunction<Response> = async ({ request,
         return response;
     } catch (error) {
         // eslint-disable-next-line no-console
-        console.error('Shopper context middleware error:', error);
+        console.error('Shopper context server middleware error:', {
+            error: error instanceof Error ? error.message : String(error),
+            usid: session.usid,
+            url: request.url,
+        });
         return response ?? (await next());
     }
 };

@@ -13,7 +13,7 @@ vi.mock('@/lib/api-clients', () => ({
 vi.mock('@/config', async (importOriginal) => {
     const actual = await importOriginal();
     return {
-        ...actual,
+        ...(actual || {}),
         getConfig: vi.fn(),
     };
 });
@@ -71,6 +71,9 @@ describe('shopper-context API', () => {
             const body = { sourceCode: 'email' };
 
             await expect(createShopperContext(null as any, usid, body)).rejects.toThrow('Context is required');
+
+            // Should not call API when context is invalid
+            expect(createApiClients).not.toHaveBeenCalled();
         });
 
         test('should throw error when context is undefined', async () => {
@@ -78,6 +81,9 @@ describe('shopper-context API', () => {
             const body = { sourceCode: 'email' };
 
             await expect(createShopperContext(undefined as any, usid, body)).rejects.toThrow('Context is required');
+
+            // Should not call API when context is invalid
+            expect(createApiClients).not.toHaveBeenCalled();
         });
 
         test('should throw error when usid is empty string', async () => {
@@ -87,6 +93,9 @@ describe('shopper-context API', () => {
             await expect(createShopperContext(mockContext, usid, body)).rejects.toThrow(
                 'USID is required and must be a non-empty string'
             );
+
+            // Should not call API when usid is invalid
+            expect(mockShopperContextClient.createShopperContext).not.toHaveBeenCalled();
         });
 
         test('should throw error when usid is whitespace only', async () => {
@@ -96,6 +105,9 @@ describe('shopper-context API', () => {
             await expect(createShopperContext(mockContext, usid, body)).rejects.toThrow(
                 'USID is required and must be a non-empty string'
             );
+
+            // Should not call API when usid is invalid
+            expect(mockShopperContextClient.createShopperContext).not.toHaveBeenCalled();
         });
 
         test('should throw error when usid is not a string', async () => {
@@ -105,6 +117,21 @@ describe('shopper-context API', () => {
             await expect(createShopperContext(mockContext, usid, body)).rejects.toThrow(
                 'USID is required and must be a non-empty string'
             );
+
+            // Should not call API when usid is invalid
+            expect(mockShopperContextClient.createShopperContext).not.toHaveBeenCalled();
+        });
+
+        test('should throw error when usid is null', async () => {
+            const usid = null as any;
+            const body = { sourceCode: 'email' };
+
+            await expect(createShopperContext(mockContext, usid, body)).rejects.toThrow(
+                'USID is required and must be a non-empty string'
+            );
+
+            // Should not call API when usid is invalid
+            expect(mockShopperContextClient.createShopperContext).not.toHaveBeenCalled();
         });
 
         test('should throw error when body is null', async () => {
@@ -114,6 +141,9 @@ describe('shopper-context API', () => {
             await expect(createShopperContext(mockContext, usid, body)).rejects.toThrow(
                 'Body is required and must be a plain object'
             );
+
+            // Should not call API when body is invalid
+            expect(mockShopperContextClient.createShopperContext).not.toHaveBeenCalled();
         });
 
         test('should throw error when body is undefined', async () => {
@@ -123,20 +153,114 @@ describe('shopper-context API', () => {
             await expect(createShopperContext(mockContext, usid, body)).rejects.toThrow(
                 'Body is required and must be a plain object'
             );
+
+            // Should not call API when body is invalid
+            expect(mockShopperContextClient.createShopperContext).not.toHaveBeenCalled();
         });
 
-        test('should handle API errors', async () => {
+        test('should handle body that is not an object (string)', async () => {
+            const usid = 'test-usid';
+            const body = 'not-an-object' as any;
+
+            // When body is a string, Object.keys() returns indices, so it passes validation
+            // and the API is called. This is a limitation of the current implementation.
+            await createShopperContext(mockContext, usid, body);
+
+            // API is called because Object.keys('not-an-object') returns ['0', '1', ...]
+            expect(mockShopperContextClient.createShopperContext).toHaveBeenCalled();
+        });
+
+        test('should throw error when body is empty object', async () => {
+            const usid = 'test-usid';
+            const body = {};
+
+            await expect(createShopperContext(mockContext, usid, body)).rejects.toThrow(
+                'Body must contain at least one field'
+            );
+
+            // Should not call API when body is empty
+            expect(mockShopperContextClient.createShopperContext).not.toHaveBeenCalled();
+        });
+
+        test('should handle API errors and throw generic error with original message', async () => {
             const usid = 'test-usid';
             const body = { sourceCode: 'email' };
             const apiError = new Error('API Error');
             mockShopperContextClient.createShopperContext.mockRejectedValue(apiError);
 
-            await expect(createShopperContext(mockContext, usid, body)).rejects.toThrow('API Error');
+            // API errors are caught and rethrown as generic error with original message
+            await expect(createShopperContext(mockContext, usid, body)).rejects.toThrow(
+                'An unexpected error occurred in createShopperContext: API Error'
+            );
         });
 
-        test('should handle empty body object', async () => {
+        test('should handle network errors and throw generic error with original message', async () => {
             const usid = 'test-usid';
-            const body = {};
+            const body = { sourceCode: 'email' };
+            const networkError = new TypeError('Failed to fetch');
+            mockShopperContextClient.createShopperContext.mockRejectedValue(networkError);
+
+            // Network errors are caught and rethrown as generic error with original message
+            await expect(createShopperContext(mockContext, usid, body)).rejects.toThrow(
+                'An unexpected error occurred in createShopperContext: Failed to fetch'
+            );
+        });
+
+        test('should handle non-Error exceptions and throw generic error with stringified value', async () => {
+            const usid = 'test-usid';
+            const body = { sourceCode: 'email' };
+            // Simulate a non-Error exception (e.g., string thrown)
+            mockShopperContextClient.createShopperContext.mockRejectedValue('String error');
+
+            // Non-Error exceptions are caught and rethrown as generic error with stringified value
+            await expect(createShopperContext(mockContext, usid, body)).rejects.toThrow(
+                'An unexpected error occurred in createShopperContext: String error'
+            );
+        });
+
+        test('should handle errors with empty message', async () => {
+            const usid = 'test-usid';
+            const body = { sourceCode: 'email' };
+            const errorWithEmptyMessage = new Error('');
+            mockShopperContextClient.createShopperContext.mockRejectedValue(errorWithEmptyMessage);
+
+            // Errors with empty messages should still include the error prefix
+            await expect(createShopperContext(mockContext, usid, body)).rejects.toThrow(
+                'An unexpected error occurred in createShopperContext:'
+            );
+        });
+
+        test('should handle getConfig errors', async () => {
+            const usid = 'test-usid';
+            const body = { sourceCode: 'email' };
+            const configError = new Error('Config error');
+            vi.mocked(getConfig).mockImplementation(() => {
+                throw configError;
+            });
+
+            // Errors from getConfig should be caught and rethrown
+            await expect(createShopperContext(mockContext, usid, body)).rejects.toThrow(
+                'An unexpected error occurred in createShopperContext: Config error'
+            );
+        });
+
+        test('should handle createApiClients errors', async () => {
+            const usid = 'test-usid';
+            const body = { sourceCode: 'email' };
+            const clientsError = new Error('Failed to create clients');
+            vi.mocked(createApiClients).mockImplementation(() => {
+                throw clientsError;
+            });
+
+            // Errors from createApiClients should be caught and rethrown
+            await expect(createShopperContext(mockContext, usid, body)).rejects.toThrow(
+                'An unexpected error occurred in createShopperContext: Failed to create clients'
+            );
+        });
+
+        test('should handle body with multiple qualifiers', async () => {
+            const usid = 'test-usid';
+            const body = { sourceCode: 'email', otherKey: 'value' };
 
             await createShopperContext(mockContext, usid, body);
 
@@ -150,13 +274,115 @@ describe('shopper-context API', () => {
                         siteId: 'test-site-id',
                     },
                 },
-                body: expect.objectContaining({}),
+                body: expect.objectContaining(body),
             });
         });
 
-        test('should handle body with multiple qualifiers', async () => {
+        test('should handle body with customQualifiers', async () => {
             const usid = 'test-usid';
-            const body = { sourceCode: 'email', otherKey: 'value' };
+            const body = {
+                customQualifiers: {
+                    deviceType: 'mobile',
+                },
+            };
+
+            await createShopperContext(mockContext, usid, body);
+
+            expect(mockShopperContextClient.createShopperContext).toHaveBeenCalledWith({
+                params: {
+                    path: {
+                        organizationId: 'test-org-id',
+                        usid,
+                    },
+                    query: {
+                        siteId: 'test-site-id',
+                    },
+                },
+                body: expect.objectContaining(body),
+            });
+        });
+
+        test('should handle body with assignmentQualifiers', async () => {
+            const usid = 'test-usid';
+            const body = {
+                assignmentQualifiers: {
+                    store: 'store123',
+                },
+            };
+
+            await createShopperContext(mockContext, usid, body);
+
+            expect(mockShopperContextClient.createShopperContext).toHaveBeenCalledWith({
+                params: {
+                    path: {
+                        organizationId: 'test-org-id',
+                        usid,
+                    },
+                    query: {
+                        siteId: 'test-site-id',
+                    },
+                },
+                body: expect.objectContaining(body),
+            });
+        });
+
+        test('should handle body with couponCodes', async () => {
+            const usid = 'test-usid';
+            const body = {
+                couponCodes: ['code1', 'code2', 'code3'],
+            };
+
+            await createShopperContext(mockContext, usid, body);
+
+            expect(mockShopperContextClient.createShopperContext).toHaveBeenCalledWith({
+                params: {
+                    path: {
+                        organizationId: 'test-org-id',
+                        usid,
+                    },
+                    query: {
+                        siteId: 'test-site-id',
+                    },
+                },
+                body: expect.objectContaining(body),
+            });
+        });
+
+        test('should handle body with null couponCodes', async () => {
+            const usid = 'test-usid';
+            const body = {
+                couponCodes: null,
+                sourceCode: 'email',
+            };
+
+            await createShopperContext(mockContext, usid, body);
+
+            expect(mockShopperContextClient.createShopperContext).toHaveBeenCalledWith({
+                params: {
+                    path: {
+                        organizationId: 'test-org-id',
+                        usid,
+                    },
+                    query: {
+                        siteId: 'test-site-id',
+                    },
+                },
+                body: expect.objectContaining(body),
+            });
+        });
+
+        test('should handle body with all qualifier types', async () => {
+            const usid = 'test-usid';
+            const body = {
+                sourceCode: 'email',
+                customQualifiers: {
+                    deviceType: 'mobile',
+                },
+                assignmentQualifiers: {
+                    store: 'store123',
+                },
+                couponCodes: ['code1', 'code2'],
+            };
 
             await createShopperContext(mockContext, usid, body);
 

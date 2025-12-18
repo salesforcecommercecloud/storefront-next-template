@@ -20,6 +20,8 @@ export const SOURCE_CODE_COOKIE_NAME_BASE = 'dwsourcecode';
 
 /**
  * Get shopper context cookie name with USID suffix
+ * In client or server shopper context middlewares, when usid is empty, the middleware will be skipped by next()
+ * It's possible Shopper Context will be used in UI directly later
  */
 export function getShopperContextCookieName(usid: string): string {
     return `${SHOPPER_CONTEXT_COOKIE_NAME_BASE}-${usid}`;
@@ -90,6 +92,32 @@ export const isCouponCode = (key: string): boolean => {
         couponCodesMapping[QUALIFIER_MAPPING_PARAM_NAME] === key
     );
 };
+
+/**
+ * Safely parse JSON from cookie value
+ * Returns empty object if parsing fails
+ */
+export function safeParseCookie(cookieValue: string): Record<string, string> {
+    if (!cookieValue) {
+        return {};
+    }
+
+    try {
+        const parsed = JSON.parse(cookieValue);
+        // Ensure parsed value is an object
+        if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) {
+            return parsed as Record<string, string>;
+        }
+        // eslint-disable-next-line no-console
+        console.warn('Parsed shopper context cookie is not a Record<string, string> object', parsed);
+        return {};
+    } catch (error) {
+        // Invalid JSON in cookie - log warning and return empty object
+        // eslint-disable-next-line no-console
+        console.warn('Failed to parse shopper context cookie:', error instanceof Error ? error.message : String(error));
+        return {};
+    }
+}
 
 /**
  * Extract qualifiers from URL query parameters into a map

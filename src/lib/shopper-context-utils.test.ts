@@ -8,6 +8,7 @@ import {
     extractQualifiersFromUrl,
     computeEffectiveShopperContext,
     buildShopperContextBody,
+    safeParseCookie,
 } from './shopper-context-utils';
 import { SHOPPER_CONTEXT_SEARCH_PARAMS } from '@/lib/shopper-context-constants';
 import { getConfig } from '@/config';
@@ -61,6 +62,162 @@ describe('shopper-context-utils', () => {
             const result = getSourceCodeCookieName(mockContext);
             expect(result).toBe(SOURCE_CODE_COOKIE_NAME_BASE);
             expect(getConfig).toHaveBeenCalledWith(mockContext);
+        });
+    });
+
+    describe('safeParseCookie', () => {
+        let consoleWarnSpy: ReturnType<typeof vi.spyOn>;
+
+        beforeEach(() => {
+            consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        });
+
+        afterEach(() => {
+            consoleWarnSpy.mockRestore();
+        });
+
+        test('should return empty object for empty string', () => {
+            const result = safeParseCookie('');
+            expect(result).toEqual({});
+            expect(consoleWarnSpy).not.toHaveBeenCalled();
+        });
+
+        test('should return empty object for null', () => {
+            const result = safeParseCookie(null as any);
+            expect(result).toEqual({});
+            expect(consoleWarnSpy).not.toHaveBeenCalled();
+        });
+
+        test('should return empty object for undefined', () => {
+            const result = safeParseCookie(undefined as any);
+            expect(result).toEqual({});
+            expect(consoleWarnSpy).not.toHaveBeenCalled();
+        });
+
+        test('should parse valid JSON object', () => {
+            const cookieValue = JSON.stringify({ key1: 'value1', key2: 'value2' });
+            const result = safeParseCookie(cookieValue);
+            expect(result).toEqual({ key1: 'value1', key2: 'value2' });
+            expect(consoleWarnSpy).not.toHaveBeenCalled();
+        });
+
+        test('should parse JSON object with nested structure', () => {
+            const cookieValue = JSON.stringify({ nested: { key: 'value' } });
+            const result = safeParseCookie(cookieValue);
+            expect(result).toEqual({ nested: { key: 'value' } });
+            expect(consoleWarnSpy).not.toHaveBeenCalled();
+        });
+
+        test('should parse empty JSON object', () => {
+            const cookieValue = JSON.stringify({});
+            const result = safeParseCookie(cookieValue);
+            expect(result).toEqual({});
+            expect(consoleWarnSpy).not.toHaveBeenCalled();
+        });
+
+        test('should return empty object for JSON array', () => {
+            const cookieValue = JSON.stringify(['value1', 'value2']);
+            const result = safeParseCookie(cookieValue);
+            expect(result).toEqual({});
+            // Warning is logged when parsed value is not an object
+            expect(consoleWarnSpy).toHaveBeenCalledWith(
+                'Parsed shopper context cookie is not a Record<string, string> object',
+                ['value1', 'value2']
+            );
+        });
+
+        test('should return empty object for JSON null', () => {
+            const cookieValue = JSON.stringify(null);
+            const result = safeParseCookie(cookieValue);
+            expect(result).toEqual({});
+            // Warning is logged when parsed value is null (not an object)
+            expect(consoleWarnSpy).toHaveBeenCalledWith(
+                'Parsed shopper context cookie is not a Record<string, string> object',
+                null
+            );
+        });
+
+        test('should return empty object for JSON string primitive', () => {
+            const cookieValue = JSON.stringify('just a string');
+            const result = safeParseCookie(cookieValue);
+            expect(result).toEqual({});
+            // Warning is logged when parsed value is a primitive (not an object)
+            expect(consoleWarnSpy).toHaveBeenCalledWith(
+                'Parsed shopper context cookie is not a Record<string, string> object',
+                'just a string'
+            );
+        });
+
+        test('should handle invalid JSON and return empty object', () => {
+            const cookieValue = 'not valid json{';
+            const result = safeParseCookie(cookieValue);
+            expect(result).toEqual({});
+            expect(consoleWarnSpy).toHaveBeenCalledWith(
+                'Failed to parse shopper context cookie:',
+                expect.stringContaining('JSON')
+            );
+        });
+
+        test('should handle malformed JSON with unclosed brace', () => {
+            const cookieValue = '{"key": "value"';
+            const result = safeParseCookie(cookieValue);
+            expect(result).toEqual({});
+            expect(consoleWarnSpy).toHaveBeenCalled();
+        });
+
+        test('should handle malformed JSON with trailing comma', () => {
+            const cookieValue = '{"key": "value",}';
+            const result = safeParseCookie(cookieValue);
+            expect(result).toEqual({});
+            expect(consoleWarnSpy).toHaveBeenCalled();
+        });
+
+        test('should handle JSON with single quotes (invalid)', () => {
+            const cookieValue = "{'key': 'value'}";
+            const result = safeParseCookie(cookieValue);
+            expect(result).toEqual({});
+            expect(consoleWarnSpy).toHaveBeenCalled();
+        });
+
+        test('should parse JSON object with string values', () => {
+            const cookieValue = JSON.stringify({ sourceCode: 'email', deviceType: 'mobile' });
+            const result = safeParseCookie(cookieValue);
+            expect(result).toEqual({ sourceCode: 'email', deviceType: 'mobile' });
+            expect(consoleWarnSpy).not.toHaveBeenCalled();
+        });
+
+        test('should parse JSON object with empty string values', () => {
+            const cookieValue = JSON.stringify({ key1: '', key2: 'value' });
+            const result = safeParseCookie(cookieValue);
+            expect(result).toEqual({ key1: '', key2: 'value' });
+            expect(consoleWarnSpy).not.toHaveBeenCalled();
+        });
+
+        test('should handle JSON object with number values (converted to string)', () => {
+            const cookieValue = JSON.stringify({ key1: 123, key2: 'value' });
+            const result = safeParseCookie(cookieValue);
+            // Note: The function returns Record<string, string>, but JSON.parse preserves number types
+            // TypeScript will allow this, but runtime values are numbers
+            expect(result).toEqual({ key1: 123, key2: 'value' });
+            expect(consoleWarnSpy).not.toHaveBeenCalled();
+        });
+
+        test('should handle JSON object with special characters', () => {
+            const cookieValue = JSON.stringify({ key: 'value with spaces', key2: 'value-with-dashes' });
+            const result = safeParseCookie(cookieValue);
+            expect(result).toEqual({ key: 'value with spaces', key2: 'value-with-dashes' });
+            expect(consoleWarnSpy).not.toHaveBeenCalled();
+        });
+
+        test('should handle empty array string', () => {
+            const cookieValue = JSON.stringify([]);
+            const result = safeParseCookie(cookieValue);
+            expect(result).toEqual({});
+            // Warning is logged when parsed value is an array (not an object)
+            expect(consoleWarnSpy).toHaveBeenCalledWith(
+                'Parsed shopper context cookie is not a Record<string, string> object',
+                []
+            );
         });
     });
 
