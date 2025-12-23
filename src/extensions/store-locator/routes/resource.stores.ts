@@ -71,6 +71,7 @@ export function loader({ request, context }: LoaderFunctionArgs) {
     return searchStores(context, request);
 }
 
+// eslint-disable-next-line custom/no-client-loaders
 export function clientLoader({ request, context }: ClientLoaderFunctionArgs) {
     return searchStores(context, request);
 }

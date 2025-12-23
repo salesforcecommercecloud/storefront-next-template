@@ -42,7 +42,7 @@ type LoginLoaderData = {
     actionParams?: string | null;
 };
 
-// eslint-disable-next-line react-refresh/only-export-components,custom/no-universal-loaders
+// eslint-disable-next-line react-refresh/only-export-components
 export function loader({ request, context }: LoaderFunctionArgs) {
     const session = getAuth(context);
     const url = new URL(request.url);

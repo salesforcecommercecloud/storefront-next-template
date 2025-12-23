@@ -85,7 +85,7 @@ export function loader(args: LoaderFunctionArgs) {
  * @param args - Client loader function arguments containing request context
  * @returns Promise containing customer data and page key or redirects to login
  */
-// eslint-disable-next-line react-refresh/only-export-components
+// eslint-disable-next-line react-refresh/only-export-components,custom/no-client-loaders
 export function clientLoader(args: ClientLoaderFunctionArgs) {
     // Check if the session in the cookie is different from what's in the cache
     // This handles the edge case where the user changed their password and was re-logged in via a server action

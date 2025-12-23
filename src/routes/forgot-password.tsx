@@ -14,7 +14,7 @@ type ForgotPasswordActionData = {
     email?: string;
 };
 
-// eslint-disable-next-line react-refresh/only-export-components,custom/no-universal-loaders
+// eslint-disable-next-line react-refresh/only-export-components
 export function loader({ context }: LoaderFunctionArgs): Response | void {
     // If user is already logged in as registered user, redirect to login page
     const session = getAuth(context);

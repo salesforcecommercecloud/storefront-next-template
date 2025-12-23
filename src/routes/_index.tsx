@@ -86,6 +86,7 @@ export function loader(args: LoaderFunctionArgs) {
  * directly instead of wrapped in a data object.
  * @returns Promise that resolves to an object containing search result promise
  */
+// eslint-disable-next-line custom/no-client-loaders
 export function clientLoader(args: ClientLoaderFunctionArgs) {
     return getPageData(args, getConfig().pages.home.featuredProductsCount);
 }

@@ -152,7 +152,7 @@ export function loader(args: LoaderFunctionArgs) {
  * @param args - Client loader function arguments containing context and parameters
  * @returns Promise that resolves to an object containing the order data promise
  */
-// eslint-disable-next-line react-refresh/only-export-components
+// eslint-disable-next-line react-refresh/only-export-components,custom/no-client-loaders
 export function clientLoader(args: ClientLoaderFunctionArgs) {
     return getPageData(args);
 }

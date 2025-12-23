@@ -224,7 +224,7 @@ export async function loader({ context }: LoaderFunctionArgs): Promise<{
 /**
  * Client-side loader to fetch the customer's wishlist items and product details
  */
-// eslint-disable-next-line custom/no-async-page-loader, react-refresh/only-export-components
+// eslint-disable-next-line custom/no-async-page-loader,react-refresh/only-export-components,custom/no-client-loaders
 export async function clientLoader({ context }: ClientLoaderFunctionArgs): Promise<{
     wishlist: CustomerProductList | null; // Type works at runtime despite linter schema warning
     items: CustomerProductListItem[];

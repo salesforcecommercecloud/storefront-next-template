@@ -70,6 +70,7 @@ export function loader({ context }: LoaderFunctionArgs) {
     return fetchBasketProducts(context);
 }
 
+// eslint-disable-next-line custom/no-client-loaders
 export function clientLoader({ context }: ClientLoaderFunctionArgs) {
     return fetchBasketProducts(context);
 }

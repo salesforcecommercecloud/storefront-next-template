@@ -94,7 +94,7 @@ export function loader(args: LoaderFunctionArgs): SearchPageData {
     return getPageData(args, getConfig(args.context).global.productListing.productsPerPage);
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
+// eslint-disable-next-line react-refresh/only-export-components,custom/no-client-loaders
 export function clientLoader(args: ClientLoaderFunctionArgs): SearchPageData {
     return getPageData(args, getConfig().global.productListing.productsPerPage);
 }

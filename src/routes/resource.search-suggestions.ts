@@ -31,6 +31,7 @@ export function loader({ request, context }: LoaderFunctionArgs) {
     return getSearchSuggestionsData({ request, context });
 }
 
+// eslint-disable-next-line custom/no-client-loaders
 export function clientLoader(args: ClientLoaderFunctionArgs) {
     return getSearchSuggestionsData(args);
 }

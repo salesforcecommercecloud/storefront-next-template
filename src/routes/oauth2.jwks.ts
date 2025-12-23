@@ -71,7 +71,7 @@ async function fetchUpstreamJWKS(context: LoaderFunctionArgs['context']): Promis
 /**
  * JWKS proxy loader - serves JWKS in standard format for jose library compatibility
  */
-// eslint-disable-next-line custom/no-async-page-loader, custom/no-universal-loaders -- Resource route for JWKS proxy serving
+// eslint-disable-next-line custom/no-async-page-loader -- Resource route for JWKS proxy serving
 export async function loader({ context }: LoaderFunctionArgs) {
     const { t } = getTranslation(context);
 

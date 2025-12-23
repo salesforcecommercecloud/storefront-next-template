@@ -28,7 +28,7 @@ type SignupActionResponse = {
     auth?: ReturnType<typeof getAuth>;
 };
 
-// eslint-disable-next-line react-refresh/only-export-components,custom/no-universal-loaders
+// eslint-disable-next-line react-refresh/only-export-components
 export function loader({ context }: LoaderFunctionArgs): null | Response {
     const session = getAuth(context);
     if (session.userType === 'registered') {

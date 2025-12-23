@@ -69,7 +69,7 @@ export function loader(args: LoaderFunctionArgs): CheckoutPageData {
  * - Handles errors gracefully with fallback to empty data
  * @returns Object containing checkout data promises
  */
-// eslint-disable-next-line react-refresh/only-export-components
+// eslint-disable-next-line react-refresh/only-export-components,custom/no-client-loaders
 export function clientLoader(args: ClientLoaderFunctionArgs): CheckoutPageData {
     return getClientLoaderData(args);
 }

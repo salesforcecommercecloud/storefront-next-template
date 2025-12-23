@@ -119,7 +119,7 @@ export function loader(args: LoaderFunctionArgs): CategoryPageData {
  * with the promise data instead of a direct promise.
  * @returns Object containing the data promise to prevent navigation blocking
  */
-// eslint-disable-next-line react-refresh/only-export-components
+// eslint-disable-next-line react-refresh/only-export-components,custom/no-client-loaders
 export function clientLoader(args: ClientLoaderFunctionArgs): CategoryPageData {
     return getPageData(args, getConfig().global.productListing.productsPerPage);
 }

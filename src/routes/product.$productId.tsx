@@ -203,6 +203,7 @@ export function loader({ request, params, context }: LoaderFunctionArgs) {
  * and fetch product data with inventory-specific information.
  * @returns Promise that resolves to an object containing product and category promises
  */
+// eslint-disable-next-line custom/no-client-loaders
 export function clientLoader({ request, params, context }: ClientLoaderFunctionArgs): ProductPageData {
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
     const cookieName = getSelectedStoreInfoCookieName();

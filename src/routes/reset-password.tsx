@@ -16,7 +16,7 @@ type ResetPasswordActionData = {
     error?: string;
 };
 
-// eslint-disable-next-line react-refresh/only-export-components,custom/no-universal-loaders
+// eslint-disable-next-line react-refresh/only-export-components
 export function loader({ request }: LoaderFunctionArgs): ResetPasswordLoaderData | Response {
     const url = new URL(request.url);
     const token = url.searchParams.get('token');

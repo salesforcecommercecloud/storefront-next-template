@@ -232,7 +232,7 @@ export function HydrateFallback() {
  * @returns Promise resolving to cart page data with basket and product details
  * TODO: Implement server loader to have the cart page take part in the SSR phase
  */
-// eslint-disable-next-line react-refresh/only-export-components,custom/no-universal-loaders
+// eslint-disable-next-line react-refresh/only-export-components,custom/no-client-loaders
 export const clientLoader: ClientLoaderFunction = ({ context }: ClientLoaderFunctionArgs): CartPageData => {
     const basket = getBasket(context);
     const productItems = basket?.productItems ?? [];

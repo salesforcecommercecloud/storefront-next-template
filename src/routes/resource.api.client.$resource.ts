@@ -265,6 +265,7 @@ export function loader<
  * @see {@link import('@/hooks/use-scapi-fetcher.ts').useScapiFetcher}
  * @see {@link import('@/lib/api-clients.ts').createApiClients}
  */
+// eslint-disable-next-line custom/no-client-loaders
 export function clientLoader<
     R extends CommerceSdkMethodReturnType<C, M>,
     C extends CommerceSdkKeyMap,

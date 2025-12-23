@@ -17,7 +17,7 @@ import { getConfig } from '@/config';
  * Client loader to fetch product details for a slice of wishlist items
  * This is used by PaginatedProductCarousel to load more products on demand
  */
-// eslint-disable-next-line custom/no-async-page-loader, custom/no-universal-loaders
+// eslint-disable-next-line custom/no-async-page-loader,custom/no-client-loaders
 export async function clientLoader({ request, context }: ClientLoaderFunctionArgs): Promise<{
     products: (ShopperSearch.schemas['ProductSearchHit'] | null)[];
     productsByProductId: Record<string, ShopperProducts.schemas['Product']>;
