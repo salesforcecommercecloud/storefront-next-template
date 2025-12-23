@@ -2,11 +2,15 @@
  * Unit tests for product-conversion.ts
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { convertProductToProductSearchHit } from './product-conversion';
 
 describe('convertProductToProductSearchHit', () => {
+    afterEach(() => {
+        vi.unstubAllEnvs();
+    });
+
     it('should convert a basic product to ProductSearchHit format', () => {
         const product: ShopperProducts.schemas['Product'] = {
             id: 'test-product-123',
@@ -124,6 +128,20 @@ describe('convertProductToProductSearchHit', () => {
         const result = convertProductToProductSearchHit(product);
 
         expect(result.price).toBe(99.99);
+    });
+
+    it('should default currency to site currency when product currency is missing', () => {
+        vi.stubEnv('PUBLIC__app__site__currency', 'EUR');
+
+        const product: ShopperProducts.schemas['Product'] = {
+            id: 'test-product',
+            name: 'Product Without Currency',
+            price: 25.99,
+        };
+
+        const result = convertProductToProductSearchHit(product);
+
+        expect(result.currency).toBe('EUR');
     });
 
     it('should default currency to USD when missing', () => {

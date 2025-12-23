@@ -24,7 +24,7 @@ export function convertProductToProductSearchHit(
         productId,
         productName: product.name || product.productName || '',
         price: productPrice,
-        currency: product.currency || 'USD',
+        currency: product.currency || import.meta.env.PUBLIC__app__site__currency || 'USD',
         image: firstImage
             ? {
                   disBaseLink: firstImage.disBaseLink || firstImage.link || '',

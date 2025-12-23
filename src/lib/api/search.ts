@@ -1,5 +1,6 @@
 import type { LoaderFunctionArgs } from 'react-router';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import { getConfig } from '@/config';
 import { createApiClients } from '@/lib/api-clients';
 
 export const fetchSearchProducts = (
@@ -12,7 +13,7 @@ export const fetchSearchProducts = (
         limit?: number;
         offset?: number;
         expand?: ShopperSearch.operations['productSearch']['parameters']['query']['expand'];
-        refine?: ShopperSearch.operations['productSearch']['parameters']['query']['refine'];
+        refine?: ShopperSearch.operations['productSearch']['parameters']['query']['refine'] | string[];
         select?: ShopperSearch.operations['productSearch']['parameters']['query']['select'];
         currency?: ShopperSearch.operations['productSearch']['parameters']['query']['currency'];
         allImages?: boolean;
@@ -20,6 +21,7 @@ export const fetchSearchProducts = (
         perPricebook?: boolean;
     }
 ): Promise<ShopperSearch.schemas['ProductSearchResult']> => {
+    const config = getConfig(context);
     const {
         categoryId,
         q = '',
@@ -29,7 +31,7 @@ export const fetchSearchProducts = (
         offset = 0,
         expand = ['promotions', 'variations', 'prices', 'images', 'page_meta_tags', 'custom_properties'],
         refine = [],
-        currency = 'USD',
+        currency = config?.site?.currency || 'USD',
         allImages = true,
         allVariationProperties = true,
         perPricebook = true,
