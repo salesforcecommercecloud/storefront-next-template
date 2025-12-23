@@ -5,7 +5,6 @@ import { readFileSync } from 'node:fs';
 import { defineConfig, perEnvironmentPlugin, loadEnv } from 'vite';
 import { configDefaults, coverageConfigDefaults } from 'vitest/config';
 import coverageConfigThresholds from './vitest.thresholds';
-import { reactRouter } from '@react-router/dev/vite';
 import tailwindcss from '@tailwindcss/vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import devtoolsJson from 'vite-plugin-devtools-json';
@@ -68,7 +67,8 @@ export default defineConfig(({ mode }) => {
             __TEST__: `${mode === 'test'}`,
         },
         plugins: [
-            mode !== 'test' && reactRouter(),
+            // Dynamically import to avoid ESM/CJS cycle with @react-router/dev in test mode
+            mode !== 'test' && import('@react-router/dev/vite').then(({ reactRouter }) => reactRouter()),
             tailwindcss(),
             tsconfigPaths(),
             devtoolsJson(),
