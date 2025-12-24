@@ -1,6 +1,9 @@
 // Default export: Vite plugin (for tree-shaking, plugin users won't bundle CLI code)
 export { storefrontNextPlugins as default, type StorefrontNextPluginsConfig } from './plugin';
 
+// Named export: Transform plugin placeholder components (PluginComponent & ProviderProviders)
+export { transformPluginPlaceholderPlugin } from './plugins/transformPlugins';
+
 // Named export: Push function for programmatic usage
 // For better tree-shaking, import from './commands/push' subpath export instead
 export { push } from './commands/push';

@@ -11,7 +11,7 @@ import type { ReactNode } from 'react';
 import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
 import PickupStoreInfo from './index';
-import { StoreLocatorWrapper } from '@/test-utils/context-provider';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
 // Mock useFetcher from react-router
 const mockFetcher = {
@@ -84,9 +84,9 @@ describe('PickupStoreInfo', () => {
     describe('Rendering', () => {
         it('renders store name and address', () => {
             render(
-                <StoreLocatorWrapper>
+                <AllProvidersWrapper>
                     <PickupStoreInfo store={mockStore} />
-                </StoreLocatorWrapper>
+                </AllProvidersWrapper>
             );
 
             expect(screen.getByText(/Pick up in/)).toBeInTheDocument();
@@ -97,9 +97,9 @@ describe('PickupStoreInfo', () => {
 
         it('renders Change Store button', () => {
             render(
-                <StoreLocatorWrapper>
+                <AllProvidersWrapper>
                     <PickupStoreInfo store={mockStore} />
-                </StoreLocatorWrapper>
+                </AllProvidersWrapper>
             );
 
             expect(screen.getByText('Change Store')).toBeInTheDocument();
@@ -107,9 +107,9 @@ describe('PickupStoreInfo', () => {
 
         it('renders with data-testid attribute', () => {
             render(
-                <StoreLocatorWrapper>
+                <AllProvidersWrapper>
                     <PickupStoreInfo store={mockStore} />
-                </StoreLocatorWrapper>
+                </AllProvidersWrapper>
             );
 
             expect(screen.getByTestId('pickup-store-info-card')).toBeInTheDocument();
@@ -117,9 +117,9 @@ describe('PickupStoreInfo', () => {
 
         it('renders store icon', () => {
             const { container } = render(
-                <StoreLocatorWrapper>
+                <AllProvidersWrapper>
                     <PickupStoreInfo store={mockStore} />
-                </StoreLocatorWrapper>
+                </AllProvidersWrapper>
             );
 
             // Check for Store icon from lucide-react (rendered as SVG)
@@ -129,9 +129,9 @@ describe('PickupStoreInfo', () => {
 
         it('renders StoreAddress component with store prop', () => {
             render(
-                <StoreLocatorWrapper>
+                <AllProvidersWrapper>
                     <PickupStoreInfo store={mockStore} />
-                </StoreLocatorWrapper>
+                </AllProvidersWrapper>
             );
 
             // StoreAddress should render the address
@@ -146,9 +146,9 @@ describe('PickupStoreInfo', () => {
             };
 
             render(
-                <StoreLocatorWrapper>
+                <AllProvidersWrapper>
                     <PickupStoreInfo store={storeWithoutName} />
-                </StoreLocatorWrapper>
+                </AllProvidersWrapper>
             );
 
             // Should still render "Pick up in" text
@@ -163,9 +163,9 @@ describe('PickupStoreInfo', () => {
             const user = userEvent.setup();
 
             render(
-                <StoreLocatorWrapper>
+                <AllProvidersWrapper>
                     <PickupStoreInfo store={mockStore} />
-                </StoreLocatorWrapper>
+                </AllProvidersWrapper>
             );
 
             const changeStoreButton = screen.getByText('Change Store');
@@ -187,9 +187,9 @@ describe('PickupStoreInfo', () => {
             };
 
             render(
-                <StoreLocatorWrapper>
+                <AllProvidersWrapper>
                     <PickupStoreInfo store={storeWithoutName} />
-                </StoreLocatorWrapper>
+                </AllProvidersWrapper>
             );
 
             const changeStoreButton = screen.getByText('Change Store');
@@ -214,16 +214,16 @@ describe('PickupStoreInfo', () => {
             mockSelectedStoreInfo.mockReturnValue(differentStore);
 
             const { rerender } = render(
-                <StoreLocatorWrapper>
+                <AllProvidersWrapper>
                     <PickupStoreInfo store={mockStore} />
-                </StoreLocatorWrapper>
+                </AllProvidersWrapper>
             );
 
             // Trigger re-render to simulate store selection change
             rerender(
-                <StoreLocatorWrapper>
+                <AllProvidersWrapper>
                     <PickupStoreInfo store={mockStore} />
-                </StoreLocatorWrapper>
+                </AllProvidersWrapper>
             );
 
             await waitFor(() => {
@@ -247,16 +247,16 @@ describe('PickupStoreInfo', () => {
             mockSelectedStoreInfo.mockReturnValue(sameStore);
 
             const { rerender } = render(
-                <StoreLocatorWrapper>
+                <AllProvidersWrapper>
                     <PickupStoreInfo store={mockStore} />
-                </StoreLocatorWrapper>
+                </AllProvidersWrapper>
             );
 
             // Trigger re-render
             rerender(
-                <StoreLocatorWrapper>
+                <AllProvidersWrapper>
                     <PickupStoreInfo store={mockStore} />
-                </StoreLocatorWrapper>
+                </AllProvidersWrapper>
             );
 
             // Wait a bit to ensure useEffect has run
@@ -281,16 +281,16 @@ describe('PickupStoreInfo', () => {
             mockSelectedStoreInfo.mockReturnValue(differentStore);
 
             const { rerender } = render(
-                <StoreLocatorWrapper>
+                <AllProvidersWrapper>
                     <PickupStoreInfo store={mockStore} />
-                </StoreLocatorWrapper>
+                </AllProvidersWrapper>
             );
 
             // Trigger re-render
             rerender(
-                <StoreLocatorWrapper>
+                <AllProvidersWrapper>
                     <PickupStoreInfo store={mockStore} />
-                </StoreLocatorWrapper>
+                </AllProvidersWrapper>
             );
 
             // Wait a bit to ensure useEffect has run
@@ -309,16 +309,16 @@ describe('PickupStoreInfo', () => {
             mockSelectedStoreInfo.mockReturnValue(null);
 
             const { rerender } = render(
-                <StoreLocatorWrapper>
+                <AllProvidersWrapper>
                     <PickupStoreInfo store={mockStore} />
-                </StoreLocatorWrapper>
+                </AllProvidersWrapper>
             );
 
             // Trigger re-render
             rerender(
-                <StoreLocatorWrapper>
+                <AllProvidersWrapper>
                     <PickupStoreInfo store={mockStore} />
-                </StoreLocatorWrapper>
+                </AllProvidersWrapper>
             );
 
             // Wait a bit to ensure useEffect has run
@@ -343,16 +343,16 @@ describe('PickupStoreInfo', () => {
             mockSelectedStoreInfo.mockReturnValue(storeWithoutInventoryId);
 
             const { rerender } = render(
-                <StoreLocatorWrapper>
+                <AllProvidersWrapper>
                     <PickupStoreInfo store={mockStore} />
-                </StoreLocatorWrapper>
+                </AllProvidersWrapper>
             );
 
             // Trigger re-render
             rerender(
-                <StoreLocatorWrapper>
+                <AllProvidersWrapper>
                     <PickupStoreInfo store={mockStore} />
-                </StoreLocatorWrapper>
+                </AllProvidersWrapper>
             );
 
             // Wait a bit to ensure useEffect has run

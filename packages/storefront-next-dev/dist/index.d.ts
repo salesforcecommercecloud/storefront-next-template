@@ -1,6 +1,6 @@
 import { Project } from "ts-morph";
 import { Express } from "express";
-import { Plugin, ViteDevServer } from "vite";
+import { Plugin, ResolvedConfig, ViteDevServer } from "vite";
 import { ServerBuild } from "react-router";
 
 //#region src/plugins/staticRegistry.d.ts
@@ -134,6 +134,18 @@ interface StorefrontNextPluginsConfig {
  */
 declare function storefrontNextPlugins(config?: StorefrontNextPluginsConfig): Plugin[];
 //#endregion
+//#region src/plugins/transformPlugins.d.ts
+declare function transformPluginPlaceholderPlugin(): {
+  name: string;
+  enforce: "pre";
+  configResolved(config: ResolvedConfig): void;
+  buildStart(): void;
+  transform(code: string, id: string): {
+    code: string;
+    map: null;
+  } | null;
+};
+//#endregion
 //#region src/types.d.ts
 interface PushOptions {
   projectDirectory: string;
@@ -264,5 +276,5 @@ interface GenerateMetadataOptions {
 }
 declare function generateMetadata(projectDirectory: string, metadataDirectory: string, options?: GenerateMetadataOptions): Promise<void>;
 //#endregion
-export { type GenerateMetadataOptions, type PushOptions, type StorefrontNextPluginsConfig, createServer, storefrontNextPlugins as default, generateMetadata, loadConfigFromEnv, loadProjectConfig, push, trimExtensions };
+export { type GenerateMetadataOptions, type PushOptions, type StorefrontNextPluginsConfig, createServer, storefrontNextPlugins as default, generateMetadata, loadConfigFromEnv, loadProjectConfig, push, transformPluginPlaceholderPlugin, trimExtensions };
 //# sourceMappingURL=index.d.ts.map

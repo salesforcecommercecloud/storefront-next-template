@@ -4,6 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import { transformPluginPlaceholderPlugin } from '@salesforce/storefront-next-dev';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -22,6 +23,7 @@ export default defineConfig({
         }), // Include React plugin for JSX processing with decorator support
         tailwindcss(), // Include Tailwind CSS plugin
         tsconfigPaths(),
+        transformPluginPlaceholderPlugin() as any, // Transform plugin placeholders for extensibility
     ],
     resolve: {
         alias: {

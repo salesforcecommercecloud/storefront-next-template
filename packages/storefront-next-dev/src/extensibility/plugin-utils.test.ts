@@ -1,14 +1,14 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { join } from 'path';
 import fs from 'fs-extra';
-import { transformPluginComponent, injectPluginContextproviders, buildPluginRegistry } from './plugin-utils';
+import { buildPluginRegistry, transformPlugins } from './plugin-utils';
 
 describe('plugin-utils', () => {
     describe('transformPluginComponent', () => {
         // PluginComponent as part of the JSX return
         const code = `
             import React from "react";
-            import { PluginComponent } from '@/plugins/plugin-components';
+            import { PluginComponent } from '@/plugins/plugin-component';
             export default function Test() {
                 const testFunc =  async () => {
                 return 'test';
@@ -23,7 +23,7 @@ describe('plugin-utils', () => {
         // PluginComponent as part of the variable declaration
         const codeWithJSXElementDeclaration = `
             import React from "react";
-            import { PluginComponent } from '@/plugins/plugin-components';
+            import { PluginComponent } from '@/plugins/plugin-component';
             export default function Test() {
                 const test = <div><PluginComponent pluginId="test.plugin" /></div>;
                 return (
@@ -34,7 +34,7 @@ describe('plugin-utils', () => {
         // PluginComponent as a variable declaration
         const codeWithPluginComponentAsVariable = `
             import React from "react";
-            import { PluginComponent } from '@/plugins/plugin-components';
+            import { PluginComponent } from '@/plugins/plugin-component';
             export default function Test() {
                 const test = <PluginComponent pluginId="test.plugin" />;
                 return (
@@ -45,7 +45,7 @@ describe('plugin-utils', () => {
         // PluginComponent as part of the JSXFragment
         const codeWithJSXElementReturn = `
             import React from "react";
-            import { PluginComponent } from '@/plugins/plugin-components';
+            import { PluginComponent } from '@/plugins/plugin-component';
             export default function Test() {
                 const content = <div>content</div>;
                 return <>{content}<PluginComponent pluginId="test.plugin" /></>;
@@ -54,7 +54,7 @@ describe('plugin-utils', () => {
         // PluginComponent has no attribute (error condition)
         const codeWithPluginComponentWithoutAttr = `
             import React from "react";
-            import { PluginComponent } from '@/plugins/plugin-components';
+            import { PluginComponent } from '@/plugins/plugin-component';
             export default function Test() {
                 return (
                 <div><PluginComponent /></div>
@@ -110,7 +110,7 @@ describe('plugin-utils', () => {
         };
 
         it('should replace a single <PluginComponent /> with the correct registered component', () => {
-            const transformed = transformPluginComponent(code, singlePluginRegistry);
+            const transformed = transformPlugins(code, singlePluginRegistry, []);
             // // Should import the registered component and replace the PluginComponent tag
             expect(transformed).toContain(
                 `import Bar_FooSingle from '@/extensions/store-locator/components/single-comp';`
@@ -120,7 +120,7 @@ describe('plugin-utils', () => {
         });
 
         it('should replace PluginComponent with corresponding registry component in variable declaration', () => {
-            const output = transformPluginComponent(codeWithPluginComponentAsVariable, pluginRegistry);
+            const output = transformPlugins(codeWithPluginComponentAsVariable, pluginRegistry, []);
             expect(output).toContain('<Bar_Foo1 /><Bar_Foo2 /><Bar_Foo3 />');
             expect(output).not.toContain('PluginComponent');
             expect(output).toContain(`import Bar_Foo1 from '@/extensions/foo1';`);
@@ -129,7 +129,7 @@ describe('plugin-utils', () => {
         });
 
         it('should replace PluginComponent with corresponding registry component', () => {
-            const output = transformPluginComponent(code, pluginRegistry);
+            const output = transformPlugins(code, pluginRegistry, []);
             expect(output).toContain('<Bar_Foo1 /><Bar_Foo2 /><Bar_Foo3 />');
             expect(output).not.toContain('PluginComponent');
             expect(output).toContain("import Bar_Foo1 from '@/extensions/foo1';");
@@ -138,24 +138,24 @@ describe('plugin-utils', () => {
         });
 
         it('should replace PluginComponent with corresponding registry component in JSX element declaration', () => {
-            const output = transformPluginComponent(codeWithJSXElementDeclaration, pluginRegistry);
+            const output = transformPlugins(codeWithJSXElementDeclaration, pluginRegistry, []);
             expect(output).toContain('<Bar_Foo1 /><Bar_Foo2 /><Bar_Foo3 />');
             expect(output).not.toContain('PluginComponent');
         });
 
         it('should replace PluginComponent with corresponding registry component in JSX element return', () => {
-            const output = transformPluginComponent(codeWithJSXElementReturn, pluginRegistry);
+            const output = transformPlugins(codeWithJSXElementReturn, pluginRegistry, []);
             expect(output).toContain('<Bar_Foo1 /><Bar_Foo2 /><Bar_Foo3 />');
             expect(output).not.toContain('PluginComponent');
         });
 
         it('should not transform code without PluginComponent', () => {
-            const output = transformPluginComponent(codeWithoutPluginComponent, pluginRegistry);
+            const output = transformPlugins(codeWithoutPluginComponent, pluginRegistry, []);
             expect(output).toBeNull();
         });
 
         it('should not transform PluginComponent without pluginId attribute', () => {
-            expect(() => transformPluginComponent(codeWithPluginComponentWithoutAttr, pluginRegistry)).toThrow(
+            expect(() => transformPlugins(codeWithPluginComponentWithoutAttr, pluginRegistry, [])).toThrow(
                 'PluginComponent must contain a pluginId attribute'
             );
         });
@@ -170,7 +170,7 @@ describe('plugin-utils', () => {
           );
         }
       `;
-            const output = transformPluginComponent(codeMissingPlugin, pluginRegistry);
+            const output = transformPlugins(codeMissingPlugin, pluginRegistry, []);
             expect(output).not.toContain('PluginComponent');
             expect(output).toContain('<div>');
             expect(output).toContain('</div>');
@@ -184,7 +184,7 @@ describe('plugin-utils', () => {
           );
         }
       `;
-            const output = transformPluginComponent(codeWithChildren, pluginRegistry);
+            const output = transformPlugins(codeWithChildren, pluginRegistry, []);
             expect(output).toContain('<span>Hello</span>');
             expect(output).not.toContain('PluginComponent');
         });
@@ -193,14 +193,24 @@ describe('plugin-utils', () => {
     describe('injectPluginContextproviders', () => {
         const code = `
       import React from "react";
-      import { ComposeProviders } from '@/providers/compose-providers';
+      import { PluginProviders } from '@/plugins/plugin-providers';
       export default function Root({ children }) { 
         const test = () => {
           return 'test';
         }
-        return <ComposeProviders>{children}</ComposeProviders>
+        return <PluginProviders>{children}</PluginProviders>
       }
     `;
+
+        const codeWithVariableDeclaration = `
+            import React from "react";
+            import { PluginProviders } from '@/plugins/plugin-providers';
+            export default function Root({ children }) { 
+                const test = <PluginProviders>{children}</PluginProviders>;
+                return {test}
+            }
+        `;
+
         const contextProviders = [
             {
                 path: 'extensions/foo/providers/foo-provider.tsx',
@@ -217,16 +227,27 @@ describe('plugin-utils', () => {
         ];
 
         it('should wrap ComposeProviders children in context providers', () => {
-            const result = injectPluginContextproviders(code, contextProviders);
+            const result = transformPlugins(code, {}, contextProviders);
             expect(result).toContain('<Foo_BarProvider>');
             expect(result).toContain('<Bar_BazProvider>');
             // All providers and children are nested
             expect(result?.indexOf('<Foo_BarProvider>') ?? -1).toBeLessThan(result?.indexOf('<Bar_BazProvider>') ?? -1);
+            expect(result).not.toContain('PluginProviders');
         });
 
-        it('should not transform code without ComposeProviders', () => {
-            const result = injectPluginContextproviders(code, []);
-            expect(result).toBeNull();
+        it('should wrap PluginProviders children in context providers in variable declaration', () => {
+            const result = transformPlugins(codeWithVariableDeclaration, {}, contextProviders);
+            expect(result).toContain('<Foo_BarProvider>');
+            expect(result).toContain('<Bar_BazProvider>');
+            // All providers and children are nested
+            expect(result?.indexOf('<Foo_BarProvider>') ?? -1).toBeLessThan(result?.indexOf('<Bar_BazProvider>') ?? -1);
+            expect(result).not.toContain('PluginProviders');
+        });
+
+        it('should remove PluginProviders without ComposeProviders', () => {
+            const result = transformPlugins(code, {}, []);
+            expect(result).not.toContain('PluginProviders');
+            expect(result).toContain('<>{children}</>');
         });
     });
 

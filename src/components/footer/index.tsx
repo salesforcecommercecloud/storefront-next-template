@@ -2,7 +2,7 @@ import type { ReactElement } from 'react';
 import { Link } from 'react-router';
 import { SiFacebook, SiInstagram, SiX, SiYoutube } from '@icons-pack/react-simple-icons';
 import Signup from './signup';
-import { PluginComponent } from '@/plugins/plugin-components';
+import { PluginComponent } from '@/plugins/plugin-component';
 import { useTranslation } from 'react-i18next';
 import LocaleSwitcher from '@/components/locale-switcher';
 

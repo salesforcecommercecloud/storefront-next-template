@@ -2,7 +2,7 @@ import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { renderHook, waitFor, act } from '@testing-library/react';
 
 import { useStoreLocatorList, type SearchStoresResult } from './use-store-locator-list';
-import { StoreLocatorWrapper } from '@/test-utils/context-provider';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
 
 // Mock react-router useFetcher and useRevalidator
@@ -70,7 +70,7 @@ describe('useStoreLocatorList', () => {
     test('triggers search when shouldSearch and input params present', () => {
         mockStore.shouldSearch = true;
         mockStore.searchParams = { countryCode: 'US', postalCode: '94105' };
-        renderHook(() => useStoreLocatorList(), { wrapper: StoreLocatorWrapper });
+        renderHook(() => useStoreLocatorList(), { wrapper: AllProvidersWrapper });
         expect(mockFetcher.load).toHaveBeenCalled();
         expect(mockStore.setShouldSearch).toHaveBeenCalledWith(false);
     });
@@ -79,14 +79,14 @@ describe('useStoreLocatorList', () => {
         mockStore.mode = 'device';
         mockStore.shouldSearch = true;
         mockStore.deviceCoordinates = { latitude: 1, longitude: 2 };
-        renderHook(() => useStoreLocatorList(), { wrapper: StoreLocatorWrapper });
+        renderHook(() => useStoreLocatorList(), { wrapper: AllProvidersWrapper });
         expect(mockFetcher.load).toHaveBeenCalled();
         expect(mockStore.setShouldSearch).toHaveBeenCalledWith(false);
     });
 
     test('exposes stores from fetcher data and supports pagination', async () => {
         // initial render — no data yet
-        const { result, rerender } = renderHook(() => useStoreLocatorList(), { wrapper: StoreLocatorWrapper });
+        const { result, rerender } = renderHook(() => useStoreLocatorList(), { wrapper: AllProvidersWrapper });
         expect(result.current.stores).toEqual([]);
 
         // provide data from fetcher
@@ -114,7 +114,7 @@ describe('useStoreLocatorList', () => {
     });
 
     test('triggers revalidation when store changes', () => {
-        const { result } = renderHook(() => useStoreLocatorList(), { wrapper: StoreLocatorWrapper });
+        const { result } = renderHook(() => useStoreLocatorList(), { wrapper: AllProvidersWrapper });
 
         // Initially no store selected
         expect(mockRevalidator.revalidate).not.toHaveBeenCalled();
@@ -163,7 +163,7 @@ describe('useStoreLocatorList', () => {
             inventoryId: 'inv1',
         };
 
-        const { result } = renderHook(() => useStoreLocatorList(), { wrapper: StoreLocatorWrapper });
+        const { result } = renderHook(() => useStoreLocatorList(), { wrapper: AllProvidersWrapper });
 
         // Set the same store (same inventoryId)
         act(() => {

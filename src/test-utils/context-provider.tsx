@@ -7,30 +7,14 @@
 
 import type { ReactNode } from 'react';
 import { ConfigProvider, type AppConfig } from '@/config/context';
-// @sfdc-extension-line SFDC_EXT_STORE_LOCATOR
-import StoreLocatorProvider from '@/extensions/store-locator/providers/store-locator';
 import { mockConfig } from './context-provider-utils';
+import { PluginProviders } from '@/plugins/plugin-providers';
 
 /**
  * React Testing Library wrapper component that provides ConfigProvider context
  */
 export function ConfigWrapper({ children }: { children: ReactNode }) {
     return <ConfigProvider config={mockConfig}>{children}</ConfigProvider>;
-}
-
-/**
- * React Testing Library wrapper component that provides StoreLocatorProvider context
- */
-export function StoreLocatorWrapper({ children }: { children: ReactNode }) {
-    return (
-        <>
-            {/* @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */}
-            <StoreLocatorProvider>
-                {children}
-                {/* @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */}
-            </StoreLocatorProvider>
-        </>
-    );
 }
 
 /**
@@ -55,5 +39,9 @@ export function StoreLocatorWrapper({ children }: { children: ReactNode }) {
  * ```
  */
 export function AllProvidersWrapper({ children, config = mockConfig }: { children: ReactNode; config?: AppConfig }) {
-    return <ConfigProvider config={config}>{StoreLocatorWrapper({ children })}</ConfigProvider>;
+    return (
+        <ConfigProvider config={config}>
+            <PluginProviders>{children}</PluginProviders>
+        </ConfigProvider>
+    );
 }

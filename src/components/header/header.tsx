@@ -5,7 +5,7 @@ import CartBadge from './cart-badge';
 import UserActions from './user-actions';
 import { useTranslation } from 'react-i18next';
 import logo from '/images/market-logo.svg';
-import { PluginComponent } from '@/plugins/plugin-components';
+import { PluginComponent } from '@/plugins/plugin-component';
 
 export default function Header({ children }: PropsWithChildren): ReactElement {
     const { t } = useTranslation('header');

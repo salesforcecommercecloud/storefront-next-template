@@ -11,7 +11,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import ChildProductCard from './child-product-card';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
-import { StoreLocatorWrapper } from '@/test-utils/context-provider';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
 vi.mock('@/hooks/product/use-current-variant', () => ({
     useCurrentVariant: () => null,
@@ -42,18 +42,6 @@ vi.mock('@/hooks/product/use-product-actions', () => ({
 vi.mock('@/hooks/product/use-variation-attributes', () => ({
     useVariationAttributes: () => [],
 }));
-
-// @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
-// Mock store locator store creation to prevent cookie/document access in tests
-vi.mock('@/extensions/store-locator/stores/store-locator-store', () => ({
-    createStoreLocatorStore: vi.fn(),
-}));
-
-vi.mock('@/extensions/store-locator/utils', () => ({
-    getCookieFromDocumentAs: vi.fn(),
-    getSelectedStoreInfoCookieName: vi.fn(),
-}));
-// @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
 
 // Mock delivery options hook used by DeliveryOptions component
 vi.mock('@/extensions/bopis/hooks/use-delivery-options', () => ({
@@ -100,9 +88,9 @@ const renderChildProductCard = (props: ComponentProps<typeof ChildProductCard>) 
             {
                 path: '/product/:productId',
                 element: (
-                    <StoreLocatorWrapper>
+                    <AllProvidersWrapper>
                         <ChildProductCard {...props} />
-                    </StoreLocatorWrapper>
+                    </AllProvidersWrapper>
                 ),
             },
         ],
@@ -115,8 +103,6 @@ const renderChildProductCard = (props: ComponentProps<typeof ChildProductCard>) 
 
 describe('ChildProductCard', () => {
     const mockOnSelectionChange = vi.fn();
-    const mockCreateStoreLocatorStore = vi.fn();
-    const mockGetSelectedStoreInfoFromDocument = vi.fn();
     const mockStore = {
         getState: vi.fn(),
         setState: vi.fn(),
@@ -124,23 +110,8 @@ describe('ChildProductCard', () => {
         destroy: vi.fn(),
     };
 
-    beforeEach(async () => {
+    beforeEach(() => {
         vi.clearAllMocks();
-
-        // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
-        // Setup mocks for store locator
-        const { createStoreLocatorStore } = await import('@/extensions/store-locator/stores/store-locator-store');
-        const { getCookieFromDocumentAs, getSelectedStoreInfoCookieName } = await import(
-            '@/extensions/store-locator/utils'
-        );
-
-        (createStoreLocatorStore as any).mockImplementation(mockCreateStoreLocatorStore);
-        (getCookieFromDocumentAs as any).mockImplementation(mockGetSelectedStoreInfoFromDocument);
-        (getSelectedStoreInfoCookieName as any).mockReturnValue('selectedStoreInfo_test');
-
-        mockCreateStoreLocatorStore.mockReturnValue(mockStore);
-        mockGetSelectedStoreInfoFromDocument.mockReturnValue(null);
-        // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
 
         // Set up stable mock state
         mockStore.getState.mockReturnValue({
@@ -318,13 +289,13 @@ describe('ChildProductCard', () => {
                             {
                                 path: '/product/:productId',
                                 element: (
-                                    <StoreLocatorWrapper>
+                                    <AllProvidersWrapper>
                                         <ChildProductCard
                                             childProduct={variantProduct}
                                             parentProduct={parentProduct}
                                             onSelectionChange={mockOnSelectionChange}
                                         />
-                                    </StoreLocatorWrapper>
+                                    </AllProvidersWrapper>
                                 ),
                             },
                         ],
@@ -701,13 +672,13 @@ describe('ChildProductCard', () => {
                             {
                                 path: '/product/:productId',
                                 element: (
-                                    <StoreLocatorWrapper>
+                                    <AllProvidersWrapper>
                                         <ChildProductCard
                                             childProduct={variantProduct}
                                             parentProduct={parentProduct}
                                             onSelectionChange={mockOnSelectionChange}
                                         />
-                                    </StoreLocatorWrapper>
+                                    </AllProvidersWrapper>
                                 ),
                             },
                         ],
@@ -768,13 +739,13 @@ describe('ChildProductCard', () => {
                             {
                                 path: '/product/:productId',
                                 element: (
-                                    <StoreLocatorWrapper>
+                                    <AllProvidersWrapper>
                                         <ChildProductCard
                                             childProduct={variantProduct}
                                             parentProduct={parentProduct}
                                             onSelectionChange={mockOnSelectionChange}
                                         />
-                                    </StoreLocatorWrapper>
+                                    </AllProvidersWrapper>
                                 ),
                             },
                         ],

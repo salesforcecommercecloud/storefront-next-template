@@ -46,7 +46,7 @@ import { composeStories } from '@storybook/react-vite';
 
 import * as ActiveFiltersStories from './active-filters.stories';
 import { render, cleanup } from '@testing-library/react';
-import { StoreLocatorWrapper } from '@/test-utils/context-provider';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
 const composed = composeStories(ActiveFiltersStories);
 
@@ -58,9 +58,9 @@ describe('ActiveFilters stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
         test(`${storyName} story renders and matches snapshot`, () => {
             const { container } = render(
-                <StoreLocatorWrapper>
+                <AllProvidersWrapper>
                     <Story />
-                </StoreLocatorWrapper>
+                </AllProvidersWrapper>
             );
             expect(container.firstChild).toMatchSnapshot();
         });

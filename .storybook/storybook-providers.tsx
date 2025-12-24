@@ -16,8 +16,6 @@ import AuthProvider from '../src/providers/auth';
 import BasketProvider from '../src/providers/basket';
 import CheckoutOneClickProvider from '../src/components/checkout/utils/checkout-context';
 import ProductViewProvider from '../src/providers/product-view';
-// @sfdc-extension-line SFDC_EXT_STORE_LOCATOR
-import StoreLocatorProvider from '../src/extensions/store-locator/providers/store-locator';
 import { ConfigProvider } from '../src/config';
 import { mockConfig } from '../src/test-utils/config';
 import type { SessionData } from '../src/lib/api/types';
@@ -129,6 +127,4 @@ export const storybookProviders = [
     StorybookAuthProvider,
     StorybookBasketProvider,
     StorybookCheckoutProvider,
-    // @sfdc-extension-line SFDC_EXT_STORE_LOCATOR
-    StoreLocatorProvider,
 ] as const;

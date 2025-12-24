@@ -1,7 +1,6 @@
 import {
     buildPluginRegistry,
-    injectPluginContextproviders,
-    transformPluginComponent,
+    transformPlugins,
     type PluginContextProviderConfig,
     type PluginComponentRegistry,
 } from '../extensibility/plugin-utils';
@@ -31,13 +30,8 @@ export function transformPluginPlaceholderPlugin() {
         },
 
         transform(code: string, id: string) {
-            let transformedCode = null;
             try {
-                if (id.includes(path.join(sourceDir, 'root.tsx'))) {
-                    transformedCode = injectPluginContextproviders(code, contextProviders);
-                } else {
-                    transformedCode = transformPluginComponent(code, componentRegistry);
-                }
+                const transformedCode = transformPlugins(code, componentRegistry, contextProviders);
                 if (transformedCode) {
                     return {
                         code: transformedCode,

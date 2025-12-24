@@ -268,8 +268,23 @@ const patchReactRouterPlugin = () => {
 //#region src/extensibility/plugin-utils.ts
 const traverse = traverseModule.default || traverseModule;
 const PLUGIN_COMPONENT_TAG = "PluginComponent";
+const PLUGIN_PROVIDERS_TAG = "PluginProviders";
 const PLUGIN_ID_ATTRIBUTE = "pluginId";
-const COMPOSE_PROVIDERS_TAG = "ComposeProviders";
+/**
+* Find and replace the PluginProviders tags with the corresponding context providers
+* @param element - the AST element to replace
+* @param contextProviders - the context providers to replace
+*/
+function findAndReplaceProviders(element, contextProviders) {
+	if (isJSXIdentifier(element.node.openingElement.name, { name: PLUGIN_PROVIDERS_TAG })) if (contextProviders.length > 0) {
+		let nested = element.node.children;
+		for (let i = contextProviders.length - 1; i >= 0; i--) {
+			const componentName = contextProviders[i].componentName;
+			nested = [jsxElement(jsxOpeningElement(jsxIdentifier(componentName), [], false), jsxClosingElement(jsxIdentifier(componentName)), nested, false)];
+		}
+		element.replaceWithMultiple(nested);
+	} else element.replaceWith(jsxFragment(jsxOpeningFragment(), jsxClosingFragment(), element.node.children));
+}
 /**
 * Find and replace the plugin component with the replacement code
 * @param componentName - the name of the component to replace
@@ -277,7 +292,7 @@ const COMPOSE_PROVIDERS_TAG = "ComposeProviders";
 * @param pluginRegistry - the plugin registry
 * @returns the pluginId that was replaced, or null if no replacement was found
 */
-function findAndReplace(componentName, element, pluginRegistry) {
+function findAndReplaceComponent(componentName, element, pluginRegistry) {
 	let pluginIdReplaced = null;
 	if (isJSXIdentifier(element.node.openingElement.name, { name: componentName })) {
 		let replaced = false;
@@ -305,10 +320,17 @@ function findAndReplace(componentName, element, pluginRegistry) {
 * @param ast - the AST to traverse
 * @param tagName - the name of the tag to replace
 * @param pluginRegistry - the plugin registry
+* @param contextProviders - the context providers to replace
 * @returns a set of pluginIds that were replaced
 */
-function runReplacementPass(ast, tagName, pluginRegistry) {
+function runReplacementPass(ast, tagName, pluginRegistry = null, contextProviders = null) {
 	const pluginIdsReplaced = /* @__PURE__ */ new Set();
+	const applyReplacement = (pathToReplace) => {
+		if (pluginRegistry) {
+			const replacedId = findAndReplaceComponent(tagName, pathToReplace, pluginRegistry);
+			if (replacedId) pluginIdsReplaced.add(replacedId);
+		} else if (contextProviders) findAndReplaceProviders(pathToReplace, contextProviders);
+	};
 	traverse(ast, {
 		VariableDeclaration(nodePath) {
 			const declarationPaths = nodePath.get("declarations");
@@ -318,11 +340,9 @@ function runReplacementPass(ast, tagName, pluginRegistry) {
 				if (initPath && isJSXElement(initPath.node)) {
 					const content = generate(initPath.node).code;
 					if ((/* @__PURE__ */ new RegExp(`<(${tagName})(\\s|\\/|>)`)).test(content)) {
-						const pluginIdReplaced = findAndReplace(tagName, initPath, pluginRegistry);
-						if (pluginIdReplaced) pluginIdsReplaced.add(pluginIdReplaced);
+						applyReplacement(initPath);
 						initPath.traverse({ JSXElement(inner) {
-							const nestedPluginIdReplaced = findAndReplace(tagName, inner, pluginRegistry);
-							if (nestedPluginIdReplaced) pluginIdsReplaced.add(nestedPluginIdReplaced);
+							applyReplacement(inner);
 						} });
 					}
 				}
@@ -332,8 +352,7 @@ function runReplacementPass(ast, tagName, pluginRegistry) {
 			const arg = nodePath.node.argument;
 			if (!isJSXElement(arg) && !isJSXFragment(arg)) return;
 			nodePath.traverse({ JSXElement(inner) {
-				const pluginIdReplaced = findAndReplace(tagName, inner, pluginRegistry);
-				if (pluginIdReplaced) pluginIdsReplaced.add(pluginIdReplaced);
+				applyReplacement(inner);
 			} });
 		}
 	});
@@ -353,14 +372,8 @@ function buildReplacementImportStatements(pluginIds, pluginRegistry) {
 	}
 	return Array.from(importStatements).join("\n");
 }
-/**
-* Transform the plugin component within the replacement code from the plugin registry
-* @param code - the code to transform
-* @param pluginRegistry - the plugin registry
-* @returns the transformed code, or null if no transformation was needed
-*/
-function transformPluginComponent(code, pluginRegistry) {
-	if (!code.includes(PLUGIN_COMPONENT_TAG)) return null;
+function transformPlugins(code, pluginRegistry, contextProviders) {
+	if (!code.includes(PLUGIN_COMPONENT_TAG) && !code.includes(PLUGIN_PROVIDERS_TAG)) return null;
 	const ast = parse(code, {
 		sourceType: "module",
 		plugins: [
@@ -369,53 +382,21 @@ function transformPluginComponent(code, pluginRegistry) {
 			"decorators-legacy"
 		]
 	});
-	const replacementImportStatements = buildReplacementImportStatements(runReplacementPass(ast, PLUGIN_COMPONENT_TAG, pluginRegistry), pluginRegistry);
-	traverse(ast, { ImportDeclaration(nodePath) {
-		if (nodePath.node.source.value.includes("@/plugins/plugin-components")) nodePath.replaceWith(jsxText(replacementImportStatements));
-	} });
-	return generate(ast).code;
-}
-/**
-* Inject the plugin context providers into the root component (root.tsx)
-* @param code - the code to inject the context providers into, typically root.tsx
-* @param contextProviders - the context providers to inject
-* @returns the code with the context providers injected, or null if no injection was needed
-*/
-function injectPluginContextproviders(code, contextProviders) {
-	if (contextProviders == null || contextProviders.length === 0 || !code.includes(COMPOSE_PROVIDERS_TAG)) return null;
-	const ast = parse(code, {
-		sourceType: "module",
-		plugins: [
-			"typescript",
-			"jsx",
-			"decorators-legacy"
-		]
-	});
-	const importStatements = /* @__PURE__ */ new Set();
-	for (const contextProvider of contextProviders) importStatements.add(`import ${contextProvider.componentName} from '@/${contextProvider.path.replace(".tsx", "")}';`);
-	const replacementImportStatements = Array.from(importStatements).join("\n");
-	ast.program.body.unshift(...parse(replacementImportStatements, {
-		sourceType: "module",
-		plugins: [
-			"typescript",
-			"jsx",
-			"decorators-legacy"
-		]
-	}).program.body);
-	traverse(ast, { ReturnStatement(nodePath) {
-		const arg = nodePath.node.argument;
-		if (!isJSXElement(arg)) return;
-		nodePath.traverse({ JSXElement(inner) {
-			if (isJSXIdentifier(inner.node.openingElement.name, { name: COMPOSE_PROVIDERS_TAG })) {
-				let nested = inner.node.children;
-				for (let i = contextProviders.length - 1; i >= 0; i--) {
-					const componentName = contextProviders[i].componentName;
-					nested = [jsxElement(jsxOpeningElement(jsxIdentifier(componentName), [], false), jsxClosingElement(jsxIdentifier(componentName)), nested, false)];
-				}
-				inner.node.children = nested;
-			}
+	if (code.includes(PLUGIN_COMPONENT_TAG)) {
+		const replacementImportStatements = buildReplacementImportStatements(runReplacementPass(ast, PLUGIN_COMPONENT_TAG, pluginRegistry, null), pluginRegistry);
+		traverse(ast, { ImportDeclaration(nodePath) {
+			if (nodePath.node.source.value.includes("@/plugins/plugin-component")) nodePath.replaceWith(jsxText(replacementImportStatements));
 		} });
-	} });
+	}
+	if (code.includes(PLUGIN_PROVIDERS_TAG)) {
+		const importStatements = /* @__PURE__ */ new Set();
+		for (const contextProvider of contextProviders) importStatements.add(`import ${contextProvider.componentName} from '@/${contextProvider.path.replace(".tsx", "")}';`);
+		const replacementImportStatements = Array.from(importStatements).join("\n");
+		traverse(ast, { ImportDeclaration(nodePath) {
+			if (nodePath.node.source.value.includes("@/plugins/plugin-providers")) nodePath.replaceWith(jsxText(replacementImportStatements));
+		} });
+		runReplacementPass(ast, PLUGIN_PROVIDERS_TAG, null, contextProviders);
+	}
 	return generate(ast).code;
 }
 /**
@@ -492,10 +473,8 @@ function transformPluginPlaceholderPlugin() {
 			({componentRegistry, contextProviders} = buildPluginRegistry(sourceDir));
 		},
 		transform(code, id) {
-			let transformedCode = null;
 			try {
-				if (id.includes(path$1.join(sourceDir, "root.tsx"))) transformedCode = injectPluginContextproviders(code, contextProviders);
-				else transformedCode = transformPluginComponent(code, componentRegistry);
+				const transformedCode = transformPlugins(code, componentRegistry, contextProviders);
 				if (transformedCode) return {
 					code: transformedCode,
 					map: null
@@ -2446,5 +2425,5 @@ async function generateMetadata(projectDirectory, metadataDirectory, options) {
 }
 
 //#endregion
-export { createServer, storefrontNextPlugins as default, generateMetadata, loadConfigFromEnv, loadProjectConfig, push, trimExtensions };
+export { createServer, storefrontNextPlugins as default, generateMetadata, loadConfigFromEnv, loadProjectConfig, push, transformPluginPlaceholderPlugin, trimExtensions };
 //# sourceMappingURL=index.js.map

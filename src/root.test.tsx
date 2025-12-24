@@ -75,13 +75,6 @@ vi.mock('@/components/tracking-consent-banner', async () => ({
     TrackingConsentBanner: () => <div data-testid="tracking-consent-banner">Tracking Consent Banner</div>,
 }));
 
-// @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
-vi.mock('@/extensions/store-locator/providers/store-locator', async () => ({
-    ...(await vi.importActual('@/extensions/store-locator/providers/store-locator')),
-    default: ({ children }: PropsWithChildren) => <div data-testid="store-locator-provider">{children}</div>,
-}));
-// @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
-
 // @sfdc-extension-block-start SFDC_EXT_HYBRID_PROXY
 vi.mock('@/extensions/hybrid-proxy/navigation-interceptor', () => ({
     HybridProxyNavigationInterceptor: () => <div data-testid="hybrid-proxy-interceptor">Hybrid Proxy Interceptor</div>,

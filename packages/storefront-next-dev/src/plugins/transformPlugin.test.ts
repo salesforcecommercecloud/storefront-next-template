@@ -15,22 +15,19 @@ const viteConfig = {
 // Mock the plugin-utils module
 vi.mock('../extensibility/plugin-utils', () => ({
     buildPluginRegistry: vi.fn(),
-    injectPluginContextproviders: vi.fn(),
-    transformPluginComponent: vi.fn(),
+    transformPlugins: vi.fn(),
 }));
 
 import {
     buildPluginRegistry,
-    injectPluginContextproviders,
-    transformPluginComponent,
     type PluginComponentRegistry,
     type PluginContextProviderConfig,
+    transformPlugins,
 } from '../extensibility/plugin-utils';
 
 describe('transformPluginPlaceholderPlugin', () => {
     let buildPluginRegistryMock: any;
-    let injectPluginContextprovidersMock: any;
-    let transformPluginComponentMock: any;
+    let transformPluginsMock: any;
     let plugin: ReturnType<typeof transformPluginPlaceholderPlugin>;
     const mockComponentRegistry: PluginComponentRegistry = {
         'test.plugin': [
@@ -61,8 +58,7 @@ describe('transformPluginPlaceholderPlugin', () => {
             componentRegistry: mockComponentRegistry,
             contextProviders: mockContextProviders,
         }));
-        injectPluginContextprovidersMock = vi.mocked(injectPluginContextproviders);
-        transformPluginComponentMock = vi.mocked(transformPluginComponent);
+        transformPluginsMock = vi.mocked(transformPlugins);
         vi.spyOn(process, 'cwd').mockReturnValue('/project');
 
         plugin = transformPluginPlaceholderPlugin();
@@ -93,23 +89,23 @@ describe('transformPluginPlaceholderPlugin', () => {
 
     it('should transform root.tsx with injectPluginContextproviders', () => {
         plugin.buildStart();
-        injectPluginContextprovidersMock.mockReturnValue('transformed-root-code');
+        transformPluginsMock.mockReturnValue('transformed-root-code');
         const res = plugin.transform(mockCode, `/project/${rootId}`);
-        expect(injectPluginContextprovidersMock).toHaveBeenCalledWith(mockCode, mockContextProviders);
+        expect(transformPluginsMock).toHaveBeenCalledWith(mockCode, mockComponentRegistry, mockContextProviders);
         expect(res).toEqual({ code: 'transformed-root-code', map: null });
     });
 
     it('should transform other components with transformPluginComponent', () => {
         plugin.buildStart();
-        transformPluginComponentMock.mockReturnValue('transformed-nonroot');
+        transformPluginsMock.mockReturnValue('transformed-nonroot');
         const res = plugin.transform(mockCode, mockId);
-        expect(transformPluginComponentMock).toHaveBeenCalledWith(mockCode, mockComponentRegistry);
+        expect(transformPluginsMock).toHaveBeenCalledWith(mockCode, mockComponentRegistry, mockContextProviders);
         expect(res).toEqual({ code: 'transformed-nonroot', map: null });
     });
 
     it('should return null if transformedCode is null or undefined', () => {
         plugin.buildStart();
-        transformPluginComponentMock.mockReturnValue(null);
+        transformPluginsMock.mockReturnValue(null);
         const res = plugin.transform(mockCode, mockId);
         expect(res).toBeNull();
     });
@@ -117,7 +113,7 @@ describe('transformPluginPlaceholderPlugin', () => {
     it('should log and throw on transform error', () => {
         plugin.buildStart();
         const error = new Error('test error');
-        transformPluginComponentMock.mockImplementation(() => {
+        transformPluginsMock.mockImplementation(() => {
             throw error;
         });
         const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -133,7 +129,7 @@ describe('transformPluginPlaceholderPlugin', () => {
     it('should log and throw on transform error that is not an Error', () => {
         plugin.buildStart();
         const error = 'test error';
-        transformPluginComponentMock.mockImplementation(() => {
+        transformPluginsMock.mockImplementation(() => {
             // eslint-disable-next-line @typescript-eslint/only-throw-error
             throw error;
         });

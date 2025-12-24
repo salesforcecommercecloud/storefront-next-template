@@ -49,6 +49,63 @@ exports[`Footer stories snapshot > DarkBackground story renders and matches snap
                     Shipping
                   </a>
                 </li>
+                <li>
+                  <h3
+                    class="text-lg font-semibold my-4"
+                  >
+                    Switch Themes
+                  </h3>
+                  <div
+                    class="flex items-center gap-2"
+                  >
+                    <div
+                      class="*:not-first:mt-2"
+                    >
+                      <div
+                        class="relative flex"
+                      >
+                        <select
+                          aria-label="Theme switcher"
+                          class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center rounded-md border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8"
+                          data-slot="select-native"
+                          id="_r_6_"
+                        >
+                          <option
+                            value="light"
+                          >
+                            Light Theme
+                          </option>
+                          <option
+                            value="dark"
+                          >
+                            Dark Theme
+                          </option>
+                        </select>
+                        <span
+                          class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
+                        >
+                          <svg
+                            aria-hidden="true"
+                            class="lucide lucide-chevron-down"
+                            fill="none"
+                            height="16"
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            viewBox="0 0 24 24"
+                            width="16"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="m6 9 6 6 6-6"
+                            />
+                          </svg>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </li>
               </ul>
               <h3
                 class="text-lg font-semibold my-4"
@@ -68,7 +125,7 @@ exports[`Footer stories snapshot > DarkBackground story renders and matches snap
                       aria-label="Language selector"
                       class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center rounded-md border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8"
                       data-slot="select-native"
-                      id="_r_3_"
+                      id="_r_7_"
                     >
                       <option
                         value="es-MX"
@@ -142,6 +199,14 @@ exports[`Footer stories snapshot > DarkBackground story renders and matches snap
               <ul
                 class="space-y-2"
               >
+                <li>
+                  <a
+                    class="hover:underline"
+                    href="/store-locator"
+                  >
+                    Store Locator
+                  </a>
+                </li>
                 <li>
                   <a
                     class="hover:underline"
@@ -328,6 +393,63 @@ exports[`Footer stories snapshot > Default story renders and matches snapshot 1`
                   Shipping
                 </a>
               </li>
+              <li>
+                <h3
+                  class="text-lg font-semibold my-4"
+                >
+                  Switch Themes
+                </h3>
+                <div
+                  class="flex items-center gap-2"
+                >
+                  <div
+                    class="*:not-first:mt-2"
+                  >
+                    <div
+                      class="relative flex"
+                    >
+                      <select
+                        aria-label="Theme switcher"
+                        class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center rounded-md border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8"
+                        data-slot="select-native"
+                        id="_r_0_"
+                      >
+                        <option
+                          value="light"
+                        >
+                          Light Theme
+                        </option>
+                        <option
+                          value="dark"
+                        >
+                          Dark Theme
+                        </option>
+                      </select>
+                      <span
+                        class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
+                      >
+                        <svg
+                          aria-hidden="true"
+                          class="lucide lucide-chevron-down"
+                          fill="none"
+                          height="16"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          width="16"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="m6 9 6 6 6-6"
+                          />
+                        </svg>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </li>
             </ul>
             <h3
               class="text-lg font-semibold my-4"
@@ -347,7 +469,7 @@ exports[`Footer stories snapshot > Default story renders and matches snapshot 1`
                     aria-label="Language selector"
                     class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center rounded-md border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8"
                     data-slot="select-native"
-                    id="_r_0_"
+                    id="_r_1_"
                   >
                     <option
                       value="es-MX"
@@ -421,6 +543,14 @@ exports[`Footer stories snapshot > Default story renders and matches snapshot 1`
             <ul
               class="space-y-2"
             >
+              <li>
+                <a
+                  class="hover:underline"
+                  href="/store-locator"
+                >
+                  Store Locator
+                </a>
+              </li>
               <li>
                 <a
                   class="hover:underline"
@@ -693,6 +823,63 @@ exports[`Footer stories snapshot > LongPage story renders and matches snapshot 1
                     Shipping
                   </a>
                 </li>
+                <li>
+                  <h3
+                    class="text-lg font-semibold my-4"
+                  >
+                    Switch Themes
+                  </h3>
+                  <div
+                    class="flex items-center gap-2"
+                  >
+                    <div
+                      class="*:not-first:mt-2"
+                    >
+                      <div
+                        class="relative flex"
+                      >
+                        <select
+                          aria-label="Theme switcher"
+                          class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center rounded-md border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8"
+                          data-slot="select-native"
+                          id="_r_2_"
+                        >
+                          <option
+                            value="light"
+                          >
+                            Light Theme
+                          </option>
+                          <option
+                            value="dark"
+                          >
+                            Dark Theme
+                          </option>
+                        </select>
+                        <span
+                          class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
+                        >
+                          <svg
+                            aria-hidden="true"
+                            class="lucide lucide-chevron-down"
+                            fill="none"
+                            height="16"
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            viewBox="0 0 24 24"
+                            width="16"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="m6 9 6 6 6-6"
+                            />
+                          </svg>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </li>
               </ul>
               <h3
                 class="text-lg font-semibold my-4"
@@ -712,7 +899,7 @@ exports[`Footer stories snapshot > LongPage story renders and matches snapshot 1
                       aria-label="Language selector"
                       class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center rounded-md border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8"
                       data-slot="select-native"
-                      id="_r_1_"
+                      id="_r_3_"
                     >
                       <option
                         value="es-MX"
@@ -786,6 +973,14 @@ exports[`Footer stories snapshot > LongPage story renders and matches snapshot 1
               <ul
                 class="space-y-2"
               >
+                <li>
+                  <a
+                    class="hover:underline"
+                    href="/store-locator"
+                  >
+                    Store Locator
+                  </a>
+                </li>
                 <li>
                   <a
                     class="hover:underline"
@@ -972,6 +1167,63 @@ exports[`Footer stories snapshot > MobileView story renders and matches snapshot
                   Shipping
                 </a>
               </li>
+              <li>
+                <h3
+                  class="text-lg font-semibold my-4"
+                >
+                  Switch Themes
+                </h3>
+                <div
+                  class="flex items-center gap-2"
+                >
+                  <div
+                    class="*:not-first:mt-2"
+                  >
+                    <div
+                      class="relative flex"
+                    >
+                      <select
+                        aria-label="Theme switcher"
+                        class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center rounded-md border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8"
+                        data-slot="select-native"
+                        id="_r_4_"
+                      >
+                        <option
+                          value="light"
+                        >
+                          Light Theme
+                        </option>
+                        <option
+                          value="dark"
+                        >
+                          Dark Theme
+                        </option>
+                      </select>
+                      <span
+                        class="text-muted-foreground/80 peer-aria-invalid:text-destructive/80 pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center peer-disabled:opacity-50"
+                      >
+                        <svg
+                          aria-hidden="true"
+                          class="lucide lucide-chevron-down"
+                          fill="none"
+                          height="16"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          width="16"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="m6 9 6 6 6-6"
+                          />
+                        </svg>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </li>
             </ul>
             <h3
               class="text-lg font-semibold my-4"
@@ -991,7 +1243,7 @@ exports[`Footer stories snapshot > MobileView story renders and matches snapshot
                     aria-label="Language selector"
                     class="peer border-input text-foreground focus-visible:border-ring focus-visible:ring-ring/50 has-[option[disabled]:checked]:text-muted-foreground aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-full cursor-pointer appearance-none items-center rounded-md border text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 ps-3 pe-8"
                     data-slot="select-native"
-                    id="_r_2_"
+                    id="_r_5_"
                   >
                     <option
                       value="es-MX"
@@ -1065,6 +1317,14 @@ exports[`Footer stories snapshot > MobileView story renders and matches snapshot
             <ul
               class="space-y-2"
             >
+              <li>
+                <a
+                  class="hover:underline"
+                  href="/store-locator"
+                >
+                  Store Locator
+                </a>
+              </li>
               <li>
                 <a
                   class="hover:underline"

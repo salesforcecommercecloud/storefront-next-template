@@ -58,6 +58,7 @@ import { initializeRegistry } from '@/lib/static-registry';
 import { HybridProxyNavigationInterceptor } from '@/extensions/hybrid-proxy/navigation-interceptor';
 /** @sfdc-extension-line SFDC_EXT_HYBRID_PROXY */
 import { isProxyPath } from '@/extensions/hybrid-proxy/config';
+import { PluginProviders } from '@/plugins/plugin-providers';
 
 // On the client side, initialize i18next.
 // (On the server side, it's initialized elsewhere in middlewares/i18next.ts file)
@@ -341,7 +342,11 @@ export default function App({
     }
     // @sfdc-extension-block-end SFDC_EXT_HYBRID_PROXY
 
-    return <ComposeProviders providers={providers}>{content}</ComposeProviders>;
+    return (
+        <ComposeProviders providers={providers}>
+            <PluginProviders>{content}</PluginProviders>
+        </ComposeProviders>
+    );
 }
 
 /**

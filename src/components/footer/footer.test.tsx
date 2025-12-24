@@ -63,13 +63,6 @@ describe('Footer', () => {
     test('renders Our Company section links', () => {
         renderWithRouter(<Footer />);
 
-        // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
-        // Store locator link uses extension UI string
-        const storeLocatorLink = screen.getByRole('link', { name: /store locator/i });
-        expect(storeLocatorLink).toBeInTheDocument();
-        expect(storeLocatorLink).toHaveAttribute('href', '/store-locator');
-        // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
-
         const aboutUsLink = screen.getByRole('link', { name: t('footer:links.aboutUs') });
         expect(aboutUsLink).toBeInTheDocument();
         expect(aboutUsLink).toHaveAttribute('href', '/about');

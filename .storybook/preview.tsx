@@ -6,6 +6,7 @@ import { applyProviders } from '../src/lib/provider-utils';
 import { storybookProviders } from './storybook-providers';
 import { inBasketProductDetails } from '../src/components/__mocks__/basket-with-dress';
 import '../src/app.css'; // Import global CSS
+import { PluginProviders } from '@/plugins/plugin-providers';
 
 // Create HOC that applies all Storybook providers
 // This uses the real provider components with mock data injected via wrapper components
@@ -23,9 +24,11 @@ const RouterWrapper = ({ Story }: { Story: ComponentType }) => {
 
     useEffect(() => {
         // Wrap Story with providers
-        const WrappedStory = () => (
+        const WrappedStory = (  
             <StorybookWrapper>
-                <Story />
+                <PluginProviders>
+                    <Story />
+                </PluginProviders>
             </StorybookWrapper>
         );
 
@@ -37,7 +40,7 @@ const RouterWrapper = ({ Story }: { Story: ComponentType }) => {
             [
                 {
                     path: '/',
-                    element: <WrappedStory />,
+                    element: WrappedStory,
                 },
                 {
                     // Resource route for basket product enrichment
