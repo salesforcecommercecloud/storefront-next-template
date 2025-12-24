@@ -24,6 +24,7 @@ import { getAuth as getAuthServer } from '@/middlewares/auth.server';
 import { createApiClients } from '@/lib/api-clients';
 import { isRegisteredCustomer } from '@/lib/api/customer';
 import { getConfig, useConfig } from '@/config';
+import { currencyContext } from '@/lib/currency';
 import { convertProductToProductSearchHit } from '@/lib/product-conversion';
 import { ProductTile } from '@/components/product-tile';
 import { useToast } from '@/components/toast';
@@ -58,6 +59,8 @@ export async function fetchProductsForWishlist(
     const maxIdsPerRequest = config.global.productListing.productsPerPage;
     const productsByProductId: Record<string, Product> = {};
 
+    const currency = context.get(currencyContext) as string;
+
     // Initialize map with empty placeholder objects for ALL wishlist items if provided
     // This ensures the map has entries for all products, even unfetched ones
     // Empty objects have just the id field to track which products need fetching
@@ -85,6 +88,7 @@ export async function fetchProductsForWishlist(
                         ids: batchIds,
                         allImages: true,
                         perPricebook: true,
+                        ...(currency ? { currency } : {}),
                     },
                 },
             });

@@ -24,6 +24,7 @@ import ProductPrice from '../product-price';
 
 // Hooks
 import { useItemFetcherLoading } from '@/hooks/use-item-fetcher';
+import { useCurrency } from '@/providers/currency';
 
 // Utils
 import { formatCurrency } from '@/lib/currency';
@@ -143,7 +144,8 @@ function ProductItemVariantAttributes({
     displayVariant?: 'default' | 'summary';
     promotions?: Record<string, ShopperPromotions.schemas['Promotion']>;
 }): ReactElement {
-    const { t } = useTranslation('cart');
+    const { t, i18n } = useTranslation('cart');
+    const currency = useCurrency();
     // Memoize expensive calculations
     const displayVariationValues = useMemo(
         () => getDisplayVariationValues(productItem?.variationAttributes, productItem?.variationValues),
@@ -190,10 +192,11 @@ function ProductItemVariantAttributes({
                     <span className="text-sm text-muted-foreground">
                         {t('attributes.promotions')}{' '}
                         <span className="text-success font-medium">
-                            {/*TODO: adjust this after we have i18n set up*/}
                             {hasItemDiscount &&
                                 formatCurrency(
-                                    productItem?.priceAdjustments?.reduce((acc, adj) => acc + (adj.price ?? 0), 0) ?? 0
+                                    productItem?.priceAdjustments?.reduce((acc, adj) => acc + (adj.price ?? 0), 0) ?? 0,
+                                    i18n.language,
+                                    currency
                                 )}
                         </span>
                     </span>
@@ -265,6 +268,9 @@ function ProductItem({
 }: ProductItemProps): ReactElement {
     // Track loading state for all fetchers related to this item
     const isItemFetcherLoading = useItemFetcherLoading(productItem?.itemId);
+    // Get currency from context (automatically derived from locale)
+    const currency = useCurrency();
+    const { i18n } = useTranslation();
 
     // Check if this is a bonus product
     const isBonusProduct = Boolean(productItem?.bonusProductLineItem);
@@ -308,7 +314,7 @@ function ProductItem({
                     <ProductPrice
                         type="unit"
                         product={productItem as ShopperProducts.schemas['Product']}
-                        currency="USD"
+                        currency={currency}
                         labelForA11y={productItem?.productName}
                         currentPriceProps={{
                             className: 'text-card-foreground text-right font-semibold text-sm leading-none relative',
@@ -364,7 +370,7 @@ function ProductItem({
                                             type="total"
                                             product={productItem as ShopperProducts.schemas['Product']}
                                             quantity={productItem.quantity ?? 1}
-                                            currency="USD"
+                                            currency={currency}
                                             labelForA11y={productItem?.productName}
                                             className="text-card-foreground text-right font-semibold text-sm leading-none relative"
                                             currentPriceProps={{
@@ -384,7 +390,9 @@ function ProductItem({
                                         <div className="text-muted-foreground text-sm">
                                             {formatCurrency(
                                                 (productItem.priceAfterItemDiscount ?? productItem.price ?? 0) /
-                                                    (productItem.quantity ?? 1)
+                                                    (productItem.quantity ?? 1),
+                                                i18n.language,
+                                                currency
                                             )}{' '}
                                             each
                                         </div>
@@ -407,7 +415,7 @@ function ProductItem({
                                                     type="total"
                                                     product={productItem as ShopperProducts.schemas['Product']}
                                                     quantity={productItem.quantity ?? 1}
-                                                    currency="USD"
+                                                    currency={currency}
                                                     labelForA11y={productItem?.productName}
                                                     currentPriceProps={{
                                                         className:
@@ -426,7 +434,9 @@ function ProductItem({
                                                 <div className="text-muted-foreground text-sm">
                                                     {formatCurrency(
                                                         (productItem.priceAfterItemDiscount ?? productItem.price ?? 0) /
-                                                            (productItem.quantity ?? 1)
+                                                            (productItem.quantity ?? 1),
+                                                        i18n.language,
+                                                        currency
                                                     )}{' '}
                                                     each
                                                 </div>

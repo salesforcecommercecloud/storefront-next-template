@@ -11,6 +11,7 @@ import ProductQuantityPicker from '@/components/product-quantity-picker';
 import { SwatchGroup, Swatch } from '@/components/swatch-group';
 import { useVariationAttributes } from '@/hooks/product/use-variation-attributes';
 import { useProductView } from '@/providers/product-view';
+import { useCurrency } from '@/providers/currency';
 import ProductPrice from '../product-price';
 import { isProductSet, isProductBundle } from '@/lib/product-utils';
 import ProductFeatures from './product-features';
@@ -67,6 +68,8 @@ export default function ProductInfo({
     const variationAttributes = useVariationAttributes({ product });
     // Get current variant for UI display
     const currentVariant = useCurrentVariant({ product });
+    // Get currency from context (automatically derived from locale)
+    const currency = useCurrency();
     // Get shared state from context
     const {
         quantity,
@@ -97,7 +100,7 @@ export default function ProductInfo({
                     type="unit"
                     product={product}
                     quantity={quantity}
-                    currency="USD"
+                    currency={currency}
                     labelForA11y={product?.name}
                     currentPriceProps={{
                         className: 'text-xl font-bold text-foreground',

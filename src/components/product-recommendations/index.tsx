@@ -5,6 +5,7 @@ import { useRecommenders, type Product } from '@/hooks/recommenders/use-recommen
 import ProductCarousel from '@/components/product-carousel/carousel';
 import { ProductRecommendationSkeleton } from '@/components/product/skeletons';
 import { useProduct } from '@/providers/product-context';
+import { useCurrency } from '@/providers/currency';
 import { Component } from '@/lib/decorators/component';
 import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
 import { EINSTEIN_RECOMMENDERS } from '@/adapters/einstein';
@@ -98,6 +99,7 @@ export default function ProductRecommendations({
     args,
 }: ProductRecommendationsProps): ReactElement | null {
     const { getRecommendations, getZoneRecommendations, recommendations, isLoading, error } = useRecommenders(true);
+    const currency = useCurrency();
 
     // Construct recommender config from props (supports both object and individual props for Page Designer)
     const recommender = useMemo(() => {
@@ -138,6 +140,7 @@ export default function ProductRecommendations({
         recommenderType?: string;
         productsKey?: string;
         argsKey?: string;
+        currency?: string;
     } | null>(null);
 
     // Create a stable key for products array
@@ -165,7 +168,8 @@ export default function ProductRecommendations({
             lastFetch.recommenderName === recommenderName &&
             lastFetch.recommenderType === recommenderType &&
             lastFetch.productsKey === productsKey &&
-            lastFetch.argsKey === argsKey
+            lastFetch.argsKey === argsKey &&
+            lastFetch.currency === currency
         ) {
             return;
         }
@@ -176,6 +180,7 @@ export default function ProductRecommendations({
             recommenderType,
             productsKey,
             argsKey,
+            currency,
         };
 
         if (recommenderType === 'zone') {
@@ -184,7 +189,7 @@ export default function ProductRecommendations({
             void getRecommendations(recommenderName, products, args);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [recommenderName, recommenderType, productsKey, argsKey]);
+    }, [recommenderName, recommenderType, productsKey, argsKey, currency]);
 
     // Early return if no recommender configured
     if (!recommender || !recommender.name || !recommender.title) {

@@ -17,7 +17,7 @@ vi.mock('@/lib/api-clients', () => ({
 vi.mock('@/config', async (importOriginal) => {
     const actual = await importOriginal();
     return {
-        ...actual,
+        ...(actual as Record<string, unknown>),
         getConfig: vi.fn(() => ({
             commerce: {
                 api: {
@@ -138,6 +138,7 @@ describe('resource.basket-products', () => {
                     ids: ['product-1', 'product-2'],
                     allImages: true,
                     perPricebook: true,
+                    currency: 'USD',
                 },
             },
         });

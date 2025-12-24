@@ -16,6 +16,7 @@ import AuthProvider from '../src/providers/auth';
 import BasketProvider from '../src/providers/basket';
 import CheckoutOneClickProvider from '../src/components/checkout/utils/checkout-context';
 import ProductViewProvider from '../src/providers/product-view';
+import StoreLocatorProvider from '../src/extensions/store-locator/providers/store-locator';
 import { ConfigProvider } from '../src/config';
 import { mockConfig } from '../src/test-utils/config';
 import type { SessionData } from '../src/lib/api/types';
@@ -94,6 +95,14 @@ export const StorybookBasketProvider = ({ children }: PropsWithChildren) => (
 );
 
 /**
+ * Storybook StoreLocatorProvider wrapper
+ * StoreLocatorProvider doesn't require any props - it initializes its own store from cookies
+ */
+export const StorybookStoreLocatorProvider = ({ children }: PropsWithChildren) => (
+    <StoreLocatorProvider>{children}</StoreLocatorProvider>
+);
+
+/**
  * Storybook CheckoutProvider wrapper with mock customer profile
  */
 export const StorybookCheckoutProvider = ({ children }: PropsWithChildren) => (
@@ -126,5 +135,6 @@ export const storybookProviders = [
     StorybookI18nextProvider,
     StorybookAuthProvider,
     StorybookBasketProvider,
+    StorybookStoreLocatorProvider,
     StorybookCheckoutProvider,
 ] as const;

@@ -8,6 +8,7 @@ const { t } = getTranslation();
 import { ProductTile } from './index';
 import { type ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { ConfigWrapper } from '@/test-utils/config';
+import { CurrencyProvider } from '@/providers/currency';
 
 vi.mock('@/lib/product-utils', () => ({
     createProductUrl: vi.fn(() => '/product/test-product'),
@@ -107,7 +108,9 @@ const renderComponent = (props = {}) => {
                 path: '/test',
                 element: (
                     <ConfigWrapper>
-                        <ProductTile product={mockProduct} {...props} />
+                        <CurrencyProvider value="USD">
+                            <ProductTile product={mockProduct} {...props} />
+                        </CurrencyProvider>
                     </ConfigWrapper>
                 ),
             },

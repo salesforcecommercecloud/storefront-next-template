@@ -1,0 +1,47 @@
+{
+    "deliveryOptions": {
+        "title": "Consegna:",
+        "pickupOrDelivery": {
+            "shipToAddress": "Spedisci a indirizzo",
+            "pickUpInStore": "Ritiro gratuito in",
+            "unavailablePickUpIn": "Ritiro non disponibile presso",
+            "selectStore": "Seleziona negozio",
+            "inStockAtStore": "Ora disponibile per il ritiro oggi.",
+            "outOfStockAtStore": "Provi un altro negozio o selezioni la consegna."
+        }
+    },
+    "storeInventoryFilter": {
+        "heading": "Acquista per disponibilità",
+        "label": "Disponibile presso {{storeName}}",
+        "inStock": "Disponibile",
+        "checkboxAriaLabel": "Filtra prodotti per disponibilità nel negozio presso {{storeName}}",
+        "selectStore": "Seleziona negozio",
+        "changeStore": "Cambia negozio",
+        "openStoreLocator": "Apri localizzatore negozi per {{action}}",
+        "selectStoreLink": "Seleziona un negozio"
+    },
+    "storePickup": {
+        "title": "Luogo di ritiro in negozio",
+        "viewButton": "Visualizza",
+        "closeButton": "Chiudi",
+        "pickupDetailsTitle": "Dettagli luogo di ritiro",
+        "phoneLabel": "Telefono:",
+        "storeHoursTitle": "Orari del negozio",
+        "pickupLastName": "Ritiro"
+    },
+    "cart": {
+        "pickupStoreInfo": {
+            "pickupInStore": "Ritira presso {{storeName}}",
+            "changeStore": "Cambia negozio",
+            "storeChanged": "Negozio di ritiro cambiato con successo",
+            "changeStoreError": "Impossibile cambiare negozio di ritiro",
+            "itemsOutOfStock": "Alcuni articoli non sono disponibili presso {{storeName}}. Selezioni un negozio diverso.",
+            "missingStoreIdOrInventoryIdError": "ID negozio o ID inventario mancante. Selezioni un negozio valido."
+        },
+        "addToCartValidation": {
+            "changeStoreError": "Ha già un articolo nel carrello da un negozio diverso.",
+            "changeToDeliveryError": "Ha già un articolo nel carrello contrassegnato per il ritiro.",
+            "changeToPickupError": "Ha già un articolo nel carrello contrassegnato per la consegna."
+        }
+    }
+}

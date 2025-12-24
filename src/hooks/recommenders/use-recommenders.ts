@@ -9,6 +9,7 @@ import { useRecommendersAdapter } from '@/providers/recommenders';
 import { convertProductToProductSearchHit } from '@/lib/product-conversion';
 import { encodeBase64Url } from '@/lib/url';
 import { useAuth } from '@/providers/auth';
+import { useCurrency } from '@/providers/currency';
 
 /**
  * Union type for products from either Shopper Products API or Shopper Search API
@@ -142,6 +143,7 @@ function enrichRecommendationsWithProducts(
 export const useRecommenders = (isEnabled: boolean = true) => {
     const adapter = useRecommendersAdapter();
     const auth = useAuth();
+    const currency = useCurrency();
     const [isLoading, setIsLoading] = useState(false);
     const [recommendations, setRecommendations] = useState<Recommendation>({});
     const [error, setError] = useState<Error | null>(null);
@@ -170,39 +172,43 @@ export const useRecommenders = (isEnabled: boolean = true) => {
      * Fetch product details from SCAPI using the resource API
      * Uses the same encoding format as useScapiFetcher for consistency
      */
-    const fetchProducts = useCallback(async (ids: string[]): Promise<ShopperProducts.schemas['Product'][]> => {
-        if (!ids.length) {
-            return [];
-        }
-
-        try {
-            const client = 'shopperProducts';
-            const method = 'getProducts';
-            const options = {
-                params: {
-                    query: {
-                        ids,
-                        allImages: true,
-                    },
-                },
-            };
-            const parameters = JSON.stringify(options);
-            const resource = encodeBase64Url(`["${client}","${method}",${parameters}]`);
-            const url = `/resource/api/client/${resource}`;
-
-            const response = await fetch(url);
-
-            if (!response.ok) {
+    const fetchProducts = useCallback(
+        async (ids: string[]): Promise<ShopperProducts.schemas['Product'][]> => {
+            if (!ids.length) {
                 return [];
             }
 
-            const result = await response.json();
-            const products = result.data?.data || [];
-            return products;
-        } catch {
-            return [];
-        }
-    }, []);
+            try {
+                const client = 'shopperProducts';
+                const method = 'getProducts';
+                const options = {
+                    params: {
+                        query: {
+                            ids,
+                            allImages: true,
+                            ...(currency ? { currency } : {}),
+                        },
+                    },
+                };
+                const parameters = JSON.stringify(options);
+                const resource = encodeBase64Url(`["${client}","${method}",${parameters}]`);
+                const url = `/resource/api/client/${resource}`;
+
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    return [];
+                }
+
+                const result = await response.json();
+                const products = result.data?.data || [];
+                return products;
+            } catch {
+                return [];
+            }
+        },
+        [currency]
+    );
 
     const getRecommenders = useCallback(async () => {
         if (!isEnabled || !adapter) return {};

@@ -8,6 +8,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { vi, describe, test, expect, beforeEach } from 'vitest';
 import ProductRecommendations, { type RecommenderConfig } from './index';
+import { CurrencyProvider } from '@/providers/currency';
 
 // Mock data
 const mockRecommendations = {
@@ -101,6 +102,11 @@ vi.mock('@/providers/recommenders', () => ({
     }),
 }));
 
+// Helper function to render with CurrencyProvider
+const renderWithCurrency = (component: React.ReactElement, currency: string = 'USD') => {
+    return render(<CurrencyProvider value={currency}>{component}</CurrencyProvider>);
+};
+
 describe('ProductRecommendations', () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -118,7 +124,7 @@ describe('ProductRecommendations', () => {
                 getZoneRecommendations: mockGetZoneRecommendations,
             });
 
-            render(<ProductRecommendations recommender={mockRecommender} />);
+            renderWithCurrency(<ProductRecommendations recommender={mockRecommender} />);
 
             await waitFor(() => {
                 const carousel = screen.getByTestId('product-carousel');
@@ -139,7 +145,7 @@ describe('ProductRecommendations', () => {
                 getZoneRecommendations: mockGetZoneRecommendations,
             });
 
-            render(<ProductRecommendations recommender={mockRecommender} />);
+            renderWithCurrency(<ProductRecommendations recommender={mockRecommender} />);
 
             await waitFor(() => {
                 expect(screen.getByTestId('product-test-product-1')).toBeInTheDocument();
@@ -160,7 +166,7 @@ describe('ProductRecommendations', () => {
                 getZoneRecommendations: mockGetZoneRecommendations,
             });
 
-            render(<ProductRecommendations recommender={mockRecommender} />);
+            renderWithCurrency(<ProductRecommendations recommender={mockRecommender} />);
 
             const skeleton = screen.getByTestId('product-recommendation-skeleton');
             expect(skeleton).toBeInTheDocument();
@@ -178,7 +184,7 @@ describe('ProductRecommendations', () => {
                 getZoneRecommendations: mockGetZoneRecommendations,
             });
 
-            const { container } = render(<ProductRecommendations recommender={mockRecommender} />);
+            const { container } = renderWithCurrency(<ProductRecommendations recommender={mockRecommender} />);
 
             expect(container.firstChild).toBeNull();
         });
@@ -186,27 +192,27 @@ describe('ProductRecommendations', () => {
 
     describe('Hook Integration', () => {
         test('calls getRecommendations for recommender type', () => {
-            render(<ProductRecommendations recommender={mockRecommender} />);
+            renderWithCurrency(<ProductRecommendations recommender={mockRecommender} />);
 
             expect(mockGetRecommendations).toHaveBeenCalledWith('pdp-similar-items', undefined, undefined);
         });
 
         test('calls getZoneRecommendations for zone type', () => {
-            render(<ProductRecommendations recommender={mockZoneRecommender} />);
+            renderWithCurrency(<ProductRecommendations recommender={mockZoneRecommender} />);
 
             expect(mockGetZoneRecommendations).toHaveBeenCalledWith('pdp-zone', undefined, undefined);
         });
 
         test('passes products to getRecommendations', () => {
             const mockProducts = [{ id: 'product-1', productId: 'product-1' }];
-            render(<ProductRecommendations recommender={mockRecommender} products={mockProducts} />);
+            renderWithCurrency(<ProductRecommendations recommender={mockRecommender} products={mockProducts} />);
 
             expect(mockGetRecommendations).toHaveBeenCalledWith('pdp-similar-items', mockProducts, undefined);
         });
 
         test('passes args to getRecommendations', () => {
             const mockArgs = { limit: 5 };
-            render(<ProductRecommendations recommender={mockRecommender} args={mockArgs} />);
+            renderWithCurrency(<ProductRecommendations recommender={mockRecommender} args={mockArgs} />);
 
             expect(mockGetRecommendations).toHaveBeenCalledWith('pdp-similar-items', undefined, mockArgs);
         });
@@ -224,13 +230,13 @@ describe('ProductRecommendations', () => {
                 getZoneRecommendations: mockGetZoneRecommendations,
             });
 
-            const { container } = render(<ProductRecommendations recommender={mockRecommender} />);
+            const { container } = renderWithCurrency(<ProductRecommendations recommender={mockRecommender} />);
 
             expect(container.firstChild).toBeNull();
         });
 
         test('does not render when recommender is null', () => {
-            const { container } = render(<ProductRecommendations recommender={null as any} />);
+            const { container } = renderWithCurrency(<ProductRecommendations recommender={null as any} />);
 
             expect(container.firstChild).toBeNull();
         });
@@ -248,7 +254,7 @@ describe('ProductRecommendations', () => {
                 getZoneRecommendations: mockGetZoneRecommendations,
             });
 
-            render(<ProductRecommendations recommender={mockRecommender} />);
+            renderWithCurrency(<ProductRecommendations recommender={mockRecommender} />);
 
             await waitFor(() => {
                 expect(screen.getByText('Custom Display Message')).toBeInTheDocument();
@@ -266,7 +272,7 @@ describe('ProductRecommendations', () => {
                 getZoneRecommendations: mockGetZoneRecommendations,
             });
 
-            render(<ProductRecommendations recommender={mockRecommender} />);
+            renderWithCurrency(<ProductRecommendations recommender={mockRecommender} />);
 
             await waitFor(() => {
                 expect(screen.getByText('You May Also Like')).toBeInTheDocument();

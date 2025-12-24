@@ -1,6 +1,5 @@
 import type { LoaderFunctionArgs } from 'react-router';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
-import { getConfig } from '@/config';
 import { createApiClients } from '@/lib/api-clients';
 
 export const fetchSearchProducts = (
@@ -15,13 +14,12 @@ export const fetchSearchProducts = (
         expand?: ShopperSearch.operations['productSearch']['parameters']['query']['expand'];
         refine?: ShopperSearch.operations['productSearch']['parameters']['query']['refine'] | string[];
         select?: ShopperSearch.operations['productSearch']['parameters']['query']['select'];
-        currency?: ShopperSearch.operations['productSearch']['parameters']['query']['currency'];
         allImages?: boolean;
         allVariationProperties?: boolean;
         perPricebook?: boolean;
+        currency?: string;
     }
 ): Promise<ShopperSearch.schemas['ProductSearchResult']> => {
-    const config = getConfig(context);
     const {
         categoryId,
         q = '',
@@ -31,10 +29,10 @@ export const fetchSearchProducts = (
         offset = 0,
         expand = ['promotions', 'variations', 'prices', 'images', 'page_meta_tags', 'custom_properties'],
         refine = [],
-        currency = config?.site?.currency || 'USD',
         allImages = true,
         allVariationProperties = true,
         perPricebook = true,
+        currency,
     } = parameters || {};
 
     // Build refinements for product search
@@ -80,11 +78,11 @@ export const fetchSearchSuggestions = (
         q: ShopperSearch.operations['getSearchSuggestions']['parameters']['query']['q'];
         expand?: ShopperSearch.operations['getSearchSuggestions']['parameters']['query']['expand'];
         limit?: ShopperSearch.operations['getSearchSuggestions']['parameters']['query']['limit'];
-        currency?: ShopperSearch.operations['getSearchSuggestions']['parameters']['query']['currency'];
         includeEinsteinSuggestedPhrases?: boolean;
+        currency?: string;
     }
 ): Promise<ShopperSearch.schemas['SuggestionResult']> => {
-    const { q, expand, limit, currency, includeEinsteinSuggestedPhrases } = parameters;
+    const { q, expand, limit, includeEinsteinSuggestedPhrases, currency } = parameters;
     const clients = createApiClients(context);
 
     return clients.shopperSearch
@@ -94,7 +92,7 @@ export const fetchSearchSuggestions = (
                     q,
                     ...(expand && { expand }),
                     ...(limit && { limit }),
-                    ...(currency && { currency }),
+                    currency,
                     ...(includeEinsteinSuggestedPhrases !== undefined && { includeEinsteinSuggestedPhrases }),
                 },
             },

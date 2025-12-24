@@ -13,41 +13,46 @@ import {
     getEnabledRecommendationTypes,
 } from './recommendations';
 import { fetchSearchProducts } from '@/lib/api/search';
+import { createTestContext } from '@/lib/test-utils';
 
 vi.mock('@/lib/api/search');
-vi.mock('@/config', () => ({
-    getConfig: () => ({
-        global: {
-            recommendations: {
-                search_limit: {
-                    youMightLike: 8,
-                    completeLook: 12,
-                    recentlyViewed: 6,
-                },
-                types: {
-                    'you-may-also-like': {
-                        enabled: true,
-                        priority: 1,
-                        sort: 'best-matches',
-                        titleKey: 'product.recommendations.youMightAlsoLike',
+vi.mock('@/config', async (importOriginal) => {
+    const actual = await importOriginal();
+    return {
+        ...(actual as object),
+        getConfig: () => ({
+            global: {
+                recommendations: {
+                    search_limit: {
+                        youMightLike: 8,
+                        completeLook: 12,
+                        recentlyViewed: 6,
                     },
-                    'complete-the-look': {
-                        enabled: true,
-                        priority: 2,
-                        sort: 'price-low-to-high',
-                        titleKey: 'product.recommendations.completeTheLook',
-                    },
-                    'recently-viewed': {
-                        enabled: false,
-                        priority: 3,
-                        sort: 'most-popular',
-                        titleKey: 'product.recommendations.recentlyViewed',
+                    types: {
+                        'you-may-also-like': {
+                            enabled: true,
+                            priority: 1,
+                            sort: 'best-matches',
+                            titleKey: 'product.recommendations.youMightAlsoLike',
+                        },
+                        'complete-the-look': {
+                            enabled: true,
+                            priority: 2,
+                            sort: 'price-low-to-high',
+                            titleKey: 'product.recommendations.completeTheLook',
+                        },
+                        'recently-viewed': {
+                            enabled: false,
+                            priority: 3,
+                            sort: 'most-popular',
+                            titleKey: 'product.recommendations.recentlyViewed',
+                        },
                     },
                 },
             },
-        },
-    }),
-}));
+        }),
+    };
+});
 
 const mockProduct: ShopperProducts.schemas['Product'] = {
     id: 'test-product-id',
@@ -64,7 +69,7 @@ const mockCategory: ShopperProducts.schemas['Category'] = {
     parentCategoryId: 'parent-category-id',
 } as ShopperProducts.schemas['Category'];
 
-const mockSearchResult: ShopperSearch.schemas['ProductSearchResult'] = {
+const mockSearchResult = {
     hits: [],
     total: 0,
     query: '',
@@ -75,7 +80,7 @@ const mockSearchResult: ShopperSearch.schemas['ProductSearchResult'] = {
     count: 0,
     offset: 0,
     limit: 0,
-};
+} as ShopperSearch.schemas['ProductSearchResult'];
 
 describe('getEnabledRecommendationTypes', () => {
     test('returns enabled recommendation types in priority order', () => {
@@ -197,10 +202,11 @@ describe('getSearchParamsForType', () => {
 });
 
 describe('generateRecommendationPromises', () => {
-    const mockContext = { clientId: 'test-client', siteId: 'test-site' } as any;
+    let mockContext: ReturnType<typeof createTestContext>;
 
     beforeEach(() => {
         vi.clearAllMocks();
+        mockContext = createTestContext();
         vi.mocked(fetchSearchProducts).mockResolvedValue(mockSearchResult);
     });
 
@@ -369,7 +375,7 @@ describe('generateRecommendationPromises', () => {
 
     describe('Edge Cases and Additional Coverage', () => {
         test('handles product without id for complete-the-look', () => {
-            const productWithoutId = { ...mockProduct, id: undefined };
+            const productWithoutId = { ...mockProduct, id: undefined } as unknown as ShopperProducts.schemas['Product'];
             const promises = generateRecommendationPromises(mockContext, {
                 product: productWithoutId,
                 category: mockCategory,

@@ -46,10 +46,12 @@ export function createApiClients(context: RouterContextProvider | Readonly<Route
           : `${appOrigin}${proxy}`;
     const redirectUri = `${appOrigin}${callback}`;
 
-    // Get current locale from i18next (already in SCAPI format like en-US, es-MX)
+    // Get current locale from i18next context
     const { i18next } = getTranslation(context);
     const locale = i18next.language ?? config.i18n.fallbackLng;
 
+    // Note: Currency is NOT passed as a global parameter because not all Shopper* APIs support it.
+    // Each caller should read currency from context and pass it in their specific API calls.
     const clients = createCommerceApiClients({
         baseUrl,
         organizationId,

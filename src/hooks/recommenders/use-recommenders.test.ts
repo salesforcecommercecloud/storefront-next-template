@@ -10,6 +10,20 @@ vi.mock('@/providers/recommenders', () => ({
     useRecommendersAdapter: vi.fn(),
 }));
 
+// Mock the currency provider
+vi.mock('@/providers/currency', () => ({
+    useCurrency: vi.fn().mockReturnValue('USD'),
+}));
+
+// Mock the auth provider
+vi.mock('@/providers/auth', () => ({
+    useAuth: vi.fn().mockReturnValue({
+        usid: 'test-usid-123',
+        userType: 'guest',
+        customer_id: null,
+    }),
+}));
+
 describe('useRecommenders', () => {
     let mockAdapter: RecommendersAdapter;
     let mockFetch: ReturnType<typeof vi.fn>;
@@ -122,9 +136,11 @@ describe('useRecommenders', () => {
                 await result.current.getRecommendations('test-recommender');
             });
 
-            // Now passes user parameters ({}) even when args is undefined
+            // Now passes user parameters (cookieId) even when args is undefined
             // eslint-disable-next-line @typescript-eslint/unbound-method
-            expect(mockAdapter.getRecommendations).toHaveBeenCalledWith('test-recommender', undefined, {});
+            expect(mockAdapter.getRecommendations).toHaveBeenCalledWith('test-recommender', undefined, {
+                cookieId: 'test-usid-123',
+            });
             // Fetch now uses encoded resource URL format with GET method (no second argument)
             expect(mockFetch).toHaveBeenCalledWith(expect.stringMatching(/^\/resource\/api\/client\/.+$/));
 
@@ -160,7 +176,10 @@ describe('useRecommenders', () => {
             });
 
             // eslint-disable-next-line @typescript-eslint/unbound-method
-            expect(mockAdapter.getRecommendations).toHaveBeenCalledWith('test-recommender', products, args);
+            expect(mockAdapter.getRecommendations).toHaveBeenCalledWith('test-recommender', products, {
+                ...args,
+                cookieId: 'test-usid-123',
+            });
         });
 
         it('should not fetch when disabled', async () => {
@@ -235,9 +254,11 @@ describe('useRecommenders', () => {
                 await result.current.getZoneRecommendations('test-zone');
             });
 
-            // Now passes user parameters ({}) even when args is undefined
+            // Now passes user parameters (cookieId) even when args is undefined
             // eslint-disable-next-line @typescript-eslint/unbound-method
-            expect(mockAdapter.getZoneRecommendations).toHaveBeenCalledWith('test-zone', undefined, {});
+            expect(mockAdapter.getZoneRecommendations).toHaveBeenCalledWith('test-zone', undefined, {
+                cookieId: 'test-usid-123',
+            });
 
             await waitFor(() => {
                 expect(result.current.isLoading).toBe(false);
@@ -256,7 +277,10 @@ describe('useRecommenders', () => {
             });
 
             // eslint-disable-next-line @typescript-eslint/unbound-method
-            expect(mockAdapter.getZoneRecommendations).toHaveBeenCalledWith('test-zone', products, args);
+            expect(mockAdapter.getZoneRecommendations).toHaveBeenCalledWith('test-zone', products, {
+                ...args,
+                cookieId: 'test-usid-123',
+            });
         });
 
         it('should not fetch when disabled', async () => {

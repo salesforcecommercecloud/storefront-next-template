@@ -211,7 +211,17 @@ describe('Order Confirmation Route', () => {
         test('should call getPageData with correct parameters', async () => {
             const { loader, clientLoader } = await import('./order-confirmation.$orderNo');
 
-            const mockContext = {};
+            const mockContext = {
+                get: vi.fn((context) => {
+                    // Check if this looks like a React context object (has Provider and Consumer)
+                    // For now, assume any React context is the currency context
+                    if (context && typeof context === 'object' && 'Provider' in context && 'Consumer' in context) {
+                        return 'USD';
+                    }
+                    // Return undefined for any other context - tests can mock specific contexts as needed
+                    return undefined;
+                }),
+            };
             const mockParams = { orderNo: 'TEST-ORDER-12345' };
             const mockArgs = { context: mockContext, params: mockParams } as any;
 
@@ -242,7 +252,17 @@ describe('Order Confirmation Route', () => {
         test('should fetch order with correct organization and site IDs', async () => {
             const { loader } = await import('./order-confirmation.$orderNo');
 
-            const mockContext = {};
+            const mockContext = {
+                get: vi.fn((context) => {
+                    // Check if this looks like a React context object (has Provider and Consumer)
+                    // For now, assume any React context is the currency context
+                    if (context && typeof context === 'object' && 'Provider' in context && 'Consumer' in context) {
+                        return 'USD';
+                    }
+                    // Return undefined for any other context - tests can mock specific contexts as needed
+                    return undefined;
+                }),
+            };
             const mockParams = { orderNo: 'TEST-ORDER-12345' };
             const mockArgs = { context: mockContext, params: mockParams } as any;
 
@@ -268,7 +288,17 @@ describe('Order Confirmation Route', () => {
         test('should fetch stores for BOPIS orders', async () => {
             const { loader } = await import('./order-confirmation.$orderNo');
 
-            const mockContext = {};
+            const mockContext = {
+                get: vi.fn((context) => {
+                    // Check if this looks like a React context object (has Provider and Consumer)
+                    // For now, assume any React context is the currency context
+                    if (context && typeof context === 'object' && 'Provider' in context && 'Consumer' in context) {
+                        return 'USD';
+                    }
+                    // Return undefined for any other context - tests can mock specific contexts as needed
+                    return undefined;
+                }),
+            };
             const mockParams = { orderNo: 'TEST-ORDER-12345' };
             const mockArgs = { context: mockContext, params: mockParams } as any;
 

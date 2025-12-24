@@ -2,6 +2,7 @@ import type { ClientLoaderFunctionArgs, LoaderFunctionArgs } from 'react-router'
 import type { ShopperSearch, ShopperProducts, ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchSearchProducts } from '@/lib/api/search';
 import { fetchCategories } from '@/lib/api/categories';
+import { currencyContext } from '@/lib/currency';
 import { createPage, type RouteComponentProps } from '@/components/create-page';
 import HomeSkeleton from '@/components/home/skeleton';
 import { Region } from '@/components/region';
@@ -54,6 +55,7 @@ export type HomePageData = {
  * @returns Promise that resolves to an object containing search result promise
  */
 function getPageData(loaderCtx: LoaderFunctionArgs, limit: number): HomePageData | void {
+    const currency = loaderCtx.context.get(currencyContext) as string;
     const pagePromise = fetchPageFromLoader(loaderCtx, {
         pageId: 'homepage',
     });
@@ -65,6 +67,7 @@ function getPageData(loaderCtx: LoaderFunctionArgs, limit: number): HomePageData
         searchResult: fetchSearchProducts(loaderCtx.context, {
             categoryId: 'root',
             limit,
+            currency: currency ?? undefined,
         }),
         categories: fetchCategories(loaderCtx.context, 'root', 1),
         componentData: componentDataPromises,

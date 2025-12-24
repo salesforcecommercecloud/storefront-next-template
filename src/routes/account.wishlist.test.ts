@@ -108,6 +108,7 @@ describe('fetchProductsForWishlist', () => {
                         ids: items.map((item) => item.productId),
                         allImages: true,
                         perPricebook: true,
+                        currency: 'USD',
                     },
                 },
             });
@@ -162,6 +163,7 @@ describe('fetchProductsForWishlist', () => {
                         ids: Array.from({ length: 24 }, (_, i) => `product-${i}`),
                         allImages: true,
                         perPricebook: true,
+                        currency: 'USD',
                     },
                 },
             });
@@ -173,6 +175,7 @@ describe('fetchProductsForWishlist', () => {
                         ids: Array.from({ length: 24 }, (_, i) => `product-${i + 24}`),
                         allImages: true,
                         perPricebook: true,
+                        currency: 'USD',
                     },
                 },
             });
@@ -184,6 +187,7 @@ describe('fetchProductsForWishlist', () => {
                         ids: Array.from({ length: 2 }, (_, i) => `product-${i + 48}`),
                         allImages: true,
                         perPricebook: true,
+                        currency: 'USD',
                     },
                 },
             });
@@ -253,6 +257,7 @@ describe('fetchProductsForWishlist', () => {
                         ids: ['product-1', 'product-3'],
                         allImages: true,
                         perPricebook: true,
+                        currency: 'USD',
                     },
                 },
             });
@@ -283,6 +288,7 @@ describe('fetchProductsForWishlist', () => {
                         ids: ['product-1', 'product-3'],
                         allImages: true,
                         perPricebook: true,
+                        currency: 'USD',
                     },
                 },
             });
@@ -313,6 +319,7 @@ describe('fetchProductsForWishlist', () => {
                         ids: ['product-1', 'product-3'],
                         allImages: true,
                         perPricebook: true,
+                        currency: 'USD',
                     },
                 },
             });
@@ -344,6 +351,7 @@ describe('fetchProductsForWishlist', () => {
                         ids: ['product-1', 'product-4'],
                         allImages: true,
                         perPricebook: true,
+                        currency: 'USD',
                     },
                 },
             });
@@ -690,6 +698,7 @@ describe('account.wishlist loaders', () => {
                         ids: Array.from({ length: 8 }, (_, i) => `product-${i}`),
                         allImages: true,
                         perPricebook: true,
+                        currency: 'USD',
                     },
                 },
             });
@@ -992,6 +1001,7 @@ describe('account.wishlist loaders', () => {
                         ids: Array.from({ length: 8 }, (_, i) => `product-${i}`),
                         allImages: true,
                         perPricebook: true,
+                        currency: 'USD',
                     },
                 },
             });

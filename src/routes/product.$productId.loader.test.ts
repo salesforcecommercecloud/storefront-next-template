@@ -11,6 +11,7 @@ import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next
 import { loader, clientLoader } from './product.$productId';
 import { appConfigContext } from '@/config';
 import { authContext } from '@/middlewares/auth.utils';
+import { currencyContext } from '@/lib/currency';
 
 // Mock the API client creation
 const mockGetProduct = vi.fn();
@@ -111,6 +112,9 @@ describe('Product Route Loaders', () => {
             }
             if (context === authContext) {
                 return mockAuthSession;
+            }
+            if (context === currencyContext) {
+                return 'USD';
             }
             return undefined;
         }),

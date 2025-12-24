@@ -353,7 +353,14 @@
         "failedToAddToWishlistError": "Failed to add to wishlist:",
         "addingToWishlistLog": "Adding to wishlist:",
         "failedToAddProductToCartError": "Failed to add product to cart:",
-        "failedToAddProductToWishlistError": "Failed to add product to wishlist:"
+        "failedToAddProductToWishlistError": "Failed to add product to wishlist:",
+        "price": {
+            "currentPriceFrom": "Current price from {{price}}",
+            "currentPrice": "Current price: {{price}}",
+            "from": "From {{price}}",
+            "listPriceFrom": "List price from {{price}}",
+            "listPrice": "List price: {{price}}"
+        }
     },
     "cart": {
         "title": "Cart",
@@ -838,7 +845,8 @@
             "account": "Account",
             "ourCompany": "Our Company",
             "switchThemes": "Switch Themes",
-            "switchLanguage": "Language"
+            "switchLanguage": "Language",
+            "switchCurrency": "Currency"
         },
         "links": {
             "contactUs": "Contact Us",
@@ -966,7 +974,29 @@
         "ariaLabel": "Language selector",
         "locales": {
             "en-US": "English (US)",
-            "es-MX": "Spanish (Mexico)"
+            "it-IT": "Italian (Italy)"
+        },
+        "validation": {
+            "unsupportedLocale": "Locale not supported",
+            "usingDefault": "Using default locale: {{locale}}"
+        }
+    },
+    "currencySwitcher": {
+        "ariaLabel": "Currency switcher",
+        "currencies": {
+            "USD": "US Dollar ($)",
+            "MXN": "Mexican Peso ($)",
+            "EUR": "Euro (€)",
+            "GBP": "British Pound (£)",
+            "JPY": "Japanese Yen (¥)",
+            "KRW": "Korean Won (₩)",
+            "BRL": "Brazilian Real (R$)",
+            "CNY": "Chinese Yuan (¥)",
+            "TWD": "Taiwan Dollar (NT$)"
+        },
+        "validation": {
+            "unsupportedCurrency": "Currency not supported",
+            "usingDefault": "Using default currency: {{currency}}"
         }
     }
 }

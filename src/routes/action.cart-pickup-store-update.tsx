@@ -19,13 +19,13 @@ import {
     createBasketSuccessResponse,
     createBasketErrorResponse,
 } from './types/action-responses';
+import { getTranslation } from '@/lib/i18next';
+import { currencyContext } from '@/lib/currency';
 
 import { updateShipmentForPickup } from '@/extensions/bopis/lib/api/shipment';
 import { isStoreOutOfStock } from '@/lib/inventory-utils';
 import { getFirstPickupStoreId, getPickupProductItemsForStore } from '@/extensions/bopis/lib/basket-utils';
 import { pickupStoreUpdateSchema, parsePickupStoreUpdateFromFormData } from '@/lib/basket-schemas';
-
-import { getTranslation } from '@/lib/i18next';
 
 /**
  * Client action for changing the pickup store for all pickup items in the basket.
@@ -117,6 +117,8 @@ export async function clientAction({ request, context }: ClientActionFunctionArg
                 .map((item) => item.productId)
                 .filter((id): id is string => Boolean(id));
 
+            const currency = context.get(currencyContext) as string;
+
             // Fetch products with the new store's inventory ID to validate availability
             const productsResponse = await clients.shopperProducts.getProducts({
                 params: {
@@ -125,6 +127,7 @@ export async function clientAction({ request, context }: ClientActionFunctionArg
                         allImages: true,
                         perPricebook: true,
                         inventoryIds: [inventoryId], // Include new store's inventory
+                        ...(currency ? { currency } : {}),
                     },
                 },
             });

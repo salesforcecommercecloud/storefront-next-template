@@ -57,6 +57,11 @@ export const mockBuildConfig: Config = {
         site: {
             locale: 'en-US',
             currency: 'USD',
+            supportedLocales: [
+                { id: 'en-US', preferredCurrency: 'USD' },
+                { id: 'es-MX', preferredCurrency: 'MXN' },
+            ],
+            supportedCurrencies: ['USD', 'MXN'],
             features: {
                 passwordlessLogin: {
                     enabled: false,

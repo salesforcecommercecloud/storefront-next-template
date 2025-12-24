@@ -63,6 +63,9 @@ describe('Search Suggestions API', () => {
         expect(fetchSearchSuggestions).toHaveBeenCalledWith(mockContext, {
             q: 'dress',
             expand: [],
+            limit: undefined,
+            includeEinsteinSuggestedPhrases: undefined,
+            currency: 'USD',
         });
     });
 
@@ -72,6 +75,9 @@ describe('Search Suggestions API', () => {
         expect(fetchSearchSuggestions).toHaveBeenCalledWith(mockContext, {
             q: 'dress',
             expand: ['images', 'prices'],
+            limit: undefined,
+            includeEinsteinSuggestedPhrases: undefined,
+            currency: 'USD',
         });
     });
 
@@ -101,7 +107,9 @@ describe('Search Suggestions API', () => {
         expect(fetchSearchSuggestions).toHaveBeenCalledWith(mockContext, {
             q: 'shoes',
             expand: [],
+            limit: undefined,
             includeEinsteinSuggestedPhrases: true,
+            currency: 'USD',
         });
     });
 
@@ -121,7 +129,9 @@ describe('Search Suggestions API', () => {
         expect(fetchSearchSuggestions).toHaveBeenCalledWith(mockContext, {
             q: 'shoes',
             expand: [],
+            limit: undefined,
             includeEinsteinSuggestedPhrases: false,
+            currency: 'USD',
         });
     });
 
@@ -140,7 +150,9 @@ describe('Search Suggestions API', () => {
         expect(fetchSearchSuggestions).toHaveBeenCalledWith(mockContext, {
             q: 'shoes',
             expand: [],
+            limit: undefined,
             includeEinsteinSuggestedPhrases: undefined,
+            currency: 'USD',
         });
     });
 
@@ -161,7 +173,9 @@ describe('Search Suggestions API', () => {
         expect(fetchSearchSuggestions).toHaveBeenCalledWith(mockContext, {
             q: 'accessories',
             expand: ['images', 'prices'],
+            limit: undefined,
             includeEinsteinSuggestedPhrases: true,
+            currency: 'USD',
         });
     });
 
@@ -181,7 +195,9 @@ describe('Search Suggestions API', () => {
         expect(fetchSearchSuggestions).toHaveBeenCalledWith(mockContext, {
             q: 'bags',
             expand: [],
+            limit: undefined,
             includeEinsteinSuggestedPhrases: false,
+            currency: 'USD',
         });
     });
 
@@ -201,7 +217,9 @@ describe('Search Suggestions API', () => {
         expect(fetchSearchSuggestions).toHaveBeenCalledWith(mockContext, {
             q: 'hats',
             expand: [],
+            limit: undefined,
             includeEinsteinSuggestedPhrases: false,
+            currency: 'USD',
         });
     });
 });

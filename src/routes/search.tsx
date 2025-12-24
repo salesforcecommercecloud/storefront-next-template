@@ -3,6 +3,7 @@ import { Await, type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from 'r
 import type { ShopperSearch, ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchSearchProducts } from '@/lib/api/search';
 import { getConfig, useConfig } from '@/config';
+import { currencyContext } from '@/lib/currency';
 import CategorySkeleton, { CategoryHeaderSkeleton, CategoryRefinementsSkeleton } from '@/components/category-skeleton';
 import CategoryPagination from '@/components/category-pagination';
 import CategoryRefinements from '@/components/category-refinements';
@@ -56,6 +57,7 @@ function getPageData(loaderCtx: LoaderFunctionArgs, limit: number): SearchPageDa
     const q = searchParams.get('q') ?? '';
     const sort = searchParams.get('sort') ?? '';
     const refine = searchParams.getAll('refine');
+    const currency = loaderCtx.context.get(currencyContext) as string;
 
     const pagePromise = fetchPageFromLoader(loaderCtx, {
         pageId: 'search',
@@ -74,6 +76,7 @@ function getPageData(loaderCtx: LoaderFunctionArgs, limit: number): SearchPageDa
             // This is a known type limitation, the API intelligently serializes the refine parameter (array) automatically, but the OAS types refers to string.
             refine: refine as unknown as string,
             expand: ['none'],
+            currency,
         }),
         searchResult: fetchSearchProducts(loaderCtx.context, {
             q,
@@ -83,6 +86,7 @@ function getPageData(loaderCtx: LoaderFunctionArgs, limit: number): SearchPageDa
 
             // This is a known type limitation, the API intelligently serializes the refine parameter (array) automatically, but the OAS types refers to string.
             refine: refine as unknown as string,
+            currency,
         }),
         page: pagePromise,
         componentData: componentDataPromises,

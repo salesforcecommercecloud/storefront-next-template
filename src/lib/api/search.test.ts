@@ -28,13 +28,14 @@ describe('', () => {
             const mockResult = { searchPhrase: 'dress' };
             mockGetSearchSuggestions.mockResolvedValue({ data: mockResult });
 
-            const result = await fetchSearchSuggestions(mockContext, { q: 'dress' });
+            const result = await fetchSearchSuggestions(mockContext, { q: 'dress', currency: 'USD' });
 
             expect(createApiClients).toHaveBeenCalledWith(mockContext);
             expect(mockGetSearchSuggestions).toHaveBeenCalledWith({
                 params: {
                     query: {
                         q: 'dress',
+                        currency: 'USD',
                     },
                 },
             });
@@ -72,13 +73,14 @@ describe('', () => {
                 q: 'jacket',
                 expand: undefined,
                 limit: undefined,
-                currency: undefined,
+                currency: 'USD',
             });
 
             expect(mockGetSearchSuggestions).toHaveBeenCalledWith({
                 params: {
                     query: {
                         q: 'jacket',
+                        currency: 'USD',
                     },
                 },
             });
@@ -91,12 +93,14 @@ describe('', () => {
             await fetchSearchSuggestions(mockContext, {
                 q: 'shoes',
                 includeEinsteinSuggestedPhrases: true,
+                currency: 'USD',
             });
 
             expect(mockGetSearchSuggestions).toHaveBeenCalledWith({
                 params: {
                     query: {
                         q: 'shoes',
+                        currency: 'USD',
                         includeEinsteinSuggestedPhrases: true,
                     },
                 },
@@ -110,12 +114,14 @@ describe('', () => {
             await fetchSearchSuggestions(mockContext, {
                 q: 'shoes',
                 includeEinsteinSuggestedPhrases: false,
+                currency: 'USD',
             });
 
             expect(mockGetSearchSuggestions).toHaveBeenCalledWith({
                 params: {
                     query: {
                         q: 'shoes',
+                        currency: 'USD',
                         includeEinsteinSuggestedPhrases: false,
                     },
                 },
@@ -129,12 +135,14 @@ describe('', () => {
             await fetchSearchSuggestions(mockContext, {
                 q: 'shoes',
                 includeEinsteinSuggestedPhrases: undefined,
+                currency: 'USD',
             });
 
             expect(mockGetSearchSuggestions).toHaveBeenCalledWith({
                 params: {
                     query: {
                         q: 'shoes',
+                        currency: 'USD',
                     },
                 },
             });
@@ -148,8 +156,8 @@ describe('', () => {
                 q: 'accessories',
                 expand: ['images', 'prices'],
                 limit: 15,
-                currency: 'EUR',
                 includeEinsteinSuggestedPhrases: true,
+                currency: 'EUR',
             });
 
             expect(mockGetSearchSuggestions).toHaveBeenCalledWith({
@@ -173,8 +181,8 @@ describe('', () => {
                 q: 'bags',
                 expand: ['images'],
                 limit: undefined,
-                currency: 'USD',
                 includeEinsteinSuggestedPhrases: false,
+                currency: 'USD',
             });
 
             expect(mockGetSearchSuggestions).toHaveBeenCalledWith({
@@ -206,6 +214,7 @@ describe('', () => {
 
         it('should call productSearch with defaults and return data', async () => {
             const mockContext = createTestContext({
+                currency: 'EUR',
                 appConfig: {
                     site: {
                         currency: 'EUR',
@@ -216,7 +225,7 @@ describe('', () => {
             const mockResult = { hits: [], total: 0 };
             mockProductSearch.mockResolvedValue({ data: mockResult });
 
-            const result = await fetchSearchProducts(mockContext, {});
+            const result = await fetchSearchProducts(mockContext, { currency: 'EUR' });
 
             expect(createApiClients).toHaveBeenCalledWith(mockContext);
             expect(mockProductSearch).toHaveBeenCalledWith({
@@ -255,6 +264,7 @@ describe('', () => {
                     size: ['M'],
                 },
                 refine: ['cgid=mens', 'color=blue'],
+                currency: 'USD',
             });
 
             expect(mockProductSearch).toHaveBeenCalledWith({
@@ -278,6 +288,7 @@ describe('', () => {
                 refine: [],
                 filters: undefined,
                 categoryId: undefined,
+                currency: 'USD',
             });
 
             expect(mockProductSearch).toHaveBeenCalledWith({
@@ -291,6 +302,7 @@ describe('', () => {
 
         it('should allow explicit currency to override config currency', async () => {
             const mockContext = createTestContext({
+                currency: 'JPY',
                 appConfig: {
                     site: {
                         currency: 'EUR',
@@ -328,6 +340,7 @@ describe('', () => {
                 allImages: false,
                 allVariationProperties: false,
                 perPricebook: false,
+                currency: 'USD',
             });
 
             expect(mockProductSearch).toHaveBeenCalledWith({

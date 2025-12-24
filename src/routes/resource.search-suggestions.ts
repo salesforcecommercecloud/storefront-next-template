@@ -1,6 +1,7 @@
 import type { LoaderFunctionArgs, ClientLoaderFunctionArgs } from 'react-router';
 import { fetchSearchSuggestions } from '@/lib/api/search';
 import { extractResponseError } from '@/lib/utils';
+import { currencyContext } from '@/lib/currency';
 
 async function getSearchSuggestionsData({
     request,
@@ -17,9 +18,16 @@ async function getSearchSuggestionsData({
     const limit = limitParam && !isNaN(parseInt(limitParam, 10)) ? parseInt(limitParam, 10) : undefined;
     const includeEinsteinParam = url.searchParams.get('includeEinsteinSuggestedPhrases');
     const includeEinsteinSuggestedPhrases = includeEinsteinParam !== null ? includeEinsteinParam === 'true' : undefined;
+    const currency = context.get(currencyContext) as string;
 
     try {
-        const result = await fetchSearchSuggestions(context, { q, expand, limit, includeEinsteinSuggestedPhrases });
+        const result = await fetchSearchSuggestions(context, {
+            q,
+            expand,
+            limit,
+            includeEinsteinSuggestedPhrases,
+            currency,
+        });
         return Response.json({ success: true, data: result });
     } catch (error) {
         const { responseMessage, status_code } = await extractResponseError(error as Error);

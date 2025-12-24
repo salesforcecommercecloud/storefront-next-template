@@ -111,7 +111,7 @@ src/extensions/
     locales/
       en-US/
         translations.json
-      es-MX/
+      it-IT/
         translations.json
     index.ts
 ```

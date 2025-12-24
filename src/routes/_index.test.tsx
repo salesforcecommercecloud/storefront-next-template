@@ -518,6 +518,7 @@ describe('HomeView', () => {
                 expect(vi.mocked(fetchSearchProducts)).toHaveBeenCalledWith(mockContext, {
                     categoryId: 'root',
                     limit: 8,
+                    currency: 'USD',
                 });
                 expect(vi.mocked(fetchCategories)).toHaveBeenCalledWith(mockContext, 'root', 1);
 
@@ -548,6 +549,7 @@ describe('HomeView', () => {
                 expect(vi.mocked(fetchSearchProducts)).toHaveBeenCalledWith(mockContext, {
                     categoryId: 'root',
                     limit: count,
+                    currency: 'USD',
                 });
             });
         });
@@ -578,6 +580,7 @@ describe('HomeView', () => {
                 expect(vi.mocked(fetchSearchProducts)).toHaveBeenCalledWith(mockContext, {
                     categoryId: 'root',
                     limit: 4,
+                    currency: 'USD',
                 });
                 expect(vi.mocked(fetchCategories)).toHaveBeenCalledWith(mockContext, 'root', 1);
 

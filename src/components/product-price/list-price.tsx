@@ -6,6 +6,7 @@
  */
 
 import { Typography } from '@/components/typography';
+import { useTranslation } from 'react-i18next';
 import { formatCurrency } from '@/lib/currency';
 
 interface ListPriceProps {
@@ -35,9 +36,14 @@ export default function ListPrice({
     currency,
     className,
 }: ListPriceProps) {
-    const listPriceText = formatCurrency(price, 'en-US', currency);
+    const { t, i18n } = useTranslation('product');
 
-    const ariaLabel = isRange ? `List price from ${listPriceText || ''}` : `List price: ${listPriceText || ''}`;
+    // Format currency using i18next's current language
+    const listPriceText = formatCurrency(price, i18n.language, currency);
+
+    const ariaLabel = isRange
+        ? t('price.listPriceFrom', { price: listPriceText })
+        : t('price.listPrice', { price: listPriceText });
 
     return (
         <>
@@ -50,7 +56,7 @@ export default function ListPrice({
             {/*For screen reader, we want to make sure the product name is announced before the price to avoid confusion*/}
             <span className="sr-only" aria-live="polite" aria-atomic={true}>
                 {labelForA11y}
-                {`List price: ${listPriceText || ''}`}
+                {t('price.listPrice', { price: listPriceText })}
             </span>
         </>
     );

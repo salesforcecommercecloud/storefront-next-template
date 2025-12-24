@@ -41,11 +41,13 @@ export default function LocaleSwitcher(): ReactElement {
                 onChange={(e) => void handleLocaleChange(e)}
                 aria-label={t('ariaLabel')}
                 value={i18n.language}>
-                {config.i18n.supportedLngs.map((locale) => (
-                    <option key={locale} value={locale}>
-                        {t(`locales.${locale}`)}
-                    </option>
-                ))}
+                {config.i18n.supportedLngs.map((locale) => {
+                    return (
+                        <option key={locale} value={locale}>
+                            {t(`locales.${locale}`, { defaultValue: locale })}
+                        </option>
+                    );
+                })}
             </SelectNative>
         </div>
     );

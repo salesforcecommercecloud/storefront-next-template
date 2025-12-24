@@ -125,12 +125,90 @@ export default defineConfig({
                     dwsourcecodeCookieSuffix: undefined,
                 },
             },
+            // these locales matches with BM supported locales
+            // this preferredCurrency will be used if user has not preference on locale
+            // these locales will not show up on your app until you add them to i18n.supportedLngs config
+            supportedLocales: [
+                {
+                    id: 'en-US',
+                    preferredCurrency: 'USD',
+                },
+                {
+                    id: 'da-DK',
+                    preferredCurrency: 'EUR',
+                },
+                {
+                    id: 'de-DE',
+                    preferredCurrency: 'EUR',
+                },
+                {
+                    id: 'en-GB',
+                    preferredCurrency: 'GBP',
+                },
+                {
+                    id: 'es-MX',
+                    // there is not MXN support on BM, so we use USD
+                    preferredCurrency: 'USD',
+                },
+                {
+                    id: 'fi-FI',
+                    preferredCurrency: 'EUR',
+                },
+                {
+                    id: 'fr-FR',
+                    preferredCurrency: 'EUR',
+                },
+                {
+                    id: 'it-IT',
+                    preferredCurrency: 'EUR',
+                },
+                {
+                    id: 'ja-JP',
+                    preferredCurrency: 'JPY',
+                },
+                {
+                    id: 'ko-KR',
+                    preferredCurrency: 'KRW',
+                },
+                {
+                    id: 'nl-NL',
+                    preferredCurrency: 'EUR',
+                },
+                {
+                    id: 'no-NO',
+                    preferredCurrency: 'EUR',
+                },
+                {
+                    id: 'pl-PL',
+                    preferredCurrency: 'EUR',
+                },
+                {
+                    id: 'pt-BR',
+                    preferredCurrency: 'BRL',
+                },
+                {
+                    id: 'sv-SE',
+                    preferredCurrency: 'EUR',
+                },
+                {
+                    id: 'zh-CN',
+                    preferredCurrency: 'CNY',
+                },
+                {
+                    id: 'zh-TW',
+                    preferredCurrency: 'TWD',
+                },
+            ],
+            // Currencies that users can manually select
+            supportedCurrencies: ['EUR', 'USD'],
         },
         // When updating these i18n properties, please also check that the middleware configurations are in sync
         // See src/middlewares/i18next.ts
+        // Also, make sure the supportedLngs are always presented in site.supportedLocale to
+        // make sure the app can fully be translated to another language
         i18n: {
             fallbackLng: 'en-US',
-            supportedLngs: ['es-MX', 'en-US'], // Your supported languages, the fallback should be LAST
+            supportedLngs: ['it-IT', 'en-US'], // Your supported languages, the fallback should be LAST
         },
         global: {
             // TODO: Allow page specific customization while keeping global defaults, e.g.:

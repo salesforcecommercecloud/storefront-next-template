@@ -13,6 +13,7 @@ import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@sale
 import ProductItem from './index';
 import { ConfigProvider } from '@/config/context';
 import { mockConfig } from '@/test-utils/config';
+import { CurrencyProvider } from '@/providers/currency';
 
 // Utils
 import { formatCurrency } from '@/lib/currency';
@@ -47,7 +48,11 @@ const renderWithRouter = (component: React.ReactElement) => {
         [
             {
                 path: '/cart',
-                element: <ConfigProvider config={mockConfig}>{component}</ConfigProvider>,
+                element: (
+                    <ConfigProvider config={mockConfig}>
+                        <CurrencyProvider value="USD">{component}</CurrencyProvider>
+                    </ConfigProvider>
+                ),
             },
         ],
         { initialEntries: ['/cart'] }

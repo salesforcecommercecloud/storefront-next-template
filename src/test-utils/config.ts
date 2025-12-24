@@ -81,10 +81,19 @@ export const mockBuildConfig: Config = {
                     dwsourcecodeCookieSuffix: 'test-site',
                 },
             },
+            hybrid: {
+                enabled: false,
+                legacyRoutes: [],
+            },
+            supportedLocales: [
+                { id: 'en-US', preferredCurrency: 'USD' },
+                { id: 'it-IT', preferredCurrency: 'EUR' },
+            ],
+            supportedCurrencies: ['EUR', 'USD'],
         },
         i18n: {
             fallbackLng: 'en-US',
-            supportedLngs: ['es-MX', 'en-US'], // Fallback language should be last
+            supportedLngs: ['it-IT', 'en-US'], // Fallback language should be last
         },
         global: {
             branding: { name: 'Test Store', logoAlt: 'Home' },

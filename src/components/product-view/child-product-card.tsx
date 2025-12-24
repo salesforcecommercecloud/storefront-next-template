@@ -18,6 +18,7 @@ import { useVariationAttributes } from '@/hooks/product/use-variation-attributes
 import { useProductImages } from '@/hooks/product/use-product-images';
 import { useProductActions } from '@/hooks/product/use-product-actions';
 import ProductPrice from '@/components/product-price';
+import { useCurrency } from '@/providers/currency';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { type ReactElement, useEffect, useRef } from 'react';
 import { isProductSet, isStandardProduct } from '@/lib/product-utils';
@@ -91,6 +92,7 @@ export default function ChildProductCard({
 }: ChildProductCardProps): ReactElement {
     const { t } = useTranslation('product');
     const isParentProductASet = isProductSet(parentProduct);
+    const currency = useCurrency();
 
     // Get current variant for UI display and parent communication
     const currentVariant = useCurrentVariant({
@@ -210,7 +212,7 @@ export default function ChildProductCard({
                 <ProductPrice
                     type="unit"
                     product={currentVariant || product}
-                    currency="USD"
+                    currency={currency}
                     labelForA11y={product?.name}
                     quantity={quantity}
                     currentPriceProps={{

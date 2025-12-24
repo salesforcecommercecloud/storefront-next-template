@@ -3,6 +3,7 @@ import type { LoaderFunctionArgs } from 'react-router';
 import i18next, { type i18n } from 'i18next';
 import { fetchSearchProducts } from '@/lib/api/search';
 import { getConfig } from '@/config';
+import { currencyContext } from '@/lib/currency';
 import type { AppConfig } from '@/config/context';
 
 export interface RecommendationType {
@@ -140,6 +141,7 @@ export function generateRecommendationPromises(
         return [];
     }
 
+    const currency = context.get(currencyContext) as string;
     // Get config from context
     const config = getConfig(context);
 
@@ -218,6 +220,7 @@ export function generateRecommendationPromises(
                                 config.global.recommendations.search_limit.completeLook / subcategoryIds.length
                             ),
                             sort: typeConfig.sort,
+                            currency,
                         });
                         return result;
                     } catch {
@@ -267,7 +270,7 @@ export function generateRecommendationPromises(
         }
 
         // Default handling for other recommendation types
-        const safePromise = fetchSearchProducts(context, searchParams).catch(() => {
+        const safePromise = fetchSearchProducts(context, { ...searchParams, currency }).catch(() => {
             return {
                 hits: [],
                 query: '',

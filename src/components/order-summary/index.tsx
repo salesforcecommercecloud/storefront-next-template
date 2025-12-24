@@ -22,6 +22,7 @@ import { VisaIcon, MastercardIcon, AmexIcon, DiscoverIcon } from '@/components/i
 import { formatCurrency } from '@/lib/currency';
 import { useTranslation } from 'react-i18next';
 import PromoPopover from '@/components/promo-popover';
+import { useCurrency } from '@/providers/currency';
 
 /**
  * Props for the OrderSummary component
@@ -149,7 +150,8 @@ export default function OrderSummary({
     onEditCart,
     showCheckoutAction,
 }: OrderSummaryProps): ReactElement {
-    const { t } = useTranslation('cart');
+    const { t, i18n } = useTranslation('cart');
+    const currency = useCurrency();
 
     if (!basket?.basketId && !basket?.orderNo) {
         return <div>{t('summary.noBasketData')}</div>;
@@ -162,7 +164,7 @@ export default function OrderSummary({
         if (basket.shippingTotal === 0) {
             return <span className="text-primary font-medium">{t('summary.shippingFree')}</span>;
         } else if (typeof basket.shippingTotal === 'number' && basket.shippingTotal > 0) {
-            return <span>{formatCurrency(basket.shippingTotal)}</span>;
+            return <span>{formatCurrency(basket.shippingTotal, i18n.language, currency)}</span>;
         } else {
             return <span className="text-muted-foreground">{t('summary.shippingTbd')}</span>;
         }
@@ -194,7 +196,7 @@ export default function OrderSummary({
                             {/* Subtotal */}
                             <div className="flex justify-between items-center">
                                 <span>{t('summary.subtotal')}</span>
-                                <span>{formatCurrency(basket?.productSubTotal ?? 0)}</span>
+                                <span>{formatCurrency(basket?.productSubTotal ?? 0, i18n.language, currency)}</span>
                             </div>
 
                             {/* Order Price Adjustments */}
@@ -202,7 +204,7 @@ export default function OrderSummary({
                                 <div key={adjustment.priceAdjustmentId} className="flex justify-between items-center">
                                     <span>{adjustment.itemText}</span>
                                     <span className="text-success text-sm font-semibold">
-                                        {formatCurrency(adjustment.price ?? 0)}
+                                        {formatCurrency(adjustment.price ?? 0, i18n.language, currency)}
                                     </span>
                                 </div>
                             ))}
@@ -235,7 +237,7 @@ export default function OrderSummary({
                             <div className="flex justify-between items-center">
                                 <span>{t('summary.tax')}</span>
                                 {typeof basket.taxTotal === 'number' && basket.taxTotal >= 0 ? (
-                                    <span>{formatCurrency(basket.taxTotal)}</span>
+                                    <span>{formatCurrency(basket.taxTotal, i18n.language, currency)}</span>
                                 ) : (
                                     <span className="text-muted-foreground">{t('summary.taxTbd')}</span>
                                 )}
@@ -249,7 +251,11 @@ export default function OrderSummary({
                                     {isEstimate ? t('summary.estimatedTotal') : t('summary.orderTotal')}
                                 </span>
                                 <span className="font-bold">
-                                    {formatCurrency(basket?.orderTotal || basket?.productTotal || 0)}
+                                    {formatCurrency(
+                                        basket?.orderTotal || basket?.productTotal || 0,
+                                        i18n.language,
+                                        currency
+                                    )}
                                 </span>
                             </div>
                         </div>

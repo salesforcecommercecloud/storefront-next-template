@@ -5,6 +5,7 @@ This project uses `i18next` with `remix-i18next` for internationalization. The i
 ## Quick Start
 
 **For React Components:**
+
 ```typescript
 import { useTranslation } from 'react-i18next';
 
@@ -15,6 +16,7 @@ function MyComponent() {
 ```
 
 **For Everything Else (loaders, actions, utilities, helpers, tests):**
+
 ```typescript
 import { getTranslation } from '@/lib/i18next';
 
@@ -43,23 +45,41 @@ Both instances support **dynamic language switching** at runtime without page re
 1. Server-side middleware detects the user locale and initializes i18next
 2. Server has access to all translations from all locales and renders SSR content with translations
 3. Client-side initializes its own i18next instance, reading the language from the HTML `lang` attribute to prevent hydration mismatches
-   - The `initI18next()` function in `root.tsx` accepts an optional `{ language }` parameter to ensure consistency between server and client
+    - The `initI18next()` function in `root.tsx` accepts an optional `{ language }` parameter to ensure consistency between server and client
 4. When a translation is first requested, the client dynamically imports ALL translations for the current language
-   - This triggers an HTTP request for a JavaScript chunk (e.g., `/assets/locales-en-[hash].js`)
-   - The chunk is served as a **static asset** (pre-built, minified, and cached with long-term headers)
-   - Much more efficient than an API endpoint: no server processing, CDN-friendly, immutable caching
+    - This triggers an HTTP request for a JavaScript chunk (e.g., `/assets/locales-en-[hash].js`)
+    - The chunk is served as a **static asset** (pre-built, minified, and cached with long-term headers)
+    - Much more efficient than an API endpoint: no server processing, CDN-friendly, immutable caching
 5. All namespaces for that language are loaded and cached in memory
 6. Subsequent translation requests use the cached data (no additional requests)
 7. When users switch languages, the client loads the new language's translations dynamically (if not already cached) and updates the UI immediately
 
 ## Configuration
 
-### Supported Languages
+### Supported Languages and Currencies
 
-Languages are configured in two places that must be kept in sync:
+Languages and currencies are configured in multiple places that must be kept in sync:
 
 **1. `config.server.ts`** - Application-level configuration:
+
 ```typescript
+site: {
+    locale: 'en-US',
+    currency: 'USD',
+    supportedLocales: [
+        {
+            id: 'en-US',
+            preferredCurrency: 'USD',
+        },
+        {
+            id: 'es-MX',
+            preferredCurrency: 'MXN',
+        },
+        // Add more locales here...
+    ],
+    // Currencies that users can manually select
+    supportedCurrencies: ['MXN', 'USD'],
+},
 i18n: {
     fallbackLng: 'en-US',
     supportedLngs: ['es-MX', 'en-US'], // Your supported languages
@@ -67,6 +87,7 @@ i18n: {
 ```
 
 **2. `src/middlewares/i18next.server.ts`** - i18next middleware configuration:
+
 ```typescript
 detection: {
     cookie: localeCookie,
@@ -75,16 +96,35 @@ detection: {
 }
 ```
 
-> **Note**: These configurations must be kept in sync. If you add a new language, update both files.
+> **⚠️ IMPORTANT**: These configurations must be kept in sync:
+>
+> - The locales in `i18n.supportedLngs` should match the `id` values in `site.supportedLocales`
+> - The `supportedLanguages` in the middleware should match both arrays above
+> - Each locale in `site.supportedLocales` should have a `preferredCurrency` that matches one of the `site.supportedCurrencies`
+> - If you add a new language, update all three places
+> - If the arrays don't match, you may get partial translations or locale/currency mismatches
+
+**Currency System:**
+
+The application supports independent locale and currency switching:
+
+1. **Locale-based currency**: Each locale in `supportedLocales` has a `preferredCurrency` that's used by default
+2. **Manual currency selection**: Users can manually select any currency from `supportedCurrencies`, which takes precedence over the locale's preferred currency
+3. **Currency priority**: User's manual selection (cookie) → Locale's preferred currency → Default site currency
+
+See the Currency Switcher component in `src/components/currency-switcher/` for the implementation.
 
 ### Locale Detection
 
 The middleware automatically detects the user's locale from:
+
 1. The `lng` cookie (if previously set)
 2. The `Accept-Language` HTTP header
 3. Falls back to the configured `fallbackLng`
 
-### Switching Languages at Runtime
+### Switching Languages and Currencies at Runtime
+
+#### Language Switching
 
 Users can switch languages dynamically without reloading the page using the `LocaleSwitcher` component. The language change happens in two steps:
 
@@ -107,6 +147,44 @@ export function Footer() {
     );
 }
 ```
+
+#### Currency Switching
+
+Users can manually select a currency independent of their locale using the `CurrencySwitcher` component. When a new currency is switched:
+
+1. Server will submit an server action
+2. Middlewares (client and server) will run to update latest currency into context
+3. `updateBasket` is called to SCAPI to update currency accordingly
+4. Loader func will revalidate and update the UI to reflect the selected currency
+
+**Using the CurrencySwitcher Component:**
+
+```typescript
+import CurrencySwitcher from '@/components/currency-switcher';
+import LocaleSwitcher from '@/components/locale-switcher';
+
+export function Footer() {
+    return (
+        <footer>
+            <div>
+                <h3>Language</h3>
+                <LocaleSwitcher />
+            </div>
+            <div>
+                <h3>Currency</h3>
+                <CurrencySwitcher />
+            </div>
+        </footer>
+    );
+}
+```
+
+**Key Points:**
+
+- Currency selection is **independent** of locale
+- Manual currency selection **takes precedence** over locale's preferred currency
+- The preference persists across locale changes
+- Falls back to locale's preferred currency if no manual selection is made
 
 **Building Your Own Language Switcher:**
 
@@ -136,8 +214,8 @@ export function MyLanguageSwitcher() {
     };
 
     return (
-        <select 
-            value={i18n.language} 
+        <select
+            value={i18n.language}
             onChange={(e) => void handleLanguageChange(e.target.value)}
         >
             <option value="en">English</option>
@@ -272,12 +350,14 @@ function ProductPage() {
 ```
 
 **With interpolation:**
+
 ```typescript
 const { t } = useTranslation('cart');
 const message = t('itemCount.other', { count: 5 }); // "Cart (5 items)"
 ```
 
 **With pluralization:**
+
 ```typescript
 const { t } = useTranslation('cart');
 const text = t('summary.itemsInCart', { count: 1 }); // "1 item in cart"
@@ -294,7 +374,7 @@ import { getTranslation } from '@/lib/i18next';
 // In tests
 describe('ActionCard', () => {
     const { t } = getTranslation();
-    
+
     test('shows edit button', () => {
         render(<ActionCard onEdit={vi.fn()} />);
         const button = screen.getByRole('button', { name: t('actionCard:edit') });
@@ -326,7 +406,7 @@ export function loader(args: LoaderFunctionArgs) {
     // Get translations by passing the context
     const { t } = getTranslation(args.context);
     const translatedTitle = t('product:title');
-    
+
     // Get the current locale for formatting (if needed)
     const i18nextData = args.context.get(i18nextContext);
     const locale = i18nextData?.getLocale() ?? 'en-US';
@@ -335,19 +415,20 @@ export function loader(args: LoaderFunctionArgs) {
         month: '2-digit',
         day: '2-digit',
     });
-    
+
     return { translatedTitle, date };
 }
 ```
 
 **In actions with error handling:**
+
 ```typescript
 import type { ActionFunctionArgs } from 'react-router';
 import { getTranslation } from '@/lib/i18next';
 
 export async function action(args: ActionFunctionArgs) {
     const { t } = getTranslation(args.context);
-    
+
     try {
         // ... perform action
         return { success: true, message: t('product:addedToCart', { productName: 'Widget' }) };
@@ -368,6 +449,7 @@ All translations are stored in a **single JSON file per language** with namespac
 i18next uses the concept of **namespaces** to organize translations into logical groups. In our implementation, namespaces are simply the **top-level keys** in each `translations.json` file. For example, `"common"`, `"product"`, `"checkout"`, and `"myNewFeature"` are all namespaces that help organize translations by feature or domain.
 
 **src/locales/en/translations.json:**
+
 ```json
 {
     "common": {
@@ -391,6 +473,7 @@ i18next uses the concept of **namespaces** to organize translations into logical
 ```
 
 **src/locales/es/translations.json:**
+
 ```json
 {
     "common": {
@@ -480,12 +563,14 @@ The script merges locales from both sources and generates **extension-only** agg
 - Extensions without a `locales` folder are automatically skipped - no error is thrown
 
 **Example scenario:**
+
 - Main app: `en-US`, `es-MX`, `fr-FR` translations
 - Extension A: `en-US`, `es-MX` translations
 - Extension B: `en-US` translations only
 - Extension C: No `locales` folder
 
 **Result:** Extension aggregation files generated in `/src/extensions/locales/` for `en-US`, `es-MX`, and `fr-FR`:
+
 - `en-US/index.ts`: Contains Extension A + Extension B translations only
 - `es-MX/index.ts`: Contains Extension A translations only
 - `fr-FR/index.ts`: Empty (no extensions have it)
@@ -499,6 +584,7 @@ The script merges locales from both sources and generates **extension-only** agg
 Create `locales/{lang}/translations.json` within your extension directory for each supported language.
 
 **Example: `src/extensions/bopis/locales/en/translations.json`**
+
 ```json
 {
     "deliveryOptions": {
@@ -519,6 +605,7 @@ Create `locales/{lang}/translations.json` within your extension directory for ea
 **2. Translations are automatically aggregated:**
 
 When you run `pnpm dev` or `pnpm build`, the system automatically:
+
 - Discovers all extension translation files
 - Aggregates them with the appropriate namespace
 - Makes them available to your extension code
@@ -535,7 +622,7 @@ import { useTranslation } from 'react-i18next';
 export function DeliveryOptions() {
     // Use your extension's namespace
     const { t } = useTranslation('extBopis');
-    
+
     return (
         <div>
             <h3>{t('deliveryOptions.title')}</h3>
@@ -566,7 +653,7 @@ import type { LoaderFunctionArgs } from 'react-router';
 export function loader(args: LoaderFunctionArgs) {
     const { t } = getTranslation(args.context);
     return {
-        message: t('extBopis:storePickup.title')
+        message: t('extBopis:storePickup.title'),
     };
 }
 ```
@@ -575,10 +662,10 @@ export function loader(args: LoaderFunctionArgs) {
 
 1. **Namespace by Route/Feature**: Organize translations by feature area (e.g., `product`, `checkout`, `account`)
 2. **Use the Right Tool**:
-   - **React components**: Use `useTranslation()` hook
-   - **Everything else**: Use `getTranslation()` function
-     - Non-component code (tests, utilities, schemas): `getTranslation()`
-     - Server-side loaders/actions: `getTranslation(context)`
+    - **React components**: Use `useTranslation()` hook
+    - **Everything else**: Use `getTranslation()` function
+        - Non-component code (tests, utilities, schemas): `getTranslation()`
+        - Server-side loaders/actions: `getTranslation(context)`
 3. **Use TypeScript**: The project includes type-safe translations based on the English locale
 4. **Interpolation**: Use `{{variable}}` syntax in translation strings (not `{variable}`)
 5. **Pluralization**: Use nested objects with `zero`, `one`, `other` keys for count-based translations
@@ -592,16 +679,16 @@ The project is configured for type-safe translations. TypeScript will autocomple
 ```typescript
 // ✅ TypeScript knows these keys exist
 const { t } = useTranslation('product');
-t('title')
-t('addToCart')
+t('title');
+t('addToCart');
 
 // With namespace prefix in non-component code
 const { t } = getTranslation();
-t('product:title')
-t('cart:empty.title')
+t('product:title');
+t('cart:empty.title');
 
 // ❌ TypeScript will warn about this
-t('nonexistent.key')
+t('nonexistent.key');
 ```
 
 Type definitions are generated from the English locale (`resources.en`) in `src/middlewares/i18next.server.ts`:
@@ -633,29 +720,32 @@ During the migration to i18next translations in PR [#447](https://github.com/Sal
 Convert module-level schema exports to factory functions that accept `t`:
 
 **Before:**
+
 ```typescript
 import uiStrings from '@/temp-ui-string';
 
 export const contactInfoSchema = z.object({
-    email: z.string().min(1, uiStrings.checkout.contactInfo.emailRequired)
+    email: z
+        .string()
+        .min(1, uiStrings.checkout.contactInfo.emailRequired)
         .email(uiStrings.checkout.contactInfo.emailInvalid),
 });
 ```
 
 **After:**
+
 ```typescript
 import type { TFunction } from 'i18next';
 
 export const createContactInfoSchema = (t: TFunction) => {
     return z.object({
-        email: z.string()
-            .min(1, t('checkout:contactInfo.emailRequired'))
-            .email(t('checkout:contactInfo.emailInvalid')),
+        email: z.string().min(1, t('checkout:contactInfo.emailRequired')).email(t('checkout:contactInfo.emailInvalid')),
     });
 };
 ```
 
 **Usage in Components:**
+
 ```typescript
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -664,7 +754,7 @@ import { createContactInfoSchema } from '@/lib/checkout-schemas';
 function ContactForm() {
     const { t } = useTranslation();
     const schema = useMemo(() => createContactInfoSchema(t), [t]);
-    
+
     const form = useForm({
         resolver: zodResolver(schema),
         // ...
@@ -673,6 +763,7 @@ function ContactForm() {
 ```
 
 **Key Points:**
+
 - Use `useMemo` to avoid recreating schema on every render
 - Add `[t]` to dependency array
 - Factory pattern ensures `t()` is called at runtime, not module load time
@@ -686,13 +777,13 @@ function ContactForm() {
 **Symptom**: Tests or Storybook fail with this error:
 
 ```
-Caused by: Error: [vitest] No "createCookie" export is defined on the "react-router" mock. 
+Caused by: Error: [vitest] No "createCookie" export is defined on the "react-router" mock.
 Did you forget to return it from "vi.mock"?
 ```
 
 **Root Cause**: The i18next middleware depends on `createCookie` from `react-router`, but in test environments (Vitest, Storybook), react-router may not be fully available or needs to be mocked.
 
-### Solution 
+### Solution
 
 Make sure your own mock of react-router includes `createCookie`. For example, in [this file](https://github.com/SalesforceCommerceCloud/storefront-next/blob/bfd08dd74b2d717f0c0984d5d82329c2dbca0ae9/packages/template-retail-rsc-app/src/components/reset-password-form/stories/index-snapshot.tsx#L4-L9):
 
@@ -708,7 +799,6 @@ vi.mock('react-router', () => ({
 }))
 ```
 
-
 ---
 
 ## 3. Translation Key Format Changes
@@ -716,21 +806,24 @@ vi.mock('react-router', () => ({
 ### Namespace Convention
 
 **Before (flat structure):**
+
 ```typescript
-uiStrings.checkout.shippingAddress.title
+uiStrings.checkout.shippingAddress.title;
 ```
 
 **After (namespace:key):**
+
 ```typescript
-const { t } = getTranslation()
-t('checkout:shippingAddress.title')
+const { t } = getTranslation();
+t('checkout:shippingAddress.title');
 
 // or with explicit namespace. You can pass in a namespace to the useTranslation hook.
-const { t } = useTranslation('checkout')
-t('shippingAddress.title')
+const { t } = useTranslation('checkout');
+t('shippingAddress.title');
 ```
 
 **Namespace Guidelines:**
+
 - Use colon separator: `namespace:key.path`
 - Group related translations by feature/domain
 - Common namespaces: `common`, `errors`, `validation`, `product`, `checkout`, `customer`, etc.

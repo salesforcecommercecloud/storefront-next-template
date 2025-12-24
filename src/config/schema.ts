@@ -10,6 +10,11 @@ export type BadgeDetail = {
     priority?: number;
 };
 
+export type Locale = {
+    id: string;
+    preferredCurrency: string;
+};
+
 // Main configuration type for config.server.ts
 export type Config = {
     metadata: {
@@ -63,6 +68,8 @@ export type Config = {
         site: {
             locale: string;
             currency: string;
+            supportedLocales: Array<Locale>;
+            supportedCurrencies: string[];
             domain?: string;
             cookies?: {
                 domain?: string;

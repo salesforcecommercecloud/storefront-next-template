@@ -1,5 +1,10 @@
+// React
 import { type PropsWithChildren, Suspense, useMemo, useRef } from 'react';
+
+// Assets
 import favicon from '/favicon.ico';
+
+// React Router
 import {
     type ClientLoaderFunctionArgs,
     type DataStrategyResult,
@@ -16,12 +21,17 @@ import {
     useMatches,
     useRouteLoaderData,
 } from 'react-router';
+
+// Third-party libraries
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { type i18n } from 'i18next';
 import { I18nextProvider } from 'react-i18next';
+import { PageDesignerProvider } from '@salesforce/storefront-next-runtime/design/react/core';
+import { isDesignModeActive, isPreviewModeActive } from '@salesforce/storefront-next-runtime/design/mode';
+
+// Middlewares
 import authMiddlewareServer, { getAuth as getAuthServer } from '@/middlewares/auth.server';
 import authMiddlewareClient, { getAuth as getAuthClient } from '@/middlewares/auth.client';
-import AuthProvider, { bootstrapAuth } from '@/providers/auth';
 import basketMiddlewareClient, { getBasket } from '@/middlewares/basket.client';
 import shopperContextMiddlewareServer from '@/middlewares/shopper-context.server';
 import shopperContextMiddlewareClient from '@/middlewares/shopper-context.client';
@@ -33,27 +43,44 @@ import {
 import { appConfigMiddlewareServer } from '@/middlewares/app-config.server';
 import { appConfigMiddlewareClient } from '@/middlewares/app-config.client';
 import { i18nextMiddleware } from '@/middlewares/i18next.server';
-import { i18nextContext } from '@/lib/i18next';
+import { currencyMiddleware } from '@/middlewares/currency.server';
+import { currencyClientMiddleware } from '@/middlewares/currency.client';
+
+// Providers
+import AuthProvider, { bootstrapAuth } from '@/providers/auth';
 import BasketProvider from '@/providers/basket';
 import { ComposeProviders } from '@/providers/compose-providers';
+import { ConfigProvider, getConfig, type AppConfig } from '@/config';
+import { CurrencyProvider } from '@/providers/currency';
 import RecommendersProvider from '@/providers/recommenders';
-import { EINSTEIN_ADAPTER_NAME } from '@/adapters/einstein';
-import type { SessionData } from '@/lib/api/types';
-import { fetchCategory } from '@/lib/api/categories';
+
+// Components
 import Header from '@/components/header';
 import CategoryNavigationMenuMega from '@/components/navigation-menu-mega';
 import Footer from '@/components/footer';
 import { ToasterTheme } from '@/components/toast';
 import { TrackingConsentBanner } from '@/components/tracking-consent-banner';
-import { ConfigProvider, getConfig, type AppConfig } from '@/config';
-import { useExecutePendingAction } from '@/hooks/use-execute-pending-action';
-import './app.css';
-import { initI18next } from '@/lib/i18next.client';
-import { PageDesignerProvider } from '@salesforce/storefront-next-runtime/design/react/core';
-import { isDesignModeActive, isPreviewModeActive } from '@salesforce/storefront-next-runtime/design/mode';
 import { PageDesignerStyles } from './page-designer-styles';
+
+// Hooks
+import { useExecutePendingAction } from '@/hooks/use-execute-pending-action';
+
+// Lib/Utils
+import type { SessionData } from '@/lib/api/types';
+import { fetchCategory } from '@/lib/api/categories';
+import { i18nextContext } from '@/lib/i18next';
+import { initI18next } from '@/lib/i18next.client';
 import { PageViewTracker } from '@/lib/analytics/page-view-tracker';
 import { initializeRegistry } from '@/lib/static-registry';
+import { currencyContext } from '@/lib/currency';
+
+// Adapters
+import { EINSTEIN_ADAPTER_NAME } from '@/adapters/einstein';
+
+// Styles
+import './app.css';
+
+// Extensions
 /** @sfdc-extension-line SFDC_EXT_HYBRID_PROXY */
 import { HybridProxyNavigationInterceptor } from '@/extensions/hybrid-proxy/navigation-interceptor';
 /** @sfdc-extension-line SFDC_EXT_HYBRID_PROXY */
@@ -70,6 +97,7 @@ const i18nextOnClient =
 export const middleware: MiddlewareFunction<Response>[] = [
     appConfigMiddlewareServer,
     i18nextMiddleware,
+    currencyMiddleware, // Read currency cookie early
     performanceMetricsMiddlewareServer,
     authMiddlewareServer,
     shopperContextMiddlewareServer,
@@ -82,6 +110,7 @@ export const clientMiddleware: MiddlewareFunction<Record<string, DataStrategyRes
     appConfigMiddlewareClient as unknown as MiddlewareFunction<Record<string, DataStrategyResult>>, // Must run first to set config in context
     legacyRoutesMiddlewareClient as unknown as MiddlewareFunction<Record<string, DataStrategyResult>>, // Checks hybrid.enabled, needs config from context
     performanceMetricsMiddlewareClient as unknown as MiddlewareFunction<Record<string, DataStrategyResult>>,
+    currencyClientMiddleware as unknown as MiddlewareFunction<Record<string, DataStrategyResult>>, // Read currency from cookie
     authMiddlewareClient as unknown as MiddlewareFunction<Record<string, DataStrategyResult>>,
     basketMiddlewareClient as unknown as MiddlewareFunction<Record<string, DataStrategyResult>>,
     shopperContextMiddlewareClient as unknown as MiddlewareFunction<Record<string, DataStrategyResult>>,
@@ -97,6 +126,7 @@ export const loader = ({
     auth: () => SessionData; // Use a function to prevent state serialization
     appConfig: AppConfig;
     locale: string;
+    currency: string;
     pageDesignerMode: 'EDIT' | 'PREVIEW' | undefined;
     // Return as function to prevent i18next instance serialization
     getI18next: () => i18n;
@@ -116,6 +146,9 @@ export const loader = ({
     // On the server side, our middleware stores the translations in this i18next object
     // so we'll need to be careful not to accidentally serialize this object (to avoid bloating the html).
     const i18next = i18nextData.getI18nextInstance();
+
+    // Currency is already resolved by middleware
+    const currency = context.get(currencyContext) as string;
 
     // Load the root category and its sub categories information
     const rootCategoryPromise = fetchCategory(context, 'root', 1);
@@ -148,6 +181,7 @@ export const loader = ({
         subs: subCategoriesPromise,
         appConfig,
         locale,
+        currency,
         // Wrap these returned objects with a function, to avoid React Router serialization
         auth: () => session,
         getI18next: () => i18next,
@@ -161,10 +195,14 @@ export const clientLoader = ({
 }: ClientLoaderFunctionArgs): {
     auth: () => SessionData;
     basket: ShopperBasketsV2.schemas['Basket'];
+    currency: string;
 } => {
+    const currency = context.get(currencyContext) as string;
+
     return {
         auth: () => getAuthClient(context),
         basket: getBasket(context),
+        currency,
     };
 };
 clientLoader.hydrate = true as const;
@@ -243,12 +281,11 @@ export function ErrorBoundary({ error }: { error: unknown }) {
 }
 
 export default function App({
-    loaderData: { root, subs, auth, basket, getI18next, pageDesignerMode },
+    loaderData: { root, subs, auth, basket, getI18next, pageDesignerMode, currency },
 }: {
     loaderData: LoaderData;
 }) {
     const i18next = (typeof window === 'undefined' ? getI18next?.() : i18nextOnClient) as i18n;
-
     // We're only loading the root and sub categories from the server on the very first navigation. These refs ensure
     // that the initial data/promises don't get overwritten/removed on subsequent client-side navigations.
     const refRoot = useRef<Promise<ShopperProducts.schemas['Category']> | undefined>(undefined);
@@ -300,17 +337,24 @@ export default function App({
     // Initialize Page Designer components
     initializeRegistry();
 
+    // Currency is always provided by loader (which reads from middleware)
+    if (!currency) {
+        throw new Error('Currency is required but not provided by loader');
+    }
+    const currentCurrency = currency;
+
     // Memoize the providers array to prevent unnecessary remounting of providers on render
     const providers = useMemo(
         () =>
             [
                 [I18nextProvider, { i18n: i18next }],
                 [ConfigProvider, { config: appConfig }],
+                [CurrencyProvider, { value: currentCurrency }],
                 [AuthProvider, { value: sessionData }],
                 [BasketProvider, { value: basket }],
                 [RecommendersProvider, { adapterName: EINSTEIN_ADAPTER_NAME }],
             ] as const,
-        [i18next, appConfig, sessionData, basket]
+        [i18next, appConfig, currentCurrency, sessionData, basket]
     );
 
     let content = (

@@ -12,13 +12,18 @@ import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-n
 import ProductItemsList from './index';
 import { ConfigProvider } from '@/config/context';
 import { mockConfig } from '@/test-utils/config';
+import { CurrencyProvider } from '@/providers/currency';
 
 const renderWithRouter = (component: React.ReactElement) => {
     const router = createMemoryRouter(
         [
             {
                 path: '/cart',
-                element: <ConfigProvider config={mockConfig}>{component}</ConfigProvider>,
+                element: (
+                    <ConfigProvider config={mockConfig}>
+                        <CurrencyProvider value="USD">{component}</CurrencyProvider>
+                    </ConfigProvider>
+                ),
             },
         ],
         { initialEntries: ['/cart'] }

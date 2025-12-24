@@ -2,6 +2,7 @@ import { use, useEffect, useRef, useMemo } from 'react';
 import { type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from 'react-router';
 import { type ShopperProducts, type ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import { createApiClients } from '@/lib/api-clients';
+import { currencyContext } from '@/lib/currency';
 import ProductSkeleton from '@/components/product-skeleton';
 import { createPage, type RouteComponentProps } from '@/components/create-page';
 import ProductView from '@/components/product-view';
@@ -72,6 +73,13 @@ function getPageData(
 
     // Check for variant product ID in search params (for product variants)
     const clients = createApiClients(context);
+
+    // Get currency from context for product pricing
+    const currency = context.get(currencyContext) as string;
+    if (!currency) {
+        throw new Error('Currency not found in context');
+    }
+
     const productPromise = clients.shopperProducts
         .getProduct({
             params: {
@@ -92,6 +100,7 @@ function getPageData(
                     ],
                     allImages: true,
                     perPricebook: true,
+                    ...(currency ? { currency } : {}),
                     // @sfdc-extension-block-start SFDC_EXT_BOPIS
                     // Include inventoryIds parameter when store is selected
                     ...(selectedStoreInfo?.inventoryId ? { inventoryIds: [selectedStoreInfo.inventoryId] } : {}),
@@ -126,6 +135,9 @@ function getPageData(
                     params: {
                         path: {
                             id: product.master.masterId,
+                        },
+                        query: {
+                            ...(currency ? { currency } : {}),
                         },
                     },
                 })

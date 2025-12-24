@@ -54,3 +54,5 @@ Thumbs.db
 packages/
 pnpm-workspace.yaml
 
+# Ignore local Claude md file
+Claude.local.md

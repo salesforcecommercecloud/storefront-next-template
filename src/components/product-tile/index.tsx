@@ -13,6 +13,7 @@ import { createProductUrl, getDecoratedVariationAttributes } from '@/lib/product
 import { getProductBadges } from '@/lib/product-badges';
 import { useTranslation } from 'react-i18next';
 import { useConfig } from '@/config';
+import { useCurrency } from '@/providers/currency';
 
 // Components
 import { Button } from '@/components/ui/button';
@@ -70,6 +71,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
         const navigate = useNavigate();
         const config = useConfig();
         const { t } = useTranslation('product');
+        const currency = useCurrency();
         const { hasBadges, badges } = getProductBadges({
             product,
             badgeDetails: config.global.badges,
@@ -147,7 +149,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                     <ProductPrice
                         type="unit"
                         product={product}
-                        currency="USD"
+                        currency={currency}
                         labelForA11y={product?.productName}
                         currentPriceProps={{
                             className: 'text-card-foreground text-right font-semibold text-sm leading-none relative',

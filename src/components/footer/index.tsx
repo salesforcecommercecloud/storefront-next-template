@@ -5,6 +5,7 @@ import Signup from './signup';
 import { PluginComponent } from '@/plugins/plugin-component';
 import { useTranslation } from 'react-i18next';
 import LocaleSwitcher from '@/components/locale-switcher';
+import CurrencySwitcher from '@/components/currency-switcher';
 
 export default function Footer(): ReactElement {
     const { t } = useTranslation('footer');
@@ -33,6 +34,10 @@ export default function Footer(): ReactElement {
                         <h3 className="text-lg font-semibold my-4">{t('sections.switchLanguage')}</h3>
                         <div className="flex items-center gap-2">
                             <LocaleSwitcher />
+                        </div>
+                        <h3 className="text-lg font-semibold my-4">{t('sections.switchCurrency')}</h3>
+                        <div className="flex items-center gap-2">
+                            <CurrencySwitcher />
                         </div>
                     </div>
 

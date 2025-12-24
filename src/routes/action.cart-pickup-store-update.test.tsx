@@ -14,6 +14,7 @@ import { isStoreOutOfStock } from '@/lib/inventory-utils';
 import { extractResponseError } from '@/lib/utils';
 import { getFirstPickupStoreId, getPickupProductItemsForStore } from '@/extensions/bopis/lib/basket-utils';
 import { createApiClients } from '@/lib/api-clients';
+import { currencyContext } from '@/lib/currency';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 vi.mock('@/middlewares/basket.client');
@@ -21,6 +22,9 @@ vi.mock('@/extensions/bopis/lib/api/shipment');
 vi.mock('@/lib/inventory-utils');
 vi.mock('@/extensions/bopis/lib/basket-utils');
 vi.mock('@/lib/api-clients');
+vi.mock('@/providers/currency', () => ({
+    getCurrency: vi.fn(() => 'USD'),
+}));
 vi.mock('@/lib/utils', () => ({
     extractResponseError: vi.fn((error) => ({
         responseMessage: error instanceof Error ? error.message : 'Unknown error',
@@ -111,7 +115,15 @@ describe('action.cart-pickup-store-update', () => {
         shopperProducts: mockShopperProducts,
     };
 
-    const mockContext = {} as any;
+    const mockContext = {
+        get: vi.fn((context) => {
+            if (context === currencyContext || context?.key === 'currency') {
+                return 'USD';
+            }
+            // Return undefined for any other context - tests can mock specific contexts as needed
+            return undefined;
+        }),
+    } as any;
     const mockServerAction = vi.fn();
 
     beforeEach(() => {
@@ -325,6 +337,7 @@ describe('action.cart-pickup-store-update', () => {
                         allImages: true,
                         perPricebook: true,
                         inventoryIds: [mockInventoryId],
+                        currency: 'USD',
                     },
                 },
             });
@@ -501,6 +514,7 @@ describe('action.cart-pickup-store-update', () => {
                         allImages: true,
                         perPricebook: true,
                         inventoryIds: [mockInventoryId],
+                        currency: 'USD',
                     },
                 },
             });
@@ -560,6 +574,7 @@ describe('action.cart-pickup-store-update', () => {
                         allImages: true,
                         perPricebook: true,
                         inventoryIds: [mockInventoryId],
+                        currency: 'USD',
                     },
                 },
             });

@@ -231,6 +231,7 @@ describe('SearchPage', () => {
                 sort: '',
                 refine: [],
                 expand: ['none'],
+                currency: 'USD',
             });
 
             expect(fetchSearchProducts).toHaveBeenCalledWith(mockContext, {
@@ -239,6 +240,7 @@ describe('SearchPage', () => {
                 offset: 0,
                 sort: '',
                 refine: [],
+                currency: 'USD',
             });
 
             expect(fetchPageFromLoader).toHaveBeenCalledWith(args, { pageId: 'search' });
@@ -272,6 +274,7 @@ describe('SearchPage', () => {
         test('should fetch search data on client side', () => {
             const args: Partial<ClientLoaderFunctionArgs> = {
                 request: new Request('https://example.com/search?q=sneakers'),
+                context: mockContext,
                 params: {},
             };
 

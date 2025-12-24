@@ -8,6 +8,7 @@ import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi'
 import { getBasket } from '@/middlewares/basket.client';
 import { createApiClients } from '@/lib/api-clients';
 import { getConfig } from '@/config';
+import { currencyContext } from '@/lib/currency';
 
 /**
  * Fetches full product details for all items in the basket
@@ -32,6 +33,7 @@ async function fetchBasketProducts(
     try {
         const config = getConfig(context);
         const clients = createApiClients(context);
+        const currency = context.get(currencyContext) as string;
 
         // Fetch product details
         const { data: productsData } = await clients.shopperProducts.getProducts({
@@ -44,6 +46,7 @@ async function fetchBasketProducts(
                     ids: productIds,
                     allImages: true,
                     perPricebook: true,
+                    ...(currency ? { currency } : {}),
                 },
             },
         });

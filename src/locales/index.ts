@@ -1,5 +1,5 @@
 import type { Resource } from 'i18next';
 import enUS from './en-US';
-import esMX from './es-MX';
+import itIT from './it-IT';
 
-export default { 'en-US': enUS, 'es-MX': esMX } satisfies Resource;
+export default { 'en-US': enUS, 'it-IT': itIT } satisfies Resource;

@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { getTranslation } from '@/lib/i18next';
+import { CurrencyProvider } from '@/providers/currency';
 
 const { t } = getTranslation();
 import OrderSummary from './index';
@@ -72,6 +73,11 @@ vi.mock('@/components/toast', () => ({
     }),
 }));
 
+// Helper function to render component with CurrencyProvider
+const renderWithCurrency = (component: React.ReactElement, currency: string = 'USD') => {
+    return render(<CurrencyProvider value={currency}>{component}</CurrencyProvider>);
+};
+
 describe('OrderSummary', () => {
     const mockBasket: ShopperBasketsV2.schemas['Basket'] = {
         basketId: 'test-basket-id',
@@ -113,7 +119,7 @@ describe('OrderSummary', () => {
     };
 
     test('renders order summary with default props', () => {
-        render(<OrderSummary basket={mockBasket} />);
+        renderWithCurrency(<OrderSummary basket={mockBasket} />);
 
         expect(screen.getByText(t('cart:summary.orderSummary'))).toBeInTheDocument();
         expect(screen.getByTestId('sf-order-summary')).toBeInTheDocument();
@@ -128,13 +134,13 @@ describe('OrderSummary', () => {
     });
 
     test('does not render heading when showHeading is false', () => {
-        render(<OrderSummary basket={mockBasket} showHeading={false} />);
+        renderWithCurrency(<OrderSummary basket={mockBasket} showHeading={false} />);
 
         expect(screen.queryByText(t('cart:summary.orderSummary'))).not.toBeInTheDocument();
     });
 
     test('does not render cart items when showCartItems is false', () => {
-        render(<OrderSummary basket={mockBasket} showCartItems={false} />);
+        renderWithCurrency(<OrderSummary basket={mockBasket} showCartItems={false} />);
 
         expect(screen.queryByText('3 items in cart')).not.toBeInTheDocument();
         expect(screen.queryByTestId('product-items-list')).not.toBeInTheDocument();
@@ -142,7 +148,7 @@ describe('OrderSummary', () => {
 
     test('renders cart items accordion with correct item count', async () => {
         const user = userEvent.setup();
-        render(<OrderSummary basket={mockBasket} productsByItemId={mockProductsByItemId} />);
+        renderWithCurrency(<OrderSummary basket={mockBasket} productsByItemId={mockProductsByItemId} />);
 
         // Total items: 2 + 1 = 3 items
         expect(screen.getByText(t('cart:items.itemsInCart.other', { count: 3 }))).toBeInTheDocument();
@@ -158,7 +164,7 @@ describe('OrderSummary', () => {
     test('shows correct item count text for different quantities', () => {
         // Test zero items
         const emptyBasket = { ...mockBasket, productItems: [] };
-        const { rerender } = render(<OrderSummary basket={emptyBasket} />);
+        const { rerender } = renderWithCurrency(<OrderSummary basket={emptyBasket} />);
         expect(screen.getByText(t('cart:items.itemsInCart.zero'))).toBeInTheDocument();
 
         // Test one item
@@ -166,12 +172,16 @@ describe('OrderSummary', () => {
             ...mockBasket,
             productItems: [{ itemId: 'item1', productId: 'product1', quantity: 1, price: 50.0 }],
         };
-        rerender(<OrderSummary basket={oneItemBasket} />);
+        rerender(
+            <CurrencyProvider value="USD">
+                <OrderSummary basket={oneItemBasket} />
+            </CurrencyProvider>
+        );
         expect(screen.getByText(t('cart:items.itemsInCart.one'))).toBeInTheDocument();
     });
 
     test('expands cart items accordion when itemsExpanded is true', () => {
-        render(<OrderSummary basket={mockBasket} itemsExpanded={true} />);
+        renderWithCurrency(<OrderSummary basket={mockBasket} itemsExpanded={true} />);
 
         // The accordion should be expanded by default, so ProductItemsList should be visible
         expect(screen.getByTestId('product-items-list')).toBeInTheDocument();
@@ -180,7 +190,7 @@ describe('OrderSummary', () => {
 
     test('renders promo code form when showPromoCodeForm is true', async () => {
         const user = userEvent.setup();
-        render(<OrderSummary basket={mockBasket} showPromoCodeForm={true} />);
+        renderWithCurrency(<OrderSummary basket={mockBasket} showPromoCodeForm={true} />);
 
         // Open the promo code accordion
         const promoCodeTrigger = screen.getByText(t('cart:promoCode.accordionTitle'));
@@ -191,7 +201,7 @@ describe('OrderSummary', () => {
     });
 
     test('shows estimated total when isEstimate is true', () => {
-        render(<OrderSummary basket={mockBasket} isEstimate={true} />);
+        renderWithCurrency(<OrderSummary basket={mockBasket} isEstimate={true} />);
 
         expect(screen.getByText(t('cart:summary.estimatedTotal'))).toBeInTheDocument();
         expect(screen.queryByText(t('cart:summary.orderTotal'))).not.toBeInTheDocument();
@@ -209,7 +219,7 @@ describe('OrderSummary', () => {
             ],
         };
 
-        render(<OrderSummary basket={basketWithAdjustments} />);
+        renderWithCurrency(<OrderSummary basket={basketWithAdjustments} />);
 
         expect(screen.getByText('10% Off Promotion')).toBeInTheDocument();
         expect(screen.getByText('$-10.00')).toBeInTheDocument();
@@ -235,7 +245,7 @@ describe('OrderSummary', () => {
             ],
         };
 
-        render(<OrderSummary basket={basketWithFreeShipping} />);
+        renderWithCurrency(<OrderSummary basket={basketWithFreeShipping} />);
 
         expect(screen.getByText(t('cart:summary.shippingPromotionApplied'))).toBeInTheDocument();
         expect(screen.getByText(t('cart:summary.shippingFree'))).toBeInTheDocument();
@@ -247,7 +257,7 @@ describe('OrderSummary', () => {
             shippingTotal: undefined,
         };
 
-        render(<OrderSummary basket={basketWithUndefinedShipping} />);
+        renderWithCurrency(<OrderSummary basket={basketWithUndefinedShipping} />);
 
         expect(screen.getByText(t('cart:summary.shippingTbd'))).toBeInTheDocument();
         expect(screen.queryByText(t('cart:summary.shippingFree'))).not.toBeInTheDocument();
@@ -260,7 +270,7 @@ describe('OrderSummary', () => {
             shippingTotal: null as unknown as number,
         };
 
-        render(<OrderSummary basket={basketWithNullShipping} />);
+        renderWithCurrency(<OrderSummary basket={basketWithNullShipping} />);
 
         expect(screen.getByText(t('cart:summary.shippingTbd'))).toBeInTheDocument();
         expect(screen.queryByText(t('cart:summary.shippingFree'))).not.toBeInTheDocument();
@@ -273,7 +283,7 @@ describe('OrderSummary', () => {
             shippingTotal: 15.99,
         };
 
-        render(<OrderSummary basket={basketWithPositiveShipping} />);
+        renderWithCurrency(<OrderSummary basket={basketWithPositiveShipping} />);
 
         expect(screen.getByText('$15.99')).toBeInTheDocument();
         expect(screen.queryByText(t('cart:summary.shippingFree'))).not.toBeInTheDocument();
@@ -286,7 +296,7 @@ describe('OrderSummary', () => {
             taxTotal: undefined,
         };
 
-        render(<OrderSummary basket={basketWithoutTax} />);
+        renderWithCurrency(<OrderSummary basket={basketWithoutTax} />);
 
         expect(screen.getByText(t('cart:summary.taxTbd'))).toBeInTheDocument();
     });
@@ -297,7 +307,7 @@ describe('OrderSummary', () => {
             taxTotal: null as unknown as number,
         };
 
-        render(<OrderSummary basket={basketWithNullTax} />);
+        renderWithCurrency(<OrderSummary basket={basketWithNullTax} />);
 
         expect(screen.getByText(t('cart:summary.taxTbd'))).toBeInTheDocument();
     });
@@ -308,7 +318,7 @@ describe('OrderSummary', () => {
             taxTotal: 0,
         };
 
-        render(<OrderSummary basket={basketWithZeroTax} />);
+        renderWithCurrency(<OrderSummary basket={basketWithZeroTax} />);
 
         expect(screen.getByText('$0.00')).toBeInTheDocument();
         expect(screen.queryByText(t('cart:summary.taxTbd'))).not.toBeInTheDocument();
@@ -320,7 +330,7 @@ describe('OrderSummary', () => {
             taxTotal: 12.75,
         };
 
-        render(<OrderSummary basket={basketWithPositiveTax} />);
+        renderWithCurrency(<OrderSummary basket={basketWithPositiveTax} />);
 
         expect(screen.getByText('$12.75')).toBeInTheDocument();
         expect(screen.queryByText(t('cart:summary.taxTbd'))).not.toBeInTheDocument();
@@ -341,7 +351,7 @@ describe('OrderSummary', () => {
             ],
         };
 
-        render(<OrderSummary basket={basketWithCoupons} showPromoCodeForm={true} />);
+        renderWithCurrency(<OrderSummary basket={basketWithCoupons} showPromoCodeForm={true} />);
 
         // Coupon codes are displayed by PromoCodeForm component
         expect(screen.getByText('SAVE10')).toBeInTheDocument();
@@ -360,13 +370,13 @@ describe('OrderSummary', () => {
             ],
         };
 
-        render(<OrderSummary basket={basketWithOrderNo} showPromoCodeForm={true} />);
+        renderWithCurrency(<OrderSummary basket={basketWithOrderNo} showPromoCodeForm={true} />);
 
         expect(screen.getByText('SAVE10')).toBeInTheDocument();
     });
 
     test('handles missing basket data gracefully', () => {
-        render(<OrderSummary basket={{} as ShopperBasketsV2.schemas['Basket']} />);
+        renderWithCurrency(<OrderSummary basket={{} as ShopperBasketsV2.schemas['Basket']} />);
 
         expect(screen.getByText(t('cart:summary.noBasketData'))).toBeInTheDocument();
     });
@@ -378,7 +388,7 @@ describe('OrderSummary', () => {
             orderNo: 'ORDER-123',
         };
 
-        render(<OrderSummary basket={orderBasket} />);
+        renderWithCurrency(<OrderSummary basket={orderBasket} />);
 
         expect(screen.getByText(t('cart:summary.orderSummary'))).toBeInTheDocument();
         expect(screen.getByTestId('sf-order-summary')).toBeInTheDocument();
@@ -391,20 +401,20 @@ describe('OrderSummary', () => {
             productTotal: 95.0,
         };
 
-        render(<OrderSummary basket={basketWithProductTotal} />);
+        renderWithCurrency(<OrderSummary basket={basketWithProductTotal} />);
 
         expect(screen.getByText('$95.00')).toBeInTheDocument();
     });
 
     test('renders separator when promo code form is not shown', () => {
-        render(<OrderSummary basket={mockBasket} showPromoCodeForm={false} />);
+        renderWithCurrency(<OrderSummary basket={mockBasket} showPromoCodeForm={false} />);
 
         const separator = document.querySelector('.shrink-0.bg-border');
         expect(separator).toBeInTheDocument();
     });
 
     test('has proper accessibility attributes', () => {
-        render(<OrderSummary basket={mockBasket} />);
+        renderWithCurrency(<OrderSummary basket={mockBasket} />);
 
         const orderSummaryRegion = screen.getByRole('region', { name: t('cart:summary.orderSummary') });
         expect(orderSummaryRegion).toBeInTheDocument();
@@ -416,7 +426,7 @@ describe('OrderSummary', () => {
 
     test('handles cart items accordion interaction', async () => {
         const user = userEvent.setup();
-        render(<OrderSummary basket={mockBasket} />);
+        renderWithCurrency(<OrderSummary basket={mockBasket} />);
 
         const accordionTrigger = screen.getByRole('button');
         expect(accordionTrigger).toBeInTheDocument();
@@ -428,7 +438,7 @@ describe('OrderSummary', () => {
 
     test('displays ProductItemsList with correct variant', async () => {
         const user = userEvent.setup();
-        render(<OrderSummary basket={mockBasket} />);
+        renderWithCurrency(<OrderSummary basket={mockBasket} />);
 
         // Open the accordion to access the content
         const accordionTrigger = screen.getByRole('button');

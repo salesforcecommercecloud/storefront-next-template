@@ -6,15 +6,20 @@ import { describe, expect, test } from 'vitest';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { ConfigProvider } from '@/config';
 import { mockConfig } from '@/test-utils/config';
+import { CurrencyProvider } from '@/providers/currency';
 import Footer from './index';
 
 // Helper function to render component with router context
-const renderWithRouter = (component: React.ReactElement) => {
+const renderWithRouter = (component: React.ReactElement, currency: string = 'USD') => {
     const router = createMemoryRouter(
         [
             {
                 path: '/',
-                element: <ConfigProvider config={mockConfig}>{component}</ConfigProvider>,
+                element: (
+                    <ConfigProvider config={mockConfig}>
+                        <CurrencyProvider value={currency}>{component}</CurrencyProvider>
+                    </ConfigProvider>
+                ),
             },
         ],
         {
@@ -34,6 +39,7 @@ describe('Footer', () => {
         // @sfdc-extension-line SFDC_EXT_INTERNAL_THEME_SWITCHER
         expect(screen.getByText(t('footer:sections.switchThemes'))).toBeInTheDocument();
         expect(screen.getByText(t('footer:sections.switchLanguage'))).toBeInTheDocument();
+        expect(screen.getByText(t('footer:sections.switchCurrency'))).toBeInTheDocument();
     });
 
     test('renders Customer Support section links', () => {
@@ -97,14 +103,17 @@ describe('Footer', () => {
         expect(screen.getByRole('button', { name: 'Subscribe' })).toBeInTheDocument();
     });
 
-    // @sfdc-extension-block-start SFDC_EXT_INTERNAL_THEME_SWITCHER
-    test('renders ThemeSwitcher component with theme options', () => {
+    test('renders all selectors, Theme, Locale and Currency Switcher', () => {
         renderWithRouter(<Footer />);
 
         // Check for ThemeSwitcher select and options
-        const themeSelects = screen.getAllByRole('combobox');
-        expect(themeSelects).toHaveLength(2); // Theme and Locale selects
+        const selectors = screen.getAllByRole('combobox');
+        expect(selectors).toHaveLength(3); // Theme and Locale selects
+    });
 
+    // @sfdc-extension-block-start SFDC_EXT_INTERNAL_THEME_SWITCHER
+    test('renders ThemeSwitcher component with theme options', () => {
+        renderWithRouter(<Footer />);
         expect(screen.getByRole('option', { name: 'Light Theme' })).toBeInTheDocument();
         expect(screen.getByRole('option', { name: 'Dark Theme' })).toBeInTheDocument();
     });
@@ -112,13 +121,8 @@ describe('Footer', () => {
 
     test('renders LocaleSwitcher component with locale options', () => {
         renderWithRouter(<Footer />);
-
-        // Check for LocaleSwitcher select and options
-        const localeSelects = screen.getAllByRole('combobox');
-        expect(localeSelects).toHaveLength(2); // Theme and Locale selects
-
         expect(screen.getByRole('option', { name: 'English (US)' })).toBeInTheDocument();
-        expect(screen.getByRole('option', { name: 'Spanish (Mexico)' })).toBeInTheDocument();
+        expect(screen.getByRole('option', { name: 'Italian (Italy)' })).toBeInTheDocument();
     });
 
     test('renders copyright text with current year', () => {

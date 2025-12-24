@@ -6,6 +6,7 @@
  */
 
 import { Typography } from '@/components/typography';
+import { useTranslation } from 'react-i18next';
 import { formatCurrency } from '@/lib/currency';
 
 interface CurrentPriceProps {
@@ -35,11 +36,16 @@ export default function CurrentPrice({
     currency,
     className,
 }: CurrentPriceProps) {
-    const currentPriceText = formatCurrency(price, 'en-US', currency);
+    const { t, i18n } = useTranslation('product');
 
-    const ariaLabel = isRange ? `Current price from ${currentPriceText}` : `Current price: ${currentPriceText}`;
+    // Format currency using i18next's current language
+    const currentPriceText = formatCurrency(price, i18n.language, currency);
 
-    const displayText = isRange ? `From ${currentPriceText}` : currentPriceText;
+    const ariaLabel = isRange
+        ? t('price.currentPriceFrom', { price: currentPriceText })
+        : t('price.currentPrice', { price: currentPriceText });
+
+    const displayText = isRange ? t('price.from', { price: currentPriceText }) : currentPriceText;
 
     return (
         <>

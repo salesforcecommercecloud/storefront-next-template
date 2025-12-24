@@ -1,10 +1,11 @@
-import { Suspense, useEffect, useMemo, useRef } from 'react';
+import { Fragment, Suspense, useEffect, useMemo, useRef } from 'react';
 import { Await, type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from 'react-router';
 import type { ShopperProducts, ShopperSearch, ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchCategory } from '@/lib/api/categories';
 import { fetchSearchProducts } from '@/lib/api/search';
 import { getAllQueryParams, getQueryParam, PRODUCT_SEARCH_QUERY_PARAMS } from '@/lib/query-params';
 import { getConfig, useConfig } from '@/config';
+import { currencyContext } from '@/lib/currency';
 import CategorySkeleton, {
     CategoryBreadcrumbsSkeleton,
     CategoryHeaderSkeleton,
@@ -54,6 +55,9 @@ type CategoryPageData = {
     searchResult: Promise<ShopperSearch.schemas['ProductSearchResult']>;
     page: Promise<ShopperExperience.schemas['Page']>;
     componentData: Promise<Record<string, Promise<unknown>>>;
+    categoryId: string;
+    currency: string;
+    locale: string;
 };
 
 /**
@@ -71,7 +75,10 @@ function getPageData(loaderCtx: LoaderFunctionArgs, limit: number): CategoryPage
     const offset = parseInt(getQueryParam(searchParams, PRODUCT_SEARCH_QUERY_PARAMS.OFFSET) || '0', 10);
     const sort = getQueryParam(searchParams, PRODUCT_SEARCH_QUERY_PARAMS.SORT);
     const refine = getAllQueryParams(searchParams, PRODUCT_SEARCH_QUERY_PARAMS.REFINE);
-
+    // Get currency and locale for cache-busting the page key
+    const config = getConfig(loaderCtx.context);
+    const currency = loaderCtx.context.get(currencyContext) as string;
+    const locale = config.site.locale;
     const pagePromise = fetchPageFromLoader(loaderCtx, {
         pageId: 'plp',
         categoryId: safeCategoryId,
@@ -88,6 +95,7 @@ function getPageData(loaderCtx: LoaderFunctionArgs, limit: number): CategoryPage
             // This is a known type limitation, the API intelligently serializes the refine parameter (array) automatically, but the OAS types refers to string.
             refine: refine as unknown as string,
             expand: ['none'],
+            currency,
         }),
         searchResult: fetchSearchProducts(loaderCtx.context, {
             categoryId: safeCategoryId,
@@ -96,10 +104,14 @@ function getPageData(loaderCtx: LoaderFunctionArgs, limit: number): CategoryPage
             sort,
             // This is a known type limitation, the API intelligently serializes the refine parameter (array) automatically, but the OAS types refers to string.
             refine: refine as unknown as string,
+            currency,
         }),
         category: fetchCategory(loaderCtx.context, safeCategoryId, 0),
         page: pagePromise,
         componentData: componentDataPromises,
+        categoryId: safeCategoryId,
+        currency,
+        locale,
     };
 }
 
@@ -130,7 +142,7 @@ export function clientLoader(args: ClientLoaderFunctionArgs): CategoryPageData {
  * @returns JSX element representing the category page
  */
 export default function CategoryPage({
-    loaderData: { category, refinements, searchResult, page, componentData },
+    loaderData: { category, refinements, searchResult, page, componentData, categoryId, locale, currency },
 }: {
     loaderData: CategoryPageData;
 }) {
@@ -168,93 +180,119 @@ export default function CategoryPage({
         }
     }, [analytics, category, searchResult]);
 
+    // Force remount when currency/locale changes to update Suspense boundaries with new data
+    // without manually refresh the page on new selected currency/locale
+    const pageKey = `${categoryId}-${currency}-${locale}`;
+
     return (
-        <div className="pb-16">
-            <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="mb-4">
-                    <Suspense fallback={<CategoryBreadcrumbsSkeleton />}>
-                        <Await resolve={category}>
-                            {(categoryData) => <CategoryBreadcrumbs category={categoryData} />}
-                        </Await>
-                    </Suspense>
-                </div>
-
-                <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <Suspense fallback={<CategoryHeaderSkeleton />}>
-                        <h1 className="text-3xl font-bold text-foreground">
+        <Fragment key={pageKey}>
+            <div className="pb-16">
+                <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="mb-4">
+                        <Suspense fallback={<CategoryBreadcrumbsSkeleton />}>
                             <Await resolve={category}>
-                                {(categoryData) => <>{categoryData?.name || categoryData.id}</>}
-                            </Await>{' '}
-                            <Await resolve={refinements}>{(refinementsData) => <>({refinementsData.total})</>}</Await>
-                        </h1>
-                        <Await resolve={refinements}>
-                            {(refinementsData) => (
-                                <div className="flex-shrink-0">
-                                    {refinementsData?.sortingOptions && refinementsData.sortingOptions.length > 0 && (
-                                        <CategorySorting result={refinementsData} />
-                                    )}
-                                </div>
-                            )}
-                        </Await>
-                    </Suspense>
-                </div>
+                                {(categoryData) => <CategoryBreadcrumbs category={categoryData} />}
+                            </Await>
+                        </Suspense>
+                    </div>
 
-                {/* plpTopFullWidth */}
-                <div className="mb-8">
-                    <Region page={page} regionId="plpTopFullWidth" componentData={componentData} fallback={<div />} />
-                </div>
-
-                <div className="flex flex-col lg:flex-row gap-8">
-                    <div className="hidden lg:block w-64 flex-shrink-0">
-                        <Suspense fallback={<CategoryRefinementsSkeleton />}>
+                    <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <Suspense fallback={<CategoryHeaderSkeleton />}>
+                            <h1 className="text-3xl font-bold text-foreground">
+                                <Await resolve={category}>
+                                    {(categoryData) => <>{categoryData?.name || categoryData.id}</>}
+                                </Await>{' '}
+                                <Await resolve={refinements}>
+                                    {(refinementsData) => <>({refinementsData.total})</>}
+                                </Await>
+                            </h1>
                             <Await resolve={refinements}>
-                                {(refinementsData) => <CategoryRefinements result={refinementsData} />}
-                            </Await>
-                        </Suspense>
-                    </div>
-
-                    {/* plpTopContent */}
-                    <div className="mb-8">
-                        <Region page={page} regionId="plpTopContent" componentData={componentData} fallback={<div />} />
-                    </div>
-
-                    <div className="flex-grow">
-                        <Suspense fallback={<CategorySkeleton />}>
-                            <Await resolve={combinedPromise}>
-                                {([categoryData, searchResultData]) => {
-                                    const handleProductClick = (product: ShopperSearch.schemas['ProductSearchHit']) => {
-                                        if (analytics) {
-                                            void analytics.trackClickProductInCategory({
-                                                category: categoryData,
-                                                product,
-                                            });
-                                        }
-                                    };
-
-                                    return (
-                                        <>
-                                            <ProductGrid
-                                                products={searchResultData.hits ?? []}
-                                                handleProductClick={handleProductClick}
-                                            />
-                                            {searchResultData.total > 1 && (
-                                                <div className="mt-10">
-                                                    <CategoryPagination limit={limit} result={searchResultData} />
-                                                </div>
+                                {(refinementsData) => (
+                                    <div className="flex-shrink-0">
+                                        {refinementsData?.sortingOptions &&
+                                            refinementsData.sortingOptions.length > 0 && (
+                                                <CategorySorting result={refinementsData} />
                                             )}
-                                        </>
-                                    );
-                                }}
+                                    </div>
+                                )}
                             </Await>
                         </Suspense>
+                    </div>
 
-                        {/* plpBottom */}
-                        <div className="mt-8">
-                            <Region page={page} regionId="plpBottom" componentData={componentData} fallback={<div />} />
+                    {/* plpTopFullWidth */}
+                    <div className="mb-8">
+                        <Region
+                            page={page}
+                            regionId="plpTopFullWidth"
+                            componentData={componentData}
+                            fallback={<div />}
+                        />
+                    </div>
+
+                    <div className="flex flex-col lg:flex-row gap-8">
+                        <div className="hidden lg:block w-64 flex-shrink-0">
+                            <Suspense fallback={<CategoryRefinementsSkeleton />}>
+                                <Await resolve={refinements}>
+                                    {(refinementsData) => <CategoryRefinements result={refinementsData} />}
+                                </Await>
+                            </Suspense>
+                        </div>
+
+                        {/* plpTopContent */}
+                        <div className="mb-8">
+                            <Region
+                                page={page}
+                                regionId="plpTopContent"
+                                componentData={componentData}
+                                fallback={<div />}
+                            />
+                        </div>
+
+                        <div className="flex-grow">
+                            <Suspense fallback={<CategorySkeleton />}>
+                                <Await resolve={combinedPromise}>
+                                    {([categoryData, searchResultData]) => {
+                                        const handleProductClick = (
+                                            product: ShopperSearch.schemas['ProductSearchHit']
+                                        ) => {
+                                            if (analytics) {
+                                                void analytics.trackClickProductInCategory({
+                                                    category: categoryData,
+                                                    product,
+                                                });
+                                            }
+                                        };
+
+                                        return (
+                                            <>
+                                                <ProductGrid
+                                                    products={searchResultData.hits ?? []}
+                                                    handleProductClick={handleProductClick}
+                                                />
+                                                {searchResultData.total > 1 && (
+                                                    <div className="mt-10">
+                                                        <CategoryPagination limit={limit} result={searchResultData} />
+                                                    </div>
+                                                )}
+                                            </>
+                                        );
+                                    }}
+                                </Await>
+                            </Suspense>
+
+                            {/* plpBottom */}
+                            <div className="mt-8">
+                                <Region
+                                    page={page}
+                                    regionId="plpBottom"
+                                    componentData={componentData}
+                                    fallback={<div />}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </Fragment>
     );
 }

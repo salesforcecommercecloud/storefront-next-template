@@ -14,6 +14,7 @@ import {
     updateStorageObject,
 } from '@/lib/middleware';
 import { createApiClients } from '@/lib/api-clients';
+import { currencyContext } from '@/lib/currency';
 
 type BasketStorageData = ShopperBasketsV2.schemas['Basket'] & StorageMetaData & StorageErrorData;
 
@@ -33,10 +34,13 @@ const retrieveBasket = (
 
     const createBasket = async (): Promise<ShopperBasketsV2.schemas['Basket']> => {
         try {
+            // Get current currency from context
+            const currency = context.get(currencyContext) as string;
+
             const { data } = await clients.shopperBasketsV2.createBasket({
                 params: {},
                 body: {
-                    currency: import.meta.env.PUBLIC__app__site__currency || 'USD',
+                    currency,
                 },
             });
             return data;
@@ -134,11 +138,37 @@ const basketMiddleware: MiddlewareFunction<Record<string, DataStrategyResult>> =
         Object.entries(basketData) as [keyof BasketStorageData, BasketStorageData[keyof BasketStorageData]][]
     );
 
+    // Get current currency to detect currency changes
+    const currentCurrency = context.get(currencyContext) as string;
+
     // Before calling the handler: Retrieve a basket (or reuse the existing one)
     if (!basketCache.ref?.basketId) {
+        // No basket exists, create one
         await retrieveBasketStorageData(context, basketStorage).catch(() => {
             // Intentionally empty
         });
+    } else if (basketCache.ref.currency !== currentCurrency) {
+        // Currency has changed, update the existing basket currency
+        const clients = createApiClients(context);
+        try {
+            const { data: updatedBasket } = await clients.shopperBasketsV2.updateBasket({
+                params: {
+                    path: { basketId: basketCache.ref.basketId },
+                },
+                body: {
+                    currency: currentCurrency,
+                },
+            });
+
+            // Update cache and storage with the new basket data
+            basketCache.ref = updatedBasket;
+            updateStorageObject(basketStorage, updatedBasket);
+        } catch {
+            // If update fails, try to retrieve/create a new basket
+            await retrieveBasketStorageData(context, basketStorage).catch(() => {
+                // Intentionally empty
+            });
+        }
     }
 
     // Write basket data to request `context` to make it available to other client middlewares, client loaders,
@@ -156,7 +186,7 @@ const basketMiddleware: MiddlewareFunction<Record<string, DataStrategyResult>> =
 
         // Clean up the storage container. That way the information is immediately updated for eventually
         // running middlewares after this one as well.
-        clearStorage(basketStorage, false);
+        clearStorage<ShopperBasketsV2.schemas['Basket']>(basketStorage, false);
     } else if (basketStorage.has('isUpdated')) {
         basketStorage.delete('isUpdated');
 

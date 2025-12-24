@@ -7,8 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Typography } from '@/components/typography';
 import ProductImage from '@/components/product-image/product-image';
 import { createApiClients } from '@/lib/api-clients';
-import { formatCurrency } from '@/lib/currency';
+import { formatCurrency, currencyContext } from '@/lib/currency';
 import createPage, { type RouteComponentProps } from '@/components/create-page';
+import { useCurrency } from '@/providers/currency';
 import type {
     ShopperOrders,
     ShopperProducts,
@@ -77,6 +78,7 @@ const getPrimaryImageFromProduct = (product: ShopperProducts.schemas['Product'] 
 function getPageData({ context, params }: LoaderFunctionArgs): CheckoutConfirmationLoaderData {
     const { orderNo } = params;
     const clients = createApiClients(context);
+    const currency = context.get(currencyContext) as string;
 
     const orderPromise = clients.shopperOrders
         .getOrder({
@@ -111,6 +113,7 @@ function getPageData({ context, params }: LoaderFunctionArgs): CheckoutConfirmat
                     query: {
                         ids: productIds,
                         expand: ['images', 'variations'],
+                        currency,
                     },
                 },
             });
@@ -216,7 +219,8 @@ function CheckoutConfirmation({
 }: RouteComponentProps<CheckoutConfirmationLoaderData>): ReactElement {
     const order = use(orderPromise);
     const productsById = use(productsByIdPromise);
-    const { t } = useTranslation('checkout');
+    const { t, i18n } = useTranslation('checkout');
+    const currency = useCurrency();
     // @sfdc-extension-line SFDC_EXT_BOPIS
     const { t: tBopis } = useTranslation('extBopis');
 
@@ -458,11 +462,11 @@ function CheckoutConfirmation({
                                             <div className="text-right space-y-1 sm:self-start">
                                                 {originalPrice && (
                                                     <p className="text-sm text-muted-foreground line-through">
-                                                        {formatCurrency(originalPrice)}
+                                                        {formatCurrency(originalPrice, i18n.language, currency)}
                                                     </p>
                                                 )}
                                                 <p className="text-lg font-semibold text-foreground">
-                                                    {formatCurrency(finalPrice)}
+                                                    {formatCurrency(finalPrice, i18n.language, currency)}
                                                 </p>
                                             </div>
                                         </div>
@@ -491,7 +495,7 @@ function CheckoutConfirmation({
                                             }>
                                             {row.key === 'shipping' && row.value === 0
                                                 ? t('confirmation.summaryLabels.freeShipping')
-                                                : formatCurrency(row.value)}
+                                                : formatCurrency(row.value, i18n.language, currency)}
                                         </span>
                                     </div>
                                 );
@@ -513,7 +517,9 @@ function CheckoutConfirmation({
                                 <p className="font-medium text-foreground">{paymentSummary}</p>
                             </div>
                         </div>
-                        <p className="text-lg font-semibold text-foreground">{formatCurrency(totals.total)}</p>
+                        <p className="text-lg font-semibold text-foreground">
+                            {formatCurrency(totals.total, i18n.language, currency)}
+                        </p>
                     </CardContent>
                 </Card>
 

@@ -21,6 +21,7 @@ import { getBasket } from '@/middlewares/basket.client';
 import { getCustomerProfileForCheckout, isRegisteredCustomer } from '@/lib/api/customer';
 import { getShippingMethodsForShipment } from '@/lib/api/shipping-methods';
 import { createApiClients } from '@/lib/api-clients';
+import { currencyContext } from '@/lib/currency';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { getPickupShipment } from '@/extensions/bopis/lib/basket-utils';
 import { setAddressAndMethodForPickup } from '@/extensions/bopis/lib/api/shipment';
@@ -99,12 +100,15 @@ async function fetchProductsInBasket(
     }
 
     const clients = createApiClients(context);
+    const currency = context.get(currencyContext) as string;
+
     const { data: productsData } = await clients.shopperProducts.getProducts({
         params: {
             query: {
                 ids,
                 allImages: true,
                 perPricebook: true,
+                ...(currency ? { currency } : {}),
             },
         },
     });

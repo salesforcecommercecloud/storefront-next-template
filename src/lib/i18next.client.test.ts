@@ -7,7 +7,7 @@ vi.mock('@/config', () => ({
     getConfig: vi.fn(() => ({
         i18n: {
             fallbackLng: 'en-US',
-            supportedLngs: ['en-US', 'es-MX'], // Fallback language should be last
+            supportedLngs: ['en-US', 'it-IT'], // Fallback language should be last
         },
     })),
 }));
@@ -20,10 +20,10 @@ vi.mock('@/locales/en-US/index.ts', () => ({
     },
 }));
 
-vi.mock('@/locales/es-MX/index.ts', () => ({
+vi.mock('@/locales/it-IT/index.ts', () => ({
     default: {
-        translations: { hello: 'Hola', welcome: 'Bienvenido' },
-        common: { yes: 'Sí', no: 'No' },
+        translations: { hello: 'Ciao', welcome: 'Benvenuto' },
+        common: { yes: 'Sì', no: 'No' },
     },
 }));
 
@@ -85,17 +85,17 @@ describe('i18next.client', () => {
         });
 
         it('should load translations for different languages', async () => {
-            // Change language to Spanish
-            await testInstance.changeLanguage('es-MX');
+            // Change language to Italian
+            await testInstance.changeLanguage('it-IT');
             await testInstance.loadNamespaces('translations');
 
-            // Verify Spanish translations are in the store
-            expect(testInstance.store.data['es-MX']?.translations).toEqual({
-                hello: 'Hola',
-                welcome: 'Bienvenido',
+            // Verify Italian translations are in the store
+            expect(testInstance.store.data['it-IT']?.translations).toEqual({
+                hello: 'Ciao',
+                welcome: 'Benvenuto',
             });
-            expect(testInstance.store.data['es-MX']?.common).toEqual({
-                yes: 'Sí',
+            expect(testInstance.store.data['it-IT']?.common).toEqual({
+                yes: 'Sì',
                 no: 'No',
             });
         });

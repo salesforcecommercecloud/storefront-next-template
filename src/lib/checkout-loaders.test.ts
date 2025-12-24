@@ -47,6 +47,10 @@ vi.mock('@/lib/api-clients', () => ({
     })),
 }));
 
+vi.mock('@/lib/currency', () => ({
+    currencyContext: { key: 'currency' },
+}));
+
 import { clientLoader } from './checkout-loaders';
 
 describe('Checkout Loaders', () => {
@@ -87,7 +91,12 @@ describe('Checkout Loaders', () => {
         return {
             request: mockRequest,
             params: {},
-            context: {},
+            context: {
+                get: vi.fn((key) => {
+                    if (key.key === 'currency') return 'USD';
+                    return undefined;
+                }),
+            },
             serverLoader: vi.fn(),
         } as any;
     }
@@ -133,7 +142,12 @@ describe('Checkout Loaders', () => {
             const args: ClientLoaderFunctionArgs = {
                 request: mockRequest,
                 params: {},
-                context: {},
+                context: {
+                    get: vi.fn((key) => {
+                        if (key.key === 'currency') return 'USD';
+                        return undefined;
+                    }),
+                },
                 serverLoader: vi.fn(),
             } as any;
 
@@ -170,7 +184,12 @@ describe('Checkout Loaders', () => {
             const args: ClientLoaderFunctionArgs = {
                 request: mockRequest,
                 params: {},
-                context: {},
+                context: {
+                    get: vi.fn((key) => {
+                        if (key.key === 'currency') return 'USD';
+                        return undefined;
+                    }),
+                },
                 serverLoader: vi.fn(),
             } as any;
 
@@ -206,7 +225,12 @@ describe('Checkout Loaders', () => {
             const args: ClientLoaderFunctionArgs = {
                 request: mockRequest,
                 params: {},
-                context: {},
+                context: {
+                    get: vi.fn((key) => {
+                        if (key.key === 'currency') return 'USD';
+                        return undefined;
+                    }),
+                },
                 serverLoader: vi.fn(),
             } as any;
 
@@ -238,7 +262,12 @@ describe('Checkout Loaders', () => {
             const args: ClientLoaderFunctionArgs = {
                 request: mockRequest,
                 params: {},
-                context: {},
+                context: {
+                    get: vi.fn((key) => {
+                        if (key.key === 'currency') return 'USD';
+                        return undefined;
+                    }),
+                },
                 serverLoader: vi.fn(),
             } as any;
 
@@ -270,7 +299,12 @@ describe('Checkout Loaders', () => {
             const args: ClientLoaderFunctionArgs = {
                 request: mockRequest,
                 params: {},
-                context: {},
+                context: {
+                    get: vi.fn((key) => {
+                        if (key.key === 'currency') return 'USD';
+                        return undefined;
+                    }),
+                },
                 serverLoader: vi.fn(),
             } as any;
 
@@ -292,7 +326,12 @@ describe('Checkout Loaders', () => {
             const args: ClientLoaderFunctionArgs = {
                 request: mockRequest,
                 params: {},
-                context: {},
+                context: {
+                    get: vi.fn((key) => {
+                        if (key.key === 'currency') return 'USD';
+                        return undefined;
+                    }),
+                },
                 serverLoader: vi.fn(),
             } as any;
 
@@ -325,7 +364,12 @@ describe('Checkout Loaders', () => {
             const args: ClientLoaderFunctionArgs = {
                 request: mockRequest,
                 params: {},
-                context: {},
+                context: {
+                    get: vi.fn((key) => {
+                        if (key.key === 'currency') return 'USD';
+                        return undefined;
+                    }),
+                },
                 serverLoader: vi.fn(),
             } as any;
 
@@ -405,7 +449,12 @@ describe('Checkout Loaders', () => {
             const args: ClientLoaderFunctionArgs = {
                 request: mockRequest,
                 params: {},
-                context: {},
+                context: {
+                    get: vi.fn((key) => {
+                        if (key.key === 'currency') return 'USD';
+                        return undefined;
+                    }),
+                },
                 serverLoader: vi.fn(),
             } as any;
 
@@ -478,7 +527,12 @@ describe('Checkout Loaders', () => {
             const args: ClientLoaderFunctionArgs = {
                 request: mockRequest,
                 params: {},
-                context: {},
+                context: {
+                    get: vi.fn((key) => {
+                        if (key.key === 'currency') return 'USD';
+                        return undefined;
+                    }),
+                },
                 serverLoader: vi.fn(),
             } as any;
 
@@ -542,7 +596,12 @@ describe('Checkout Loaders', () => {
             const args: ClientLoaderFunctionArgs = {
                 request: mockRequest,
                 params: {},
-                context: {},
+                context: {
+                    get: vi.fn((key) => {
+                        if (key.key === 'currency') return 'USD';
+                        return undefined;
+                    }),
+                },
                 serverLoader: vi.fn(),
             } as any;
 
@@ -589,7 +648,12 @@ describe('Checkout Loaders', () => {
             const args: ClientLoaderFunctionArgs = {
                 request: mockRequest,
                 params: {},
-                context: {},
+                context: {
+                    get: vi.fn((key) => {
+                        if (key.key === 'currency') return 'USD';
+                        return undefined;
+                    }),
+                },
                 serverLoader: vi.fn(),
             } as any;
 

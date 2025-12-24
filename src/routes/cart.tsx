@@ -18,6 +18,7 @@ import { getBasket } from '@/middlewares/basket.client';
 
 // API
 import { createApiClients } from '@/lib/api-clients';
+import { currencyContext } from '@/lib/currency';
 
 // Components
 import CartContent from '@/components/cart/cart-content';
@@ -147,12 +148,15 @@ async function fetchProductsInBasket(
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     const clients = createApiClients(context);
+    const currency = context.get(currencyContext) as string;
+
     const { data: productsData } = await clients.shopperProducts.getProducts({
         params: {
             query: {
                 ids,
                 allImages: true,
                 perPricebook: true,
+                currency,
                 // NOTE: if we do use `expand` parameter here, we can't pass in `bundled_products` for this API endpoint
                 // @sfdc-extension-block-start SFDC_EXT_BOPIS
                 // Include store inventory IDs for pickup items

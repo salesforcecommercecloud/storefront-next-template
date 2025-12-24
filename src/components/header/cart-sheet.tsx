@@ -13,6 +13,7 @@ import { useBasketWithProducts, type BasketItemWithProduct } from '@/hooks/use-b
 import { useToast } from '@/components/toast';
 import type { ActionResponse } from '@/routes/types/action-responses';
 import { useTranslation } from 'react-i18next';
+import { useCurrency } from '@/providers/currency';
 
 /**
  * Container component for MiniCartItem that handles remove functionality
@@ -79,10 +80,11 @@ function MiniCartItemContainer({ item, removeAction }: { item: BasketItemWithPro
 export default function CartSheet({ children }: PropsWithChildren): ReactElement {
     // As this component gets loaded on demand, it immediately gets displayed open
     const [open, setOpen] = useState<boolean>(true);
-    const { t } = useTranslation('header');
+    const { t, i18n } = useTranslation('header');
     const { t: tMiniCart } = useTranslation('miniCart');
     const basket = useBasket();
     const config = useConfig();
+    const currency = useCurrency();
 
     // Fetch full product details (images, variations, etc.) for basket items
     const { productItems: enrichedProductItems, isLoading } = useBasketWithProducts(basket);
@@ -144,9 +146,9 @@ export default function CartSheet({ children }: PropsWithChildren): ReactElement
                             <Link to="/checkout" onClick={() => setOpen(false)}>
                                 {t('checkout')}{' '}
                                 {basket?.orderTotal
-                                    ? formatCurrency(basket.orderTotal)
+                                    ? formatCurrency(basket.orderTotal, i18n.language, currency)
                                     : basket?.productTotal
-                                      ? formatCurrency(basket.productTotal)
+                                      ? formatCurrency(basket.productTotal, i18n.language, currency)
                                       : ''}
                             </Link>
                         </Button>

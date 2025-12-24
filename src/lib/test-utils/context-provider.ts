@@ -6,6 +6,7 @@ import { appConfigContext } from '@/config';
 import type { Config } from '@/config/schema';
 import config from '@/config/server';
 import { i18nextContext } from '@/lib/i18next';
+import { currencyContext } from '@/lib/currency';
 import i18next from 'i18next';
 
 /**
@@ -28,6 +29,8 @@ export interface TestContextConfig {
     locale?: string;
     /** Whether to skip setting up i18next context (for testing missing middleware scenarios) */
     skipI18next?: boolean;
+    /** Override the currency (defaults to 'USD') */
+    currency?: string;
 }
 
 const ACCESS_TOKEN_VALIDITY_MS = 1800000; // 30 minutes
@@ -92,6 +95,7 @@ export function createTestContext(testConfig: TestContextConfig = {}): RouterCon
         authError = new Error('Auth failed'),
         locale = 'en-US',
         skipI18next = false,
+        currency = 'USD',
     } = testConfig;
 
     const contextProvider = new RouterContextProvider();
@@ -126,6 +130,9 @@ export function createTestContext(testConfig: TestContextConfig = {}): RouterCon
             getI18nextInstance: () => i18next,
         });
     }
+
+    // Set up currency context
+    contextProvider.set(currencyContext, currency);
 
     return contextProvider;
 }
