@@ -1,6 +1,6 @@
 import { describe, expect, test, vi, beforeEach, afterEach } from 'vitest';
 import { RouterContextProvider } from 'react-router';
-import legacyRoutesMiddleware from '@/middlewares/legacy-routes.client';
+import legacyRoutesMiddleware, { matchesRoutePattern } from '@/middlewares/legacy-routes.client';
 import { appConfigContext } from '@/config/context';
 import type { AppConfig } from '@/config';
 
@@ -252,6 +252,102 @@ describe('legacyRoutesMiddleware', () => {
 
             // Should continue normal navigation since /accounts/profile !== /account
             expect(mockNext).toHaveBeenCalledOnce();
+        });
+    });
+
+    describe('matchesRoutePattern', () => {
+        test('should match exact routes', () => {
+            expect(matchesRoutePattern('/checkout', '/checkout')).toBe(true);
+            expect(matchesRoutePattern('/account/orders', '/account/orders')).toBe(true);
+            expect(matchesRoutePattern('/checkout', '/account')).toBe(false);
+            expect(matchesRoutePattern('/checkout/payment', '/checkout')).toBe(false);
+        });
+
+        test('should match single parameter routes', () => {
+            expect(matchesRoutePattern('/product/123', '/product/:id')).toBe(true);
+            expect(matchesRoutePattern('/product/abc-xyz', '/product/:id')).toBe(true);
+            expect(matchesRoutePattern('/user/john-doe', '/user/:username')).toBe(true);
+            // Should not match different base paths
+            expect(matchesRoutePattern('/products/123', '/product/:id')).toBe(false);
+            // Should not match with extra or missing segments
+            expect(matchesRoutePattern('/product/123/details', '/product/:id')).toBe(false);
+            expect(matchesRoutePattern('/product', '/product/:id')).toBe(false);
+        });
+
+        test('should match multiple parameter routes', () => {
+            expect(matchesRoutePattern('/category/shoes/item/123', '/category/:cat/item/:id')).toBe(true);
+            expect(matchesRoutePattern('/store/NYC/product/abc', '/store/:location/product/:id')).toBe(true);
+            expect(matchesRoutePattern('/checkout/step/1', '/checkout/step/:id')).toBe(true);
+            // Should not match with wrong segments
+            expect(matchesRoutePattern('/category/shoes', '/category/:cat/item/:id')).toBe(false);
+            expect(matchesRoutePattern('/category/shoes/item/123/view', '/category/:cat/item/:id')).toBe(false);
+        });
+
+        test('should handle special cases', () => {
+            // Special regex characters in paths
+            expect(matchesRoutePattern('/path.with.dots/123', '/path.with.dots/:id')).toBe(true);
+            expect(matchesRoutePattern('/pathXwithXdots/123', '/path.with.dots/:id')).toBe(false);
+            // Parameters should not match slashes
+            expect(matchesRoutePattern('/product/123/456', '/product/:id')).toBe(false);
+        });
+    });
+
+    describe('client-side parameterized route matching', () => {
+        beforeEach(() => {
+            vi.stubGlobal('window', { location: { href: '' } } as Window & typeof globalThis);
+
+            vi.spyOn(mockContext, 'get').mockImplementation((contextKey: any) => {
+                if (contextKey === appConfigContext) {
+                    return {
+                        site: {
+                            hybrid: {
+                                enabled: true,
+                                legacyRoutes: [
+                                    '/checkout',
+                                    '/product/:id',
+                                    '/category/:cat/item/:id',
+                                    '/user/:username/profile',
+                                ],
+                            },
+                        },
+                    } as unknown as AppConfig;
+                }
+                return undefined;
+            });
+        });
+
+        test('should trigger redirects for parameterized routes', async () => {
+            const testCases = [
+                'https://example.com/product/123', // Single parameter
+                'https://example.com/category/electronics/item/abc-123', // Multiple parameters
+                'https://example.com/user/john-doe/profile', // Mixed route
+                'https://example.com/checkout', // Exact match alongside parameterized
+                'https://example.com/product/123?color=blue&size=large', // With query params
+                'https://example.com/product/123#reviews', // With hash
+                'https://example.com/product/abc-123_xyz', // Hyphens and underscores
+            ];
+
+            for (const url of testCases) {
+                const request = new Request(url);
+                await legacyRoutesMiddleware({ request, context: mockContext, params: {} }, mockNext);
+                expect(mockNext).not.toHaveBeenCalled();
+                mockNext.mockClear();
+            }
+        });
+
+        test('should continue normal navigation when routes do not match', async () => {
+            const testCases = [
+                'https://example.com/product/123/details', // Extra segments
+                'https://example.com/category/shoes', // Missing segments
+                'https://example.com/products/123', // Different base path
+            ];
+
+            for (const url of testCases) {
+                const request = new Request(url);
+                await legacyRoutesMiddleware({ request, context: mockContext, params: {} }, mockNext);
+                expect(mockNext).toHaveBeenCalledOnce();
+                mockNext.mockClear();
+            }
         });
     });
 });
