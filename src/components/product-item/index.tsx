@@ -162,7 +162,7 @@ function ProductItemVariantAttributes({
 
     const hasPromotions = productPromotions.length > 0;
     const hasItemDiscount =
-        productItem.priceAfterItemDiscount &&
+        productItem.priceAfterItemDiscount !== undefined &&
         productItem.priceAfterItemDiscount > 0 &&
         productItem.priceAfterItemDiscount !== productItem.price;
     const isBonusProduct = Boolean(productItem?.bonusProductLineItem);
