@@ -12,7 +12,7 @@ describe('Payment Schema and Validation', () => {
                 useSavedPaymentMethod: false,
                 selectedSavedPaymentMethod: undefined,
                 cardNumber: '4111111111111111',
-                expiryDate: '12/25',
+                expiryDate: '12/28',
                 cvv: '123',
                 cardholderName: 'John Doe', // Updated field name
                 billingSameAsShipping: true, // Required field
@@ -45,7 +45,7 @@ describe('Payment Schema and Validation', () => {
                 useSavedPaymentMethod: false,
                 selectedSavedPaymentMethod: undefined,
                 cardNumber: '', // Missing
-                expiryDate: '12/25',
+                expiryDate: '12/28',
                 cvv: '123',
                 cardholderName: 'John Doe', // Updated field name
                 billingSameAsShipping: true, // Required field
@@ -91,7 +91,7 @@ describe('Payment Schema and Validation', () => {
                 useSavedPaymentMethod: false,
                 selectedSavedPaymentMethod: undefined,
                 cardNumber: '1234', // Too short
-                expiryDate: '12/25',
+                expiryDate: '12/28',
                 cvv: '123',
                 cardholderName: 'John Doe', // Updated field name
                 billingSameAsShipping: true, // Required field
@@ -114,7 +114,7 @@ describe('Payment Schema and Validation', () => {
                 useSavedPaymentMethod: false,
                 selectedSavedPaymentMethod: undefined,
                 cardNumber: '4111111111111111',
-                expiryDate: '13/25', // Invalid month
+                expiryDate: '13/28', // Invalid month
                 cvv: '123',
                 cardholderName: 'John Doe', // Updated field name
                 billingSameAsShipping: true, // Required field
@@ -137,7 +137,7 @@ describe('Payment Schema and Validation', () => {
                 useSavedPaymentMethod: false,
                 selectedSavedPaymentMethod: undefined,
                 cardNumber: '4111111111111111',
-                expiryDate: '12/25',
+                expiryDate: '12/28',
                 cvv: '12', // Too short
                 cardholderName: 'John Doe', // Updated field name
                 billingSameAsShipping: true, // Required field

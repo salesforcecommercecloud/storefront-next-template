@@ -139,10 +139,10 @@ describe('Payment Integration Tests', () => {
             render(<Payment {...createDefaultProps()} />);
 
             const expiryInput = screen.getByRole('textbox', { name: /expiry date/i });
-            await user.type(expiryInput, '1225');
+            await user.type(expiryInput, '1227');
 
             await waitFor(() => {
-                expect(expiryInput).toHaveValue('12/25');
+                expect(expiryInput).toHaveValue('12/27');
             });
         });
 
@@ -225,7 +225,7 @@ describe('Payment Integration Tests', () => {
                             maskedNumber: '**** **** **** 1234',
                             holder: 'John Doe',
                             expirationMonth: 12,
-                            expirationYear: 2025,
+                            expirationYear: 2027,
                         },
                         preferred: true,
                     },
@@ -289,7 +289,7 @@ describe('Payment Integration Tests', () => {
             // Fill in all required fields
             await user.type(screen.getByPlaceholderText('1234 5678 9012 3456'), '4111111111111111');
             await user.type(screen.getByRole('textbox', { name: /cardholder name/i }), 'John Doe');
-            await user.type(screen.getByRole('textbox', { name: /expiry date/i }), '1225');
+            await user.type(screen.getByRole('textbox', { name: /expiry date/i }), '1227');
             await user.type(screen.getByRole('textbox', { name: /cvv/i }), '123');
 
             const submitButton = screen.getByRole('button', { name: /continue/i });
