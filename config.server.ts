@@ -36,14 +36,20 @@ import { TrackingConsent } from '@/types/tracking-consent';
  * Server-only secrets (API keys, passwords, etc.) should NEVER use this config system.
  * Read them directly from process.env in server-side code (loaders, actions, middleware).
  *
- * See src/config/README.md for complete documentation.
+ * Documentation:
+ *    - Configuration Guide: `src/config/README.md`
+ *    - Configuration Options Reference: `src/config/CONFIG-OPTIONS.md`
  */
 
 export default defineConfig({
+    // Project identification and metadata
+    // See CONFIG-OPTIONS.md#metadata for detailed documentation
     metadata: {
-        projectName: 'Odyssey Retail App',
-        projectSlug: 'odyssey-retail-app',
+        projectName: 'Storefront Next Retail App',
+        projectSlug: 'storefront-next-retail-app',
     },
+    // Runtime deployment settings for Managed Runtime (server-only)
+    // See CONFIG-OPTIONS.md#runtime for detailed documentation
     runtime: {
         // MRT deployment settings (server-only, set via MRT_PROJECT and MRT_TARGET env vars)
         defaultMrtProject: '',
@@ -67,7 +73,11 @@ export default defineConfig({
             ssrFunctionNodeVersion: '22.x',
         },
     },
+    // Main application configuration (public settings)
+    // See CONFIG-OPTIONS.md#app for complete reference
     app: {
+        // Page-specific configuration
+        // See CONFIG-OPTIONS.md#pages for detailed documentation
         pages: {
             home: {
                 featuredProductsCount: 12,
@@ -90,6 +100,8 @@ export default defineConfig({
                 suggestionsDebounce: 100,
             },
         },
+        // Commerce Cloud API integration
+        // See CONFIG-OPTIONS.md#commerce for detailed documentation
         commerce: {
             api: {
                 // Commerce Cloud API credentials (required, set via env vars)
@@ -105,6 +117,8 @@ export default defineConfig({
                 guestRefreshTokenExpirySeconds: undefined,
             },
         },
+        // Site configuration and localization
+        // See CONFIG-OPTIONS.md#site for detailed documentation
         site: {
             locale: 'en-US',
             currency: 'USD',
@@ -115,6 +129,8 @@ export default defineConfig({
                 enabled: false,
                 legacyRoutes: [],
             },
+            // Feature flags for enabling/disabling functionality
+            // See CONFIG-OPTIONS.md#features for detailed documentation
             features: {
                 passwordlessLogin: {
                     enabled: false,
@@ -217,6 +233,8 @@ export default defineConfig({
             // Currencies that users can manually select
             supportedCurrencies: ['EUR', 'USD'],
         },
+        // Internationalization configuration
+        // See CONFIG-OPTIONS.md#i18n for detailed documentation
         // When updating these i18n properties, please also check that the middleware configurations are in sync
         // See src/middlewares/i18next.ts
         // Also, make sure the supportedLngs are always presented in site.supportedLocale to
@@ -225,6 +243,8 @@ export default defineConfig({
             fallbackLng: 'en-US',
             supportedLngs: ['it-IT', 'en-US'], // Your supported languages, the fallback should be LAST
         },
+        // Global UI configuration and component settings
+        // See CONFIG-OPTIONS.md#global for detailed documentation
         global: {
             // TODO: Allow page specific customization while keeping global defaults, e.g.:
             //   config.pages.search.components?.productListing ?? config.global.productListing
@@ -285,6 +305,8 @@ export default defineConfig({
                 },
             },
         },
+        // Performance optimization settings
+        // See CONFIG-OPTIONS.md#performance for detailed documentation
         performance: {
             images: { quality: 80, formats: ['webp', 'jpeg'], lazyLoading: true },
             caching: { apiCacheTtl: 300, staticAssetCacheTtl: 31536000 },
@@ -294,6 +316,8 @@ export default defineConfig({
                 clientPerformanceMetricsEnabled: false,
             },
         },
+        // Analytics and engagement adapters
+        // See CONFIG-OPTIONS.md#engagement for detailed documentation
         engagement: {
             adapters: {
                 einstein: {
@@ -384,6 +408,8 @@ export default defineConfig({
                 pageViewsResetDuration: 1500, // 1.5 seconds
             },
         },
+        // Development tools and features
+        // See CONFIG-OPTIONS.md#development for detailed documentation
         development: { enableDevtools: true, hotReload: true, strictMode: true },
     },
 });
