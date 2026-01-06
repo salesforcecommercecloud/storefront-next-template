@@ -132,6 +132,12 @@ export function createCommerceApiClients(config: CommerceApiClientConfig): Clien
         ...(locale ? { locale } : {}),
     };
 
+    // Some APIs don't support locale parameter - exclude it for those clients
+    const globalParamsWithoutLocale: GlobalRequestParameters = {
+        organizationId,
+        siteId,
+    };
+
     // Create base clients and wrap with proxy for operation methods
     const shopperBasketsV1 = createClient(
         createBaseClient<ShopperBasketsV1.endpoints>({
@@ -163,7 +169,7 @@ export function createCommerceApiClients(config: CommerceApiClientConfig): Clien
             ...clientOptions,
         }),
         shopperContextOps,
-        globalParams
+        globalParamsWithoutLocale // API does not accept locale parameter
     );
     const shopperCustomers = createClient(
         createBaseClient<ShopperCustomers.endpoints>({
@@ -171,7 +177,7 @@ export function createCommerceApiClients(config: CommerceApiClientConfig): Clien
             ...clientOptions,
         }),
         shopperCustomersOps,
-        globalParams
+        globalParamsWithoutLocale // API does not accept locale parameter
     );
     const shopperExperience = createClient(
         createBaseClient<ShopperExperience.endpoints>({
@@ -187,7 +193,7 @@ export function createCommerceApiClients(config: CommerceApiClientConfig): Clien
             ...clientOptions,
         }),
         shopperGiftCertificatesOps,
-        globalParams
+        globalParamsWithoutLocale // API does not accept locale parameter
     );
     const shopperLogin = createClient(
         createBaseClient<ShopperLogin.endpoints>({
