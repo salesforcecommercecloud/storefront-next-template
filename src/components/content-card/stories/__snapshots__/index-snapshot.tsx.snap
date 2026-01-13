@@ -35,7 +35,7 @@ exports[`ContentCard stories snapshot > Default story renders and matches snapsh
           Featured Product
         </h3>
         <p
-          class="text-sm text-muted-foreground"
+          class="text-sm text-muted-foreground whitespace-pre-line"
         >
           Discover our latest collection of premium products designed for modern living.
         </p>
@@ -87,7 +87,7 @@ exports[`ContentCard stories snapshot > Desktop story renders and matches snapsh
           Featured Product
         </h3>
         <p
-          class="text-sm text-muted-foreground"
+          class="text-sm text-muted-foreground whitespace-pre-line"
         >
           Discover our latest collection of premium products designed for modern living.
         </p>
@@ -123,7 +123,7 @@ exports[`ContentCard stories snapshot > Minimal story renders and matches snapsh
           Minimal Card
         </h3>
         <p
-          class="text-sm text-muted-foreground"
+          class="text-sm text-muted-foreground whitespace-pre-line"
         >
           A simple card with just title and description, no button.
         </p>
@@ -168,7 +168,7 @@ exports[`ContentCard stories snapshot > Mobile story renders and matches snapsho
           Featured Product
         </h3>
         <p
-          class="text-sm text-muted-foreground"
+          class="text-sm text-muted-foreground whitespace-pre-line"
         >
           Discover our latest collection of premium products designed for modern living.
         </p>
@@ -204,7 +204,7 @@ exports[`ContentCard stories snapshot > NoBackground story renders and matches s
           Transparent Card
         </h3>
         <p
-          class="text-sm text-muted-foreground"
+          class="text-sm text-muted-foreground whitespace-pre-line"
         >
           This card has no background or border for a cleaner look.
         </p>
@@ -256,7 +256,7 @@ exports[`ContentCard stories snapshot > Tablet story renders and matches snapsho
           Featured Product
         </h3>
         <p
-          class="text-sm text-muted-foreground"
+          class="text-sm text-muted-foreground whitespace-pre-line"
         >
           Discover our latest collection of premium products designed for modern living.
         </p>
@@ -292,7 +292,7 @@ exports[`ContentCard stories snapshot > WithoutImage story renders and matches s
           Text Only Card
         </h3>
         <p
-          class="text-sm text-muted-foreground"
+          class="text-sm text-muted-foreground whitespace-pre-line"
         >
           This card doesn't have an image, just text content and a button.
         </p>

@@ -263,7 +263,7 @@ exports[`Footer stories snapshot > DarkBackground story renders and matches snap
                 <li>
                   <a
                     class="hover:underline"
-                    href="/about"
+                    href="/about-us"
                   >
                     About Us
                   </a>
@@ -660,7 +660,7 @@ exports[`Footer stories snapshot > Default story renders and matches snapshot 1`
               <li>
                 <a
                   class="hover:underline"
-                  href="/about"
+                  href="/about-us"
                 >
                   About Us
                 </a>
@@ -1143,7 +1143,7 @@ exports[`Footer stories snapshot > LongPage story renders and matches snapshot 1
                 <li>
                   <a
                     class="hover:underline"
-                    href="/about"
+                    href="/about-us"
                   >
                     About Us
                   </a>
@@ -1540,7 +1540,7 @@ exports[`Footer stories snapshot > MobileView story renders and matches snapshot
               <li>
                 <a
                   class="hover:underline"
-                  href="/about"
+                  href="/about-us"
                 >
                   About Us
                 </a>

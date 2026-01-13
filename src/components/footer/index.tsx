@@ -81,7 +81,7 @@ export default function Footer(): ReactElement {
                         <ul className="space-y-2">
                             <PluginComponent pluginId="footer.ourcompany.start" />
                             <li>
-                                <Link to="/about" className="hover:underline">
+                                <Link to="/about-us" className="hover:underline">
                                     {t('links.aboutUs')}
                                 </Link>
                             </li>

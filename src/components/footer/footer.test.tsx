@@ -86,7 +86,7 @@ describe('Footer', () => {
 
         const aboutUsLink = screen.getByRole('link', { name: t('footer:links.aboutUs') });
         expect(aboutUsLink).toBeInTheDocument();
-        expect(aboutUsLink).toHaveAttribute('href', '/about');
+        expect(aboutUsLink).toHaveAttribute('href', '/about-us');
     });
 
     test('renders social media links with correct aria-labels and hrefs', () => {

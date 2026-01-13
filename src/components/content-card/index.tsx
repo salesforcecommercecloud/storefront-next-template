@@ -131,7 +131,9 @@ export const ContentCard = forwardRef<HTMLDivElement, ContentCardProps>(
                         {(title || description) && (
                             <div className="flex-1">
                                 {title && <h3 className="text-2xl font-bold text-foreground mb-3">{title}</h3>}
-                                {description && <p className="text-sm text-muted-foreground">{description}</p>}
+                                {description && (
+                                    <p className="text-sm text-muted-foreground whitespace-pre-line">{description}</p>
+                                )}
                             </div>
                         )}
                         {buttonText && buttonLink && (

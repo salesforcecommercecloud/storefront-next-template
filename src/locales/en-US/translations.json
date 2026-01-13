@@ -872,6 +872,36 @@
         },
         "copyright": "Salesforce or its affiliates. All rights reserved. This is a demo store only. Orders made WILL NOT be processed."
     },
+    "aboutUs": {
+        "breadcrumb": {
+            "home": "Home",
+            "aboutUs": "About Us"
+        },
+        "title": "About Us",
+        "subtitle": "Learn more about our company and mission",
+        "section": {
+            "ourGoal": {
+                "title": "Built for movement. Designed for everyday life.",
+                "content": "Inspired by urban culture and the energy of movement, Market Street was created to connect performance, style, and everyday essentials in one seamless experience. We believe great products should move with you — from the streets to the studio, from work to the weekend.\nWhat started as a vision to simplify the way people experience fashion and lifestyle retail has evolved into a brand focused on clarity, accessibility, and smart design. Every collection is curated to deliver versatility, durability, and timeless appeal."
+            },
+            "ourVision": {
+                "title": "Our Vision",
+                "content": "To redefine modern retail through technology, design, and customer experience — creating a commerce environment that feels effortless, inspiring, and human. We don’t chase trends. We build lasting experiences."
+            },
+            "ourValue": {
+                "title": "Why We Exist",
+                "content": "We exist to remove friction between people and what they love. To make shopping intuitive, fast, and meaningful. To create a brand that evolves with its community."
+            },
+            "ourMission": {
+                "title": "What We Stand For",
+                "content": "Design with purpose – Every product, every interaction, every detail is intentional.\nTechnology that disappears – We use innovation to simplify, not to complicate.\nCustomer-first mindset – From discovery to delivery, your journey comes first.\nSustainability in motion – We prioritize responsible materials, suppliers, and logistics."
+            },
+            "ourTeam": {
+                "title": "A Global Brand, A Street-Level Soul",
+                "content": "Market Street was born from the idea that great style shouldn’t feel unreachable. We blend global inspiration with a street-level mindset, connecting culture, performance, and lifestyle into one fluid expression.\nFrom product development to digital experience, everything we do is guided by one principle:\nMake commerce feel natural."
+            }
+        }
+    },
     "countries": {
         "US": {
             "name": "United States",
