@@ -1221,6 +1221,7 @@ async function dev(options = {}) {
 	const projectDir = path.resolve(options.projectDirectory || process.cwd());
 	const port = options.port || 5173;
 	process.env.NODE_ENV = process.env.NODE_ENV ?? "development";
+	process.env.EXTERNAL_DOMAIN_NAME = process.env.EXTERNAL_DOMAIN_NAME ?? `localhost:${port}`;
 	loadEnvFile(projectDir);
 	const config = await loadProjectConfig(projectDir);
 	const vite = await createServer({

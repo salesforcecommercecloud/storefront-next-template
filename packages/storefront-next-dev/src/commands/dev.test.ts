@@ -233,6 +233,24 @@ describe('dev command', () => {
             expect(process.env.NODE_ENV).toBe('production');
         });
 
+        it('should set EXTERNAL_DOMAIN_NAME if not already set', async () => {
+            const { dev } = await import('./dev');
+
+            delete process.env.EXTERNAL_DOMAIN_NAME;
+            await dev({ port: 4000 });
+
+            expect(process.env.EXTERNAL_DOMAIN_NAME).toBe('localhost:4000');
+        });
+
+        it('should not override existing EXTERNAL_DOMAIN_NAME', async () => {
+            const { dev } = await import('./dev');
+
+            process.env.EXTERNAL_DOMAIN_NAME = 'custom-domain.com';
+            await dev();
+
+            expect(process.env.EXTERNAL_DOMAIN_NAME).toBe('custom-domain.com');
+        });
+
         it('should handle SIGTERM signal for graceful shutdown', async () => {
             const { dev } = await import('./dev');
 

@@ -36,6 +36,7 @@ export async function dev(options: DevOptions = {}): Promise<void> {
 
     // Set NODE_ENV to development
     process.env.NODE_ENV = process.env.NODE_ENV ?? 'development';
+    process.env.EXTERNAL_DOMAIN_NAME = process.env.EXTERNAL_DOMAIN_NAME ?? `localhost:${port}`;
 
     // Load .env file early
     loadEnvFile(projectDir);
