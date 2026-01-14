@@ -53,6 +53,11 @@ vi.mock('@/components/ui/card', () => ({
             {children}
         </div>
     ),
+    CardHeader: ({ children, className, ...props }: any) => (
+        <div data-testid="card-header" className={className} {...props}>
+            {children}
+        </div>
+    ),
 }));
 
 describe('ProductCarouselSkeleton', () => {
@@ -131,12 +136,16 @@ describe('ProductCarouselSkeleton', () => {
             render(<ProductCarouselSkeleton itemCount={1} />);
 
             const card = screen.getByTestId('card');
-            const cardContent = screen.getByTestId('card-content');
+            const cardContents = screen.getAllByTestId('card-content');
             const cardFooter = screen.getByTestId('card-footer');
+            const cardHeader = screen.getByTestId('card-header');
 
             expect(card).toBeInTheDocument();
-            expect(cardContent).toBeInTheDocument();
+            expect(cardContents).toHaveLength(2);
+            expect(cardContents[0]).toBeInTheDocument();
+            expect(cardContents[1]).toBeInTheDocument();
             expect(cardFooter).toBeInTheDocument();
+            expect(cardHeader).toBeInTheDocument();
         });
     });
 

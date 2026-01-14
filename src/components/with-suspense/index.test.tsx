@@ -111,6 +111,17 @@ describe('withSuspense', () => {
             expect(screen.queryByTestId('custom-fallback')).not.toBeInTheDocument();
         });
 
+        test('should use custom fallback function in Suspense boundary', () => {
+            const customFallback = <div data-testid="custom-fallback">Custom Loading...</div>;
+            const WrappedComponent = withSuspense(TestComponent, { fallback: () => customFallback });
+
+            render(<WrappedComponent name="Test" />);
+
+            // Component should still render (no Suspense triggered without promise)
+            expect(screen.getByTestId('test-component')).toBeInTheDocument();
+            expect(screen.queryByTestId('custom-fallback')).not.toBeInTheDocument();
+        });
+
         test('should use different fallback components', () => {
             const fallback1 = <div data-testid="fallback-1">Loading 1...</div>;
             const fallback2 = <div data-testid="fallback-2">Loading 2...</div>;

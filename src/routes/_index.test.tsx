@@ -93,9 +93,9 @@ const createMockPage = (regions: any[] = []): ShopperExperience.schemas['Page'] 
         regions,
     }) as ShopperExperience.schemas['Page'];
 
-// Mock the Region component to render fallback
+// Mock the Region component to render the `errorElement` as fallback
 vi.mock('@/components/region', () => ({
-    Region: ({ fallback }: any) => <>{fallback}</>,
+    Region: ({ errorElement }: any) => <>{errorElement}</>,
 }));
 
 // Mock the PopularCategories component
@@ -120,11 +120,13 @@ vi.mock('@/components/content-card', () => ({
 // Mock HeroCarousel component
 vi.mock('@/components/hero-carousel', () => ({
     default: () => <div data-testid="hero-carousel">Hero Carousel</div>,
+    HeroCarouselSkeleton: () => <div data-testid="hero-carousel-skeleton">Hero Carousel</div>,
 }));
 
 // Mock ProductCarousel component
 vi.mock('@/components/product-carousel', () => ({
     ProductCarouselWithSuspense: () => <div data-testid="product-carousel">Product Carousel</div>,
+    ProductCarouselSkeleton: () => <div data-testid="product-carousel-skeleton">Product Carousel</div>,
 }));
 
 // Mock the Button component
@@ -300,7 +302,7 @@ describe('HomePage', () => {
                 componentData: Promise.resolve({}),
             });
 
-            // Region mock always renders fallback, so check for fallback content
+            // Region mock always renders the error element, so check for that fallback content
             expect(screen.getByTestId('hero-carousel')).toBeInTheDocument();
             expect(screen.getByTestId('product-carousel')).toBeInTheDocument();
             // Should still render other sections

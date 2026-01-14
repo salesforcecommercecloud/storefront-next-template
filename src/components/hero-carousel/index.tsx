@@ -453,7 +453,8 @@ HeroSlideContent.displayName = 'HeroSlideContent';
  * ```
  */
 const HeroCarousel = withSuspense(HeroCarouselPlain, {
-    fallback: <HeroCarouselSkeleton />,
+    fallback: (props) => <HeroCarouselSkeleton {...props} />,
 });
 
 export default HeroCarousel;
+export { HeroCarouselSkeleton };

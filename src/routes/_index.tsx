@@ -29,9 +29,9 @@ import { RegionDefinition } from '@/lib/decorators/region-definition';
 import { collectComponentDataPromises, fetchPageFromLoader } from '@/lib/util/pageLoader';
 
 import heroNewArrivals from '/images/hero-new-arrivals.webp';
-import HeroCarousel, { type HeroSlide } from '@/components/hero-carousel';
+import HeroCarousel, { HeroCarouselSkeleton, type HeroSlide } from '@/components/hero-carousel';
 import heroImage from '/images/hero-cube.webp';
-import { ProductCarouselWithSuspense } from '@/components/product-carousel';
+import { ProductCarouselSkeleton, ProductCarouselWithSuspense } from '@/components/product-carousel';
 import { useTranslation } from 'react-i18next';
 
 @PageType({
@@ -135,7 +135,14 @@ export default function HomePage({ loaderData }: { loaderData: HomePageData }) {
                         page={loaderData.page}
                         regionId="headerbanner"
                         componentData={loaderData.componentData}
-                        fallback={
+                        fallbackElement={
+                            <>
+                                {/* Provide fallback skeletons for the above the fold content */}
+                                <HeroCarouselSkeleton showDots={true} showNavigation={true} />
+                                <ProductCarouselSkeleton title={t('featuredProducts.title')} />
+                            </>
+                        }
+                        errorElement={
                             <>
                                 <HeroCarousel
                                     slides={heroSlides}
@@ -146,12 +153,10 @@ export default function HomePage({ loaderData }: { loaderData: HomePageData }) {
                                 />
 
                                 {/* Featured Products - ProductCarouselWithSuspense handles its own Suspense */}
-                                <div className="pt-16 max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
-                                    <ProductCarouselWithSuspense
-                                        resolve={loaderData.searchResult}
-                                        title={t('featuredProducts.title')}
-                                    />
-                                </div>
+                                <ProductCarouselWithSuspense
+                                    resolve={loaderData.searchResult}
+                                    title={t('featuredProducts.title')}
+                                />
                             </>
                         }
                     />
@@ -186,11 +191,12 @@ export default function HomePage({ loaderData }: { loaderData: HomePageData }) {
             {/* Main Region - Region component handles its own Suspense internally */}
             <div className="pt-16">
                 <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+                    {/* Note: This region doesn't provide fallback skeletons right now as it's located below the fold */}
                     <Region
                         page={loaderData.page}
                         regionId="main"
                         componentData={loaderData.componentData}
-                        fallback={
+                        errorElement={
                             <>
                                 {/* Popular Categories - handles its own Suspense internally */}
                                 <PopularCategories

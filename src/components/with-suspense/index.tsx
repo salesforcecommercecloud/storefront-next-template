@@ -60,10 +60,10 @@ import { Suspense, use, type ReactNode, type ComponentType } from 'react';
  * ```
  */
 export default function withSuspense<TProps extends Record<string, unknown> = Record<string, unknown>>(
-    Component: ComponentType<TProps>,
+    Component: ComponentType<Omit<TProps, 'resolve'>>,
     config: {
-        /** Fallback component to show while loading */
-        fallback?: ReactNode;
+        /** Fallback component to show while loading. Can be a ReactNode or a function that receives props */
+        fallback?: ReactNode | ((props: Omit<TProps, 'resolve'>) => ReactNode);
         /** Promise to resolve and pass as 'data' prop to the wrapped component */
         resolve?: Promise<unknown>;
     } = {}
@@ -76,9 +76,16 @@ export default function withSuspense<TProps extends Record<string, unknown> = Re
         // Use prop resolve if provided, otherwise fall back to config resolve
         const resolve = propResolve || configResolve;
 
+        // Resolve fallback - if it's a function, call it with props
+        const resolvedFallback = typeof fallback === 'function' ? fallback(otherProps as TProps) : fallback;
+
         return (
-            <Suspense fallback={fallback}>
-                <ComponentWithData Component={Component} resolve={resolve} props={otherProps as TProps} />
+            <Suspense fallback={resolvedFallback}>
+                <ComponentWithData
+                    Component={Component}
+                    resolve={resolve}
+                    props={otherProps as Omit<TProps, 'resolve'>}
+                />
             </Suspense>
         );
     };

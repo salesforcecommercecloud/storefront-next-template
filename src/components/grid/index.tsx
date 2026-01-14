@@ -142,7 +142,7 @@ const Grid = forwardRef<HTMLDivElement, GridProps>(
         return (
             <ComponentElement ref={ref} className={classes} style={gridStyles} data-slot="grid" {...props}>
                 {page ? (
-                    <Region page={page} regionId="main" componentData={componentData} fallback={children} />
+                    <Region page={page} regionId="main" componentData={componentData} errorElement={children} />
                 ) : (
                     children
                 )}

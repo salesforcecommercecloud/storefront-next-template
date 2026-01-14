@@ -213,7 +213,7 @@ const managedRuntimeBundlePlugin = () => {
 			return {
 				environments: { ssr: { resolve: { noExternal: true } } },
 				experimental: { renderBuiltUrl(filename, { type }) {
-					if (mode !== "preview" && (type === "asset" || type === "public")) return { runtime: `(typeof window !== 'undefined' ? window._BUNDLE_PATH : ('/mobify/bundle/'+process.env.BUNDLE_ID+'/client/')) + ${JSON.stringify(filename)}` };
+					if (mode !== "preview" && (type === "asset" || type === "public")) return { runtime: `(typeof window !== 'undefined' ? window._BUNDLE_PATH : ('/mobify/bundle/'+(process.env.BUNDLE_ID??'local')+'/client/')) + ${JSON.stringify(filename)}` };
 				} }
 			};
 		},

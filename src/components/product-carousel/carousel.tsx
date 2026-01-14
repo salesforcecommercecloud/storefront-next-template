@@ -148,7 +148,7 @@ export default function ProductCarousel({ products, title, className }: ProductC
  * ```
  */
 export const ProductCarouselWithSuspense = withSuspense(ProductCarouselWithData, {
-    fallback: <ProductCarouselSkeleton />,
+    fallback: (props) => <ProductCarouselSkeleton {...props} />,
 });
 
 /**

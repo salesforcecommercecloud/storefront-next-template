@@ -189,7 +189,7 @@ export default function SearchPage({
                         page={page}
                         regionId="searchTopFullWidth"
                         componentData={componentData}
-                        fallback={<div />}
+                        errorElement={<div />}
                     />
                 </div>
 
@@ -209,7 +209,7 @@ export default function SearchPage({
                                 page={page}
                                 regionId="searchTopContent"
                                 componentData={componentData}
-                                fallback={<div />}
+                                errorElement={<div />}
                             />
                         </div>
                         <Suspense fallback={<CategorySkeleton />}>
@@ -236,7 +236,7 @@ export default function SearchPage({
                                 page={page}
                                 regionId="searchBottom"
                                 componentData={componentData}
-                                fallback={<div />}
+                                errorElement={<div />}
                             />
                         </div>
                     </div>

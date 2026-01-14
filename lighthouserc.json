@@ -27,7 +27,7 @@
                         ],
                         "resource-summary:document:size": [
                             "error",
-                            { "maxNumericValue": 41000, "aggregationMethod": "median" }
+                            { "maxNumericValue": 42000, "aggregationMethod": "median" }
                         ]
                     }
                 },

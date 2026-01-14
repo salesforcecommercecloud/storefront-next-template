@@ -347,7 +347,7 @@ function ProductDetailView({ loaderData }: { loaderData: ProductPageData }) {
                             page={page}
                             regionId="promoContent"
                             componentData={loaderData.componentData}
-                            fallback={<div />}
+                            errorElement={<div />}
                         />
                     </div>
                 }
@@ -373,7 +373,7 @@ function ProductDetailView({ loaderData }: { loaderData: ProductPageData }) {
                         page={page}
                         regionId="engagementContent"
                         componentData={loaderData.componentData}
-                        fallback={<ProductRecommendationsSection />}
+                        errorElement={<ProductRecommendationsSection />}
                     />
                 </div>
             </>

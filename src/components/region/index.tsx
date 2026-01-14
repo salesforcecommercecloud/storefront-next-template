@@ -27,8 +27,8 @@ interface RegionProps extends React.HTMLAttributes<HTMLDivElement> {
     page: Promise<ShopperExperience.schemas['Page'] | ShopperExperience.schemas['Component']>;
     regionId: string;
     componentData?: Promise<Record<string, Promise<unknown>>>;
-    fallback?: ReactNode;
-    suspenseFallback?: ReactNode;
+    fallbackElement?: ReactNode;
+    errorElement?: ReactNode;
 }
 
 /**
@@ -53,12 +53,12 @@ interface RegionProps extends React.HTMLAttributes<HTMLDivElement> {
  */
 
 export function Region(props: RegionProps) {
-    const { page, regionId, className = '', componentData, fallback, suspenseFallback = <div />, ...rest } = props;
+    const { page, regionId, className = '', componentData, errorElement, fallbackElement = <div />, ...rest } = props;
     const regionContext = useRegionContext();
 
     return (
-        <Suspense fallback={suspenseFallback}>
-            <Await resolve={page} errorElement={fallback}>
+        <Suspense fallback={fallbackElement}>
+            <Await resolve={page} errorElement={errorElement}>
                 {(resolvedPage) => {
                     // Find the region within the page
                     const region = resolvedPage.regions?.find((r) => r.id === regionId);
@@ -66,7 +66,7 @@ export function Region(props: RegionProps) {
 
                     // If region not found, return fallback
                     if (!region) {
-                        return fallback ?? null;
+                        return errorElement ?? null;
                     }
 
                     return (

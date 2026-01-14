@@ -60,9 +60,9 @@ export default function HeroCarouselSkeleton({
 }) {
     return (
         <div className="relative w-full max-h-[70vh] animate-pulse">
-            {/* Hero image skeleton */}
-            <div className="relative w-full h-full min-h-[300px] max-h-[70vh] overflow-hidden">
-                <Skeleton className="w-full h-full min-h-[300px] object-cover" />
+            {/* Hero image skeleton - aspect-[24/5] matches hero-cube.webp (1536x320) */}
+            <div className="relative w-full min-h-[300px] max-h-[70vh] overflow-hidden aspect-[24/5]">
+                <Skeleton className="absolute inset-0 w-full h-full" />
 
                 {/* Dark overlay for better contrast - matches actual component */}
                 <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent z-[5]" />
@@ -70,18 +70,12 @@ export default function HeroCarouselSkeleton({
                 {/* Content overlay skeleton */}
                 <div className="absolute inset-0 z-10 flex items-center">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="max-w-2xl space-y-4 sm:space-y-6 md:space-y-8">
-                            {/* Title skeleton */}
-                            <div className="space-y-2">
-                                <Skeleton className="h-8 sm:h-10 md:h-12 lg:h-16 w-full bg-white/20" />
-                                <Skeleton className="h-8 sm:h-10 md:h-12 lg:h-16 w-3/4 bg-white/20" />
-                            </div>
+                        <div className="max-w-2xl">
+                            {/* Title skeleton - matches h1 with mb-3 sm:mb-4 md:mb-6 */}
+                            <Skeleton className="h-6 sm:h-8 md:h-9 lg:h-10 w-3/4 bg-white/20 mb-3 sm:mb-4 md:mb-6" />
 
-                            {/* Subtitle skeleton */}
-                            <div className="space-y-2">
-                                <Skeleton className="h-4 sm:h-5 md:h-6 lg:h-7 w-full bg-white/15" />
-                                <Skeleton className="h-4 sm:h-5 md:h-6 lg:h-7 w-5/6 bg-white/15" />
-                            </div>
+                            {/* Subtitle skeleton - matches p with mb-4 sm:mb-6 md:mb-8 */}
+                            <Skeleton className="h-4 sm:h-5 md:h-6 lg:h-7 w-full bg-white/15 mb-4 sm:mb-6 md:mb-8" />
 
                             {/* CTA button skeleton */}
                             <Skeleton className="h-10 sm:h-12 md:h-14 lg:h-16 w-32 sm:w-36 md:w-40 lg:w-44 bg-white/25 rounded-md" />

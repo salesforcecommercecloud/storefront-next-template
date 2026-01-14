@@ -97,7 +97,7 @@ export const managedRuntimeBundlePlugin = (): Plugin => {
                 experimental: {
                     renderBuiltUrl(filename, { type }) {
                         if (mode !== 'preview' && (type === 'asset' || type === 'public')) {
-                            const runtimeCode = `(typeof window !== 'undefined' ? window._BUNDLE_PATH : ('/mobify/bundle/'+process.env.BUNDLE_ID+'/client/')) + ${JSON.stringify(filename)}`;
+                            const runtimeCode = `(typeof window !== 'undefined' ? window._BUNDLE_PATH : ('/mobify/bundle/'+(process.env.BUNDLE_ID??'local')+'/client/')) + ${JSON.stringify(filename)}`;
 
                             return {
                                 runtime: runtimeCode,

@@ -223,7 +223,7 @@ export default function CategoryPage({
                             page={page}
                             regionId="plpTopFullWidth"
                             componentData={componentData}
-                            fallback={<div />}
+                            errorElement={<div />}
                         />
                     </div>
 
@@ -242,7 +242,7 @@ export default function CategoryPage({
                                 page={page}
                                 regionId="plpTopContent"
                                 componentData={componentData}
-                                fallback={<div />}
+                                errorElement={<div />}
                             />
                         </div>
 
@@ -284,7 +284,7 @@ export default function CategoryPage({
                                     page={page}
                                     regionId="plpBottom"
                                     componentData={componentData}
-                                    fallback={<div />}
+                                    errorElement={<div />}
                                 />
                             </div>
                         </div>
