@@ -104,8 +104,8 @@ export interface ScapiFetcherEffectConfig<TData = unknown> {
  * }
  * ```
  */
-export function useScapiFetcherEffect<TData = unknown>(
-    fetcher: ScapiFetcher<TData>,
+export function useScapiFetcherEffect<TData = unknown, TSubmitPayload = unknown>(
+    fetcher: ScapiFetcher<TData, TSubmitPayload>,
     config: ScapiFetcherEffectConfig<TData>
 ): void {
     // TODO: Implement onSuccess and onError callback tracking to avoid calling callbacks when the fetcher is not in idle state.

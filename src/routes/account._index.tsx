@@ -22,10 +22,8 @@ import { CustomerProfileForm } from '@/components/customer-profile-form';
 import { useToast } from '@/components/toast';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { useFetcherEffect } from '@/hooks/use-fetcher-effect';
-import { useScapiFetcher, type ScapiFetcher } from '@/hooks/use-scapi-fetcher';
+import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
 import { useAuth } from '@/providers/auth';
-import type { CustomerProfileFetcherData } from '@/components/customer-profile-form/types';
-import type { PasswordUpdateFetcherData } from '@/components/password-update-form/types';
 import { useTranslation } from 'react-i18next';
 
 type Customer = ShopperCustomers.schemas['Customer'];
@@ -291,7 +289,7 @@ function AccountDetailsContent({ customer }: { customer: Customer | null }): Rea
                             email: customer?.email || customer?.login || '',
                             phone: customer?.phoneHome || customer?.phoneMobile || '',
                         }}
-                        updateFetcher={updateProfileFetcher as ScapiFetcher<CustomerProfileFetcherData>}
+                        updateFetcher={updateProfileFetcher}
                         onSuccess={handleCustomerProfileSuccess}
                         onError={handleCustomerProfileError}
                         onCancel={handleCustomerProfileCancel}
@@ -320,7 +318,7 @@ function AccountDetailsContent({ customer }: { customer: Customer | null }): Rea
 
                 <ToggleCardEdit>
                     <PasswordUpdateForm
-                        updateFetcher={passwordFetcher as ScapiFetcher<PasswordUpdateFetcherData>}
+                        updateFetcher={passwordFetcher}
                         onSuccess={handlePasswordSuccess}
                         onError={handlePasswordError}
                         onCancel={handlePasswordCancel}

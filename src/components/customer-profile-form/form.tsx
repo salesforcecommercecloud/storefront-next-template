@@ -36,7 +36,6 @@ import { useScapiFetcherEffect } from '@/hooks/use-scapi-fetcher-effect';
 //types
 import { createCustomerProfileFormSchema, type CustomerProfileFormData } from './index';
 import { type CustomerProfileFormProps } from './types';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -96,7 +95,7 @@ export const CustomerProfileForm = ({
         onSuccess: (data) => {
             if (data) {
                 // data is already the customer object (unwrapped by ScapiFetcher)
-                const customer = data as ShopperCustomers.schemas['Customer'];
+                const customer = data;
 
                 const formData: CustomerProfileFormData = {
                     firstName: (customer.firstName as string) || '',

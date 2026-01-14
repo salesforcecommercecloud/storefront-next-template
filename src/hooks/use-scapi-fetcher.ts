@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 import { useCallback, useMemo, useRef } from 'react';
-import {
-    useFetcher,
-    type FetcherWithComponents,
-    type FetcherSubmitOptions,
-    type SubmitTarget as ReactRouterSubmitTarget,
-} from 'react-router';
+import { useFetcher, type FetcherWithComponents, type FetcherSubmitOptions } from 'react-router';
 import type {
     CommerceSdkKeyMap,
     CommerceSdkMethodName,
@@ -32,29 +27,51 @@ import { encodeBase64Url } from '@/lib/url';
 // API route for Commerce SDK resource endpoints
 const RESOURCE_API_ROUTE = '/resource/api/client';
 
-type FilterResponseFromUnion<T> = T extends Promise<Response | infer U> ? Promise<U> : T;
+/**
+ * Unwraps the payload type from our ApiResponse wrapper or the SCAPI client shape `{ data, response }`.
+ * The second branch matches the openapi-fetch response shape exposed by the proxied Commerce SDK clients.
+ */
+type UnwrapApiResponse<T> = T extends ApiResponse<infer P> ? P : T extends { data: infer P; response: unknown } ? P : T;
+
+/** Infers the argument signature for a given Commerce SDK client and method */
+type CommerceSdkMethodArgs<
+    C extends CommerceSdkKeyMap,
+    M extends CommerceSdkMethodName<C>,
+> = CommerceSdkMethodParameters<C, M>[0];
+
+/** Extracts the request body type from a Commerce SDK method, or falls back to args */
+type CommerceSdkMethodBody<C extends CommerceSdkKeyMap, M extends CommerceSdkMethodName<C>> =
+    CommerceSdkMethodArgs<C, M> extends { body: infer B } ? B : CommerceSdkMethodArgs<C, M>;
+
+/** Resolves the return payload type for a given Commerce SDK client and method */
+type CommerceSdkMethodPayload<C extends CommerceSdkKeyMap, M extends CommerceSdkMethodName<C>> = UnwrapApiResponse<
+    Awaited<CommerceSdkMethodReturnType<C, M>>
+>;
 
 /**
  * Custom fetcher interface for Commerce SDK operations.
  * Built from React Router's FetcherWithComponents but with simplified load and submit methods.
  * Now works with structured ApiResponse format instead of throwing errors.
  */
-export type ScapiFetcher<TData = unknown> = Omit<FetcherWithComponents<ApiResponse<TData>>, 'load' | 'submit'> & {
+export type ScapiFetcher<TData = unknown, TSubmitPayload = unknown> = Omit<
+    FetcherWithComponents<TData>,
+    'load' | 'submit' | 'data'
+> & {
     /** Load data using the configured Commerce SDK client and method (no URL needed) */
     load: () => Promise<void>;
-    /** Submit data using the configured Commerce SDK client and method */
-    submit: (target?: ReactRouterSubmitTarget, opts?: Omit<FetcherSubmitOptions, 'action' | 'method'>) => Promise<void>;
+    /**
+     * Submit data using the configured Commerce SDK client and method.
+     * Payload is the method body shape (JSON-serializable); it will be wrapped in FormData.
+     */
+    submit: (payload?: TSubmitPayload, opts?: Omit<FetcherSubmitOptions, 'action' | 'method'>) => Promise<void>;
+    // TODO: Fix the data getter, typescript didn't like resolving its type properly, and I removed it for now.
     /** Convenience property to access the actual data when success is true */
-    data: TData | undefined;
+    data: UnwrapApiResponse<TData> | undefined;
     /** Convenience property to access error messages when success is false */
     errors: string[] | undefined;
     /** Convenience property to check if the operation was successful */
     success: boolean;
 };
-
-// Type helper to filter Response from union types (e.g., Promise<Response | U> -> Promise<U>)
-type FilterResponseFromReturnType<T> =
-    T extends Promise<infer U> ? Promise<FilterResponseFromUnion<U>> : FilterResponseFromUnion<T>;
 
 /**
  * A React hook that's part of our Commerce SDK fetch API trinity. The trinity consists of this hook, the `fetch`
@@ -130,13 +147,14 @@ type FilterResponseFromReturnType<T> =
 export function useScapiFetcher<
     C extends CommerceSdkKeyMap,
     M extends CommerceSdkMethodName<C>,
-    R extends FilterResponseFromReturnType<CommerceSdkMethodReturnType<C, M>>,
->(client: C, method: M, options: CommerceSdkMethodParameters<C, M>[0]): ScapiFetcher<Awaited<R>> {
+    P extends CommerceSdkMethodArgs<C, M> = CommerceSdkMethodArgs<C, M>,
+    B extends CommerceSdkMethodBody<C, M> = CommerceSdkMethodBody<C, M>,
+>(client: C, method: M, options: P): ScapiFetcher<CommerceSdkMethodPayload<C, M>, B> {
     // Memoize the method parameters to prevent creating new fetchers on every render
     // We use refs to track the previous options string and params for deep comparison
     const prevOptionsStringRef = useRef<string>('');
-    const prevMethodParamsRef = useRef<CommerceSdkMethodParameters<C, M>[0]>(options);
-    const currentOptionsRef = useRef<CommerceSdkMethodParameters<C, M>[0]>(options);
+    const prevMethodParamsRef = useRef<P>(options);
+    const currentOptionsRef = useRef<P>(options);
 
     // Update the current options ref on every render
     currentOptionsRef.current = options;
@@ -151,10 +169,9 @@ export function useScapiFetcher<
         return prevMethodParamsRef.current;
     }, [optionsString]);
 
-    // Encode the single options object
     const parameters = JSON.stringify(methodParams);
     const resource = encodeBase64Url(`["${client}","${method}",${parameters}]`);
-    const fetcher = useFetcher<ApiResponse<Awaited<R>>>({ key: resource });
+    const fetcher = useFetcher<ApiResponse<CommerceSdkMethodPayload<C, M>>>({ key: resource });
 
     /**
      * Load method for handling GET requests using loader/clientLoader functions.
@@ -178,9 +195,9 @@ export function useScapiFetcher<
      * @returns Promise that resolves when the request completes
      */
     const submit = useCallback(
-        (target?: ReactRouterSubmitTarget, _opts?: Omit<FetcherSubmitOptions, 'action' | 'method'>): Promise<void> => {
+        (payload?: B, _opts?: Omit<FetcherSubmitOptions, 'action' | 'method'>): Promise<void> => {
             // Invoke fetcher submit method for actions with the provided target data
-            return fetcher.submit(target ?? {}, {
+            return fetcher.submit(payload ?? {}, {
                 ..._opts,
                 method: 'POST',
                 action: `${RESOURCE_API_ROUTE}/${resource}`,
@@ -190,6 +207,7 @@ export function useScapiFetcher<
     );
 
     return {
+        // ...(fetcher as unknown as FetcherWithComponents<CommerceSdkMethodPayload<C, M>>),
         ...fetcher,
         load,
         submit,
@@ -203,5 +221,5 @@ export function useScapiFetcher<
         get success() {
             return fetcher.data?.success ?? false;
         },
-    } as ScapiFetcher<Awaited<R>>;
+    };
 }

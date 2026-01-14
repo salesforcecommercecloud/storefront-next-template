@@ -15,6 +15,7 @@
  */
 import { type UseFormReturn } from 'react-hook-form';
 import type { ScapiFetcher } from '@/hooks/use-scapi-fetcher';
+import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 
 // Type for the form data (inferred from schema in index.tsx)
 export type CustomerProfileFormData = {
@@ -41,7 +42,7 @@ export type CustomerProfileFetcherData = {
 // Props interface for CustomerProfileForm component
 export interface CustomerProfileFormProps {
     initialData?: Partial<CustomerProfileFormData>;
-    updateFetcher: ScapiFetcher<CustomerProfileFetcherData>;
+    updateFetcher: ScapiFetcher<ShopperCustomers.schemas['Customer'], ShopperCustomers.schemas['Customer']>;
     onSuccess?: (formData: CustomerProfileFormData) => void;
     onError?: (error: string) => void;
     onCancel?: () => void;
@@ -50,6 +51,6 @@ export interface CustomerProfileFormProps {
 // Props interface for CustomerProfileFields component
 export interface CustomerProfileFieldsProps {
     form: UseFormReturn<CustomerProfileFormData>;
-    updateFetcher: ScapiFetcher<CustomerProfileFetcherData>;
+    updateFetcher: ScapiFetcher<ShopperCustomers.schemas['Customer'], ShopperCustomers.schemas['Customer']>;
     onCancel?: () => void;
 }

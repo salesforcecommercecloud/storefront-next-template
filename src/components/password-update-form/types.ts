@@ -38,7 +38,7 @@ export type PasswordUpdateFetcherData = {
 // Props interface for PasswordUpdateForm component
 export interface PasswordUpdateFormProps {
     initialData?: Partial<PasswordUpdateFormData>;
-    updateFetcher: ScapiFetcher<PasswordUpdateFetcherData>;
+    updateFetcher: ScapiFetcher<PasswordUpdateFetcherData, PasswordUpdateSubmissionData>;
     onSuccess?: (formData: PasswordUpdateFormData) => void;
     onError?: (error: string) => void;
     onCancel?: () => void;
@@ -47,6 +47,6 @@ export interface PasswordUpdateFormProps {
 // Props interface for PasswordUpdateFields component
 export interface PasswordUpdateFieldsProps {
     form: UseFormReturn<PasswordUpdateFormData>;
-    updateFetcher: ScapiFetcher<PasswordUpdateFetcherData>;
+    updateFetcher: ScapiFetcher<PasswordUpdateFetcherData, PasswordUpdateSubmissionData>;
     onCancel?: () => void;
 }

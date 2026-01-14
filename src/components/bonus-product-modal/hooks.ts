@@ -63,6 +63,8 @@ export function useProductIdChangeHandler({
     }, [productId]);
 }
 
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+
 /**
  * Composite hook that manages product data loading and processing for bonus product modal
  *
@@ -85,7 +87,7 @@ export function useBonusProductData({
 }: {
     open: boolean;
     productId: string;
-    fetcher: ScapiFetcher<'shopperProducts', 'getProduct'>;
+    fetcher: ScapiFetcher<ShopperProducts.schemas['Product']>;
     currentProduct: ShopperProductsTypes.Product | null;
     setIsLockedToVariant: (locked: boolean) => void;
     setCurrentProduct: (product: ShopperProductsTypes.Product | null) => void;

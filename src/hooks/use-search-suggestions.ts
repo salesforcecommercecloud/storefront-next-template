@@ -72,7 +72,7 @@ export function useSearchSuggestions({
     }, [fetcher, enabled, q]);
 
     return {
-        data: fetcher.data as ShopperSearch.schemas['SuggestionResult'] | undefined,
+        data: fetcher.data,
         isLoading: fetcher.state === 'loading',
         refetch,
     };
