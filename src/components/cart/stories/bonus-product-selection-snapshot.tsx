@@ -13,7 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { expect, test, describe, afterEach } from 'vitest';
+import { vi, expect, test, describe, afterEach } from 'vitest';
+
+type MockFormProps = React.PropsWithChildren<Record<string, unknown>>;
+
+const fetcherMock = {
+    data: null,
+    state: 'idle',
+    submit: () => {},
+    Form: (props: MockFormProps) => <form {...props}>{props.children}</form>,
+};
+
+// Extend the global react-router mock to add useFetcher
+vi.mock('react-router', async () => {
+    const actual = await vi.importActual('react-router');
+    return {
+        ...actual,
+        useFetcher: () => fetcherMock,
+    };
+});
+
+vi.mock('@/components/toast', () => ({
+    useToast: () => ({
+        addToast: () => {},
+    }),
+}));
+
 import { composeStories } from '@storybook/react-vite';
 
 import * as BonusProductSelectionStories from './bonus-product-selection.stories';

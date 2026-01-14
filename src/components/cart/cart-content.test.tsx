@@ -261,6 +261,7 @@ describe('CartContent', () => {
             renderCartContent({
                 basket: basket as any,
                 productsByItemId: { 'item-1': { id: 'p1', variants: [{} as any] } } as any,
+                bonusProductsById: { p1: { id: 'p1', name: 'Choice Bonus Product 1' } } as any,
             });
 
             // Edit button should be hidden for choice-based bonus products

@@ -363,3 +363,73 @@ export function getBonusProductType(
 
     return 'auto';
 }
+
+/**
+ * Determines if a product requires variant selection before adding to cart.
+ * Returns true for master products with variants or products with selectable attributes.
+ *
+ * @param product - The product to check
+ * @returns true if variant selection is required, false for standard products
+ */
+export function requiresVariantSelection(product: ShopperProducts.schemas['Product']): boolean {
+    // If this is already a variant (not a master), it can be added directly
+    if (product.type?.variant) {
+        return false;
+    }
+
+    // Check if it's a master product with variants
+    if (product.variants && product.variants.length > 0) {
+        return true;
+    }
+
+    // Check if it has variation attributes that need selection
+    if (product.variationAttributes && product.variationAttributes.length > 0) {
+        const hasSelectableAttributes = product.variationAttributes.some(
+            (attr) => attr.values && attr.values.length > 1
+        );
+        return hasSelectableAttributes;
+    }
+
+    return false;
+}
+
+/**
+ * Gets the primary image URL for a product from its image groups.
+ * Prefers 'large' view type, falls back to first available image.
+ * For variants, uses variation values to find the correct color-specific image.
+ *
+ * @param product - The product with image groups
+ * @param viewType - Image view type preference (default: 'large')
+ * @param variationValues - Optional variation values for variant-specific images (e.g., {color: 'red'})
+ * @returns Image URL or undefined if no images available
+ */
+export function getPrimaryProductImageUrl(
+    product: ShopperProducts.schemas['Product'],
+    viewType: string = 'large',
+    variationValues?: Record<string, string>
+): string | undefined {
+    // If variation values provided, find matching image group for the specific variant
+    if (variationValues && Object.keys(variationValues).length > 0) {
+        const imageGroup = findImageGroupBy(product.imageGroups || [], {
+            viewType,
+            selectedVariationAttributes: variationValues,
+        });
+        if (imageGroup?.images?.[0]) {
+            return imageGroup.images[0].disBaseLink || imageGroup.images[0].link;
+        }
+    }
+
+    // Try to find image group with specified view type
+    const imageGroup = product.imageGroups?.find((group) => group.viewType === viewType);
+
+    if (imageGroup?.images?.[0]) {
+        return imageGroup.images[0].disBaseLink || imageGroup.images[0].link;
+    }
+
+    // Fallback: get first image from any group
+    if (product.imageGroups?.[0]?.images?.[0]) {
+        return product.imageGroups[0].images[0].disBaseLink || product.imageGroups[0].images[0].link;
+    }
+
+    return undefined;
+}

@@ -26,8 +26,8 @@ import CartEmpty from './cart-empty';
 import CartTitle from './cart-title';
 import OrderSummary from '@/components/order-summary';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Button } from '@/components/ui/button';
 import { BonusProductModal } from '@/components/bonus-product-modal';
+import BonusProductSelection from '@/components/cart/bonus-product-selection';
 import { useTranslation } from 'react-i18next';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import PickupStoreInfo from '@/extensions/bopis/components/pickup-store-info';
@@ -50,6 +50,7 @@ import { isStandardProduct, isBonusProduct } from '@/lib/product-utils';
 interface CartContentProps {
     basket: ShopperBasketsV2.schemas['Basket'] | undefined;
     productsByItemId: Record<string, ShopperProducts.schemas['Product']>;
+    bonusProductsById: Record<string, ShopperProducts.schemas['Product']>;
     promotions?: Record<string, ShopperPromotions.schemas['Promotion']>;
 }
 
@@ -67,7 +68,12 @@ interface CartContentProps {
  * @param props - Component props
  * @returns JSX element representing the cart content
  */
-export default function CartContent({ basket, productsByItemId, promotions }: CartContentProps): ReactElement {
+export default function CartContent({
+    basket,
+    productsByItemId,
+    bonusProductsById,
+    promotions,
+}: CartContentProps): ReactElement {
     const { t } = useTranslation('cart');
 
     // TEMPORARY: State to facilitate bonus product modal development
@@ -104,7 +110,6 @@ export default function CartContent({ basket, productsByItemId, promotions }: Ca
 
     // TEMPORARY: Logic to facilitate bonus product modal - extract bonus product data
     const bonusDiscountItems = basket?.bonusDiscountLineItems || [];
-    const hasBonusProducts = bonusDiscountItems.length > 0;
 
     // TEMPORARY: Handler to facilitate bonus product modal - open modal with selected product
     const handleBonusProductSelect = (
@@ -215,58 +220,42 @@ export default function CartContent({ basket, productsByItemId, promotions }: Ca
                     </div>
                 </div>
 
-                {/* TEMPORARY: Bonus Products Section - to facilitate bonus product modal development */}
-                {hasBonusProducts &&
-                    bonusDiscountItems.map((bonusItem, index) => (
-                        <div key={bonusItem.id || index} className="mt-6 p-4 bg-card rounded border">
-                            <h3 className="text-lg font-semibold mb-2 text-foreground">
-                                promotionId: {bonusItem.promotionId}
-                            </h3>
-                            <p className="text-sm text-muted-foreground mb-1">
-                                Max bonus items: {bonusItem.maxBonusItems}
-                            </p>
-                            <p className="text-sm text-muted-foreground mb-3">
-                                bonusDiscountLineItemId: {bonusItem.id}
-                            </p>
-                            <div className="flex flex-col gap-2 items-start">
-                                {bonusItem.bonusProducts?.map((product) => {
-                                    // Type guard: ensure required fields exist
-                                    if (
-                                        !product.productId ||
-                                        !product.productName ||
-                                        !bonusItem.promotionId ||
-                                        !bonusItem.maxBonusItems ||
-                                        !bonusItem.id
-                                    ) {
-                                        return null;
-                                    }
-                                    // Extract values to preserve type narrowing in closure
-                                    const productId = product.productId;
-                                    const productName = product.productName;
-                                    const promotionId = bonusItem.promotionId;
-                                    const bonusDiscountLineItemId = bonusItem.id;
-                                    const maxBonusItems = bonusItem.maxBonusItems;
+                {/* Bonus Product Carousels - one per bonusDiscountLineItem */}
+                {bonusDiscountItems.length > 0 &&
+                    bonusDiscountItems.map((bonusItem, index) => {
+                        // Skip if no bonus products available for selection
+                        if (!bonusItem.bonusProducts || bonusItem.bonusProducts.length === 0) {
+                            return null;
+                        }
 
-                                    return (
-                                        <Button
-                                            key={productId}
-                                            onClick={() =>
-                                                handleBonusProductSelect(
-                                                    productId,
-                                                    productName,
-                                                    promotionId,
-                                                    bonusDiscountLineItemId,
-                                                    maxBonusItems
-                                                )
-                                            }
-                                            variant="default">
-                                            Select {productName}
-                                        </Button>
-                                    );
-                                })}
+                        // Get promotion name from promotions map
+                        const promotion = bonusItem.promotionId ? promotions?.[bonusItem.promotionId] : undefined;
+                        const promotionName = promotion?.calloutMsg || promotion?.name;
+
+                        return (
+                            <div key={bonusItem.id || index} className="mt-6">
+                                <BonusProductSelection
+                                    bonusDiscountLineItem={bonusItem}
+                                    bonusProductsById={bonusProductsById}
+                                    basket={basket}
+                                    promotionName={promotionName}
+                                    onProductSelect={(productId, productName, requiresModal) => {
+                                        if (requiresModal) {
+                                            // Open modal with variant selection
+                                            handleBonusProductSelect(
+                                                productId,
+                                                productName,
+                                                bonusItem.promotionId || '',
+                                                bonusItem.id || '',
+                                                bonusItem.maxBonusItems || 0
+                                            );
+                                        }
+                                        // Direct add-to-cart is handled inside BonusProductSelection
+                                    }}
+                                />
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
 
                 {selectedBonusProduct &&
                     (() => {

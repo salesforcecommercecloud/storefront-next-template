@@ -447,6 +447,12 @@
         },
         "bundle": {
             "selectedOptions": "Opzioni selezionate"
+        },
+        "bonusProducts": {
+            "selectBonusProducts": "Seleziona prodotti bonus nel carrello",
+            "addedToCart": "Prodotto bonus aggiunto al carrello",
+            "failedToAdd": "Impossibile aggiungere il prodotto bonus: {{error}}",
+            "missingRequiredInfo": "Informazioni richieste mancanti"
         }
     },
     "checkout": {

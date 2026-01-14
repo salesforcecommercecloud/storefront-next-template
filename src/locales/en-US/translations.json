@@ -449,7 +449,10 @@
             "selectedOptions": "Selected Options"
         },
         "bonusProducts": {
-            "selectBonusProducts": "Select bonus products in Cart"
+            "selectBonusProducts": "Select bonus products in Cart",
+            "addedToCart": "Bonus product added to cart",
+            "failedToAdd": "Failed to add bonus product: {{error}}",
+            "missingRequiredInfo": "Missing required information"
         }
     },
     "checkout": {

@@ -50,6 +50,7 @@ import { fetchStoresForBasket } from '@/extensions/bopis/lib/api/stores';
 type CartPageData = {
     basket: ShopperBasketsV2.schemas['Basket'];
     productsByItemId: Promise<Record<string, ShopperProducts.schemas['Product']>>;
+    bonusProductsById: Promise<Record<string, ShopperProducts.schemas['Product']>>;
     promotions?: Promise<Record<string, ShopperPromotions.schemas['Promotion']>>;
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
     storesByStoreId: Promise<Map<string, ShopperStores.schemas['Store']>>;
@@ -131,7 +132,10 @@ async function fetchPromotionsForBasket(
 async function fetchProductsInBasket(
     context: ClientLoaderFunctionArgs['context'],
     basket: ShopperBasketsV2.schemas['Basket'] | null
-): Promise<Record<string, ShopperProducts.schemas['Product']>> {
+): Promise<{
+    productsByItemId: Record<string, ShopperProducts.schemas['Product']>;
+    bonusProductsById: Record<string, ShopperProducts.schemas['Product']>;
+}> {
     const productItems = basket?.productItems ?? [];
 
     // Collect all product IDs (both parent products and bundled child products)
@@ -152,8 +156,21 @@ async function fetchProductsInBasket(
         }
     });
 
+    // Collect bonus product IDs from bonusDiscountLineItems
+    const bonusProductIds: string[] = [];
+    basket?.bonusDiscountLineItems?.forEach((bonusItem) => {
+        bonusItem.bonusProducts?.forEach((bp) => {
+            if (bp.productId) {
+                bonusProductIds.push(bp.productId);
+            }
+        });
+    });
+
+    // Add bonus product IDs to the main ids array for bulk fetch
+    ids.push(...bonusProductIds);
+
     if (!ids.length) {
-        return {};
+        return { productsByItemId: {}, bonusProductsById: {} };
     }
 
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -181,7 +198,7 @@ async function fetchProductsInBasket(
     });
 
     if (!productsData?.data) {
-        return {};
+        return { productsByItemId: {}, bonusProductsById: {} };
     }
 
     const products = productsData.data.reduce(
@@ -224,7 +241,18 @@ async function fetchProductsInBasket(
             productsByItemId[productItem.itemId] = product;
         }
     });
-    return productsByItemId;
+
+    // Create separate mapping for bonus products
+    const bonusProductsById: Record<string, ShopperProducts.schemas['Product']> = {};
+    basket?.bonusDiscountLineItems?.forEach((bonusItem) => {
+        bonusItem.bonusProducts?.forEach((bp) => {
+            if (bp.productId && products[bp.productId]) {
+                bonusProductsById[bp.productId] = products[bp.productId];
+            }
+        });
+    });
+
+    return { productsByItemId, bonusProductsById };
 }
 
 /**
@@ -255,9 +283,12 @@ export const clientLoader: ClientLoaderFunction = ({ context }: ClientLoaderFunc
     const basket = getBasket(context);
     const productItems = basket?.productItems ?? [];
 
+    const productsData = fetchProductsInBasket(context, basket);
+
     return {
         basket,
-        productsByItemId: fetchProductsInBasket(context, basket),
+        productsByItemId: productsData.then((d) => d.productsByItemId),
+        bonusProductsById: productsData.then((d) => d.bonusProductsById),
         promotions: fetchPromotionsForBasket(context, productItems),
         // @sfdc-extension-block-start SFDC_EXT_BOPIS
         storesByStoreId: fetchStoresForBasket(context, basket),
@@ -282,6 +313,7 @@ function Cart({
     loaderData: {
         basket,
         productsByItemId: productsByItemIdPromise,
+        bonusProductsById: bonusProductsByIdPromise,
         promotions: promotionsPromise,
         // @sfdc-extension-line SFDC_EXT_BOPIS
         storesByStoreId: storesByStoreIdPromise,
@@ -290,11 +322,19 @@ function Cart({
     loaderData: CartPageData;
 }): ReactElement {
     const productsByItemId = use(productsByItemIdPromise);
+    const bonusProductsById = use(bonusProductsByIdPromise);
     const promotions = use(promotionsPromise ?? Promise.resolve({}));
     // @sfdc-extension-line SFDC_EXT_BOPIS
     const storesByStoreId = use(storesByStoreIdPromise);
 
-    const content = <CartContent basket={basket} productsByItemId={productsByItemId} promotions={promotions} />;
+    const content = (
+        <CartContent
+            basket={basket}
+            productsByItemId={productsByItemId}
+            bonusProductsById={bonusProductsById}
+            promotions={promotions}
+        />
+    );
 
     let finalContent = content;
     // @sfdc-extension-block-start SFDC_EXT_BOPIS

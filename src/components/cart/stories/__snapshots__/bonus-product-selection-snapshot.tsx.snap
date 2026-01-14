@@ -18,21 +18,21 @@ exports[`BonusProductSelection stories snapshot > Default story renders and matc
         class="border-b last:border-b-0 border-none"
         data-orientation="vertical"
         data-slot="accordion-item"
-        data-state="closed"
+        data-state="open"
       >
         <h3
           class="flex"
           data-orientation="vertical"
-          data-state="closed"
+          data-state="open"
         >
           <button
             aria-controls="radix-_r_1_"
-            aria-expanded="false"
+            aria-expanded="true"
             class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 rounded-md text-sm font-medium transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 text-left hover:no-underline py-4 justify-start items-center gap-1.5"
             data-orientation="vertical"
             data-radix-collection-item=""
             data-slot="accordion-trigger"
-            data-state="closed"
+            data-state="open"
             id="radix-_r_0_"
             type="button"
           >
@@ -47,7 +47,7 @@ exports[`BonusProductSelection stories snapshot > Default story renders and matc
               <span
                 class="font-normal"
               >
-                 (1 of 1 added to cart)
+                 (0 of 3 added to cart)
               </span>
             </span>
             <svg
@@ -74,12 +74,212 @@ exports[`BonusProductSelection stories snapshot > Default story renders and matc
           class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
           data-orientation="vertical"
           data-slot="accordion-content"
-          data-state="closed"
-          hidden=""
+          data-state="open"
           id="radix-_r_1_"
           role="region"
-          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
-        />
+          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width); transition-duration: 0s; animation-name: none;"
+        >
+          <div
+            class="pb-4 px-0 pt-4"
+          >
+            <div
+              aria-roledescription="carousel"
+              class="relative w-full"
+              data-slot="carousel"
+              role="region"
+            >
+              <div
+                class="overflow-hidden"
+                data-slot="carousel-content"
+              >
+                <div
+                  class="flex -ml-2 justify-start"
+                >
+                  <div
+                    aria-roledescription="slide"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
+                    data-slot="carousel-item"
+                    role="group"
+                  >
+                    <article
+                      aria-label="Bonus bundle product card"
+                      class="bg-[var(--bg-input-30)] border border-border rounded-lg w-full shadow-sm h-full flex flex-col"
+                    >
+                      <div
+                        class="px-6 py-4"
+                      >
+                        <div
+                          class="bg-background border border-border rounded-xl overflow-hidden"
+                        >
+                          <div
+                            class="h-36 w-full relative"
+                          >
+                            <img
+                              alt=""
+                              class="absolute inset-0 h-full w-full object-cover"
+                              loading="lazy"
+                              role="presentation"
+                              src="https://example.com/image.jpg"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pt-0 pb-4 flex items-start justify-between gap-1.5 min-h-[4rem]"
+                      >
+                        <p
+                          class="text-lg font-semibold leading-tight text-card-foreground line-clamp-2"
+                        >
+                          Test Product 1
+                        </p>
+                        <div
+                          class="flex items-center gap-1.5 flex-shrink-0"
+                        >
+                          <span
+                            class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-primary text-primary-foreground font-semibold"
+                            data-slot="badge"
+                          >
+                            Free
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pb-4 mt-auto"
+                      >
+                        <button
+                          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 has-[>svg]:px-3 w-full h-9 shadow-sm"
+                          data-slot="button"
+                        >
+                          Select
+                        </button>
+                      </div>
+                    </article>
+                  </div>
+                  <div
+                    aria-roledescription="slide"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
+                    data-slot="carousel-item"
+                    role="group"
+                  >
+                    <article
+                      aria-label="Bonus bundle product card"
+                      class="bg-[var(--bg-input-30)] border border-border rounded-lg w-full shadow-sm h-full flex flex-col"
+                    >
+                      <div
+                        class="px-6 py-4"
+                      >
+                        <div
+                          class="bg-background border border-border rounded-xl overflow-hidden"
+                        >
+                          <div
+                            class="h-36 w-full relative"
+                          >
+                            <img
+                              alt=""
+                              class="absolute inset-0 h-full w-full object-cover"
+                              loading="lazy"
+                              role="presentation"
+                              src="https://example.com/image.jpg"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pt-0 pb-4 flex items-start justify-between gap-1.5 min-h-[4rem]"
+                      >
+                        <p
+                          class="text-lg font-semibold leading-tight text-card-foreground line-clamp-2"
+                        >
+                          Test Product 2
+                        </p>
+                        <div
+                          class="flex items-center gap-1.5 flex-shrink-0"
+                        >
+                          <span
+                            class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-primary text-primary-foreground font-semibold"
+                            data-slot="badge"
+                          >
+                            Free
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pb-4 mt-auto"
+                      >
+                        <button
+                          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 has-[>svg]:px-3 w-full h-9 shadow-sm"
+                          data-slot="button"
+                        >
+                          Select
+                        </button>
+                      </div>
+                    </article>
+                  </div>
+                  <div
+                    aria-roledescription="slide"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
+                    data-slot="carousel-item"
+                    role="group"
+                  >
+                    <article
+                      aria-label="Bonus bundle product card"
+                      class="bg-[var(--bg-input-30)] border border-border rounded-lg w-full shadow-sm h-full flex flex-col"
+                    >
+                      <div
+                        class="px-6 py-4"
+                      >
+                        <div
+                          class="bg-background border border-border rounded-xl overflow-hidden"
+                        >
+                          <div
+                            class="h-36 w-full relative"
+                          >
+                            <img
+                              alt=""
+                              class="absolute inset-0 h-full w-full object-cover"
+                              loading="lazy"
+                              role="presentation"
+                              src="https://example.com/image.jpg"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pt-0 pb-4 flex items-start justify-between gap-1.5 min-h-[4rem]"
+                      >
+                        <p
+                          class="text-lg font-semibold leading-tight text-card-foreground line-clamp-2"
+                        >
+                          Test Product 3
+                        </p>
+                        <div
+                          class="flex items-center gap-1.5 flex-shrink-0"
+                        >
+                          <span
+                            class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-primary text-primary-foreground font-semibold"
+                            data-slot="badge"
+                          >
+                            Free
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pb-4 mt-auto"
+                      >
+                        <button
+                          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 has-[>svg]:px-3 w-full h-9 shadow-sm"
+                          data-slot="button"
+                        >
+                          Select
+                        </button>
+                      </div>
+                    </article>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -104,21 +304,21 @@ exports[`BonusProductSelection stories snapshot > Desktop story renders and matc
         class="border-b last:border-b-0 border-none"
         data-orientation="vertical"
         data-slot="accordion-item"
-        data-state="closed"
+        data-state="open"
       >
         <h3
           class="flex"
           data-orientation="vertical"
-          data-state="closed"
+          data-state="open"
         >
           <button
             aria-controls="radix-_r_b_"
-            aria-expanded="false"
+            aria-expanded="true"
             class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 rounded-md text-sm font-medium transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 text-left hover:no-underline py-4 justify-start items-center gap-1.5"
             data-orientation="vertical"
             data-radix-collection-item=""
             data-slot="accordion-trigger"
-            data-state="closed"
+            data-state="open"
             id="radix-_r_a_"
             type="button"
           >
@@ -133,7 +333,7 @@ exports[`BonusProductSelection stories snapshot > Desktop story renders and matc
               <span
                 class="font-normal"
               >
-                 (1 of 1 added to cart)
+                 (0 of 3 added to cart)
               </span>
             </span>
             <svg
@@ -160,12 +360,212 @@ exports[`BonusProductSelection stories snapshot > Desktop story renders and matc
           class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
           data-orientation="vertical"
           data-slot="accordion-content"
-          data-state="closed"
-          hidden=""
+          data-state="open"
           id="radix-_r_b_"
           role="region"
-          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
-        />
+          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width); transition-duration: 0s; animation-name: none;"
+        >
+          <div
+            class="pb-4 px-0 pt-4"
+          >
+            <div
+              aria-roledescription="carousel"
+              class="relative w-full"
+              data-slot="carousel"
+              role="region"
+            >
+              <div
+                class="overflow-hidden"
+                data-slot="carousel-content"
+              >
+                <div
+                  class="flex -ml-2 justify-start"
+                >
+                  <div
+                    aria-roledescription="slide"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
+                    data-slot="carousel-item"
+                    role="group"
+                  >
+                    <article
+                      aria-label="Bonus bundle product card"
+                      class="bg-[var(--bg-input-30)] border border-border rounded-lg w-full shadow-sm h-full flex flex-col"
+                    >
+                      <div
+                        class="px-6 py-4"
+                      >
+                        <div
+                          class="bg-background border border-border rounded-xl overflow-hidden"
+                        >
+                          <div
+                            class="h-36 w-full relative"
+                          >
+                            <img
+                              alt=""
+                              class="absolute inset-0 h-full w-full object-cover"
+                              loading="lazy"
+                              role="presentation"
+                              src="https://example.com/image.jpg"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pt-0 pb-4 flex items-start justify-between gap-1.5 min-h-[4rem]"
+                      >
+                        <p
+                          class="text-lg font-semibold leading-tight text-card-foreground line-clamp-2"
+                        >
+                          Test Product 1
+                        </p>
+                        <div
+                          class="flex items-center gap-1.5 flex-shrink-0"
+                        >
+                          <span
+                            class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-primary text-primary-foreground font-semibold"
+                            data-slot="badge"
+                          >
+                            Free
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pb-4 mt-auto"
+                      >
+                        <button
+                          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 has-[>svg]:px-3 w-full h-9 shadow-sm"
+                          data-slot="button"
+                        >
+                          Select
+                        </button>
+                      </div>
+                    </article>
+                  </div>
+                  <div
+                    aria-roledescription="slide"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
+                    data-slot="carousel-item"
+                    role="group"
+                  >
+                    <article
+                      aria-label="Bonus bundle product card"
+                      class="bg-[var(--bg-input-30)] border border-border rounded-lg w-full shadow-sm h-full flex flex-col"
+                    >
+                      <div
+                        class="px-6 py-4"
+                      >
+                        <div
+                          class="bg-background border border-border rounded-xl overflow-hidden"
+                        >
+                          <div
+                            class="h-36 w-full relative"
+                          >
+                            <img
+                              alt=""
+                              class="absolute inset-0 h-full w-full object-cover"
+                              loading="lazy"
+                              role="presentation"
+                              src="https://example.com/image.jpg"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pt-0 pb-4 flex items-start justify-between gap-1.5 min-h-[4rem]"
+                      >
+                        <p
+                          class="text-lg font-semibold leading-tight text-card-foreground line-clamp-2"
+                        >
+                          Test Product 2
+                        </p>
+                        <div
+                          class="flex items-center gap-1.5 flex-shrink-0"
+                        >
+                          <span
+                            class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-primary text-primary-foreground font-semibold"
+                            data-slot="badge"
+                          >
+                            Free
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pb-4 mt-auto"
+                      >
+                        <button
+                          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 has-[>svg]:px-3 w-full h-9 shadow-sm"
+                          data-slot="button"
+                        >
+                          Select
+                        </button>
+                      </div>
+                    </article>
+                  </div>
+                  <div
+                    aria-roledescription="slide"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
+                    data-slot="carousel-item"
+                    role="group"
+                  >
+                    <article
+                      aria-label="Bonus bundle product card"
+                      class="bg-[var(--bg-input-30)] border border-border rounded-lg w-full shadow-sm h-full flex flex-col"
+                    >
+                      <div
+                        class="px-6 py-4"
+                      >
+                        <div
+                          class="bg-background border border-border rounded-xl overflow-hidden"
+                        >
+                          <div
+                            class="h-36 w-full relative"
+                          >
+                            <img
+                              alt=""
+                              class="absolute inset-0 h-full w-full object-cover"
+                              loading="lazy"
+                              role="presentation"
+                              src="https://example.com/image.jpg"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pt-0 pb-4 flex items-start justify-between gap-1.5 min-h-[4rem]"
+                      >
+                        <p
+                          class="text-lg font-semibold leading-tight text-card-foreground line-clamp-2"
+                        >
+                          Test Product 3
+                        </p>
+                        <div
+                          class="flex items-center gap-1.5 flex-shrink-0"
+                        >
+                          <span
+                            class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-primary text-primary-foreground font-semibold"
+                            data-slot="badge"
+                          >
+                            Free
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pb-4 mt-auto"
+                      >
+                        <button
+                          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 has-[>svg]:px-3 w-full h-9 shadow-sm"
+                          data-slot="button"
+                        >
+                          Select
+                        </button>
+                      </div>
+                    </article>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -190,21 +590,21 @@ exports[`BonusProductSelection stories snapshot > Expanded story renders and mat
         class="border-b last:border-b-0 border-none"
         data-orientation="vertical"
         data-slot="accordion-item"
-        data-state="closed"
+        data-state="open"
       >
         <h3
           class="flex"
           data-orientation="vertical"
-          data-state="closed"
+          data-state="open"
         >
           <button
             aria-controls="radix-_r_3_"
-            aria-expanded="false"
+            aria-expanded="true"
             class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 rounded-md text-sm font-medium transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 text-left hover:no-underline py-4 justify-start items-center gap-1.5"
             data-orientation="vertical"
             data-radix-collection-item=""
             data-slot="accordion-trigger"
-            data-state="closed"
+            data-state="open"
             id="radix-_r_2_"
             type="button"
           >
@@ -219,7 +619,7 @@ exports[`BonusProductSelection stories snapshot > Expanded story renders and mat
               <span
                 class="font-normal"
               >
-                 (1 of 1 added to cart)
+                 (0 of 3 added to cart)
               </span>
             </span>
             <svg
@@ -246,12 +646,212 @@ exports[`BonusProductSelection stories snapshot > Expanded story renders and mat
           class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
           data-orientation="vertical"
           data-slot="accordion-content"
-          data-state="closed"
-          hidden=""
+          data-state="open"
           id="radix-_r_3_"
           role="region"
-          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
-        />
+          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width); transition-duration: 0s; animation-name: none;"
+        >
+          <div
+            class="pb-4 px-0 pt-4"
+          >
+            <div
+              aria-roledescription="carousel"
+              class="relative w-full"
+              data-slot="carousel"
+              role="region"
+            >
+              <div
+                class="overflow-hidden"
+                data-slot="carousel-content"
+              >
+                <div
+                  class="flex -ml-2 justify-start"
+                >
+                  <div
+                    aria-roledescription="slide"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
+                    data-slot="carousel-item"
+                    role="group"
+                  >
+                    <article
+                      aria-label="Bonus bundle product card"
+                      class="bg-[var(--bg-input-30)] border border-border rounded-lg w-full shadow-sm h-full flex flex-col"
+                    >
+                      <div
+                        class="px-6 py-4"
+                      >
+                        <div
+                          class="bg-background border border-border rounded-xl overflow-hidden"
+                        >
+                          <div
+                            class="h-36 w-full relative"
+                          >
+                            <img
+                              alt=""
+                              class="absolute inset-0 h-full w-full object-cover"
+                              loading="lazy"
+                              role="presentation"
+                              src="https://example.com/image.jpg"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pt-0 pb-4 flex items-start justify-between gap-1.5 min-h-[4rem]"
+                      >
+                        <p
+                          class="text-lg font-semibold leading-tight text-card-foreground line-clamp-2"
+                        >
+                          Test Product 1
+                        </p>
+                        <div
+                          class="flex items-center gap-1.5 flex-shrink-0"
+                        >
+                          <span
+                            class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-primary text-primary-foreground font-semibold"
+                            data-slot="badge"
+                          >
+                            Free
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pb-4 mt-auto"
+                      >
+                        <button
+                          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 has-[>svg]:px-3 w-full h-9 shadow-sm"
+                          data-slot="button"
+                        >
+                          Select
+                        </button>
+                      </div>
+                    </article>
+                  </div>
+                  <div
+                    aria-roledescription="slide"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
+                    data-slot="carousel-item"
+                    role="group"
+                  >
+                    <article
+                      aria-label="Bonus bundle product card"
+                      class="bg-[var(--bg-input-30)] border border-border rounded-lg w-full shadow-sm h-full flex flex-col"
+                    >
+                      <div
+                        class="px-6 py-4"
+                      >
+                        <div
+                          class="bg-background border border-border rounded-xl overflow-hidden"
+                        >
+                          <div
+                            class="h-36 w-full relative"
+                          >
+                            <img
+                              alt=""
+                              class="absolute inset-0 h-full w-full object-cover"
+                              loading="lazy"
+                              role="presentation"
+                              src="https://example.com/image.jpg"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pt-0 pb-4 flex items-start justify-between gap-1.5 min-h-[4rem]"
+                      >
+                        <p
+                          class="text-lg font-semibold leading-tight text-card-foreground line-clamp-2"
+                        >
+                          Test Product 2
+                        </p>
+                        <div
+                          class="flex items-center gap-1.5 flex-shrink-0"
+                        >
+                          <span
+                            class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-primary text-primary-foreground font-semibold"
+                            data-slot="badge"
+                          >
+                            Free
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pb-4 mt-auto"
+                      >
+                        <button
+                          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 has-[>svg]:px-3 w-full h-9 shadow-sm"
+                          data-slot="button"
+                        >
+                          Select
+                        </button>
+                      </div>
+                    </article>
+                  </div>
+                  <div
+                    aria-roledescription="slide"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
+                    data-slot="carousel-item"
+                    role="group"
+                  >
+                    <article
+                      aria-label="Bonus bundle product card"
+                      class="bg-[var(--bg-input-30)] border border-border rounded-lg w-full shadow-sm h-full flex flex-col"
+                    >
+                      <div
+                        class="px-6 py-4"
+                      >
+                        <div
+                          class="bg-background border border-border rounded-xl overflow-hidden"
+                        >
+                          <div
+                            class="h-36 w-full relative"
+                          >
+                            <img
+                              alt=""
+                              class="absolute inset-0 h-full w-full object-cover"
+                              loading="lazy"
+                              role="presentation"
+                              src="https://example.com/image.jpg"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pt-0 pb-4 flex items-start justify-between gap-1.5 min-h-[4rem]"
+                      >
+                        <p
+                          class="text-lg font-semibold leading-tight text-card-foreground line-clamp-2"
+                        >
+                          Test Product 3
+                        </p>
+                        <div
+                          class="flex items-center gap-1.5 flex-shrink-0"
+                        >
+                          <span
+                            class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-primary text-primary-foreground font-semibold"
+                            data-slot="badge"
+                          >
+                            Free
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pb-4 mt-auto"
+                      >
+                        <button
+                          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 has-[>svg]:px-3 w-full h-9 shadow-sm"
+                          data-slot="button"
+                        >
+                          Select
+                        </button>
+                      </div>
+                    </article>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -276,21 +876,21 @@ exports[`BonusProductSelection stories snapshot > Mobile story renders and match
         class="border-b last:border-b-0 border-none"
         data-orientation="vertical"
         data-slot="accordion-item"
-        data-state="closed"
+        data-state="open"
       >
         <h3
           class="flex"
           data-orientation="vertical"
-          data-state="closed"
+          data-state="open"
         >
           <button
             aria-controls="radix-_r_7_"
-            aria-expanded="false"
+            aria-expanded="true"
             class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 rounded-md text-sm font-medium transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 text-left hover:no-underline py-4 justify-start items-center gap-1.5"
             data-orientation="vertical"
             data-radix-collection-item=""
             data-slot="accordion-trigger"
-            data-state="closed"
+            data-state="open"
             id="radix-_r_6_"
             type="button"
           >
@@ -305,7 +905,7 @@ exports[`BonusProductSelection stories snapshot > Mobile story renders and match
               <span
                 class="font-normal"
               >
-                 (1 of 1 added to cart)
+                 (0 of 3 added to cart)
               </span>
             </span>
             <svg
@@ -332,12 +932,212 @@ exports[`BonusProductSelection stories snapshot > Mobile story renders and match
           class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
           data-orientation="vertical"
           data-slot="accordion-content"
-          data-state="closed"
-          hidden=""
+          data-state="open"
           id="radix-_r_7_"
           role="region"
-          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
-        />
+          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width); transition-duration: 0s; animation-name: none;"
+        >
+          <div
+            class="pb-4 px-0 pt-4"
+          >
+            <div
+              aria-roledescription="carousel"
+              class="relative w-full"
+              data-slot="carousel"
+              role="region"
+            >
+              <div
+                class="overflow-hidden"
+                data-slot="carousel-content"
+              >
+                <div
+                  class="flex -ml-2 justify-start"
+                >
+                  <div
+                    aria-roledescription="slide"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
+                    data-slot="carousel-item"
+                    role="group"
+                  >
+                    <article
+                      aria-label="Bonus bundle product card"
+                      class="bg-[var(--bg-input-30)] border border-border rounded-lg w-full shadow-sm h-full flex flex-col"
+                    >
+                      <div
+                        class="px-6 py-4"
+                      >
+                        <div
+                          class="bg-background border border-border rounded-xl overflow-hidden"
+                        >
+                          <div
+                            class="h-36 w-full relative"
+                          >
+                            <img
+                              alt=""
+                              class="absolute inset-0 h-full w-full object-cover"
+                              loading="lazy"
+                              role="presentation"
+                              src="https://example.com/image.jpg"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pt-0 pb-4 flex items-start justify-between gap-1.5 min-h-[4rem]"
+                      >
+                        <p
+                          class="text-lg font-semibold leading-tight text-card-foreground line-clamp-2"
+                        >
+                          Test Product 1
+                        </p>
+                        <div
+                          class="flex items-center gap-1.5 flex-shrink-0"
+                        >
+                          <span
+                            class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-primary text-primary-foreground font-semibold"
+                            data-slot="badge"
+                          >
+                            Free
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pb-4 mt-auto"
+                      >
+                        <button
+                          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 has-[>svg]:px-3 w-full h-9 shadow-sm"
+                          data-slot="button"
+                        >
+                          Select
+                        </button>
+                      </div>
+                    </article>
+                  </div>
+                  <div
+                    aria-roledescription="slide"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
+                    data-slot="carousel-item"
+                    role="group"
+                  >
+                    <article
+                      aria-label="Bonus bundle product card"
+                      class="bg-[var(--bg-input-30)] border border-border rounded-lg w-full shadow-sm h-full flex flex-col"
+                    >
+                      <div
+                        class="px-6 py-4"
+                      >
+                        <div
+                          class="bg-background border border-border rounded-xl overflow-hidden"
+                        >
+                          <div
+                            class="h-36 w-full relative"
+                          >
+                            <img
+                              alt=""
+                              class="absolute inset-0 h-full w-full object-cover"
+                              loading="lazy"
+                              role="presentation"
+                              src="https://example.com/image.jpg"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pt-0 pb-4 flex items-start justify-between gap-1.5 min-h-[4rem]"
+                      >
+                        <p
+                          class="text-lg font-semibold leading-tight text-card-foreground line-clamp-2"
+                        >
+                          Test Product 2
+                        </p>
+                        <div
+                          class="flex items-center gap-1.5 flex-shrink-0"
+                        >
+                          <span
+                            class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-primary text-primary-foreground font-semibold"
+                            data-slot="badge"
+                          >
+                            Free
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pb-4 mt-auto"
+                      >
+                        <button
+                          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 has-[>svg]:px-3 w-full h-9 shadow-sm"
+                          data-slot="button"
+                        >
+                          Select
+                        </button>
+                      </div>
+                    </article>
+                  </div>
+                  <div
+                    aria-roledescription="slide"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
+                    data-slot="carousel-item"
+                    role="group"
+                  >
+                    <article
+                      aria-label="Bonus bundle product card"
+                      class="bg-[var(--bg-input-30)] border border-border rounded-lg w-full shadow-sm h-full flex flex-col"
+                    >
+                      <div
+                        class="px-6 py-4"
+                      >
+                        <div
+                          class="bg-background border border-border rounded-xl overflow-hidden"
+                        >
+                          <div
+                            class="h-36 w-full relative"
+                          >
+                            <img
+                              alt=""
+                              class="absolute inset-0 h-full w-full object-cover"
+                              loading="lazy"
+                              role="presentation"
+                              src="https://example.com/image.jpg"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pt-0 pb-4 flex items-start justify-between gap-1.5 min-h-[4rem]"
+                      >
+                        <p
+                          class="text-lg font-semibold leading-tight text-card-foreground line-clamp-2"
+                        >
+                          Test Product 3
+                        </p>
+                        <div
+                          class="flex items-center gap-1.5 flex-shrink-0"
+                        >
+                          <span
+                            class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-primary text-primary-foreground font-semibold"
+                            data-slot="badge"
+                          >
+                            Free
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pb-4 mt-auto"
+                      >
+                        <button
+                          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 has-[>svg]:px-3 w-full h-9 shadow-sm"
+                          data-slot="button"
+                        >
+                          Select
+                        </button>
+                      </div>
+                    </article>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -362,21 +1162,21 @@ exports[`BonusProductSelection stories snapshot > Tablet story renders and match
         class="border-b last:border-b-0 border-none"
         data-orientation="vertical"
         data-slot="accordion-item"
-        data-state="closed"
+        data-state="open"
       >
         <h3
           class="flex"
           data-orientation="vertical"
-          data-state="closed"
+          data-state="open"
         >
           <button
             aria-controls="radix-_r_9_"
-            aria-expanded="false"
+            aria-expanded="true"
             class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 rounded-md text-sm font-medium transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 text-left hover:no-underline py-4 justify-start items-center gap-1.5"
             data-orientation="vertical"
             data-radix-collection-item=""
             data-slot="accordion-trigger"
-            data-state="closed"
+            data-state="open"
             id="radix-_r_8_"
             type="button"
           >
@@ -391,7 +1191,7 @@ exports[`BonusProductSelection stories snapshot > Tablet story renders and match
               <span
                 class="font-normal"
               >
-                 (1 of 1 added to cart)
+                 (0 of 3 added to cart)
               </span>
             </span>
             <svg
@@ -418,12 +1218,212 @@ exports[`BonusProductSelection stories snapshot > Tablet story renders and match
           class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
           data-orientation="vertical"
           data-slot="accordion-content"
-          data-state="closed"
-          hidden=""
+          data-state="open"
           id="radix-_r_9_"
           role="region"
-          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
-        />
+          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width); transition-duration: 0s; animation-name: none;"
+        >
+          <div
+            class="pb-4 px-0 pt-4"
+          >
+            <div
+              aria-roledescription="carousel"
+              class="relative w-full"
+              data-slot="carousel"
+              role="region"
+            >
+              <div
+                class="overflow-hidden"
+                data-slot="carousel-content"
+              >
+                <div
+                  class="flex -ml-2 justify-start"
+                >
+                  <div
+                    aria-roledescription="slide"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
+                    data-slot="carousel-item"
+                    role="group"
+                  >
+                    <article
+                      aria-label="Bonus bundle product card"
+                      class="bg-[var(--bg-input-30)] border border-border rounded-lg w-full shadow-sm h-full flex flex-col"
+                    >
+                      <div
+                        class="px-6 py-4"
+                      >
+                        <div
+                          class="bg-background border border-border rounded-xl overflow-hidden"
+                        >
+                          <div
+                            class="h-36 w-full relative"
+                          >
+                            <img
+                              alt=""
+                              class="absolute inset-0 h-full w-full object-cover"
+                              loading="lazy"
+                              role="presentation"
+                              src="https://example.com/image.jpg"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pt-0 pb-4 flex items-start justify-between gap-1.5 min-h-[4rem]"
+                      >
+                        <p
+                          class="text-lg font-semibold leading-tight text-card-foreground line-clamp-2"
+                        >
+                          Test Product 1
+                        </p>
+                        <div
+                          class="flex items-center gap-1.5 flex-shrink-0"
+                        >
+                          <span
+                            class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-primary text-primary-foreground font-semibold"
+                            data-slot="badge"
+                          >
+                            Free
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pb-4 mt-auto"
+                      >
+                        <button
+                          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 has-[>svg]:px-3 w-full h-9 shadow-sm"
+                          data-slot="button"
+                        >
+                          Select
+                        </button>
+                      </div>
+                    </article>
+                  </div>
+                  <div
+                    aria-roledescription="slide"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
+                    data-slot="carousel-item"
+                    role="group"
+                  >
+                    <article
+                      aria-label="Bonus bundle product card"
+                      class="bg-[var(--bg-input-30)] border border-border rounded-lg w-full shadow-sm h-full flex flex-col"
+                    >
+                      <div
+                        class="px-6 py-4"
+                      >
+                        <div
+                          class="bg-background border border-border rounded-xl overflow-hidden"
+                        >
+                          <div
+                            class="h-36 w-full relative"
+                          >
+                            <img
+                              alt=""
+                              class="absolute inset-0 h-full w-full object-cover"
+                              loading="lazy"
+                              role="presentation"
+                              src="https://example.com/image.jpg"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pt-0 pb-4 flex items-start justify-between gap-1.5 min-h-[4rem]"
+                      >
+                        <p
+                          class="text-lg font-semibold leading-tight text-card-foreground line-clamp-2"
+                        >
+                          Test Product 2
+                        </p>
+                        <div
+                          class="flex items-center gap-1.5 flex-shrink-0"
+                        >
+                          <span
+                            class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-primary text-primary-foreground font-semibold"
+                            data-slot="badge"
+                          >
+                            Free
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pb-4 mt-auto"
+                      >
+                        <button
+                          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 has-[>svg]:px-3 w-full h-9 shadow-sm"
+                          data-slot="button"
+                        >
+                          Select
+                        </button>
+                      </div>
+                    </article>
+                  </div>
+                  <div
+                    aria-roledescription="slide"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
+                    data-slot="carousel-item"
+                    role="group"
+                  >
+                    <article
+                      aria-label="Bonus bundle product card"
+                      class="bg-[var(--bg-input-30)] border border-border rounded-lg w-full shadow-sm h-full flex flex-col"
+                    >
+                      <div
+                        class="px-6 py-4"
+                      >
+                        <div
+                          class="bg-background border border-border rounded-xl overflow-hidden"
+                        >
+                          <div
+                            class="h-36 w-full relative"
+                          >
+                            <img
+                              alt=""
+                              class="absolute inset-0 h-full w-full object-cover"
+                              loading="lazy"
+                              role="presentation"
+                              src="https://example.com/image.jpg"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pt-0 pb-4 flex items-start justify-between gap-1.5 min-h-[4rem]"
+                      >
+                        <p
+                          class="text-lg font-semibold leading-tight text-card-foreground line-clamp-2"
+                        >
+                          Test Product 3
+                        </p>
+                        <div
+                          class="flex items-center gap-1.5 flex-shrink-0"
+                        >
+                          <span
+                            class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-primary text-primary-foreground font-semibold"
+                            data-slot="badge"
+                          >
+                            Free
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pb-4 mt-auto"
+                      >
+                        <button
+                          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 has-[>svg]:px-3 w-full h-9 shadow-sm"
+                          data-slot="button"
+                        >
+                          Select
+                        </button>
+                      </div>
+                    </article>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -448,21 +1448,21 @@ exports[`BonusProductSelection stories snapshot > WithCarouselNavigation story r
         class="border-b last:border-b-0 border-none"
         data-orientation="vertical"
         data-slot="accordion-item"
-        data-state="closed"
+        data-state="open"
       >
         <h3
           class="flex"
           data-orientation="vertical"
-          data-state="closed"
+          data-state="open"
         >
           <button
             aria-controls="radix-_r_5_"
-            aria-expanded="false"
+            aria-expanded="true"
             class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 rounded-md text-sm font-medium transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 text-left hover:no-underline py-4 justify-start items-center gap-1.5"
             data-orientation="vertical"
             data-radix-collection-item=""
             data-slot="accordion-trigger"
-            data-state="closed"
+            data-state="open"
             id="radix-_r_4_"
             type="button"
           >
@@ -477,7 +1477,7 @@ exports[`BonusProductSelection stories snapshot > WithCarouselNavigation story r
               <span
                 class="font-normal"
               >
-                 (1 of 1 added to cart)
+                 (0 of 8 added to cart)
               </span>
             </span>
             <svg
@@ -504,12 +1504,512 @@ exports[`BonusProductSelection stories snapshot > WithCarouselNavigation story r
           class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
           data-orientation="vertical"
           data-slot="accordion-content"
-          data-state="closed"
-          hidden=""
+          data-state="open"
           id="radix-_r_5_"
           role="region"
-          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
-        />
+          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width); transition-duration: 0s; animation-name: none;"
+        >
+          <div
+            class="pb-4 px-0 pt-4"
+          >
+            <div
+              aria-roledescription="carousel"
+              class="relative w-full"
+              data-slot="carousel"
+              role="region"
+            >
+              <div
+                class="overflow-hidden"
+                data-slot="carousel-content"
+              >
+                <div
+                  class="flex -ml-2 justify-start"
+                >
+                  <div
+                    aria-roledescription="slide"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
+                    data-slot="carousel-item"
+                    role="group"
+                  >
+                    <article
+                      aria-label="Bonus bundle product card"
+                      class="bg-[var(--bg-input-30)] border border-border rounded-lg w-full shadow-sm h-full flex flex-col"
+                    >
+                      <div
+                        class="px-6 py-4"
+                      >
+                        <div
+                          class="bg-background border border-border rounded-xl overflow-hidden"
+                        >
+                          <div
+                            class="h-36 w-full relative"
+                          >
+                            <img
+                              alt=""
+                              class="absolute inset-0 h-full w-full object-cover"
+                              loading="lazy"
+                              role="presentation"
+                              src="https://example.com/image.jpg"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pt-0 pb-4 flex items-start justify-between gap-1.5 min-h-[4rem]"
+                      >
+                        <p
+                          class="text-lg font-semibold leading-tight text-card-foreground line-clamp-2"
+                        >
+                          Classic Silk Tie 1
+                        </p>
+                        <div
+                          class="flex items-center gap-1.5 flex-shrink-0"
+                        >
+                          <span
+                            class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-primary text-primary-foreground font-semibold"
+                            data-slot="badge"
+                          >
+                            Free
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pb-4 mt-auto"
+                      >
+                        <button
+                          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 has-[>svg]:px-3 w-full h-9 shadow-sm"
+                          data-slot="button"
+                        >
+                          Select
+                        </button>
+                      </div>
+                    </article>
+                  </div>
+                  <div
+                    aria-roledescription="slide"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
+                    data-slot="carousel-item"
+                    role="group"
+                  >
+                    <article
+                      aria-label="Bonus bundle product card"
+                      class="bg-[var(--bg-input-30)] border border-border rounded-lg w-full shadow-sm h-full flex flex-col"
+                    >
+                      <div
+                        class="px-6 py-4"
+                      >
+                        <div
+                          class="bg-background border border-border rounded-xl overflow-hidden"
+                        >
+                          <div
+                            class="h-36 w-full relative"
+                          >
+                            <img
+                              alt=""
+                              class="absolute inset-0 h-full w-full object-cover"
+                              loading="lazy"
+                              role="presentation"
+                              src="https://example.com/image.jpg"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pt-0 pb-4 flex items-start justify-between gap-1.5 min-h-[4rem]"
+                      >
+                        <p
+                          class="text-lg font-semibold leading-tight text-card-foreground line-clamp-2"
+                        >
+                          Classic Silk Tie 2
+                        </p>
+                        <div
+                          class="flex items-center gap-1.5 flex-shrink-0"
+                        >
+                          <span
+                            class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-primary text-primary-foreground font-semibold"
+                            data-slot="badge"
+                          >
+                            Free
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pb-4 mt-auto"
+                      >
+                        <button
+                          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 has-[>svg]:px-3 w-full h-9 shadow-sm"
+                          data-slot="button"
+                        >
+                          Select
+                        </button>
+                      </div>
+                    </article>
+                  </div>
+                  <div
+                    aria-roledescription="slide"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
+                    data-slot="carousel-item"
+                    role="group"
+                  >
+                    <article
+                      aria-label="Bonus bundle product card"
+                      class="bg-[var(--bg-input-30)] border border-border rounded-lg w-full shadow-sm h-full flex flex-col"
+                    >
+                      <div
+                        class="px-6 py-4"
+                      >
+                        <div
+                          class="bg-background border border-border rounded-xl overflow-hidden"
+                        >
+                          <div
+                            class="h-36 w-full relative"
+                          >
+                            <img
+                              alt=""
+                              class="absolute inset-0 h-full w-full object-cover"
+                              loading="lazy"
+                              role="presentation"
+                              src="https://example.com/image.jpg"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pt-0 pb-4 flex items-start justify-between gap-1.5 min-h-[4rem]"
+                      >
+                        <p
+                          class="text-lg font-semibold leading-tight text-card-foreground line-clamp-2"
+                        >
+                          Classic Silk Tie 3
+                        </p>
+                        <div
+                          class="flex items-center gap-1.5 flex-shrink-0"
+                        >
+                          <span
+                            class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-primary text-primary-foreground font-semibold"
+                            data-slot="badge"
+                          >
+                            Free
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pb-4 mt-auto"
+                      >
+                        <button
+                          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 has-[>svg]:px-3 w-full h-9 shadow-sm"
+                          data-slot="button"
+                        >
+                          Select
+                        </button>
+                      </div>
+                    </article>
+                  </div>
+                  <div
+                    aria-roledescription="slide"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
+                    data-slot="carousel-item"
+                    role="group"
+                  >
+                    <article
+                      aria-label="Bonus bundle product card"
+                      class="bg-[var(--bg-input-30)] border border-border rounded-lg w-full shadow-sm h-full flex flex-col"
+                    >
+                      <div
+                        class="px-6 py-4"
+                      >
+                        <div
+                          class="bg-background border border-border rounded-xl overflow-hidden"
+                        >
+                          <div
+                            class="h-36 w-full relative"
+                          >
+                            <img
+                              alt=""
+                              class="absolute inset-0 h-full w-full object-cover"
+                              loading="lazy"
+                              role="presentation"
+                              src="https://example.com/image.jpg"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pt-0 pb-4 flex items-start justify-between gap-1.5 min-h-[4rem]"
+                      >
+                        <p
+                          class="text-lg font-semibold leading-tight text-card-foreground line-clamp-2"
+                        >
+                          Classic Silk Tie 4
+                        </p>
+                        <div
+                          class="flex items-center gap-1.5 flex-shrink-0"
+                        >
+                          <span
+                            class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-primary text-primary-foreground font-semibold"
+                            data-slot="badge"
+                          >
+                            Free
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pb-4 mt-auto"
+                      >
+                        <button
+                          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 has-[>svg]:px-3 w-full h-9 shadow-sm"
+                          data-slot="button"
+                        >
+                          Select
+                        </button>
+                      </div>
+                    </article>
+                  </div>
+                  <div
+                    aria-roledescription="slide"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
+                    data-slot="carousel-item"
+                    role="group"
+                  >
+                    <article
+                      aria-label="Bonus bundle product card"
+                      class="bg-[var(--bg-input-30)] border border-border rounded-lg w-full shadow-sm h-full flex flex-col"
+                    >
+                      <div
+                        class="px-6 py-4"
+                      >
+                        <div
+                          class="bg-background border border-border rounded-xl overflow-hidden"
+                        >
+                          <div
+                            class="h-36 w-full relative"
+                          >
+                            <img
+                              alt=""
+                              class="absolute inset-0 h-full w-full object-cover"
+                              loading="lazy"
+                              role="presentation"
+                              src="https://example.com/image.jpg"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pt-0 pb-4 flex items-start justify-between gap-1.5 min-h-[4rem]"
+                      >
+                        <p
+                          class="text-lg font-semibold leading-tight text-card-foreground line-clamp-2"
+                        >
+                          Classic Silk Tie 5
+                        </p>
+                        <div
+                          class="flex items-center gap-1.5 flex-shrink-0"
+                        >
+                          <span
+                            class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-primary text-primary-foreground font-semibold"
+                            data-slot="badge"
+                          >
+                            Free
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pb-4 mt-auto"
+                      >
+                        <button
+                          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 has-[>svg]:px-3 w-full h-9 shadow-sm"
+                          data-slot="button"
+                        >
+                          Select
+                        </button>
+                      </div>
+                    </article>
+                  </div>
+                  <div
+                    aria-roledescription="slide"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
+                    data-slot="carousel-item"
+                    role="group"
+                  >
+                    <article
+                      aria-label="Bonus bundle product card"
+                      class="bg-[var(--bg-input-30)] border border-border rounded-lg w-full shadow-sm h-full flex flex-col"
+                    >
+                      <div
+                        class="px-6 py-4"
+                      >
+                        <div
+                          class="bg-background border border-border rounded-xl overflow-hidden"
+                        >
+                          <div
+                            class="h-36 w-full relative"
+                          >
+                            <img
+                              alt=""
+                              class="absolute inset-0 h-full w-full object-cover"
+                              loading="lazy"
+                              role="presentation"
+                              src="https://example.com/image.jpg"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pt-0 pb-4 flex items-start justify-between gap-1.5 min-h-[4rem]"
+                      >
+                        <p
+                          class="text-lg font-semibold leading-tight text-card-foreground line-clamp-2"
+                        >
+                          Classic Silk Tie 6
+                        </p>
+                        <div
+                          class="flex items-center gap-1.5 flex-shrink-0"
+                        >
+                          <span
+                            class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-primary text-primary-foreground font-semibold"
+                            data-slot="badge"
+                          >
+                            Free
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pb-4 mt-auto"
+                      >
+                        <button
+                          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 has-[>svg]:px-3 w-full h-9 shadow-sm"
+                          data-slot="button"
+                        >
+                          Select
+                        </button>
+                      </div>
+                    </article>
+                  </div>
+                  <div
+                    aria-roledescription="slide"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
+                    data-slot="carousel-item"
+                    role="group"
+                  >
+                    <article
+                      aria-label="Bonus bundle product card"
+                      class="bg-[var(--bg-input-30)] border border-border rounded-lg w-full shadow-sm h-full flex flex-col"
+                    >
+                      <div
+                        class="px-6 py-4"
+                      >
+                        <div
+                          class="bg-background border border-border rounded-xl overflow-hidden"
+                        >
+                          <div
+                            class="h-36 w-full relative"
+                          >
+                            <img
+                              alt=""
+                              class="absolute inset-0 h-full w-full object-cover"
+                              loading="lazy"
+                              role="presentation"
+                              src="https://example.com/image.jpg"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pt-0 pb-4 flex items-start justify-between gap-1.5 min-h-[4rem]"
+                      >
+                        <p
+                          class="text-lg font-semibold leading-tight text-card-foreground line-clamp-2"
+                        >
+                          Classic Silk Tie 7
+                        </p>
+                        <div
+                          class="flex items-center gap-1.5 flex-shrink-0"
+                        >
+                          <span
+                            class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-primary text-primary-foreground font-semibold"
+                            data-slot="badge"
+                          >
+                            Free
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pb-4 mt-auto"
+                      >
+                        <button
+                          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 has-[>svg]:px-3 w-full h-9 shadow-sm"
+                          data-slot="button"
+                        >
+                          Select
+                        </button>
+                      </div>
+                    </article>
+                  </div>
+                  <div
+                    aria-roledescription="slide"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
+                    data-slot="carousel-item"
+                    role="group"
+                  >
+                    <article
+                      aria-label="Bonus bundle product card"
+                      class="bg-[var(--bg-input-30)] border border-border rounded-lg w-full shadow-sm h-full flex flex-col"
+                    >
+                      <div
+                        class="px-6 py-4"
+                      >
+                        <div
+                          class="bg-background border border-border rounded-xl overflow-hidden"
+                        >
+                          <div
+                            class="h-36 w-full relative"
+                          >
+                            <img
+                              alt=""
+                              class="absolute inset-0 h-full w-full object-cover"
+                              loading="lazy"
+                              role="presentation"
+                              src="https://example.com/image.jpg"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pt-0 pb-4 flex items-start justify-between gap-1.5 min-h-[4rem]"
+                      >
+                        <p
+                          class="text-lg font-semibold leading-tight text-card-foreground line-clamp-2"
+                        >
+                          Classic Silk Tie 8
+                        </p>
+                        <div
+                          class="flex items-center gap-1.5 flex-shrink-0"
+                        >
+                          <span
+                            class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-primary text-primary-foreground font-semibold"
+                            data-slot="badge"
+                          >
+                            Free
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        class="px-6 pb-4 mt-auto"
+                      >
+                        <button
+                          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 has-[>svg]:px-3 w-full h-9 shadow-sm"
+                          data-slot="button"
+                        >
+                          Select
+                        </button>
+                      </div>
+                    </article>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>

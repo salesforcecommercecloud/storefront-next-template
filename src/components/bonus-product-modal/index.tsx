@@ -286,83 +286,78 @@ export function BonusProductModal({
                 className="flex flex-col w-full h-screen max-w-none lg:max-w-4xl lg:max-h-[90vh] lg:h-auto lg:overflow-y-auto"
                 showCloseButton
                 aria-describedby={undefined}>
-                {open && (
-                    <>
-                        <DialogHeader className="shrink-0">
-                            <DialogTitle>
-                                {currentProduct?.name || productName} ({alreadySelectedCount} of {totalAllowedCount}{' '}
-                                selected)
-                            </DialogTitle>
-                        </DialogHeader>
+                <DialogHeader className="shrink-0">
+                    <DialogTitle>
+                        {currentProduct?.name || productName} ({alreadySelectedCount} of {totalAllowedCount} selected)
+                    </DialogTitle>
+                </DialogHeader>
 
-                        {fetcher.state === 'loading' && !currentProduct ? (
-                            <div className="flex items-center justify-center p-8">
-                                <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
-                            </div>
-                        ) : !currentProduct && fetcher.state === 'idle' && fetcher.data != null && !fetcher.success ? (
-                            <div className="flex flex-col items-center justify-center p-8 gap-4">
-                                <p className="text-destructive text-center">
-                                    Failed to load product details. Please try again.
-                                </p>
-                                <Button
-                                    onClick={() => {
-                                        void fetcher.load();
-                                    }}
-                                    variant="outline">
-                                    Retry
-                                </Button>
-                            </div>
-                        ) : currentProduct ? (
-                            <ProductViewProvider
-                                product={currentProduct}
-                                mode="add"
-                                initialQuantity={1}
-                                maxQuantity={remainingCapacity}
-                                currentVariant={matchingVariant}>
-                                {/* Scrollable content area */}
-                                <div className="flex-1 overflow-y-auto min-h-0 lg:overflow-visible lg:flex-none">
-                                    <div className="lg:grid lg:grid-cols-2 lg:gap-8 lg:items-start">
-                                        <div className="lg:order-1">
-                                            <ImageGallery images={galleryImages} eager={false} />
-                                        </div>
-                                        <div className="lg:order-2">
-                                            <div
-                                                className="lg:border lg:border-gray-200 lg:rounded-lg lg:p-6 lg:overflow-y-auto"
-                                                style={{ maxHeight: `${BONUS_MODAL_CONTENT_MAX_HEIGHT}px` }}>
-                                                <ProductInfo
-                                                    product={currentProduct}
-                                                    swatchMode="controlled"
-                                                    onAttributeChange={handleAttributeChange}
-                                                    variationValues={variationValues}
-                                                    hideVariantSelection={isLockedToVariant}
-                                                />
-                                                <div className="text-destructive text-sm mt-2">
-                                                    Select up to {remainingCapacity}
-                                                </div>
-                                            </div>
+                {fetcher.state === 'loading' && !currentProduct ? (
+                    <div className="flex items-center justify-center p-8">
+                        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+                    </div>
+                ) : !currentProduct && fetcher.state === 'idle' && fetcher.data != null && !fetcher.success ? (
+                    <div className="flex flex-col items-center justify-center p-8 gap-4">
+                        <p className="text-destructive text-center">
+                            Failed to load product details. Please try again.
+                        </p>
+                        <Button
+                            onClick={() => {
+                                void fetcher.load();
+                            }}
+                            variant="outline">
+                            Retry
+                        </Button>
+                    </div>
+                ) : currentProduct ? (
+                    <ProductViewProvider
+                        product={currentProduct}
+                        mode="add"
+                        initialQuantity={1}
+                        maxQuantity={remainingCapacity}
+                        currentVariant={matchingVariant}>
+                        {/* Scrollable content area */}
+                        <div className="flex-1 overflow-y-auto min-h-0 lg:overflow-visible lg:flex-none">
+                            <div className="lg:grid lg:grid-cols-2 lg:gap-8 lg:items-start">
+                                <div className="lg:order-1">
+                                    <ImageGallery images={galleryImages} eager={false} />
+                                </div>
+                                <div className="lg:order-2">
+                                    <div
+                                        className="lg:border lg:border-gray-200 lg:rounded-lg lg:p-6 lg:overflow-y-auto"
+                                        style={{ maxHeight: `${BONUS_MODAL_CONTENT_MAX_HEIGHT}px` }}>
+                                        <ProductInfo
+                                            product={currentProduct}
+                                            swatchMode="controlled"
+                                            onAttributeChange={handleAttributeChange}
+                                            variationValues={variationValues}
+                                            hideVariantSelection={isLockedToVariant}
+                                        />
+                                        <div className="text-destructive text-sm mt-2">
+                                            Select up to {remainingCapacity}
                                         </div>
                                     </div>
-
-                                    {/* Desktop button - below both columns, aligned right */}
-                                    <div className="hidden lg:flex lg:justify-end lg:mt-6">
-                                        <AddToCartButton className="w-full lg:w-auto" />
-                                    </div>
                                 </div>
+                            </div>
 
-                                {/* Sticky button area - only on mobile, outside scrollable area */}
-                                <div className="shrink-0 bg-background border-t px-4 py-4 lg:hidden flex flex-col gap-2">
-                                    <AddToCartButton className="w-full" />
-                                    <Button
-                                        variant="outline"
-                                        className="w-full bg-muted hover:bg-muted/80"
-                                        onClick={() => onOpenChange(false)}>
-                                        Back to Cart
-                                    </Button>
-                                </div>
-                            </ProductViewProvider>
-                        ) : null}
-                    </>
-                )}
+                            {/* Desktop button - below both columns, aligned right */}
+                            <div className="hidden lg:flex lg:justify-end lg:mt-6">
+                                <AddToCartButton className="w-full lg:w-auto" />
+                            </div>
+                        </div>
+
+                        {/* Sticky button area - only on mobile, outside scrollable area */}
+                        <div className="shrink-0 bg-background border-t px-4 py-4 lg:hidden flex flex-col gap-2">
+                            <AddToCartButton className="w-full" />
+                            <Button
+                                variant="outline"
+                                className="w-full bg-muted hover:bg-muted/80"
+                                onClick={() => onOpenChange(false)}>
+                                Back to Cart
+                            </Button>
+                        </div>
+                    </ProductViewProvider>
+                ) : null}
             </DialogContent>
         </Dialog>
     );

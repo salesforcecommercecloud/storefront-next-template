@@ -19,8 +19,62 @@ import { action } from 'storybook/actions';
 import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'react';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
+import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
+import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 const BONUS_HARNESS_ATTR = 'data-bonus-product-harness';
+
+// Mock data factories
+function createMockProduct(
+    overrides: Partial<ShopperProducts.schemas['Product']> = {}
+): ShopperProducts.schemas['Product'] {
+    return {
+        id: 'product-1',
+        name: 'Test Product',
+        imageGroups: [
+            {
+                viewType: 'large',
+                images: [{ link: 'https://example.com/image.jpg', alt: 'Product Image' }],
+            },
+        ],
+        ...overrides,
+    };
+}
+
+function createMockBonusDiscountLineItem(
+    overrides: Partial<ShopperBasketsV2.schemas['BonusDiscountLineItem']> = {}
+): ShopperBasketsV2.schemas['BonusDiscountLineItem'] {
+    return {
+        id: 'bdli-1',
+        promotionId: 'promo-1',
+        maxBonusItems: 3,
+        bonusProducts: [
+            { productId: 'product-1', productName: 'Test Product 1' },
+            { productId: 'product-2', productName: 'Test Product 2' },
+            { productId: 'product-3', productName: 'Test Product 3' },
+        ],
+        ...overrides,
+    };
+}
+
+function createMockBasket(
+    overrides: Partial<ShopperBasketsV2.schemas['Basket']> = {}
+): ShopperBasketsV2.schemas['Basket'] {
+    return {
+        basketId: 'basket-1',
+        productItems: [],
+        bonusDiscountLineItems: [],
+        ...overrides,
+    };
+}
+
+function createMockBonusProductsById(): Record<string, ShopperProducts.schemas['Product']> {
+    return {
+        'product-1': createMockProduct({ id: 'product-1', name: 'Classic Silk Tie - Navy' }),
+        'product-2': createMockProduct({ id: 'product-2', name: 'Classic Silk Tie - Red' }),
+        'product-3': createMockProduct({ id: 'product-3', name: 'Classic Silk Tie - Black' }),
+    };
+}
 
 function BonusProductStoryHarness({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -98,6 +152,18 @@ const meta: Meta<typeof BonusProductSelection> = {
     title: 'CART/Bonus Product Selection',
     component: BonusProductSelection,
     tags: ['autodocs', 'interaction'],
+    args: (() => {
+        const bonusDiscountLineItem = createMockBonusDiscountLineItem();
+        return {
+            bonusDiscountLineItem,
+            bonusProductsById: createMockBonusProductsById(),
+            basket: createMockBasket({
+                bonusDiscountLineItems: [bonusDiscountLineItem],
+            }),
+            promotionName: 'Buy one Classic Fit Shirt and get one free tie',
+            onProductSelect: action('product-selected'),
+        };
+    })(),
     parameters: {
         layout: 'padded',
         docs: {
@@ -150,11 +216,34 @@ This component currently uses dev-only mocks for visual testing. In production, 
         },
     },
     decorators: [
-        (Story: React.ComponentType) => (
-            <BonusProductStoryHarness>
-                <Story />
-            </BonusProductStoryHarness>
-        ),
+        (Story: React.ComponentType, context) => {
+            const RouterWrapper = (): ReactElement => {
+                const inRouter = useInRouterContext();
+                const content = (
+                    <BonusProductStoryHarness>
+                        <Story {...(context.args as Record<string, unknown>)} />
+                    </BonusProductStoryHarness>
+                );
+
+                if (inRouter) {
+                    return content;
+                }
+
+                const router = createMemoryRouter(
+                    [
+                        {
+                            path: '/cart',
+                            element: content,
+                        },
+                    ],
+                    { initialEntries: ['/cart'] }
+                );
+
+                return <RouterProvider router={router} />;
+            };
+
+            return <RouterWrapper />;
+        },
     ],
 };
 
@@ -189,12 +278,15 @@ The default BonusProductSelection shows all available bonus products:
 
         await waitForStorybookReady(canvasElement);
 
-        // Test accordion is present
-        const accordion = await canvas.findByRole('button');
+        // Test accordion is present - find by text content to avoid ambiguity
+        const accordion = await canvas.findByRole('button', { name: /Buy one Classic Fit Shirt/i });
         await expect(accordion).toBeInTheDocument();
 
-        // Test accordion can be toggled
-        await userEvent.click(accordion);
+        // Check if accordion is collapsed, if so expand it
+        const isExpanded = accordion.getAttribute('aria-expanded') === 'true';
+        if (!isExpanded) {
+            await userEvent.click(accordion);
+        }
 
         // Wait for accordion content to be visible
         const selectButtons = await canvas.findAllByRole('button', { name: /select/i });
@@ -228,9 +320,12 @@ BonusProductSelection with accordion expanded:
 
         await waitForStorybookReady(canvasElement);
 
-        // Expand accordion
-        const accordion = await canvas.findByRole('button');
-        await userEvent.click(accordion);
+        // Ensure accordion is expanded - find by text content to avoid ambiguity
+        const accordion = await canvas.findByRole('button', { name: /Buy one Classic Fit Shirt/i });
+        const isExpanded = accordion.getAttribute('aria-expanded') === 'true';
+        if (!isExpanded) {
+            await userEvent.click(accordion);
+        }
 
         // Test select buttons are present
         const selectButtons = await canvas.findAllByRole('button', { name: /select/i });
@@ -243,6 +338,30 @@ BonusProductSelection with accordion expanded:
 };
 
 export const WithCarouselNavigation: Story = {
+    args: (() => {
+        const bonusDiscountLineItem = createMockBonusDiscountLineItem({
+            maxBonusItems: 8,
+            bonusProducts: Array.from({ length: 8 }, (_, i) => ({
+                productId: `product-${i + 1}`,
+                productName: `Classic Silk Tie ${i + 1}`,
+            })),
+        });
+        return {
+            bonusDiscountLineItem,
+            bonusProductsById: Object.fromEntries(
+                Array.from({ length: 8 }, (_, i) => [
+                    `product-${i + 1}`,
+                    createMockProduct({
+                        id: `product-${i + 1}`,
+                        name: `Classic Silk Tie ${i + 1}`,
+                    }),
+                ])
+            ),
+            basket: createMockBasket({
+                bonusDiscountLineItems: [bonusDiscountLineItem],
+            }),
+        };
+    })(),
     parameters: {
         docs: {
             description: {
@@ -269,9 +388,12 @@ BonusProductSelection demonstrating carousel navigation:
 
         await waitForStorybookReady(canvasElement);
 
-        // Expand accordion
-        const accordion = await canvas.findByRole('button');
-        await userEvent.click(accordion);
+        // Ensure accordion is expanded - find by text content to avoid ambiguity
+        const accordion = await canvas.findByRole('button', { name: /Buy one Classic Fit Shirt/i });
+        const isExpanded = accordion.getAttribute('aria-expanded') === 'true';
+        if (!isExpanded) {
+            await userEvent.click(accordion);
+        }
 
         // Test carousel navigation buttons
         const prevButton = canvasElement.querySelector('button[aria-label*="Previous"]');
@@ -296,12 +418,15 @@ export const Mobile: Story = {
 
         await waitForStorybookReady(canvasElement);
 
-        // Test accordion is present
-        const accordion = await canvas.findByRole('button');
+        // Test accordion is present - find by text content to avoid ambiguity
+        const accordion = await canvas.findByRole('button', { name: /Buy one Classic Fit Shirt/i });
         await expect(accordion).toBeInTheDocument();
 
-        // Test accordion can be toggled
-        await userEvent.click(accordion);
+        // Check if accordion is collapsed, if so expand it
+        const isExpanded = accordion.getAttribute('aria-expanded') === 'true';
+        if (!isExpanded) {
+            await userEvent.click(accordion);
+        }
 
         // Wait for accordion content to be visible
         const selectButtons = await canvas.findAllByRole('button', { name: /select/i });
@@ -319,12 +444,15 @@ export const Tablet: Story = {
 
         await waitForStorybookReady(canvasElement);
 
-        // Test accordion is present
-        const accordion = await canvas.findByRole('button');
+        // Test accordion is present - find by text content to avoid ambiguity
+        const accordion = await canvas.findByRole('button', { name: /Buy one Classic Fit Shirt/i });
         await expect(accordion).toBeInTheDocument();
 
-        // Test accordion can be toggled
-        await userEvent.click(accordion);
+        // Check if accordion is collapsed, if so expand it
+        const isExpanded = accordion.getAttribute('aria-expanded') === 'true';
+        if (!isExpanded) {
+            await userEvent.click(accordion);
+        }
 
         // Wait for accordion content to be visible
         const selectButtons = await canvas.findAllByRole('button', { name: /select/i });
@@ -342,12 +470,15 @@ export const Desktop: Story = {
 
         await waitForStorybookReady(canvasElement);
 
-        // Test accordion is present
-        const accordion = await canvas.findByRole('button');
+        // Test accordion is present - find by text content to avoid ambiguity
+        const accordion = await canvas.findByRole('button', { name: /Buy one Classic Fit Shirt/i });
         await expect(accordion).toBeInTheDocument();
 
-        // Test accordion can be toggled
-        await userEvent.click(accordion);
+        // Check if accordion is collapsed, if so expand it
+        const isExpanded = accordion.getAttribute('aria-expanded') === 'true';
+        if (!isExpanded) {
+            await userEvent.click(accordion);
+        }
 
         // Wait for accordion content to be visible
         const selectButtons = await canvas.findAllByRole('button', { name: /select/i });

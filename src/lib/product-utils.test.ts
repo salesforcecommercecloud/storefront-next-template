@@ -22,6 +22,8 @@ import {
     getImagesForColor,
     isProductBundle,
     isStandardProduct,
+    requiresVariantSelection,
+    getPrimaryProductImageUrl,
 } from './product-utils';
 
 describe('product-utils', () => {
@@ -419,6 +421,260 @@ describe('product-utils', () => {
         it('isStandardProduct returns false when product.type.item is falsy', () => {
             const product = { id: 'p5', type: { master: true } } as unknown as ShopperProducts.schemas['Product'];
             expect(isStandardProduct(product)).toBe(false);
+        });
+    });
+
+    describe('requiresVariantSelection', () => {
+        it('returns true for products with variants array', () => {
+            const product = {
+                id: 'master-product',
+                variants: [{ productId: 'variant-1' }, { productId: 'variant-2' }],
+            } as unknown as ShopperProducts.schemas['Product'];
+
+            expect(requiresVariantSelection(product)).toBe(true);
+        });
+
+        it('returns true for products with multiple selectable variation attribute values', () => {
+            const product = {
+                id: 'product-with-variations',
+                variationAttributes: [
+                    {
+                        id: 'color',
+                        name: 'Color',
+                        values: [
+                            { value: 'red', name: 'Red' },
+                            { value: 'blue', name: 'Blue' },
+                        ],
+                    },
+                ],
+            } as unknown as ShopperProducts.schemas['Product'];
+
+            expect(requiresVariantSelection(product)).toBe(true);
+        });
+
+        it('returns false for products with single variation attribute value', () => {
+            const product = {
+                id: 'single-variant',
+                variationAttributes: [
+                    {
+                        id: 'color',
+                        name: 'Color',
+                        values: [{ value: 'red', name: 'Red' }],
+                    },
+                ],
+            } as unknown as ShopperProducts.schemas['Product'];
+
+            expect(requiresVariantSelection(product)).toBe(false);
+        });
+
+        it('returns false for standard products without variants', () => {
+            const product = {
+                id: 'standard-product',
+                type: { item: true },
+            } as unknown as ShopperProducts.schemas['Product'];
+
+            expect(requiresVariantSelection(product)).toBe(false);
+        });
+
+        it('returns false for products with empty variants array', () => {
+            const product = {
+                id: 'empty-variants',
+                variants: [],
+            } as unknown as ShopperProducts.schemas['Product'];
+
+            expect(requiresVariantSelection(product)).toBe(false);
+        });
+
+        it('returns false for variant products even with sibling variants array', () => {
+            const product = {
+                id: '793775370033M',
+                type: { variant: true },
+                variants: [
+                    { productId: '793775370033M', variationValues: { color: 'TURQUSI' } },
+                    { productId: '793775362380M', variationValues: { color: 'REDSI' } },
+                ],
+                variationAttributes: [
+                    {
+                        id: 'color',
+                        name: 'Color',
+                        values: [
+                            { value: 'TURQUSI', name: 'Turquoise' },
+                            { value: 'REDSI', name: 'Red' },
+                        ],
+                    },
+                ],
+            } as unknown as ShopperProducts.schemas['Product'];
+
+            // This is a variant product (not a master), so it should not require variant selection
+            // even though it has a variants array containing sibling variants
+            expect(requiresVariantSelection(product)).toBe(false);
+        });
+    });
+
+    describe('getPrimaryProductImageUrl', () => {
+        it('returns large image URL when available', () => {
+            const product = {
+                id: 'product-with-images',
+                imageGroups: [
+                    {
+                        viewType: 'large',
+                        images: [
+                            { disBaseLink: 'https://cdn.example.com/large.jpg', link: 'https://example.com/large.jpg' },
+                        ],
+                    },
+                ],
+            } as unknown as ShopperProducts.schemas['Product'];
+
+            expect(getPrimaryProductImageUrl(product)).toBe('https://cdn.example.com/large.jpg');
+        });
+
+        it('prefers disBaseLink over link', () => {
+            const product = {
+                id: 'product',
+                imageGroups: [
+                    {
+                        viewType: 'large',
+                        images: [
+                            { disBaseLink: 'https://cdn.example.com/image.jpg', link: 'https://example.com/image.jpg' },
+                        ],
+                    },
+                ],
+            } as unknown as ShopperProducts.schemas['Product'];
+
+            expect(getPrimaryProductImageUrl(product)).toBe('https://cdn.example.com/image.jpg');
+        });
+
+        it('falls back to link when disBaseLink is not available', () => {
+            const product = {
+                id: 'product',
+                imageGroups: [
+                    {
+                        viewType: 'large',
+                        images: [{ link: 'https://example.com/image.jpg' }],
+                    },
+                ],
+            } as unknown as ShopperProducts.schemas['Product'];
+
+            expect(getPrimaryProductImageUrl(product)).toBe('https://example.com/image.jpg');
+        });
+
+        it('falls back to first available image when large view type not found', () => {
+            const product = {
+                id: 'product',
+                imageGroups: [
+                    {
+                        viewType: 'swatch',
+                        images: [{ link: 'https://example.com/swatch.jpg' }],
+                    },
+                    {
+                        viewType: 'medium',
+                        images: [{ link: 'https://example.com/medium.jpg' }],
+                    },
+                ],
+            } as unknown as ShopperProducts.schemas['Product'];
+
+            // Falls back to first image group
+            expect(getPrimaryProductImageUrl(product)).toBe('https://example.com/swatch.jpg');
+        });
+
+        it('returns undefined when no images available', () => {
+            const product = {
+                id: 'product-no-images',
+            } as unknown as ShopperProducts.schemas['Product'];
+
+            expect(getPrimaryProductImageUrl(product)).toBeUndefined();
+        });
+
+        it('returns undefined when imageGroups is empty', () => {
+            const product = {
+                id: 'product',
+                imageGroups: [],
+            } as unknown as ShopperProducts.schemas['Product'];
+
+            expect(getPrimaryProductImageUrl(product)).toBeUndefined();
+        });
+
+        it('allows custom viewType parameter', () => {
+            const product = {
+                id: 'product',
+                imageGroups: [
+                    {
+                        viewType: 'large',
+                        images: [{ link: 'https://example.com/large.jpg' }],
+                    },
+                    {
+                        viewType: 'small',
+                        images: [{ link: 'https://example.com/small.jpg' }],
+                    },
+                ],
+            } as unknown as ShopperProducts.schemas['Product'];
+
+            expect(getPrimaryProductImageUrl(product, 'small')).toBe('https://example.com/small.jpg');
+        });
+
+        it('returns variant-specific image when variationValues provided', () => {
+            const product = {
+                id: 'product-with-color-variants',
+                imageGroups: [
+                    {
+                        viewType: 'large',
+                        images: [{ link: 'https://example.com/default.jpg' }],
+                    },
+                    {
+                        viewType: 'large',
+                        variationAttributes: [
+                            {
+                                id: 'color',
+                                values: [{ value: 'red' }],
+                            },
+                        ],
+                        images: [{ disBaseLink: 'https://example.com/red.jpg' }],
+                    },
+                    {
+                        viewType: 'large',
+                        variationAttributes: [
+                            {
+                                id: 'color',
+                                values: [{ value: 'blue' }],
+                            },
+                        ],
+                        images: [{ disBaseLink: 'https://example.com/blue.jpg' }],
+                    },
+                ],
+            } as unknown as ShopperProducts.schemas['Product'];
+
+            // Should return red variant image
+            expect(getPrimaryProductImageUrl(product, 'large', { color: 'red' })).toBe('https://example.com/red.jpg');
+
+            // Should return blue variant image
+            expect(getPrimaryProductImageUrl(product, 'large', { color: 'blue' })).toBe('https://example.com/blue.jpg');
+        });
+
+        it('falls back to default image when variationValues do not match any image group', () => {
+            const product = {
+                id: 'product-with-color-variants',
+                imageGroups: [
+                    {
+                        viewType: 'large',
+                        images: [{ link: 'https://example.com/default.jpg' }],
+                    },
+                    {
+                        viewType: 'large',
+                        variationAttributes: [
+                            {
+                                id: 'color',
+                                values: [{ value: 'red' }],
+                            },
+                        ],
+                        images: [{ disBaseLink: 'https://example.com/red.jpg' }],
+                    },
+                ],
+            } as unknown as ShopperProducts.schemas['Product'];
+
+            // Request a color that doesn't exist - should fall back to default large image
+            expect(getPrimaryProductImageUrl(product, 'large', { color: 'green' })).toBe(
+                'https://example.com/default.jpg'
+            );
         });
     });
 });
