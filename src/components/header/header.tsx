@@ -21,21 +21,13 @@ import UserActions from './user-actions';
 import { useTranslation } from 'react-i18next';
 import logo from '/images/market-logo.svg';
 import { PluginComponent } from '@/plugins/plugin-component';
-import { useCorrelationId } from '@/providers/correlation';
 
 export default function Header({ children }: PropsWithChildren): ReactElement {
     const { t } = useTranslation('header');
     const location = useLocation();
-    const correlationId = useCorrelationId();
 
     return (
         <header className="bg-background shadow-md sticky top-0 z-50">
-            {/* TODO: Remove this debug display */}
-            {correlationId && (
-                <div className="bg-muted text-muted-foreground text-xs px-4 py-1 text-center font-mono">
-                    Correlation ID: {correlationId}
-                </div>
-            )}
             <div className="container mx-auto px-4 py-4">
                 <div className="flex items-center justify-between">
                     {/* Logo */}
