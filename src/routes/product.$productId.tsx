@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { use, useEffect, useRef, useMemo } from 'react';
-import { type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from 'react-router';
+import { use, useEffect, useRef, useMemo, Suspense, Fragment } from 'react';
+import { type LoaderFunctionArgs } from 'react-router';
 import { type ShopperProducts, type ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import { createApiClients } from '@/lib/api-clients';
 import { currencyContext } from '@/lib/currency';
 import ProductSkeleton from '@/components/product-skeleton';
-import { createPage, type RouteComponentProps } from '@/components/create-page';
 import ProductView from '@/components/product-view';
 import { Typography } from '@/components/typography';
 import ChildProducts from '@/components/product-view/child-products';
@@ -34,11 +33,7 @@ import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 import { collectComponentDataPromises, fetchPageFromLoader } from '@/lib/util/pageLoader';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
-import {
-    getCookieFromRequestAs,
-    getCookieFromDocumentAs,
-    getSelectedStoreInfoCookieName,
-} from '@/extensions/store-locator/utils';
+import { getCookieFromRequestAs, getSelectedStoreInfoCookieName } from '@/extensions/store-locator/utils';
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
 import PickupProvider from '@/extensions/bopis/context/pickup-context';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
@@ -73,18 +68,19 @@ export type ProductPageData = {
 };
 
 /**
- * Internal helper function that fetches product data and category information.
- * This function handles the actual data fetching logic shared between server and client loaders.
- * @param selectedStoreInfo - Optional store information for inventory-specific data
- * @returns Promise that resolves to an object containing product and category data promises
+ * Server-side loader function that fetches product data and category information.
+ * This function runs on the server during SSR and can access cookies for store information.
+ * @returns Object containing product, category, page data, and component data promises
  */
-function getPageData(
-    // @sfdc-extension-line SFDC_EXT_BOPIS
-    selectedStoreInfo: SelectedStoreInfo | null,
-    { request, params, context }: LoaderFunctionArgs
-): ProductPageData {
+// eslint-disable-next-line react-refresh/only-export-components
+export function loader({ request, params, context }: LoaderFunctionArgs): ProductPageData {
     const { productId = '' } = params;
     const { searchParams } = new URL(request.url);
+
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    const cookieName = getSelectedStoreInfoCookieName();
+    const selectedStoreInfo = getCookieFromRequestAs<SelectedStoreInfo>(request, cookieName);
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     // Check for variant product ID in search params (for product variants)
     const clients = createApiClients(context);
@@ -206,49 +202,13 @@ function getPageData(
         pageKey: productId,
     };
 }
-/**
- * Server-side loader function that fetches product data and category information.
- * This function runs on the server during SSR and can access cookies for store information.
- * @returns Promise that resolves to an object containing product and category promises
- */
-export function loader({ request, params, context }: LoaderFunctionArgs) {
-    // @sfdc-extension-block-start SFDC_EXT_BOPIS
-    const cookieName = getSelectedStoreInfoCookieName();
-    const selectedStoreInfo = getCookieFromRequestAs<SelectedStoreInfo>(request, cookieName);
-    // @sfdc-extension-block-end SFDC_EXT_BOPIS
-
-    return getPageData(
-        // @sfdc-extension-line SFDC_EXT_BOPIS
-        selectedStoreInfo,
-        { request, params, context }
-    );
-}
-
-/**
- * Client-side loader function that handles data loading for client-side navigation.
- * This function can access client-side cookies to get store selection information
- * and fetch product data with inventory-specific information.
- * @returns Promise that resolves to an object containing product and category promises
- */
-// eslint-disable-next-line custom/no-client-loaders
-export function clientLoader({ request, params, context }: ClientLoaderFunctionArgs): ProductPageData {
-    // @sfdc-extension-block-start SFDC_EXT_BOPIS
-    const cookieName = getSelectedStoreInfoCookieName();
-    const selectedStoreInfo = getCookieFromDocumentAs<SelectedStoreInfo>(cookieName);
-    // @sfdc-extension-block-end SFDC_EXT_BOPIS
-
-    return getPageData(
-        // @sfdc-extension-line SFDC_EXT_BOPIS
-        selectedStoreInfo,
-        { request, params, context }
-    );
-}
 
 /**
  * Prevent loader from re-running on variant parameter changes to avoid skeleton
  * https://reactrouter.com/start/data/route-object#shouldrevalidate
  * we don't want the page to show skeleton when loading variant product after first initial load
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function shouldRevalidate({
     currentUrl,
     nextUrl,
@@ -284,7 +244,6 @@ export function shouldRevalidate({
     return false;
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 function ProductRecommendationsSection() {
     const { t } = useTranslation('product');
 
@@ -325,11 +284,11 @@ function ProductRecommendationsSection() {
 /**
  * Product view component that displays the product content.
  * This component receives loader data and renders the main product view including
- * breadcrumbs and product details.
+ * breadcrumbs and product details. Uses React's use() hook to unwrap promises.
  * @returns JSX element representing the product page layout
  */
-// eslint-disable-next-line react-refresh/only-export-components
-function ProductDetailView({ loaderData }: RouteComponentProps<ProductPageData>) {
+
+function ProductDetailView({ loaderData }: { loaderData: ProductPageData }) {
     const { product, category } = loaderData;
     const productData = use(product);
     const categoryData = use(category);
@@ -439,19 +398,22 @@ function ProductDetailView({ loaderData }: RouteComponentProps<ProductPageData>)
 
 /**
  * Product page component that displays a product with its details and category breadcrumbs.
- * This component uses the createPage factory to handle Suspense patterns and data loading.
- * The page factory automatically handles the Suspense boundary and passes loader data
- * directly to the ProductView component.
- * @returns A page component created by the createPage factory
+ * This component wraps ProductDetailView with Suspense and uses a page key to prevent
+ * skeleton from showing when switching between product variants (color, size, etc.).
+ * The page key ensures React only remounts when navigating to a different product, not variants.
+ * Uses React's use() hook internally to handle async data fetching.
+ * @returns JSX element representing the product page with Suspense boundary
  */
-// eslint-disable-next-line react-refresh/only-export-components
-export default createPage<ProductPageData>({
-    component: ProductDetailView,
-    fallback: <ProductSkeleton />,
-    getPageKey: (_loaderData) => {
-        // we only want to show skeleton again if the product has changed and don't worry about params
-        // changes. This will give us the ability to fetch variant product lazily in the background
-        // (using pid search params) without interupting UX
-        return _loaderData.pageKey;
-    },
-});
+export default function ProductPage({ loaderData }: { loaderData: ProductPageData }) {
+    // Use pageKey from loaderData to force remount only when productId changes
+    // This prevents showing skeleton when switching variants (pid parameter)
+    const pageKey = loaderData.pageKey;
+
+    return (
+        <Fragment key={pageKey}>
+            <Suspense fallback={<ProductSkeleton />}>
+                <ProductDetailView loaderData={loaderData} />
+            </Suspense>
+        </Fragment>
+    );
+}

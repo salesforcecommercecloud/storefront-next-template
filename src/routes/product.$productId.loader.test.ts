@@ -16,8 +16,8 @@
 
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import type { RouterContextProvider } from 'react-router';
-import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
-import { loader, clientLoader } from './product.$productId';
+import type { ShopperProducts, ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
+import { loader } from './product.$productId';
 import { appConfigContext } from '@/config';
 import { authContext } from '@/middlewares/auth.utils';
 import { currencyContext } from '@/lib/currency';
@@ -35,29 +35,23 @@ vi.mock('@/lib/api-clients', () => ({
     })),
 }));
 
-// Mock the recommendations function
-const mockGenerateRecommendationPromises = vi.hoisted(() =>
-    vi.fn(() => [
-        {
-            config: { id: 'you-may-also-like', title: 'You May Also Like' },
-            promise: Promise.resolve({
-                hits: [],
-                total: 0,
-                query: '',
-                refinements: [],
-                searchPhraseSuggestions: { suggestedTerms: [] },
-                sortingOptions: [],
-                start: 0,
-                count: 0,
-                offset: 0,
-                limit: 8,
-            } as ShopperSearch.schemas['ProductSearchResult']),
-        },
-    ])
+// Mock Page Designer functions
+const mockFetchPageFromLoader = vi.fn(
+    (): Promise<ShopperExperience.schemas['Page']> =>
+        Promise.resolve({
+            id: 'pdp',
+            typeId: 'page',
+            aspectTypeId: 'pdp',
+            name: 'Product Detail Page',
+            regions: [],
+        })
 );
 
-vi.mock('@/lib/recommendations', () => ({
-    generateRecommendationPromises: mockGenerateRecommendationPromises,
+const mockCollectComponentDataPromises = vi.fn(() => Promise.resolve({}));
+
+vi.mock('@/lib/page-designer', () => ({
+    fetchPageFromLoader: mockFetchPageFromLoader,
+    collectComponentDataPromises: mockCollectComponentDataPromises,
 }));
 
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -248,96 +242,6 @@ describe('Product Route Loaders', () => {
                 }),
             });
         });
-    });
-
-    describe('clientLoader function', () => {
-        test('returns same data structure as server loader', async () => {
-            mockGetProduct.mockResolvedValue({ data: mockProduct });
-            mockGetCategory.mockResolvedValue({ data: mockCategory });
-            // @sfdc-extension-line SFDC_EXT_BOPIS
-            mockGetCookieFromDocumentAs.mockReturnValue(null);
-
-            const request = new Request('https://example.com/product/test-product-123');
-            const params = { productId: 'test-product-123' };
-            const context = mockContext;
-
-            const result = clientLoader({
-                request,
-                params,
-                context,
-                serverLoader: vi.fn().mockResolvedValue({
-                    product: Promise.resolve(mockProduct),
-                    category: Promise.resolve(mockCategory),
-                    recommendations: Promise.resolve([]),
-                }),
-            });
-
-            expect(result).toHaveProperty('product');
-            expect(result).toHaveProperty('category');
-
-            // Verify the structure is the same as server loader
-            const productData = await result.product;
-            expect(productData).toEqual(mockProduct);
-        });
-
-        // @sfdc-extension-block-start SFDC_EXT_BOPIS
-        test('includes inventoryIds when store is selected', () => {
-            mockGetProduct.mockResolvedValue({ data: mockProduct });
-            mockGetCategory.mockResolvedValue({ data: mockCategory });
-
-            const selectedStoreInfo = {
-                storeId: 'store-123',
-                inventoryId: 'inventory-123',
-                name: 'Test Store',
-            };
-
-            mockGetCookieFromDocumentAs.mockReturnValue(selectedStoreInfo);
-
-            const request = new Request('https://example.com/product/test-product-123');
-            const params = { productId: 'test-product-123' };
-            const context = mockContext;
-
-            clientLoader({
-                request,
-                params,
-                context,
-                serverLoader: vi.fn(),
-            });
-
-            // Verify getProduct was called with inventoryIds parameter
-            expect(mockGetProduct).toHaveBeenCalledWith({
-                params: expect.objectContaining({
-                    path: expect.objectContaining({
-                        id: 'test-product-123',
-                    }),
-                    query: expect.objectContaining({
-                        inventoryIds: ['inventory-123'],
-                    }),
-                }),
-            });
-        });
-
-        test('does not include inventoryIds when store is not selected', () => {
-            mockGetProduct.mockResolvedValue({ data: mockProduct });
-            mockGetCategory.mockResolvedValue({ data: mockCategory });
-            mockGetCookieFromDocumentAs.mockReturnValue(null);
-
-            const request = new Request('https://example.com/product/test-product-123');
-            const params = { productId: 'test-product-123' };
-            const context = mockContext;
-
-            clientLoader({
-                request,
-                params,
-                context,
-                serverLoader: vi.fn(),
-            });
-
-            // Verify getProduct was called without inventoryIds parameter
-            const callArgs = mockGetProduct.mock.calls[0]?.[0];
-            expect(callArgs?.params?.query).not.toHaveProperty('inventoryIds');
-        });
-        // @sfdc-extension-block-end SFDC_EXT_BOPIS
     });
 
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -619,208 +523,6 @@ describe('Product Route Loaders', () => {
                     }),
                 }),
             });
-        });
-
-        test.skip('generates recommendations with correct product and category data', async () => {
-            mockGetProduct.mockResolvedValue({ data: mockProduct });
-            mockGetCategory.mockResolvedValue({ data: mockCategory });
-
-            const request = new Request('https://example.com/product/test-product-123');
-            const params = { productId: 'test-product-123' };
-            const context = mockContext;
-
-            const result = loader({ request, params, context });
-
-            // Wait for promises to resolve
-            await Promise.all([result.product, result.category, result.recommendations]);
-
-            // Verify generateRecommendationPromises was called
-            expect(mockGenerateRecommendationPromises).toHaveBeenCalled();
-            const callArgs = mockGenerateRecommendationPromises.mock.calls[0] as unknown[];
-            if (callArgs && callArgs.length >= 2) {
-                const firstArg = callArgs[0];
-                const secondArg = callArgs[1];
-                expect(firstArg).toBe(context);
-                expect(secondArg).toHaveProperty('product');
-                expect(secondArg).toHaveProperty('category');
-            }
-        });
-
-        test.skip('handles category with parentCategoryId and extracts subcategories', async () => {
-            const categoryWithParent: ShopperProducts.schemas['Category'] = {
-                ...mockCategory,
-                parentCategoryId: 'parent-category-123',
-            };
-
-            const parentCategory: ShopperProducts.schemas['Category'] = {
-                id: 'parent-category-123',
-                name: 'Parent Category',
-                categories: [
-                    { id: 'sub-1', name: 'Subcategory 1', parentCategoryId: 'parent-category-123' },
-                    { id: 'sub-2', name: 'Subcategory 2', parentCategoryId: 'parent-category-123' },
-                ],
-            };
-
-            mockGetProduct.mockResolvedValue({ data: mockProduct });
-            mockGetCategory
-                .mockResolvedValueOnce({ data: categoryWithParent }) // First call for the category
-                .mockResolvedValueOnce({ data: parentCategory }); // Second call for parent category
-
-            const request = new Request('https://example.com/product/test-product-123');
-            const params = { productId: 'test-product-123' };
-            const context = mockContext;
-
-            loader({ request, params, context });
-
-            // Wait for promises to resolve
-            await new Promise((resolve) => setTimeout(resolve, 0));
-
-            // Verify parent category was fetched
-            expect(mockGetCategory).toHaveBeenCalledWith({
-                params: expect.objectContaining({
-                    path: expect.objectContaining({
-                        id: 'parent-category-123',
-                    }),
-                    query: expect.objectContaining({
-                        levels: 1,
-                    }),
-                }),
-            });
-
-            // Verify generateRecommendationPromises was called with subcategories
-            expect(mockGenerateRecommendationPromises).toHaveBeenCalled();
-            const callArgs = mockGenerateRecommendationPromises.mock.calls[0] as unknown[];
-            if (callArgs && callArgs.length >= 2) {
-                const secondArg = callArgs[1] as any;
-                expect(secondArg).toHaveProperty('subcategories');
-                expect(Array.isArray(secondArg.subcategories)).toBe(true);
-            }
-        });
-
-        test.skip('handles product with master product ID for recommendations', async () => {
-            const variantProduct = {
-                ...mockProduct,
-                id: 'variant-product-123',
-                master: {
-                    masterId: 'master-product-123',
-                },
-            };
-
-            mockGetProduct.mockResolvedValue({ data: variantProduct });
-            mockGetCategory.mockResolvedValue({ data: mockCategory });
-
-            const request = new Request('https://example.com/product/variant-product-123');
-            const params = { productId: 'variant-product-123' };
-            const context = mockContext;
-
-            loader({ request, params, context });
-
-            // Wait for promises to resolve
-            await new Promise((resolve) => setTimeout(resolve, 0));
-
-            // Verify generateRecommendationPromises was called
-            expect(mockGenerateRecommendationPromises).toHaveBeenCalled();
-            const callArgs = mockGenerateRecommendationPromises.mock.calls[0] as unknown[];
-            if (callArgs && callArgs.length >= 2) {
-                const secondArg = callArgs[1] as any;
-                expect(secondArg.product.id).toBe('master-product-123');
-            }
-        });
-
-        test.skip('handles category fetch error when parent category fails', async () => {
-            const categoryWithParent: ShopperProducts.schemas['Category'] = {
-                ...mockCategory,
-                parentCategoryId: 'parent-category-123',
-            };
-
-            mockGetProduct.mockResolvedValue({ data: mockProduct });
-            mockGetCategory
-                .mockResolvedValueOnce({ data: categoryWithParent }) // First call succeeds
-                .mockRejectedValueOnce(new Error('Parent category not found')); // Second call fails
-
-            const request = new Request('https://example.com/product/test-product-123');
-            const params = { productId: 'test-product-123' };
-            const context = mockContext;
-
-            const result = loader({ request, params, context });
-
-            // Should still return valid structure even if parent category fetch fails
-            expect(result).toHaveProperty('product');
-            expect(result).toHaveProperty('category');
-
-            // Wait for promises to resolve and handle the rejection
-            try {
-                await result.recommendations;
-            } catch {
-                // The error is expected and handled internally by the code
-                // The recommendations promise will reject, but that's okay for this test
-            }
-        });
-
-        test.skip('handles category without parentCategoryId for recommendations', async () => {
-            const categoryWithoutParent: ShopperProducts.schemas['Category'] = {
-                ...mockCategory,
-                parentCategoryId: undefined,
-            };
-
-            mockGetProduct.mockResolvedValue({ data: mockProduct });
-            mockGetCategory.mockResolvedValue({ data: categoryWithoutParent });
-
-            const request = new Request('https://example.com/product/test-product-123');
-            const params = { productId: 'test-product-123' };
-            const context = mockContext;
-
-            loader({ request, params, context });
-
-            // Wait for promises to resolve
-            await new Promise((resolve) => setTimeout(resolve, 0));
-
-            // Verify generateRecommendationPromises was called without subcategories
-            expect(mockGenerateRecommendationPromises).toHaveBeenCalled();
-            const callArgs = mockGenerateRecommendationPromises.mock.calls[0] as unknown[];
-            if (callArgs && callArgs.length >= 2) {
-                const secondArg = callArgs[1] as any;
-                expect(secondArg).toHaveProperty('subcategories');
-                expect(Array.isArray(secondArg.subcategories)).toBe(true);
-                expect(secondArg.subcategories.length).toBe(0);
-            }
-        });
-
-        test.skip('handles parent category with empty categories array', async () => {
-            const categoryWithParent: ShopperProducts.schemas['Category'] = {
-                ...mockCategory,
-                parentCategoryId: 'parent-category-123',
-            };
-
-            const parentCategoryWithNoSubs: ShopperProducts.schemas['Category'] = {
-                id: 'parent-category-123',
-                name: 'Parent Category',
-                categories: [], // Empty categories array
-            };
-
-            mockGetProduct.mockResolvedValue({ data: mockProduct });
-            mockGetCategory
-                .mockResolvedValueOnce({ data: categoryWithParent }) // First call for the category
-                .mockResolvedValueOnce({ data: parentCategoryWithNoSubs }); // Second call for parent category
-
-            const request = new Request('https://example.com/product/test-product-123');
-            const params = { productId: 'test-product-123' };
-            const context = mockContext;
-
-            loader({ request, params, context });
-
-            // Wait for promises to resolve
-            await new Promise((resolve) => setTimeout(resolve, 0));
-
-            // Verify generateRecommendationPromises was called with empty subcategories
-            expect(mockGenerateRecommendationPromises).toHaveBeenCalled();
-            const callArgs = mockGenerateRecommendationPromises.mock.calls[0] as unknown[];
-            if (callArgs && callArgs.length >= 2) {
-                const secondArg = callArgs[1] as any;
-                expect(secondArg).toHaveProperty('subcategories');
-                expect(Array.isArray(secondArg.subcategories)).toBe(true);
-                expect(secondArg.subcategories.length).toBe(0);
-            }
         });
     });
 });

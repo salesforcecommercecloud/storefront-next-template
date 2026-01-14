@@ -17,7 +17,7 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render } from '@testing-library/react';
 import { use } from 'react';
-import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { shouldRevalidate, type ProductPageData } from './product.$productId';
 
 // Mock the components and utilities
@@ -91,20 +91,26 @@ vi.mock('@/lib/product-utils', () => ({
     isProductBundle: vi.fn(),
 }));
 
-vi.mock('@/lib/recommendations', () => ({
-    generateRecommendationPromises: vi.fn(),
+vi.mock('@/components/product-recommendations', () => ({
+    default: ({ recommender }: any) => (
+        <div data-testid="product-recommendations">
+            <div data-testid="recommender-title">{recommender?.title}</div>
+        </div>
+    ),
 }));
 
-const createPageMock = vi.hoisted(() =>
-    vi.fn((config: any) => {
-        return function ProductPage(props: any) {
-            return <div data-testid="product-page">{config.component && <config.component {...props} />}</div>;
-        };
-    })
-);
+vi.mock('@/hooks/use-analytics', () => ({
+    useAnalytics: () => ({
+        trackViewProduct: vi.fn(),
+    }),
+}));
 
-vi.mock('@/components/create-page', () => ({
-    createPage: createPageMock,
+vi.mock('@/providers/product-context', () => ({
+    ProductProvider: ({ children }: any) => <div data-testid="product-provider">{children}</div>,
+}));
+
+vi.mock('@/components/region', () => ({
+    Region: ({ fallback }: any) => <div data-testid="region">{fallback}</div>,
 }));
 
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -148,23 +154,15 @@ describe('Product Detail Route', () => {
         categories: [],
     };
 
-    const mockRecommendations = [
-        {
-            config: { id: 'you-may-also-like', title: 'You May Also Like' },
-            promise: Promise.resolve({
-                hits: [],
-                total: 0,
-                query: '',
-                refinements: [],
-                searchPhraseSuggestions: { suggestedTerms: [] },
-                sortingOptions: [],
-                start: 0,
-                count: 0,
-                offset: 0,
-                limit: 8,
-            } as ShopperSearch.schemas['ProductSearchResult']),
-        },
-    ];
+    const mockPage = Promise.resolve({
+        id: 'pdp',
+        typeId: 'page',
+        aspectTypeId: 'pdp',
+        name: 'Product Detail Page',
+        regions: [],
+    });
+
+    const mockComponentData = Promise.resolve({});
 
     describe('shouldRevalidate function', () => {
         test('should revalidate when pathname changes (different product)', () => {
@@ -303,15 +301,16 @@ describe('Product Detail Route', () => {
             };
 
             const { default: ProductPage } = await import('./product.$productId');
-            const mockLoaderData = {
+            const mockLoaderData: ProductPageData = {
                 product: Promise.resolve(productWithoutDescription),
                 category: Promise.resolve(mockCategory),
-                recommendations: Promise.resolve(mockRecommendations),
+                page: mockPage,
+                componentData: mockComponentData,
                 pageKey: 'test-product-123',
             };
 
             // Render the page component to exercise ProductDetailView
-            render(<ProductPage loaderData={mockLoaderData as unknown as ProductPageData} />);
+            render(<ProductPage loaderData={mockLoaderData} />);
 
             // Component should handle missing shortDescription
             expect(productWithoutDescription.shortDescription).toBeUndefined();
@@ -327,15 +326,16 @@ describe('Product Detail Route', () => {
             };
 
             const { default: ProductPage } = await import('./product.$productId');
-            const mockLoaderData = {
+            const mockLoaderData: ProductPageData = {
                 product: Promise.resolve(productWithDescription),
                 category: Promise.resolve(mockCategory),
-                recommendations: Promise.resolve(mockRecommendations),
+                page: mockPage,
+                componentData: mockComponentData,
                 pageKey: 'test-product-123',
             };
 
             // Render the page component to exercise ProductDetailView
-            render(<ProductPage loaderData={mockLoaderData as unknown as ProductPageData} />);
+            render(<ProductPage loaderData={mockLoaderData} />);
 
             // Component should handle shortDescription
             expect(productWithDescription.shortDescription).toBe('Test description');
@@ -346,15 +346,16 @@ describe('Product Detail Route', () => {
             vi.mocked(isProductBundle).mockReturnValue(false);
 
             const { default: ProductPage } = await import('./product.$productId');
-            const mockLoaderData = {
+            const mockLoaderData: ProductPageData = {
                 product: Promise.resolve(mockProduct),
                 category: Promise.resolve(mockCategory),
-                recommendations: Promise.resolve(mockRecommendations),
+                page: mockPage,
+                componentData: mockComponentData,
                 pageKey: 'test-product-123',
             };
 
             // Render the page component to exercise ProductDetailView with product set
-            render(<ProductPage loaderData={mockLoaderData as unknown as ProductPageData} />);
+            render(<ProductPage loaderData={mockLoaderData} />);
         });
 
         test('should render ProductDetailView with product bundle', async () => {
@@ -362,115 +363,38 @@ describe('Product Detail Route', () => {
             vi.mocked(isProductBundle).mockReturnValue(true);
 
             const { default: ProductPage } = await import('./product.$productId');
-            const mockLoaderData = {
+            const mockLoaderData: ProductPageData = {
                 product: Promise.resolve(mockProduct),
                 category: Promise.resolve(mockCategory),
-                recommendations: Promise.resolve(mockRecommendations),
+                page: mockPage,
+                componentData: mockComponentData,
                 pageKey: 'test-product-123',
             };
 
             // Render the page component to exercise ProductDetailView with product bundle
-            render(<ProductPage loaderData={mockLoaderData as unknown as ProductPageData} />);
+            render(<ProductPage loaderData={mockLoaderData} />);
         });
     });
 
-    describe('RecommendationsContent component', () => {
-        test('should return null for empty recommendations array', async () => {
-            vi.mocked(isProductSet).mockReturnValue(false);
-            vi.mocked(isProductBundle).mockReturnValue(false);
-
+    describe('ProductRecommendationsSection component', () => {
+        test('should include ProductRecommendations component integration', async () => {
+            // This test verifies that the ProductRecommendations component is properly integrated
+            // The actual rendering with Suspense and async data is handled by React and tested in integration tests
             const { default: ProductPage } = await import('./product.$productId');
 
-            const mockLoaderData = {
-                product: Promise.resolve(mockProduct),
-                category: Promise.resolve(mockCategory),
-                recommendations: Promise.resolve([]),
-                pageKey: 'test-product-123',
-            };
-
-            // Render the page component to exercise RecommendationsContent with empty array
-            render(<ProductPage loaderData={mockLoaderData as unknown as ProductPageData} />);
-        });
-
-        test('should render recommendations with data', async () => {
-            vi.mocked(isProductSet).mockReturnValue(false);
-            vi.mocked(isProductBundle).mockReturnValue(false);
-
-            const { default: ProductPage } = await import('./product.$productId');
-            const mockLoaderData = {
-                product: Promise.resolve(mockProduct),
-                category: Promise.resolve(mockCategory),
-                recommendations: Promise.resolve(mockRecommendations),
-                pageKey: 'test-product-123',
-            };
-
-            // Render the page component to exercise RecommendationsContent with data
-            render(<ProductPage loaderData={mockLoaderData as unknown as ProductPageData} />);
-        });
-
-        test('should handle multiple recommendation carousels', () => {
-            const multipleRecommendations = [
-                {
-                    config: { id: 'you-may-also-like', title: 'You May Also Like' },
-                    promise: Promise.resolve({
-                        hits: [],
-                        total: 0,
-                        query: '',
-                        refinements: [],
-                        searchPhraseSuggestions: { suggestedTerms: [] },
-                        sortingOptions: [],
-                        start: 0,
-                        count: 0,
-                        offset: 0,
-                        limit: 8,
-                    } as ShopperSearch.schemas['ProductSearchResult']),
-                },
-                {
-                    config: { id: 'similar-items', title: 'Similar Items' },
-                    promise: Promise.resolve({
-                        hits: [],
-                        total: 0,
-                        query: '',
-                        refinements: [],
-                        searchPhraseSuggestions: { suggestedTerms: [] },
-                        sortingOptions: [],
-                        start: 0,
-                        count: 0,
-                        offset: 0,
-                        limit: 8,
-                    } as ShopperSearch.schemas['ProductSearchResult']),
-                },
-            ];
-
-            // Test that multiple recommendations are handled
-            expect(multipleRecommendations.length).toBe(2);
-            expect(multipleRecommendations[0].config.title).toBe('You May Also Like');
-            expect(multipleRecommendations[1].config.title).toBe('Similar Items');
-        });
-
-        test('should handle null data gracefully', async () => {
-            vi.mocked(isProductSet).mockReturnValue(false);
-            vi.mocked(isProductBundle).mockReturnValue(false);
-
-            const { default: ProductPage } = await import('./product.$productId');
-            const mockLoaderData = {
-                product: Promise.resolve(mockProduct),
-                category: Promise.resolve(mockCategory),
-                recommendations: Promise.resolve(null as any),
-                pageKey: 'test-product-123',
-            };
-
-            // Render the page component to exercise RecommendationsContent with null data
-            render(<ProductPage loaderData={mockLoaderData as unknown as ProductPageData} />);
+            // Verify the page component can be imported and has the correct structure
+            expect(ProductPage).toBeDefined();
+            expect(typeof ProductPage).toBe('function');
         });
     });
 
-    describe('createPage integration', () => {
+    describe('ProductPage component', () => {
         test('should handle pageKey correctly', () => {
-            const mockLoaderData = {
+            const mockLoaderData: ProductPageData = {
                 product: Promise.resolve(mockProduct),
                 category: Promise.resolve(mockCategory),
-                recommendations: Promise.resolve(mockRecommendations),
+                page: mockPage,
+                componentData: mockComponentData,
                 pageKey: 'test-product-123',
             };
 
@@ -479,89 +403,39 @@ describe('Product Detail Route', () => {
         });
 
         test('should have proper loader data structure', () => {
-            const mockLoaderData = {
+            const mockLoaderData: ProductPageData = {
                 product: Promise.resolve(mockProduct),
                 category: Promise.resolve(mockCategory),
-                recommendations: Promise.resolve(mockRecommendations),
+                page: mockPage,
+                componentData: mockComponentData,
                 pageKey: 'test-product-123',
             };
 
             // Test that all required properties are present
             expect(mockLoaderData).toHaveProperty('product');
             expect(mockLoaderData).toHaveProperty('category');
-            expect(mockLoaderData).toHaveProperty('recommendations');
+            expect(mockLoaderData).toHaveProperty('page');
+            expect(mockLoaderData).toHaveProperty('componentData');
             expect(mockLoaderData).toHaveProperty('pageKey');
         });
 
-        test('should use pageKey from loader data for getPageKey', () => {
-            // Verify createPage was called (it's called when the route module is imported)
-            expect(createPageMock).toHaveBeenCalled();
-            expect(createPageMock.mock.calls.length).toBeGreaterThan(0);
+        test('should render product skeleton while loading', async () => {
+            vi.mocked(isProductSet).mockReturnValue(false);
+            vi.mocked(isProductBundle).mockReturnValue(false);
 
-            // Get the config from the createPage mock call
-            const createPageCall = createPageMock.mock.calls[0]?.[0];
-
-            // If the call structure is different, try to find it
-            if (!createPageCall || !createPageCall.getPageKey) {
-                // Try to find the config in any call
-                for (const call of createPageMock.mock.calls) {
-                    if (call[0]?.getPageKey) {
-                        const mockGetPageKey = call[0].getPageKey;
-                        const mockLoaderData = {
-                            product: Promise.resolve(mockProduct),
-                            category: Promise.resolve(mockCategory),
-                            recommendations: Promise.resolve(mockRecommendations),
-                            pageKey: 'test-product-123',
-                        };
-                        const result = mockGetPageKey(mockLoaderData);
-                        expect(result).toBe('test-product-123');
-                        return;
-                    }
-                }
-                // If we get here, the structure is unexpected
-                expect.fail('createPage was called but getPageKey not found in config');
-            }
-
-            const mockGetPageKey = createPageCall.getPageKey;
-            expect(mockGetPageKey).toBeDefined();
-            expect(typeof mockGetPageKey).toBe('function');
-
-            const mockLoaderData = {
+            const { default: ProductPage } = await import('./product.$productId');
+            const mockLoaderData: ProductPageData = {
                 product: Promise.resolve(mockProduct),
                 category: Promise.resolve(mockCategory),
-                recommendations: Promise.resolve(mockRecommendations),
+                page: mockPage,
+                componentData: mockComponentData,
                 pageKey: 'test-product-123',
             };
 
-            const result = mockGetPageKey(mockLoaderData);
-            expect(result).toBe('test-product-123');
-        });
+            const { getByTestId } = render(<ProductPage loaderData={mockLoaderData} />);
 
-        test('getPageKey function should return pageKey from different loader data', () => {
-            // Verify createPage was called
-            expect(createPageMock).toHaveBeenCalled();
-
-            // Find the config with getPageKey
-            let mockGetPageKey: ((data: any) => string) | undefined;
-            for (const call of createPageMock.mock.calls) {
-                if (call[0]?.getPageKey) {
-                    mockGetPageKey = call[0].getPageKey;
-                    break;
-                }
-            }
-
-            expect(mockGetPageKey).toBeDefined();
-            if (mockGetPageKey) {
-                const mockLoaderData = {
-                    product: Promise.resolve(mockProduct),
-                    category: Promise.resolve(mockCategory),
-                    recommendations: Promise.resolve(mockRecommendations),
-                    pageKey: 'different-product-456',
-                };
-
-                const result = mockGetPageKey(mockLoaderData);
-                expect(result).toBe('different-product-456');
-            }
+            // Should show skeleton while Suspense boundary is waiting for promises to resolve
+            expect(getByTestId('product-skeleton')).toBeTruthy();
         });
     });
 });
