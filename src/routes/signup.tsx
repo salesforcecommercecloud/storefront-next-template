@@ -14,19 +14,10 @@
  * limitations under the License.
  */
 import type { ReactElement } from 'react';
-import {
-    redirect,
-    Link,
-    Form,
-    useActionData,
-    type LoaderFunctionArgs,
-    type ActionFunctionArgs,
-    type ClientActionFunctionArgs,
-} from 'react-router';
+import { redirect, Link, Form, useActionData, type LoaderFunctionArgs, type ActionFunctionArgs } from 'react-router';
 import { Card } from '@/components/ui/card';
 // services
 import { registerCustomer } from '@/lib/api/auth/register';
-import { updateAuth } from '@/middlewares/auth.client';
 
 // components
 import { SignupForm } from '@/components/signup-form';
@@ -39,8 +30,6 @@ import { useTranslation } from 'react-i18next';
 
 type SignupActionResponse = {
     error?: string;
-    redirectUrl?: string;
-    auth?: ReturnType<typeof getAuth>;
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -55,11 +44,10 @@ export function loader({ context }: LoaderFunctionArgs): null | Response {
 
 /**
  * This server action is required for authentication, because registration must be handled server-side for security reasons,
- * and proper integration with session management and Salesforce Commerce Cloud's authentication system. It operates
- * together with the client action to ensure a smooth signup process.
+ * and proper integration with session management and Salesforce Commerce Cloud's authentication system.
  */
 // eslint-disable-next-line react-refresh/only-export-components
-export async function action({ request, context }: ActionFunctionArgs): Promise<SignupActionResponse> {
+export async function action({ request, context }: ActionFunctionArgs): Promise<SignupActionResponse | Response> {
     const { t } = getTranslation(context);
     const formData = await request.formData();
     const firstName = formData.get('firstName')?.toString();
@@ -95,39 +83,12 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         return { error: result.error || t('errors:genericTryAgain') };
     }
 
-    // Registration and auto-login successful - return redirect URL and auth
+    // Registration and auto-login successful - redirect to return URL
     const url = new URL(request.url);
     const returnUrl = url.searchParams.get('returnUrl') || '/';
 
-    return {
-        redirectUrl: returnUrl,
-        auth: getAuth(context),
-    };
+    return redirect(returnUrl);
 }
-
-/**
- * This client action operates together with the server action to ensure a smooth signup process. It ensures that the
- * session gets updated on both server and client side, and that the user is redirected to the correct route afterward.
- */
-// eslint-disable-next-line react-refresh/only-export-components,custom/no-client-actions
-export async function clientAction({ context, serverAction }: ClientActionFunctionArgs) {
-    const result = await serverAction<SignupActionResponse>();
-
-    if (result.error) {
-        return result;
-    }
-
-    // Success - sync auth from server and redirect
-    const { redirectUrl, auth } = result;
-    if (redirectUrl && auth) {
-        updateAuth(context, () => auth);
-        return redirect(redirectUrl);
-    }
-    // Fallback (shouldn't happen)
-    return redirect('/');
-}
-
-clientAction.hydrate = true as const;
 
 export default function Signup(): ReactElement {
     const actionData = useActionData<typeof action>();

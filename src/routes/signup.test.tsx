@@ -351,7 +351,7 @@ describe('signup route', () => {
         });
 
         describe('successful registration', () => {
-            it('should return redirectUrl and auth on successful registration', async () => {
+            it('should redirect to home on successful registration', async () => {
                 mockIsPasswordValid.mockReturnValue(true);
                 mockRegisterCustomer.mockResolvedValue({ success: true } as any);
 
@@ -388,13 +388,14 @@ describe('signup route', () => {
                     },
                     password: 'Test123!',
                 });
-                expect(result).toEqual({
-                    redirectUrl: '/',
-                    auth: mockGetAuth(mockContext),
-                });
+                expect(result).toBeInstanceOf(Response);
+                if (result instanceof Response) {
+                    expect(result.status).toBe(302);
+                    expect(result.headers.get('Location')).toBe('/');
+                }
             });
 
-            it('should use returnUrl when provided on successful registration', async () => {
+            it('should redirect to returnUrl when provided on successful registration', async () => {
                 mockIsPasswordValid.mockReturnValue(true);
                 mockRegisterCustomer.mockResolvedValue({ success: true } as any);
 
@@ -422,10 +423,11 @@ describe('signup route', () => {
                 const result = await action(args);
 
                 expect(mockRegisterCustomer).toHaveBeenCalled();
-                expect(result).toEqual({
-                    redirectUrl: '/checkout',
-                    auth: mockGetAuth(mockContext),
-                });
+                expect(result).toBeInstanceOf(Response);
+                if (result instanceof Response) {
+                    expect(result.status).toBe(302);
+                    expect(result.headers.get('Location')).toBe('/checkout');
+                }
             });
         });
 
