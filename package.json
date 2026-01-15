@@ -78,7 +78,8 @@
         "tailwind-merge": "3.3.1",
         "tailwindcss": "4.1.13",
         "vaul": "1.1.2",
-        "zod": "4.1.11"
+        "zod": "4.1.11",
+        "@vis.gl/react-google-maps": "1.7.1"
     },
     "devDependencies": {
         "@chromatic-com/storybook": "4.1.2",

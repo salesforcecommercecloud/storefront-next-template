@@ -66,6 +66,12 @@ vi.mock('@/components/loading', () => ({
     default: () => <div data-testid="loading">Loading...</div>,
 }));
 
+vi.mock('@/providers/google-cloud-api', () => ({
+    default: ({ children }: { children: React.ReactNode }) => (
+        <div data-testid="google-cloud-api-provider">{children}</div>
+    ),
+}));
+
 const createMockLoader = () => {
     return async (args: LoaderFunctionArgs) => {
         const result = await mockUniversalServerLoader(args);

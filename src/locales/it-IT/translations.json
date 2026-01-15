@@ -477,32 +477,34 @@
         },
         "shippingAddress": {
             "title": "Indirizzo di spedizione",
-            "firstNameLabel": "Nome",
-            "firstNamePlaceholder": "Nome",
             "firstNameRequired": "Il nome è obbligatorio",
-            "lastNameLabel": "Cognome",
-            "lastNamePlaceholder": "Cognome",
             "lastNameRequired": "Il cognome è obbligatorio",
-            "addressLabel": "Indirizzo",
-            "addressPlaceholder": "Indirizzo",
             "addressRequired": "L'indirizzo è obbligatorio",
-            "address2Label": "Indirizzo riga 2",
-            "address2Placeholder": "Appartamento, interno, ecc. (facoltativo)",
-            "cityLabel": "Città",
-            "cityPlaceholder": "Città",
             "cityRequired": "La città è obbligatoria",
-            "stateLabel": "Stato/Provincia",
-            "statePlaceholder": "Stato o provincia (facoltativo)",
-            "zipLabel": "Codice postale",
-            "zipPlaceholder": "Codice postale (facoltativo)",
-            "phoneLabel": "Numero di telefono",
-            "phonePlaceholder": "(555) 123-4567",
             "continue": "Continua alle opzioni di spedizione",
             "saving": "Salvataggio in corso...",
             "saved": "Indirizzo di spedizione salvato",
             "failed": "Impossibile salvare l'indirizzo di spedizione",
             "confirmed": "Indirizzo di spedizione confermato",
             "notProvided": "Indirizzo di spedizione non ancora fornito"
+        },
+        "addressForm": {
+            "firstNameLabel": "Nome",
+            "firstNamePlaceholder": "Nome",
+            "lastNameLabel": "Cognome",
+            "lastNamePlaceholder": "Cognome",
+            "addressLabel": "Indirizzo",
+            "addressPlaceholder": "Via e numero civico",
+            "address2Label": "Indirizzo riga 2",
+            "address2Placeholder": "Appartamento, interno, ecc. (facoltativo)",
+            "cityLabel": "Città",
+            "cityPlaceholder": "Città",
+            "stateLabel": "Stato/Provincia",
+            "statePlaceholder": "Stato o provincia",
+            "zipLabel": "Codice postale",
+            "zipPlaceholder": "Codice postale",
+            "phoneLabel": "Numero di telefono",
+            "phonePlaceholder": "(555) 123-4567"
         },
         "shippingOptions": {
             "title": "Opzioni di spedizione",
@@ -1004,5 +1006,10 @@
             "unsupportedCurrency": "Valuta non supportata",
             "usingDefault": "Utilizzo della valuta predefinita: {{currency}}"
         }
+    },
+    "addressSuggestionDropdown": {
+        "suggested": "SUGGERITO",
+        "closeSuggestions": "Chiudi suggerimenti",
+        "loading": "Caricamento suggerimenti..."
     }
 }

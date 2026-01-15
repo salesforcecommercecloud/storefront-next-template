@@ -477,32 +477,34 @@
         },
         "shippingAddress": {
             "title": "Shipping Address",
-            "firstNameLabel": "First Name",
-            "firstNamePlaceholder": "First name",
             "firstNameRequired": "First name is required",
-            "lastNameLabel": "Last Name",
-            "lastNamePlaceholder": "Last name",
             "lastNameRequired": "Last name is required",
-            "addressLabel": "Address",
-            "addressPlaceholder": "Street address",
             "addressRequired": "Address is required",
-            "address2Label": "Address Line 2",
-            "address2Placeholder": "Apartment, suite, etc. (optional)",
-            "cityLabel": "City",
-            "cityPlaceholder": "City",
             "cityRequired": "City is required",
-            "stateLabel": "State/Province",
-            "statePlaceholder": "State or province (optional)",
-            "zipLabel": "Postal Code",
-            "zipPlaceholder": "Postal code (optional)",
-            "phoneLabel": "Phone Number",
-            "phonePlaceholder": "(555) 123-4567",
             "continue": "Continue to Shipping Options",
             "saving": "Saving...",
             "saved": "Shipping address saved",
             "failed": "Failed to save shipping address",
             "confirmed": "Shipping address confirmed",
             "notProvided": "Shipping address not provided yet"
+        },
+        "addressForm": {
+            "firstNameLabel": "First Name",
+            "firstNamePlaceholder": "First name",
+            "lastNameLabel": "Last Name",
+            "lastNamePlaceholder": "Last name",
+            "addressLabel": "Address",
+            "addressPlaceholder": "Street address",
+            "address2Label": "Address Line 2",
+            "address2Placeholder": "Apartment, suite, etc. (optional)",
+            "cityLabel": "City",
+            "cityPlaceholder": "City",
+            "stateLabel": "State/Province",
+            "statePlaceholder": "State or province",
+            "zipLabel": "Postal Code",
+            "zipPlaceholder": "Postal code",
+            "phoneLabel": "Phone Number",
+            "phonePlaceholder": "(555) 123-4567"
         },
         "shippingOptions": {
             "title": "Shipping Options",
@@ -1043,5 +1045,10 @@
             "unsupportedCurrency": "Currency not supported",
             "usingDefault": "Using default currency: {{currency}}"
         }
+    },
+    "addressSuggestionDropdown": {
+        "suggested": "SUGGESTED",
+        "closeSuggestions": "Close suggestions",
+        "loading": "Loading suggestions..."
     }
 }

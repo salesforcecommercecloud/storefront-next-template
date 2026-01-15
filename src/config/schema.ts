@@ -117,6 +117,9 @@ export type Config = {
                     enabled: boolean;
                     dwsourcecodeCookieSuffix?: string;
                 };
+                googleCloudAPI: {
+                    apiKey: string;
+                };
             };
         };
         i18n: {

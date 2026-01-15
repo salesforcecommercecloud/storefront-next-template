@@ -155,6 +155,9 @@ export default defineConfig({
                     enabled: false,
                     dwsourcecodeCookieSuffix: undefined,
                 },
+                googleCloudAPI: {
+                    apiKey: '',
+                },
             },
             // these locales matches with BM supported locales
             // this preferredCurrency will be used if user has not preference on locale

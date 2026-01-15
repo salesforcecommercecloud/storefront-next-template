@@ -32,6 +32,7 @@ import { getCardTypeDisplay, detectCardType, getLastFourDigits } from '@/lib/pay
 import { getCardIcon } from '@/lib/card-icon-utils';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import { getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';
+import { AddressFormFields } from '@/components/address-form-fields';
 import type { CheckoutActionData } from '../types';
 import { useTranslation } from 'react-i18next';
 // @sfdc-extension-line SFDC_EXT_BOPIS
@@ -498,149 +499,12 @@ export default function Payment({
                                             {t('confirmation.fields.billingAddress')}
                                         </Typography>
 
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <FormField
-                                                control={form.control}
-                                                name="billingFirstName"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel className="data-[error=true]:text-xl data-[error=true]:font-bold">
-                                                            {t('shippingAddress.firstNameLabel')}
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                placeholder={t('shippingAddress.firstNamePlaceholder')}
-                                                                autoComplete="billing given-name"
-                                                                {...field}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage className="text-xl font-bold" />
-                                                    </FormItem>
-                                                )}
-                                            />
-
-                                            <FormField
-                                                control={form.control}
-                                                name="billingLastName"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel className="data-[error=true]:text-xl data-[error=true]:font-bold">
-                                                            {t('shippingAddress.lastNameLabel')}
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                placeholder={t('shippingAddress.lastNamePlaceholder')}
-                                                                autoComplete="billing family-name"
-                                                                {...field}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage className="text-xl font-bold" />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </div>
-
-                                        <FormField
-                                            control={form.control}
-                                            name="billingAddress1"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel className="data-[error=true]:text-xl data-[error=true]:font-bold">
-                                                        {t('shippingAddress.addressLabel')}
-                                                    </FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            placeholder={t('shippingAddress.addressPlaceholder')}
-                                                            autoComplete="billing address-line1"
-                                                            {...field}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage className="text-xl font-bold" />
-                                                </FormItem>
-                                            )}
+                                        <AddressFormFields
+                                            form={form}
+                                            fieldPrefix="billing"
+                                            showPhone={false}
+                                            countryCode="US"
                                         />
-
-                                        <FormField
-                                            control={form.control}
-                                            name="billingAddress2"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel className="data-[error=true]:text-xl data-[error=true]:font-bold">
-                                                        {t('shippingAddress.address2Label')}
-                                                    </FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            placeholder={t('shippingAddress.address2Placeholder')}
-                                                            autoComplete="billing address-line2"
-                                                            {...field}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage className="text-xl font-bold" />
-                                                </FormItem>
-                                            )}
-                                        />
-
-                                        <div className="grid grid-cols-3 gap-4">
-                                            <FormField
-                                                control={form.control}
-                                                name="billingCity"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel className="data-[error=true]:text-xl data-[error=true]:font-bold">
-                                                            {t('shippingAddress.cityLabel')}
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                placeholder={t('shippingAddress.cityPlaceholder')}
-                                                                autoComplete="billing address-level2"
-                                                                {...field}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage className="text-xl font-bold" />
-                                                    </FormItem>
-                                                )}
-                                            />
-
-                                            <FormField
-                                                control={form.control}
-                                                name="billingStateCode"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel className="data-[error=true]:text-xl data-[error=true]:font-bold">
-                                                            {t('shippingAddress.stateLabel')}
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                placeholder={t('shippingAddress.statePlaceholder')}
-                                                                autoComplete="billing address-level1"
-                                                                {...field}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage className="text-xl font-bold" />
-                                                    </FormItem>
-                                                )}
-                                            />
-
-                                            <FormField
-                                                control={form.control}
-                                                name="billingPostalCode"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel className="data-[error=true]:text-xl data-[error=true]:font-bold">
-                                                            {t('shippingAddress.zipLabel')}
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                placeholder={t('shippingAddress.zipPlaceholder')}
-                                                                autoComplete="billing postal-code"
-                                                                {...field}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage className="text-xl font-bold" />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </div>
                                     </div>
                                 )}
                             </PluginComponent>

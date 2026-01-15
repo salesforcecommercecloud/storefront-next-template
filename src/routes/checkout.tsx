@@ -30,6 +30,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import Loading from '@/components/loading';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import PickupProvider from '@/extensions/bopis/context/pickup-context';
+import GoogleCloudApiProvider from '@/providers/google-cloud-api';
 
 /**
  * Server-side loader function for checkout route
@@ -189,6 +190,10 @@ function CheckoutView({
     /// Initialize PickupProvider with stores by store id
     finalContent = <PickupProvider initialPickupStores={storesByStoreId}>{content}</PickupProvider>;
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
+
+    // Wrap with GoogleCloudApiProvider for access to Google Cloud Platform APIs
+    finalContent = <GoogleCloudApiProvider>{finalContent}</GoogleCloudApiProvider>;
+
     return finalContent;
 }
 
