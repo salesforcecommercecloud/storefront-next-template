@@ -21,7 +21,7 @@ import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-ro
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { AccountNavList, type AccountNavItemData } from '../index';
-import { User, Heart, Receipt, MapPin, Settings, LogOut } from 'lucide-react';
+import { User, Heart, ShoppingBag, MapPin, Settings, LogOut } from 'lucide-react';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -98,7 +98,7 @@ function ActionLogger({ children }: { children: ReactNode }): ReactElement {
 const mockNavigationItems: AccountNavItemData[] = [
     { path: '/account', icon: User, label: 'Account Details' },
     { path: '/account/wishlist', icon: Heart, label: 'Wishlist' },
-    { path: '/account/orders', icon: Receipt, label: 'Orders' },
+    { path: '/account/orders', icon: ShoppingBag, label: 'Orders' },
     { path: '/account/addresses', icon: MapPin, label: 'Addresses' },
 ];
 
@@ -254,7 +254,7 @@ export const WithDisabledItem: Story = {
         items: [
             { path: '/account', icon: User, label: 'Account Details' },
             { path: '/account/wishlist', icon: Heart, label: 'Wishlist' },
-            { path: '/account/orders', icon: Receipt, label: 'Orders' },
+            { path: '/account/orders', icon: ShoppingBag, label: 'Orders' },
             { path: '/account/addresses', icon: MapPin, label: 'Addresses', disabled: true },
         ],
     },
@@ -363,7 +363,7 @@ export const WithManyItems: Story = {
         items: [
             { path: '/account', icon: User, label: 'Account Details' },
             { path: '/account/wishlist', icon: Heart, label: 'Wishlist' },
-            { path: '/account/orders', icon: Receipt, label: 'Orders' },
+            { path: '/account/orders', icon: ShoppingBag, label: 'Orders' },
             { path: '/account/addresses', icon: MapPin, label: 'Addresses' },
             { path: '/account/settings', icon: Settings, label: 'Settings' },
         ],

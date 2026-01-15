@@ -15,7 +15,7 @@
  */
 import { useMemo, type ReactElement } from 'react';
 import { Outlet, type LoaderFunctionArgs, redirect, type ShouldRevalidateFunctionArgs } from 'react-router';
-import { User, Heart, Receipt, MapPin, LogOut } from 'lucide-react';
+import { User, Heart, ShoppingBag, MapPin, LogOut } from 'lucide-react';
 import { getAuth as getAuthServer } from '@/middlewares/auth.server';
 import { getCustomer } from '@/lib/api/customer';
 import { Card, CardContent } from '@/components/ui/card';
@@ -92,7 +92,7 @@ export default function AccountPage({ loaderData }: { loaderData: AccountPageDat
             },
             {
                 path: '/account/orders',
-                icon: Receipt,
+                icon: ShoppingBag,
                 label: t('navigation.orderHistory'),
             },
             {

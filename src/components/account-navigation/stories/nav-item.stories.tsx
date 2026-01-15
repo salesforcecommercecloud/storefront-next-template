@@ -21,7 +21,7 @@ import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-ro
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { AccountNavItem } from '../index';
-import { User, Heart, Receipt, LogOut } from 'lucide-react';
+import { User, Heart, ShoppingBag, LogOut } from 'lucide-react';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -364,7 +364,7 @@ export const Interactive: Story = {
     args: {
         item: {
             path: '/account/orders',
-            icon: Receipt,
+            icon: ShoppingBag,
             label: 'Orders',
         },
     },

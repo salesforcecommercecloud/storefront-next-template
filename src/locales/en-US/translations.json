@@ -691,7 +691,16 @@
             "mustLoginToRemove": "You must be logged in to remove items from your wishlist."
         },
         "orders": {
-            "empty": "No orders found. Start shopping to see your order history!"
+            "empty": "No orders found. Start shopping to see your order history!",
+            "subtitle": "View and track your orders",
+            "tableHeaders": {
+                "orderNumber": "Order Number",
+                "status": "Status",
+                "method": "Method",
+                "amount": "Amount",
+                "actions": "Actions"
+            },
+            "viewDetails": "View Details"
         },
         "addresses": {
             "empty": "No addresses saved. Add an address to make checkout faster!",

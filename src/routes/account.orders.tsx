@@ -14,28 +14,38 @@
  * limitations under the License.
  */
 import type { ReactElement } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { useTranslation } from 'react-i18next';
+import { OrderList, type Order } from '@/components/account/order-list';
 
+// Mock order data for UI development
+// API statuses: 'new', 'completed', 'cancelled'
+const MOCK_ORDERS: Order[] = [
+    { orderNo: 'INV001', status: 'new', method: 'Credit Card', amount: 54.0 },
+    { orderNo: 'INV002', status: 'new', method: 'Credit Card', amount: 43.0 },
+    { orderNo: 'INV003', status: 'completed', method: 'Credit Card', amount: 48.38 },
+    { orderNo: 'INV004', status: 'cancelled', method: 'Credit Card', amount: 95.92 },
+    { orderNo: 'INV005', status: 'completed', method: 'Credit Card', amount: 250.0 },
+];
+
+/**
+ * Order history page component that displays a list of customer orders.
+ * Uses the reusable OrderList component.
+ *
+ * @returns JSX element representing the order history page
+ */
 export default function AccountOrders(): ReactElement {
     const { t } = useTranslation('account');
-    return (
-        <div className="space-y-6">
-            {/* Page Header */}
-            <div>
-                <h1 className="text-2xl font-bold text-foreground" tabIndex={0}>
-                    {t('navigation.orderHistory')}
-                </h1>
-            </div>
 
-            {/* Order History Content */}
-            <Card className="border-border">
-                <CardContent className="p-6">
-                    <div className="text-center py-12">
-                        <p className="text-muted-foreground">{t('orders.empty')}</p>
-                    </div>
-                </CardContent>
-            </Card>
-        </div>
+    const handleViewDetails = (_order: Order) => {
+        // TODO: Navigate to order details page
+    };
+
+    return (
+        <OrderList
+            title={t('navigation.orderHistory')}
+            subtitle={t('orders.subtitle')}
+            orders={MOCK_ORDERS}
+            onViewDetails={handleViewDetails}
+        />
     );
 }

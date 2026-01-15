@@ -16,20 +16,20 @@
 import { describe, test, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import { Heart, MapPin, Receipt, User } from 'lucide-react';
+import { Heart, MapPin, ShoppingBag, User } from 'lucide-react';
 import { AccountNavList } from './nav-list';
 
 const mockNavigationItems = [
     { path: '/account', icon: User, label: 'Account Details' },
     { path: '/account/wishlist', icon: Heart, label: 'Wishlist' },
-    { path: '/account/orders', icon: Receipt, label: 'Orders' },
+    { path: '/account/orders', icon: ShoppingBag, label: 'Orders' },
     { path: '/account/addresses', icon: MapPin, label: 'Addresses' },
 ];
 
 const mockDisabledNavigationItems = [
     { path: '/account', icon: User, label: 'Account Details' },
     { path: '/account/wishlist', icon: Heart, label: 'Wishlist' },
-    { path: '/account/orders', icon: Receipt, label: 'Orders' },
+    { path: '/account/orders', icon: ShoppingBag, label: 'Orders' },
     { path: '/account/addresses', icon: MapPin, label: 'Addresses', disabled: true },
 ];
 
