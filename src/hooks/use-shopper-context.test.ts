@@ -41,7 +41,7 @@ const createMockFetcher = () => ({
     type: 'init' as const,
     json: undefined,
     text: undefined,
-    unstable_reset: vi.fn(),
+    reset: vi.fn(),
 });
 
 let mockFetcher = createMockFetcher();

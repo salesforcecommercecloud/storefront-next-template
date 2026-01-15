@@ -27,15 +27,17 @@ const createMockResolvedConfig = (overrides: Record<string, any> = {}) => {
         unstable_routeConfig: [],
         future: {
             v8_middleware: true,
-            unstable_viteEnvironmentApi: true,
+            v8_viteEnvironmentApi: true,
             unstable_optimizeDeps: false,
-            unstable_splitRouteModules: false,
+            v8_splitRouteModules: false,
             unstable_subResourceIntegrity: false,
+            unstable_trailingSlashAwareDataRequests: false,
         },
         routeDiscovery: { mode: 'initial' as const },
         serverModuleFormat: 'cjs' as const,
         ssr: true,
         prerender: false,
+        allowedActionOrigins: [],
         ...overrides,
     };
 };
@@ -76,7 +78,7 @@ describe('react-router.config', () => {
                     ssr: true,
                     future: {
                         v8_middleware: true,
-                        unstable_viteEnvironmentApi: true,
+                        v8_viteEnvironmentApi: true,
                     },
                 });
             });
@@ -151,9 +153,9 @@ describe('react-router.config', () => {
                 const invalidConfig = createMockResolvedConfig({
                     future: {
                         v8_middleware: false,
-                        unstable_viteEnvironmentApi: true,
+                        v8_viteEnvironmentApi: true,
                         unstable_optimizeDeps: false,
-                        unstable_splitRouteModules: false,
+                        v8_splitRouteModules: false,
                         unstable_subResourceIntegrity: false,
                     },
                 });
@@ -167,14 +169,14 @@ describe('react-router.config', () => {
                 }).toThrow('future.v8_middleware: expected true, got false');
             });
 
-            it('should throw error when future.unstable_viteEnvironmentApi is overridden', () => {
+            it('should throw error when future.v8_viteEnvironmentApi is overridden', () => {
                 const preset = odysseyPreset();
                 const invalidConfig = createMockResolvedConfig({
                     future: {
                         v8_middleware: true,
-                        unstable_viteEnvironmentApi: false,
+                        v8_viteEnvironmentApi: false,
                         unstable_optimizeDeps: false,
-                        unstable_splitRouteModules: false,
+                        v8_splitRouteModules: false,
                         unstable_subResourceIntegrity: false,
                     },
                 });
@@ -185,7 +187,7 @@ describe('react-router.config', () => {
 
                 expect(() => {
                     void preset.reactRouterConfigResolved?.({ reactRouterConfig: invalidConfig });
-                }).toThrow('future.unstable_viteEnvironmentApi: expected true, got false');
+                }).toThrow('future.v8_viteEnvironmentApi: expected true, got false');
             });
 
             it('should throw error with all validation errors when multiple values are overridden', () => {
@@ -196,9 +198,9 @@ describe('react-router.config', () => {
                     ssr: false,
                     future: {
                         v8_middleware: false,
-                        unstable_viteEnvironmentApi: false,
+                        v8_viteEnvironmentApi: false,
                         unstable_optimizeDeps: false,
-                        unstable_splitRouteModules: false,
+                        v8_splitRouteModules: false,
                         unstable_subResourceIntegrity: false,
                     },
                 });
@@ -218,7 +220,7 @@ describe('react-router.config', () => {
                 expect(errorMessage).toContain('serverModuleFormat: expected "cjs", got "esm"');
                 expect(errorMessage).toContain('ssr: expected true, got false');
                 expect(errorMessage).toContain('future.v8_middleware: expected true, got false');
-                expect(errorMessage).toContain('future.unstable_viteEnvironmentApi: expected true, got false');
+                expect(errorMessage).toContain('future.v8_viteEnvironmentApi: expected true, got false');
             });
 
             it('should handle missing routeDiscovery object', () => {
@@ -248,7 +250,7 @@ describe('react-router.config', () => {
                 }
 
                 expect(errorMessage).toContain('future.v8_middleware: expected true, got undefined');
-                expect(errorMessage).toContain('future.unstable_viteEnvironmentApi: expected true, got undefined');
+                expect(errorMessage).toContain('future.v8_viteEnvironmentApi: expected true, got undefined');
             });
 
             it('should not validate appDirectory and buildDirectory', () => {

@@ -36,7 +36,7 @@ const mockFetcher = {
     type: 'init' as const,
     json: undefined,
     text: undefined,
-    unstable_reset: vi.fn(),
+    reset: vi.fn(),
 } as unknown as FetcherWithComponents<{ success: boolean; basket?: unknown; error?: string }>;
 
 vi.mock('react-router', async (importOriginal) => {

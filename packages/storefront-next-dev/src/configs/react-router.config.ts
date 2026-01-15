@@ -29,7 +29,7 @@ export function odysseyPreset(): Preset {
         ssr: true,
         future: {
             v8_middleware: true,
-            unstable_viteEnvironmentApi: true,
+            v8_viteEnvironmentApi: true,
         },
     };
 
@@ -64,12 +64,9 @@ export function odysseyPreset(): Preset {
                 );
             }
 
-            if (
-                reactRouterConfig.future?.unstable_viteEnvironmentApi !==
-                presetConfig.future.unstable_viteEnvironmentApi
-            ) {
+            if (reactRouterConfig.future?.v8_viteEnvironmentApi !== presetConfig.future.v8_viteEnvironmentApi) {
                 errors.push(
-                    `future.unstable_viteEnvironmentApi: expected ${presetConfig.future.unstable_viteEnvironmentApi}, got ${reactRouterConfig.future?.unstable_viteEnvironmentApi}`
+                    `future.v8_viteEnvironmentApi: expected ${presetConfig.future.v8_viteEnvironmentApi}, got ${reactRouterConfig.future?.v8_viteEnvironmentApi}`
                 );
             }
 

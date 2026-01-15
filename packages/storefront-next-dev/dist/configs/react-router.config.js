@@ -13,7 +13,7 @@ function odysseyPreset() {
 		ssr: true,
 		future: {
 			v8_middleware: true,
-			unstable_viteEnvironmentApi: true
+			v8_viteEnvironmentApi: true
 		}
 	};
 	return {
@@ -25,7 +25,7 @@ function odysseyPreset() {
 			if (reactRouterConfig.serverModuleFormat !== presetConfig.serverModuleFormat) errors.push(`serverModuleFormat: expected "${presetConfig.serverModuleFormat}", got "${reactRouterConfig.serverModuleFormat}"`);
 			if (reactRouterConfig.ssr !== presetConfig.ssr) errors.push(`ssr: expected ${presetConfig.ssr}, got ${reactRouterConfig.ssr}`);
 			if (reactRouterConfig.future?.v8_middleware !== presetConfig.future.v8_middleware) errors.push(`future.v8_middleware: expected ${presetConfig.future.v8_middleware}, got ${reactRouterConfig.future?.v8_middleware}`);
-			if (reactRouterConfig.future?.unstable_viteEnvironmentApi !== presetConfig.future.unstable_viteEnvironmentApi) errors.push(`future.unstable_viteEnvironmentApi: expected ${presetConfig.future.unstable_viteEnvironmentApi}, got ${reactRouterConfig.future?.unstable_viteEnvironmentApi}`);
+			if (reactRouterConfig.future?.v8_viteEnvironmentApi !== presetConfig.future.v8_viteEnvironmentApi) errors.push(`future.v8_viteEnvironmentApi: expected ${presetConfig.future.v8_viteEnvironmentApi}, got ${reactRouterConfig.future?.v8_viteEnvironmentApi}`);
 			if (errors.length > 0) throw new Error(`Odyssey preset configuration was overridden. The following values must not be modified:\n${errors.map((e) => `  - ${e}`).join("\n")}`);
 		}
 	};

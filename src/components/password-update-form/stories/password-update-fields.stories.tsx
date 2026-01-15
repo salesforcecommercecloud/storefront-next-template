@@ -138,7 +138,7 @@ function createMockFetcher<TData = unknown>(
         json: undefined,
         Form: undefined as unknown,
 
-        unstable_reset: () => {},
+        reset: () => {},
         type: 'init',
     } as unknown as ScapiFetcher<TData>;
 }

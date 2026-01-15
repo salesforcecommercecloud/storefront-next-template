@@ -1174,7 +1174,7 @@ async function createSSRHandler(mode, bundleId, vite, build, enableAssetUrlPatch
 			try {
 				const ssrEnvironment = vite.environments.ssr;
 				if (!isRunnableDevEnvironment(ssrEnvironment)) {
-					next(/* @__PURE__ */ new Error("SSR environment is not runnable. Please ensure:\n  1. \"@salesforce/storefront-next-dev\" plugin is added to vite.config.ts\n  2. \"future.unstable_viteEnvironmentApi: true\" is set in react-router.config.ts"));
+					next(/* @__PURE__ */ new Error("SSR environment is not runnable. Please ensure:\n  1. \"@salesforce/storefront-next-dev\" plugin is added to vite.config.ts\n  2. \"future.v8_viteEnvironmentApi: true\" is set in react-router.config.ts"));
 					return;
 				}
 				await createRequestHandler({
