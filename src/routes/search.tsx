@@ -163,7 +163,7 @@ export default function SearchPage({
         <div className="pb-16">
             <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <Suspense fallback={<CategoryHeaderSkeleton />}>
+                    <Suspense fallback={<CategoryHeaderSkeleton className="h-15" />}>
                         <Await resolve={refinements}>
                             {(refinementsData) => (
                                 <>

@@ -93,7 +93,8 @@ export default function ProductCarousel({ products, title, className }: ProductC
                         align: 'start',
                     }}
                     aria-label={title ? `${title} carousel` : t('productCarousel')}>
-                    <CarouselContent className="items-stretch flex-nowrap">
+                    {/* Passing -ml-4 to the CarouselContent to prevent CLS issues during hydration */}
+                    <CarouselContent className="-ml-4 items-stretch flex-nowrap">
                         {products.map((product) => (
                             <CarouselItem
                                 key={product.productId}

@@ -267,7 +267,8 @@ export function HeroCarouselPlain({
                     containScroll: 'trimSnaps',
                 }}
                 className="w-full h-full">
-                <CarouselContent className="h-full">
+                {/* Passing -ml-4 to the CarouselContent to prevent CLS issues during hydration */}
+                <CarouselContent className="h-full -ml-4">
                     {slides.map((slide) => (
                         <CarouselItem key={slide.id} className="h-full">
                             <HeroSlideContent slide={image ? { ...slide, imageUrl: image.url } : slide} />

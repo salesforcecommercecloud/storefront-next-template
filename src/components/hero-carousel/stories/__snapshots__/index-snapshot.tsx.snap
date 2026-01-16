@@ -19,7 +19,7 @@ exports[`HeroCarousel stories snapshot > Default story renders and matches snaps
         data-slot="carousel-content"
       >
         <div
-          class="flex -ml-4 h-full"
+          class="flex h-full -ml-4"
           style="transform: translate3d(0px,0px,0px);"
         >
           <div
@@ -285,7 +285,7 @@ exports[`HeroCarousel stories snapshot > Desktop story renders and matches snaps
         data-slot="carousel-content"
       >
         <div
-          class="flex -ml-4 h-full"
+          class="flex h-full -ml-4"
           style="transform: translate3d(0px,0px,0px);"
         >
           <div
@@ -551,7 +551,7 @@ exports[`HeroCarousel stories snapshot > Mobile story renders and matches snapsh
         data-slot="carousel-content"
       >
         <div
-          class="flex -ml-4 h-full"
+          class="flex h-full -ml-4"
           style="transform: translate3d(0px,0px,0px);"
         >
           <div
@@ -817,7 +817,7 @@ exports[`HeroCarousel stories snapshot > Tablet story renders and matches snapsh
         data-slot="carousel-content"
       >
         <div
-          class="flex -ml-4 h-full"
+          class="flex h-full -ml-4"
           style="transform: translate3d(0px,0px,0px);"
         >
           <div
@@ -1083,7 +1083,7 @@ exports[`HeroCarousel stories snapshot > WithoutAutoPlay story renders and match
         data-slot="carousel-content"
       >
         <div
-          class="flex -ml-4 h-full"
+          class="flex h-full -ml-4"
           style="transform: translate3d(0px,0px,0px);"
         >
           <div
@@ -1349,7 +1349,7 @@ exports[`HeroCarousel stories snapshot > WithoutDots story renders and matches s
         data-slot="carousel-content"
       >
         <div
-          class="flex -ml-4 h-full"
+          class="flex h-full -ml-4"
           style="transform: translate3d(0px,0px,0px);"
         >
           <div
@@ -1588,7 +1588,7 @@ exports[`HeroCarousel stories snapshot > WithoutNavigation story renders and mat
         data-slot="carousel-content"
       >
         <div
-          class="flex -ml-4 h-full"
+          class="flex h-full -ml-4"
           style="transform: translate3d(0px,0px,0px);"
         >
           <div

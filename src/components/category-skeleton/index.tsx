@@ -15,6 +15,7 @@
  */
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 export function CategoryBreadcrumbsSkeleton() {
     return (
@@ -28,10 +29,10 @@ export function CategoryBreadcrumbsSkeleton() {
     );
 }
 
-export function CategoryHeaderSkeleton() {
+export function CategoryHeaderSkeleton({ className }: { className?: string }) {
     return (
         <>
-            <Skeleton className="h-9 w-64" />
+            <Skeleton className={cn('h-9 w-64', className)} />
             <div className="flex-shrink-0">
                 <div className="flex items-center space-x-2">
                     <Skeleton className="h-5 w-12" />

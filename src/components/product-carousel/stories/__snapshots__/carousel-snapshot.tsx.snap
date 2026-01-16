@@ -32,7 +32,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
             data-slot="carousel-content"
           >
             <div
-              class="flex justify-center items-stretch flex-nowrap"
+              class="flex justify-center -ml-4 items-stretch flex-nowrap"
             >
               <div
                 aria-roledescription="slide"
@@ -1403,7 +1403,7 @@ exports[`ProductCarousel stories snapshot > Desktop story renders and matches sn
             data-slot="carousel-content"
           >
             <div
-              class="flex justify-center items-stretch flex-nowrap"
+              class="flex justify-center -ml-4 items-stretch flex-nowrap"
             >
               <div
                 aria-roledescription="slide"
@@ -2790,7 +2790,7 @@ exports[`ProductCarousel stories snapshot > Mobile story renders and matches sna
             data-slot="carousel-content"
           >
             <div
-              class="flex justify-center items-stretch flex-nowrap"
+              class="flex justify-center -ml-4 items-stretch flex-nowrap"
             >
               <div
                 aria-roledescription="slide"
@@ -4152,7 +4152,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
             data-slot="carousel-content"
           >
             <div
-              class="flex justify-center items-stretch flex-nowrap"
+              class="flex justify-center -ml-4 items-stretch flex-nowrap"
             >
               <div
                 aria-roledescription="slide"
@@ -5523,7 +5523,7 @@ exports[`ProductCarousel stories snapshot > Tablet story renders and matches sna
             data-slot="carousel-content"
           >
             <div
-              class="flex justify-center items-stretch flex-nowrap"
+              class="flex justify-center -ml-4 items-stretch flex-nowrap"
             >
               <div
                 aria-roledescription="slide"
@@ -6894,7 +6894,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
             data-slot="carousel-content"
           >
             <div
-              class="flex justify-center items-stretch flex-nowrap"
+              class="flex justify-center -ml-4 items-stretch flex-nowrap"
             >
               <div
                 aria-roledescription="slide"
