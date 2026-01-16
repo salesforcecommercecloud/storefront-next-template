@@ -62,7 +62,7 @@ vi.mock('@/providers/auth', () => ({
 
 import { composeStories } from '@storybook/react-vite';
 
-import * as UserActionsStories from './user-actions.stories';
+import * as UserActionsStories from '../user-actions/stories/user-actions.stories';
 import { render, cleanup } from '@testing-library/react';
 
 const composed = composeStories(UserActionsStories);

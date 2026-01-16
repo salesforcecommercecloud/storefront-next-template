@@ -7,10 +7,15 @@ exports[`UserActions stories snapshot > Authenticated story renders and matches 
   >
     <div>
       <a
+        aria-controls="radix-_r_1_"
+        aria-expanded="false"
+        aria-haspopup="dialog"
         aria-label="My Account"
         class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 cursor-pointer"
-        data-slot="button"
+        data-slot="popover-trigger"
+        data-state="closed"
         href="/account"
+        type="button"
       >
         <svg
           aria-hidden="true"
@@ -47,10 +52,15 @@ exports[`UserActions stories snapshot > Desktop story renders and matches snapsh
   >
     <div>
       <a
+        aria-controls="radix-_r_4_"
+        aria-expanded="false"
+        aria-haspopup="dialog"
         aria-label="Sign In"
         class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 cursor-pointer"
-        data-slot="button"
+        data-slot="popover-trigger"
+        data-state="closed"
         href="/login"
+        type="button"
       >
         <svg
           aria-hidden="true"
@@ -88,10 +98,15 @@ exports[`UserActions stories snapshot > Guest story renders and matches snapshot
   >
     <div>
       <a
+        aria-controls="radix-_r_0_"
+        aria-expanded="false"
+        aria-haspopup="dialog"
         aria-label="Sign In"
         class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 cursor-pointer"
-        data-slot="button"
+        data-slot="popover-trigger"
+        data-state="closed"
         href="/login"
+        type="button"
       >
         <svg
           aria-hidden="true"
@@ -129,10 +144,15 @@ exports[`UserActions stories snapshot > Mobile story renders and matches snapsho
   >
     <div>
       <a
+        aria-controls="radix-_r_2_"
+        aria-expanded="false"
+        aria-haspopup="dialog"
         aria-label="Sign In"
         class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 cursor-pointer"
-        data-slot="button"
+        data-slot="popover-trigger"
+        data-state="closed"
         href="/login"
+        type="button"
       >
         <svg
           aria-hidden="true"
@@ -170,10 +190,15 @@ exports[`UserActions stories snapshot > Tablet story renders and matches snapsho
   >
     <div>
       <a
+        aria-controls="radix-_r_3_"
+        aria-expanded="false"
+        aria-haspopup="dialog"
         aria-label="Sign In"
         class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 cursor-pointer"
-        data-slot="button"
+        data-slot="popover-trigger"
+        data-state="closed"
         href="/login"
+        type="button"
       >
         <svg
           aria-hidden="true"

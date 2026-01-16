@@ -17,7 +17,7 @@ import type { ReactElement, PropsWithChildren } from 'react';
 import { Link, useLocation } from 'react-router';
 import Search from './search';
 import CartBadge from './cart-badge';
-import UserActions from './user-actions';
+import UserActions from './user-actions/user-actions';
 import { useTranslation } from 'react-i18next';
 import logo from '/images/market-logo.svg';
 import { PluginComponent } from '@/plugins/plugin-component';

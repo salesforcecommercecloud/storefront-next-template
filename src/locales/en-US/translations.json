@@ -62,7 +62,18 @@
         "signingOut": "Signing out...",
         "cartTitle": "My Cart",
         "checkout": "Checkout",
-        "continueShopping": "Continue Shopping"
+        "continueShopping": "Continue Shopping",
+        "menu": {
+            "yourLists": "Your Lists",
+            "yourAccount": "Your Account",
+            "savedItems": "Saved Items",
+            "overview": "Overview",
+            "addressBook": "Address Book",
+            "paymentMethods": "Payment Methods",
+            "signInForBestExperience": "Sign in for the best experience",
+            "newCustomer": "New customer?",
+            "createAccount": "Create account"
+        }
     },
     "login": {
         "title": "Sign in to your account",
