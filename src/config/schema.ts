@@ -54,6 +54,7 @@ export type Config = {
                 maxQuantityPerItem: number;
                 enableSaveForLater: boolean;
                 removeAction: string;
+                ruleBasedProductLimit: number;
                 confirmDescription?: string;
                 miniCart?: {
                     enableViewCartButton: boolean;

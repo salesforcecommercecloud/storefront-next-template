@@ -15,13 +15,14 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts, ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import {
     getDisplayVariationValues,
     createProductUrl,
     getImagesForColor,
     isProductBundle,
     isStandardProduct,
+    isRuleBasedPromotion,
     requiresVariantSelection,
     getPrimaryProductImageUrl,
 } from './product-utils';
@@ -421,6 +422,46 @@ describe('product-utils', () => {
         it('isStandardProduct returns false when product.type.item is falsy', () => {
             const product = { id: 'p5', type: { master: true } } as unknown as ShopperProducts.schemas['Product'];
             expect(isStandardProduct(product)).toBe(false);
+        });
+    });
+
+    describe('isRuleBasedPromotion', () => {
+        it('should return true when promotionId exists and bonusProducts is empty array', () => {
+            const item: ShopperBasketsV2.schemas['BonusDiscountLineItem'] = {
+                promotionId: 'promo-123',
+                bonusProducts: [],
+            };
+            expect(isRuleBasedPromotion(item)).toBe(true);
+        });
+
+        it('should return true when promotionId exists and bonusProducts is undefined', () => {
+            const item: ShopperBasketsV2.schemas['BonusDiscountLineItem'] = {
+                promotionId: 'promo-123',
+            };
+            expect(isRuleBasedPromotion(item)).toBe(true);
+        });
+
+        it('should return false when bonusProducts has items', () => {
+            const item: ShopperBasketsV2.schemas['BonusDiscountLineItem'] = {
+                promotionId: 'promo-123',
+                bonusProducts: [{ productId: 'prod-1' }],
+            };
+            expect(isRuleBasedPromotion(item)).toBe(false);
+        });
+
+        it('should return false when item is null', () => {
+            expect(isRuleBasedPromotion(null)).toBe(false);
+        });
+
+        it('should return false when item is undefined', () => {
+            expect(isRuleBasedPromotion(undefined)).toBe(false);
+        });
+
+        it('should return false when promotionId is missing', () => {
+            const item: ShopperBasketsV2.schemas['BonusDiscountLineItem'] = {
+                bonusProducts: [],
+            };
+            expect(isRuleBasedPromotion(item)).toBe(false);
         });
     });
 

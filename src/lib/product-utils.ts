@@ -365,6 +365,37 @@ export function getBonusProductType(
 }
 
 /**
+ * Detects if a bonus discount line item is rule-based.
+ * Rule-based promotions have empty bonusProducts arrays - products are
+ * determined by dynamic rules and must be fetched via SCAPI product search.
+ *
+ * @param bonusDiscountLineItem - A single bonus discount line item from basket
+ * @returns True if rule-based (empty bonusProducts array), false if list-based
+ *
+ * @example
+ * // Rule-based promotion (dynamic rules)
+ * const ruleBasedItem = {
+ *   promotionId: 'promo-123',
+ *   bonusProducts: []  // Empty array indicates rule-based
+ * }
+ * isRuleBasedPromotion(ruleBasedItem) // true
+ */
+export const isRuleBasedPromotion = (
+    bonusDiscountLineItem?: ShopperBasketsV2.schemas['BonusDiscountLineItem'] | null
+): boolean => {
+    if (!bonusDiscountLineItem) {
+        return false;
+    }
+
+    // Rule-based indicator: has a valid promotionId AND bonusProducts array is empty or doesn't exist
+    const hasPromotionId = Boolean(bonusDiscountLineItem.promotionId);
+    const bonusProducts = bonusDiscountLineItem.bonusProducts || [];
+    const hasEmptyBonusProducts = bonusProducts.length === 0;
+
+    return hasPromotionId && hasEmptyBonusProducts;
+};
+
+/**
  * Determines if a product requires variant selection before adding to cart.
  * Returns true for master products with variants or products with selectable attributes.
  *

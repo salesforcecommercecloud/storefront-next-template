@@ -88,6 +88,7 @@ export default defineConfig({
                 maxQuantityPerItem: 999,
                 enableSaveForLater: false,
                 removeAction: '/action/cart-item-remove',
+                ruleBasedProductLimit: 50,
                 miniCart: {
                     enableViewCartButton: true,
                 },
