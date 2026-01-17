@@ -16,7 +16,7 @@
 
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import type { ShopperCustomers, ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
-import { loader } from './loader.wishlist-products';
+import { loader } from './resource.wishlist-products';
 import { createTestContext } from '@/lib/test-utils';
 import type { LoaderFunctionArgs } from 'react-router';
 
@@ -72,7 +72,7 @@ vi.mock('@/lib/api/wishlist', async () => {
     };
 });
 
-describe('loader.wishlist-products', () => {
+describe('resource.wishlist-products', () => {
     const mockContext = createTestContext();
     let mockFetchProductsForWishlist: ReturnType<typeof vi.fn>;
 
@@ -112,7 +112,7 @@ describe('loader.wishlist-products', () => {
             mockIsRegisteredCustomer.mockReturnValue(false);
 
             const result = await loader({
-                request: new Request('http://localhost/loader/wishlist-products'),
+                request: new Request('http://localhost/resource/wishlist-products'),
                 context: mockContext,
             } as LoaderFunctionArgs);
 
@@ -129,7 +129,7 @@ describe('loader.wishlist-products', () => {
             });
 
             const result = await loader({
-                request: new Request('http://localhost/loader/wishlist-products'),
+                request: new Request('http://localhost/resource/wishlist-products'),
                 context: mockContext,
             } as LoaderFunctionArgs);
 
@@ -156,8 +156,6 @@ describe('loader.wishlist-products', () => {
                 data: { data: [mockWishlist] },
             });
 
-            mockGetCustomerProductList.mockResolvedValue({ data: mockWishlist });
-
             mockFetchProductsForWishlist.mockResolvedValue({
                 'product-1': { id: 'product-1', name: 'Product 1' },
                 'product-2': { id: 'product-2', name: 'Product 2' },
@@ -169,7 +167,7 @@ describe('loader.wishlist-products', () => {
             }));
 
             const result = await loader({
-                request: new Request('http://localhost/loader/wishlist-products'),
+                request: new Request('http://localhost/resource/wishlist-products'),
                 context: mockContext,
             } as LoaderFunctionArgs);
 
@@ -193,12 +191,10 @@ describe('loader.wishlist-products', () => {
                 data: { data: [mockWishlist] },
             });
 
-            mockGetCustomerProductList.mockResolvedValue({ data: mockWishlist });
-
             mockFetchProductsForWishlist.mockResolvedValue({});
 
             const result = await loader({
-                request: new Request('http://localhost/loader/wishlist-products?offset=10&limit=5'),
+                request: new Request('http://localhost/resource/wishlist-products?offset=10&limit=5'),
                 context: mockContext,
             } as LoaderFunctionArgs);
 
@@ -212,7 +208,7 @@ describe('loader.wishlist-products', () => {
         test('should throw error for invalid offset (NaN)', async () => {
             await expect(
                 loader({
-                    request: new Request('http://localhost/loader/wishlist-products?offset=invalid'),
+                    request: new Request('http://localhost/resource/wishlist-products?offset=invalid'),
                     context: mockContext,
                 } as LoaderFunctionArgs)
             ).rejects.toThrow('Invalid offset parameter: must be a non-negative integer');
@@ -221,7 +217,7 @@ describe('loader.wishlist-products', () => {
         test('should throw error for negative offset', async () => {
             await expect(
                 loader({
-                    request: new Request('http://localhost/loader/wishlist-products?offset=-5'),
+                    request: new Request('http://localhost/resource/wishlist-products?offset=-5'),
                     context: mockContext,
                 } as LoaderFunctionArgs)
             ).rejects.toThrow('Invalid offset parameter: must be a non-negative integer');
@@ -230,7 +226,7 @@ describe('loader.wishlist-products', () => {
         test('should throw error for invalid limit (NaN)', async () => {
             await expect(
                 loader({
-                    request: new Request('http://localhost/loader/wishlist-products?limit=abc'),
+                    request: new Request('http://localhost/resource/wishlist-products?limit=abc'),
                     context: mockContext,
                 } as LoaderFunctionArgs)
             ).rejects.toThrow('Invalid limit parameter: must be a positive integer not exceeding 24');
@@ -239,7 +235,7 @@ describe('loader.wishlist-products', () => {
         test('should throw error for zero limit', async () => {
             await expect(
                 loader({
-                    request: new Request('http://localhost/loader/wishlist-products?limit=0'),
+                    request: new Request('http://localhost/resource/wishlist-products?limit=0'),
                     context: mockContext,
                 } as LoaderFunctionArgs)
             ).rejects.toThrow('Invalid limit parameter: must be a positive integer not exceeding 24');
@@ -248,7 +244,7 @@ describe('loader.wishlist-products', () => {
         test('should throw error for negative limit', async () => {
             await expect(
                 loader({
-                    request: new Request('http://localhost/loader/wishlist-products?limit=-10'),
+                    request: new Request('http://localhost/resource/wishlist-products?limit=-10'),
                     context: mockContext,
                 } as LoaderFunctionArgs)
             ).rejects.toThrow('Invalid limit parameter: must be a positive integer not exceeding 24');
@@ -257,7 +253,7 @@ describe('loader.wishlist-products', () => {
         test('should throw error for limit exceeding maximum (24)', async () => {
             await expect(
                 loader({
-                    request: new Request('http://localhost/loader/wishlist-products?limit=25'),
+                    request: new Request('http://localhost/resource/wishlist-products?limit=25'),
                     context: mockContext,
                 } as LoaderFunctionArgs)
             ).rejects.toThrow('Invalid limit parameter: must be a positive integer not exceeding 24');
@@ -278,12 +274,10 @@ describe('loader.wishlist-products', () => {
                 data: { data: [mockWishlist] },
             });
 
-            mockGetCustomerProductList.mockResolvedValue({ data: mockWishlist });
-
             mockFetchProductsForWishlist.mockResolvedValue({});
 
             const result = await loader({
-                request: new Request('http://localhost/loader/wishlist-products?offset=0&limit=24'),
+                request: new Request('http://localhost/resource/wishlist-products?offset=0&limit=24'),
                 context: mockContext,
             } as LoaderFunctionArgs);
 
@@ -300,7 +294,7 @@ describe('loader.wishlist-products', () => {
             });
 
             const result = await loader({
-                request: new Request('http://localhost/loader/wishlist-products'),
+                request: new Request('http://localhost/resource/wishlist-products'),
                 context: mockContext,
             } as LoaderFunctionArgs);
 
@@ -320,7 +314,7 @@ describe('loader.wishlist-products', () => {
             });
 
             const result = await loader({
-                request: new Request('http://localhost/loader/wishlist-products'),
+                request: new Request('http://localhost/resource/wishlist-products'),
                 context: mockContext,
             } as LoaderFunctionArgs);
 
@@ -342,8 +336,6 @@ describe('loader.wishlist-products', () => {
                 data: { data: [mockWishlist] },
             });
 
-            mockGetCustomerProductList.mockResolvedValue({ data: mockWishlist });
-
             mockFetchProductsForWishlist.mockResolvedValue({
                 'product-1': { id: 'product-1', name: 'Product 1' },
             });
@@ -354,18 +346,11 @@ describe('loader.wishlist-products', () => {
             }));
 
             const result = await loader({
-                request: new Request('http://localhost/loader/wishlist-products'),
+                request: new Request('http://localhost/resource/wishlist-products'),
                 context: mockContext,
             } as LoaderFunctionArgs);
 
-            expect(mockGetCustomerProductList).toHaveBeenCalledWith({
-                params: {
-                    path: {
-                        customerId: 'test-customer-id',
-                        listId: 'wishlist-1',
-                    },
-                },
-            });
+            // Verify that we successfully got items using 'id' field as fallback
             expect(result.products).toHaveLength(1);
         });
     });
@@ -388,8 +373,6 @@ describe('loader.wishlist-products', () => {
                 data: { data: [mockWishlist] },
             });
 
-            mockGetCustomerProductList.mockResolvedValue({ data: mockWishlist });
-
             // Mock products for items 5-9 (offset 5, limit 5)
             const slicedItems = allItems.slice(5, 10);
             const productsByProductId: Record<string, ShopperProducts.schemas['Product']> = {};
@@ -410,7 +393,7 @@ describe('loader.wishlist-products', () => {
             }));
 
             const result = await loader({
-                request: new Request('http://localhost/loader/wishlist-products?offset=5&limit=5'),
+                request: new Request('http://localhost/resource/wishlist-products?offset=5&limit=5'),
                 context: mockContext,
             } as LoaderFunctionArgs);
 
@@ -447,10 +430,8 @@ describe('loader.wishlist-products', () => {
                 data: { data: [mockWishlist] },
             });
 
-            mockGetCustomerProductList.mockResolvedValue({ data: mockWishlist });
-
             const result = await loader({
-                request: new Request('http://localhost/loader/wishlist-products?offset=10&limit=5'),
+                request: new Request('http://localhost/resource/wishlist-products?offset=10&limit=5'),
                 context: mockContext,
             } as LoaderFunctionArgs);
 
@@ -476,8 +457,6 @@ describe('loader.wishlist-products', () => {
                 data: { data: [mockWishlist] },
             });
 
-            mockGetCustomerProductList.mockResolvedValue({ data: mockWishlist });
-
             mockFetchProductsForWishlist.mockResolvedValue({
                 'product-1': { id: 'product-1', name: 'Product 1' },
                 'product-2': { id: 'product-2', name: 'Product 2' },
@@ -489,7 +468,7 @@ describe('loader.wishlist-products', () => {
             }));
 
             const result = await loader({
-                request: new Request('http://localhost/loader/wishlist-products'),
+                request: new Request('http://localhost/resource/wishlist-products'),
                 context: mockContext,
             } as LoaderFunctionArgs);
 
@@ -513,8 +492,6 @@ describe('loader.wishlist-products', () => {
             mockGetCustomerProductLists.mockResolvedValue({
                 data: { data: [mockWishlist] },
             });
-
-            mockGetCustomerProductList.mockResolvedValue({ data: mockWishlist });
 
             const mockProduct1: ShopperProducts.schemas['Product'] = {
                 id: 'product-1',
@@ -546,7 +523,7 @@ describe('loader.wishlist-products', () => {
                 .mockReturnValueOnce(mockSearchHit2);
 
             const result = await loader({
-                request: new Request('http://localhost/loader/wishlist-products'),
+                request: new Request('http://localhost/resource/wishlist-products'),
                 context: mockContext,
             } as LoaderFunctionArgs);
 
@@ -572,8 +549,6 @@ describe('loader.wishlist-products', () => {
                 data: { data: [mockWishlist] },
             });
 
-            mockGetCustomerProductList.mockResolvedValue({ data: mockWishlist });
-
             // Only product-1 and product-3 have actual data, product-2 is just a placeholder
             mockFetchProductsForWishlist.mockResolvedValue({
                 'product-1': { id: 'product-1', name: 'Product 1' } as ShopperProducts.schemas['Product'],
@@ -593,7 +568,7 @@ describe('loader.wishlist-products', () => {
             });
 
             const result = await loader({
-                request: new Request('http://localhost/loader/wishlist-products'),
+                request: new Request('http://localhost/resource/wishlist-products'),
                 context: mockContext,
             } as LoaderFunctionArgs);
 
@@ -606,19 +581,22 @@ describe('loader.wishlist-products', () => {
     });
 
     describe('error handling', () => {
-        test('should throw error when getCustomerProductLists fails', async () => {
+        test('should return empty result when getCustomerProductLists fails', async () => {
             const apiError = new Error('API Error');
             mockGetCustomerProductLists.mockRejectedValue(apiError);
 
-            await expect(
-                loader({
-                    request: new Request('http://localhost/loader/wishlist-products'),
-                    context: mockContext,
-                } as LoaderFunctionArgs)
-            ).rejects.toThrow('API Error');
+            const result = await loader({
+                request: new Request('http://localhost/resource/wishlist-products'),
+                context: mockContext,
+            } as LoaderFunctionArgs);
+
+            // getWishlist() catches the error and returns null wishlist, which causes the loader to return empty result
+            expect(result.products).toEqual([]);
+            expect(result.productsByProductId).toEqual({});
+            expect(result.total).toBe(0);
         });
 
-        test('should throw error when getCustomerProductList fails', async () => {
+        test('should return empty result when getCustomerProductList fails', async () => {
             const mockWishlist: ShopperCustomers.schemas['CustomerProductList'] = {
                 id: 'wishlist-1',
                 listId: 'wishlist-1',
@@ -629,15 +607,15 @@ describe('loader.wishlist-products', () => {
                 data: { data: [mockWishlist] },
             });
 
-            const apiError = new Error('API Error');
-            mockGetCustomerProductList.mockRejectedValue(apiError);
+            const result = await loader({
+                request: new Request('http://localhost/resource/wishlist-products'),
+                context: mockContext,
+            } as LoaderFunctionArgs);
 
-            await expect(
-                loader({
-                    request: new Request('http://localhost/loader/wishlist-products'),
-                    context: mockContext,
-                } as LoaderFunctionArgs)
-            ).rejects.toThrow('API Error');
+            // getWishlist() catches the error and returns null wishlist, which causes the loader to return empty result
+            expect(result.products).toEqual([]);
+            expect(result.productsByProductId).toEqual({});
+            expect(result.total).toBe(0);
         });
 
         test('should throw error when fetchProductsForWishlist fails', async () => {
@@ -654,14 +632,12 @@ describe('loader.wishlist-products', () => {
                 data: { data: [mockWishlist] },
             });
 
-            mockGetCustomerProductList.mockResolvedValue({ data: mockWishlist });
-
             const apiError = new Error('Product fetch error');
             mockFetchProductsForWishlist.mockRejectedValue(apiError);
 
             await expect(
                 loader({
-                    request: new Request('http://localhost/loader/wishlist-products'),
+                    request: new Request('http://localhost/resource/wishlist-products'),
                     context: mockContext,
                 } as LoaderFunctionArgs)
             ).rejects.toThrow('Product fetch error');

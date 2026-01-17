@@ -104,7 +104,7 @@ export function useRequireAuth<T extends (...args: unknown[]) => Promise<unknown
                     },
                 },
                 cancel: {
-                    label: t('signup:signIn'),
+                    label: t('signup:form.createAccountButton'),
                     onClick: () => {
                         void navigate(signupUrl);
                     },

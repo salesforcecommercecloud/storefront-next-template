@@ -23,7 +23,7 @@ import { useToast } from '@/components/toast';
 import { useRequireAuth } from '@/hooks/use-require-auth';
 /**
  * Hook for wishlist functionality using action routes for server-side state management.
- * Note: This hook maintains optimistic client-side state. For full wishlist data,
+ * Note: This hook maintains optimistic client-side state. For server-side wishlist data,
  * use the loader in account.wishlist.tsx route.
  */
 export const useWishlist = () => {

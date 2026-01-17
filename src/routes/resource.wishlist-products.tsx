@@ -16,10 +16,9 @@
 import { type LoaderFunctionArgs } from 'react-router';
 import type { ShopperCustomers, ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { getAuth } from '@/middlewares/auth.server';
-import { createApiClients } from '@/lib/api-clients';
 import { isRegisteredCustomer } from '@/lib/api/customer.server';
 import { convertProductToProductSearchHit } from '@/lib/product-conversion';
-import { fetchProductsForWishlist } from '@/lib/api/wishlist';
+import { fetchProductsForWishlist, getWishlist } from '@/lib/api/wishlist';
 import { getConfig } from '@/config';
 
 /**
@@ -73,19 +72,10 @@ export async function loader({ request, context }: LoaderFunctionArgs): Promise<
     }
 
     const customerId = session.customer_id;
-    const clients = createApiClients(context);
 
-    // Get the customer's product lists
-    const { data: productListsResponse } = await clients.shopperCustomers.getCustomerProductLists({
-        params: {
-            path: { customerId },
-        },
-    });
+    const { wishlist, items: allItems, id: listId } = await getWishlist(context, customerId);
 
-    // Find the wishlist
-    const wishlist = productListsResponse?.data?.find((list) => list.type === 'wish_list');
-
-    if (!wishlist) {
+    if (!wishlist || !listId) {
         return {
             products: [],
             productsByProductId: {},
@@ -95,32 +85,6 @@ export async function loader({ request, context }: LoaderFunctionArgs): Promise<
         };
     }
 
-    // Commerce SDK might return 'id' instead of 'listId' - use 'id' if 'listId' is not available
-    // @ts-expect-error - listId and id may exist at runtime but are not in type definitions
-    const listId = wishlist?.listId || wishlist?.id;
-    if (!listId) {
-        return {
-            products: [],
-            productsByProductId: {},
-            offset: 0,
-            limit: 0,
-            total: 0,
-        };
-    }
-
-    // Get the full wishlist with items
-    const { data: fullWishlist } = await clients.shopperCustomers.getCustomerProductList({
-        params: {
-            path: {
-                customerId,
-                listId,
-            },
-        },
-    });
-
-    // Commerce SDK may return items in 'items' or 'customerProductListItems' field
-    // @ts-expect-error - items and customerProductListItems may exist at runtime but are not in type definitions
-    const allItems = fullWishlist?.items || fullWishlist?.customerProductListItems || [];
     const total = allItems.length;
 
     // Slice items based on offset and limit (client-side pagination)

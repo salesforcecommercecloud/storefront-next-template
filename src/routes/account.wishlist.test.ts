@@ -626,9 +626,6 @@ describe('account.wishlist loaders', () => {
                 data: { data: [mockWishlist] },
             });
 
-            // Loader always calls getCustomerProductList to get full wishlist
-            mockGetCustomerProductList.mockResolvedValue({ data: mockWishlist });
-
             mockGetProducts.mockResolvedValue({
                 data: [
                     { id: 'product-1', name: 'Product 1' },
@@ -644,7 +641,6 @@ describe('account.wishlist loaders', () => {
 
             expect(result.wishlist).toEqual(mockWishlist);
             expect(result.items).toHaveLength(2);
-            expect(mockGetCustomerProductList).toHaveBeenCalled();
             expect(mockGetCustomerProductLists).toHaveBeenCalledWith({
                 params: {
                     path: { customerId: 'test-customer-id' },
@@ -672,9 +668,6 @@ describe('account.wishlist loaders', () => {
                 data: { data: [mockWishlist] },
             });
 
-            // Loader always calls getCustomerProductList to get full wishlist
-            mockGetCustomerProductList.mockResolvedValue({ data: mockWishlist });
-
             mockGetProducts.mockResolvedValue({
                 data: Array.from({ length: 8 }, (_, i) => ({
                     id: `product-${i}`,
@@ -701,54 +694,6 @@ describe('account.wishlist loaders', () => {
                         allImages: true,
                         perPricebook: true,
                         currency: 'USD',
-                    },
-                },
-            });
-        });
-
-        test('should fetch full wishlist when items are not in initial response', async () => {
-            const mockWishlistSummary: ShopperCustomers.schemas['CustomerProductList'] = {
-                id: 'wishlist-1',
-                listId: 'wishlist-1',
-                type: 'wish_list',
-            };
-
-            const mockFullWishlist: ShopperCustomers.schemas['CustomerProductList'] = {
-                id: 'wishlist-1',
-                listId: 'wishlist-1',
-                type: 'wish_list',
-                items: [
-                    { id: 'item-1', productId: 'product-1' },
-                    { id: 'item-2', productId: 'product-2' },
-                ] as ShopperCustomers.schemas['CustomerProductListItem'][],
-            };
-
-            mockGetCustomerProductLists.mockResolvedValue({
-                data: { data: [mockWishlistSummary] },
-            });
-
-            mockGetCustomerProductList.mockResolvedValue({ data: mockFullWishlist });
-
-            mockGetProducts.mockResolvedValue({
-                data: [
-                    { id: 'product-1', name: 'Product 1' },
-                    { id: 'product-2', name: 'Product 2' },
-                ],
-            });
-
-            const result = await loader({
-                context: mockContext,
-                request: new Request('http://localhost/account/wishlist'),
-                params: {},
-            } as LoaderFunctionArgs);
-
-            expect(result.wishlist).toEqual(mockFullWishlist);
-            expect(result.items).toHaveLength(2);
-            expect(mockGetCustomerProductList).toHaveBeenCalledWith({
-                params: {
-                    path: {
-                        customerId: 'test-customer-id',
-                        listId: 'wishlist-1',
                     },
                 },
             });
@@ -817,10 +762,6 @@ describe('account.wishlist loaders', () => {
             mockGetCustomerProductLists.mockResolvedValue({
                 data: { data: [mockWishlist] },
             });
-
-            // Loader always calls getCustomerProductList to get full wishlist
-            // Return the same wishlist with listId undefined
-            mockGetCustomerProductList.mockResolvedValue({ data: mockWishlist });
 
             mockGetProducts.mockResolvedValue({
                 data: [{ id: 'product-1', name: 'Product 1' }],

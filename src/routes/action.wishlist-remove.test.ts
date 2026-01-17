@@ -250,14 +250,20 @@ describe('action.wishlist-remove', () => {
             };
 
             mockShopperCustomers.getCustomerProductLists.mockResolvedValue({
-                data: { data: [{ id: 'wishlist-123', listId: 'wishlist-123', type: 'wish_list' }] },
+                data: {
+                    data: [
+                        {
+                            id: 'wishlist-123',
+                            listId: 'wishlist-123',
+                            type: 'wish_list',
+                            items: [{ id: 'item-123', productId: 'product-123' }],
+                        },
+                    ],
+                },
             });
 
-            // First call: get full wishlist to find the item to remove (lookup by productId)
-            // Second call: get updated wishlist after removal
-            mockShopperCustomers.getCustomerProductList
-                .mockResolvedValueOnce({ data: wishlist } as any)
-                .mockResolvedValueOnce({ data: wishlistAfterRemoval } as any);
+            // Mock getCustomerProductList to return updated list after removal
+            mockShopperCustomers.getCustomerProductList.mockResolvedValue({ data: wishlistAfterRemoval } as any);
 
             mockShopperCustomers.deleteCustomerProductListItem.mockResolvedValue({
                 data: {},
@@ -301,10 +307,19 @@ describe('action.wishlist-remove', () => {
             };
 
             mockShopperCustomers.getCustomerProductLists.mockResolvedValue({
-                data: { data: [{ id: 'wishlist-123', listId: 'wishlist-123', type: 'wish_list' }] },
+                data: {
+                    data: [
+                        {
+                            id: 'wishlist-123',
+                            listId: 'wishlist-123',
+                            type: 'wish_list',
+                            items: [{ id: 'item-123', productId: 'product-123' }],
+                        },
+                    ],
+                },
             });
 
-            // Only one call to getCustomerProductList (after removal) - no lookup needed!
+            // Mock getCustomerProductList to return updated list after removal
             mockShopperCustomers.getCustomerProductList.mockResolvedValue({ data: wishlistAfterRemoval } as any);
 
             mockShopperCustomers.deleteCustomerProductListItem.mockResolvedValue({
@@ -339,8 +354,8 @@ describe('action.wishlist-remove', () => {
                 },
             });
 
-            // Verify getCustomerProductList was called only ONCE (for fetching updated list after removal)
-            // NOT twice (which would happen if we needed to look up the itemId from productId)
+            // Verify getCustomerProductList was called ONCE (after removal to get updated list)
+            // getWishlist() no longer calls it - it uses items from getCustomerProductLists
             expect(mockShopperCustomers.getCustomerProductList).toHaveBeenCalledTimes(1);
         });
 
@@ -355,9 +370,19 @@ describe('action.wishlist-remove', () => {
             };
 
             mockShopperCustomers.getCustomerProductLists.mockResolvedValue({
-                data: { data: [{ id: 'wishlist-123', listId: 'wishlist-123', type: 'wish_list' }] },
+                data: {
+                    data: [
+                        {
+                            id: 'wishlist-123',
+                            listId: 'wishlist-123',
+                            type: 'wish_list',
+                            items: [{ id: 'item-123', productId: 'product-456' }],
+                        },
+                    ],
+                },
             });
 
+            // Mock getCustomerProductList to return updated list after removal
             mockShopperCustomers.getCustomerProductList.mockResolvedValue({ data: wishlistAfterRemoval } as any);
 
             mockShopperCustomers.deleteCustomerProductListItem.mockResolvedValue({
@@ -390,7 +415,8 @@ describe('action.wishlist-remove', () => {
                 },
             });
 
-            // Verify no lookup was performed
+            // Verify getCustomerProductList was called ONCE (after removal to get updated list)
+            // getWishlist() no longer calls it - it uses items from getCustomerProductLists
             expect(mockShopperCustomers.getCustomerProductList).toHaveBeenCalledTimes(1);
         });
 
@@ -503,17 +529,6 @@ describe('action.wishlist-remove', () => {
         });
 
         test('should find items in customerProductListItems field when items is empty', async () => {
-            // Note: The code checks fullWishlist.items first, then customerProductListItems
-            // So we need items to be empty/falsy and customerProductListItems to have the item
-            const wishlistWithItemsInAltField = {
-                id: 'wishlist-123',
-                listId: 'wishlist-123',
-                type: 'wish_list',
-                name: 'Wishlist',
-                items: undefined, // Explicitly undefined so || operator works
-                customerProductListItems: [{ id: 'item-123', productId: 'product-123' }], // Items in alternative field
-            } as any; // Use any to include customerProductListItems which may not be in the type
-
             const wishlistAfterRemoval = {
                 id: 'wishlist-123',
                 listId: 'wishlist-123',
@@ -524,14 +539,21 @@ describe('action.wishlist-remove', () => {
             };
 
             mockShopperCustomers.getCustomerProductLists.mockResolvedValue({
-                data: { data: [{ id: 'wishlist-123', listId: 'wishlist-123', type: 'wish_list' }] },
+                data: {
+                    data: [
+                        {
+                            id: 'wishlist-123',
+                            listId: 'wishlist-123',
+                            type: 'wish_list',
+                            // Use customerProductListItems field (alt field)
+                            customerProductListItems: [{ id: 'item-123', productId: 'product-123' }],
+                        },
+                    ],
+                },
             });
 
-            // First call: get full wishlist to find the item (line 81)
-            // Second call: get updated wishlist after removal (line 125)
-            mockShopperCustomers.getCustomerProductList
-                .mockResolvedValueOnce({ data: wishlistWithItemsInAltField })
-                .mockResolvedValueOnce({ data: wishlistAfterRemoval } as any);
+            // Mock getCustomerProductList to return updated list after removal
+            mockShopperCustomers.getCustomerProductList.mockResolvedValue({ data: wishlistAfterRemoval } as any);
 
             mockShopperCustomers.deleteCustomerProductListItem.mockResolvedValue({
                 data: {},

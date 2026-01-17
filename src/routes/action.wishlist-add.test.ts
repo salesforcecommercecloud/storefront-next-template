@@ -309,11 +309,12 @@ describe('action.wishlist-add', () => {
                 listId: 'list-456',
                 type: 'custom_list',
                 name: 'Other List',
+                customerProductListItems: [], // Include items field for getWishlist
             };
 
             // First call: try to get wishlist (finds none)
             // createCustomerProductList throws error
-            // Second call in catch: get all lists and use first one (line 112-117)
+            // Second call in catch: get all lists and use first one (using getWishlist)
             mockShopperCustomers.getCustomerProductLists.mockResolvedValueOnce({
                 data: { data: [] }, // No wishlist found
             });
@@ -324,8 +325,9 @@ describe('action.wishlist-add', () => {
                 data: { data: [firstList] }, // Fallback: return first available list
             });
 
+            // Mock getCustomerProductList for the post-add fetch
             mockShopperCustomers.getCustomerProductList.mockResolvedValue({
-                data: { ...firstList, items: [] },
+                data: firstList, // firstList already has customerProductListItems
             });
 
             mockShopperCustomers.createCustomerProductListItem.mockResolvedValue({
@@ -339,14 +341,8 @@ describe('action.wishlist-add', () => {
                 params: {},
             };
 
-            // Start the async operation
-            const responsePromise = action(args);
-
-            // Fast-forward the 1.5 second delay
-            await vi.advanceTimersByTimeAsync(1500);
-
-            // Wait for the response
-            const response = await responsePromise;
+            // No timer advancement needed for fallback path - creation fails immediately
+            const response = await action(args);
             let json: any;
             if (response instanceof Response) {
                 json = await response.json();
@@ -373,8 +369,8 @@ describe('action.wishlist-add', () => {
 
             // First call: getCustomerProductLists - no wishlist exists
             // Second call: after createCustomerProductList, getCustomerProductLists to find created wishlist
-            // Third call: getCustomerProductList - get full wishlist before adding item
-            // Fourth call: getCustomerProductList - get updated wishlist after adding item (duplicate check)
+            // Third call: getCustomerProductList - get wishlist before adding item
+            // Fourth call: getCustomerProductList - get updated wishlist after adding item
             mockShopperCustomers.getCustomerProductLists
                 .mockResolvedValueOnce({
                     data: { data: [] },
@@ -489,11 +485,12 @@ describe('action.wishlist-add', () => {
                 ],
             };
 
+            // getCustomerProductLists returns the wishlist data including items
             mockShopperCustomers.getCustomerProductLists.mockResolvedValue({
-                data: { data: [{ id: 'wishlist-123', listId: 'wishlist-123', type: 'wish_list' }] },
+                data: { data: [wishlistWithExistingItem] },
             });
 
-            // When we check the wishlist, item already exists
+            // This mock is no longer called for duplicate check, but keep it for reference
             mockShopperCustomers.getCustomerProductList.mockResolvedValue({
                 data: wishlistWithExistingItem,
             } as any);
@@ -522,7 +519,11 @@ describe('action.wishlist-add', () => {
         });
 
         test('should handle API errors gracefully', async () => {
+            // getWishlist catches errors and returns empty data, so getOrCreateWishlist tries to create
             mockShopperCustomers.getCustomerProductLists.mockRejectedValue(new Error('API Error'));
+
+            // Mock createCustomerProductList to also fail, triggering the final error path
+            mockShopperCustomers.createCustomerProductList.mockRejectedValue(new Error('API Error'));
 
             mockExtractResponseError.mockResolvedValue({
                 responseMessage: 'Failed to add to wishlist',
@@ -600,7 +601,11 @@ describe('action.wishlist-add', () => {
         });
 
         test('should handle 401/403 authentication errors in catch block', async () => {
+            // getWishlist catches errors and returns empty data, so getOrCreateWishlist tries to create
             mockShopperCustomers.getCustomerProductLists.mockRejectedValue(new Error('Unauthorized'));
+
+            // Mock createCustomerProductList to also fail with 401, triggering the auth error path
+            mockShopperCustomers.createCustomerProductList.mockRejectedValue(new Error('Unauthorized'));
 
             mockExtractResponseError.mockResolvedValue({
                 responseMessage: 'Unauthorized',
@@ -630,7 +635,11 @@ describe('action.wishlist-add', () => {
         });
 
         test('should handle error when extractResponseError fails and status_code is undefined', async () => {
+            // getWishlist catches errors and returns empty data, so getOrCreateWishlist tries to create
             mockShopperCustomers.getCustomerProductLists.mockRejectedValue(new Error('API Error'));
+
+            // Mock createCustomerProductList to also fail, triggering the error path
+            mockShopperCustomers.createCustomerProductList.mockRejectedValue(new Error('API Error'));
 
             // extractResponseError fails, so we fall back to extractStatusCode which returns undefined
             mockExtractResponseError.mockRejectedValue(new Error('Response body already read'));
@@ -733,6 +742,7 @@ describe('action.wishlist-add', () => {
                 id: 'wishlist-123',
                 type: 'wish_list',
                 name: 'Wishlist',
+                customerProductListItems: [{ id: 'item-123', productId: 'product-123' }], // Item already exists
             };
 
             const wishlistWithId = {
@@ -751,7 +761,7 @@ describe('action.wishlist-add', () => {
                     data: { data: [wishlistWithId] },
                 });
 
-            // In retry path, getCustomerProductList is called once to get the full wishlist (line 160)
+            // getCustomerProductList is no longer called for duplicate checking after refactor
             mockShopperCustomers.getCustomerProductList.mockResolvedValueOnce({ data: wishlistWithId } as any);
 
             const request = createRequest('product-123');

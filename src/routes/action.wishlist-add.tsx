@@ -20,6 +20,7 @@ import { extractStatusCode } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients';
 import { isRegisteredCustomer } from '@/lib/api/customer.server';
 import { getTranslation } from '@/lib/i18next';
+import { getWishlist } from '@/lib/api/wishlist';
 
 type CustomerProductList = ShopperCustomers.schemas['CustomerProductList'];
 type CustomerProductListItem = ShopperCustomers.schemas['CustomerProductListItem'];
@@ -41,22 +42,13 @@ async function getOrCreateWishlist(
     const clients = createApiClients(context);
 
     try {
-        // Try to get the default wishlist (product list type 'wish_list')
-        const { data: productLists } = await clients.shopperCustomers.getCustomerProductLists({
-            params: {
-                path: { customerId },
-            },
-        });
-
-        // Find the default wishlist
-        const wishlist = productLists?.data?.find((list) => list.type === 'wish_list');
+        // Try to get the default wishlist using getWishlist
+        const { wishlist, id: listId } = await getWishlist(context, customerId);
 
         if (wishlist) {
             // Commerce Cloud may take time to index wishlists. If the wishlist exists but
             // doesn't have a listId yet, wait and retry once to handle indexing delays.
             // This ensures the function contract: always return a wishlist with valid listId.
-            const listId = wishlist.listId || wishlist.id;
-
             if (listId) {
                 return wishlist; // Has valid listId
             }
@@ -64,14 +56,7 @@ async function getOrCreateWishlist(
             // Retry logic: wait and fetch again (Commerce Cloud indexing delay)
             await new Promise((resolve) => setTimeout(resolve, WISHLIST_RETRY_DELAY_MS));
 
-            const { data: retryProductLists } = await clients.shopperCustomers.getCustomerProductLists({
-                params: {
-                    path: { customerId },
-                },
-            });
-
-            const retryWishlist = retryProductLists?.data?.find((list) => list.type === 'wish_list');
-            const retryListId = retryWishlist?.listId || retryWishlist?.id;
+            const { wishlist: retryWishlist, id: retryListId } = await getWishlist(context, customerId);
 
             if (retryWishlist && retryListId) {
                 return retryWishlist;
@@ -98,16 +83,8 @@ async function getOrCreateWishlist(
         // This is necessary because Commerce Cloud may not return listId in the create response
         await new Promise((resolve) => setTimeout(resolve, WISHLIST_CREATION_DELAY_MS));
 
-        // Fetch the newly created wishlist
-        const { data: productListsResponse } = await clients.shopperCustomers.getCustomerProductLists({
-            params: {
-                path: { customerId },
-            },
-        });
-
-        const createdWishlist = productListsResponse?.data?.find((list) => list.type === 'wish_list');
-        // Commerce SDK might return 'id' instead of 'listId' - check both
-        const createdListId = createdWishlist?.listId || createdWishlist?.id;
+        // Fetch the newly created wishlist using getWishlist
+        const { wishlist: createdWishlist, id: createdListId } = await getWishlist(context, customerId);
 
         if (!createdWishlist || !createdListId) {
             throw new Error(t('account:wishlist.failedToCreate'));
@@ -167,25 +144,18 @@ async function addToWishlist(
         const wishlist = await getOrCreateWishlist(context, customerId);
 
         // Commerce SDK might return 'id' instead of 'listId' - use 'id' if 'listId' is not available
+        // @ts-expect-error - listId may exist at runtime but is not in type definitions
         const listId = wishlist.listId || wishlist.id;
 
-        // Check if product is already in the wishlist
-        const { data: fullWishlist } = await clients.shopperCustomers.getCustomerProductList({
-            params: {
-                path: {
-                    customerId,
-                    listId,
-                },
-            },
-        });
-
-        const existingItem = fullWishlist.customerProductListItems?.find(
-            (item: CustomerProductListItem) => item.productId === productId
-        );
+        // Check if product is already in the wishlist using items from getOrCreateWishlist
+        // The wishlist object already contains all items - no additional API call needed
+        // @ts-expect-error - customerProductListItems may exist at runtime but is not in type definitions
+        const wishlistItems = wishlist.customerProductListItems || wishlist.items || [];
+        const existingItem = wishlistItems.find((item: CustomerProductListItem) => item.productId === productId);
         if (existingItem) {
             return {
                 success: true, // Still success, just informational
-                productList: fullWishlist,
+                productList: wishlist,
                 alreadyInWishlist: true,
             };
         }
@@ -207,19 +177,13 @@ async function addToWishlist(
             },
         });
 
-        // Fetch the updated wishlist to return it
-        const { data: updatedList } = await clients.shopperCustomers.getCustomerProductList({
-            params: {
-                path: {
-                    customerId,
-                    listId,
-                },
-            },
-        });
+        // Fetch the updated wishlist using getWishlist
+        // Since we just successfully added to it, the wishlist must exist
+        const { wishlist: updatedList } = await getWishlist(context, customerId, listId);
 
         return {
             success: true,
-            productList: updatedList,
+            productList: updatedList ?? undefined,
             alreadyInWishlist: false,
         };
     } catch (error) {
@@ -227,7 +191,7 @@ async function addToWishlist(
         let status_code: string | undefined;
 
         if (error instanceof ApiError) {
-            responseMessage = error.body?.message || error.message;
+            responseMessage = (error.body?.message as string | undefined) || error.message;
             status_code = String(error.status);
         } else {
             responseMessage = error instanceof Error ? error.message : String(error);
@@ -281,7 +245,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
         let status_code: string | undefined;
 
         if (error instanceof ApiError) {
-            responseMessage = error.body?.message || error.message;
+            responseMessage = (error.body?.message as string | undefined) || error.message;
             status_code = String(error.status);
         } else {
             responseMessage = error instanceof Error ? error.message : String(error);

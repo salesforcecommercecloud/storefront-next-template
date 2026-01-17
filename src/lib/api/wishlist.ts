@@ -23,6 +23,7 @@ type CustomerProductList = ShopperCustomers.schemas['CustomerProductList'];
 type CustomerProductListItem = ShopperCustomers.schemas['CustomerProductListItem'];
 type Product = ShopperProducts.schemas['Product'];
 
+// TODO: for later refactoring, there are similar product-fetch functions for Cart and Checkout.
 /**
  * Fetch product details for wishlist items
  * The API has a limit based on productsPerPage config, so we batch requests if needed
@@ -98,20 +99,49 @@ export async function fetchProductsForWishlist(
 }
 
 /**
- * Get the customer's wishlist with items
- * Returns both the wishlist metadata and the items
+ * Get the customer's wishlist with items. It's the first list with `wish_list` type.
+ * Returns the wishlist metadata, items, and extracted ID
+ *
+ * @param context - Loader function context
+ * @param customerId - The customer ID
+ * @param listId - Optional list ID for direct fetch. If provided, fetches the specific list directly.
  */
-export async function getWishlistWithItems(
+export async function getWishlist(
     context: LoaderFunctionArgs['context'],
-    customerId: string
+    customerId: string,
+    listId?: string
 ): Promise<{
     wishlist: CustomerProductList | null;
     items: CustomerProductListItem[];
+    id: string | null;
 }> {
     const clients = createApiClients(context);
 
     try {
-        // Get the customer's product lists
+        // If listId is provided, fetch the wishlist directly
+        if (listId) {
+            const { data: wishlist } = await clients.shopperCustomers.getCustomerProductList({
+                params: {
+                    path: { customerId, listId },
+                },
+            });
+
+            // Extract the ID using the defensive pattern (listId may exist at runtime but not in types)
+            // @ts-expect-error - listId may exist at runtime but is not in type definitions
+            const id = wishlist.listId || wishlist.id || null;
+
+            // Commerce SDK may return items in 'items' or 'customerProductListItems' field
+            // @ts-expect-error - items and customerProductListItems may exist at runtime but are not in type definitions
+            const items = wishlist.items || wishlist.customerProductListItems || [];
+
+            return {
+                wishlist,
+                items,
+                id,
+            };
+        }
+
+        // Otherwise, get all product lists and find the wishlist
         const { data: productLists } = await clients.shopperCustomers.getCustomerProductLists({
             params: {
                 path: { customerId },
@@ -125,38 +155,23 @@ export async function getWishlistWithItems(
             return {
                 wishlist: null,
                 items: [],
+                id: null,
             };
         }
 
-        // Commerce SDK might return 'id' instead of 'listId' - use 'id' if 'listId' is not available
-        // @ts-expect-error - listId and id may exist at runtime but are not in type definitions
-        const listId = wishlist?.listId || wishlist?.id;
-        if (!listId) {
-            return {
-                wishlist: null,
-                items: [],
-            };
-        }
-
-        // Always fetch the full wishlist to ensure we get ALL items
-        // (getCustomerProductLists might only return a partial list)
-        const { data: fullWishlistRaw } = await clients.shopperCustomers.getCustomerProductList({
-            params: {
-                path: {
-                    customerId,
-                    listId,
-                },
-            },
-        });
+        // Extract the ID using the defensive pattern (listId may exist at runtime but not in types)
+        // @ts-expect-error - listId may exist at runtime but is not in type definitions
+        const id = wishlist.listId || wishlist.id || null;
+        // It's possible that id does not exist yet, if Commerce Cloud is still indexing the newly created wishlist
 
         // Commerce SDK may return items in 'items' or 'customerProductListItems' field
-        // Check both fields to ensure we get the items
         // @ts-expect-error - items and customerProductListItems may exist at runtime but are not in type definitions
-        const items = fullWishlistRaw?.items || fullWishlistRaw?.customerProductListItems || [];
+        const items = wishlist.items || wishlist.customerProductListItems || [];
 
         return {
-            wishlist: fullWishlistRaw,
+            wishlist,
             items,
+            id,
         };
     } catch (error) {
         // eslint-disable-next-line no-console
@@ -164,6 +179,7 @@ export async function getWishlistWithItems(
         return {
             wishlist: null,
             items: [],
+            id: null,
         };
     }
 }

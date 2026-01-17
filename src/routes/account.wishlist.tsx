@@ -23,14 +23,13 @@ import {
 } from '@salesforce/storefront-next-runtime/scapi';
 import { Button } from '@/components/ui/button';
 import { getAuth } from '@/middlewares/auth.server';
-import { createApiClients } from '@/lib/api-clients';
 import { getConfig, useConfig } from '@/config';
 import { convertProductToProductSearchHit } from '@/lib/product-conversion';
 import { ProductTile } from '@/components/product-tile';
 import { useToast } from '@/components/toast';
 import PaginatedProductCarousel from '@/components/product-carousel/paginated-carousel';
 import { useTranslation } from 'react-i18next';
-import { fetchProductsForWishlist } from '@/lib/api/wishlist';
+import { fetchProductsForWishlist, getWishlist } from '@/lib/api/wishlist';
 
 type CustomerProductList = ShopperCustomers.schemas['CustomerProductList'];
 type CustomerProductListItem = ShopperCustomers.schemas['CustomerProductListItem'];
@@ -66,60 +65,24 @@ export async function loader({ context }: LoaderFunctionArgs): Promise<{
 
     try {
         const customerId = session.customer_id;
-        const clients = createApiClients(context);
         const config = getConfig(context);
         const initialLimit = config.global.paginatedProductCarousel.defaultLimit;
 
-        // Get the customer's product lists
-        const { data: productLists } = await clients.shopperCustomers.getCustomerProductLists({
-            params: {
-                path: { customerId },
-            },
-        });
+        const { wishlist, items, id: listId } = await getWishlist(context, customerId);
 
-        // Find the wishlist
-        const wishlist = productLists?.data?.find((list) => list.type === 'wish_list');
-
-        if (!wishlist) {
+        if (!wishlist || !listId) {
             return {
                 wishlist: null,
                 items: [],
                 productsByProductId: Promise.resolve({}),
             };
         }
-
-        // Commerce SDK might return 'id' instead of 'listId' - use 'id' if 'listId' is not available
-        // @ts-expect-error - listId and id may exist at runtime but are not in type definitions
-        const listId = wishlist?.listId || wishlist?.id;
-        if (!listId) {
-            return {
-                wishlist: null,
-                items: [],
-                productsByProductId: Promise.resolve({}),
-            };
-        }
-
-        // Always fetch the full wishlist to ensure we get ALL items
-        // (getCustomerProductLists might only return a partial list)
-        const { data: fullWishlistRaw } = await clients.shopperCustomers.getCustomerProductList({
-            params: {
-                path: {
-                    customerId,
-                    listId,
-                },
-            },
-        });
-
-        // Commerce SDK may return items in 'items' or 'customerProductListItems' field
-        // Check both fields to ensure we get the items
-        // @ts-expect-error - items and customerProductListItems may exist at runtime but are not in type definitions
-        const items = fullWishlistRaw?.items || fullWishlistRaw?.customerProductListItems || [];
 
         // Only fetch product details for the initial batch to optimize initial load
         const initialItems = items.slice(0, initialLimit);
 
         return {
-            wishlist: fullWishlistRaw,
+            wishlist,
             items,
             // Pass allItems to create placeholder entries for ALL products in the map
             productsByProductId: fetchProductsForWishlist(context, initialItems, items),
@@ -393,7 +356,7 @@ export default function AccountWishlist(): ReactElement {
             }
 
             // Use the fetcher to load more product details
-            const url = `/loader/wishlist-products?offset=${carouselOffset}&limit=${limitParam}`;
+            const url = `/resource/wishlist-products?offset=${carouselOffset}&limit=${limitParam}`;
 
             return new Promise<(ProductSearchHit | null)[]>((resolve, reject) => {
                 pendingLoadRef.current = { resolve, reject };

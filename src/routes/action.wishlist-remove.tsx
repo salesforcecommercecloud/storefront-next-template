@@ -20,6 +20,7 @@ import { extractStatusCode } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients';
 import { isRegisteredCustomer } from '@/lib/api/customer.server';
 import { getTranslation } from '@/lib/i18next';
+import { getWishlist } from '@/lib/api/wishlist';
 
 type CustomerProductList = ShopperCustomers.schemas['CustomerProductList'];
 type CustomerProductListItem = ShopperCustomers.schemas['CustomerProductListItem'];
@@ -46,6 +47,10 @@ async function removeFromWishlist(
     error?: string;
 }> {
     const { t } = getTranslation();
+
+    // TODO: revisit the error messages returned from this function
+    // Since they will be shown in a toast UI, make sure that the errors are appropriate for the end users.
+    // Some of them are meant for developers only, and some are API errors that should not be leaked for security concern.
 
     // Validate that at least one identifier is provided
     if (!itemId && !productId) {
@@ -76,15 +81,7 @@ async function removeFromWishlist(
         const customerId = session.customer_id;
         const clients = createApiClients(context);
 
-        // Get the customer's product lists
-        const { data: productLists } = await clients.shopperCustomers.getCustomerProductLists({
-            params: {
-                path: { customerId },
-            },
-        });
-
-        // Find the wishlist
-        const wishlist = productLists?.data?.find((list) => list.type === 'wish_list');
+        const { wishlist, items, id: listId } = await getWishlist(context, customerId);
 
         if (!wishlist) {
             return {
@@ -93,9 +90,6 @@ async function removeFromWishlist(
             };
         }
 
-        // Commerce SDK might return 'id' instead of 'listId' - use 'id' if 'listId' is not available
-        // @ts-expect-error - listId and id may exist at runtime but are not in type definitions
-        const listId = wishlist.listId || wishlist.id;
         if (!listId) {
             return {
                 success: false,
@@ -107,23 +101,12 @@ async function removeFromWishlist(
         let wishlistItemId: string | undefined = itemId;
 
         // If itemId not provided, we need to look it up using productId
+        //
+        // Note: The SFCC deleteCustomerProductListItem API requires an itemId (the unique identifier
+        // of the wishlist item), not a productId. We look through the items we already have from
+        // getWishlist() to find the item that matches the productId, then extract its itemId to
+        // perform the deletion.
         if (!wishlistItemId && productId) {
-            // Get the full wishlist to find the item
-            //
-            // Note: The SFCC deleteCustomerProductListItem API requires an itemId (the unique identifier
-            // of the wishlist item), not a productId. We need to fetch the full wishlist to find the
-            // item that matches the productId, then extract its itemId to perform the deletion.
-            const { data: fullWishlist } = await clients.shopperCustomers.getCustomerProductList({
-                params: {
-                    path: {
-                        customerId,
-                        listId,
-                    },
-                },
-            });
-
-            // Find the item in the wishlist
-            const items = fullWishlist.customerProductListItems || [];
             const wishlistItem = items.find((item: CustomerProductListItem) => item.productId === productId);
 
             if (!wishlistItem || !wishlistItem.id) {
@@ -136,6 +119,7 @@ async function removeFromWishlist(
             wishlistItemId = wishlistItem.id;
         }
 
+        // This should never happen due to early validation, but TypeScript needs this check
         if (!wishlistItemId) {
             return {
                 success: false,
@@ -144,6 +128,8 @@ async function removeFromWishlist(
         }
 
         // Remove the item from the wishlist using deleteCustomerProductListItem
+        // Note: The deleteCustomerProductListItem API returns a 204 No Content response with no data,
+        // so we need to refetch the wishlist to get the updated state and return it to the caller
         await clients.shopperCustomers.deleteCustomerProductListItem({
             params: {
                 path: {
@@ -155,18 +141,11 @@ async function removeFromWishlist(
         });
 
         // Fetch the updated wishlist to return it
-        const { data: updatedList } = await clients.shopperCustomers.getCustomerProductList({
-            params: {
-                path: {
-                    customerId,
-                    listId,
-                },
-            },
-        });
+        const { wishlist: updatedList } = await getWishlist(context, customerId, listId);
 
         return {
             success: true,
-            productList: updatedList,
+            productList: updatedList ?? undefined,
         };
     } catch (error) {
         let responseMessage: string | undefined;
