@@ -24,6 +24,7 @@ import { Input } from '@/components/ui/input';
 import AddressSuggestionDropdown, { type AddressSuggestion } from '@/components/address-suggestion-dropdown';
 import { MIN_INPUT_LENGTH, useAutocompleteSuggestions } from '@/hooks/use-autocomplete-suggestions';
 import { processAddressSuggestion } from '@/lib/address-suggestions';
+import { PluginComponent } from '@/plugins/plugin-component';
 
 /**
  * Base address field names that the form must support
@@ -163,6 +164,44 @@ export function AddressFormFields<TFormValues extends FieldValues>({
         }
     };
 
+    /**
+     * Renders the address autocomplete dropdown with plugin extensibility.
+     * Uses different pluginIds for shipping vs billing addresses to allow
+     * extension developers to customize each independently.
+     */
+    const renderAddressAutocomplete = (): React.ReactNode => {
+        if (!showSuggestions || addressSuggestions.length === 0) {
+            return null;
+        }
+
+        const dropdown = (
+            <AddressSuggestionDropdown
+                suggestions={addressSuggestions}
+                isVisible={showSuggestions}
+                isLoading={isLoadingSuggestions}
+                onClose={handleCloseSuggestions}
+                onSelectSuggestion={(suggestion) => void handleSelectSuggestion(suggestion)}
+            />
+        );
+
+        if (fieldPrefix === 'billing') {
+            return (
+                <div>
+                    <PluginComponent pluginId="checkout.payment.billingAddress.autocomplete">
+                        {dropdown}
+                    </PluginComponent>
+                </div>
+            );
+        }
+
+        // Default: shipping address (no fieldPrefix)
+        return (
+            <div>
+                <PluginComponent pluginId="checkout.shippingAddress.autocomplete">{dropdown}</PluginComponent>
+            </div>
+        );
+    };
+
     return (
         <div className={className}>
             {/* First Name and Last Name Row */}
@@ -230,13 +269,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                                     onChange={(e) => handleAddressInputChange(e, field.onChange)}
                                 />
                             </FormControl>
-                            <AddressSuggestionDropdown
-                                suggestions={addressSuggestions}
-                                isVisible={showSuggestions}
-                                isLoading={isLoadingSuggestions}
-                                onClose={handleCloseSuggestions}
-                                onSelectSuggestion={(suggestion) => void handleSelectSuggestion(suggestion)}
-                            />
+                            {renderAddressAutocomplete()}
                             <FormMessage className="text-xl font-bold" />
                         </FormItem>
                     )}
