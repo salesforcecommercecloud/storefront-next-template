@@ -16,6 +16,7 @@
 
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import React from 'react';
 import type { ShopperOrders, ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
 import { getTranslation } from '@/lib/i18next';
 
@@ -82,6 +83,10 @@ vi.mock('react-router', () => ({
             {children}
         </a>
     ),
+    Await: ({ resolve, children }: any) => {
+        const data = React.use(resolve);
+        return children(data);
+    },
     createContext: (defaultValue: any) => ({
         Provider: ({ children }: any) => children,
         Consumer: ({ children }: any) => children(defaultValue),
@@ -126,20 +131,6 @@ vi.mock('@/extensions/store-locator/components/store-locator/details', () => ({
     ),
 }));
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
-
-const createPageMock = vi.hoisted(() =>
-    vi.fn((config: any) => {
-        return function OrderConfirmationPage(props: any) {
-            return (
-                <div data-testid="order-confirmation-page">{config.component && <config.component {...props} />}</div>
-            );
-        };
-    })
-);
-
-vi.mock('@/components/create-page', () => ({
-    default: createPageMock,
-}));
 
 // Import the functions we want to test
 import { createApiClients } from '@/lib/api-clients';
@@ -216,9 +207,9 @@ describe('Order Confirmation Route', () => {
     const mockStoresByStoreId = new Map<string, ShopperStores.schemas['Store']>([['store-123', mockStore]]);
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
-    describe('loader and clientLoader functions', () => {
-        test('should call getPageData with correct parameters', async () => {
-            const { loader, clientLoader } = await import('./order-confirmation.$orderNo');
+    describe('loader function', () => {
+        test('should return combined order data promise', async () => {
+            const { loader } = await import('./order-confirmation.$orderNo');
 
             const mockContext = {
                 get: vi.fn((context) => {
@@ -248,14 +239,10 @@ describe('Order Confirmation Route', () => {
             vi.mocked(fetchStoresForOrder).mockResolvedValue(new Map());
 
             const loaderResult = loader(mockArgs);
-            const clientLoaderResult = clientLoader(mockArgs);
 
             expect(loaderResult).toBeDefined();
-            expect(clientLoaderResult).toBeDefined();
-            expect(loaderResult).toHaveProperty('order');
-            expect(clientLoaderResult).toHaveProperty('order');
-            expect(loaderResult).toHaveProperty('productsById');
-            expect(clientLoaderResult).toHaveProperty('productsById');
+            expect(loaderResult).toHaveProperty('orderData');
+            expect(loaderResult.orderData).toBeInstanceOf(Promise);
         });
 
         test('should fetch order with correct organization and site IDs', async () => {
@@ -325,26 +312,18 @@ describe('Order Confirmation Route', () => {
 
             const result = loader(mockArgs);
 
-            expect(result).toHaveProperty('storesByStoreId');
+            expect(result).toHaveProperty('orderData');
 
-            // Wait for the order promise to resolve to trigger storesByStoreId
-            await result.order;
+            // Wait for the combined promise to resolve
+            const resolvedData = await result.orderData;
 
-            // Verify fetchStoresForOrder will be called
-            expect(vi.mocked(fetchStoresForOrder)).toBeDefined();
+            // Verify the resolved data structure
+            expect(resolvedData).toHaveProperty('order');
+            expect(resolvedData).toHaveProperty('productsById');
+            expect(resolvedData).toHaveProperty('storesByStoreId');
+            expect(vi.mocked(fetchStoresForOrder)).toHaveBeenCalled();
         });
         // @sfdc-extension-block-end SFDC_EXT_BOPIS
-    });
-
-    describe('HydrateFallback component', () => {
-        test('should render OrderSkeleton', async () => {
-            const { HydrateFallback } = await import('./order-confirmation.$orderNo');
-
-            render(<HydrateFallback />);
-
-            expect(screen.getByTestId('order-skeleton')).toBeInTheDocument();
-            expect(screen.getByText('Loading order...')).toBeInTheDocument();
-        });
     });
 
     describe('ErrorBoundary component', () => {
@@ -368,7 +347,7 @@ describe('Order Confirmation Route', () => {
         });
     });
 
-    describe('CheckoutConfirmation component', () => {
+    describe('OrderConfirmationContent component', () => {
         test('should have order data structure', () => {
             // Test that the order data structure is correctly defined
             expect(mockOrder).toHaveProperty('orderNo');
@@ -454,24 +433,48 @@ describe('Order Confirmation Route', () => {
         // @sfdc-extension-block-end SFDC_EXT_BOPIS
     });
 
-    describe('createPage integration', () => {
-        test('should have been called with correct configuration', () => {
-            expect(createPageMock).toHaveBeenCalled();
-            expect(createPageMock.mock.calls.length).toBeGreaterThan(0);
+    describe('Suspense and Await integration', () => {
+        test('should wrap component with Suspense and Await', async () => {
+            const OrderConfirmationPage = (await import('./order-confirmation.$orderNo')).default;
 
-            const config = createPageMock.mock.calls[0]?.[0];
-            expect(config).toBeDefined();
-            expect(config).toHaveProperty('component');
-            expect(config).toHaveProperty('fallback');
+            // Create a mock loader data with resolved promise
+            const mockLoaderData = {
+                orderData: Promise.resolve({
+                    order: mockOrder,
+                    productsById: {},
+                    storesByStoreId: new Map(),
+                }),
+            };
+
+            const { container } = render(<OrderConfirmationPage loaderData={mockLoaderData} />);
+
+            // Wait for the promise to resolve
+            await new Promise((resolve) => setTimeout(resolve, 0));
+
+            expect(container).toBeInTheDocument();
         });
 
-        test('should have correct fallback component', () => {
-            const config = createPageMock.mock.calls[0]?.[0];
-            expect(config.fallback).toBeDefined();
+        test('should show OrderSkeleton as fallback while loading', async () => {
+            const OrderConfirmationPage = (await import('./order-confirmation.$orderNo')).default;
 
-            // Render the fallback to verify it's the OrderSkeleton
-            const { container } = render(config.fallback);
-            expect(container.querySelector('[data-testid="order-skeleton"]')).toBeInTheDocument();
+            // Create a pending promise that never resolves (simulating loading state)
+            const pendingPromise = new Promise<{
+                order: ShopperOrders.schemas['Order'];
+                productsById: Record<string, any>;
+                storesByStoreId: Map<string, ShopperStores.schemas['Store']>;
+            }>(() => {
+                // Never resolves - keeps component in loading state
+            });
+
+            const mockLoaderData = {
+                orderData: pendingPromise,
+            };
+
+            render(<OrderConfirmationPage loaderData={mockLoaderData} />);
+
+            // Should show the skeleton while promise is pending
+            expect(screen.getByTestId('order-skeleton')).toBeInTheDocument();
+            expect(screen.getByText('Loading order...')).toBeInTheDocument();
         });
     });
 

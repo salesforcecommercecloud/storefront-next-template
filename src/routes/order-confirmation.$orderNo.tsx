@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ReactElement, use } from 'react';
+import { type ReactElement, Suspense } from 'react';
 import AddressDisplay from '@/components/address-display';
-import { type ClientLoaderFunctionArgs, Link, type LoaderFunctionArgs } from 'react-router';
+import { Await, Link, type LoaderFunctionArgs } from 'react-router';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,7 +23,6 @@ import { Typography } from '@/components/typography';
 import ProductImage from '@/components/product-image/product-image';
 import { createApiClients } from '@/lib/api-clients';
 import { formatCurrency, currencyContext } from '@/lib/currency';
-import createPage, { type RouteComponentProps } from '@/components/create-page';
 import { useCurrency } from '@/providers/currency';
 import type {
     ShopperOrders,
@@ -44,11 +43,15 @@ import StoreDetails from '@/extensions/store-locator/components/store-locator/de
 
 type ProductDataById = Record<string, ShopperProducts.schemas['Product'] | undefined>;
 
-type CheckoutConfirmationLoaderData = {
-    order: Promise<ShopperOrders.schemas['Order']>;
-    productsById: Promise<ProductDataById>;
+type OrderConfirmationData = {
+    order: ShopperOrders.schemas['Order'];
+    productsById: ProductDataById;
     // @sfdc-extension-line SFDC_EXT_BOPIS
-    storesByStoreId: Promise<Map<string, ShopperStores.schemas['Store']>>;
+    storesByStoreId: Map<string, ShopperStores.schemas['Store']>;
+};
+
+type CheckoutConfirmationLoaderData = {
+    orderData: Promise<OrderConfirmationData>;
 };
 
 type ImageSource = {
@@ -84,13 +87,13 @@ const getPrimaryImageFromProduct = (product: ShopperProducts.schemas['Product'] 
 };
 
 /**
- * Internal helper function that fetches order data for the confirmation page.
- * This function handles the actual data fetching logic shared between server and client loaders.
- * @param context - The request context containing authentication and configuration
- * @param params - Route parameters containing the order number
+ * Server-side loader function that fetches order data for the confirmation page.
+ * This function runs on the server during SSR and prepares data for the order confirmation page.
+ * @param args - Loader function arguments containing context and parameters
  * @returns Promise that resolves to an object containing the order data promise
  */
-function getPageData({ context, params }: LoaderFunctionArgs): CheckoutConfirmationLoaderData {
+// eslint-disable-next-line react-refresh/only-export-components
+export function loader({ context, params }: LoaderFunctionArgs): CheckoutConfirmationLoaderData {
     const { orderNo } = params;
     const clients = createApiClients(context);
     const currency = context.get(currencyContext) as string;
@@ -144,44 +147,29 @@ function getPageData({ context, params }: LoaderFunctionArgs): CheckoutConfirmat
         }
     });
 
-    return {
-        order: orderPromise,
-        productsById: productsByIdPromise,
+    // Combine all promises into a single promise that resolves to an object
+    const combinedPromise = Promise.all([
+        orderPromise,
+        productsByIdPromise,
         // @sfdc-extension-line SFDC_EXT_BOPIS
-        storesByStoreId: storesByStoreIdPromise,
+        storesByStoreIdPromise,
+    ]).then(
+        ([
+            order,
+            productsById,
+            // @sfdc-extension-line SFDC_EXT_BOPIS
+            storesByStoreId,
+        ]) => ({
+            order,
+            productsById,
+            // @sfdc-extension-line SFDC_EXT_BOPIS
+            storesByStoreId,
+        })
+    );
+
+    return {
+        orderData: combinedPromise,
     };
-}
-
-/**
- * Server-side loader function that fetches order data for the confirmation page.
- * This function runs on the server during SSR and prepares data for the order confirmation page.
- * @param args - Loader function arguments containing context and parameters
- * @returns Promise that resolves to an object containing the order data promise
- */
-// eslint-disable-next-line react-refresh/only-export-components
-export function loader(args: LoaderFunctionArgs) {
-    return getPageData(args);
-}
-
-/**
- * Client-side loader function that handles data loading for client-side navigation.
- * This function ensures React Router doesn't block navigation by returning promises
- * directly instead of wrapped in a data object.
- * @param args - Client loader function arguments containing context and parameters
- * @returns Promise that resolves to an object containing the order data promise
- */
-// eslint-disable-next-line react-refresh/only-export-components,custom/no-client-loaders
-export function clientLoader(args: ClientLoaderFunctionArgs) {
-    return getPageData(args);
-}
-
-/**
- * Hydrate fallback component displayed during client-side hydration.
- * This component is shown while the order data is being loaded and hydrated on the client.
- * @returns JSX element representing the order skeleton loading state
- */
-export function HydrateFallback() {
-    return <OrderSkeleton />;
 }
 
 /**
@@ -218,29 +206,26 @@ export function ErrorBoundary() {
 }
 
 /**
- * Order confirmation component that displays the order details and confirmation information.
- * This component receives loader data and renders the complete order confirmation page including
+ * Order confirmation content component that displays the order details and confirmation information.
+ * This component receives resolved order data and renders the complete order confirmation page including
  * success header, order summary, shipping details, payment details, and action buttons.
- * @param loaderData - The loader data containing the order promise
+ * @param order - The resolved order data
+ * @param productsById - The resolved products data indexed by product ID
+ * @param storesByStoreId - The resolved stores data for BOPIS
  * @returns JSX element representing the order confirmation page layout
  */
-function CheckoutConfirmation({
-    loaderData: {
-        order: orderPromise,
-        productsById: productsByIdPromise,
-        // @sfdc-extension-line SFDC_EXT_BOPIS
-        storesByStoreId: storesByStoreIdPromise,
-    },
-}: RouteComponentProps<CheckoutConfirmationLoaderData>): ReactElement {
-    const order = use(orderPromise);
-    const productsById = use(productsByIdPromise);
+function OrderConfirmationContent({
+    order,
+    productsById,
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    storesByStoreId,
+}: OrderConfirmationData): ReactElement {
     const { t, i18n } = useTranslation('checkout');
     const currency = useCurrency();
     // @sfdc-extension-line SFDC_EXT_BOPIS
     const { t: tBopis } = useTranslation('extBopis');
 
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
-    const storesByStoreId = use(storesByStoreIdPromise);
     const store = getPickupStoreFromMap(
         getOrderPickupShipment(order)?.c_fromStoreId as string | undefined,
         storesByStoreId
@@ -573,9 +558,20 @@ function CheckoutConfirmation({
     );
 }
 
-const OrderConfirmationPage = createPage({
-    component: CheckoutConfirmation,
-    fallback: <OrderSkeleton />,
-});
-
-export default OrderConfirmationPage;
+/**
+ * Order confirmation page component that wraps the content with Suspense and Await.
+ * This component follows the React Router v7 pattern for handling deferred data with Suspense.
+ * @param loaderData - The loader data containing the combined order data promise
+ * @returns JSX element representing the order confirmation page with Suspense boundary
+ */
+export default function OrderConfirmationPage({
+    loaderData,
+}: {
+    loaderData: CheckoutConfirmationLoaderData;
+}): ReactElement {
+    return (
+        <Suspense fallback={<OrderSkeleton />}>
+            <Await resolve={loaderData.orderData}>{(data) => <OrderConfirmationContent {...data} />}</Await>
+        </Suspense>
+    );
+}
