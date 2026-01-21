@@ -24,6 +24,7 @@ import {
     BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import ContentCard from '@/components/content-card';
+import Contact from '@/components/contact';
 import { Typography } from '@/components/typography';
 import { useTranslation } from 'react-i18next';
 
@@ -41,8 +42,8 @@ export default function AboutUs(): ReactElement {
     const { t } = useTranslation('aboutUs');
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="my-6">
+        <div className="pb-8">
+            <div className="max-w-screen-2xl mx-auto px-4 pb-6">
                 {/* Breadcrumb */}
                 <Breadcrumb className="mb-2.5">
                     <BreadcrumbList>
@@ -62,8 +63,8 @@ export default function AboutUs(): ReactElement {
                 <Typography variant="h2">{t('title', { defaultValue: 'About Us' })}</Typography>
             </div>
 
-            {/* Content Cards */}
-            <div className="mx-auto space-y-6">
+            {/* About Us Sections: Our Goal, Our Vision, Our Value */}
+            <div className="max-w-screen-2xl mx-auto px-4 py-6 space-y-6">
                 <ContentCard
                     title={t('section.ourGoal.title')}
                     description={t('section.ourGoal.content')}
@@ -79,6 +80,16 @@ export default function AboutUs(): ReactElement {
                     description={t('section.ourValue.content')}
                     className="max-w-4xl"
                 />
+            </div>
+
+            <div className="md:px-8 px-4 py-12 bg-secondary">
+                <div className="max-w-screen-2xl mx-auto">
+                    <Contact />
+                </div>
+            </div>
+
+            {/* About Us Sections: Our Mission, Our Team */}
+            <div className="max-w-screen-2xl mx-auto px-4 py-6 space-y-6">
                 <ContentCard
                     title={t('section.ourMission.title')}
                     description={t('section.ourMission.content')}
