@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { use, type ReactElement, useEffect, useRef, useMemo, useState, useCallback } from 'react';
-import { useLoaderData, useFetcher, type LoaderFunctionArgs, type ShouldRevalidateFunctionArgs } from 'react-router';
+import { type ReactElement, useEffect, useRef, useMemo, useState, useCallback, Suspense } from 'react';
+import { Await, useFetcher, type LoaderFunctionArgs, type ShouldRevalidateFunctionArgs } from 'react-router';
 import {
     type ShopperCustomers,
     type ShopperProducts,
@@ -22,12 +22,14 @@ import {
     ApiError,
 } from '@salesforce/storefront-next-runtime/scapi';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { getAuth } from '@/middlewares/auth.server';
 import { getConfig, useConfig } from '@/config';
 import { convertProductToProductSearchHit } from '@/lib/product-conversion';
 import { ProductTile } from '@/components/product-tile';
 import { useToast } from '@/components/toast';
 import PaginatedProductCarousel from '@/components/product-carousel/paginated-carousel';
+import ProductCarouselSkeleton from '@/components/product-carousel/skeleton';
 import { useTranslation } from 'react-i18next';
 import { fetchProductsForWishlist, getWishlist } from '@/lib/api/wishlist';
 
@@ -129,6 +131,35 @@ export function shouldRevalidate({ formAction, defaultShouldRevalidate }: Should
 }
 
 /**
+ * Wishlist skeleton component for loading state
+ * Follows the pattern of other account page skeletons (AccountDetailSkeleton, AccountAddressesSkeleton)
+ */
+export function WishlistSkeleton(): ReactElement {
+    const { t } = useTranslation('account');
+
+    return (
+        <div className="pb-16">
+            <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+                {/* Page Header - show actual title like other account skeletons */}
+                <div className="mb-8">
+                    <h1 className="text-2xl font-bold text-foreground" tabIndex={0}>
+                        {t('navigation.wishlist')}
+                    </h1>
+                </div>
+
+                {/* Item count skeleton */}
+                <div className="mb-4">
+                    <Skeleton className="h-5 w-48" />
+                </div>
+
+                {/* Product carousel skeleton */}
+                <ProductCarouselSkeleton />
+            </div>
+        </div>
+    );
+}
+
+/**
  * Component for rendering a remove button in the ProductTile footer
  */
 function WishlistRemoveButton({
@@ -193,17 +224,15 @@ function WishlistRemoveButton({
     );
 }
 
-export default function AccountWishlist(): ReactElement {
+function AccountWishlistContent({
+    items,
+    productsByProductId,
+}: {
+    items: CustomerProductListItem[];
+    productsByProductId: Record<string, Product>;
+}): ReactElement {
     const { t } = useTranslation('account');
     const { t: tProduct } = useTranslation('product');
-
-    const loaderData = useLoaderData<Awaited<ReturnType<typeof loader>>>();
-    const { items, productsByProductId: productsPromise } = loaderData || {
-        items: [] as CustomerProductListItem[],
-        productsByProductId: Promise.resolve({} as Record<string, Product>),
-    };
-
-    const productsByProductId = use(productsPromise);
     const config = useConfig();
     const carouselLimit = config.global.paginatedProductCarousel.defaultLimit;
     const loadMoreFetcher = useFetcher<{
@@ -467,5 +496,21 @@ export default function AccountWishlist(): ReactElement {
                 )}
             </div>
         </div>
+    );
+}
+
+export default function AccountWishlist({
+    loaderData,
+}: {
+    loaderData: Awaited<ReturnType<typeof loader>>;
+}): ReactElement {
+    return (
+        <Suspense fallback={<WishlistSkeleton />}>
+            <Await resolve={loaderData.productsByProductId}>
+                {(productsByProductId) => (
+                    <AccountWishlistContent items={loaderData.items} productsByProductId={productsByProductId} />
+                )}
+            </Await>
+        </Suspense>
     );
 }

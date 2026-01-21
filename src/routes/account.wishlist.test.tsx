@@ -15,11 +15,15 @@
  */
 
 import { describe, test, expect, vi, beforeEach } from 'vitest';
+import { render, screen } from '@testing-library/react';
 import type { ShopperCustomers, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { loader } from './account.wishlist';
 import { fetchProductsForWishlist } from '@/lib/api/wishlist';
 import { createTestContext } from '@/lib/test-utils';
 import type { LoaderFunctionArgs } from 'react-router';
+import { getTranslation } from '@/lib/i18next';
+
+const { t } = getTranslation();
 
 // Mock the SCAPI client
 const mockGetProducts = vi.fn();
@@ -37,6 +41,20 @@ vi.mock('@/lib/api-clients', () => ({
             getCustomerProductList: mockGetCustomerProductList,
         },
     }),
+}));
+
+// Mock Skeleton component
+vi.mock('@/components/ui/skeleton', () => ({
+    Skeleton: ({ className, children, ...props }: any) => (
+        <div data-testid="skeleton" className={className} {...props}>
+            {children}
+        </div>
+    ),
+}));
+
+// Mock ProductCarouselSkeleton
+vi.mock('@/components/product-carousel/skeleton', () => ({
+    default: () => <div data-testid="product-carousel-skeleton">Product Carousel Skeleton</div>,
 }));
 
 // Mock auth functions
@@ -846,5 +864,41 @@ describe('shouldRevalidate', () => {
         } as any);
 
         expect(result).toBe(false);
+    });
+});
+
+describe('WishlistSkeleton Component', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    test('should render page title and skeletons while awaiting loader data', async () => {
+        const AccountWishlist = (await import('./account.wishlist')).default;
+
+        // Create a pending promise that never resolves during the test
+        const pendingPromise = new Promise<Record<string, any>>(() => {});
+
+        const loaderData = {
+            wishlist: { id: 'wishlist-1', type: 'wish_list' },
+            items: [
+                { id: 'item-1', productId: 'product-1' },
+                { id: 'item-2', productId: 'product-2' },
+            ],
+            productsByProductId: pendingPromise,
+        };
+
+        const { container } = render(<AccountWishlist loaderData={loaderData} />);
+
+        // Should show the Wishlist page title from translation while loading
+        const heading = screen.getByRole('heading', { level: 1 });
+        expect(heading).toHaveTextContent(t('account:navigation.wishlist'));
+
+        // Should render skeleton placeholders while awaiting loader data
+        const skeletons = container.querySelectorAll('[data-testid="skeleton"]');
+        expect(skeletons.length).toBeGreaterThan(0);
+
+        // Should render product carousel skeleton
+        const carouselSkeleton = screen.getByTestId('product-carousel-skeleton');
+        expect(carouselSkeleton).toBeInTheDocument();
     });
 });
