@@ -13,7 +13,7 @@
         "start": "sfnext preview",
         "preview": "pnpm start",
         "push": "sfnext push --project-directory .",
-        "typecheck": "node scripts/typecheck-ratchet.js",
+        "typecheck": "react-router typegen && tsc --noEmit",
         "generate:story-tests": "node scripts/generate-story-tests.js",
         "test": "vitest run --coverage",
         "generate:story-tests:coverage": "pnpm generate:story-tests && vitest run --coverage --config .storybook/vite.config.ts",
@@ -31,8 +31,7 @@
         "test-storybook:static:interaction": "pnpm build-storybook && cross-env STORYBOOK_DISABLE_A11Y=true concurrently \"cross-env STORYBOOK_DISABLE_A11Y=true npx serve .storybook/storybook-static\" \"wait-on http://127.0.0.1:3000 && sleep 1 && test-storybook --url http://127.0.0.1:3000 --index-json --config-dir .storybook --browsers chromium --maxWorkers 3 --includeTags interaction\" --success first --kill-others",
         "test-storybook:a11y": "cross-env STORYBOOK_A11Y_TEST_MODE=error concurrently \"pnpm storybook\" \"wait-on http://127.0.0.1:6006 && sleep 1 && test-storybook --url http://127.0.0.1:6006 --index-json --config-dir .storybook --browsers chromium --maxWorkers 3 --excludeTags skip-a11y\" --success first --kill-others",
         "test-storybook:static:a11y": "pnpm build-storybook && cross-env STORYBOOK_A11Y_TEST_MODE=error concurrently \"npx serve .storybook/storybook-static\" \"wait-on http://127.0.0.1:3000 && sleep 1 && test-storybook --url http://127.0.0.1:3000 --index-json --config-dir .storybook --browsers chromium --maxWorkers 3 --excludeTags skip-a11y\" --success first --kill-others",
-        "lighthouse:ci": "node scripts/lighthouse-check-port.js && lhci autorun",
-        "upgrade:shadcn": "node scripts/upgrade-shadcn.js"
+        "lighthouse:ci": "node scripts/lighthouse-check-port.js && lhci autorun"
     },
     "dependencies": {
         "@hookform/resolvers": "5.2.2",
@@ -78,10 +77,11 @@
         "reflect-metadata": "0.2.2",
         "remix-i18next": "7.4.2",
         "sonner": "2.0.7",
-        "tailwind-merge": "3.4.0",
-        "tailwindcss": "4.1.18",
+        "tailwind-merge": "3.3.1",
+        "tailwindcss": "4.1.13",
         "vaul": "1.1.2",
-        "zod": "4.1.11"
+        "zod": "4.1.11",
+        "zustand": "5.0.8"
     },
     "devDependencies": {
         "@chromatic-com/storybook": "4.1.2",
@@ -95,7 +95,7 @@
         "@storybook/builder-vite": "10.0.6",
         "@storybook/react-vite": "10.0.6",
         "@storybook/test-runner": "0.24.1",
-        "@tailwindcss/vite": "4.1.18",
+        "@tailwindcss/vite": "4.1.13",
         "@testing-library/jest-dom": "6.8.0",
         "@testing-library/react": "16.3.0",
         "@testing-library/user-event": "14.6.1",
