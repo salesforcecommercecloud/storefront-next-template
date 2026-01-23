@@ -37,6 +37,7 @@ import { useScapiFetcherEffect } from '@/hooks/use-scapi-fetcher-effect';
 import { createCustomerProfileFormSchema, type CustomerProfileFormData } from './index';
 import { type CustomerProfileFormProps } from './types';
 import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 
 /**
  * CustomerProfileForm component that provides a form interface for editing customer profile information.
@@ -75,16 +76,18 @@ export const CustomerProfileForm = ({
     onCancel,
 }: CustomerProfileFormProps) => {
     const { t } = useTranslation('account');
-    const schema = useMemo(() => createCustomerProfileFormSchema(t), [t]);
+    // Cast t to generic TFunction since schema uses full namespace:key format (account:profile.validation.*)
+    const schema = useMemo(() => createCustomerProfileFormSchema(t as unknown as TFunction), [t]);
 
     const form = useForm<CustomerProfileFormData>({
-        // @ts-expect-error - zodResolver type mismatch with zod version
         resolver: zodResolver(schema),
         defaultValues: {
             firstName: initialData?.firstName || '',
             lastName: initialData?.lastName || '',
             email: initialData?.email || '',
             phone: initialData?.phone || '',
+            gender: initialData?.gender || '',
+            birthday: initialData?.birthday || '',
         },
     });
 
@@ -102,6 +105,8 @@ export const CustomerProfileForm = ({
                     lastName: (customer.lastName as string) || '',
                     email: (customer.email as string) || (customer.login as string) || '',
                     phone: (customer.phoneHome as string) || (customer.phoneMobile as string) || '',
+                    gender: customer.gender !== undefined ? String(customer.gender) : '',
+                    birthday: (customer.birthday as string) || '',
                 };
 
                 // Reset form on success
@@ -135,21 +140,24 @@ export const CustomerProfileForm = ({
      * @param data.lastName - The customer's last name
      * @param data.email - The customer's email address
      * @param data.phone - The customer's phone number
+     * @param data.gender - The customer's gender (1=Male, 2=Female)
+     * @param data.birthday - The customer's date of birth
      */
     const handleSubmit = form.handleSubmit((data) => {
         // Prepare customer data in the format expected by Commerce SDK
-        const customerUpdateData = {
+        // Only include fields that have values to avoid sending empty strings
+        const customerUpdateData: Record<string, string | number> = {
             firstName: data.firstName,
             lastName: data.lastName,
             email: data.email,
-            phoneHome: data.phone || undefined,
         };
 
+        customerUpdateData.phoneHome = data.phone ?? '';
+        customerUpdateData.gender = data.gender ?? '';
+        customerUpdateData.birthday = data.birthday ?? '';
+
         // Submit the update request - response will be handled by parent component's fetcher effect
-        void updateFetcher.submit({
-            ...customerUpdateData,
-            phoneHome: customerUpdateData.phoneHome || '',
-        });
+        void updateFetcher.submit(customerUpdateData);
     });
 
     /**

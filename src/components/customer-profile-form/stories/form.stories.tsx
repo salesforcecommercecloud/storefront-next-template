@@ -124,6 +124,8 @@ The Customer Profile Form component provides a form interface for editing custom
 - Success/error feedback through toasts
 - Automatic form reset on successful submission
 - Support for dependency injection via fetcher prop
+- Gender selection dropdown (optional)
+- Date of birth picker (optional)
 
 **Usage:**
 The form accepts a fetcher as a prop, allowing for easy testing and Storybook integration without requiring
@@ -215,16 +217,19 @@ export const Default: Story = {
             await new Promise((resolve) => setTimeout(resolve, 1000));
 
             // Simulate success
+            const data = formData as Record<string, unknown>;
             setFetcher(
                 createMockFetcher<CustomerProfileFetcherData>(
                     'idle',
                     {
                         success: true,
                         customer: {
-                            firstName: (formData as Record<string, unknown>).firstName as string,
-                            lastName: (formData as Record<string, unknown>).lastName as string,
-                            email: (formData as Record<string, unknown>).email as string,
-                            phoneHome: (formData as Record<string, unknown>).phoneHome as string,
+                            firstName: data.firstName as string,
+                            lastName: data.lastName as string,
+                            email: data.email as string,
+                            phoneHome: data.phoneHome as string,
+                            gender: data.gender ? Number(data.gender) : undefined,
+                            birthday: data.birthday as string,
                         },
                     },
                     true
@@ -265,12 +270,15 @@ export const WithInitialData: Story = {
             lastName: 'Doe',
             email: 'john.doe@example.com',
             phone: '555-1234',
+            gender: '1',
+            birthday: '1990-05-15',
         },
         updateFetcher: createMockFetcher<CustomerProfileFetcherData>('idle'),
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
+        const { t } = getTranslation();
 
         // Verify form fields are populated
         const firstNameInput = canvas.getByDisplayValue('John');
@@ -281,6 +289,14 @@ export const WithInitialData: Story = {
 
         const emailInput = canvas.getByDisplayValue('john.doe@example.com');
         await expect(emailInput).toBeInTheDocument();
+
+        // Verify gender dropdown has correct value
+        const genderSelect = canvas.getByRole('combobox', { name: t('account:profile.gender') });
+        await expect(genderSelect).toHaveValue('1');
+
+        // Verify birthday field has correct value
+        const birthdayInput = canvas.getByLabelText(t('account:profile.dateOfBirth'));
+        await expect(birthdayInput).toHaveValue('1990-05-15');
     },
 };
 
@@ -296,16 +312,19 @@ export const Interactive: Story = {
         const handleSubmit = async (formData: FormData | Record<string, unknown>) => {
             setFetcher(createMockFetcher<CustomerProfileFetcherData>('submitting'));
             await new Promise((resolve) => setTimeout(resolve, 1000));
+            const data = formData as Record<string, unknown>;
             setFetcher(
                 createMockFetcher<CustomerProfileFetcherData>(
                     'idle',
                     {
                         success: true,
                         customer: {
-                            firstName: (formData as Record<string, unknown>).firstName as string,
-                            lastName: (formData as Record<string, unknown>).lastName as string,
-                            email: (formData as Record<string, unknown>).email as string,
-                            phoneHome: (formData as Record<string, unknown>).phoneHome as string,
+                            firstName: data.firstName as string,
+                            lastName: data.lastName as string,
+                            email: data.email as string,
+                            phoneHome: data.phoneHome as string,
+                            gender: data.gender ? Number(data.gender) : undefined,
+                            birthday: data.birthday as string,
                         },
                     },
                     true

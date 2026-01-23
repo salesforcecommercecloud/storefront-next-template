@@ -54,6 +54,22 @@ export const createCustomerProfileFormSchema = (t: TFunction) => {
                     message: t('account:profile.validation.phoneInvalid'),
                 }
             ),
+        gender: z.string().optional(),
+        birthday: z
+            .string()
+            .optional()
+            .refine(
+                (value) => {
+                    if (!value || value.trim() === '') return true; // Allow empty birthday
+                    const birthDate = new Date(value);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0); // Reset to start of day for comparison
+                    return birthDate <= today;
+                },
+                {
+                    message: t('account:profile.validation.birthdayFuture'),
+                }
+            ),
     });
 };
 

@@ -24,10 +24,17 @@
 import { Button } from '@/components/ui/button';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { NativeSelect } from '@/components/ui/native-select';
 
 import { FETCHER_STATES } from '@/lib/fetcher-states';
 import { type CustomerProfileFieldsProps } from './types';
 import { useTranslation } from 'react-i18next';
+
+// Gender values for SFCC API: 1 = Male, 2 = Female
+const GENDER_OPTIONS = [
+    { value: '1', labelKey: 'profile.genderOptions.male' },
+    { value: '2', labelKey: 'profile.genderOptions.female' },
+] as const;
 
 /**
  * CustomerProfileFields component that renders the form fields for editing customer profile.
@@ -135,6 +142,60 @@ export function CustomerProfileFields({ form, updateFetcher, onCancel }: Custome
                     </FormItem>
                 )}
             />
+
+            {/* Gender and Date of Birth Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Gender Field */}
+                <FormField
+                    control={form.control}
+                    name="gender"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="text-sm font-medium text-foreground">{t('profile.gender')}</FormLabel>
+                            <FormControl>
+                                <NativeSelect
+                                    className="w-full rounded-md"
+                                    value={field.value || ''}
+                                    onChange={field.onChange}
+                                    onBlur={field.onBlur}
+                                    name={field.name}
+                                    aria-label={t('profile.gender')}>
+                                    <option value="">{t('profile.genderPlaceholder')}</option>
+                                    {GENDER_OPTIONS.map((option) => (
+                                        <option key={option.value} value={option.value}>
+                                            {t(option.labelKey)}
+                                        </option>
+                                    ))}
+                                </NativeSelect>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                {/* Date of Birth Field */}
+                <FormField
+                    control={form.control}
+                    name="birthday"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="text-sm font-medium text-foreground">
+                                {t('profile.dateOfBirth')}
+                            </FormLabel>
+                            <FormControl>
+                                <Input
+                                    type="date"
+                                    autoComplete="bday"
+                                    className="rounded-md"
+                                    aria-label={t('profile.dateOfBirth')}
+                                    {...field}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            </div>
 
             {/* Action Buttons */}
             <div className="flex gap-3 pt-2 justify-center">

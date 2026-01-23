@@ -201,12 +201,23 @@ export async function action<
         const formData = await request.formData();
 
         // Convert FormData to a plain object for the body
-        // Note: FormData converts all values to strings, so we need to convert known boolean fields back
-        const bodyData: Record<string, FormDataEntryValue | boolean> = {};
+        // Note: FormData converts all values to strings, so we need to convert known fields back to their proper types
+        const bodyData: Record<string, FormDataEntryValue | boolean | number | null> = {};
         for (const [key, value] of formData.entries()) {
             // Convert known boolean fields from string to boolean
             if (key === 'preferred' && typeof value === 'string') {
                 bodyData[key] = value === 'true' || value === '1';
+            }
+            // Convert known numeric fields from string to number, or null to clear
+            else if (key === 'gender' && typeof value === 'string') {
+                // If empty string, send null to clear the field; otherwise convert to number
+                // If parsing fails (NaN), treat as null to avoid sending invalid data
+                if (value === '') {
+                    bodyData[key] = null;
+                } else {
+                    const parsed = parseInt(value, 10);
+                    bodyData[key] = isNaN(parsed) ? null : parsed;
+                }
             } else {
                 bodyData[key] = value;
             }

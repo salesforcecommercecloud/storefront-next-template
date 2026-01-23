@@ -23,6 +23,8 @@ export type CustomerProfileFormData = {
     lastName: string;
     email: string;
     phone?: string;
+    gender?: string;
+    birthday?: string;
 };
 
 // Type for the fetcher data response
@@ -35,6 +37,8 @@ export type CustomerProfileFetcherData = {
         login?: string;
         phoneHome?: string;
         phoneMobile?: string;
+        gender?: number;
+        birthday?: string;
     };
     error?: string;
 };

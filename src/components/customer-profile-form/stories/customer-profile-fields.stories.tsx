@@ -158,6 +158,8 @@ The Customer Profile Fields component renders the form fields for editing custom
 - First name and last name fields
 - Email field
 - Phone number field (optional)
+- Gender dropdown (optional) - Male/Female selection
+- Date of birth field (optional) - Date picker
 - Submit and cancel buttons
 - Form validation feedback
                 `,
@@ -207,6 +209,8 @@ export const Default: Story = {
                 lastName: '',
                 email: '',
                 phone: '',
+                gender: '',
+                birthday: '',
             },
         });
 
@@ -242,6 +246,14 @@ export const Default: Story = {
         const phoneInput = canvas.getByPlaceholderText(t('account:profile.phonePlaceholder'));
         await expect(phoneInput).toBeInTheDocument();
 
+        // Verify gender dropdown is present
+        const genderSelect = canvas.getByRole('combobox', { name: t('account:profile.gender') });
+        await expect(genderSelect).toBeInTheDocument();
+
+        // Verify date of birth field is present
+        const birthdayInput = canvas.getByLabelText(t('account:profile.dateOfBirth'));
+        await expect(birthdayInput).toBeInTheDocument();
+
         // Verify submit button
         const submitButton = canvas.getByRole('button', { name: t('account:profile.saveButton') });
         await expect(submitButton).toBeInTheDocument();
@@ -263,6 +275,8 @@ export const WithInitialValues: Story = {
                 lastName: 'Doe',
                 email: 'john.doe@example.com',
                 phone: '555-1234',
+                gender: '1',
+                birthday: '1990-05-15',
             },
         });
 
@@ -283,6 +297,7 @@ export const WithInitialValues: Story = {
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
+        const { t } = getTranslation();
 
         // Verify form fields are populated
         const firstNameInput = canvas.getByDisplayValue('John');
@@ -293,6 +308,14 @@ export const WithInitialValues: Story = {
 
         const emailInput = canvas.getByDisplayValue('john.doe@example.com');
         await expect(emailInput).toBeInTheDocument();
+
+        // Verify gender dropdown has correct value
+        const genderSelect = canvas.getByRole('combobox', { name: t('account:profile.gender') });
+        await expect(genderSelect).toHaveValue('1');
+
+        // Verify birthday field has correct value
+        const birthdayInput = canvas.getByLabelText(t('account:profile.dateOfBirth'));
+        await expect(birthdayInput).toHaveValue('1990-05-15');
     },
 };
 
@@ -311,6 +334,8 @@ export const WithCancelButton: Story = {
                 lastName: '',
                 email: '',
                 phone: '',
+                gender: '',
+                birthday: '',
             },
         });
 
@@ -360,6 +385,8 @@ export const Submitting: Story = {
                 lastName: 'Doe',
                 email: 'john.doe@example.com',
                 phone: '555-1234',
+                gender: '1',
+                birthday: '1990-05-15',
             },
         });
 
@@ -408,6 +435,8 @@ export const Interactive: Story = {
                 lastName: '',
                 email: '',
                 phone: '',
+                gender: '',
+                birthday: '',
             },
         });
 
@@ -442,5 +471,127 @@ export const Interactive: Story = {
         const emailInput = canvas.getByPlaceholderText(t('account:profile.emailPlaceholder'));
         await userEvent.type(emailInput, 'jane.smith@example.com');
         await expect(emailInput).toHaveValue('jane.smith@example.com');
+
+        // Select gender
+        const genderSelect = canvas.getByRole('combobox', { name: t('account:profile.gender') });
+        await userEvent.selectOptions(genderSelect, '2');
+        await expect(genderSelect).toHaveValue('2');
+
+        // Enter birthday
+        const birthdayInput = canvas.getByLabelText(t('account:profile.dateOfBirth'));
+        await userEvent.clear(birthdayInput);
+        await userEvent.type(birthdayInput, '1995-08-20');
+        await expect(birthdayInput).toHaveValue('1995-08-20');
+    },
+};
+
+export const Mobile: Story = {
+    ...Default,
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const { t } = getTranslation();
+
+        // Verify form fields are present
+        const firstNameInput = canvas.getByPlaceholderText(t('account:profile.firstNamePlaceholder'));
+        await expect(firstNameInput).toBeInTheDocument();
+
+        const lastNameInput = canvas.getByPlaceholderText(t('account:profile.lastNamePlaceholder'));
+        await expect(lastNameInput).toBeInTheDocument();
+
+        const emailInput = canvas.getByPlaceholderText(t('account:profile.emailPlaceholder'));
+        await expect(emailInput).toBeInTheDocument();
+
+        const phoneInput = canvas.getByPlaceholderText(t('account:profile.phonePlaceholder'));
+        await expect(phoneInput).toBeInTheDocument();
+
+        // Verify gender dropdown is present
+        const genderSelect = canvas.getByRole('combobox', { name: t('account:profile.gender') });
+        await expect(genderSelect).toBeInTheDocument();
+
+        // Verify date of birth field is present
+        const birthdayInput = canvas.getByLabelText(t('account:profile.dateOfBirth'));
+        await expect(birthdayInput).toBeInTheDocument();
+
+        // Verify submit button
+        const submitButton = canvas.getByRole('button', { name: t('account:profile.saveButton') });
+        await expect(submitButton).toBeInTheDocument();
+    },
+};
+
+export const Tablet: Story = {
+    ...Default,
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const { t } = getTranslation();
+
+        // Verify form fields are present
+        const firstNameInput = canvas.getByPlaceholderText(t('account:profile.firstNamePlaceholder'));
+        await expect(firstNameInput).toBeInTheDocument();
+
+        const lastNameInput = canvas.getByPlaceholderText(t('account:profile.lastNamePlaceholder'));
+        await expect(lastNameInput).toBeInTheDocument();
+
+        const emailInput = canvas.getByPlaceholderText(t('account:profile.emailPlaceholder'));
+        await expect(emailInput).toBeInTheDocument();
+
+        const phoneInput = canvas.getByPlaceholderText(t('account:profile.phonePlaceholder'));
+        await expect(phoneInput).toBeInTheDocument();
+
+        // Verify gender dropdown is present
+        const genderSelect = canvas.getByRole('combobox', { name: t('account:profile.gender') });
+        await expect(genderSelect).toBeInTheDocument();
+
+        // Verify date of birth field is present
+        const birthdayInput = canvas.getByLabelText(t('account:profile.dateOfBirth'));
+        await expect(birthdayInput).toBeInTheDocument();
+
+        // Verify submit button
+        const submitButton = canvas.getByRole('button', { name: t('account:profile.saveButton') });
+        await expect(submitButton).toBeInTheDocument();
+    },
+};
+
+export const Desktop: Story = {
+    ...Default,
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const { t } = getTranslation();
+
+        // Verify form fields are present
+        const firstNameInput = canvas.getByPlaceholderText(t('account:profile.firstNamePlaceholder'));
+        await expect(firstNameInput).toBeInTheDocument();
+
+        const lastNameInput = canvas.getByPlaceholderText(t('account:profile.lastNamePlaceholder'));
+        await expect(lastNameInput).toBeInTheDocument();
+
+        const emailInput = canvas.getByPlaceholderText(t('account:profile.emailPlaceholder'));
+        await expect(emailInput).toBeInTheDocument();
+
+        const phoneInput = canvas.getByPlaceholderText(t('account:profile.phonePlaceholder'));
+        await expect(phoneInput).toBeInTheDocument();
+
+        // Verify gender dropdown is present
+        const genderSelect = canvas.getByRole('combobox', { name: t('account:profile.gender') });
+        await expect(genderSelect).toBeInTheDocument();
+
+        // Verify date of birth field is present
+        const birthdayInput = canvas.getByLabelText(t('account:profile.dateOfBirth'));
+        await expect(birthdayInput).toBeInTheDocument();
+
+        // Verify submit button
+        const submitButton = canvas.getByRole('button', { name: t('account:profile.saveButton') });
+        await expect(submitButton).toBeInTheDocument();
     },
 };

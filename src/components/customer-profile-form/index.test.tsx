@@ -34,6 +34,20 @@ describe('customerProfileFormSchema', () => {
             expect(result.success).toBe(true);
         });
 
+        it('should validate when all fields including optional ones are provided', () => {
+            const validData = {
+                firstName: 'John',
+                lastName: 'Doe',
+                email: 'john.doe@example.com',
+                phone: '1234567890',
+                gender: '1',
+                birthday: '1990-05-15',
+            };
+
+            const result = customerProfileFormSchema.safeParse(validData);
+            expect(result.success).toBe(true);
+        });
+
         it('should validate without phone field', () => {
             const validData = {
                 firstName: 'John',
@@ -51,6 +65,20 @@ describe('customerProfileFormSchema', () => {
                 lastName: 'Doe',
                 email: 'john.doe@example.com',
                 phone: '',
+            };
+
+            const result = customerProfileFormSchema.safeParse(validData);
+            expect(result.success).toBe(true);
+        });
+
+        it('should validate with only required fields and optional fields empty', () => {
+            const validData = {
+                firstName: 'John',
+                lastName: 'Doe',
+                email: 'john.doe@example.com',
+                phone: '',
+                gender: '',
+                birthday: '',
             };
 
             const result = customerProfileFormSchema.safeParse(validData);
@@ -298,6 +326,138 @@ describe('customerProfileFormSchema', () => {
                 lastName: 'Doe',
                 email: 'john.doe@example.com',
                 phone: '+1 (555) 123-4567',
+            };
+
+            const result = customerProfileFormSchema.safeParse(validData);
+            expect(result.success).toBe(true);
+        });
+    });
+
+    describe('gender validation', () => {
+        it('should validate without gender field', () => {
+            const validData = {
+                firstName: 'John',
+                lastName: 'Doe',
+                email: 'john.doe@example.com',
+            };
+
+            const result = customerProfileFormSchema.safeParse(validData);
+            expect(result.success).toBe(true);
+        });
+
+        it('should validate with empty gender field', () => {
+            const validData = {
+                firstName: 'John',
+                lastName: 'Doe',
+                email: 'john.doe@example.com',
+                gender: '',
+            };
+
+            const result = customerProfileFormSchema.safeParse(validData);
+            expect(result.success).toBe(true);
+        });
+
+        it('should accept gender value of 1 (Male)', () => {
+            const validData = {
+                firstName: 'John',
+                lastName: 'Doe',
+                email: 'john.doe@example.com',
+                gender: '1',
+            };
+
+            const result = customerProfileFormSchema.safeParse(validData);
+            expect(result.success).toBe(true);
+        });
+
+        it('should accept gender value of 2 (Female)', () => {
+            const validData = {
+                firstName: 'Jane',
+                lastName: 'Doe',
+                email: 'jane.doe@example.com',
+                gender: '2',
+            };
+
+            const result = customerProfileFormSchema.safeParse(validData);
+            expect(result.success).toBe(true);
+        });
+    });
+
+    describe('birthday validation', () => {
+        it('should validate without birthday field', () => {
+            const validData = {
+                firstName: 'John',
+                lastName: 'Doe',
+                email: 'john.doe@example.com',
+            };
+
+            const result = customerProfileFormSchema.safeParse(validData);
+            expect(result.success).toBe(true);
+        });
+
+        it('should validate with empty birthday field', () => {
+            const validData = {
+                firstName: 'John',
+                lastName: 'Doe',
+                email: 'john.doe@example.com',
+                birthday: '',
+            };
+
+            const result = customerProfileFormSchema.safeParse(validData);
+            expect(result.success).toBe(true);
+        });
+
+        it('should accept valid date format (YYYY-MM-DD)', () => {
+            const validData = {
+                firstName: 'John',
+                lastName: 'Doe',
+                email: 'john.doe@example.com',
+                birthday: '1990-01-15',
+            };
+
+            const result = customerProfileFormSchema.safeParse(validData);
+            expect(result.success).toBe(true);
+        });
+
+        it('should accept birthday with other date formats', () => {
+            const validData = {
+                firstName: 'John',
+                lastName: 'Doe',
+                email: 'john.doe@example.com',
+                birthday: '2000-12-31',
+            };
+
+            const result = customerProfileFormSchema.safeParse(validData);
+            expect(result.success).toBe(true);
+        });
+
+        it('should reject future dates', () => {
+            // Create a date one year in the future
+            const futureDate = new Date();
+            futureDate.setFullYear(futureDate.getFullYear() + 1);
+            const futureDateString = futureDate.toISOString().split('T')[0];
+
+            const invalidData = {
+                firstName: 'John',
+                lastName: 'Doe',
+                email: 'john.doe@example.com',
+                birthday: futureDateString,
+            };
+
+            const result = customerProfileFormSchema.safeParse(invalidData);
+            expect(result.success).toBe(false);
+            if (!result.success) {
+                expect(result.error.issues.some((issue) => issue.path.includes('birthday'))).toBe(true);
+            }
+        });
+
+        it('should accept today as valid birthday', () => {
+            const today = new Date().toISOString().split('T')[0];
+
+            const validData = {
+                firstName: 'John',
+                lastName: 'Doe',
+                email: 'john.doe@example.com',
+                birthday: today,
             };
 
             const result = customerProfileFormSchema.safeParse(validData);

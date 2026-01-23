@@ -792,6 +792,14 @@
             "lastNamePlaceholder": "Enter your last name",
             "emailPlaceholder": "you@email.com",
             "phonePlaceholder": "Enter your phone number",
+            "gender": "Gender",
+            "genderPlaceholder": "Select gender",
+            "genderOptions": {
+                "male": "Male",
+                "female": "Female"
+            },
+            "dateOfBirth": "Date of Birth",
+            "dateOfBirthPlaceholder": "Select date of birth",
             "saveButton": "Save",
             "savingButton": "Saving...",
             "cancelButton": "Cancel",
@@ -802,7 +810,8 @@
                 "lastNameRequired": "Last name is required",
                 "emailRequired": "Email is required",
                 "emailInvalid": "Enter a valid email address",
-                "phoneInvalid": "Enter a valid phone number"
+                "phoneInvalid": "Enter a valid phone number",
+                "birthdayFuture": "Date of birth cannot be in the future"
             }
         },
         "password": {

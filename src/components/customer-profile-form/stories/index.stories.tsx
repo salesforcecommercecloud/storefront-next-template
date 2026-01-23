@@ -115,6 +115,8 @@ Customer Profile Form component for editing customer profile information.
 
 ### Features:
 - First name, last name, email, and phone fields
+- Gender selection dropdown (optional)
+- Date of birth picker (optional)
 - Form validation using Zod schema
 - Success/error feedback through callbacks
 - Automatic form reset on successful submission
@@ -167,16 +169,19 @@ export const Default: Story = {
         const handleSubmit = async (formData: FormData | Record<string, unknown>) => {
             setFetcher(createMockFetcher<CustomerProfileFetcherData>('submitting'));
             await new Promise((resolve) => setTimeout(resolve, 1000));
+            const data = formData as Record<string, unknown>;
             setFetcher(
                 createMockFetcher<CustomerProfileFetcherData>(
                     'idle',
                     {
                         success: true,
                         customer: {
-                            firstName: (formData as Record<string, unknown>).firstName as string,
-                            lastName: (formData as Record<string, unknown>).lastName as string,
-                            email: (formData as Record<string, unknown>).email as string,
-                            phoneHome: (formData as Record<string, unknown>).phoneHome as string,
+                            firstName: data.firstName as string,
+                            lastName: data.lastName as string,
+                            email: data.email as string,
+                            phoneHome: data.phoneHome as string,
+                            gender: data.gender ? Number(data.gender) : undefined,
+                            birthday: data.birthday as string,
                         },
                     },
                     true
@@ -246,16 +251,19 @@ export const WithInitialData: Story = {
         const handleSubmit = async (formData: FormData | Record<string, unknown>) => {
             setFetcher(createMockFetcher<CustomerProfileFetcherData>('submitting'));
             await new Promise((resolve) => setTimeout(resolve, 1000));
+            const data = formData as Record<string, unknown>;
             setFetcher(
                 createMockFetcher<CustomerProfileFetcherData>(
                     'idle',
                     {
                         success: true,
                         customer: {
-                            firstName: (formData as Record<string, unknown>).firstName as string,
-                            lastName: (formData as Record<string, unknown>).lastName as string,
-                            email: (formData as Record<string, unknown>).email as string,
-                            phoneHome: (formData as Record<string, unknown>).phoneHome as string,
+                            firstName: data.firstName as string,
+                            lastName: data.lastName as string,
+                            email: data.email as string,
+                            phoneHome: data.phoneHome as string,
+                            gender: data.gender ? Number(data.gender) : undefined,
+                            birthday: data.birthday as string,
                         },
                     },
                     true
@@ -277,6 +285,8 @@ export const WithInitialData: Story = {
                     lastName: 'Doe',
                     email: 'john.doe@example.com',
                     phone: '555-1234',
+                    gender: '1',
+                    birthday: '1990-05-15',
                 }}
                 updateFetcher={mockFetcher}
                 onSuccess={(formData: CustomerProfileFormData) => {
@@ -302,6 +312,7 @@ Customer profile form with pre-filled initial data.
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
+        const { t } = getTranslation();
 
         // Verify form fields are populated
         const firstNameInput = await canvas.findByDisplayValue('John', {}, { timeout: 5000 });
@@ -312,6 +323,14 @@ Customer profile form with pre-filled initial data.
 
         const emailInput = await canvas.findByDisplayValue('john.doe@example.com', {}, { timeout: 5000 });
         await expect(emailInput).toBeInTheDocument();
+
+        // Verify gender dropdown has correct value
+        const genderSelect = canvas.getByRole('combobox', { name: t('account:profile.gender') });
+        await expect(genderSelect).toHaveValue('1');
+
+        // Verify birthday field has correct value
+        const birthdayInput = canvas.getByLabelText(t('account:profile.dateOfBirth'));
+        await expect(birthdayInput).toHaveValue('1990-05-15');
     },
 };
 
@@ -324,16 +343,19 @@ export const Interactive: Story = {
         const handleSubmit = async (formData: FormData | Record<string, unknown>) => {
             setFetcher(createMockFetcher<CustomerProfileFetcherData>('submitting'));
             await new Promise((resolve) => setTimeout(resolve, 1000));
+            const data = formData as Record<string, unknown>;
             setFetcher(
                 createMockFetcher<CustomerProfileFetcherData>(
                     'idle',
                     {
                         success: true,
                         customer: {
-                            firstName: (formData as Record<string, unknown>).firstName as string,
-                            lastName: (formData as Record<string, unknown>).lastName as string,
-                            email: (formData as Record<string, unknown>).email as string,
-                            phoneHome: (formData as Record<string, unknown>).phoneHome as string,
+                            firstName: data.firstName as string,
+                            lastName: data.lastName as string,
+                            email: data.email as string,
+                            phoneHome: data.phoneHome as string,
+                            gender: data.gender ? Number(data.gender) : undefined,
+                            birthday: data.birthday as string,
                         },
                     },
                     true
@@ -401,5 +423,16 @@ Interactive customer profile form for testing user interactions.
         );
         await userEvent.type(emailInput, 'jane.smith@example.com');
         await expect(emailInput).toHaveValue('jane.smith@example.com');
+
+        // Select gender
+        const genderSelect = canvas.getByRole('combobox', { name: t('account:profile.gender') });
+        await userEvent.selectOptions(genderSelect, '2');
+        await expect(genderSelect).toHaveValue('2');
+
+        // Enter birthday
+        const birthdayInput = canvas.getByLabelText(t('account:profile.dateOfBirth'));
+        await userEvent.clear(birthdayInput);
+        await userEvent.type(birthdayInput, '1995-08-20');
+        await expect(birthdayInput).toHaveValue('1995-08-20');
     },
 };

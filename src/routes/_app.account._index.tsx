@@ -27,6 +27,7 @@ import { useFetcherEffect } from '@/hooks/use-fetcher-effect';
 import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
 import { useAuth } from '@/providers/auth';
 import { useTranslation } from 'react-i18next';
+import { formatDateForLocale } from '@/lib/date-utils';
 
 type Customer = ShopperCustomers.schemas['Customer'];
 
@@ -46,7 +47,7 @@ function AccountDetailsContent({ customer }: { customer: Customer | null }): Rea
     const loginFetcher = useFetcher();
     const revalidator = useRevalidator();
     const auth = useAuth();
-    const { t } = useTranslation('account');
+    const { t, i18n } = useTranslation('account');
     const customerId = auth?.customer_id;
 
     const updateProfileFetcher = useScapiFetcher('shopperCustomers', 'updateCustomer', {
@@ -144,6 +145,8 @@ function AccountDetailsContent({ customer }: { customer: Customer | null }): Rea
         lastName: string;
         email: string;
         phone?: string;
+        gender?: string;
+        birthday?: string;
     }) => {
         // Show success toast
         addToast(t('profile.successMessage'), 'success');
@@ -288,6 +291,22 @@ function AccountDetailsContent({ customer }: { customer: Customer | null }): Rea
                                 {userInfo.phoneNumber || t('profile.notProvided')}
                             </p>
                         </div>
+                        <div className="space-y-1">
+                            <p className="text-sm text-muted-foreground">{t('profile.gender')}</p>
+                            <p className="text-sm font-medium text-foreground">
+                                {customer?.gender === 1
+                                    ? t('profile.genderOptions.male')
+                                    : customer?.gender === 2
+                                      ? t('profile.genderOptions.female')
+                                      : t('profile.notProvided')}
+                            </p>
+                        </div>
+                        <div className="space-y-1">
+                            <p className="text-sm text-muted-foreground">{t('profile.dateOfBirth')}</p>
+                            <p className="text-sm font-medium text-foreground">
+                                {formatDateForLocale(customer?.birthday, i18n.language) || t('profile.notProvided')}
+                            </p>
+                        </div>
                     </div>
                 </ToggleCardSummary>
 
@@ -298,6 +317,8 @@ function AccountDetailsContent({ customer }: { customer: Customer | null }): Rea
                             lastName: customer?.lastName || '',
                             email: customer?.email || customer?.login || '',
                             phone: customer?.phoneHome || customer?.phoneMobile || '',
+                            gender: customer?.gender !== undefined ? String(customer.gender) : '',
+                            birthday: customer?.birthday || '',
                         }}
                         updateFetcher={updateProfileFetcher}
                         onSuccess={handleCustomerProfileSuccess}
