@@ -467,6 +467,25 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
               Add to Cart
             </button>
             <div
+              class="text-sm text-muted-foreground"
+            >
+              <span>
+                Pay in 4 interest-free payments of 
+                <span
+                  class="font-bold text-foreground"
+                >
+                  $12.25
+                </span>
+                .
+                 
+              </span>
+              <button
+                class="text-primary hover:underline font-medium cursor-pointer"
+              >
+                Learn more
+              </button>
+            </div>
+            <div
               class="grid grid-cols-2 gap-3"
             >
               <button
@@ -486,7 +505,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                 data-slot="dropdown-menu-trigger"
                 data-state="closed"
                 data-variant="outline"
-                id="radix-_r_2_"
+                id="radix-_r_5_"
                 type="button"
               >
                 Share
@@ -967,6 +986,25 @@ exports[`ProductView stories snapshot > Desktop story renders and matches snapsh
               Add to Cart
             </button>
             <div
+              class="text-sm text-muted-foreground"
+            >
+              <span>
+                Pay in 4 interest-free payments of 
+                <span
+                  class="font-bold text-foreground"
+                >
+                  $12.25
+                </span>
+                .
+                 
+              </span>
+              <button
+                class="text-primary hover:underline font-medium cursor-pointer"
+              >
+                Learn more
+              </button>
+            </div>
+            <div
               class="grid grid-cols-2 gap-3"
             >
               <button
@@ -986,7 +1024,7 @@ exports[`ProductView stories snapshot > Desktop story renders and matches snapsh
                 data-slot="dropdown-menu-trigger"
                 data-state="closed"
                 data-variant="outline"
-                id="radix-_r_i_"
+                id="radix-_r_11_"
                 type="button"
               >
                 Share
@@ -1467,6 +1505,25 @@ exports[`ProductView stories snapshot > Mobile story renders and matches snapsho
               Add to Cart
             </button>
             <div
+              class="text-sm text-muted-foreground"
+            >
+              <span>
+                Pay in 4 interest-free payments of 
+                <span
+                  class="font-bold text-foreground"
+                >
+                  $12.25
+                </span>
+                .
+                 
+              </span>
+              <button
+                class="text-primary hover:underline font-medium cursor-pointer"
+              >
+                Learn more
+              </button>
+            </div>
+            <div
               class="grid grid-cols-2 gap-3"
             >
               <button
@@ -1486,7 +1543,7 @@ exports[`ProductView stories snapshot > Mobile story renders and matches snapsho
                 data-slot="dropdown-menu-trigger"
                 data-state="closed"
                 data-variant="outline"
-                id="radix-_r_a_"
+                id="radix-_r_j_"
                 type="button"
               >
                 Share
@@ -1967,6 +2024,25 @@ exports[`ProductView stories snapshot > Tablet story renders and matches snapsho
               Add to Cart
             </button>
             <div
+              class="text-sm text-muted-foreground"
+            >
+              <span>
+                Pay in 4 interest-free payments of 
+                <span
+                  class="font-bold text-foreground"
+                >
+                  $12.25
+                </span>
+                .
+                 
+              </span>
+              <button
+                class="text-primary hover:underline font-medium cursor-pointer"
+              >
+                Learn more
+              </button>
+            </div>
+            <div
               class="grid grid-cols-2 gap-3"
             >
               <button
@@ -1986,7 +2062,7 @@ exports[`ProductView stories snapshot > Tablet story renders and matches snapsho
                 data-slot="dropdown-menu-trigger"
                 data-state="closed"
                 data-variant="outline"
-                id="radix-_r_e_"
+                id="radix-_r_q_"
                 type="button"
               >
                 Share
@@ -2417,6 +2493,25 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
               Add to Cart
             </button>
             <div
+              class="text-sm text-muted-foreground"
+            >
+              <span>
+                Pay in 4 interest-free payments of 
+                <span
+                  class="font-bold text-foreground"
+                >
+                  $12.25
+                </span>
+                .
+                 
+              </span>
+              <button
+                class="text-primary hover:underline font-medium cursor-pointer"
+              >
+                Learn more
+              </button>
+            </div>
+            <div
               class="grid grid-cols-2 gap-3"
             >
               <button
@@ -2436,7 +2531,7 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
                 data-slot="dropdown-menu-trigger"
                 data-state="closed"
                 data-variant="outline"
-                id="radix-_r_6_"
+                id="radix-_r_c_"
                 type="button"
               >
                 Share

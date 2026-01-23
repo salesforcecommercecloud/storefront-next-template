@@ -17,6 +17,25 @@ exports[`ProductCartActions stories snapshot > Default story renders and matches
         Add to Cart
       </button>
       <div
+        class="text-sm text-muted-foreground"
+      >
+        <span>
+          Pay in 4 interest-free payments of 
+          <span
+            class="font-bold text-foreground"
+          >
+            $12.25
+          </span>
+          .
+           
+        </span>
+        <button
+          class="text-primary hover:underline font-medium cursor-pointer"
+        >
+          Learn more
+        </button>
+      </div>
+      <div
         class="grid grid-cols-2 gap-3"
       >
         <button
@@ -36,7 +55,7 @@ exports[`ProductCartActions stories snapshot > Default story renders and matches
           data-slot="dropdown-menu-trigger"
           data-state="closed"
           data-variant="outline"
-          id="radix-_r_0_"
+          id="radix-_r_3_"
           type="button"
         >
           Share
@@ -64,6 +83,25 @@ exports[`ProductCartActions stories snapshot > Desktop story renders and matches
         Add to Cart
       </button>
       <div
+        class="text-sm text-muted-foreground"
+      >
+        <span>
+          Pay in 4 interest-free payments of 
+          <span
+            class="font-bold text-foreground"
+          >
+            $12.25
+          </span>
+          .
+           
+        </span>
+        <button
+          class="text-primary hover:underline font-medium cursor-pointer"
+        >
+          Learn more
+        </button>
+      </div>
+      <div
         class="grid grid-cols-2 gap-3"
       >
         <button
@@ -83,7 +121,7 @@ exports[`ProductCartActions stories snapshot > Desktop story renders and matches
           data-slot="dropdown-menu-trigger"
           data-state="closed"
           data-variant="outline"
-          id="radix-_r_6_"
+          id="radix-_r_l_"
           type="button"
         >
           Share
@@ -111,6 +149,25 @@ exports[`ProductCartActions stories snapshot > EditMode story renders and matche
         >
           Update
         </button>
+        <div
+          class="text-sm text-muted-foreground"
+        >
+          <span>
+            Pay in 4 interest-free payments of 
+            <span
+              class="font-bold text-foreground"
+            >
+              $12.25
+            </span>
+            .
+             
+          </span>
+          <button
+            class="text-primary hover:underline font-medium cursor-pointer"
+          >
+            Learn more
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -134,6 +191,25 @@ exports[`ProductCartActions stories snapshot > Mobile story renders and matches 
         Add to Cart
       </button>
       <div
+        class="text-sm text-muted-foreground"
+      >
+        <span>
+          Pay in 4 interest-free payments of 
+          <span
+            class="font-bold text-foreground"
+          >
+            $12.25
+          </span>
+          .
+           
+        </span>
+        <button
+          class="text-primary hover:underline font-medium cursor-pointer"
+        >
+          Learn more
+        </button>
+      </div>
+      <div
         class="grid grid-cols-2 gap-3"
       >
         <button
@@ -153,7 +229,7 @@ exports[`ProductCartActions stories snapshot > Mobile story renders and matches 
           data-slot="dropdown-menu-trigger"
           data-state="closed"
           data-variant="outline"
-          id="radix-_r_2_"
+          id="radix-_r_b_"
           type="button"
         >
           Share
@@ -181,6 +257,25 @@ exports[`ProductCartActions stories snapshot > Tablet story renders and matches 
         Add to Cart
       </button>
       <div
+        class="text-sm text-muted-foreground"
+      >
+        <span>
+          Pay in 4 interest-free payments of 
+          <span
+            class="font-bold text-foreground"
+          >
+            $12.25
+          </span>
+          .
+           
+        </span>
+        <button
+          class="text-primary hover:underline font-medium cursor-pointer"
+        >
+          Learn more
+        </button>
+      </div>
+      <div
         class="grid grid-cols-2 gap-3"
       >
         <button
@@ -200,7 +295,7 @@ exports[`ProductCartActions stories snapshot > Tablet story renders and matches 
           data-slot="dropdown-menu-trigger"
           data-state="closed"
           data-variant="outline"
-          id="radix-_r_4_"
+          id="radix-_r_g_"
           type="button"
         >
           Share

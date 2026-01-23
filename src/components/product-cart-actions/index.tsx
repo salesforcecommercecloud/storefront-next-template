@@ -25,6 +25,8 @@ import { isProductSet, isProductBundle } from '@/lib/product-utils';
 import { ShareButton } from '@/components/buttons/share-button';
 import { useCheckAndExecutePendingAction } from '@/hooks/check-and-execute-pending-action';
 import { useTranslation } from 'react-i18next';
+import { PluginComponent } from '@/plugins/plugin-component';
+import BuyNowPayLater from '@/components/buy-now-pay-later';
 
 interface ProductCartActionsProps {
     product: ShopperProducts.schemas['Product'];
@@ -146,6 +148,9 @@ export default function ProductCartActions({
                         {isEditMode ? t('updateCart') : isAddingToOrUpdatingCart ? t('addingToCart') : t('addToCart')}
                     </Button>
                 )}
+                <PluginComponent pluginId="pdp.after.addToCart">
+                    <BuyNowPayLater />
+                </PluginComponent>
 
                 {!isEditMode && (
                     <div className="grid grid-cols-2 gap-3">
