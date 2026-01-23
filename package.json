@@ -13,7 +13,7 @@
         "start": "sfnext preview",
         "preview": "pnpm start",
         "push": "sfnext push --project-directory .",
-        "typecheck": "react-router typegen && tsc --noEmit",
+        "typecheck": "node scripts/typecheck-ratchet.js",
         "generate:story-tests": "node scripts/generate-story-tests.js",
         "test": "vitest run --coverage",
         "generate:story-tests:coverage": "pnpm generate:story-tests && vitest run --coverage --config .storybook/vite.config.ts",
