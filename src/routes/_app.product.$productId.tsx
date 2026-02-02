@@ -29,6 +29,7 @@ import { useTranslation } from 'react-i18next';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { Region } from '@/components/region';
 import { ProductProvider } from '@/providers/product-context';
+import ProductContentProvider from '@/providers/product-content';
 import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 import { collectComponentDataPromises, fetchPageFromLoader } from '@/lib/util/pageLoader';
@@ -390,13 +391,17 @@ function ProductDetailView({ loaderData }: { loaderData: ProductPageData }) {
         );
     };
 
-    // Wrap entire page content with ProductProvider so components can access product from context
+    // Wrap entire page content with ProductContentProvider (PDP modals) and ProductProvider (product context)
     const content = (
-        <ProductProvider product={productData}>
-            <div className="min-h-screen bg-background">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">{renderPageContent(loaderData.page)}</div>
-            </div>
-        </ProductProvider>
+        <ProductContentProvider>
+            <ProductProvider product={productData}>
+                <div className="min-h-screen bg-background">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                        {renderPageContent(loaderData.page)}
+                    </div>
+                </div>
+            </ProductProvider>
+        </ProductContentProvider>
     );
 
     let finalContent = content;
