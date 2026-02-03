@@ -99,6 +99,11 @@ export default defineConfig({
                 enableRecentSearches: true,
                 suggestionsDebounce: 400,
             },
+            maintenancePage: {
+                sharedMaintenancePage: false,
+                cdnUrl: 'http://prd.cmp.cdn.commercecloud.salesforce.com',
+                forwardedHost: '',
+            },
         },
         // Commerce Cloud API integration
         // See CONFIG-OPTIONS.md#commerce for detailed documentation

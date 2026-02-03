@@ -154,7 +154,7 @@
             },
             {
                 "name": "assets/\\(package\\)-\\(react-router\\)-\\(dist\\)-\\(development\\)-chunk*.js",
-                "limit": "128 kB"
+                "limit": "135 kB"
             },
             {
                 "name": "assets/\\(package\\)-\\(zod\\)-\\(v4\\)-\\(classic\\)-schemas.*.js",

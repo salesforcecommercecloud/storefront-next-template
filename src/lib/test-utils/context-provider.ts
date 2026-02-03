@@ -22,6 +22,7 @@ import type { Config } from '@/config/schema';
 import config from '@/config/server';
 import { i18nextContext } from '@/lib/i18next';
 import { currencyContext } from '@/lib/currency';
+import { createMaintenance, maintenanceContext } from '@/lib/maintenance';
 import i18next from 'i18next';
 
 /**
@@ -148,6 +149,10 @@ export function createTestContext(testConfig: TestContextConfig = {}): RouterCon
 
     // Set up currency context
     contextProvider.set(currencyContext, currency);
+
+    // Set up maintenance context
+    const maintenance = createMaintenance();
+    contextProvider.set(maintenanceContext, maintenance);
 
     return contextProvider;
 }

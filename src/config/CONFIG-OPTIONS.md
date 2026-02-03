@@ -302,6 +302,48 @@ PUBLIC__app__pages__search__suggestionsDebounce=200
 
 ---
 
+### pages.maintenancePage.sharedMaintenancePage
+
+Type: `boolean` | Default: `false`
+
+When enabled, the maintenance page fetches HTML content from a shared service instead of displaying the local fallback maintenance page. It can be the default B2C maintenance page or a custom page uploaded through Business Manager.
+Note that the same page is displayed for both system and site maintenance.
+
+Example:
+```bash
+PUBLIC__app__pages__maintenancePage__sharedMaintenancePage=true
+```
+
+---
+
+### pages.maintenancePage.cdnUrl
+
+Type: `string` | Default: `'http://prd.cmp.cdn.commercecloud.salesforce.com'`
+
+The URL of the shared maintenance page server. This is the endpoint where the maintenance page HTML is fetched from when `sharedMaintenancePage` is enabled. This is typically a Salesforce URL that should not be changed.
+
+Example:
+```bash
+PUBLIC__app__pages__maintenancePage__cdnUrl="https://custom-cdn.example.com/maintenance"
+```
+
+---
+
+### pages.maintenancePage.forwardedHost
+
+Type: `string` | Default: `''` (empty string)
+
+Optional domain name to send as the `x-dw-forwarded-host` header when fetching from the maintenance page service. See the Business Manager document for more information about 'system' maintenance pages and how to associate them with a domain.
+By default, the domain is empty, meaning that it fetches the default Salesforce maintenance page.
+
+Example:
+```bash
+PUBLIC__app__pages__maintenancePage__forwardedHost="mystore.example.com"
+```
+
+
+---
+
 ## commerce
 
 Commerce Cloud API configuration.

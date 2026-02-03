@@ -80,6 +80,11 @@ export type Config = {
                 enableRecentSearches: boolean;
                 suggestionsDebounce: number;
             };
+            maintenancePage: {
+                sharedMaintenancePage: boolean;
+                cdnUrl: string;
+                forwardedHost: string;
+            };
         };
         commerce: {
             api: {

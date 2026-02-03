@@ -21,6 +21,7 @@ import {
 } from '@salesforce/storefront-next-runtime/scapi';
 import { authContext } from '@/middlewares/auth.utils';
 import { correlationContext } from '@/lib/correlation';
+import { maintenanceContext } from '@/lib/maintenance';
 import { getConfig } from '@/config';
 import { getAppOrigin, isAbsoluteURL } from '@/lib/utils';
 import { getTranslation } from '@/lib/i18next';
@@ -41,6 +42,11 @@ const getSlasClientSecret = (): string | undefined => {
     }
     return process.env.COMMERCE_API_SLAS_SECRET;
 };
+
+/**
+ * Identifier for a Maintenance error.
+ */
+export const MAINTENANCE_ERROR = 'MAINTENANCE_ERROR';
 
 /**
  * Create Commerce API clients with authentication middleware.
@@ -124,9 +130,48 @@ export function createApiClients(context: RouterContextProvider | Readonly<Route
         },
     };
 
+    /**
+     * Middleware to ensure that at least one SCAPI call per route request detects maintenance mode from API responses.
+     * It keeps track of all SCAPI requests running until the first response is received.
+     */
+    const requestMap = new Map<Request, [(...args: unknown[]) => void, (reason?: unknown) => void]>();
+    const maintenanceMiddleware: Middleware = {
+        onRequest({ request }) {
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            let requestResolver: (...args: unknown[]) => void = () => {};
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            let requestRejecter: (reason?: unknown) => void = () => {};
+            const promise = new Promise((resolve, reject) => {
+                requestResolver = resolve;
+                requestRejecter = reject;
+            });
+            requestMap.set(request, [requestResolver, requestRejecter]);
+
+            const maintenance = context.get(maintenanceContext);
+            void maintenance.set(request, promise);
+            return request;
+        },
+        onResponse({ request, response }) {
+            const maintenanceHeader = response.headers.get('sfdc_maintenance');
+            const maintenance = context.get(maintenanceContext);
+            const [requestResolver, requestRejecter] = requestMap.get(request) ?? [];
+
+            if (maintenance.gate(request) && (maintenanceHeader === 'system' || maintenanceHeader === 'site')) {
+                // This will be handled by the middleware, which is waiting for the first promise to resolve
+                requestRejecter?.(new Response('Maintenance', { status: 503 }));
+            } else {
+                requestResolver?.(response);
+            }
+
+            requestMap.delete(request);
+            return response;
+        },
+    };
+
     clients.use(correlationMiddleware);
     clients.use(authMiddleware);
     clients.use(identifyingHeadersMiddleware);
+    clients.use(maintenanceMiddleware);
 
     return clients;
 }

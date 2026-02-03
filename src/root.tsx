@@ -25,6 +25,7 @@ import {
     type LoaderFunctionArgs,
     Meta,
     type MiddlewareFunction,
+    Navigate,
     Outlet,
     Scripts,
     ScrollRestoration,
@@ -58,6 +59,7 @@ import { i18nextMiddleware } from '@/middlewares/i18next.server';
 import { currencyMiddleware } from '@/middlewares/currency.server';
 import { currencyClientMiddleware } from '@/middlewares/currency.client';
 import { correlationMiddleware } from '@/middlewares/correlation.server';
+import { maintenanceMiddleware } from '@/middlewares/maintenance.server';
 
 // Providers
 import AuthProvider, { bootstrapAuth } from '@/providers/auth';
@@ -100,6 +102,8 @@ import { HybridProxyNavigationInterceptor } from '@/extensions/hybrid-proxy/navi
 /** @sfdc-extension-line SFDC_EXT_HYBRID_PROXY */
 import { isProxyPath } from '@/extensions/hybrid-proxy/config';
 import { PluginProviders } from '@/plugins/plugin-providers';
+import { MAINTENANCE_ERROR } from './lib/api-clients';
+import { type Maintenance, maintenanceContext } from '@/lib/maintenance';
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const links: LinksFunction = () => [
@@ -115,6 +119,7 @@ export const middleware: MiddlewareFunction<Response>[] = [
     currencyMiddleware, // Read currency cookie early
     performanceMetricsMiddlewareServer,
     authMiddlewareServer,
+    maintenanceMiddleware,
     shopperContextMiddlewareServer,
 ];
 
@@ -144,6 +149,7 @@ export const loader = ({
 }: LoaderFunctionArgs): {
     auth: () => SessionData; // Use a function to prevent state serialization
     appConfig: AppConfig;
+    maintenance: Maintenance;
     locale: string;
     currency: string;
     correlationId: string;
@@ -173,11 +179,15 @@ export const loader = ({
     // Get correlation ID from middleware for request tracing
     const correlationId = context.get(correlationContext);
 
+    // Get maintenance data from middleware
+    const maintenance = context.get(maintenanceContext);
+
     return {
         appConfig,
         locale,
         currency,
         correlationId,
+        maintenance,
         // Wrap these returned objects with a function, to avoid React Router serialization
         auth: () => session,
         getI18next: () => i18next,
@@ -260,6 +270,13 @@ export function Layout({ children }: PropsWithChildren) {
 }
 
 export function ErrorBoundary({ error }: { error: unknown }) {
+    // Handle maintenance mode errors
+    // Error is serialized when crossing server->client boundary, so we check the string representation
+    if (error && error.toString().indexOf(MAINTENANCE_ERROR) >= 0) {
+        // Use React Router Navigate for smooth client-side navigation
+        return <Navigate to="/maintenance" replace />;
+    }
+
     let message = 'Oops!';
     let details: string | undefined;
     let stack: string | undefined;
