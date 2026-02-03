@@ -32,7 +32,17 @@ env:
   DEFAULT_MESSAGE: 'build ${{ github.run_id }} on ${{ github.ref }} - ${{ github.sha }}'
 
 jobs:
+  check-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log deploy skip
+        if: ${{ secrets.MRT_CLIENT_API_KEY == '' }}
+        run: |
+          echo "::notice title=Deploy skipped::Deploy job was skipped because MRT_CLIENT_API_KEY is not set. Configure the secret in repository settings to enable deploys."
+
   deploy:
+    needs: check-deploy
+    if: ${{ secrets.MRT_CLIENT_API_KEY != '' }}
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.environment || 'Production' }}
     timeout-minutes: 30
