@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// @sfdc-extension-file SFDC_EXT_BOPIS
 // React Router
 import type { ClientActionFunctionArgs } from 'react-router';
 
@@ -27,13 +26,13 @@ import {
     type BasketActionResponse,
     createBasketSuccessResponse,
     createBasketErrorResponse,
-} from './types/action-responses';
+} from '@/routes/types/action-responses';
 import { getTranslation } from '@/lib/i18next';
 import { currencyContext } from '@/lib/currency';
 
 import { updateShipmentForPickup } from '@/extensions/bopis/lib/api/shipment';
 import { isStoreOutOfStock } from '@/lib/inventory-utils';
-import { getFirstPickupStoreId, getPickupProductItemsForStore } from '@/extensions/bopis/lib/basket-utils';
+import { getPickupShipment, getPickupProductItemsForStore } from '@/extensions/bopis/lib/basket-utils';
 import { pickupStoreUpdateSchema, parsePickupStoreUpdateFromFormData } from '@/lib/basket-schemas';
 
 /**
@@ -79,6 +78,7 @@ export async function clientAction({ request, context }: ClientActionFunctionArg
     }
 
     let originalStoreId = '';
+    let pickupShipmentId = '';
     let shipmentUpdated = false;
 
     try {
@@ -108,16 +108,17 @@ export async function clientAction({ request, context }: ClientActionFunctionArg
 
         // Capture the original store ID from the first pickup shipment for potential rollback
         // Validate that there's an existing pickup store before allowing change
-        const storeIdFromShipment = getFirstPickupStoreId(basket);
-        if (!storeIdFromShipment) {
-            return createBasketErrorResponse('No pickup store is currently set. Cannot change pickup store.');
+        const pickupShipment = getPickupShipment(basket);
+        if (!pickupShipment?.shipmentId || !pickupShipment?.c_fromStoreId) {
+            return createBasketErrorResponse('No pickup shipment found. Cannot change pickup store.');
         }
-        originalStoreId = storeIdFromShipment;
+        originalStoreId = pickupShipment.c_fromStoreId as string;
+        pickupShipmentId = pickupShipment.shipmentId;
 
         // TODO: Need to verify inventory check for bundle support W-20159731
         // Get pickup items from the current basket that belong to the original store
         // Since a basket has a single store pickup shipment, get items for that store
-        const currentPickupItems = getPickupProductItemsForStore(basket, storeIdFromShipment);
+        const currentPickupItems = getPickupProductItemsForStore(basket, originalStoreId);
 
         // Validate inventory availability before updating
         if (currentPickupItems && currentPickupItems.length > 0) {
@@ -141,8 +142,9 @@ export async function clientAction({ request, context }: ClientActionFunctionArg
                 },
             });
 
-            if (productsResponse.data) {
-                const productsMap = new Map(productsResponse.data.map((product) => [product.id, product]));
+            const productsArray = Array.isArray(productsResponse.data?.data) ? productsResponse.data.data : [];
+            if (productsArray.length > 0) {
+                const productsMap = new Map(productsArray.map((product) => [product.id, product]));
 
                 // TODO: Need to verify inventory check for bundle support W-20159731
                 // Validate each pickup item's inventory
@@ -180,8 +182,8 @@ export async function clientAction({ request, context }: ClientActionFunctionArg
         }
 
         // All items are in stock - proceed with the update
-        // Update the shipment with the new store ID
-        let updatedBasket = await updateShipmentForPickup(context, basketId, 'me', storeId);
+        // Update the pickup shipment with the new store ID (use actual shipment ID, not 'me')
+        let updatedBasket = await updateShipmentForPickup(context, basketId, pickupShipmentId, storeId);
         shipmentUpdated = true;
 
         // Get pickup items from the updated basket for the new store
@@ -222,9 +224,9 @@ export async function clientAction({ request, context }: ClientActionFunctionArg
         return createBasketSuccessResponse(updatedBasket);
     } catch (error) {
         // Rollback shipment update if it was already updated
-        if (shipmentUpdated && originalStoreId) {
+        if (shipmentUpdated && originalStoreId && pickupShipmentId) {
             try {
-                await updateShipmentForPickup(context, basketId, 'me', originalStoreId);
+                await updateShipmentForPickup(context, basketId, pickupShipmentId, originalStoreId);
             } catch {
                 // Silently handle rollback error - original error is more important
                 // Rollback failure doesn't affect the user-facing error response

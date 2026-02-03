@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Fragment, Suspense, useEffect, useMemo, useRef, use } from 'react';
-import { Await, type LoaderFunctionArgs } from 'react-router';
+import { Await, type LoaderFunctionArgs, useLocation } from 'react-router';
 import type { ShopperProducts, ShopperSearch, ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchCategory } from '@/lib/api/categories';
 import { fetchSearchProducts } from '@/lib/api/search';
@@ -231,9 +231,10 @@ export default function CategoryPage({
         }
     }, [analytics, category, searchResult]);
 
-    // Force remount when currency/locale changes to update Suspense boundaries with new data
-    // without manually refresh the page on new selected currency/locale
-    const pageKey = `${categoryId}-${currency}-${locale}`;
+    // Force remount when currency/locale/search params change to update Suspense boundaries with
+    // new data without manually refresh the page on new selected currency/locale/filters (incl. pagination, sort, refinements)
+    const location = useLocation();
+    const pageKey = `${categoryId}-${currency}-${locale}-${location.search}-${location.hash}`;
 
     return (
         <Fragment key={pageKey}>

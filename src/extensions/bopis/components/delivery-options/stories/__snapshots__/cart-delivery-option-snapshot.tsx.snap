@@ -5,7 +5,7 @@ exports[`CartDeliveryOption stories snapshot > Default story renders and matches
   <button
     aria-expanded="false"
     aria-haspopup="menu"
-    class="mb-3 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center gap-2 hover:bg-accent transition-colors"
+    class="mb-3 w-[8.5rem] min-w-[8.5rem] h-10 min-h-10 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center justify-center gap-2 hover:bg-accent transition-colors"
     data-slot="dropdown-menu-trigger"
     data-state="closed"
     id="radix-_r_0_"
@@ -50,7 +50,7 @@ exports[`CartDeliveryOption stories snapshot > Desktop story renders and matches
   <button
     aria-expanded="false"
     aria-haspopup="menu"
-    class="mb-3 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center gap-2 hover:bg-accent transition-colors"
+    class="mb-3 w-[8.5rem] min-w-[8.5rem] h-10 min-h-10 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center justify-center gap-2 hover:bg-accent transition-colors"
     data-slot="dropdown-menu-trigger"
     data-state="closed"
     id="radix-_r_6_"
@@ -95,7 +95,7 @@ exports[`CartDeliveryOption stories snapshot > Mobile story renders and matches 
   <button
     aria-expanded="false"
     aria-haspopup="menu"
-    class="mb-3 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center gap-2 hover:bg-accent transition-colors"
+    class="mb-3 w-[8.5rem] min-w-[8.5rem] h-10 min-h-10 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center justify-center gap-2 hover:bg-accent transition-colors"
     data-slot="dropdown-menu-trigger"
     data-state="closed"
     id="radix-_r_4_"
@@ -141,7 +141,7 @@ exports[`CartDeliveryOption stories snapshot > PickupSelected story renders and 
     <button
       aria-expanded="false"
       aria-haspopup="menu"
-      class="mb-3 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center gap-2 hover:bg-accent transition-colors"
+      class="mb-3 w-[8.5rem] min-w-[8.5rem] h-10 min-h-10 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center justify-center gap-2 hover:bg-accent transition-colors"
       data-slot="dropdown-menu-trigger"
       data-state="closed"
       id="radix-_r_2_"

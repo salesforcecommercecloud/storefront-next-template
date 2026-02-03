@@ -229,7 +229,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                               <button
                                 aria-expanded="false"
                                 aria-haspopup="menu"
-                                class="mb-3 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center gap-2 hover:bg-accent transition-colors"
+                                class="mb-3 w-[8.5rem] min-w-[8.5rem] h-10 min-h-10 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center justify-center gap-2 hover:bg-accent transition-colors"
                                 data-slot="dropdown-menu-trigger"
                                 data-state="closed"
                                 id="radix-_r_8_"
@@ -993,7 +993,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                               <button
                                 aria-expanded="false"
                                 aria-haspopup="menu"
-                                class="mb-3 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center gap-2 hover:bg-accent transition-colors"
+                                class="mb-3 w-[8.5rem] min-w-[8.5rem] h-10 min-h-10 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center justify-center gap-2 hover:bg-accent transition-colors"
                                 data-slot="dropdown-menu-trigger"
                                 data-state="closed"
                                 id="radix-_r_n_"
@@ -1276,7 +1276,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                               <button
                                 aria-expanded="false"
                                 aria-haspopup="menu"
-                                class="mb-3 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center gap-2 hover:bg-accent transition-colors"
+                                class="mb-3 w-[8.5rem] min-w-[8.5rem] h-10 min-h-10 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center justify-center gap-2 hover:bg-accent transition-colors"
                                 data-slot="dropdown-menu-trigger"
                                 data-state="closed"
                                 id="radix-_r_12_"
@@ -2049,7 +2049,7 @@ exports[`CartContent stories snapshot > DesktopLayout story renders and matches 
                               <button
                                 aria-expanded="false"
                                 aria-haspopup="menu"
-                                class="mb-3 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center gap-2 hover:bg-accent transition-colors"
+                                class="mb-3 w-[8.5rem] min-w-[8.5rem] h-10 min-h-10 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center justify-center gap-2 hover:bg-accent transition-colors"
                                 data-slot="dropdown-menu-trigger"
                                 data-state="closed"
                                 id="radix-_r_20_"
@@ -2332,7 +2332,7 @@ exports[`CartContent stories snapshot > DesktopLayout story renders and matches 
                               <button
                                 aria-expanded="false"
                                 aria-haspopup="menu"
-                                class="mb-3 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center gap-2 hover:bg-accent transition-colors"
+                                class="mb-3 w-[8.5rem] min-w-[8.5rem] h-10 min-h-10 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center justify-center gap-2 hover:bg-accent transition-colors"
                                 data-slot="dropdown-menu-trigger"
                                 data-state="closed"
                                 id="radix-_r_2b_"
@@ -3241,7 +3241,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                               <button
                                 aria-expanded="false"
                                 aria-haspopup="menu"
-                                class="mb-3 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center gap-2 hover:bg-accent transition-colors"
+                                class="mb-3 w-[8.5rem] min-w-[8.5rem] h-10 min-h-10 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center justify-center gap-2 hover:bg-accent transition-colors"
                                 data-slot="dropdown-menu-trigger"
                                 data-state="closed"
                                 id="radix-_r_3k_"
@@ -4025,7 +4025,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                               <button
                                 aria-expanded="false"
                                 aria-haspopup="menu"
-                                class="mb-3 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center gap-2 hover:bg-accent transition-colors"
+                                class="mb-3 w-[8.5rem] min-w-[8.5rem] h-10 min-h-10 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center justify-center gap-2 hover:bg-accent transition-colors"
                                 data-slot="dropdown-menu-trigger"
                                 data-state="closed"
                                 id="radix-_r_2q_"
@@ -4308,7 +4308,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                               <button
                                 aria-expanded="false"
                                 aria-haspopup="menu"
-                                class="mb-3 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center gap-2 hover:bg-accent transition-colors"
+                                class="mb-3 w-[8.5rem] min-w-[8.5rem] h-10 min-h-10 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center justify-center gap-2 hover:bg-accent transition-colors"
                                 data-slot="dropdown-menu-trigger"
                                 data-state="closed"
                                 id="radix-_r_35_"
@@ -5060,7 +5060,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                               <button
                                 aria-expanded="false"
                                 aria-haspopup="menu"
-                                class="mb-3 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center gap-2 hover:bg-accent transition-colors"
+                                class="mb-3 w-[8.5rem] min-w-[8.5rem] h-10 min-h-10 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center justify-center gap-2 hover:bg-accent transition-colors"
                                 data-slot="dropdown-menu-trigger"
                                 data-state="closed"
                                 id="radix-_r_4i_"
@@ -5803,7 +5803,7 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                               <button
                                 aria-expanded="false"
                                 aria-haspopup="menu"
-                                class="mb-3 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center gap-2 hover:bg-accent transition-colors"
+                                class="mb-3 w-[8.5rem] min-w-[8.5rem] h-10 min-h-10 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center justify-center gap-2 hover:bg-accent transition-colors"
                                 data-slot="dropdown-menu-trigger"
                                 data-state="closed"
                                 id="radix-_r_43_"
@@ -6565,7 +6565,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                               <button
                                 aria-expanded="false"
                                 aria-haspopup="menu"
-                                class="mb-3 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center gap-2 hover:bg-accent transition-colors"
+                                class="mb-3 w-[8.5rem] min-w-[8.5rem] h-10 min-h-10 px-3 py-1 rounded-full border bg-background shadow text-sm font-semibold flex items-center justify-center gap-2 hover:bg-accent transition-colors"
                                 data-slot="dropdown-menu-trigger"
                                 data-state="closed"
                                 id="radix-_r_1h_"

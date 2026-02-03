@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// @sfdc-extension-file SFDC_EXT_BOPIS
-
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { clientAction } from './action.cart-pickup-store-update';
 import { getBasket, updateBasket } from '@/middlewares/basket.client';
 import { updateShipmentForPickup } from '@/extensions/bopis/lib/api/shipment';
 import { isStoreOutOfStock } from '@/lib/inventory-utils';
 import { extractResponseError } from '@/lib/utils';
-import { getFirstPickupStoreId, getPickupProductItemsForStore } from '@/extensions/bopis/lib/basket-utils';
+import { getPickupShipment, getPickupProductItemsForStore } from '@/extensions/bopis/lib/basket-utils';
 import { createApiClients } from '@/lib/api-clients';
 import { currencyContext } from '@/lib/currency';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
@@ -106,7 +104,7 @@ describe('action.cart-pickup-store-update', () => {
     };
 
     const mockProductsResponse = {
-        data: [mockProduct1, mockProduct2],
+        data: { data: [mockProduct1, mockProduct2] },
     };
 
     // Mock for shopperBasketsV2 using new API client structure
@@ -145,7 +143,10 @@ describe('action.cart-pickup-store-update', () => {
         } as ShopperBasketsV2.schemas['Basket']);
         vi.mocked(updateShipmentForPickup).mockResolvedValue(mockUpdatedBasket);
         vi.mocked(isStoreOutOfStock).mockReturnValue(false);
-        vi.mocked(getFirstPickupStoreId).mockReturnValue('old-store-123');
+        vi.mocked(getPickupShipment).mockReturnValue({
+            shipmentId: 'me',
+            c_fromStoreId: 'old-store-123',
+        } as ShopperBasketsV2.schemas['Shipment']);
         vi.mocked(getPickupProductItemsForStore).mockImplementation((basket, storeId) => {
             if (!basket?.productItems || !basket?.shipments) return [];
             // Return items that belong to shipments with the matching storeId
@@ -228,8 +229,8 @@ describe('action.cart-pickup-store-update', () => {
             expect(response.error).toContain('Inventory ID');
         });
 
-        test('returns error when no pickup store is currently set', async () => {
-            vi.mocked(getFirstPickupStoreId).mockReturnValue(undefined);
+        test('returns error when no pickup shipment found', async () => {
+            vi.mocked(getPickupShipment).mockReturnValue(undefined);
 
             const request = createFormDataRequest('http://localhost/action/cart-pickup-store-update', 'PATCH', {
                 storeId: mockStoreId,
@@ -244,7 +245,7 @@ describe('action.cart-pickup-store-update', () => {
             });
 
             expect(response.success).toBe(false);
-            expect(response.error).toBe('No pickup store is currently set. Cannot change pickup store.');
+            expect(response.error).toBe('No pickup shipment found. Cannot change pickup store.');
             expect(updateShipmentForPickup).not.toHaveBeenCalled();
         });
 
@@ -416,7 +417,7 @@ describe('action.cart-pickup-store-update', () => {
         test('returns error when product is not found during validation', async () => {
             // Mock products response without one of the products
             mockShopperProducts.getProducts.mockResolvedValue({
-                data: [mockProduct1], // Missing product-2
+                data: { data: [mockProduct1] }, // Missing product-2
             });
 
             const request = createFormDataRequest('http://localhost/action/cart-pickup-store-update', 'PATCH', {
@@ -548,7 +549,7 @@ describe('action.cart-pickup-store-update', () => {
         });
 
         test('handles empty products response gracefully', async () => {
-            mockShopperProducts.getProducts.mockResolvedValue({ data: undefined });
+            mockShopperProducts.getProducts.mockResolvedValue({ data: { data: undefined } });
 
             const request = createFormDataRequest('http://localhost/action/cart-pickup-store-update', 'PATCH', {
                 storeId: mockStoreId,
@@ -719,9 +720,8 @@ describe('action.cart-pickup-store-update', () => {
                 basketId: mockBasketId,
                 ...basketWithoutOriginalStore,
             } as ShopperBasketsV2.schemas['Basket']);
-            // This test should fail earlier because getFirstPickupStoreId returns undefined
-            // But if it somehow gets past that, test the rollback behavior
-            vi.mocked(getFirstPickupStoreId).mockReturnValue(undefined);
+            // Action fails early when getPickupShipment returns undefined
+            vi.mocked(getPickupShipment).mockReturnValue(undefined);
 
             const request = createFormDataRequest('http://localhost/action/cart-pickup-store-update', 'PATCH', {
                 storeId: mockStoreId,
@@ -736,7 +736,7 @@ describe('action.cart-pickup-store-update', () => {
             });
 
             expect(response.success).toBe(false);
-            expect(response.error).toBe('No pickup store is currently set. Cannot change pickup store.');
+            expect(response.error).toBe('No pickup shipment found. Cannot change pickup store.');
 
             // Verify shipment was NOT updated (error occurred before update)
             expect(updateShipmentForPickup).not.toHaveBeenCalled();

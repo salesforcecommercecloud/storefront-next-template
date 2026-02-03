@@ -33,7 +33,7 @@ import type {
 import type { CustomerProfile } from '@/components/checkout/utils/checkout-context-types';
 import type { SessionData } from '@/lib/api/types';
 import { getAuth as getAuthClient } from '@/middlewares/auth.client';
-import { getBasket } from '@/middlewares/basket.client';
+import { getBasket, updateBasket } from '@/middlewares/basket.client';
 import { getCustomerProfileForCheckout, isRegisteredCustomer } from '@/lib/api/customer';
 import { getShippingMethodsForShipment } from '@/lib/api/shipping-methods';
 import { createApiClients } from '@/lib/api-clients';
@@ -366,7 +366,10 @@ export async function clientLoader(args: ClientLoaderFunctionArgs): Promise<Chec
                         basket?.basketId,
                         store,
                         pickupShipment.shipmentId
-                    ).then(() => Promise.resolve(undefined));
+                    ).then((updatedBasket) => {
+                        updateBasket(context, updatedBasket);
+                        return Promise.resolve(undefined);
+                    });
                 }
             }
         }
@@ -378,6 +381,11 @@ export async function clientLoader(args: ClientLoaderFunctionArgs): Promise<Chec
             const customerProfile = await getCustomerProfileForCheckout(context, session.customer_id).catch(() => null);
 
             if (customerProfile) {
+                // @sfdc-extension-block-start SFDC_EXT_BOPIS
+                // Avoid basket race condition when both BOPIS and returning customer
+                // Wait for BOPIS address setup to complete before prefilling basket
+                await shippingDefaultSet;
+                // @sfdc-extension-block-end SFDC_EXT_BOPIS
                 // Step 2: Prefill basket with saved address (await for basket update)
                 // If we don't wait, basket.shipments[0].shippingAddress is still undefined
                 const updatedBasket = await handleBasketPrefill(context, customerProfile);

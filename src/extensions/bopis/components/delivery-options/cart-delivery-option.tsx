@@ -16,7 +16,7 @@
 'use client';
 
 import { type ReactElement, useCallback, useEffect } from 'react';
-import { useFetcher } from 'react-router';
+import { useItemFetcher } from '@/hooks/use-item-fetcher';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import PickupOrDeliveryDropdown from './pickup-or-delivery-dropdown';
 import { useDeliveryOptions } from '@/extensions/bopis/hooks/use-delivery-options';
@@ -49,7 +49,7 @@ export default function CartDeliveryOption({ product }: CartDeliveryOptionProps)
     const openStoreLocator = useStoreLocator((s) => s.open);
     const setSelectedStoreInfoRaw = useStoreLocator((s) => s.setSelectedStoreInfo);
     const basketContext = useBasket();
-    const fetcher = useFetcher();
+    const fetcher = useItemFetcher({ itemId: product.itemId, componentName: 'cart-delivery-option' });
     const { addToast } = useToast();
     const { t: tExtBopis } = useTranslation('extBopis');
 

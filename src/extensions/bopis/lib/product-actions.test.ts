@@ -29,7 +29,6 @@ vi.mock('@/config', () => ({
 
 vi.mock('@/extensions/bopis/lib/api/shipment', () => ({
     updateShipmentForPickup: vi.fn(),
-    clearPickupFromShipment: vi.fn(),
 }));
 
 beforeEach(() => {

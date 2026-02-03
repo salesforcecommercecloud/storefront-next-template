@@ -21,6 +21,7 @@ import {
     getInventoryIdsFromPickupShipments,
     getStoreIdsFromBasket,
     getFirstPickupStoreId,
+    getFirstPickupShipmentId,
     getStoreIdForBasketItem,
     getPickupProductItemsForStore,
     filterPickupProductItems,
@@ -39,7 +40,6 @@ vi.mock('@/config', () => ({
 
 vi.mock('@/extensions/bopis/lib/api/shipment', () => ({
     updateShipmentForPickup: vi.fn(),
-    clearPickupFromShipment: vi.fn(),
 }));
 
 beforeEach(() => {
@@ -1425,6 +1425,62 @@ describe('getFirstPickupStoreId', () => {
         const result = getFirstPickupStoreId(basket);
         // Should still find the first valid shipment with c_fromStoreId
         expect(result).toBe('store-123');
+    });
+});
+
+describe('getFirstPickupShipmentId', () => {
+    it('should return undefined for undefined basket', () => {
+        const result = getFirstPickupShipmentId(undefined);
+        expect(result).toBeUndefined();
+    });
+
+    it('should return undefined for null basket', () => {
+        const result = getFirstPickupShipmentId(null);
+        expect(result).toBeUndefined();
+    });
+
+    it('should return undefined when basket has no shipments', () => {
+        const basket = {
+            basketId: 'basket-1',
+            productItems: [],
+        } as ShopperBasketsV2.schemas['Basket'];
+
+        const result = getFirstPickupShipmentId(basket);
+        expect(result).toBeUndefined();
+    });
+
+    it('should return undefined when no shipments have c_fromStoreId', () => {
+        const basket = {
+            basketId: 'basket-1',
+            shipments: [{ shipmentId: 'shipment-1' }],
+        } as ShopperBasketsV2.schemas['Basket'];
+
+        const result = getFirstPickupShipmentId(basket);
+        expect(result).toBeUndefined();
+    });
+
+    it('should return shipment ID from first shipment with c_fromStoreId', () => {
+        const basket = {
+            basketId: 'basket-1',
+            shipments: [{ shipmentId: 'pickup-shipment-1', c_fromStoreId: 'store-123' }],
+        } as ShopperBasketsV2.schemas['Basket'];
+
+        const result = getFirstPickupShipmentId(basket);
+        expect(result).toBe('pickup-shipment-1');
+    });
+
+    it('should return first pickup shipment ID when multiple shipments exist', () => {
+        const basket = {
+            basketId: 'basket-1',
+            shipments: [
+                { shipmentId: 'delivery-1' },
+                { shipmentId: 'pickup-1', c_fromStoreId: 'store-123' },
+                { shipmentId: 'pickup-2', c_fromStoreId: 'store-456' },
+            ],
+        } as ShopperBasketsV2.schemas['Basket'];
+
+        const result = getFirstPickupShipmentId(basket);
+        expect(result).toBe('pickup-1');
     });
 });
 

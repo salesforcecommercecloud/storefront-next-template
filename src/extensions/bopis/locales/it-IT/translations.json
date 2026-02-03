@@ -38,6 +38,7 @@
     "storePickup": {
         "title": "Dettagli ritiro in negozio",
         "pickupLocationTitle": "Luogo di ritiro",
+        "changePickupLocation": "Cambia luogo di ritiro",
         "viewButton": "Visualizza",
         "closeButton": "Chiudi",
         "pickupDetailsTitle": "Dettagli luogo di ritiro",
@@ -50,7 +51,7 @@
         "pickupStoreInfo": {
             "pickupInStore": "Ritira presso {{storeName}}",
             "changeStore": "Cambia negozio",
-            "storeChanged": "Negozio di ritiro cambiato con successo",
+            "storeChanged": "Il negozio di ritiro è stato cambiato.",
             "changeStoreError": "Impossibile cambiare negozio di ritiro",
             "itemsOutOfStock": "Alcuni articoli non sono disponibili presso {{storeName}}. Selezioni un negozio diverso.",
             "missingStoreIdOrInventoryIdError": "ID negozio o ID inventario mancante. Selezioni un negozio valido."

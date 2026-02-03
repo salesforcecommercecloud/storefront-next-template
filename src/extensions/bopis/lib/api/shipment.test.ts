@@ -15,26 +15,16 @@
  */
 
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import {
-    clearPickupFromShipment,
-    updateShipmentForPickup,
-    setAddressAndMethodForPickup,
-    findOrCreatePickupShipment,
-} from './shipment';
+import { updateShipmentForPickup, setAddressAndMethodForPickup, findOrCreatePickupShipment } from './shipment';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import type { RouterContextProvider } from 'react-router';
 import { createApiClients } from '@/lib/api-clients';
-import { getShippingMethodsForShipment } from '@/lib/api/shipping-methods';
 import { PICKUP_SHIPMENT_ID, PICKUP_SHIPPING_METHOD_ID } from '@/extensions/bopis/constants';
 import { createMockBasketWithPickupItems, createMockStore } from '@/extensions/bopis/tests/__mocks__/basket';
 
 // Mock createApiClients
 vi.mock('@/lib/api-clients', () => ({
     createApiClients: vi.fn(),
-}));
-
-vi.mock('@/lib/api/shipping-methods', () => ({
-    getShippingMethodsForShipment: vi.fn(),
 }));
 
 describe('Shipment API utilities', () => {
@@ -77,16 +67,6 @@ describe('Shipment API utilities', () => {
                 basketId,
                 shipmentId,
             },
-        };
-    }
-
-    // Helper function to create common body structure for clearing pickup
-    function createClearedPickupBody(shipmentId: string, shippingMethodId: string) {
-        return {
-            shipmentId,
-            c_fromStoreId: null,
-            shippingAddress: {},
-            shippingMethod: { id: shippingMethodId },
         };
     }
 
@@ -288,88 +268,6 @@ describe('Shipment API utilities', () => {
 
             await expect(setAddressAndMethodForPickup(mockContext, 'test-basket', mockStore, 'me')).rejects.toThrow(
                 'API Error'
-            );
-        });
-    });
-
-    describe('clearPickupFromShipment', () => {
-        test('should clear pickup fields and set default shipping method from defaultShippingMethodId', async () => {
-            const mockBasket = createMockBasketWithPickupItems(
-                [{ productId: 'product-1', inventoryId: 'inventory-1', storeId: 'store-123' }],
-                {
-                    basketId: 'test-basket',
-                }
-            );
-
-            vi.mocked(getShippingMethodsForShipment).mockResolvedValue({
-                defaultShippingMethodId: 'default-shipping-method',
-                applicableShippingMethods: [
-                    { id: 'standard-shipping', name: 'Standard' },
-                    { id: 'express-shipping', name: 'Express' },
-                ],
-            } as any);
-
-            const mockUpdateShipmentForBasket = vi.fn().mockResolvedValue({ data: mockBasket });
-            setupMockApiClients(mockUpdateShipmentForBasket);
-
-            const result = await clearPickupFromShipment(mockContext, 'test-basket', 'me');
-
-            expect(getShippingMethodsForShipment).toHaveBeenCalledWith(mockContext, 'test-basket', 'me');
-            expect(mockUpdateShipmentForBasket).toHaveBeenCalledWith({
-                params: createShipmentParams('test-basket', 'me'),
-                body: createClearedPickupBody('me', 'default-shipping-method'),
-            });
-            expect(result).toEqual(mockBasket);
-        });
-
-        test('should use first applicable shipping method when defaultShippingMethodId is missing', async () => {
-            const mockBasket = createMockBasketWithPickupItems(
-                [{ productId: 'product-1', inventoryId: 'inventory-1', storeId: 'store-123' }],
-                {
-                    basketId: 'test-basket',
-                }
-            );
-
-            vi.mocked(getShippingMethodsForShipment).mockResolvedValue({
-                applicableShippingMethods: [
-                    { id: 'first-method', name: 'First Method' },
-                    { id: 'second-method', name: 'Second Method' },
-                ],
-            } as any);
-
-            const mockUpdateShipmentForBasket = vi.fn().mockResolvedValue({ data: mockBasket });
-            setupMockApiClients(mockUpdateShipmentForBasket);
-
-            await clearPickupFromShipment(mockContext, 'test-basket', 'me');
-
-            expect(mockUpdateShipmentForBasket).toHaveBeenCalledWith({
-                params: createShipmentParams('test-basket', 'me'),
-                body: createClearedPickupBody('me', 'first-method'),
-            });
-        });
-
-        test('should handle API errors from getShippingMethodsForShipment', async () => {
-            const mockError = new Error('Shipping methods API Error');
-
-            vi.mocked(getShippingMethodsForShipment).mockRejectedValue(mockError);
-
-            await expect(clearPickupFromShipment(mockContext, 'test-basket', 'me')).rejects.toThrow(
-                'Shipping methods API Error'
-            );
-        });
-
-        test('should handle API errors from updateShipmentForBasket', async () => {
-            const mockError = new Error('Update shipment API Error');
-
-            vi.mocked(getShippingMethodsForShipment).mockResolvedValue({
-                defaultShippingMethodId: 'default-method',
-            } as any);
-
-            const mockUpdateShipmentForBasket = vi.fn().mockRejectedValue(mockError);
-            setupMockApiClients(mockUpdateShipmentForBasket);
-
-            await expect(clearPickupFromShipment(mockContext, 'test-basket', 'me')).rejects.toThrow(
-                'Update shipment API Error'
             );
         });
     });

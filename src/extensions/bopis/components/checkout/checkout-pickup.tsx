@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useMemo } from 'react';
+'use client';
+
+import { useMemo, useCallback, useEffect } from 'react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Typography } from '@/components/typography';
 import { Button } from '@/components/ui/button';
@@ -21,6 +23,8 @@ import AddressDisplay from '@/components/address-display';
 import { orderAddressFromStoreAddress } from '@/extensions/bopis/lib/store-utils';
 import { useTranslation } from 'react-i18next';
 import { usePickup } from '@/extensions/bopis/context/pickup-context';
+import { useStoreLocator } from '@/extensions/store-locator/providers/store-locator';
+import { useChangePickupStore } from '@/extensions/bopis/hooks/use-change-pickup-store';
 import { getFirstPickupStore, getPickupProductItemsForStore } from '@/extensions/bopis/lib/basket-utils';
 import {
     getDisplayVariationValues,
@@ -98,6 +102,29 @@ export default function CheckoutPickup({
     const store = getFirstPickupStore(cart, pickupContext?.pickupStores);
     // Get currency from context (automatically derived from locale)
     const currency = useCurrency();
+    const openStoreLocator = useStoreLocator((s) => s.open);
+    const setSelectedStoreInfoRaw = useStoreLocator((s) => s.setSelectedStoreInfo);
+    const selectedStoreInfo = useStoreLocator((s) => s.selectedStoreInfo);
+    const isStoreLocatorOpen = useStoreLocator((s) => s.isOpen);
+    const { changeStore } = useChangePickupStore();
+
+    const handleChangePickupLocation = useCallback(() => {
+        if (!store) return;
+        setSelectedStoreInfoRaw(store);
+        openStoreLocator();
+    }, [store, setSelectedStoreInfoRaw, openStoreLocator]);
+
+    useEffect(() => {
+        if (
+            selectedStoreInfo &&
+            selectedStoreInfo.id !== store?.id &&
+            selectedStoreInfo.inventoryId &&
+            isStoreLocatorOpen
+        ) {
+            void changeStore(selectedStoreInfo);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedStoreInfo?.id, selectedStoreInfo?.inventoryId, isStoreLocatorOpen, store?.id]);
 
     // Filter pickup items for the specific store and enrich with product catalog data
     // Skip expensive computation when not editing
@@ -136,7 +163,7 @@ export default function CheckoutPickup({
                 {isEditing ? (
                     <>
                         <Card className="border border-border bg-background rounded-xl shadow-sm">
-                            <div className="px-6 pt-0 pb-0">
+                            <div className="px-6 pt-0 pb-0 flex items-center justify-between">
                                 <Typography
                                     variant="h5"
                                     as="h3"
@@ -144,6 +171,13 @@ export default function CheckoutPickup({
                                     style={{ marginBottom: 0 }}>
                                     {tBopis('storePickup.pickupLocationTitle')}
                                 </Typography>
+                                <Button
+                                    variant="link"
+                                    size="sm"
+                                    onClick={handleChangePickupLocation}
+                                    className="ml-auto h-auto p-0 text-muted-foreground hover:text-foreground font-normal">
+                                    {tBopis('storePickup.changePickupLocation')}
+                                </Button>
                             </div>
                             <CardContent className="pt-0 pb-6 px-6">
                                 <div className="mt-0 mb-0">

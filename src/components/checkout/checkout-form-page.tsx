@@ -502,6 +502,7 @@ export default function CheckoutFormPage({
                                     onSubmit={handlePaymentSubmit}
                                     isLoading={isSubmitting('payment')}
                                     actionData={paymentFetcher.data}
+                                    showBillingSameAsShipping={showAddressAndOptions}
                                     {...paymentState}
                                 />
                             </PluginComponent>

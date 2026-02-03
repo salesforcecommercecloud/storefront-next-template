@@ -19,7 +19,6 @@ import { PICKUP_SHIPMENT_ID, PICKUP_SHIPPING_METHOD_ID } from '@/extensions/bopi
 import type { ShopperBasketsV2, ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
 import { createApiClients } from '@/lib/api-clients';
 import { getTranslation } from '@/lib/i18next';
-import { getShippingMethodsForShipment } from '@/lib/api/shipping-methods';
 import { orderAddressFromStoreAddress } from '@/extensions/bopis/lib/store-utils';
 
 /**
@@ -95,46 +94,6 @@ export async function setAddressAndMethodForPickup(
             shippingMethod: {
                 id: PICKUP_SHIPPING_METHOD_ID,
             },
-        },
-    });
-
-    return updatedBasket;
-}
-
-/**
- * Clears pickup-related fields from shipment and sets default shipping method
- * Removes c_fromStoreId and shippingAddress, sets shippingMethod to default
- *
- * @param context - Router context
- * @param basket - Current basket
- * @param shipmentId - Shipment ID (defaults to 'me')
- * @returns Updated basket with cleared pickup fields and default shipping method
- */
-export async function clearPickupFromShipment(
-    context: Readonly<RouterContextProvider>,
-    basketId: string,
-    shipmentId: string = 'me'
-): Promise<ShopperBasketsV2.schemas['Basket']> {
-    const clients = createApiClients(context);
-
-    // Fetch shipping methods to get defaultShippingMethodId
-    const shippingMethods = await getShippingMethodsForShipment(context, basketId, shipmentId);
-    const defaultShippingMethodId =
-        shippingMethods?.defaultShippingMethodId ?? shippingMethods?.applicableShippingMethods?.[0]?.id ?? '';
-
-    // Clear c_fromStoreId and shippingAddress, and set default shipping method
-    const { data: updatedBasket } = await clients.shopperBasketsV2.updateShipmentForBasket({
-        params: {
-            path: {
-                basketId,
-                shipmentId,
-            },
-        },
-        body: {
-            shipmentId,
-            c_fromStoreId: null,
-            shippingAddress: {},
-            shippingMethod: { id: defaultShippingMethodId },
         },
     });
 

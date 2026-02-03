@@ -38,6 +38,7 @@
     "storePickup": {
         "title": "Store Pickup Details",
         "pickupLocationTitle": "Pickup Location",
+        "changePickupLocation": "Change Pickup Location",
         "viewButton": "View",
         "closeButton": "Close",
         "pickupDetailsTitle": "Pickup Location Details",
@@ -50,10 +51,10 @@
         "pickupStoreInfo": {
             "pickupInStore": "Pick up in {{storeName}}",
             "changeStore": "Change Store",
-            "storeChanged": "Pickup store changed successfully",
+            "storeChanged": "The pickup store was changed.",
             "changeStoreError": "Failed to change pickup store",
-            "itemsOutOfStock": "Some items are out of stock at {{storeName}}. Please select a different store.",
-            "missingStoreIdOrInventoryIdError": "Store ID or inventory ID is missing. Please select a valid store."
+            "itemsOutOfStock": "Some items are out of stock at {{storeName}}. Select a different store.",
+            "missingStoreIdOrInventoryIdError": "Store ID or inventory ID is missing. Select a valid store."
         },
         "deliveryOptionChangeError": "Failed to change delivery option. {{error}}",
         "addToCartValidation": {

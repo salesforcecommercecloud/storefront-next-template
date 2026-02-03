@@ -37,8 +37,6 @@ import type { CheckoutActionData } from '../types';
 import CheckoutErrorBanner from './checkout-error-banner';
 import { getCheckoutDisplayError } from './checkout-display-error';
 import { useTranslation } from 'react-i18next';
-// @sfdc-extension-line SFDC_EXT_BOPIS
-import { isStorePickup } from '@/extensions/bopis/lib/basket-utils';
 import { PluginComponent } from '@/plugins/plugin-component';
 
 interface PaymentProps {
@@ -49,6 +47,7 @@ interface PaymentProps {
     isCompleted: boolean;
     isEditing: boolean;
     onEdit: () => void;
+    showBillingSameAsShipping?: boolean;
 }
 
 export default function Payment({
@@ -58,14 +57,12 @@ export default function Payment({
     isCompleted: _isCompleted,
     isEditing,
     onEdit,
+    showBillingSameAsShipping = true,
 }: PaymentProps) {
     const cart = useBasket();
     const customerProfile = useCustomerProfile();
     const [detectedCardType, setDetectedCardType] = useState<string>('');
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('new'); // 'new' or payment method ID
-    let showBillingSameAsShipping = true;
-    // @sfdc-extension-line SFDC_EXT_BOPIS
-    showBillingSameAsShipping = !isStorePickup(cart);
     const { t } = useTranslation('checkout');
     const paymentFormError = getCheckoutDisplayError(actionData, 'payment');
 

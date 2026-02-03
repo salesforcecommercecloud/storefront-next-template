@@ -77,19 +77,21 @@ export default function StoreLocatorForm(): ReactElement {
                                 <FormItem className="flex flex-col gap-1">
                                     <FormLabel className="sr-only">{t('storeLocator.form.countryLabel')}</FormLabel>
                                     <FormControl>
-                                        <NativeSelect
-                                            aria-label={t('storeLocator.form.countryLabel')}
-                                            value={field.value}
-                                            onChange={(e) => field.onChange(e.target.value)}>
-                                            <option value="" disabled>
-                                                {t('storeLocator.form.selectCountry')}
-                                            </option>
-                                            {countryOptions.map((c) => (
-                                                <option key={c.countryCode} value={c.countryCode}>
-                                                    {c.countryName}
+                                        <div className="w-full [&_[data-slot='native-select-wrapper']]:w-full">
+                                            <NativeSelect
+                                                aria-label={t('storeLocator.form.countryLabel')}
+                                                value={field.value}
+                                                onChange={(e) => field.onChange(e.target.value)}>
+                                                <option value="" disabled>
+                                                    {t('storeLocator.form.selectCountry')}
                                                 </option>
-                                            ))}
-                                        </NativeSelect>
+                                                {countryOptions.map((c) => (
+                                                    <option key={c.countryCode} value={c.countryCode}>
+                                                        {c.countryName}
+                                                    </option>
+                                                ))}
+                                            </NativeSelect>
+                                        </div>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

@@ -51,7 +51,7 @@ describe('Payment Component - BOPIS/Store Pickup Scenarios', () => {
 
         mockedUseBasket.mockReturnValue(basketWithPickup);
 
-        render(<Payment {...createDefaultProps()} />);
+        render(<Payment {...createDefaultProps({ showBillingSameAsShipping: false })} />);
 
         // The checkbox should NOT be rendered for store pickup
         expect(screen.queryByRole('checkbox', { name: /billing same as shipping/i })).not.toBeInTheDocument();
@@ -66,7 +66,7 @@ describe('Payment Component - BOPIS/Store Pickup Scenarios', () => {
 
         mockedUseBasket.mockReturnValue(basketWithPickup);
 
-        render(<Payment {...createDefaultProps()} />);
+        render(<Payment {...createDefaultProps({ showBillingSameAsShipping: false })} />);
 
         // Check that billing address fields are NOT pre-filled with store address
         const firstNameInput = screen.getByRole('textbox', { name: /first name/i });
@@ -93,7 +93,7 @@ describe('Payment Component - BOPIS/Store Pickup Scenarios', () => {
 
         mockedUseBasket.mockReturnValue(basketWithPickup);
 
-        render(<Payment {...createDefaultProps({ isEditing: false })} />);
+        render(<Payment {...createDefaultProps({ isEditing: false, showBillingSameAsShipping: false })} />);
 
         // For store pickup with no billing address, it should show appropriate message
         // Should NOT show "Same as shipping address" for store pickup
@@ -110,7 +110,7 @@ describe('Payment Component - BOPIS/Store Pickup Scenarios', () => {
         mockedUseBasket.mockReturnValue(basketWithPickup);
 
         const onSubmitMock = vi.fn();
-        render(<Payment {...createDefaultProps({ onSubmit: onSubmitMock })} />);
+        render(<Payment {...createDefaultProps({ onSubmit: onSubmitMock, showBillingSameAsShipping: false })} />);
 
         // Verify billing address fields are visible (not hidden by "same as shipping" checkbox)
         expect(screen.getByRole('textbox', { name: /first name/i })).toBeInTheDocument();

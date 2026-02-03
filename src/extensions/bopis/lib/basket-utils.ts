@@ -223,8 +223,21 @@ export function getStoreIdsFromBasket(basket: ShopperBasketsV2.schemas['Basket']
 export function getFirstPickupStoreId(
     basket: ShopperBasketsV2.schemas['Basket'] | null | undefined
 ): string | undefined {
-    const shipment = basket?.shipments?.find((s) => s.c_fromStoreId);
+    const shipment = getPickupShipment(basket);
     return shipment?.c_fromStoreId as string | undefined;
+}
+
+/**
+ * Gets the shipment ID of the first pickup shipment
+ *
+ * @param basket
+ * @returns The shipment ID of first pickup shipment, or undefined
+ */
+export function getFirstPickupShipmentId(
+    basket: ShopperBasketsV2.schemas['Basket'] | null | undefined
+): string | undefined {
+    const shipment = getPickupShipment(basket);
+    return shipment?.shipmentId;
 }
 
 /**
