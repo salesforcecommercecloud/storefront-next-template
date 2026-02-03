@@ -18,13 +18,15 @@ import { type ActionFunctionArgs, type LoaderFunctionArgs } from 'react-router';
 import { encodeBase64Url } from '@/lib/url';
 import { action, loader, type ApiResponse } from './resource.api.client.$resource';
 import { createTestContext } from '@/lib/test-utils';
-import { extractResponseError } from '@/lib/utils';
+import { extractResponseError, getErrorMessage } from '@/lib/utils';
+import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 
 // Mock dependencies
 vi.mock('@/middlewares/auth.server');
 vi.mock('@/middlewares/auth.client');
 vi.mock('@/lib/utils', () => ({
     extractResponseError: vi.fn(),
+    getErrorMessage: vi.fn(),
     getAppOrigin: vi.fn(() => 'https://example.com'),
 }));
 
@@ -33,6 +35,7 @@ const mockShopperCustomersGetCustomer = vi.fn();
 const mockShopperCustomersUpdateCustomer = vi.fn();
 const mockShopperBasketsAddItemToBasket = vi.fn();
 const mockExtractResponseError = vi.mocked(extractResponseError);
+const mockGetErrorMessage = vi.mocked(getErrorMessage);
 
 // Mock the createApiClients function
 vi.mock('@/lib/api-clients', () => ({
@@ -66,6 +69,7 @@ describe('Commerce SDK resource', () => {
         mockShopperCustomersUpdateCustomer.mockClear();
         mockShopperBasketsAddItemToBasket.mockClear();
         mockExtractResponseError.mockClear();
+        mockGetErrorMessage.mockClear();
 
         mockContextProvider = createTestContext();
 
@@ -112,6 +116,35 @@ describe('Commerce SDK resource', () => {
                     success: false,
                     errors: ['Unexpected resource format'],
                 });
+            });
+
+            it('should handle ApiError using getErrorMessage', async () => {
+                const mockApiError = new ApiError({
+                    url: 'https://api.example.com/test',
+                    method: 'PUT',
+                    status: 400,
+                    statusText: 'Bad Request',
+                    headers: new Headers(),
+                    body: {
+                        type: 'https://api.commercecloud.salesforce.com/documentation/error/v1/errors/invalid-customer',
+                        title: 'Invalid Customer',
+                        detail: 'The current password is incorrect.',
+                    },
+                    rawBody: JSON.stringify({ message: 'The current password is incorrect.' }),
+                });
+
+                mockShopperCustomersGetCustomer.mockRejectedValue(mockApiError);
+                mockGetErrorMessage.mockReturnValue('The current password is incorrect.');
+
+                const result = await loader(createLoaderArgs(encodedValidResource));
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['The current password is incorrect.'],
+                });
+
+                expect(mockGetErrorMessage).toHaveBeenCalledWith(mockApiError);
+                // extractResponseError should NOT be called for ApiError instances
+                expect(mockExtractResponseError).not.toHaveBeenCalled();
             });
 
             it('should handle fetch client errors with extractResponseError', async () => {
@@ -365,6 +398,35 @@ describe('Commerce SDK resource', () => {
                     success: false,
                     errors: ['Unexpected resource format'],
                 });
+            });
+
+            it('should handle ApiError using getErrorMessage for password update errors', async () => {
+                const mockApiError = new ApiError({
+                    url: 'https://api.example.com/test',
+                    method: 'PUT',
+                    status: 400,
+                    statusText: 'Bad Request',
+                    headers: new Headers(),
+                    body: {
+                        type: 'https://api.commercecloud.salesforce.com/documentation/error/v1/errors/invalid-customer',
+                        title: 'Invalid Customer',
+                        detail: 'The customer is invalid.',
+                    },
+                    rawBody: JSON.stringify({ message: 'The current password is incorrect.' }),
+                });
+
+                mockShopperCustomersUpdateCustomer.mockRejectedValue(mockApiError);
+                mockGetErrorMessage.mockReturnValue('The current password is incorrect.');
+
+                const result = await action(createActionArgs(encodedValidActionResource));
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['The current password is incorrect.'],
+                });
+
+                expect(mockGetErrorMessage).toHaveBeenCalledWith(mockApiError);
+                // extractResponseError should NOT be called for ApiError instances
+                expect(mockExtractResponseError).not.toHaveBeenCalled();
             });
 
             it('should handle action errors with extractResponseError', async () => {

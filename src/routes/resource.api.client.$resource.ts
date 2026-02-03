@@ -17,9 +17,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router';
 import { decodeBase64Url } from '@/lib/url';
-import { extractResponseError } from '@/lib/utils';
+import { extractResponseError, getErrorMessage } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients';
-import type { Clients, OperationMethodsOnly } from '@salesforce/storefront-next-runtime/scapi';
+import { ApiError, type Clients, type OperationMethodsOnly } from '@salesforce/storefront-next-runtime/scapi';
 
 // Default empty array string for resource parameter fallback
 const DEFAULT_RESOURCE_ARRAY = '[]';
@@ -151,11 +151,17 @@ export async function loader<
         };
     } catch (reason) {
         let errorMessage: string;
-        try {
-            const { responseMessage } = await extractResponseError(reason as Error);
-            errorMessage = responseMessage || 'Unknown error';
-        } catch {
-            errorMessage = reason instanceof Error ? reason.message : 'Unknown error';
+        // Use getErrorMessage for ApiError instances (new Commerce SDK format)
+        if (reason instanceof ApiError) {
+            errorMessage = getErrorMessage(reason);
+        } else {
+            // Fall back to extractResponseError for legacy ResponseError format
+            try {
+                const { responseMessage } = await extractResponseError(reason as Error);
+                errorMessage = responseMessage || 'Unknown error';
+            } catch {
+                errorMessage = reason instanceof Error ? reason.message : 'Unknown error';
+            }
         }
         return {
             success: false,
@@ -256,11 +262,17 @@ export async function action<
         };
     } catch (reason) {
         let errorMessage: string;
-        try {
-            const { responseMessage } = await extractResponseError(reason as Error);
-            errorMessage = responseMessage || 'Unknown error';
-        } catch {
-            errorMessage = reason instanceof Error ? reason.message : 'Unknown error';
+        // Use getErrorMessage for ApiError instances (new Commerce SDK format)
+        if (reason instanceof ApiError) {
+            errorMessage = getErrorMessage(reason);
+        } else {
+            // Fall back to extractResponseError for legacy ResponseError format
+            try {
+                const { responseMessage } = await extractResponseError(reason as Error);
+                errorMessage = responseMessage || 'Unknown error';
+            } catch {
+                errorMessage = reason instanceof Error ? reason.message : 'Unknown error';
+            }
         }
         return {
             success: false,
