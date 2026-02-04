@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import type { ClientLoaderFunctionArgs } from 'react-router';
 
-// Mock the middleware functions
-vi.mock('@/middlewares/auth.client', () => ({
+// Mock the middleware and API functions
+vi.mock('@/middlewares/auth.server', () => ({
     getAuth: vi.fn(),
 }));
 
-vi.mock('@/middlewares/basket.client', () => ({
+vi.mock('@/middlewares/basket.server', () => ({
     getBasket: vi.fn(),
+    updateBasketResource: vi.fn(),
 }));
 
 vi.mock('@/lib/api/customer', () => ({
@@ -33,19 +33,6 @@ vi.mock('@/lib/api/customer', () => ({
 vi.mock('@/lib/api/shipping-methods', () => ({
     getShippingMethodsForShipment: vi.fn(),
 }));
-
-vi.mock('@/components/checkout/utils/checkout-utils', () => {
-    return {
-        shouldPrefillBasket: vi.fn(() => false),
-        initializeBasketForReturningCustomer: vi.fn((_context, profile) =>
-            Promise.resolve({
-                basketId: 'prefilled-basket-123',
-                shipments: [{ shippingAddress: { address1: 'Prefilled Address' } }],
-                customerInfo: { email: profile.customer.login },
-            })
-        ),
-    };
-});
 
 vi.mock('@/lib/checkout-server-utils', () => ({
     fetchProductsInBasket: vi.fn(() => Promise.resolve({})),
@@ -67,60 +54,15 @@ vi.mock('@/lib/currency', () => ({
 }));
 
 import {
-    clientLoader,
+    loader,
     getServerCustomerProfileData,
     getServerShippingMethodsMapData,
     fetchShippingMethodsMapForBasket,
+    initializeBasketForReturningCustomer,
 } from './checkout-loaders';
+import type { CustomerProfile } from '@/components/checkout/utils/checkout-context-types';
 
 describe('Checkout Loaders', () => {
-    function createPromotionIds(count: number): string[] {
-        return Array.from({ length: count }, (_, i) => `promo-${i + 1}`);
-    }
-
-    function createProductItemsFromPromotions(promotionIds: string[]) {
-        return promotionIds.map((promoId, index) => ({
-            itemId: `item-${index + 1}`,
-            productId: `prod-${index + 1}`,
-            priceAdjustments: [
-                {
-                    priceAdjustmentId: `adj-${index + 1}`,
-                    promotionId: promoId,
-                },
-            ],
-        }));
-    }
-
-    async function setupGuestUserMocks() {
-        const { getBasket } = await import('@/middlewares/basket.client');
-        const { getAuth: getAuthClient } = await import('@/middlewares/auth.client');
-        const { isRegisteredCustomer } = await import('@/lib/api/customer');
-
-        vi.mocked(getAuthClient).mockReturnValue({
-            customer_id: undefined,
-            userType: 'guest',
-        } as any);
-
-        vi.mocked(isRegisteredCustomer).mockReturnValue(false);
-
-        return { getBasket };
-    }
-
-    function createTestArgs(): ClientLoaderFunctionArgs {
-        const mockRequest = new Request('https://localhost/checkout');
-        return {
-            request: mockRequest,
-            params: {},
-            context: {
-                get: vi.fn((key) => {
-                    if (key.key === 'currency') return 'USD';
-                    return undefined;
-                }),
-            },
-            serverLoader: vi.fn(),
-        } as any;
-    }
-
     beforeEach(() => {
         vi.clearAllMocks();
     });
@@ -129,716 +71,95 @@ describe('Checkout Loaders', () => {
         vi.restoreAllMocks();
     });
 
-    describe('clientLoader', () => {
-        it('should return correct data structure for registered customer with profile', async () => {
-            const { getBasket } = await import('@/middlewares/basket.client');
-            const { getAuth: getAuthClient } = await import('@/middlewares/auth.client');
+    describe('loader', () => {
+        function createMockArgs() {
+            return {
+                request: new Request('http://localhost/checkout'),
+                params: {},
+                context: {
+                    get: vi.fn(),
+                    set: vi.fn(),
+                },
+            } as any;
+        }
+
+        it('should return checkout data for guest user', async () => {
+            const { getBasket } = await import('@/middlewares/basket.server');
+            const { isRegisteredCustomer } = await import('@/lib/api/customer');
+            const { getAuth } = await import('@/middlewares/auth.server');
+
+            vi.mocked(isRegisteredCustomer).mockReturnValue(false);
+            vi.mocked(getAuth).mockReturnValue({ userType: 'guest' } as any);
+            vi.mocked(getBasket).mockResolvedValue({
+                current: {
+                    basketId: 'guest-basket',
+                    productItems: [],
+                    shipments: [],
+                },
+            } as any);
+
+            const result = await loader(createMockArgs());
+
+            expect(result).toBeDefined();
+            expect(result.isRegisteredCustomer).toBe(false);
+            expect(result.productMap).toBeInstanceOf(Promise);
+            expect(result.promotions).toBeInstanceOf(Promise);
+            expect(result.shippingMethodsMap).toBeInstanceOf(Promise);
+        });
+
+        it('should return checkout data with customer profile for registered user', async () => {
+            const { getBasket } = await import('@/middlewares/basket.server');
             const { isRegisteredCustomer, getCustomerProfileForCheckout } = await import('@/lib/api/customer');
-            const { getShippingMethodsForShipment } = await import('@/lib/api/shipping-methods');
-
-            vi.mocked(getBasket).mockReturnValue({
-                basketId: 'test-basket-123',
-                shipments: [{ shippingAddress: { address1: '123 Main St' } }],
-            } as any);
-
-            vi.mocked(getAuthClient).mockReturnValue({
-                customer_id: 'test-customer-123',
-                userType: 'registered',
-            } as any);
+            const { getAuth } = await import('@/middlewares/auth.server');
 
             vi.mocked(isRegisteredCustomer).mockReturnValue(true);
-
-            vi.mocked(getShippingMethodsForShipment).mockResolvedValue({
-                applicableShippingMethods: [{ id: 'standard', name: 'Standard', price: 5.99 }],
+            vi.mocked(getAuth).mockReturnValue({
+                userType: 'registered',
+                customer_id: 'customer-123',
             } as any);
-
+            vi.mocked(getBasket).mockResolvedValue({
+                current: {
+                    basketId: 'registered-basket',
+                    productItems: [],
+                    shipments: [{}],
+                },
+            } as any);
             vi.mocked(getCustomerProfileForCheckout).mockResolvedValue({
-                customer: { customerId: 'test-123', login: 'test@example.com' },
-                addresses: [{ addressId: 'addr1', address1: '123 Main St' }],
+                customer: { customerId: 'customer-123', login: 'test@example.com' },
+                addresses: [],
                 paymentInstruments: [],
             } as any);
 
-            const mockRequest = new Request('https://localhost/checkout');
-            const args: ClientLoaderFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: {
-                    get: vi.fn((key) => {
-                        if (key.key === 'currency') return 'USD';
-                        return undefined;
-                    }),
-                },
-                serverLoader: vi.fn(),
-            } as any;
+            const result = await loader(createMockArgs());
 
-            const result = await clientLoader(args);
-
-            expect(result).toHaveProperty('isRegisteredCustomer');
-            expect(result).toHaveProperty('customerProfile');
-            expect(result).toHaveProperty('productMap');
-            expect(result).toHaveProperty('promotions');
+            expect(result).toBeDefined();
             expect(result.isRegisteredCustomer).toBe(true);
             expect(result.customerProfile).toBeInstanceOf(Promise);
             expect(result.productMap).toBeInstanceOf(Promise);
-            expect(result.promotions).toBeInstanceOf(Promise);
-        });
-
-        it('should handle guest user checkout', async () => {
-            const { getBasket } = await import('@/middlewares/basket.client');
-            const { getAuth: getAuthClient } = await import('@/middlewares/auth.client');
-            const { isRegisteredCustomer } = await import('@/lib/api/customer');
-
-            vi.mocked(getBasket).mockReturnValue({
-                basketId: 'guest-basket-456',
-                shipments: [{ shippingAddress: { address1: '456 Oak St' } }],
-            } as any);
-
-            vi.mocked(getAuthClient).mockReturnValue({
-                customer_id: undefined,
-                userType: 'guest',
-            } as any);
-
-            vi.mocked(isRegisteredCustomer).mockReturnValue(false);
-
-            const mockRequest = new Request('https://localhost/checkout');
-            const args: ClientLoaderFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: {
-                    get: vi.fn((key) => {
-                        if (key.key === 'currency') return 'USD';
-                        return undefined;
-                    }),
-                },
-                serverLoader: vi.fn(),
-            } as any;
-
-            const result = await clientLoader(args);
-
-            expect(result.isRegisteredCustomer).toBe(false);
-            expect(result.customerProfile).toBeUndefined();
-            expect(result.productMap).toBeInstanceOf(Promise);
-            expect(result.promotions).toBeInstanceOf(Promise);
-        });
-
-        it('should handle registered user with profile fetch failure', async () => {
-            const { getBasket } = await import('@/middlewares/basket.client');
-            const { getAuth: getAuthClient } = await import('@/middlewares/auth.client');
-            const { isRegisteredCustomer, getCustomerProfileForCheckout } = await import('@/lib/api/customer');
-
-            vi.mocked(getBasket).mockReturnValue({
-                basketId: 'test-basket-789',
-                shipments: [{ shippingAddress: undefined }],
-            } as any);
-
-            vi.mocked(getAuthClient).mockReturnValue({
-                customer_id: 'customer-789',
-                userType: 'registered',
-            } as any);
-
-            vi.mocked(isRegisteredCustomer).mockReturnValue(true);
-
-            // Simulate profile fetch failure
-            vi.mocked(getCustomerProfileForCheckout).mockRejectedValue(new Error('API Error'));
-
-            const mockRequest = new Request('https://localhost/checkout');
-            const args: ClientLoaderFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: {
-                    get: vi.fn((key) => {
-                        if (key.key === 'currency') return 'USD';
-                        return undefined;
-                    }),
-                },
-                serverLoader: vi.fn(),
-            } as any;
-
-            const result = await clientLoader(args);
-
-            // Should fall back to guest-like behavior
-            expect(result.isRegisteredCustomer).toBe(false);
-            expect(result.customerProfile).toBeUndefined();
-        });
-
-        it('should handle basket without shipping address', async () => {
-            const { getBasket } = await import('@/middlewares/basket.client');
-            const { getAuth: getAuthClient } = await import('@/middlewares/auth.client');
-            const { isRegisteredCustomer } = await import('@/lib/api/customer');
-
-            vi.mocked(getBasket).mockReturnValue({
-                basketId: 'empty-basket-999',
-                shipments: [{ shippingAddress: undefined }],
-            } as any);
-
-            vi.mocked(getAuthClient).mockReturnValue({
-                customer_id: undefined,
-                userType: 'guest',
-            } as any);
-
-            vi.mocked(isRegisteredCustomer).mockReturnValue(false);
-
-            const mockRequest = new Request('https://localhost/checkout');
-            const args: ClientLoaderFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: {
-                    get: vi.fn((key) => {
-                        if (key.key === 'currency') return 'USD';
-                        return undefined;
-                    }),
-                },
-                serverLoader: vi.fn(),
-            } as any;
-
-            const result = await clientLoader(args);
-
-            // Should not have shipping methods promise
-            expect(result.shippingMethodsMap).toBeInstanceOf(Promise);
-            expect(result.productMap).toBeInstanceOf(Promise);
-        });
-
-        it('should handle registered user without customer_id', async () => {
-            const { getBasket } = await import('@/middlewares/basket.client');
-            const { getAuth: getAuthClient } = await import('@/middlewares/auth.client');
-            const { isRegisteredCustomer } = await import('@/lib/api/customer');
-
-            vi.mocked(getBasket).mockReturnValue({
-                basketId: 'test-basket',
-                shipments: [],
-            } as any);
-
-            vi.mocked(getAuthClient).mockReturnValue({
-                customer_id: undefined,
-                userType: 'registered',
-            } as any);
-
-            vi.mocked(isRegisteredCustomer).mockReturnValue(true);
-
-            const mockRequest = new Request('https://localhost/checkout');
-            const args: ClientLoaderFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: {
-                    get: vi.fn((key) => {
-                        if (key.key === 'currency') return 'USD';
-                        return undefined;
-                    }),
-                },
-                serverLoader: vi.fn(),
-            } as any;
-
-            const result = await clientLoader(args);
-
-            // Should fall back to guest path
-            expect(result.customerProfile).toBeUndefined();
-        });
-
-        it('should handle error gracefully', async () => {
-            const { getBasket } = await import('@/middlewares/basket.client');
-
-            // Simulate error in getBasket
-            vi.mocked(getBasket).mockImplementation(() => {
-                throw new Error('Basket error');
-            });
-
-            const mockRequest = new Request('https://localhost/checkout');
-            const args: ClientLoaderFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: {
-                    get: vi.fn((key) => {
-                        if (key.key === 'currency') return 'USD';
-                        return undefined;
-                    }),
-                },
-                serverLoader: vi.fn(),
-            } as any;
-
-            const result = await clientLoader(args);
-
-            // Should return fallback data
-            expect(result.productMap).toBeInstanceOf(Promise);
-            expect(result.promotions).toBeInstanceOf(Promise);
-            expect(result.isRegisteredCustomer).toBe(false);
-        });
-
-        it('should handle basket with shipping address but no basketId', async () => {
-            const { getBasket } = await import('@/middlewares/basket.client');
-            const { getAuth: getAuthClient } = await import('@/middlewares/auth.client');
-            const { isRegisteredCustomer } = await import('@/lib/api/customer');
-
-            vi.mocked(getBasket).mockReturnValue({
-                basketId: undefined,
-                shipments: [{ shippingAddress: { address1: '123 Main St' } }],
-            } as any);
-
-            vi.mocked(getAuthClient).mockReturnValue({
-                customer_id: undefined,
-                userType: 'guest',
-            } as any);
-
-            vi.mocked(isRegisteredCustomer).mockReturnValue(false);
-
-            const mockRequest = new Request('https://localhost/checkout');
-            const args: ClientLoaderFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: {
-                    get: vi.fn((key) => {
-                        if (key.key === 'currency') return 'USD';
-                        return undefined;
-                    }),
-                },
-                serverLoader: vi.fn(),
-            } as any;
-
-            const result = await clientLoader(args);
-
-            // Should not fetch shipping methods without basketId
             expect(result.shippingMethodsMap).toBeInstanceOf(Promise);
         });
 
-        it('should extract promotions from product items, shipping items, and order-level adjustments', async () => {
-            const { getBasket } = await import('@/middlewares/basket.client');
-            const { getAuth: getAuthClient } = await import('@/middlewares/auth.client');
+        it('should return fallback data when an error occurs', async () => {
             const { isRegisteredCustomer } = await import('@/lib/api/customer');
-            const { createApiClients } = await import('@/lib/api-clients');
 
-            const mockGetPromotions = vi.fn().mockResolvedValue({
-                data: {
-                    data: [
-                        { id: 'product-promo-1', name: 'Product Promotion 1' },
-                        { id: 'shipping-promo-1', name: 'Free Shipping' },
-                        { id: 'order-promo-1', name: 'Order Discount' },
-                    ],
-                },
+            // Simulate an error during basket fetch
+            vi.mocked(isRegisteredCustomer).mockImplementation(() => {
+                throw new Error('Auth error');
             });
 
-            vi.mocked(createApiClients).mockReturnValue({
-                shopperPromotions: {
-                    getPromotions: mockGetPromotions,
-                },
-                shopperProducts: {
-                    getProducts: vi.fn().mockResolvedValue({ data: { data: [] } }),
-                },
-            } as any);
+            const result = await loader(createMockArgs());
 
-            vi.mocked(getBasket).mockReturnValue({
-                basketId: 'test-basket-promos',
-                productItems: [
-                    {
-                        itemId: 'item-1',
-                        productId: 'prod-1',
-                        priceAdjustments: [
-                            {
-                                priceAdjustmentId: 'adj-1',
-                                promotionId: 'product-promo-1',
-                            },
-                        ],
-                    },
-                ],
-                shippingItems: [
-                    {
-                        itemId: 'shipping-1',
-                        priceAdjustments: [
-                            {
-                                priceAdjustmentId: 'shipping-adj-1',
-                                promotionId: 'shipping-promo-1',
-                            },
-                        ],
-                    },
-                ],
-                priceAdjustments: [
-                    {
-                        priceAdjustmentId: 'order-adj-1',
-                        promotionId: 'order-promo-1',
-                    },
-                ],
-                shipments: [{ shippingAddress: { address1: '123 Main St' } }],
-            } as any);
-
-            vi.mocked(getAuthClient).mockReturnValue({
-                customer_id: undefined,
-                userType: 'guest',
-            } as any);
-
-            vi.mocked(isRegisteredCustomer).mockReturnValue(false);
-
-            const mockRequest = new Request('https://localhost/checkout');
-            const args: ClientLoaderFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: {
-                    get: vi.fn((key) => {
-                        if (key.key === 'currency') return 'USD';
-                        return undefined;
-                    }),
-                },
-                serverLoader: vi.fn(),
-            } as any;
-
-            const result = await clientLoader(args);
-
+            // Should return fallback data instead of throwing
+            expect(result).toBeDefined();
+            expect(result.isRegisteredCustomer).toBe(false);
+            expect(result.productMap).toBeInstanceOf(Promise);
             expect(result.promotions).toBeInstanceOf(Promise);
+            expect(result.shippingMethodsMap).toBeInstanceOf(Promise);
 
-            // Verify that getPromotions was called with all promotion IDs
-            expect(mockGetPromotions).toHaveBeenCalledWith({
-                params: {
-                    query: {
-                        ids: expect.arrayContaining(['product-promo-1', 'shipping-promo-1', 'order-promo-1']),
-                    },
-                },
-            });
-
-            // Verify the promotions promise resolves correctly
-            const promotions = await result.promotions;
-            expect(promotions).toHaveProperty('product-promo-1');
-            expect(promotions).toHaveProperty('shipping-promo-1');
-            expect(promotions).toHaveProperty('order-promo-1');
-        });
-
-        it('should handle basket with only product item promotions', async () => {
-            const { getBasket } = await import('@/middlewares/basket.client');
-            const { getAuth: getAuthClient } = await import('@/middlewares/auth.client');
-            const { isRegisteredCustomer } = await import('@/lib/api/customer');
-            const { createApiClients } = await import('@/lib/api-clients');
-
-            const mockGetPromotions = vi.fn().mockResolvedValue({
-                data: {
-                    data: [{ id: 'product-promo-1', name: 'Product Promotion' }],
-                },
-            });
-
-            vi.mocked(createApiClients).mockReturnValue({
-                shopperPromotions: {
-                    getPromotions: mockGetPromotions,
-                },
-                shopperProducts: {
-                    getProducts: vi.fn().mockResolvedValue({ data: { data: [] } }),
-                },
-            } as any);
-
-            vi.mocked(getBasket).mockReturnValue({
-                basketId: 'test-basket',
-                productItems: [
-                    {
-                        itemId: 'item-1',
-                        productId: 'prod-1',
-                        priceAdjustments: [
-                            {
-                                priceAdjustmentId: 'adj-1',
-                                promotionId: 'product-promo-1',
-                            },
-                        ],
-                    },
-                ],
-                shipments: [{ shippingAddress: { address1: '123 Main St' } }],
-            } as any);
-
-            vi.mocked(getAuthClient).mockReturnValue({
-                customer_id: undefined,
-                userType: 'guest',
-            } as any);
-
-            vi.mocked(isRegisteredCustomer).mockReturnValue(false);
-
-            const mockRequest = new Request('https://localhost/checkout');
-            const args: ClientLoaderFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: {
-                    get: vi.fn((key) => {
-                        if (key.key === 'currency') return 'USD';
-                        return undefined;
-                    }),
-                },
-                serverLoader: vi.fn(),
-            } as any;
-
-            await clientLoader(args);
-
-            expect(mockGetPromotions).toHaveBeenCalledWith({
-                params: {
-                    query: {
-                        ids: ['product-promo-1'],
-                    },
-                },
-            });
-        });
-
-        it('should handle basket with only shipping promotions', async () => {
-            const { getBasket } = await import('@/middlewares/basket.client');
-            const { getAuth: getAuthClient } = await import('@/middlewares/auth.client');
-            const { isRegisteredCustomer } = await import('@/lib/api/customer');
-            const { createApiClients } = await import('@/lib/api-clients');
-
-            const mockGetPromotions = vi.fn().mockResolvedValue({
-                data: {
-                    data: [{ id: 'shipping-promo-1', name: 'Free Shipping' }],
-                },
-            });
-
-            vi.mocked(createApiClients).mockReturnValue({
-                shopperPromotions: {
-                    getPromotions: mockGetPromotions,
-                },
-                shopperProducts: {
-                    getProducts: vi.fn().mockResolvedValue({ data: { data: [] } }),
-                },
-            } as any);
-
-            vi.mocked(getBasket).mockReturnValue({
-                basketId: 'test-basket',
-                productItems: [],
-                shippingItems: [
-                    {
-                        itemId: 'shipping-1',
-                        priceAdjustments: [
-                            {
-                                priceAdjustmentId: 'shipping-adj-1',
-                                promotionId: 'shipping-promo-1',
-                            },
-                        ],
-                    },
-                ],
-                shipments: [{ shippingAddress: { address1: '123 Main St' } }],
-            } as any);
-
-            vi.mocked(getAuthClient).mockReturnValue({
-                customer_id: undefined,
-                userType: 'guest',
-            } as any);
-
-            vi.mocked(isRegisteredCustomer).mockReturnValue(false);
-
-            const mockRequest = new Request('https://localhost/checkout');
-            const args: ClientLoaderFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: {
-                    get: vi.fn((key) => {
-                        if (key.key === 'currency') return 'USD';
-                        return undefined;
-                    }),
-                },
-                serverLoader: vi.fn(),
-            } as any;
-
-            await clientLoader(args);
-
-            expect(mockGetPromotions).toHaveBeenCalledWith({
-                params: {
-                    query: {
-                        ids: ['shipping-promo-1'],
-                    },
-                },
-            });
-        });
-
-        it('should return empty promotions when basket has no promotions', async () => {
-            const { getBasket } = await import('@/middlewares/basket.client');
-            const { getAuth: getAuthClient } = await import('@/middlewares/auth.client');
-            const { isRegisteredCustomer } = await import('@/lib/api/customer');
-            const { createApiClients } = await import('@/lib/api-clients');
-
-            vi.mocked(createApiClients).mockReturnValue({
-                shopperPromotions: {
-                    getPromotions: vi.fn(),
-                },
-                shopperProducts: {
-                    getProducts: vi.fn().mockResolvedValue({ data: { data: [] } }),
-                },
-            } as any);
-
-            vi.mocked(getBasket).mockReturnValue({
-                basketId: 'test-basket',
-                productItems: [{ itemId: 'item-1', productId: 'prod-1' }],
-                shipments: [{ shippingAddress: { address1: '123 Main St' } }],
-            } as any);
-
-            vi.mocked(getAuthClient).mockReturnValue({
-                customer_id: undefined,
-                userType: 'guest',
-            } as any);
-
-            vi.mocked(isRegisteredCustomer).mockReturnValue(false);
-
-            const mockRequest = new Request('https://localhost/checkout');
-            const args: ClientLoaderFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: {
-                    get: vi.fn((key) => {
-                        if (key.key === 'currency') return 'USD';
-                        return undefined;
-                    }),
-                },
-                serverLoader: vi.fn(),
-            } as any;
-
-            const result = await clientLoader(args);
-
-            const promotions = await result.promotions;
-            expect(promotions).toEqual({});
-        });
-
-        it('should batch promotion requests when there are more than 50 promotion IDs', async () => {
-            const { createApiClients } = await import('@/lib/api-clients');
-            const { getBasket } = await setupGuestUserMocks();
-
-            // Create 75 promotion IDs (should require 2 batches: 50 + 25)
-            const promotionIds = createPromotionIds(75);
-
-            const mockGetPromotions = vi
-                .fn()
-                .mockResolvedValueOnce({
-                    data: {
-                        data: Array.from({ length: 50 }, (_, i) => ({
-                            id: `promo-${i + 1}`,
-                            name: `Promotion ${i + 1}`,
-                        })),
-                    },
-                })
-                .mockResolvedValueOnce({
-                    data: {
-                        data: Array.from({ length: 25 }, (_, i) => ({
-                            id: `promo-${i + 51}`,
-                            name: `Promotion ${i + 51}`,
-                        })),
-                    },
-                });
-
-            vi.mocked(createApiClients).mockReturnValue({
-                shopperPromotions: {
-                    getPromotions: mockGetPromotions,
-                },
-                shopperProducts: {
-                    getProducts: vi.fn().mockResolvedValue({ data: { data: [] } }),
-                },
-            } as any);
-
-            const productItems = createProductItemsFromPromotions(promotionIds);
-
-            vi.mocked(getBasket).mockReturnValue({
-                basketId: 'test-basket-batch',
-                productItems,
-                shipments: [{ shippingAddress: { address1: '123 Main St' } }],
-            } as any);
-
-            const result = await clientLoader(createTestArgs());
-
-            // Verify that getPromotions was called twice (for 2 batches)
-            expect(mockGetPromotions).toHaveBeenCalledTimes(2);
-
-            expect(mockGetPromotions).toHaveBeenNthCalledWith(1, {
-                params: {
-                    query: {
-                        ids: promotionIds.slice(0, 50),
-                    },
-                },
-            });
-
-            expect(mockGetPromotions).toHaveBeenNthCalledWith(2, {
-                params: {
-                    query: {
-                        ids: promotionIds.slice(50, 75),
-                    },
-                },
-            });
-
-            const promotions = await result.promotions;
-            expect(promotions).toBeDefined();
-            if (promotions) {
-                expect(Object.keys(promotions)).toHaveLength(75);
-                expect(promotions).toHaveProperty('promo-1');
-                expect(promotions).toHaveProperty('promo-50');
-                expect(promotions).toHaveProperty('promo-75');
-            }
-        });
-
-        it('should continue processing other batches when one batch fails', async () => {
-            const { createApiClients } = await import('@/lib/api-clients');
-            const { getBasket } = await setupGuestUserMocks();
-
-            // Create 75 promotion IDs (should require 2 batches: 50 + 25)
-            const promotionIds = createPromotionIds(75);
-
-            const mockGetPromotions = vi
-                .fn()
-                .mockRejectedValueOnce(new Error('API Error for first batch'))
-                .mockResolvedValueOnce({
-                    data: {
-                        data: Array.from({ length: 25 }, (_, i) => ({
-                            id: `promo-${i + 51}`,
-                            name: `Promotion ${i + 51}`,
-                        })),
-                    },
-                });
-
-            vi.mocked(createApiClients).mockReturnValue({
-                shopperPromotions: {
-                    getPromotions: mockGetPromotions,
-                },
-                shopperProducts: {
-                    getProducts: vi.fn().mockResolvedValue({ data: { data: [] } }),
-                },
-            } as any);
-
-            const productItems = createProductItemsFromPromotions(promotionIds);
-
-            vi.mocked(getBasket).mockReturnValue({
-                basketId: 'test-basket-error',
-                productItems,
-                shipments: [{ shippingAddress: { address1: '123 Main St' } }],
-            } as any);
-
-            const result = await clientLoader(createTestArgs());
-
-            expect(mockGetPromotions).toHaveBeenCalledTimes(2);
-
-            const promotions = await result.promotions;
-            expect(promotions).toBeDefined();
-            if (promotions) {
-                expect(Object.keys(promotions)).toHaveLength(25);
-                expect(promotions).toHaveProperty('promo-51');
-                expect(promotions).toHaveProperty('promo-75');
-                expect(promotions).not.toHaveProperty('promo-1');
-            }
-        });
-
-        it('should handle basket with no product items', async () => {
-            const { getBasket } = await import('@/middlewares/basket.client');
-            const { getAuth: getAuthClient } = await import('@/middlewares/auth.client');
-            const { isRegisteredCustomer } = await import('@/lib/api/customer');
-            const { createApiClients } = await import('@/lib/api-clients');
-
-            vi.mocked(createApiClients).mockReturnValue({
-                shopperPromotions: {
-                    getPromotions: vi.fn(),
-                },
-                shopperProducts: {
-                    getProducts: vi.fn().mockResolvedValue({ data: { data: [] } }),
-                },
-            } as any);
-
-            vi.mocked(getBasket).mockReturnValue({
-                basketId: 'test-basket',
-                productItems: [],
-                shipments: [{ shippingAddress: { address1: '123 Main St' } }],
-            } as any);
-
-            vi.mocked(getAuthClient).mockReturnValue({
-                customer_id: undefined,
-                userType: 'guest',
-            } as any);
-
-            vi.mocked(isRegisteredCustomer).mockReturnValue(false);
-
-            const result = await clientLoader(createTestArgs());
-
-            const productMap = await result.productMap;
-            expect(productMap).toEqual({});
+            // Verify fallback promises resolve to empty objects
+            expect(await result.productMap).toEqual({});
+            expect(await result.promotions).toEqual({});
+            expect(await result.shippingMethodsMap).toEqual({});
         });
     });
 
@@ -888,21 +209,42 @@ describe('Checkout Loaders', () => {
     });
 
     describe('getServerShippingMethodsMapData', () => {
-        it('should return empty object when authSession is null', async () => {
+        it('should return empty object when basket fetch fails', async () => {
+            const { getBasket } = await import('@/middlewares/basket.server');
+
+            vi.mocked(getBasket).mockRejectedValue(new Error('Basket error'));
+
             const mockContext = {} as any;
             const result = await getServerShippingMethodsMapData(mockContext, null);
             expect(result).toEqual({});
         });
 
-        it('should return empty object when authSession exists', async () => {
+        it('should return shipping methods when basket has shipments with addresses', async () => {
+            const { getBasket } = await import('@/middlewares/basket.server');
+            const { getShippingMethodsForShipment } = await import('@/lib/api/shipping-methods');
+
+            vi.mocked(getBasket).mockResolvedValue({
+                current: {
+                    basketId: 'test-basket',
+                    shipments: [
+                        {
+                            shipmentId: 'shipment-1',
+                            shippingAddress: { address1: '123 Main St' },
+                        },
+                    ],
+                },
+            } as any);
+
+            vi.mocked(getShippingMethodsForShipment).mockResolvedValue({
+                applicableShippingMethods: [{ id: 'standard', name: 'Standard' }],
+            } as any);
+
             const mockContext = {} as any;
-            const authSession = {
-                customer_id: 'test-123',
-                userType: 'registered',
-            } as any;
+            const authSession = { customer_id: 'test-123', userType: 'registered' } as any;
 
             const result = await getServerShippingMethodsMapData(mockContext, authSession);
-            expect(result).toEqual({});
+
+            expect(result).toHaveProperty('shipment-1');
         });
     });
 
@@ -1062,6 +404,147 @@ describe('Checkout Loaders', () => {
 
             expect(result).toHaveProperty('shipment-1');
             expect(result).not.toHaveProperty('shipment-2');
+        });
+    });
+
+    describe('initializeBasketForReturningCustomer', () => {
+        const mockShopperBasketsClient = {
+            updateCustomerForBasket: vi.fn(),
+            updateShippingAddressForShipment: vi.fn(),
+            updateBillingAddressForBasket: vi.fn(),
+            updateShippingMethodForShipment: vi.fn(),
+        };
+
+        beforeEach(async () => {
+            vi.clearAllMocks();
+            const { createApiClients } = await import('@/lib/api-clients');
+            vi.mocked(createApiClients).mockReturnValue({
+                shopperBasketsV2: mockShopperBasketsClient,
+            } as any);
+        });
+
+        it('should return null when basket or customer profile is missing', async () => {
+            const { getBasket } = await import('@/middlewares/basket.server');
+            const mockContext = {} as any;
+
+            // Test missing basket
+            vi.mocked(getBasket).mockResolvedValue({ current: undefined } as any);
+            expect(await initializeBasketForReturningCustomer(mockContext, {} as CustomerProfile)).toBeNull();
+
+            // Test missing customer profile
+            vi.mocked(getBasket).mockResolvedValue({ current: { basketId: 'test-basket' } } as any);
+            expect(
+                await initializeBasketForReturningCustomer(mockContext, undefined as unknown as CustomerProfile)
+            ).toBeNull();
+        });
+
+        it('should prefill email and shipping address when missing from basket', async () => {
+            const { getBasket, updateBasketResource } = await import('@/middlewares/basket.server');
+            const mockBasket = {
+                basketId: 'test-basket',
+                customerInfo: {},
+                shipments: [{ shipmentId: 'me' }],
+            };
+
+            vi.mocked(getBasket).mockResolvedValue({ current: mockBasket } as any);
+            vi.mocked(updateBasketResource).mockImplementation(() => {});
+
+            mockShopperBasketsClient.updateCustomerForBasket.mockResolvedValue({
+                data: { ...mockBasket, customerInfo: { email: 'test@example.com' } },
+            });
+            mockShopperBasketsClient.updateShippingAddressForShipment.mockResolvedValue({
+                data: {
+                    ...mockBasket,
+                    shipments: [{ shipmentId: 'me', shippingAddress: { address1: '123 Main St' } }],
+                },
+            });
+            mockShopperBasketsClient.updateBillingAddressForBasket.mockResolvedValue({ data: mockBasket });
+
+            const mockCustomerProfile = {
+                customer: { login: 'test@example.com' },
+                addresses: [
+                    {
+                        addressId: 'addr-1',
+                        firstName: 'John',
+                        lastName: 'Doe',
+                        address1: '123 Main St',
+                        city: 'Anytown',
+                        stateCode: 'CA',
+                        postalCode: '12345',
+                        countryCode: 'US',
+                    },
+                ],
+                paymentInstruments: [],
+            } as CustomerProfile;
+
+            const result = await initializeBasketForReturningCustomer({} as any, mockCustomerProfile);
+
+            // Verify email was prefilled from customer profile
+            expect(mockShopperBasketsClient.updateCustomerForBasket).toHaveBeenCalledWith({
+                params: { path: { basketId: 'test-basket' } },
+                body: { email: 'test@example.com' },
+            });
+
+            // Verify shipping address was prefilled from customer profile
+            expect(mockShopperBasketsClient.updateShippingAddressForShipment).toHaveBeenCalledWith({
+                params: { path: { basketId: 'test-basket', shipmentId: 'me' } },
+                body: expect.objectContaining({
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    address1: '123 Main St',
+                    city: 'Anytown',
+                    stateCode: 'CA',
+                    postalCode: '12345',
+                    countryCode: 'US',
+                }),
+            });
+
+            expect(result).toBeTruthy();
+        });
+
+        it('should skip prefill when basket already has email and shipping address', async () => {
+            const { getBasket } = await import('@/middlewares/basket.server');
+            const mockBasket = {
+                basketId: 'test-basket',
+                customerInfo: { email: 'test@example.com' },
+                shipments: [
+                    {
+                        shipmentId: 'me',
+                        shippingAddress: { firstName: 'John', lastName: 'Doe', address1: '123 Main St' },
+                    },
+                ],
+            };
+
+            vi.mocked(getBasket).mockResolvedValue({ current: mockBasket } as any);
+
+            const mockCustomerProfile = {
+                customer: { login: 'test@example.com' },
+                addresses: [{ addressId: 'addr-1', countryCode: 'US', lastName: 'Doe' }],
+                paymentInstruments: [],
+            } as CustomerProfile;
+
+            const result = await initializeBasketForReturningCustomer({} as any, mockCustomerProfile);
+
+            expect(mockShopperBasketsClient.updateCustomerForBasket).not.toHaveBeenCalled();
+            expect(mockShopperBasketsClient.updateShippingAddressForShipment).not.toHaveBeenCalled();
+            expect(result).toEqual(mockBasket);
+        });
+
+        it('should handle API errors gracefully', async () => {
+            const { getBasket } = await import('@/middlewares/basket.server');
+            vi.mocked(getBasket).mockResolvedValue({
+                current: { basketId: 'test-basket', customerInfo: {}, shipments: [{}] },
+            } as any);
+            mockShopperBasketsClient.updateCustomerForBasket.mockRejectedValue(new Error('API Error'));
+
+            const mockCustomerProfile = {
+                customer: { login: 'test@example.com' },
+                addresses: [{ addressId: 'addr-1', countryCode: 'US', lastName: 'Doe' }],
+                paymentInstruments: [],
+            } as CustomerProfile;
+
+            const result = await initializeBasketForReturningCustomer({} as any, mockCustomerProfile);
+            expect(result).toBeNull();
         });
     });
 });

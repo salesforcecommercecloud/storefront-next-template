@@ -28171,8 +28171,8 @@ interface AuthNamespace {
   password: PasswordNamespace;
 }
 //#endregion
-//#region src/scapi-client/generated/shopper-baskets-v1.operations.d.ts
-declare const operations: {
+//#region src/scapi-client/generated/shopper-baskets-v2.operations.d.ts
+declare const operations$1: {
   readonly createBasket: {
     readonly m: "POST";
     readonly b: "/organizations/{organizationId}/baskets";
@@ -28360,8 +28360,61 @@ declare const operations: {
   };
 };
 //#endregion
-//#region src/scapi-client/generated/shopper-baskets-v2.operations.d.ts
-declare const operations$1: {
+//#region src/scapi-client/basket/types.d.ts
+/**
+ * Basket schema from Shopper Baskets V2.
+ */
+type Basket = ShopperBasketsV2.schemas['Basket'];
+/**
+ * Shopper Baskets V2 client type used by basket helpers.
+ */
+type ShopperBasketsV2Client = ProxyClient<Client<ShopperBasketsV2.endpoints>, typeof operations$1>;
+/**
+ * Configuration required for basket helpers.
+ */
+interface BasketHelpersConfig {
+  shopperBasketsClient: ShopperBasketsV2Client;
+}
+interface BasketHelpersNamespace {
+  getOrCreateBasket: (options: GetOrCreateBasketOptions) => Promise<Basket>;
+}
+/**
+ * Options for retrieving or creating a basket.
+ */
+interface GetOrCreateBasketOptions {
+  params: {
+    path?: {
+      basketId?: string;
+    };
+  };
+  body: {
+    currency: string;
+  };
+}
+//#endregion
+//#region src/scapi-client/basket/index.d.ts
+/**
+ * Get an existing basket or create a new one when missing/unavailable.
+ *
+ * Currency is passed via the basket request body (Shopper Baskets V2).
+ *
+ * @param config - Helper configuration containing the Shopper Baskets client
+ * @param options - Basket identifiers and create options
+ * @returns Basket instance (existing or newly created)
+ *
+ * @example
+ * ```ts
+ * const basketHelpers = createBasketHelpers({ shopperBasketsClient: clients.shopperBasketsV2 });
+ * const basket = await basketHelpers.getOrCreateBasket({
+ *   params: { path: { basketId } },
+ *   body: { currency: 'USD' },
+ * });
+ * ```
+ */
+declare function createBasketHelpers(config: BasketHelpersConfig): BasketHelpersNamespace;
+//#endregion
+//#region src/scapi-client/generated/shopper-baskets-v1.operations.d.ts
+declare const operations: {
   readonly createBasket: {
     readonly m: "POST";
     readonly b: "/organizations/{organizationId}/baskets";
@@ -28983,6 +29036,8 @@ type Clients = {
   shopperStores: ProxyClient<Client<ShopperStores.endpoints>, typeof operations$15>;
   /** Authentication helpers for SLAS operations */
   auth: AuthNamespace;
+  /** Basket helper utilities */
+  basket: BasketHelpersNamespace;
   use: (middleware: Middleware) => void;
 };
 declare function createCommerceApiClients(config: CommerceApiClientConfig): Clients;
@@ -29219,5 +29274,5 @@ declare class ApiError extends Error {
  */
 declare const SLAS_AUTH_ENDPOINTS: readonly ["/oauth2/token", "/oauth2/authorize", "/oauth2/logout", "/oauth2/login", "/oauth2/passwordless", "/oauth2/password", "/oauth2/session-bridge", "/oauth2/trusted-agent", "/oauth2/trusted-system", "/oauth2/revoke", "/oauth2/introspect"];
 //#endregion
-export { ApiError, type AuthConfig, type AuthNamespace, type AuthResponse, Clients, CommerceApiClientConfig, type ErrorDetail, GlobalRequestParameters, type LoginAsGuestOptions, type LoginWithCredentialsOptions, type LogoutOptions, type OperationMethodsOnly, type PasswordRequestResetOptions, type PasswordResetOptions, type PasswordlessAuthorizeOptions, type PasswordlessExchangeTokenOptions, type RefreshTokenOptions, SLAS_AUTH_ENDPOINTS, ShopperBasketsV1, ShopperBasketsV2, ShopperConfigurations, ShopperConsents, ShopperContext, ShopperCustomers, ShopperExperience, ShopperGiftCertificates, ShopperLogin, ShopperOrders, ShopperPayments, ShopperProducts, ShopperPromotions, ShopperSearch, ShopperSeo, ShopperStores, type SocialAuthorizationUrlResult, type SocialExchangeCodeOptions, type SocialGetAuthorizationUrlOptions, type TokenResponse, createClient, createCommerceApiClients };
+export { ApiError, type AuthConfig, type AuthNamespace, type AuthResponse, type Basket, type BasketHelpersConfig, type BasketHelpersNamespace, Clients, CommerceApiClientConfig, type ErrorDetail, type GetOrCreateBasketOptions, GlobalRequestParameters, type LoginAsGuestOptions, type LoginWithCredentialsOptions, type LogoutOptions, type OperationMethodsOnly, type PasswordRequestResetOptions, type PasswordResetOptions, type PasswordlessAuthorizeOptions, type PasswordlessExchangeTokenOptions, type RefreshTokenOptions, SLAS_AUTH_ENDPOINTS, ShopperBasketsV1, ShopperBasketsV2, type ShopperBasketsV2Client, ShopperConfigurations, ShopperConsents, ShopperContext, ShopperCustomers, ShopperExperience, ShopperGiftCertificates, ShopperLogin, ShopperOrders, ShopperPayments, ShopperProducts, ShopperPromotions, ShopperSearch, ShopperSeo, ShopperStores, type SocialAuthorizationUrlResult, type SocialExchangeCodeOptions, type SocialGetAuthorizationUrlOptions, type TokenResponse, createBasketHelpers, createClient, createCommerceApiClients };
 //# sourceMappingURL=scapi.d.ts.map

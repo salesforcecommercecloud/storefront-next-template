@@ -130,7 +130,7 @@ Wrapper component that resolves productMap Promise within Suspense boundary for 
     },
     decorators: [
         (Story: React.ComponentType) => (
-            <BasketProvider value={mockBasket}>
+            <BasketProvider basket={mockBasket}>
                 <Suspense fallback={<div data-testid="loading">Loading...</div>}>
                     <Story />
                 </Suspense>

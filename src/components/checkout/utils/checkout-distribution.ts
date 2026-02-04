@@ -65,7 +65,7 @@ export type SingleShipmentDistribution = {
  *
  * @example
  * ```tsx
- * const basket = getBasket(context);
+ * const basket = (await getBasket(context)).current;
  * const distribution = getSingleShipmentDistribution(basket);
  *
  * if (distribution.hasUnaddressedDeliveryItems) {
@@ -132,7 +132,7 @@ export type ShipmentDistribution = SingleShipmentDistribution &
  *
  * @example
  * ```tsx
- * const basket = getBasket(context);
+ * const basket = (await getBasket(context)).current;
  * const distribution = getShipmentDistribution(basket);
  *
  * if (distribution.hasUnaddressedDeliveryItems) {

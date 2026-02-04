@@ -36,7 +36,7 @@ import { getPickupStoreFromMap } from '@/extensions/bopis/lib/store-utils';
  * @example
  * ```tsx
  * // Get basket from context
- * const basket = getBasket(context);
+ * const basket = (await getBasket(context)).current;
  *
  * // Extract pickup items from basket
  * const pickupItems = getPickupItemsFromBasket(basket);
@@ -114,7 +114,7 @@ export function getPickupItemsFromBasket(
  *
  * @example
  * ```tsx
- * const basket = getBasket(context);
+ * const basket = (await getBasket(context)).current;
  * const inventoryIds = getInventoryIdsFromPickupShipments(basket);
  *
  * const productsResponse = await client.ShopperProducts.getProducts({
@@ -172,7 +172,7 @@ export function getInventoryIdsFromPickupShipments(
  *
  * @example
  * ```tsx
- * const basket = getBasket(context);
+ * const basket = (await getBasket(context)).current;
  * const storeIds = getStoreIdsFromBasket(basket);
  *
  * // Fetch store details for all stores in the basket
@@ -208,7 +208,7 @@ export function getStoreIdsFromBasket(basket: ShopperBasketsV2.schemas['Basket']
  *
  * @example
  * ```tsx
- * const basket = getBasket(context);
+ * const basket = (await getBasket(context)).current;
  * const storeId = getFirstPickupStoreId(basket);
  *
  * if (storeId) {
@@ -283,7 +283,7 @@ export function getFirstPickupStore(
  *
  * @example
  * ```tsx
- * const basket = getBasket(context);
+ * const basket = (await getBasket(context)).current;
  * const storeId = getStoreIdForBasketItem(basket, 'item-123');
  *
  * if (storeId) {
@@ -322,7 +322,7 @@ export function getStoreIdForBasketItem(
  *
  * @example
  * ```tsx
- * const basket = getBasket(context);
+ * const basket = (await getBasket(context)).current;
  * const storeId = getFirstPickupStoreId(basket);
  * const pickupItems = getPickupProductItemsForStore(basket, storeId);
  *

@@ -13,14 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, waitFor } from '@testing-library/react';
 import { createTestContext } from '@/lib/test-utils';
 import { type PropsWithChildren } from 'react';
 import { createRoutesStub } from 'react-router';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import type { SessionData } from '@/lib/api/types';
-import { clientLoader, default as App, ErrorBoundary, Layout, loader } from './root';
+import type AppComponent from './root';
+import type { ErrorBoundary as RootErrorBoundary, Layout as RootLayout, loader as RootLoader } from './root';
+
+let App: typeof AppComponent;
+let ErrorBoundary: typeof RootErrorBoundary;
+let Layout: typeof RootLayout;
+let loader: typeof RootLoader;
+const defaultSession: SessionData = {
+    access_token: 'test-token',
+    customer_id: 'test-customer',
+    userType: 'registered',
+};
 import { mockConfig } from '@/test-utils/config';
 // @sfdc-extension-block-start SFDC_EXT_HYBRID_PROXY
 import { isProxyPath } from '@/extensions/hybrid-proxy/config';
@@ -116,16 +126,6 @@ vi.mock('@salesforce/storefront-next-runtime/design/react/core', async (importOr
     };
 });
 
-vi.mock('@/middlewares/auth.server', async () => ({
-    ...(await vi.importActual('@/middlewares/auth.server')),
-    default: vi.fn(),
-    getAuth: vi.fn(() => ({
-        access_token: 'test-token',
-        customer_id: 'test-customer',
-        userType: 'registered',
-    })),
-}));
-
 vi.mock('@/middlewares/auth.client', async () => ({
     ...(await vi.importActual('@/middlewares/auth.client')),
     default: vi.fn(),
@@ -136,13 +136,10 @@ vi.mock('@/middlewares/auth.client', async () => ({
     })),
 }));
 
-vi.mock('@/middlewares/basket.client', async () => ({
-    ...(await vi.importActual('@/middlewares/basket.client')),
+vi.mock('@/middlewares/basket.server', async () => ({
+    ...(await vi.importActual('@/middlewares/basket.server')),
     default: vi.fn(),
-    getBasket: vi.fn(() => ({
-        basketId: 'test-basket-id',
-        productItems: [],
-    })),
+    getBasket: vi.fn(() => Promise.resolve({ current: null, snapshot: null })),
 }));
 
 vi.mock('@/middlewares/i18next', async () => {
@@ -166,6 +163,34 @@ vi.mock('@/middlewares/i18next', async () => {
         i18nextMiddleware: vi.fn(),
     };
 });
+
+beforeAll(async () => {
+    const rootModule = await import('./root');
+    App = rootModule.default;
+    ErrorBoundary = rootModule.ErrorBoundary;
+    Layout = rootModule.Layout;
+    loader = rootModule.loader;
+});
+
+function createLoaderContext(options: Parameters<typeof createTestContext>[0] = {}) {
+    const context = createTestContext(options);
+    const baseGet = context.get.bind(context);
+    const authFallback = new Map() as Map<string, unknown> & { ref?: SessionData };
+    const authSession =
+        options.authSession === null ? undefined : { ...defaultSession, ...(options.authSession ?? {}) };
+    authFallback.ref = authSession;
+
+    context.get = ((key) => {
+        try {
+            return baseGet(key);
+        } catch {
+            // If additional context keys need to be shimmed in tests, handle them here.
+            return authFallback;
+        }
+    }) as typeof context.get;
+
+    return context;
+}
 
 function ContentComponent() {
     return <div data-testid="content">Content</div>;
@@ -634,7 +659,7 @@ describe('root.tsx', () => {
                 },
             });
 
-            const context = createTestContext();
+            const context = createLoaderContext();
             // Set up i18next context with bound functions
             context.set(i18nextContext, {
                 getLocale: () => 'en-US',
@@ -657,8 +682,7 @@ describe('root.tsx', () => {
             expect(result.locale).toBe('en-US');
         });
 
-        it('should call getAuth to retrieve session data', async () => {
-            const { getAuth } = await import('@/middlewares/auth.server');
+        it('should return auth session data', async () => {
             const { i18nextContext } = await import('@/lib/i18next');
             const i18next = await import('i18next');
             const { initReactI18next } = await import('react-i18next');
@@ -669,8 +693,6 @@ describe('root.tsx', () => {
                 customer_id: 'test-customer',
                 userType: 'registered',
             };
-
-            vi.mocked(getAuth).mockReturnValue(mockSession);
 
             // Set up i18next context
             const testInstance = i18next.default.createInstance();
@@ -683,7 +705,7 @@ describe('root.tsx', () => {
                 },
             });
 
-            const context = createTestContext();
+            const context = createLoaderContext({ authSession: mockSession });
             // Set up i18next context with bound functions
             context.set(i18nextContext, {
                 getLocale: () => 'en-US',
@@ -697,7 +719,6 @@ describe('root.tsx', () => {
                 unstable_pattern: '/',
             }) as any;
 
-            expect(getAuth).toHaveBeenCalledWith(context);
             expect(result.auth()).toEqual(mockSession);
             expect(result.appConfig).toBeDefined();
             expect(result.locale).toBe('en-US');
@@ -705,7 +726,7 @@ describe('root.tsx', () => {
         });
 
         it('should throw error when i18next data is not found in context', () => {
-            const context = createTestContext({ skipI18next: true });
+            const context = createLoaderContext({ skipI18next: true });
             // Do not set i18next context to simulate missing middleware
 
             expect(() => {
@@ -729,7 +750,7 @@ describe('root.tsx', () => {
                 },
             });
 
-            const context = createTestContext();
+            const context = createLoaderContext();
             context.set(i18nextContext, {
                 getLocale: () => 'en',
                 getI18nextInstance: () => testInstance,
@@ -761,7 +782,7 @@ describe('root.tsx', () => {
                 },
             });
 
-            const context = createTestContext();
+            const context = createLoaderContext();
             context.set(i18nextContext, {
                 getLocale: () => 'en',
                 getI18nextInstance: () => testInstance,
@@ -793,7 +814,7 @@ describe('root.tsx', () => {
                 },
             });
 
-            const context = createTestContext();
+            const context = createLoaderContext();
             context.set(i18nextContext, {
                 getLocale: () => 'en',
                 getI18nextInstance: () => testInstance,
@@ -807,50 +828,6 @@ describe('root.tsx', () => {
             }) as any;
 
             expect(result.pageDesignerMode).toBeUndefined();
-        });
-    });
-
-    describe('clientLoader function', () => {
-        it('should return auth function and basket', async () => {
-            const { getAuth } = await import('@/middlewares/auth.client');
-            const { getBasket } = await import('@/middlewares/basket.client');
-
-            const mockSession: SessionData = {
-                access_token: 'test-token',
-                customer_id: 'test-customer',
-                userType: 'registered',
-            };
-
-            const mockBasket: ShopperBasketsV2.schemas['Basket'] = {
-                basketId: 'test-basket',
-                productItems: [],
-            };
-
-            vi.mocked(getAuth).mockReturnValue(mockSession);
-            vi.mocked(getBasket).mockReturnValue(mockBasket);
-
-            const context = createTestContext();
-            const result = clientLoader({
-                context,
-                request: new Request('http://localhost'),
-                params: {},
-                serverLoader: vi.fn(),
-                unstable_pattern: '/',
-            }) as any;
-
-            expect(result).toHaveProperty('auth');
-            expect(result).toHaveProperty('basket');
-            expect(typeof result.auth).toBe('function');
-            expect(typeof result.basket).toBe('object');
-
-            expect(getAuth).not.toHaveBeenCalled();
-            expect(getBasket).toHaveBeenCalledWith(context);
-            expect(result.auth()).toEqual(mockSession);
-            expect(result.basket).toEqual(mockBasket);
-        });
-
-        it('should have hydrate property set to true', () => {
-            expect(clientLoader.hydrate).toBe(true);
         });
     });
 

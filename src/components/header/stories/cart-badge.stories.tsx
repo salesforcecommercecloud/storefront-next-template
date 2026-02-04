@@ -21,7 +21,9 @@ import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import BasketProvider from '@/providers/basket';
 import emptyBasket from '@/components/__mocks__/empty-basket';
+import emptyBasketSnapshot from '@/components/__mocks__/empty-basket-snapshot';
 import { basketWithOneItem } from '@/components/__mocks__/basket-with-dress';
+import basketWithOneItemSnapshot from '@/components/__mocks__/basket-with-dress-snapshot';
 
 function CartBadgeStoryHarness({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -88,7 +90,7 @@ type Story = StoryObj<typeof CartBadge>;
 
 export const Empty: Story = {
     render: () => (
-        <BasketProvider value={emptyBasket}>
+        <BasketProvider basket={emptyBasket} snapshot={emptyBasketSnapshot}>
             <CartBadge />
         </BasketProvider>
     ),
@@ -127,7 +129,7 @@ Cart badge with empty cart.
 
 export const WithItems: Story = {
     render: () => (
-        <BasketProvider value={basketWithOneItem}>
+        <BasketProvider basket={basketWithOneItem} snapshot={basketWithOneItemSnapshot}>
             <CartBadge />
         </BasketProvider>
     ),
@@ -166,7 +168,7 @@ Cart badge with items in cart.
 
 export const Interactive: Story = {
     render: () => (
-        <BasketProvider value={basketWithOneItem}>
+        <BasketProvider basket={basketWithOneItem} snapshot={basketWithOneItemSnapshot}>
             <CartBadge />
         </BasketProvider>
     ),

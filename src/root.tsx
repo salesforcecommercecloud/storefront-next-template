@@ -17,7 +17,6 @@ import { type PropsWithChildren, useMemo } from 'react';
 
 // React Router
 import {
-    type ClientLoaderFunctionArgs,
     type DataStrategyResult,
     isRouteErrorResponse,
     Links,
@@ -36,7 +35,6 @@ import {
 } from 'react-router';
 
 // Third-party libraries
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import { type i18n } from 'i18next';
 import { I18nextProvider } from 'react-i18next';
 import { PageDesignerProvider } from '@salesforce/storefront-next-runtime/design/react/core';
@@ -44,8 +42,8 @@ import { isDesignModeActive, isPreviewModeActive } from '@salesforce/storefront-
 
 // Middlewares
 import authMiddlewareServer, { getAuth as getAuthServer } from '@/middlewares/auth.server';
-import authMiddlewareClient, { getAuth as getAuthClient } from '@/middlewares/auth.client';
-import basketMiddlewareClient, { getBasket } from '@/middlewares/basket.client';
+import authMiddlewareClient from '@/middlewares/auth.client';
+import createBasketMiddleware, { basketResourceContext, type BasketSnapshot } from '@/middlewares/basket.server';
 import shopperContextMiddlewareServer from '@/middlewares/shopper-context.server';
 import shopperContextMiddlewareClient from '@/middlewares/shopper-context.client';
 import legacyRoutesMiddlewareClient from '@/middlewares/legacy-routes.client';
@@ -63,7 +61,7 @@ import { modeDetectionMiddlewareServer, modeDetectionMiddlewareClient } from '@/
 import { maintenanceMiddleware } from '@/middlewares/maintenance.server';
 
 // Providers
-import AuthProvider, { bootstrapAuth } from '@/providers/auth';
+import AuthProvider, { getBootstrapSession } from '@/providers/auth';
 import BasketProvider from '@/providers/basket';
 import { ComposeProviders } from '@/providers/compose-providers';
 import { type AppConfig, ConfigProvider, getConfig } from '@/config';
@@ -122,6 +120,7 @@ export const middleware: MiddlewareFunction<Response>[] = [
     performanceMetricsMiddlewareServer,
     maintenanceMiddleware,
     authMiddlewareServer,
+    createBasketMiddleware(),
     shopperContextMiddlewareServer,
 ];
 
@@ -135,7 +134,6 @@ export const clientMiddleware: MiddlewareFunction<Record<string, DataStrategyRes
     performanceMetricsMiddlewareClient as unknown as MiddlewareFunction<Record<string, DataStrategyResult>>,
     currencyClientMiddleware as unknown as MiddlewareFunction<Record<string, DataStrategyResult>>, // Read currency from cookie
     authMiddlewareClient as unknown as MiddlewareFunction<Record<string, DataStrategyResult>>,
-    basketMiddlewareClient as unknown as MiddlewareFunction<Record<string, DataStrategyResult>>,
     shopperContextMiddlewareClient as unknown as MiddlewareFunction<Record<string, DataStrategyResult>>,
 ];
 
@@ -152,6 +150,7 @@ export const loader = ({
 }: LoaderFunctionArgs): {
     auth: () => SessionData; // Use a function to prevent state serialization
     appConfig: AppConfig;
+    basketSnapshot: BasketSnapshot | null;
     maintenance: Maintenance;
     locale: string;
     currency: string;
@@ -179,6 +178,11 @@ export const loader = ({
     // Currency is already resolved by middleware
     const currency = context.get(currencyContext) as string;
 
+    // Load the application basket provider with the basket snapshot. We are actively not loading the basket, as
+    // we want to lazy load the basket when the basket is needed. This prevents low-engagement users from causing
+    // unnecessary resource usage in the form of basket creations.
+    const basketSnapshot = context.get(basketResourceContext)?.snapshot ?? null;
+
     // Get correlation ID from middleware for request tracing
     const correlationId = context.get(correlationContext);
 
@@ -187,6 +191,7 @@ export const loader = ({
 
     return {
         appConfig,
+        basketSnapshot,
         locale,
         currency,
         correlationId,
@@ -198,32 +203,10 @@ export const loader = ({
     };
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const clientLoader = ({
-    context,
-}: ClientLoaderFunctionArgs): {
-    auth: () => SessionData;
-    basket: ShopperBasketsV2.schemas['Basket'];
-    currency: string;
-} => {
-    const currency = context.get(currencyContext) as string;
-
-    return {
-        auth: () => getAuthClient(context),
-        basket: getBasket(context),
-        currency,
-    };
-};
-clientLoader.hydrate = true as const;
-
 // This creates a union type where properties unique to either loader are optional
 // Properties present in both loaders remain required
 type ServerLoaderData = ReturnType<typeof loader>;
-type ClientLoaderData = Awaited<ReturnType<typeof clientLoader>>;
-export type RootLoaderData = Partial<ServerLoaderData> &
-    Partial<ClientLoaderData> &
-    // Properties present in both should remain required
-    Pick<ServerLoaderData & ClientLoaderData, keyof ServerLoaderData & keyof ClientLoaderData>;
+type LoaderData = ServerLoaderData;
 
 export function Layout({ children }: PropsWithChildren) {
     const matches = useMatches();
@@ -231,7 +214,7 @@ export function Layout({ children }: PropsWithChildren) {
     const appConfig = (rootMatch?.data as { appConfig?: AppConfig })?.appConfig;
     const appConfigScript = appConfig ? `window.__APP_CONFIG__ = ${JSON.stringify(appConfig)};` : '';
 
-    const data = useRouteLoaderData<RootLoaderData>('root');
+    const data = useRouteLoaderData<LoaderData>('root');
     const i18next = (typeof window === 'undefined' ? data?.getI18next?.() : i18nextOnClient) as i18n;
 
     return (
@@ -306,9 +289,9 @@ export function ErrorBoundary({ error }: { error: unknown }) {
 }
 
 export default function App({
-    loaderData: { auth, basket, getI18next, currency, correlationId, pageDesignerMode },
+    loaderData: { auth, basketSnapshot, getI18next, currency, correlationId, pageDesignerMode },
 }: {
-    loaderData: RootLoaderData;
+    loaderData: LoaderData;
 }) {
     // Currency is always provided by loader (which reads from middleware)
     if (!currency) {
@@ -335,7 +318,7 @@ export default function App({
     // has access to auth data. Once clientLoader runs and provides session data, that loader-based
     // value becomes the single source of truth.
     const loaderSession = auth?.();
-    const sessionData = loaderSession ?? bootstrapAuth;
+    const sessionData = loaderSession ?? getBootstrapSession();
 
     // Initialize Page Designer components
     initializeRegistry();
@@ -350,11 +333,11 @@ export default function App({
                 [ConfigProvider, { config: appConfig }],
                 [CurrencyProvider, { value: currency }],
                 [AuthProvider, { value: sessionData }],
-                [BasketProvider, { value: basket }],
+                [BasketProvider, { snapshot: basketSnapshot }],
                 [RecommendersProvider, { adapterName: EINSTEIN_ADAPTER_NAME }],
                 [CorrelationProvider, { value: correlationId }],
             ] as const,
-        [correlationId, i18next, appConfig, currency, sessionData, basket]
+        [correlationId, i18next, appConfig, currency, sessionData, basketSnapshot]
     );
 
     let content = (

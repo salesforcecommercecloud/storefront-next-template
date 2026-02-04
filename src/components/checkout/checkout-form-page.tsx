@@ -111,7 +111,7 @@ function MyCartWithData({
 }
 
 export default function CheckoutFormPage({
-    shippingMethodsMap,
+    shippingMethodsMap: shippingMethodsMapFromLoader,
     productMapPromise,
     promotionsPromise,
 }: CheckoutFormPageProps) {
@@ -122,17 +122,42 @@ export default function CheckoutFormPage({
     const { step, STEPS, goToStep, editingStep, shipmentDistribution } = useCheckoutContext();
     const customerProfile = useCustomerProfile();
 
+    // Checkout actions hook with all fetchers and submission handlers
+    const {
+        submitContactInfo,
+        submitShippingAddress,
+        submitShippingOptions,
+        submitPayment,
+        submitPlaceOrder,
+        contactFetcher,
+        shippingAddressFetcher,
+        shippingOptionsFetcher,
+        paymentFetcher,
+        placeOrderFetcher,
+        isSubmitting,
+        handleCreateAccountPreferenceChange,
+    } = useCheckoutActions();
+
     let showAddressAndOptions = true;
+
+    // Determine shipping methods: prefer action response over loader data (avoids flash when advancing to shipping step)
+    const actionShippingMethods = shippingAddressFetcher.data?.data?.shippingMethodsMap as
+        | Record<string, ShopperBasketsV2.schemas['ShippingMethodResult']>
+        | undefined;
+    let shippingMethodsMap =
+        actionShippingMethods && Object.keys(actionShippingMethods).length > 0
+            ? actionShippingMethods
+            : shippingMethodsMapFromLoader;
 
     // @sfdc-extension-block-start SFDC_EXT_MULTISHIP
     let isDeliveryProductItem = (_item: ShopperBasketsV2.schemas['ProductItem']) => true;
     // @sfdc-extension-block-end SFDC_EXT_MULTISHIP
 
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    shippingMethodsMap = filterDeliveryShippingMethods(shippingMethodsMap);
     const hasPickupItems = shipmentDistribution.hasPickupItems;
     showAddressAndOptions = shipmentDistribution.hasDeliveryItems;
     isDeliveryProductItem = shipmentDistribution.isDeliveryProductItem;
-    shippingMethodsMap = filterDeliveryShippingMethods(shippingMethodsMap);
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     // @sfdc-extension-block-start SFDC_EXT_MULTISHIP
@@ -182,22 +207,6 @@ export default function CheckoutFormPage({
             previousStepRef.current = step;
         }
     }, [analytics, step, STEPS, cart]);
-
-    // Checkout actions hook with all fetchers and submission handlers
-    const {
-        submitContactInfo,
-        submitShippingAddress,
-        submitShippingOptions,
-        submitPayment,
-        submitPlaceOrder,
-        contactFetcher,
-        shippingAddressFetcher,
-        shippingOptionsFetcher,
-        paymentFetcher,
-        placeOrderFetcher,
-        isSubmitting,
-        handleCreateAccountPreferenceChange,
-    } = useCheckoutActions();
 
     const isPlacingOrder = placeOrderFetcher.state === 'submitting';
     const placeOrderErrorRef = useRef<HTMLDivElement>(null);

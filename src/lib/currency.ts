@@ -15,6 +15,8 @@
  */
 import { createContext } from 'react-router';
 
+const formatterCache = new Map<string, Intl.NumberFormat>();
+
 /**
  * Format a number as a currency string
  * @param price - The price to format
@@ -23,12 +25,19 @@ import { createContext } from 'react-router';
  * @returns Formatted currency string
  */
 export function formatCurrency(price: number, locale = 'en-US', currency = 'USD'): string {
-    return new Intl.NumberFormat(locale, {
-        style: 'currency',
-        currency,
-        // this will keep the currency to use symbol for currency (e.g $113 instead of USD 113) for all locale.
-        currencyDisplay: 'narrowSymbol',
-    }).format(price);
+    const key = `${locale}:${currency}`;
+    if (!formatterCache.has(key)) {
+        formatterCache.set(
+            key,
+            new Intl.NumberFormat(locale, {
+                style: 'currency',
+                currency,
+                // this will keep the currency to use symbol for currency (e.g., $113 instead of USD 113) for all locales
+                currencyDisplay: 'narrowSymbol',
+            })
+        );
+    }
+    return (formatterCache.get(key) as Intl.NumberFormat).format(price);
 }
 
 /**

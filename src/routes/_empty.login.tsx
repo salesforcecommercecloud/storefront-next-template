@@ -20,7 +20,7 @@ import {
     useActionData,
     type LoaderFunctionArgs,
     type ActionFunctionArgs,
-    type ClientActionFunctionArgs,
+    // type ClientActionFunctionArgs,
 } from 'react-router';
 import { Card } from '@/components/ui/card';
 import { useTranslation } from 'react-i18next';
@@ -33,11 +33,11 @@ import { getTranslation } from '@/lib/i18next';
 
 // services
 import { getAuth, authorizePasswordless } from '@/middlewares/auth.server';
-import { updateAuth, getAuth as getClientAuth } from '@/middlewares/auth.client';
-import { updateBasket } from '@/middlewares/basket.client';
+// import { updateAuth, getAuth as getClientAuth } from '@/middlewares/auth.client';
+// import { updateBasketResource } from '@/middlewares/basket.server';
 import { loginRegisteredUser } from '@/lib/api/auth/standard-login';
 import { authorizeIDP } from '@/lib/api/auth/social-login';
-import { mergeBasket } from '@/lib/api/basket';
+// import { mergeBasket } from '@/lib/api/basket';
 
 type LoginActionResponse = {
     error?: string;
@@ -239,63 +239,6 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         return { error: genericError };
     }
 }
-
-/**
- * This client action operates together with the server action to ensure a smooth login process. It ensures that the
- * session gets updated on both server and client side, and that the user is redirected to the correct route afterward.
- * Also handles basket merge when transitioning from guest to registered user.
- */
-// eslint-disable-next-line react-refresh/only-export-components,custom/no-client-actions
-export async function clientAction({ context, serverAction }: ClientActionFunctionArgs) {
-    const { t } = getTranslation(context);
-    const genericError = t('errors:genericTryAgain');
-    const prevAuth = getClientAuth(context);
-
-    const result = await serverAction<LoginActionResponse>();
-
-    if (result.error) {
-        return result;
-    }
-
-    // Success - handle redirect and optionally update auth
-    const { redirectUrl, auth } = result;
-    if (!redirectUrl) {
-        return { error: genericError };
-    }
-
-    // Only update auth if it exists (standard login flow)
-    // Social and passwordless login don't return auth here - auth happens in their callback handlers
-    if (auth) {
-        updateAuth(context, () => auth);
-
-        // Merge basket if transitioning from guest to registered user
-        if (prevAuth.userType === 'guest' && auth.userType === 'registered') {
-            try {
-                const mergedBasket = await mergeBasket(context);
-                // Only update basket if one was returned.
-                if (mergedBasket) {
-                    updateBasket(context, mergedBasket);
-                }
-            } catch (error) {
-                // Log but don't block redirect - user can still access their registered basket
-                // eslint-disable-next-line no-console
-                console.error('[Standard Login] Failed to merge basket:', error);
-            }
-        }
-    }
-
-    // If redirectUrl is an absolute URL (e.g., OAuth authorize endpoint), use full-page navigation
-    // This is necessary for external redirects like social login flows
-    if (typeof window !== 'undefined' && /^https?:\/\//.test(redirectUrl)) {
-        window.location.assign(redirectUrl);
-        return null;
-    }
-
-    // Otherwise, use React Router redirect for internal paths
-    return redirect(redirectUrl);
-}
-
-clientAction.hydrate = true as const;
 
 export default function Login({ loaderData }: { loaderData: LoginLoaderData }): ReactElement {
     const { t } = useTranslation('login');

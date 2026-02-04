@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+
 export type CheckoutActionData = {
     success?: boolean;
     step?: string;
@@ -22,4 +24,6 @@ export type CheckoutActionData = {
     formError?: string;
     /** API or validation error message; components display error ?? formError for consistency */
     error?: string;
+    /** Updated basket returned from checkout actions */
+    basket?: ShopperBasketsV2.schemas['Basket'];
 };

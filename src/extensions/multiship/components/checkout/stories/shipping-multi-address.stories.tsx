@@ -116,7 +116,7 @@ const BasketDecorator = (productItems: ShopperBasketsV2.schemas['ProductItem'][]
         };
 
         return (
-            <BasketProvider value={mockBasket}>
+            <BasketProvider basket={mockBasket}>
                 <Story />
             </BasketProvider>
         );

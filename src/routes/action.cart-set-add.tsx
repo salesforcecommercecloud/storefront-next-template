@@ -15,7 +15,7 @@
  */
 import { data, type ActionFunctionArgs } from 'react-router';
 import { ApiError, type ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
-import { getBasket, updateBasket } from '@/middlewares/basket.client';
+import { ensureBasketId, updateBasketResource } from '@/middlewares/basket.server';
 import { extractResponseError } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients';
 import { getTranslation } from '@/lib/i18next';
@@ -37,8 +37,7 @@ async function addMultipleItemsToCart(
     error?: string;
 }> {
     const { t } = getTranslation();
-    const basket = getBasket(context);
-    const basketId = basket?.basketId;
+    const basketId = await ensureBasketId(context);
 
     if (!basketId) {
         // This state should never happen as it would indicate that the basket middleware is broken
@@ -75,7 +74,7 @@ async function addMultipleItemsToCart(
         });
 
         // Update the basket storage
-        updateBasket(context, updatedBasket);
+        updateBasketResource(context, updatedBasket);
 
         return {
             success: true,
@@ -97,10 +96,9 @@ async function addMultipleItemsToCart(
 }
 
 /**
- * Client action to add multiple items to the cart (for product sets).
+ * Server action to add multiple items to the cart (for product sets).
  */
-// eslint-disable-next-line custom/no-client-actions
-export async function clientAction({ request, context }: ActionFunctionArgs) {
+export async function action({ request, context }: ActionFunctionArgs) {
     const { t } = getTranslation();
 
     if (request.method !== 'POST') {

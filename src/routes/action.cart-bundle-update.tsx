@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 // React Router
-import type { ClientActionFunctionArgs } from 'react-router';
+import type { ActionFunctionArgs } from 'react-router';
 
 // Commerce SDK
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 
 // Middlewares
-import { getBasket, updateBasket } from '@/middlewares/basket.client';
+import { ensureBasketId, updateBasketResource } from '@/middlewares/basket.server';
 
 // API
 import { createApiClients } from '@/lib/api-clients';
@@ -36,7 +36,7 @@ import { getTranslation } from '@/lib/i18next';
 // Constants
 
 /**
- * Client action for updating multiple items in a bundle
+ * Server action for updating multiple items in a bundle
  *
  * This action handles updating a bundle and its child products in the basket.
  * It can update:
@@ -67,15 +67,14 @@ import { getTranslation } from '@/lib/i18next';
  * @throws Error if items data is invalid or missing
  * @throws Error if no basket is found in the session
  */
-// eslint-disable-next-line custom/no-client-actions
-export async function clientAction({ request, context }: ClientActionFunctionArgs): Promise<BasketActionResponse> {
+export async function action({ request, context }: ActionFunctionArgs): Promise<BasketActionResponse> {
     const { t } = getTranslation();
 
     if (request.method !== 'PATCH') {
         throw new Response(t('errors:methodNotAllowed'), { status: 405 });
     }
 
-    const { basketId } = getBasket(context);
+    const basketId = await ensureBasketId(context);
     if (!basketId) {
         return createBasketErrorResponse(t('errors:noBasketFound'));
     }
@@ -113,7 +112,7 @@ export async function clientAction({ request, context }: ClientActionFunctionArg
         });
 
         // Update the basket cache to reflect the changes
-        updateBasket(context, updatedBasket);
+        updateBasketResource(context, updatedBasket);
 
         return createBasketSuccessResponse(updatedBasket);
     } catch (error) {

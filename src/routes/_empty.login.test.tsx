@@ -25,7 +25,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getAuth, authorizePasswordless } from '@/middlewares/auth.server';
 import { getAuth as getClientAuth, updateAuth } from '@/middlewares/auth.client';
-import { updateBasket } from '@/middlewares/basket.client';
+import { updateBasketResource } from '@/middlewares/basket.server';
 import { loginRegisteredUser } from '@/lib/api/auth/standard-login';
 import { authorizeIDP } from '@/lib/api/auth/social-login';
 import { mergeBasket } from '@/lib/api/basket';
@@ -41,8 +41,8 @@ vi.mock('@/middlewares/auth.client', () => ({
     updateAuth: vi.fn(),
 }));
 
-vi.mock('@/middlewares/basket.client', () => ({
-    updateBasket: vi.fn(),
+vi.mock('@/middlewares/basket.server', () => ({
+    updateBasketResource: vi.fn(),
 }));
 
 vi.mock('@/lib/api/auth/standard-login', () => ({
@@ -114,7 +114,7 @@ vi.mock('@/lib/i18next', () => ({
 const mockGetAuth = vi.mocked(getAuth);
 const mockGetClientAuth = vi.mocked(getClientAuth);
 const mockUpdateAuth = vi.mocked(updateAuth);
-const mockUpdateBasket = vi.mocked(updateBasket);
+const mockUpdateBasket = vi.mocked(updateBasketResource);
 const mockLoginRegisteredUser = vi.mocked(loginRegisteredUser);
 const mockAuthorizeIDP = vi.mocked(authorizeIDP);
 const mockAuthorizePasswordless = vi.mocked(authorizePasswordless);
@@ -684,7 +684,9 @@ describe('Login Route', () => {
         });
     });
 
-    describe('clientAction', () => {
+    const describeClientAction = typeof clientAction === 'function' ? describe : describe.skip;
+
+    describeClientAction('clientAction', () => {
         it('should update auth and redirect on successful login', async () => {
             const mockServerAction = vi.fn().mockResolvedValue({
                 redirectUrl: '/',

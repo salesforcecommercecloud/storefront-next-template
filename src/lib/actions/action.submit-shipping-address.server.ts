@@ -13,27 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ActionFunctionArgs } from 'react-router';
-import { getBasket, updateBasket } from '@/middlewares/basket.client';
+import type { RouterContextProvider } from 'react-router';
+import { ensureBasketId, getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { createApiClients } from '@/lib/api-clients';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 import { extractResponseError } from '@/lib/utils';
 import { createShippingAddressSchema, parseShippingAddressFromFormData } from '@/lib/checkout-schemas';
 import { getTranslation } from '@/lib/i18next';
+import { fetchShippingMethodsMapForBasket } from '@/lib/checkout-loaders';
 // @sfdc-extension-block-start SFDC_EXT_MULTISHIP
 import { handleMultiShipShippingAddress } from '@/extensions/multiship/lib/actions/checkout-submit-multi-address';
 import { assignProductsToDefaultShipment } from '@/extensions/multiship/lib/api/basket';
 // @sfdc-extension-block-end SFDC_EXT_MULTISHIP
 
-// eslint-disable-next-line custom/no-client-actions
-export async function clientAction({ request, context }: ActionFunctionArgs) {
+/**
+ * Server action for submitting checkout shipping address information.
+ */
+export async function action(formData: FormData, context: RouterContextProvider) {
     const { t } = getTranslation();
-
-    const formData = await request.formData();
-
     // Update shipping address in Commerce Cloud (like PWA Kit)
-    const basket = getBasket(context);
-    if (!basket || !basket.basketId) {
+    const basketId = await ensureBasketId(context);
+
+    if (!basketId) {
         return Response.json(
             {
                 success: false,
@@ -46,9 +47,13 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
 
     // @sfdc-extension-block-start SFDC_EXT_MULTISHIP
     // Check if this is a multi-shipment submission and handle it
-    const multiShipResponse = await handleMultiShipShippingAddress(formData, basket, context);
-    if (multiShipResponse) {
-        return multiShipResponse;
+    const basketResource = await getBasket(context);
+    const basket = basketResource.current;
+    if (basket) {
+        const multiShipResponse = await handleMultiShipShippingAddress(formData, basket, context);
+        if (multiShipResponse) {
+            return multiShipResponse;
+        }
     }
     // @sfdc-extension-block-end SFDC_EXT_MULTISHIP
 
@@ -76,12 +81,13 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
         countryCode: formData.get('countryCode')?.toString() || 'US',
     };
 
+    let updatedBasket;
     try {
         const clients = createApiClients(context);
-        let { data: updatedBasket } = await clients.shopperBasketsV2.updateShippingAddressForShipment({
+        const { data } = await clients.shopperBasketsV2.updateShippingAddressForShipment({
             params: {
                 path: {
-                    basketId: basket.basketId,
+                    basketId,
                     shipmentId: 'me',
                 },
                 query: {
@@ -100,13 +106,14 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
                 stateCode: addressDataWithExtras.stateCode,
             },
         });
+        updatedBasket = data;
 
         // sfdc-extension-line SFDC_EXT_MULTISHIP
         updatedBasket = await assignProductsToDefaultShipment(updatedBasket, context);
 
         // Update local basket state with API response
         // For shipping address updates, the API should preserve existing basket data
-        updateBasket(context, updatedBasket);
+        updateBasketResource(context, updatedBasket);
     } catch (error) {
         let errorMessage = t('errors:checkout.addressValidationFailed');
         if (error instanceof ApiError) {
@@ -129,15 +136,18 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
         );
     }
 
-    // Store address - step progression computed from basket state
-    if (typeof sessionStorage !== 'undefined') {
-        sessionStorage.setItem('checkoutAddress', JSON.stringify(addressDataWithExtras));
-    }
+    // Fetch shipping methods for the updated basket (now that we have an address)
+    // This prevents the "flash" of no shipping options when advancing to the shipping step
+    const shippingMethodsMap = await fetchShippingMethodsMapForBasket(context, updatedBasket);
 
-    // Return success data as JSON
+    // Return success data with updated basket and shipping methods for client-side state update
     return Response.json({
         success: true,
         step: 'shippingAddress',
-        data: { address: addressDataWithExtras },
+        data: {
+            address: addressDataWithExtras,
+            shippingMethodsMap,
+        },
+        basket: updatedBasket,
     });
 }

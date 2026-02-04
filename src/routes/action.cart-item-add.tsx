@@ -15,7 +15,7 @@
  */
 import { type ActionFunctionArgs, data } from 'react-router';
 import { ApiError, type ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
-import { getBasket, updateBasket } from '@/middlewares/basket.client';
+import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { extractResponseError } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients';
 import { getTranslation } from '@/lib/i18next';
@@ -33,10 +33,10 @@ async function addToCart(
     error?: string;
 }> {
     const { t } = getTranslation();
-    const basket = getBasket(context);
-    const basketId = basket?.basketId;
+    const basketResource = await getBasket(context);
+    const basket = basketResource.current;
 
-    if (!basketId) {
+    if (!basket) {
         // This state should never happen as it would indicate that the basket middleware is broken
         return {
             success: false,
@@ -62,12 +62,13 @@ async function addToCart(
             shipmentId,
         };
         const { data: updatedBasket } = await clients.shopperBasketsV2.addItemToBasket({
-            params: { path: { basketId } },
+            params: { path: { basketId: basket.basketId as string } },
             body: [payload],
         });
 
         // Update the basket storage
-        updateBasket(context, updatedBasket);
+        updateBasketResource(context, updatedBasket);
+
         return { success: true, basket: updatedBasket };
     } catch (error) {
         if (error instanceof ApiError) {
@@ -85,10 +86,9 @@ async function addToCart(
 }
 
 /**
- * Client action to add a single item to the cart.
+ * Server action to add a single item to the cart.
  */
-// eslint-disable-next-line custom/no-client-actions
-export async function clientAction({ request, context }: ActionFunctionArgs) {
+export async function action({ request, context }: ActionFunctionArgs) {
     const { t } = getTranslation();
 
     if (request.method !== 'POST') {

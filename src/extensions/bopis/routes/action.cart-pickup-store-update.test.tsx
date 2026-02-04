@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { clientAction } from './action.cart-pickup-store-update';
-import { getBasket, updateBasket } from '@/middlewares/basket.client';
+import { action } from './action.cart-pickup-store-update';
+import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { updateShipmentForPickup } from '@/extensions/bopis/lib/api/shipment';
 import { isStoreOutOfStock } from '@/lib/inventory-utils';
 import { extractResponseError } from '@/lib/utils';
@@ -24,7 +24,7 @@ import { createApiClients } from '@/lib/api-clients';
 import { currencyContext } from '@/lib/currency';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
-vi.mock('@/middlewares/basket.client');
+vi.mock('@/middlewares/basket.server');
 vi.mock('@/extensions/bopis/lib/api/shipment');
 vi.mock('@/lib/inventory-utils');
 vi.mock('@/extensions/bopis/lib/basket-utils');
@@ -107,6 +107,13 @@ describe('action.cart-pickup-store-update', () => {
         data: { data: [mockProduct1, mockProduct2] },
     };
 
+    const createBasketResource = (basket?: Partial<ShopperBasketsV2.schemas['Basket']> | null) => ({
+        snapshot: basket?.basketId ? { basketId: basket.basketId, itemsCount: basket.productItems?.length ?? 0 } : null,
+        current: basket ?? null,
+        hydrated: Boolean(basket),
+        error: null,
+    });
+
     // Mock for shopperBasketsV2 using new API client structure
     const mockShopperBasketsV2 = {
         updateItemsInBasket: vi.fn(),
@@ -137,10 +144,9 @@ describe('action.cart-pickup-store-update', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        vi.mocked(getBasket).mockReturnValue({
-            basketId: mockBasketId,
-            ...mockBasketWithPickupItems,
-        } as ShopperBasketsV2.schemas['Basket']);
+        vi.mocked(getBasket).mockResolvedValue(
+            createBasketResource(mockBasketWithPickupItems as ShopperBasketsV2.schemas['Basket']) as any
+        );
         vi.mocked(updateShipmentForPickup).mockResolvedValue(mockUpdatedBasket);
         vi.mocked(isStoreOutOfStock).mockReturnValue(false);
         vi.mocked(getPickupShipment).mockReturnValue({
@@ -162,14 +168,14 @@ describe('action.cart-pickup-store-update', () => {
         mockShopperProducts.getProducts.mockResolvedValue(mockProductsResponse);
     });
 
-    describe('clientAction', () => {
+    describe('action', () => {
         test('throws 405 error for non-PATCH requests', async () => {
             const request = new Request('http://localhost/action/cart-pickup-store-update', {
                 method: 'POST',
             });
 
             await expect(
-                clientAction({
+                action({
                     request,
                     context: mockContext,
                     params: {},
@@ -179,14 +185,14 @@ describe('action.cart-pickup-store-update', () => {
         });
 
         test('returns error when basket is not found', async () => {
-            vi.mocked(getBasket).mockReturnValue({});
+            vi.mocked(getBasket).mockResolvedValue(createBasketResource(undefined) as any);
 
             const request = createFormDataRequest('http://localhost/action/cart-pickup-store-update', 'PATCH', {
                 storeId: mockStoreId,
                 inventoryId: mockInventoryId,
             });
 
-            const response = await clientAction({
+            const response = await action({
                 request,
                 context: mockContext,
                 params: {},
@@ -202,7 +208,7 @@ describe('action.cart-pickup-store-update', () => {
                 inventoryId: mockInventoryId,
             });
 
-            const response = await clientAction({
+            const response = await action({
                 request,
                 context: mockContext,
                 params: {},
@@ -218,7 +224,7 @@ describe('action.cart-pickup-store-update', () => {
                 storeId: mockStoreId,
             });
 
-            const response = await clientAction({
+            const response = await action({
                 request,
                 context: mockContext,
                 params: {},
@@ -237,7 +243,7 @@ describe('action.cart-pickup-store-update', () => {
                 inventoryId: mockInventoryId,
             });
 
-            const response = await clientAction({
+            const response = await action({
                 request,
                 context: mockContext,
                 params: {},
@@ -268,10 +274,9 @@ describe('action.cart-pickup-store-update', () => {
                 ],
             };
 
-            vi.mocked(getBasket).mockReturnValue({
-                basketId: mockBasketId,
-                ...basketWithoutPickup,
-            } as ShopperBasketsV2.schemas['Basket']);
+            vi.mocked(getBasket).mockResolvedValue(
+                createBasketResource(basketWithoutPickup as ShopperBasketsV2.schemas['Basket']) as any
+            );
             vi.mocked(getPickupProductItemsForStore).mockReturnValue([]); // No pickup items
             vi.mocked(updateShipmentForPickup).mockResolvedValue({
                 ...basketWithoutPickup,
@@ -288,7 +293,7 @@ describe('action.cart-pickup-store-update', () => {
                 inventoryId: mockInventoryId,
             });
 
-            const response = await clientAction({
+            const response = await action({
                 request,
                 context: mockContext,
                 params: {},
@@ -297,7 +302,7 @@ describe('action.cart-pickup-store-update', () => {
 
             expect(response.success).toBe(true);
             expect(updateShipmentForPickup).toHaveBeenCalledWith(mockContext, mockBasketId, 'me', mockStoreId);
-            expect(updateBasket).toHaveBeenCalled();
+            expect(updateBasketResource).toHaveBeenCalled();
         });
 
         test('successfully updates pickup store when all items are in stock', async () => {
@@ -307,7 +312,7 @@ describe('action.cart-pickup-store-update', () => {
                 storeName: mockStoreName,
             });
 
-            const response = await clientAction({
+            const response = await action({
                 request,
                 context: mockContext,
                 params: {},
@@ -366,7 +371,7 @@ describe('action.cart-pickup-store-update', () => {
                 },
             });
 
-            expect(updateBasket).toHaveBeenCalled();
+            expect(updateBasketResource).toHaveBeenCalled();
         });
 
         test('returns error when items are out of stock at new store', async () => {
@@ -378,7 +383,7 @@ describe('action.cart-pickup-store-update', () => {
                 storeName: mockStoreName,
             });
 
-            const response = await clientAction({
+            const response = await action({
                 request,
                 context: mockContext,
                 params: {},
@@ -403,7 +408,7 @@ describe('action.cart-pickup-store-update', () => {
                 inventoryId: mockInventoryId,
             });
 
-            const response = await clientAction({
+            const response = await action({
                 request,
                 context: mockContext,
                 params: {},
@@ -425,7 +430,7 @@ describe('action.cart-pickup-store-update', () => {
                 inventoryId: mockInventoryId,
             });
 
-            const response = await clientAction({
+            const response = await action({
                 request,
                 context: mockContext,
                 params: {},
@@ -461,17 +466,16 @@ describe('action.cart-pickup-store-update', () => {
                 ],
             };
 
-            vi.mocked(getBasket).mockReturnValue({
-                basketId: mockBasketId,
-                ...basketWithMissingProductId,
-            } as ShopperBasketsV2.schemas['Basket']);
+            vi.mocked(getBasket).mockResolvedValue(
+                createBasketResource(basketWithMissingProductId as ShopperBasketsV2.schemas['Basket']) as any
+            );
 
             const request = createFormDataRequest('http://localhost/action/cart-pickup-store-update', 'PATCH', {
                 storeId: mockStoreId,
                 inventoryId: mockInventoryId,
             });
 
-            await clientAction({
+            await action({
                 request,
                 context: mockContext,
                 params: {},
@@ -517,17 +521,16 @@ describe('action.cart-pickup-store-update', () => {
                 ],
             };
 
-            vi.mocked(getBasket).mockReturnValue({
-                basketId: mockBasketId,
-                ...basketWithDuplicates,
-            } as ShopperBasketsV2.schemas['Basket']);
+            vi.mocked(getBasket).mockResolvedValue(
+                createBasketResource(basketWithDuplicates as ShopperBasketsV2.schemas['Basket']) as any
+            );
 
             const request = createFormDataRequest('http://localhost/action/cart-pickup-store-update', 'PATCH', {
                 storeId: mockStoreId,
                 inventoryId: mockInventoryId,
             });
 
-            await clientAction({
+            await action({
                 request,
                 context: mockContext,
                 params: {},
@@ -556,7 +559,7 @@ describe('action.cart-pickup-store-update', () => {
                 inventoryId: mockInventoryId,
             });
 
-            const response = await clientAction({
+            const response = await action({
                 request,
                 context: mockContext,
                 params: {},
@@ -577,7 +580,7 @@ describe('action.cart-pickup-store-update', () => {
                 inventoryId: mockInventoryId,
             });
 
-            const response = await clientAction({
+            const response = await action({
                 request,
                 context: mockContext,
                 params: {},
@@ -598,7 +601,7 @@ describe('action.cart-pickup-store-update', () => {
                 inventoryId: mockInventoryId,
             });
 
-            const response = await clientAction({
+            const response = await action({
                 request,
                 context: mockContext,
                 params: {},
@@ -625,7 +628,7 @@ describe('action.cart-pickup-store-update', () => {
                 inventoryId: mockInventoryId,
             });
 
-            const response = await clientAction({
+            const response = await action({
                 request,
                 context: mockContext,
                 params: {},
@@ -660,7 +663,7 @@ describe('action.cart-pickup-store-update', () => {
                 inventoryId: mockInventoryId,
             });
 
-            const response = await clientAction({
+            const response = await action({
                 request,
                 context: mockContext,
                 params: {},
@@ -683,7 +686,7 @@ describe('action.cart-pickup-store-update', () => {
                 inventoryId: mockInventoryId,
             });
 
-            const response = await clientAction({
+            const response = await action({
                 request,
                 context: mockContext,
                 params: {},
@@ -716,10 +719,9 @@ describe('action.cart-pickup-store-update', () => {
                 ],
             };
 
-            vi.mocked(getBasket).mockReturnValue({
-                basketId: mockBasketId,
-                ...basketWithoutOriginalStore,
-            } as ShopperBasketsV2.schemas['Basket']);
+            vi.mocked(getBasket).mockResolvedValue(
+                createBasketResource(basketWithoutOriginalStore as ShopperBasketsV2.schemas['Basket']) as any
+            );
             // Action fails early when getPickupShipment returns undefined
             vi.mocked(getPickupShipment).mockReturnValue(undefined);
 
@@ -728,7 +730,7 @@ describe('action.cart-pickup-store-update', () => {
                 inventoryId: mockInventoryId,
             });
 
-            const response = await clientAction({
+            const response = await action({
                 request,
                 context: mockContext,
                 params: {},
@@ -759,7 +761,7 @@ describe('action.cart-pickup-store-update', () => {
                 inventoryId: mockInventoryId,
             });
 
-            const response = await clientAction({
+            const response = await action({
                 request,
                 context: mockContext,
                 params: {},
@@ -803,7 +805,7 @@ describe('action.cart-pickup-store-update', () => {
                 inventoryId: mockInventoryId,
             });
 
-            const response = await clientAction({
+            const response = await action({
                 request,
                 context: mockContext,
                 params: {},
@@ -844,7 +846,7 @@ describe('action.cart-pickup-store-update', () => {
                 inventoryId: mockInventoryId,
             });
 
-            const response = await clientAction({
+            const response = await action({
                 request,
                 context: mockContext,
                 params: {},

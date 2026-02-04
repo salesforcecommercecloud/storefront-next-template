@@ -15,7 +15,6 @@
  */
 
 import type { ActionFunctionArgs } from 'react-router';
-import { getBasket, updateBasket } from '@/middlewares/basket.client';
 import { extractResponseError } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients';
 import { getTranslation } from '@/lib/i18next';
@@ -25,6 +24,7 @@ import {
     createBasketErrorResponse,
     createBasketSuccessResponse,
 } from './types/action-responses';
+import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 
 /**
  * Add bonus products to the cart (supports multiple slots)
@@ -51,10 +51,10 @@ async function addBonusProductsToCart(
     }>
 ): Promise<BasketActionResponse> {
     const { t } = getTranslation();
-    const basket = getBasket(context);
-    const basketId = basket?.basketId;
+    const basketResource = await getBasket(context);
+    const basket = basketResource.current;
 
-    if (!basketId) {
+    if (!basket) {
         return createBasketErrorResponse(t('errors:noBasketFound'));
     }
 
@@ -88,13 +88,13 @@ async function addBonusProductsToCart(
 
         const { data: updatedBasket } = await clients.shopperBasketsV2.addItemToBasket({
             params: {
-                path: { basketId },
+                path: { basketId: basket?.basketId ?? '' },
             },
             body: requestBody,
         });
 
         // Update the basket storage
-        updateBasket(context, updatedBasket);
+        updateBasketResource(context, updatedBasket);
 
         return createBasketSuccessResponse(updatedBasket);
     } catch (error) {
@@ -104,7 +104,7 @@ async function addBonusProductsToCart(
 }
 
 /**
- * Client action to add bonus products to the cart
+ * Server action to add bonus products to the cart
  *
  * This is the React Router action function that handles POST requests to /action/bonus-product-add
  *
@@ -138,8 +138,7 @@ async function addBonusProductsToCart(
  * });
  * ```
  */
-// eslint-disable-next-line custom/no-client-actions -- Client action required for bonus product modal
-export async function clientAction({ request, context }: ActionFunctionArgs): Promise<BasketActionResponse> {
+export async function action({ request, context }: ActionFunctionArgs): Promise<BasketActionResponse> {
     if (request.method !== 'POST') {
         throw new Response('Method not allowed', { status: 405 });
     }

@@ -26,7 +26,7 @@ import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi
 import type { SessionData as AuthData } from '@/lib/api/types';
 import type { CustomerProfile } from '@/components/checkout/utils/checkout-context-types';
 import { createApiClients } from '@/lib/api-clients';
-import { getBasket } from '@/middlewares/basket.client';
+import { getBasket } from '@/middlewares/basket.server';
 import { fetchShippingMethodsMapForBasket } from '@/lib/checkout-loaders';
 
 /**
@@ -83,7 +83,7 @@ export async function getServerShippingMethodsMap(
 ): Promise<Record<string, ShopperBasketsV2.schemas['ShippingMethodResult']>> {
     try {
         // Get basket using existing basket middleware
-        const basket = getBasket(context);
+        const basket = (await getBasket(context)).current;
         return await fetchShippingMethodsMapForBasket(context, basket);
     } catch {
         // Failed to fetch shipping methods
@@ -110,7 +110,10 @@ export type ServerCheckoutData = {
  * Fetches all necessary checkout data using validated auth sessions.
  * This function uses the standard auth middleware and ensures token freshness.
  */
-export function getServerCheckoutData({ context }: LoaderFunctionArgs, authSession: AuthData): ServerCheckoutData {
+export async function getServerCheckoutData(
+    { context }: LoaderFunctionArgs,
+    authSession: AuthData
+): Promise<ServerCheckoutData> {
     try {
         if (!authSession) {
             return {
@@ -123,7 +126,7 @@ export function getServerCheckoutData({ context }: LoaderFunctionArgs, authSessi
 
         const isRegistered = authSession.userType === 'registered';
 
-        const basket = getBasket(context);
+        const basket = (await getBasket(context)).current;
 
         // Fetch all dependent data in parallel
         const customerProfilePromise = isRegistered
@@ -132,7 +135,7 @@ export function getServerCheckoutData({ context }: LoaderFunctionArgs, authSessi
 
         const shippingMethodsMapPromise =
             basket?.basketId && basket.shipments && basket.shipments.length > 0
-                ? getServerShippingMethodsMap(context)
+                ? fetchShippingMethodsMapForBasket(context, basket)
                 : Promise.resolve({});
 
         // Execute all remaining fetches in parallel - return promises directly for streaming

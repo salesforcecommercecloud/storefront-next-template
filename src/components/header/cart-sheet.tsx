@@ -32,7 +32,6 @@ import { useToast } from '@/components/toast';
 import type { ActionResponse } from '@/routes/types/action-responses';
 import { useTranslation } from 'react-i18next';
 import { useCurrency } from '@/providers/currency';
-
 /**
  * Container component for MiniCartItem that handles remove functionality
  * Uses useFetcher to submit remove requests to the cart API
@@ -75,6 +74,142 @@ const MiniCartItemContainer = memo(function MiniCartItemContainer({
     return <MiniCartItem product={item} onRemove={handleRemove} bonusProductSlot={bonusProductSlot} />;
 });
 
+const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => void }): ReactElement {
+    const { t, i18n } = useTranslation('header');
+    const { t: tMiniCart } = useTranslation('miniCart');
+    const basket = useBasket();
+    const config = useConfig();
+    const navigate = useNavigate();
+    const currency = useCurrency();
+
+    // Fetch full product details (images, variations, etc.) for basket items
+    const { productItems: enrichedProductItems, isLoading } = useBasketWithProducts(basket);
+
+    // Fetch promotion data for basket products
+    const { productsWithPromotions } = useBasketWithPromotions(basket);
+
+    // Build bonus promotion map with remaining capacity
+    const promotionMap = useMemo(() => {
+        if (!basket) {
+            return new Map();
+        }
+        return buildBonusPromotionMap(basket);
+    }, [basket]);
+
+    // Get attached bonus promotions for cart items based on priceAdjustments
+    const attachedPromotions = useMemo(() => {
+        if (!basket) {
+            return new Map();
+        }
+        return getAttachedBonusPromotions(basket, productsWithPromotions, promotionMap);
+    }, [basket, productsWithPromotions, promotionMap]);
+
+    /**
+     * Handle bonus product selection button click
+     * Navigates to the full cart page
+     */
+    const handleSelectBonusProducts = useCallback(() => {
+        void navigate('/cart');
+    }, [navigate]);
+
+    // Use the same count as the cart badge icon - number of unique products, not total quantity
+    const totalItems = basket?.productItems?.length ?? 0;
+
+    return (
+        <SheetContent className="w-full sm:max-w-lg flex flex-col p-0" data-testid="mini-cart-flyout">
+            {/* Header */}
+            <SheetHeader className="px-6 pt-6 pb-4 space-y-0">
+                <SheetTitle className="text-2xl font-bold text-foreground">
+                    {t('cartTitle')}
+                    {totalItems > 0 && ` (${totalItems})`}
+                </SheetTitle>
+            </SheetHeader>
+
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto">
+                {basket && basket.productItems && basket.productItems.length > 0 ? (
+                    <>
+                        {/* Top Divider */}
+                        <Separator className="bg-muted-foreground/10" />
+
+                        {/* Cart Items */}
+                        {isLoading && enrichedProductItems.length === 0 ? (
+                            <div className="flex items-center justify-center py-8 px-6">
+                                <p className="text-sm text-muted-foreground">{tMiniCart('loading')}</p>
+                            </div>
+                        ) : (
+                            <div className="py-4 px-6">
+                                {enrichedProductItems.map((item) => {
+                                    // Check if this item has an attached bonus card
+                                    const bonusPromo = item.itemId ? attachedPromotions.get(item.itemId) : undefined;
+
+                                    const bonusProductCard = bonusPromo ? (
+                                        <SelectBonusProductsCard
+                                            promotion={bonusPromo}
+                                            onSelectClick={handleSelectBonusProducts}
+                                        />
+                                    ) : undefined;
+
+                                    return (
+                                        <div key={item.itemId} className="mb-4 last:mb-0">
+                                            <MiniCartItemContainer
+                                                item={item}
+                                                removeAction={config.pages.cart.removeAction}
+                                                bonusProductSlot={bonusProductCard}
+                                            />
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+
+                        {/* Bottom Divider */}
+                        <Separator className="bg-muted-foreground/10" />
+                    </>
+                ) : (
+                    <div className="flex flex-col items-center justify-center py-12 text-center px-6">
+                        <p className="text-lg text-muted-foreground">{tMiniCart('emptyCart')}</p>
+                    </div>
+                )}
+            </div>
+
+            {/* Footer */}
+            {basket && basket.productItems && basket.productItems.length > 0 && (
+                <SheetFooter className="px-6 py-6 border-t flex-col gap-3 sm:flex-col">
+                    <Button asChild className="w-full h-12 text-base font-semibold rounded-md" size="lg">
+                        <Link to="/checkout" onClick={onClose}>
+                            {t('checkout')}{' '}
+                            {basket?.orderTotal
+                                ? formatCurrency(basket.orderTotal, i18n.language, currency)
+                                : basket?.productTotal
+                                  ? formatCurrency(basket.productTotal, i18n.language, currency)
+                                  : ''}
+                        </Link>
+                    </Button>
+                    <Button
+                        variant="secondary"
+                        className="w-full h-12 text-base font-normal rounded-md"
+                        size="lg"
+                        onClick={onClose}>
+                        {t('continueShopping')}
+                    </Button>
+                    {config.pages.cart.miniCart?.enableViewCartButton && (
+                        <Button
+                            asChild
+                            variant="ghost"
+                            className="w-full h-12 text-base font-normal rounded-md"
+                            size="lg">
+                            <Link to="/cart" onClick={onClose}>
+                                {tMiniCart('viewCart')}
+                            </Link>
+                        </Button>
+                    )}
+                </SheetFooter>
+            )}
+        </SheetContent>
+    );
+};
+
 /**
  * CartSheet (Mini Cart Flyout) - A slide-out panel displaying the shopping cart contents
  *
@@ -107,136 +242,11 @@ const MiniCartItemContainer = memo(function MiniCartItemContainer({
 export default function CartSheet({ children }: PropsWithChildren): ReactElement {
     // As this component gets loaded on demand, it immediately gets displayed open
     const [open, setOpen] = useState<boolean>(true);
-    const { t, i18n } = useTranslation('header');
-    const { t: tMiniCart } = useTranslation('miniCart');
-    const basket = useBasket();
-    const config = useConfig();
-    const navigate = useNavigate();
-    const currency = useCurrency();
-
-    // Fetch full product details (images, variations, etc.) for basket items
-    const { productItems: enrichedProductItems, isLoading } = useBasketWithProducts(basket);
-
-    // Fetch promotion data for basket products
-    const { productsWithPromotions } = useBasketWithPromotions(basket);
-
-    // Build bonus promotion map with remaining capacity
-    const promotionMap = useMemo(() => {
-        return buildBonusPromotionMap(basket);
-    }, [basket]);
-
-    // Get attached bonus promotions for cart items based on priceAdjustments
-    const attachedPromotions = useMemo(() => {
-        return getAttachedBonusPromotions(basket, productsWithPromotions, promotionMap);
-    }, [basket, productsWithPromotions, promotionMap]);
-
-    /**
-     * Handle bonus product selection button click
-     * Navigates to the full cart page
-     */
-    const handleSelectBonusProducts = useCallback(() => {
-        void navigate('/cart');
-    }, [navigate]);
-
-    // Use the same count as the cart badge icon - number of unique products, not total quantity
-    const totalItems = basket?.productItems?.length ?? 0;
 
     return (
         <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>{children}</SheetTrigger>
-            <SheetContent className="w-full sm:max-w-lg flex flex-col p-0" data-testid="mini-cart-flyout">
-                {/* Header */}
-                <SheetHeader className="px-6 pt-6 pb-4 space-y-0">
-                    <SheetTitle className="text-2xl font-bold text-foreground">
-                        {t('cartTitle')}
-                        {totalItems > 0 && ` (${totalItems})`}
-                    </SheetTitle>
-                </SheetHeader>
-
-                {/* Content */}
-                <div className="flex-1 overflow-y-auto">
-                    {basket && basket.productItems && basket.productItems.length > 0 ? (
-                        <>
-                            {/* Top Divider */}
-                            <Separator className="bg-muted-foreground/10" />
-
-                            {/* Cart Items */}
-                            {isLoading && enrichedProductItems.length === 0 ? (
-                                <div className="flex items-center justify-center py-8 px-6">
-                                    <p className="text-sm text-muted-foreground">{tMiniCart('loading')}</p>
-                                </div>
-                            ) : (
-                                <div className="py-4 px-6">
-                                    {enrichedProductItems.map((item) => {
-                                        // Check if this item has an attached bonus card
-                                        const bonusPromo = item.itemId
-                                            ? attachedPromotions.get(item.itemId)
-                                            : undefined;
-
-                                        const bonusProductCard = bonusPromo ? (
-                                            <SelectBonusProductsCard
-                                                promotion={bonusPromo}
-                                                onSelectClick={handleSelectBonusProducts}
-                                            />
-                                        ) : undefined;
-
-                                        return (
-                                            <div key={item.itemId} className="mb-4 last:mb-0">
-                                                <MiniCartItemContainer
-                                                    item={item}
-                                                    removeAction={config.pages.cart.removeAction}
-                                                    bonusProductSlot={bonusProductCard}
-                                                />
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            )}
-
-                            {/* Bottom Divider */}
-                            <Separator className="bg-muted-foreground/10" />
-                        </>
-                    ) : (
-                        <div className="flex flex-col items-center justify-center py-12 text-center px-6">
-                            <p className="text-lg text-muted-foreground">{tMiniCart('emptyCart')}</p>
-                        </div>
-                    )}
-                </div>
-
-                {/* Footer */}
-                {basket && basket.productItems && basket.productItems.length > 0 && (
-                    <SheetFooter className="px-6 py-6 border-t flex-col gap-3 sm:flex-col">
-                        <Button asChild className="w-full h-12 text-base font-semibold rounded-md" size="lg">
-                            <Link to="/checkout" onClick={() => setOpen(false)}>
-                                {t('checkout')}{' '}
-                                {basket?.orderTotal
-                                    ? formatCurrency(basket.orderTotal, i18n.language, currency)
-                                    : basket?.productTotal
-                                      ? formatCurrency(basket.productTotal, i18n.language, currency)
-                                      : ''}
-                            </Link>
-                        </Button>
-                        <Button
-                            variant="secondary"
-                            className="w-full h-12 text-base font-normal rounded-md"
-                            size="lg"
-                            onClick={() => setOpen(false)}>
-                            {t('continueShopping')}
-                        </Button>
-                        {config.pages.cart.miniCart?.enableViewCartButton && (
-                            <Button
-                                asChild
-                                variant="ghost"
-                                className="w-full h-12 text-base font-normal rounded-md"
-                                size="lg">
-                                <Link to="/cart" onClick={() => setOpen(false)}>
-                                    {tMiniCart('viewCart')}
-                                </Link>
-                            </Button>
-                        )}
-                    </SheetFooter>
-                )}
-            </SheetContent>
+            {open && <CartSheetPanel onClose={() => setOpen(false)} />}
         </Sheet>
     );
 }

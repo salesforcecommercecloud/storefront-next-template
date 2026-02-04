@@ -57,6 +57,7 @@
             "missingStoreIdOrInventoryIdError": "Store ID or inventory ID is missing. Select a valid store."
         },
         "deliveryOptionChangeError": "Failed to change delivery option. {{error}}",
+        "deliveryOptionProductUnavailable": "We couldn't update your delivery option for \"{{productName}}\" because there isn't enough stock for {{quantity}} items. Try reducing the quantity or choose a different store.",
         "addToCartValidation": {
             "changeStoreError": "You already have an item in your cart from a different store.",
             "changeToDeliveryError": "You already have an item in your cart marked for pickup.",

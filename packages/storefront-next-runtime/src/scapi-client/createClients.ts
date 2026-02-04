@@ -36,6 +36,7 @@ import { createClient, type GlobalRequestParameters } from './createClient';
 import { defaultQuerySerializer } from './defaultQuerySerializer';
 import type { ProxyClient } from './proxy-types';
 import { createAuthHelpers, type AuthNamespace } from './auth';
+import { createBasketHelpers, type BasketHelpersNamespace } from './basket';
 
 /**
  * Configuration for creating Commerce API clients.
@@ -97,6 +98,8 @@ export type Clients = {
     shopperStores: ProxyClient<Client<ShopperStores.endpoints>, typeof shopperStoresOps>;
     /** Authentication helpers for SLAS operations */
     auth: AuthNamespace;
+    /** Basket helper utilities */
+    basket: BasketHelpersNamespace;
     use: (middleware: Middleware) => void;
 };
 
@@ -303,6 +306,7 @@ export function createCommerceApiClients(config: CommerceApiClientConfig): Clien
         siteId,
         baseUrl,
     });
+    const basket = createBasketHelpers({ shopperBasketsClient: shopperBasketsV2 });
 
     return {
         shopperBasketsV1,
@@ -322,6 +326,7 @@ export function createCommerceApiClients(config: CommerceApiClientConfig): Clien
         shopperSeo,
         shopperStores,
         auth,
+        basket,
         use: (middleware: Middleware) => {
             allClients.forEach((client) => client.use(middleware));
         },

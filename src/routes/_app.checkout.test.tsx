@@ -20,12 +20,14 @@ import type React from 'react';
 
 const mockUniversalServerLoader = vi.fn();
 const mockUniversalClientLoader = vi.fn();
+const mockCheckoutLoadersLoader = vi.fn();
 const mockGetServerCustomerProfileData = vi.fn();
 const mockGetServerShippingMethodsMapData = vi.fn();
 const mockGetClientLoaderData = vi.fn();
 const mockGetAuthServer = vi.fn();
 
 vi.mock('@/lib/checkout-loaders', () => ({
+    loader: mockCheckoutLoadersLoader,
     serverLoader: mockUniversalServerLoader,
     getServerCustomerProfileData: mockGetServerCustomerProfileData,
     getServerShippingMethodsMapData: mockGetServerShippingMethodsMapData,
@@ -289,126 +291,30 @@ describe('Checkout Route Components', () => {
     });
 
     describe('Route Functions', () => {
-        it('should export loader function', async () => {
-            // Import the actual route
+        it('should export loader function that delegates to checkout-loaders', async () => {
+            const mockLoaderResult = {
+                productMap: Promise.resolve({}),
+                promotions: Promise.resolve({}),
+                shippingMethodsMap: Promise.resolve({}),
+                isRegisteredCustomer: false,
+            };
+            mockCheckoutLoadersLoader.mockResolvedValue(mockLoaderResult);
+
             const checkoutRoute = await import('./_app.checkout');
+            const mockArgs = {
+                request: new Request('http://localhost/checkout'),
+                params: {},
+                context: { get: vi.fn(), set: vi.fn() },
+            } as any;
+
+            // Verify loader is exported and callable
             expect(checkoutRoute.loader).toBeDefined();
             expect(typeof checkoutRoute.loader).toBe('function');
-        });
 
-        it('should export clientLoader function', async () => {
-            const checkoutRoute = await import('./_app.checkout');
-            expect(checkoutRoute.clientLoader).toBeDefined();
-            expect(typeof checkoutRoute.clientLoader).toBe('function');
-        });
-
-        it('sets clientLoader.hydrate to true for fresh basket state', async () => {
-            const checkoutRoute = await import('./_app.checkout');
-            expect(checkoutRoute.clientLoader.hydrate).toBe(true);
-        });
-
-        it('should export HydrateFallback component', async () => {
-            const checkoutRoute = await import('./_app.checkout');
-            expect(checkoutRoute.HydrateFallback).toBeDefined();
-        });
-
-        it('should call getClientLoaderData from clientLoader', async () => {
-            mockGetClientLoaderData.mockResolvedValue({
-                productMap: Promise.resolve({}),
-                isRegisteredCustomer: false,
-            });
-
-            const checkoutRoute = await import('./_app.checkout');
-            const mockArgs = {
-                request: new Request('http://localhost/checkout'),
-                params: {},
-                context: { get: vi.fn(), set: vi.fn() },
-            } as any;
-
-            // clientLoader returns a Promise from getClientLoaderData
-            const result = checkoutRoute.clientLoader(mockArgs);
-
-            // Should delegate to getClientLoaderData
-            expect(mockGetClientLoaderData).toHaveBeenCalledWith(mockArgs);
-
-            // Verify it returns a Promise
-            expect(result).toBeInstanceOf(Promise);
-        });
-
-        it('should call server loader functions for registered user', async () => {
-            mockGetAuthServer.mockReturnValue({
-                userType: 'registered',
-                customer_id: 'test-123',
-            });
-            mockGetServerCustomerProfileData.mockResolvedValue({
-                customer: { customerId: 'test-123' },
-            });
-            mockGetServerShippingMethodsMapData.mockResolvedValue({});
-
-            const checkoutRoute = await import('./_app.checkout');
-            const mockArgs = {
-                request: new Request('http://localhost/checkout'),
-                params: {},
-                context: { get: vi.fn(), set: vi.fn() },
-            } as any;
-
-            // loader is synchronous, returns CheckoutPageData with promises inside
-            const result = checkoutRoute.loader(mockArgs);
-
-            expect(result).toBeDefined();
-            expect(result.productMap).toBeDefined();
-            expect(result.isRegisteredCustomer).toBe(true);
-            expect(result.customerProfile).toBeDefined();
-            expect(result.shippingMethodsMap).toBeDefined();
-        });
-
-        it('should call server loader functions for guest user', async () => {
-            mockGetAuthServer.mockReturnValue({
-                userType: 'guest',
-            });
-
-            const checkoutRoute = await import('./_app.checkout');
-            const mockArgs = {
-                request: new Request('http://localhost/checkout'),
-                params: {},
-                context: { get: vi.fn(), set: vi.fn() },
-            } as any;
-
-            const result = checkoutRoute.loader(mockArgs);
-
-            expect(result).toBeDefined();
-            expect(result.isRegisteredCustomer).toBe(false);
-            expect(result.customerProfile).toBeDefined();
-        });
-
-        it('should handle server loader error gracefully', async () => {
-            mockGetAuthServer.mockImplementation(() => {
-                throw new Error('Auth error');
-            });
-
-            const checkoutRoute = await import('./_app.checkout');
-            const mockArgs = {
-                request: new Request('http://localhost/checkout'),
-                params: {},
-                context: { get: vi.fn(), set: vi.fn() },
-            } as any;
-
-            const result = checkoutRoute.loader(mockArgs);
-
-            expect(result).toBeDefined();
-            expect(result.isRegisteredCustomer).toBe(false);
-            expect(result.productMap).toBeDefined();
-        });
-    });
-
-    describe('HydrateFallback', () => {
-        it('should render loading component', async () => {
-            const checkoutRoute = await import('./_app.checkout');
-            const { HydrateFallback } = checkoutRoute;
-
-            render(<HydrateFallback />);
-
-            expect(screen.getByTestId('loading')).toBeInTheDocument();
+            // Verify it delegates to checkout-loaders loader
+            const result = await checkoutRoute.loader(mockArgs);
+            expect(mockCheckoutLoadersLoader).toHaveBeenCalledWith(mockArgs);
+            expect(result).toBe(mockLoaderResult);
         });
     });
 

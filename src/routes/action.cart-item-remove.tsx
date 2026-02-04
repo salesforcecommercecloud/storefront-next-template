@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ClientActionFunctionArgs } from 'react-router';
+import type { ActionFunctionArgs } from 'react-router';
 import { ApiError, type ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
-import { getBasket, updateBasket } from '@/middlewares/basket.client';
+import { ensureBasketId, updateBasketResource } from '@/middlewares/basket.server';
 import { extractResponseError } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients';
 import { getTranslation } from '@/lib/i18next';
 
 /**
- * Client action for removing an item from the shopping cart
+ * Server action for removing an item from the shopping cart
  *
  * This action handles the removal of a specific item from the user's shopping basket.
  * It performs the following operations:
@@ -56,8 +56,7 @@ import { getTranslation } from '@/lib/i18next';
  * </form>
  * ```
  */
-// eslint-disable-next-line custom/no-client-actions
-export async function clientAction({ request, context }: ClientActionFunctionArgs): Promise<{
+export async function action({ request, context }: ActionFunctionArgs): Promise<{
     success: boolean;
     basket?: ShopperBasketsV2.schemas['Basket'];
     error?: string;
@@ -68,7 +67,7 @@ export async function clientAction({ request, context }: ClientActionFunctionArg
         throw new Response(t('errors:methodNotAllowed'), { status: 405 });
     }
 
-    const { basketId } = getBasket(context);
+    const basketId = await ensureBasketId(context);
     if (!basketId) {
         return {
             success: false,
@@ -97,7 +96,7 @@ export async function clientAction({ request, context }: ClientActionFunctionArg
         });
 
         // Update the basket cache to reflect the changes
-        updateBasket(context, updatedBasket);
+        updateBasketResource(context, updatedBasket);
 
         return { success: true, basket: updatedBasket };
     } catch (error) {

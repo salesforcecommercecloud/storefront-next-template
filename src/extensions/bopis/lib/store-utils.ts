@@ -16,6 +16,7 @@
 
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
 import type { ShopperBasketsV2, ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
+import type { RouterContextProvider } from 'react-router';
 import { isAddressEqual } from '@/extensions/multiship/lib/address-utils';
 import { getTranslation } from '@/lib/i18next';
 
@@ -59,12 +60,14 @@ export function getPickupStoreFromMap(
 /**
  * Converts a Store address to an OrderAddress
  * @param store - The store to convert
+ * @param context - Optional router context for server-side translations
  * @returns OrderAddress object with store address details
  */
 export function orderAddressFromStoreAddress(
-    store: ShopperStores.schemas['Store']
+    store: ShopperStores.schemas['Store'],
+    context?: Readonly<RouterContextProvider>
 ): ShopperBasketsV2.schemas['OrderAddress'] {
-    const { t } = getTranslation();
+    const { t } = getTranslation(context);
     return {
         firstName: store.name ?? '',
         lastName: t('extBopis:storePickup.pickupLastName'),
@@ -83,14 +86,16 @@ export function orderAddressFromStoreAddress(
  *
  * @param shippingAddress - Shipping address to compare
  * @param storeAddress - Store address to compare
+ * @param context - Optional router context for server-side translations
  * @returns true if shipping address matches store address, false otherwise
  */
 export function isPickupAddressSet(
     shippingAddress?: ShopperBasketsV2.schemas['OrderAddress'] | null,
-    storeAddress?: ShopperStores.schemas['Store'] | null
+    storeAddress?: ShopperStores.schemas['Store'] | null,
+    context?: Readonly<RouterContextProvider>
 ): boolean {
     if (!shippingAddress || !storeAddress) return false;
 
-    const storeAsOrderAddress = orderAddressFromStoreAddress(storeAddress);
+    const storeAsOrderAddress = orderAddressFromStoreAddress(storeAddress, context);
     return isAddressEqual(shippingAddress, storeAsOrderAddress);
 }

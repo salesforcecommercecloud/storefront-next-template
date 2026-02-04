@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ReactElement, Suspense } from 'react';
+import { type ReactElement, Suspense, useEffect } from 'react';
 import AddressDisplay from '@/components/address-display';
 import { Await, Link, type LoaderFunctionArgs } from 'react-router';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,6 +24,7 @@ import ProductImage from '@/components/product-image/product-image';
 import { createApiClients } from '@/lib/api-clients';
 import { formatCurrency, currencyContext } from '@/lib/currency';
 import { useCurrency } from '@/providers/currency';
+import { useBasketReset } from '@/providers/basket';
 import type {
     ShopperOrders,
     ShopperProducts,
@@ -222,6 +223,7 @@ function OrderConfirmationContent({
 }: OrderConfirmationData): ReactElement {
     const { t, i18n } = useTranslation('checkout');
     const currency = useCurrency();
+    const resetBasket = useBasketReset();
     let deliveryShipments = order.shipments;
 
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -276,6 +278,11 @@ function OrderConfirmationContent({
         { key: 'tax', label: t('confirmation.totals.tax'), value: totals.tax },
         { key: 'total', label: t('confirmation.totals.total'), value: totals.total, bold: true },
     ];
+
+    // Clear the basket context after an order is confirmed.
+    useEffect(() => {
+        resetBasket();
+    }, [resetBasket]);
 
     return (
         <div className="min-h-screen bg-muted/30">

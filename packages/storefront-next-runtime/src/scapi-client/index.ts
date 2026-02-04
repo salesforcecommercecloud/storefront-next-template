@@ -19,6 +19,14 @@ export * from './createClients';
 export * from './createClient';
 export { ApiError, type ErrorDetail } from './ApiError';
 export { SLAS_AUTH_ENDPOINTS } from './constants';
+export { createBasketHelpers } from './basket';
+export type {
+    Basket,
+    BasketHelpersConfig,
+    BasketHelpersNamespace,
+    GetOrCreateBasketOptions,
+    ShopperBasketsV2Client,
+} from './basket';
 export type {
     AuthNamespace,
     AuthConfig,

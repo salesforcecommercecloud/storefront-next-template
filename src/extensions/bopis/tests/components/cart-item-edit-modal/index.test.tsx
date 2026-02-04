@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 
 // React Router
 import { createMemoryRouter, RouterProvider } from 'react-router';
@@ -33,12 +33,27 @@ import { createMockBasketWithPickupItems } from '@/extensions/bopis/tests/__mock
 
 // Mock useScapiFetcher to prevent actual API calls
 const mockLoad = vi.fn().mockResolvedValue(undefined);
+const mockSubmit = vi.fn().mockResolvedValue(undefined);
+
+// Create a mock fetcher result that matches the ScapiFetcher type
+const createMockFetcher = (data: typeof variantProduct) => ({
+    load: mockLoad,
+    submit: mockSubmit,
+    data,
+    errors: undefined,
+    success: true,
+    state: 'idle' as const,
+    Form: vi.fn(),
+    formMethod: undefined,
+    formAction: undefined,
+    formData: undefined,
+    formEncType: undefined,
+    json: undefined,
+    text: undefined,
+});
+
 vi.mock('@/hooks/use-scapi-fetcher', () => ({
-    useScapiFetcher: vi.fn(() => ({
-        load: mockLoad,
-        data: variantProduct,
-        state: 'idle',
-    })),
+    useScapiFetcher: vi.fn(() => createMockFetcher(variantProduct)),
 }));
 
 describe('CartItemEditModal', () => {
@@ -57,27 +72,20 @@ describe('CartItemEditModal', () => {
     describe('pickup inventory fetching', () => {
         beforeEach(async () => {
             mockLoad.mockClear();
+            mockSubmit.mockClear();
             // Reset the mock implementation
             const { useScapiFetcher } = await import('@/hooks/use-scapi-fetcher');
-            vi.mocked(useScapiFetcher).mockReturnValue({
-                load: mockLoad,
-                data: variantProduct,
-                state: 'idle',
-            });
+            vi.mocked(useScapiFetcher).mockReturnValue(createMockFetcher(variantProduct) as any);
         });
 
         test('includes inventoryIds when editing pickup item', async () => {
             const { useScapiFetcher } = await import('@/hooks/use-scapi-fetcher');
-            let capturedParameters: any = null;
+            const allCapturedCalls: any[] = [];
 
-            // Mock useScapiFetcher to capture parameters
+            // Mock useScapiFetcher to capture all calls
             vi.mocked(useScapiFetcher).mockImplementation((_service, _method, options) => {
-                capturedParameters = (options as any)?.params;
-                return {
-                    load: mockLoad,
-                    data: variantProduct,
-                    state: 'idle',
-                };
+                allCapturedCalls.push({ service: _service, method: _method, params: (options as any)?.params });
+                return createMockFetcher(variantProduct) as any;
             });
 
             // Setup pickup context with the item marked for pickup
@@ -107,23 +115,24 @@ describe('CartItemEditModal', () => {
             );
             render(<RouterProvider router={router} />);
 
-            // Check that inventoryIds parameter was included
-            expect(capturedParameters).toBeDefined();
-            expect(capturedParameters.query.inventoryIds).toEqual(['inventory-store-123']);
+            await waitFor(() => {
+                // Find the getProduct call which should have the inventoryIds
+                const getProductCall = allCapturedCalls.find(
+                    (call) => call.service === 'shopperProducts' && call.method === 'getProduct'
+                );
+                expect(getProductCall).toBeDefined();
+                expect(getProductCall?.params?.query?.inventoryIds).toEqual(['inventory-store-123']);
+            });
         });
 
         test('does not include inventoryIds when editing non-pickup item', async () => {
             const { useScapiFetcher } = await import('@/hooks/use-scapi-fetcher');
-            let capturedParameters: any = null;
+            const allCapturedCalls: any[] = [];
 
-            // Mock useScapiFetcher to capture parameters
+            // Mock useScapiFetcher to capture all calls
             vi.mocked(useScapiFetcher).mockImplementation((_service, _method, options) => {
-                capturedParameters = (options as any)?.params;
-                return {
-                    load: mockLoad,
-                    data: variantProduct,
-                    state: 'idle',
-                };
+                allCapturedCalls.push({ service: _service, method: _method, params: (options as any)?.params });
+                return createMockFetcher(variantProduct) as any;
             });
 
             // Setup pickup context without the item (not a pickup item)
@@ -148,23 +157,24 @@ describe('CartItemEditModal', () => {
             );
             render(<RouterProvider router={router} />);
 
-            // Check that inventoryIds parameter was not included
-            expect(capturedParameters).toBeDefined();
-            expect(capturedParameters.query.inventoryIds).toBeUndefined();
+            await waitFor(() => {
+                // Find the getProduct call which should NOT have inventoryIds
+                const getProductCall = allCapturedCalls.find(
+                    (call) => call.service === 'shopperProducts' && call.method === 'getProduct'
+                );
+                expect(getProductCall).toBeDefined();
+                expect(getProductCall?.params?.query?.inventoryIds).toBeUndefined();
+            });
         });
 
         test('works without pickup context', async () => {
             const { useScapiFetcher } = await import('@/hooks/use-scapi-fetcher');
-            let capturedParameters: any = null;
+            const allCapturedCalls: any[] = [];
 
-            // Mock useScapiFetcher to capture parameters
+            // Mock useScapiFetcher to capture all calls
             vi.mocked(useScapiFetcher).mockImplementation((_service, _method, options) => {
-                capturedParameters = (options as any)?.params;
-                return {
-                    load: mockLoad,
-                    data: variantProduct,
-                    state: 'idle',
-                };
+                allCapturedCalls.push({ service: _service, method: _method, params: (options as any)?.params });
+                return createMockFetcher(variantProduct) as any;
             });
 
             // Render without PickupProvider (pickup context is null)
@@ -185,9 +195,14 @@ describe('CartItemEditModal', () => {
             );
             render(<RouterProvider router={router} />);
 
-            // Should not crash and should not include inventoryIds
-            expect(capturedParameters).toBeDefined();
-            expect(capturedParameters.query.inventoryIds).toBeUndefined();
+            await waitFor(() => {
+                // Find the getProduct call which should NOT have inventoryIds
+                const getProductCall = allCapturedCalls.find(
+                    (call) => call.service === 'shopperProducts' && call.method === 'getProduct'
+                );
+                expect(getProductCall).toBeDefined();
+                expect(getProductCall?.params?.query?.inventoryIds).toBeUndefined();
+            });
         });
     });
 });

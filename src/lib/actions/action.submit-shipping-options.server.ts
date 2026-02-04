@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ActionFunctionArgs } from 'react-router';
-import { getBasket, updateBasket } from '@/middlewares/basket.client';
+import type { RouterContextProvider } from 'react-router';
+import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { createShippingOptionsSchema, parseShippingOptionsFromFormData } from '@/lib/checkout-schemas';
 import { createApiClients } from '@/lib/api-clients';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
@@ -23,14 +23,16 @@ import { getTranslation } from '@/lib/i18next';
 // @sfdc-extension-line SFDC_EXT_MULTISHIP
 import { handleMultiShipShippingOptions } from '@/extensions/multiship/lib/actions/checkout-submit-multi-options';
 
-// eslint-disable-next-line custom/no-client-actions
-export async function clientAction({ request, context }: ActionFunctionArgs) {
+/**
+ * Server action for submitting checkout shipping options.
+ */
+export async function action(formData: FormData, context: RouterContextProvider) {
     const { t } = getTranslation();
 
-    const formData = await request.formData();
-
     // Update shipping method in Commerce Cloud (like PWA Kit)
-    const basket = getBasket(context);
+    const basketResource = await getBasket(context);
+    const basket = basketResource.current;
+
     if (!basket || !basket.basketId) {
         return Response.json(
             {
@@ -71,12 +73,13 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
     // Use validated data
     const { shippingMethodId } = result.data;
 
+    let finalBasket;
     try {
         const clients = createApiClients(context);
         const { data: updatedBasket } = await clients.shopperBasketsV2.updateShippingMethodForShipment({
             params: {
                 path: {
-                    basketId: basket.basketId,
+                    basketId: basket?.basketId ?? '',
                     shipmentId: 'me',
                 },
             },
@@ -87,12 +90,12 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
 
         // Update local basket state with API response
         // Check if critical data is preserved in the Commerce API response
-        const currentBasket = getBasket(context);
+        const currentBasket = basket;
 
-        if (!updatedBasket.customerInfo?.email && currentBasket.customerInfo?.email) {
+        if (currentBasket && !updatedBasket.customerInfo?.email && currentBasket.customerInfo?.email) {
             // Customer info missing from shipping method API response, merging with current basket
             // Selectively update to preserve existing data
-            updateBasket(context, {
+            finalBasket = {
                 ...currentBasket,
                 // Update shipping-related fields from API response
                 shipments: updatedBasket.shipments || currentBasket.shipments,
@@ -102,10 +105,12 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
                 shippingTotal: updatedBasket.shippingTotal || currentBasket.shippingTotal,
                 merchandizeTotalTax: updatedBasket.merchandizeTotalTax || currentBasket.merchandizeTotalTax,
                 taxTotal: updatedBasket.taxTotal || currentBasket.taxTotal,
-            });
+            };
+            updateBasketResource(context, finalBasket);
         } else {
             // API response includes all necessary data, use it directly
-            updateBasket(context, updatedBasket);
+            finalBasket = updatedBasket;
+            updateBasketResource(context, updatedBasket);
         }
     } catch (error) {
         let errorMessage = t('errors:api.serverError');
@@ -129,15 +134,11 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
         );
     }
 
-    // Store shipping method - step progression computed from basket state
-    if (typeof sessionStorage !== 'undefined') {
-        sessionStorage.setItem('checkoutShippingMethod', JSON.stringify({ shippingMethodId }));
-    }
-
-    // Return success data as JSON
+    // Return success data with updated basket for client-side state update
     return Response.json({
         success: true,
         step: 'shippingOptions',
         data: { shippingMethodId },
+        basket: finalBasket,
     });
 }

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 // React Router
-import type { ClientActionFunctionArgs } from 'react-router';
+import type { ActionFunctionArgs } from 'react-router';
 
 // Middlewares
-import { getBasket, updateBasket } from '@/middlewares/basket.client';
+import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 
 // Utils
 import { extractResponseError } from '@/lib/utils';
@@ -36,7 +36,7 @@ import { getPickupShipment, getPickupProductItemsForStore } from '@/extensions/b
 import { pickupStoreUpdateSchema, parsePickupStoreUpdateFromFormData } from '@/lib/basket-schemas';
 
 /**
- * Client action for changing the pickup store for all pickup items in the basket.
+ * Server action for changing the pickup store for all pickup items in the basket.
  *
  * This action handles changing the pickup store for all items currently set for store pickup.
  * It performs the following operations:
@@ -64,15 +64,17 @@ import { pickupStoreUpdateSchema, parsePickupStoreUpdateFromFormData } from '@/l
  * @throws Error if no basket is found in the session
  * @throws Error if any items are out of stock at the selected store
  */
-// eslint-disable-next-line custom/no-client-actions
-export async function clientAction({ request, context }: ClientActionFunctionArgs): Promise<BasketActionResponse> {
+export async function action({ request, context }: ActionFunctionArgs): Promise<BasketActionResponse> {
     const { t } = getTranslation();
 
     if (request.method !== 'PATCH') {
         throw new Response(t('errors:methodNotAllowed'), { status: 405 });
     }
 
-    const { basketId } = getBasket(context);
+    const basketResource = await getBasket(context);
+    const basket = basketResource.current;
+    const basketId = basket?.basketId ?? basketResource.snapshot?.basketId;
+
     if (!basketId) {
         return createBasketErrorResponse(t('errors:noBasketFound'));
     }
@@ -99,9 +101,6 @@ export async function clientAction({ request, context }: ClientActionFunctionArg
         const { storeId, inventoryId, storeName } = validationResult.data;
 
         const clients = createApiClients(context);
-        const basket = getBasket(context);
-
-        // Validate basket exists
         if (!basket) {
             return createBasketErrorResponse(t('errors:noBasketFound'));
         }
@@ -219,7 +218,7 @@ export async function clientAction({ request, context }: ClientActionFunctionArg
         }
 
         // Update the basket cache to reflect the changes
-        updateBasket(context, updatedBasket);
+        updateBasketResource(context, updatedBasket);
 
         return createBasketSuccessResponse(updatedBasket);
     } catch (error) {

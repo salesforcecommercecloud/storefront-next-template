@@ -21,7 +21,9 @@ import { expect, within, userEvent } from 'storybook/test';
 import { Button } from '@/components/ui/button';
 import BasketProvider from '@/providers/basket';
 import emptyBasket from '@/components/__mocks__/empty-basket';
+import emptyBasketSnapshot from '@/components/__mocks__/empty-basket-snapshot';
 import { basketWithOneItem } from '@/components/__mocks__/basket-with-dress';
+import basketWithOneItemSnapshot from '@/components/__mocks__/basket-with-dress-snapshot';
 import { ConfigProvider } from '@/config/context';
 import { mockConfig } from '@/test-utils/config';
 
@@ -138,7 +140,7 @@ type Story = StoryObj<typeof CartSheet>;
 export const Empty: Story = {
     decorators: [
         (Story) => (
-            <BasketProvider value={emptyBasket}>
+            <BasketProvider basket={emptyBasket} snapshot={emptyBasketSnapshot}>
                 <Story />
             </BasketProvider>
         ),
@@ -180,7 +182,7 @@ Cart sheet with empty cart.
 export const WithItems: Story = {
     decorators: [
         (Story) => (
-            <BasketProvider value={basketWithOneItem}>
+            <BasketProvider basket={basketWithOneItem} snapshot={basketWithOneItemSnapshot}>
                 <Story />
             </BasketProvider>
         ),
@@ -230,7 +232,7 @@ Cart sheet with items in cart.
 export const Interactive: Story = {
     decorators: [
         (Story) => (
-            <BasketProvider value={basketWithOneItem}>
+            <BasketProvider basket={basketWithOneItem} snapshot={basketWithOneItemSnapshot}>
                 <Story />
             </BasketProvider>
         ),
@@ -299,7 +301,7 @@ export const WithViewCartButton: Story = {
             };
             return (
                 <ConfigProvider config={configWithViewCart}>
-                    <BasketProvider value={basketWithOneItem}>
+                    <BasketProvider basket={basketWithOneItem} snapshot={basketWithOneItemSnapshot}>
                         <Story />
                     </BasketProvider>
                 </ConfigProvider>

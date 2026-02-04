@@ -15,7 +15,7 @@
  */
 'use client';
 
-import { type ReactElement, useCallback, useEffect } from 'react';
+import { type ReactElement, useCallback, useEffect, useRef } from 'react';
 import { useItemFetcher } from '@/hooks/use-item-fetcher';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import PickupOrDeliveryDropdown from './pickup-or-delivery-dropdown';
@@ -80,17 +80,29 @@ export default function CartDeliveryOption({ product }: CartDeliveryOptionProps)
     }, [product.storeId, setSelectedStoreInfoRaw, openStoreLocator]);
 
     // Handle show error toast on delivery-option switch (pickup - cart & vice versa) failure
+    const lastHandledErrorRef = useRef<unknown>(null);
     useEffect(() => {
-        if (fetcher.state === 'idle' && fetcher.data) {
-            const result = fetcher.data;
+        if (fetcher.state !== 'idle' || !fetcher.data) return;
+        const result = fetcher.data;
+        if (result.success !== false && !result.error) return;
+        if (lastHandledErrorRef.current === result) return;
+        lastHandledErrorRef.current = result;
 
-            if (result.success === false || result.error) {
-                const apiError = result.error || 'Unknown error';
-                const errorMessage = tExtBopis('cart.deliveryOptionChangeError', { error: apiError });
-                addToast(errorMessage, 'error');
-            }
-        }
-    }, [fetcher.data, fetcher.state, addToast, tExtBopis]);
+        const productName =
+            (product as { name?: string }).name || (product as { productName?: string }).productName || '';
+        const quantity = product?.quantity ?? 1;
+        const errorMessage = productName
+            ? tExtBopis('cart.deliveryOptionProductUnavailable', {
+                  productName,
+                  quantity,
+                  interpolation: { escapeValue: false },
+              })
+            : tExtBopis('cart.deliveryOptionChangeError', {
+                  error: result.error || 'Unknown error',
+                  interpolation: { escapeValue: false },
+              });
+        addToast(errorMessage, 'error');
+    }, [fetcher.data, fetcher.state, addToast, tExtBopis, product]);
 
     const handleSubmitDeliveryOption = (option: string) => {
         if (option === DELIVERY_OPTIONS.PICKUP && !selectedStoreInfo?.id) {

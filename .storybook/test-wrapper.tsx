@@ -31,7 +31,7 @@ export function StoryTestWrapper({ children }: { children: ReactNode }): ReactEl
     const content = (
         <ConfigProvider config={mockConfig}>
             <AuthProvider value={{ userType: 'guest', customer_id: undefined }}>
-                <BasketProvider value={undefined}>
+                <BasketProvider basket={undefined}>
                     <StoreLocatorProvider>
                         <CheckoutOneClickProvider customerProfile={undefined} shippingDefaultSet={Promise.resolve(undefined)}>
                             {children}

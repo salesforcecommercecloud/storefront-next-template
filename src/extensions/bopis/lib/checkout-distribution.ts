@@ -69,7 +69,7 @@ export type PickupShipmentDistribution = {
  *
  * @example
  * ```tsx
- * const basket = getBasket(context);
+ * const basket = (await getBasket(context)).current;
  * const distribution = getPickupShipmentDistribution(basket);
  *
  * if (distribution.hasPickupItems && distribution.hasDeliveryItems) {

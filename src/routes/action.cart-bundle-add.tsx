@@ -15,7 +15,7 @@
  */
 import { data, type ActionFunctionArgs } from 'react-router';
 import { ApiError, type ShopperBasketsV2, type ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
-import { getBasket, updateBasket } from '@/middlewares/basket.client';
+import { ensureBasketId, updateBasketResource } from '@/middlewares/basket.server';
 import { createApiClients } from '@/lib/api-clients';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import { findOrCreatePickupShipment } from '@/extensions/bopis/lib/api/shipment';
@@ -43,8 +43,7 @@ async function addBundleToCart(
     error?: string;
 }> {
     const { t } = getTranslation();
-    const basket = getBasket(context);
-    const basketId = basket?.basketId;
+    const basketId = await ensureBasketId(context);
 
     if (!basketId) {
         // This state should never happen as it would indicate that the basket middleware is broken
@@ -138,7 +137,7 @@ async function addBundleToCart(
         }
 
         // Update the basket storage
-        updateBasket(context, updatedBasket);
+        updateBasketResource(context, updatedBasket);
 
         return {
             success: true,
@@ -159,10 +158,9 @@ async function addBundleToCart(
 }
 
 /**
- * Client action to add a product bundle to the cart.
+ * Server action to add a product bundle to the cart.
  */
-// eslint-disable-next-line custom/no-client-actions
-export async function clientAction({ request, context }: ActionFunctionArgs) {
+export async function action({ request, context }: ActionFunctionArgs) {
     const { t } = getTranslation();
 
     if (request.method !== 'POST') {

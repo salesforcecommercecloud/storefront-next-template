@@ -103,7 +103,7 @@ const createTestProviders = (
 ) => (
     // @sfdc-extension-line SFDC_EXT_BOPIS
     <PickupProvider initialPickupStores={stores}>
-        <BasketProvider value={basket}>{children}</BasketProvider>
+        <BasketProvider {...(basket ? { basket } : {})}>{children}</BasketProvider>
         {/* @sfdc-extension-line SFDC_EXT_BOPIS */}
     </PickupProvider>
 );

@@ -87,10 +87,12 @@ export async function handleMultiShipShippingOptions(
             sessionStorage.setItem('checkoutShippingMethod', JSON.stringify({ multiShipFields }));
         }
 
+        // Return success with basket for client-side state update and step advancement
         return Response.json({
             success: true,
             step: 'shippingOptions',
             data: { multiShipFields },
+            basket: updatedBasket,
         });
     } catch (error) {
         let errorMessage = t('errors:api.serverError');

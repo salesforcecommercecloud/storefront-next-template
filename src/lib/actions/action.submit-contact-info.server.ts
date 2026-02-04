@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ActionFunctionArgs } from 'react-router';
-import { getBasket, updateBasket } from '@/middlewares/basket.client';
+import type { RouterContextProvider } from 'react-router';
+import { ensureBasketId, updateBasketResource } from '@/middlewares/basket.server';
 import { extractResponseError } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
@@ -22,11 +22,11 @@ import { createContactInfoSchema, parseContactInfoFromFormData } from '@/lib/che
 import { customerLookup } from '@/lib/api/customer';
 import { getTranslation } from '@/lib/i18next';
 
-// eslint-disable-next-line custom/no-client-actions
-export async function clientAction({ request, context }: ActionFunctionArgs) {
+/**
+ * Server action for submitting checkout contact information.
+ */
+export async function action(formData: FormData, context: RouterContextProvider) {
     const { t } = getTranslation();
-
-    const formData = await request.formData();
 
     // Parse and validate using shared schema
     // This ensures server-side validation matches client-side validation exactly
@@ -66,8 +66,8 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
     }
 
     // Update customer info in Commerce Cloud only if user should be treated as registered
-    const basket = getBasket(context);
-    if (!basket || !basket.basketId) {
+    const basketId = await ensureBasketId(context);
+    if (!basketId) {
         return Response.json(
             {
                 success: false,
@@ -79,12 +79,13 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
     }
 
     // Always update basket with customer email and phone (required for order placement)
+    let updatedBasket;
     try {
         const clients = createApiClients(context);
-        const { data: updatedBasket } = await clients.shopperBasketsV2.updateCustomerForBasket({
+        const { data: basketData } = await clients.shopperBasketsV2.updateCustomerForBasket({
             params: {
                 path: {
-                    basketId: basket.basketId,
+                    basketId,
                 },
             },
             body: {
@@ -93,8 +94,10 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
             },
         });
 
+        updatedBasket = basketData;
+
         // Update local basket state with API response
-        updateBasket(context, updatedBasket);
+        updateBasketResource(context, updatedBasket);
     } catch (error) {
         // Try to extract a more specific error message
         let errorMessage = t('checkout.contactInfo.saveError');
@@ -126,13 +129,7 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
         );
     }
 
-    // Store email and customer lookup result - step progression computed from basket state
-    if (typeof sessionStorage !== 'undefined') {
-        sessionStorage.setItem('checkoutEmail', email);
-        sessionStorage.setItem('customerLookupResult', JSON.stringify(customerLookupResult));
-    }
-
-    // Return success data as JSON
+    // Return success data as JSON with updated basket for direct context updates
     return Response.json({
         success: true,
         step: 'contactInfo',
@@ -140,5 +137,6 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
             email,
             customerLookup: customerLookupResult,
         },
+        basket: updatedBasket,
     });
 }

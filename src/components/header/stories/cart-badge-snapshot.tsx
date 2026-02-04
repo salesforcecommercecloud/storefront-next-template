@@ -51,11 +51,36 @@ vi.mock('react-router', () => ({
 let mockBasketValue: unknown = undefined;
 
 vi.mock('@/providers/basket', () => ({
-    default: ({ children, value }: { children: React.ReactNode; value: unknown }) => {
-        mockBasketValue = value;
+    default: ({
+        children,
+        value,
+        basket,
+        snapshot,
+    }: {
+        children: React.ReactNode;
+        value?: unknown;
+        basket?: unknown;
+        snapshot?: unknown;
+    }) => {
+        if (value !== undefined) {
+            mockBasketValue = value;
+        } else {
+            mockBasketValue = { current: basket, snapshot };
+        }
         return <div>{children}</div>;
     },
-    useBasket: () => mockBasketValue,
+    useBasket: () => {
+        if (mockBasketValue && typeof mockBasketValue === 'object' && 'current' in mockBasketValue) {
+            return (mockBasketValue as { current?: unknown }).current;
+        }
+        return mockBasketValue;
+    },
+    useBasketSnapshot: () => {
+        if (mockBasketValue && typeof mockBasketValue === 'object' && 'snapshot' in mockBasketValue) {
+            return (mockBasketValue as { snapshot?: unknown }).snapshot;
+        }
+        return undefined;
+    },
 }));
 
 import { composeStories } from '@storybook/react-vite';

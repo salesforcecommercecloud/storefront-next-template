@@ -22,7 +22,7 @@ import { getAuthDataFromCookies } from '@/middlewares/auth.client';
 /**
  * Bootstrap auth data used during client hydration before loader data is available.
  *
- * - On the client: snapshot of auth data from cookies at module load time.
+ * - On the client: snapshot of auth data from cookies at call time.
  * - On the server: always undefined.
  *
  * This is consumed by the root App component to provide a fallback value when
@@ -30,7 +30,7 @@ import { getAuthDataFromCookies } from '@/middlewares/auth.client';
  */
 /* eslint-disable react-refresh/only-export-components */
 
-export const bootstrapAuth: SessionData | undefined =
+export const getBootstrapSession = (): SessionData | undefined =>
     typeof window === 'undefined' ? undefined : (getAuthDataFromCookies() as SessionData | undefined);
 
 export const AuthContext = createContext<SessionData | undefined>(undefined);

@@ -15,7 +15,7 @@
  */
 import express, { type Express } from 'express';
 import { createRequestHandler } from '@react-router/express';
-import type { ServerBuild } from 'react-router';
+import { type ServerBuild } from 'react-router';
 import type { ViteDevServer } from 'vite';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';

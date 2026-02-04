@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ClientActionFunctionArgs } from 'react-router';
+import type { ActionFunctionArgs } from 'react-router';
 import { ApiError, type ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
-import { getBasket, updateBasket } from '@/middlewares/basket.client';
+import { ensureBasketId, updateBasketResource } from '@/middlewares/basket.server';
 import { extractResponseError } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients';
 import { getTranslation } from '@/lib/i18next';
 
 /**
- * Client action for removing a promo code from the shopping basket.
+ * Server action for removing a promo code from the shopping basket.
  *
  * This action handles POST requests to remove a specific coupon from the current user's basket.
  * It validates the coupon item ID, retrieves the current basket from the session,
@@ -45,8 +45,7 @@ import { getTranslation } from '@/lib/i18next';
  * </form>
  * ```
  */
-// eslint-disable-next-line custom/no-client-actions
-export async function clientAction({ request, context }: ClientActionFunctionArgs): Promise<{
+export async function action({ request, context }: ActionFunctionArgs): Promise<{
     success: boolean;
     basket?: ShopperBasketsV2.schemas['Basket'];
     error?: string;
@@ -57,7 +56,7 @@ export async function clientAction({ request, context }: ClientActionFunctionArg
         throw new Response(t('errors:methodNotAllowed'), { status: 405 });
     }
 
-    const { basketId } = getBasket(context);
+    const basketId = await ensureBasketId(context);
     if (!basketId) {
         return {
             success: false,
@@ -86,7 +85,7 @@ export async function clientAction({ request, context }: ClientActionFunctionArg
         });
 
         // Update the basket cache to reflect the changes
-        updateBasket(context, updatedBasket);
+        updateBasketResource(context, updatedBasket);
 
         return { success: true, basket: updatedBasket };
     } catch (error) {

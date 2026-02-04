@@ -20,12 +20,12 @@ import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi
 import type { RouterContextProvider } from 'react-router';
 
 // Mock the dependencies
-vi.mock('@/middlewares/basket.client', () => ({
-    getBasket: vi.fn(),
-    updateBasket: vi.fn(),
+vi.mock('@/middlewares/basket.server', async () => ({
+    ...(await vi.importActual('@/middlewares/basket.server')),
+    updateBasketResource: vi.fn(),
 }));
 
-import { getBasket, updateBasket } from '@/middlewares/basket.client';
+import { basketResourceContext, updateBasketResource } from '@/middlewares/basket.server';
 
 describe('generateRandomShipmentId', () => {
     it('returns a string that starts with "Shipment_"', () => {
@@ -72,7 +72,10 @@ describe('isDeliveryShipment', () => {
 });
 
 describe('updateBasketWithCustomerInfoFallback', () => {
-    const mockContext = {} as Readonly<RouterContextProvider>;
+    let mockBasketResource: { current: ShopperBasketsV2.schemas['Basket'] | null } | undefined;
+    const mockContext = {
+        get: vi.fn((context) => (context === basketResourceContext ? mockBasketResource : undefined)),
+    } as Readonly<RouterContextProvider>;
 
     beforeEach(() => {
         vi.clearAllMocks();
@@ -95,13 +98,12 @@ describe('updateBasketWithCustomerInfoFallback', () => {
             },
         } as ShopperBasketsV2.schemas['Basket'];
 
-        vi.mocked(getBasket).mockReturnValue(currentBasket);
+        mockBasketResource = { current: currentBasket };
 
         updateBasketWithCustomerInfoFallback(mockContext, updatedBasket);
 
-        expect(getBasket).toHaveBeenCalledWith(mockContext);
-        expect(updateBasket).toHaveBeenCalledWith(mockContext, updatedBasket);
-        expect(updateBasket).toHaveBeenCalledTimes(1);
+        expect(updateBasketResource).toHaveBeenCalledWith(mockContext, updatedBasket);
+        expect(updateBasketResource).toHaveBeenCalledTimes(1);
     });
 
     it('merges customer info when updated basket is missing email but current basket has it', () => {
@@ -129,12 +131,11 @@ describe('updateBasketWithCustomerInfoFallback', () => {
             taxTotal: 5,
         } as ShopperBasketsV2.schemas['Basket'];
 
-        vi.mocked(getBasket).mockReturnValue(currentBasket);
+        mockBasketResource = { current: currentBasket };
 
         updateBasketWithCustomerInfoFallback(mockContext, updatedBasket);
 
-        expect(getBasket).toHaveBeenCalledWith(mockContext);
-        expect(updateBasket).toHaveBeenCalledWith(mockContext, {
+        expect(updateBasketResource).toHaveBeenCalledWith(mockContext, {
             ...currentBasket,
             shipments: updatedBasket.shipments,
             orderTotal: updatedBasket.orderTotal,
@@ -143,7 +144,7 @@ describe('updateBasketWithCustomerInfoFallback', () => {
             merchandizeTotalTax: updatedBasket.merchandizeTotalTax,
             taxTotal: updatedBasket.taxTotal,
         });
-        expect(updateBasket).toHaveBeenCalledTimes(1);
+        expect(updateBasketResource).toHaveBeenCalledTimes(1);
     });
 
     it('uses current basket values when updated basket values are missing', () => {
@@ -171,12 +172,11 @@ describe('updateBasketWithCustomerInfoFallback', () => {
             taxTotal: 5,
         } as ShopperBasketsV2.schemas['Basket'];
 
-        vi.mocked(getBasket).mockReturnValue(currentBasket);
+        mockBasketResource = { current: currentBasket };
 
         updateBasketWithCustomerInfoFallback(mockContext, updatedBasket);
 
-        expect(getBasket).toHaveBeenCalledWith(mockContext);
-        expect(updateBasket).toHaveBeenCalledWith(mockContext, {
+        expect(updateBasketResource).toHaveBeenCalledWith(mockContext, {
             ...currentBasket,
             shipments: currentBasket.shipments,
             orderTotal: currentBasket.orderTotal,
@@ -200,13 +200,12 @@ describe('updateBasketWithCustomerInfoFallback', () => {
             customerInfo: undefined,
         } as ShopperBasketsV2.schemas['Basket'];
 
-        vi.mocked(getBasket).mockReturnValue(currentBasket);
+        mockBasketResource = { current: currentBasket };
 
         updateBasketWithCustomerInfoFallback(mockContext, updatedBasket);
 
-        expect(getBasket).toHaveBeenCalledWith(mockContext);
-        expect(updateBasket).toHaveBeenCalledWith(mockContext, updatedBasket);
-        expect(updateBasket).toHaveBeenCalledTimes(1);
+        expect(updateBasketResource).toHaveBeenCalledWith(mockContext, updatedBasket);
+        expect(updateBasketResource).toHaveBeenCalledTimes(1);
     });
 
     it('merges customer info when updated basket has empty email string', () => {
@@ -236,12 +235,11 @@ describe('updateBasketWithCustomerInfoFallback', () => {
             taxTotal: 2,
         } as ShopperBasketsV2.schemas['Basket'];
 
-        vi.mocked(getBasket).mockReturnValue(currentBasket);
+        mockBasketResource = { current: currentBasket };
 
         updateBasketWithCustomerInfoFallback(mockContext, updatedBasket);
 
-        expect(getBasket).toHaveBeenCalledWith(mockContext);
-        expect(updateBasket).toHaveBeenCalledWith(mockContext, {
+        expect(updateBasketResource).toHaveBeenCalledWith(mockContext, {
             ...currentBasket,
             shipments: updatedBasket.shipments,
             orderTotal: updatedBasket.orderTotal,
@@ -250,6 +248,6 @@ describe('updateBasketWithCustomerInfoFallback', () => {
             merchandizeTotalTax: updatedBasket.merchandizeTotalTax,
             taxTotal: updatedBasket.taxTotal,
         });
-        expect(updateBasket).toHaveBeenCalledTimes(1);
+        expect(updateBasketResource).toHaveBeenCalledTimes(1);
     });
 });

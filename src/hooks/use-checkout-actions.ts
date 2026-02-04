@@ -16,15 +16,44 @@
 import { useFetcher } from 'react-router';
 import { useEffect, useRef, useState } from 'react';
 import { useCheckoutContext } from '@/hooks/use-checkout';
+import { useBasket, useBasketUpdater } from '@/providers/basket';
 import type { ContactInfoData, PaymentData } from '@/lib/checkout-schemas';
 import type { CheckoutActionData } from '@/components/checkout/types';
+import {
+    CHECKOUT_STEPS,
+    CHECKOUT_ACTION_INTENTS,
+    type CheckoutStep,
+} from '@/components/checkout/utils/checkout-context-types';
 
-// Action route constants
-const contactInfoActionRoute = '/action/submit-contact-info';
-const shippingAddressActionRoute = '/action/submit-shipping-address';
-const shippingOptionsActionRoute = '/action/submit-shipping-options';
-const paymentActionRoute = '/action/submit-payment';
+// Action route - all checkout actions go through the checkout route
+const checkoutActionRoute = '/checkout';
 const placeOrderActionRoute = '/action/place-order';
+
+/**
+ * Action lifecycle states for tracking form submission progress.
+ */
+enum ActionState {
+    /** No action has been submitted yet */
+    NOT_STARTED = 'notStarted',
+    /** Action was submitted, waiting for response */
+    SUBMITTED = 'submitted',
+    /** Response received, basket updated, waiting to exit edit mode */
+    BASKET_UPDATED = 'basketUpdated',
+    /** Edit mode exited, action complete */
+    COMPLETED = 'completed',
+}
+
+/**
+ * Tracks the current action submission lifecycle.
+ * We must track the step here (not rely on editingStep from context) because
+ * editingStep can change before action processing completes.
+ */
+type ActionLifecycle = {
+    /** Which checkout step's action was submitted */
+    step: CheckoutStep | null;
+    /** Current state in the action lifecycle */
+    state: ActionState;
+};
 
 /**
  * Custom hook for managing checkout form actions using React Router fetchers.
@@ -46,6 +75,8 @@ const placeOrderActionRoute = '/action/place-order';
  */
 export function useCheckoutActions() {
     const { exitEditMode, editingStep } = useCheckoutContext();
+    const updateBasket = useBasketUpdater();
+    const basket = useBasket();
 
     const contactFetcher = useFetcher<CheckoutActionData>({ key: 'contact-form' });
     const shippingAddressFetcher = useFetcher<CheckoutActionData>({ key: 'shipping-address-form' });
@@ -53,64 +84,72 @@ export function useCheckoutActions() {
     const paymentFetcher = useFetcher<CheckoutActionData>({ key: 'payment-form' });
     const placeOrderFetcher = useFetcher<{ success?: boolean; error?: string; step?: string }>({ key: 'place-order' });
 
-    // Track if we've already exited edit mode for this action to prevent multiple exits
-    const hasExitedEditModeRef = useRef<Record<string, boolean>>({});
-    // Track which fetchers have been submitted during the current edit session
-    const submittedInEditSessionRef = useRef<Record<string, boolean>>({});
+    // Track action submission lifecycle.
+    // We track step here because editingStep from context can change before processing completes.
+    const actionRef = useRef<ActionLifecycle>({ step: null, state: ActionState.NOT_STARTED });
 
     // Create account state
     const [shouldCreateAccount, setShouldCreateAccount] = useState(false);
     const [savedPaymentMethods, setSavedPaymentMethods] = useState(new Set<string>());
 
-    // Reset exit tracking when entering edit mode
+    // Reset lifecycle when entering a new edit step
     useEffect(() => {
         if (editingStep !== null) {
-            hasExitedEditModeRef.current = {};
-            submittedInEditSessionRef.current = {};
+            actionRef.current = { step: null, state: ActionState.NOT_STARTED };
         }
     }, [editingStep]);
 
-    // Exit edit mode when any action completes successfully
-    // Step progression is now computed from basket state, so we just need to exit edit mode
+    // Map checkout steps to their corresponding fetchers
+    const fetcherMap: Partial<Record<CheckoutStep, typeof contactFetcher>> = {
+        [CHECKOUT_STEPS.CONTACT_INFO]: contactFetcher,
+        [CHECKOUT_STEPS.SHIPPING_ADDRESS]: shippingAddressFetcher,
+        [CHECKOUT_STEPS.SHIPPING_OPTIONS]: shippingOptionsFetcher,
+        [CHECKOUT_STEPS.PAYMENT]: paymentFetcher,
+    };
+
+    // Update basket context when action completes successfully
+    // Updates client-side basket state from action responses. Root loader revalidation
+    // only updates basketSnapshot, not the full basket. This ensures checkout step
+    // progression (which depends on basket state) works correctly after form submissions.
     useEffect(() => {
-        const fetchersToCheck = [
-            { name: 'contact', fetcher: contactFetcher },
-            { name: 'shippingAddress', fetcher: shippingAddressFetcher },
-            { name: 'shippingOptions', fetcher: shippingOptionsFetcher },
-            { name: 'payment', fetcher: paymentFetcher },
-        ];
+        const { step, state } = actionRef.current;
 
-        // Only exit edit mode if we're currently in edit mode
-        if (editingStep !== null) {
-            // Check for fetchers that just transitioned from submitting/loading to idle with success
-            for (const { name, fetcher } of fetchersToCheck) {
-                const hasSuccess = fetcher.data?.success;
-                const hasAlreadyExited = hasExitedEditModeRef.current[name];
-                const wasSubmitted = submittedInEditSessionRef.current[name];
-
-                // Skip if we've already exited edit mode for this fetcher
-                if (hasAlreadyExited) {
-                    continue;
-                }
-
-                // Exit edit mode if fetcher has success data AND was submitted during current edit session
-                if (hasSuccess && wasSubmitted) {
-                    hasExitedEditModeRef.current[name] = true;
-                    exitEditMode();
-                    break; // Exit after first successful completion
-                }
-            }
+        // Only process if we're in SUBMITTED state
+        if (step === null || state !== ActionState.SUBMITTED) {
+            return;
         }
-        // Following project pattern: only include fetcher.data as dependencies
-        // The fetcher objects and stable functions like exitEditMode don't need to be dependencies
+
+        const fetcher = fetcherMap[step];
+        if (!fetcher?.data?.success || !fetcher.data.basket) {
+            return;
+        }
+
+        // Transition: SUBMITTED -> BASKET_UPDATED
+        actionRef.current = { step, state: ActionState.BASKET_UPDATED };
+        updateBasket(fetcher.data.basket);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [
-        contactFetcher.data,
-        shippingAddressFetcher.data,
-        shippingOptionsFetcher.data,
-        paymentFetcher.data,
-        editingStep,
-    ]);
+    }, [contactFetcher.data, shippingAddressFetcher.data, shippingOptionsFetcher.data, paymentFetcher.data]);
+
+    // Exit edit mode after basket has been updated
+    // Depends on basket so it runs AFTER the basket state update has been applied
+    useEffect(() => {
+        const { step, state } = actionRef.current;
+
+        // Only process if we're in BASKET_UPDATED state and in edit mode
+        if (editingStep === null || step === null || state !== ActionState.BASKET_UPDATED) {
+            return;
+        }
+
+        const fetcher = fetcherMap[step];
+        if (!fetcher?.data?.success) {
+            return;
+        }
+
+        // Transition: BASKET_UPDATED -> COMPLETED
+        actionRef.current = { step, state: ActionState.COMPLETED };
+        exitEditMode();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [editingStep, basket]);
 
     /**
      * Submits contact information to the contact info action.
@@ -123,16 +162,17 @@ export function useCheckoutActions() {
             return;
         }
 
-        // Track that this fetcher was submitted during the current edit session
-        submittedInEditSessionRef.current.contact = true;
+        // Transition: IDLE -> SUBMITTED
+        actionRef.current = { step: CHECKOUT_STEPS.CONTACT_INFO, state: ActionState.SUBMITTED };
 
         // Convert typed data to FormData for fetcher submission
         const formData = new FormData();
+        formData.append('intent', CHECKOUT_ACTION_INTENTS.CONTACT_INFO);
         formData.append('email', data.email);
 
         void contactFetcher.submit(formData, {
             method: 'post',
-            action: contactInfoActionRoute,
+            action: checkoutActionRoute,
         });
     };
 
@@ -147,12 +187,15 @@ export function useCheckoutActions() {
             return;
         }
 
-        // Track that this fetcher was submitted during the current edit session
-        submittedInEditSessionRef.current.shippingAddress = true;
+        // Transition: IDLE -> SUBMITTED
+        actionRef.current = { step: CHECKOUT_STEPS.SHIPPING_ADDRESS, state: ActionState.SUBMITTED };
+
+        // Add intent field
+        formData.append('intent', CHECKOUT_ACTION_INTENTS.SHIPPING_ADDRESS);
 
         void shippingAddressFetcher.submit(formData, {
             method: 'post',
-            action: shippingAddressActionRoute,
+            action: checkoutActionRoute,
         });
     };
 
@@ -167,12 +210,15 @@ export function useCheckoutActions() {
             return;
         }
 
-        // Track that this fetcher was submitted during the current edit session
-        submittedInEditSessionRef.current.shippingOptions = true;
+        // Transition: IDLE -> SUBMITTED
+        actionRef.current = { step: CHECKOUT_STEPS.SHIPPING_OPTIONS, state: ActionState.SUBMITTED };
+
+        // Add intent field
+        formData.append('intent', CHECKOUT_ACTION_INTENTS.SHIPPING_OPTIONS);
 
         void shippingOptionsFetcher.submit(formData, {
             method: 'post',
-            action: shippingOptionsActionRoute,
+            action: checkoutActionRoute,
         });
     };
 
@@ -186,11 +232,13 @@ export function useCheckoutActions() {
         if (paymentFetcher.state === 'submitting') {
             return;
         }
-        // Track that this fetcher was submitted during the current edit session
-        submittedInEditSessionRef.current.payment = true;
+
+        // Transition: IDLE -> SUBMITTED
+        actionRef.current = { step: CHECKOUT_STEPS.PAYMENT, state: ActionState.SUBMITTED };
 
         // Convert typed data to FormData for fetcher submission
         const formData = new FormData();
+        formData.append('intent', CHECKOUT_ACTION_INTENTS.PAYMENT);
         formData.append('cardNumber', data.cardNumber || '');
         formData.append('cardholderName', data.cardholderName || '');
         formData.append('expiryDate', data.expiryDate || '');
@@ -217,7 +265,7 @@ export function useCheckoutActions() {
         // Submit payment form data
         void paymentFetcher.submit(formData, {
             method: 'post',
-            action: paymentActionRoute,
+            action: checkoutActionRoute,
         });
     };
 

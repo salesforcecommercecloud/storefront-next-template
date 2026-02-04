@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { clientAction } from './action.place-order';
-import { getBasket } from '@/middlewares/basket.client';
+import { action } from './action.place-order';
+import { getBasket } from '@/middlewares/basket.server';
 import { getTranslation } from '@/lib/i18next';
 import { createFormDataRequest } from '@/test-utils/request-helpers';
 import type { ActionFunctionArgs } from 'react-router';
 
-vi.mock('@/middlewares/basket.client', () => ({
+vi.mock('@/middlewares/basket.server', () => ({
     getBasket: vi.fn(),
-    updateBasket: vi.fn(),
+    updateBasketResource: vi.fn(),
     destroyBasket: vi.fn(),
 }));
 
-vi.mock('@/middlewares/auth.client', () => ({
+vi.mock('@/middlewares/auth.server', () => ({
     getAuth: vi.fn(),
 }));
 
@@ -50,7 +50,7 @@ async function parsePlaceOrderResponse(
     return response.json() as Promise<{ success?: boolean; error?: string; step?: string }>;
 }
 
-describe('action.place-order clientAction', () => {
+describe('action.place-order action', () => {
     const mockContext = {} as ActionFunctionArgs['context'];
 
     beforeEach(() => {
@@ -63,10 +63,10 @@ describe('action.place-order clientAction', () => {
     });
 
     test('returns noActiveBasket when basket is missing', async () => {
-        vi.mocked(getBasket).mockReturnValue(undefined as any);
+        vi.mocked(getBasket).mockResolvedValue({ current: undefined } as any);
 
         const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {});
-        const response = await clientAction({ request, context: mockContext, params: {} });
+        const response = await action({ request, context: mockContext, params: {} } as ActionFunctionArgs);
 
         expect(response).toBeInstanceOf(Response);
         expect(response.status).toBe(400);
@@ -77,14 +77,16 @@ describe('action.place-order clientAction', () => {
     });
 
     test('returns emailRequired when basket has no customer email', async () => {
-        vi.mocked(getBasket).mockReturnValue({
-            basketId: 'b1',
-            productItems: [],
-            shipments: [],
+        vi.mocked(getBasket).mockResolvedValue({
+            current: {
+                basketId: 'b1',
+                productItems: [],
+                shipments: [],
+            },
         } as any);
 
         const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {});
-        const response = await clientAction({ request, context: mockContext, params: {} });
+        const response = await action({ request, context: mockContext, params: {} } as ActionFunctionArgs);
 
         expect(response.status).toBe(400);
         const body = await parsePlaceOrderResponse(response);
@@ -93,26 +95,28 @@ describe('action.place-order clientAction', () => {
     });
 
     test('returns shippingMethodRequired when a non-empty shipment has no shipping method', async () => {
-        vi.mocked(getBasket).mockReturnValue({
-            basketId: 'b1',
-            customerInfo: { email: 'test@example.com' },
-            productItems: [{ itemId: 'i1', productId: 'p1', quantity: 1, shipmentId: 'me' }],
-            shipments: [
-                {
-                    shipmentId: 'me',
-                    shippingAddress: {
-                        address1: '123 Main St',
-                        city: 'Austin',
-                        postalCode: '78701',
-                        countryCode: 'US',
+        vi.mocked(getBasket).mockResolvedValue({
+            current: {
+                basketId: 'b1',
+                customerInfo: { email: 'test@example.com' },
+                productItems: [{ itemId: 'i1', productId: 'p1', quantity: 1, shipmentId: 'me' }],
+                shipments: [
+                    {
+                        shipmentId: 'me',
+                        shippingAddress: {
+                            address1: '123 Main St',
+                            city: 'Austin',
+                            postalCode: '78701',
+                            countryCode: 'US',
+                        },
+                        // no shippingMethod
                     },
-                    // no shippingMethod
-                },
-            ],
+                ],
+            },
         } as any);
 
         const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {});
-        const response = await clientAction({ request, context: mockContext, params: {} });
+        const response = await action({ request, context: mockContext, params: {} } as ActionFunctionArgs);
 
         expect(response).toBeInstanceOf(Response);
         expect(response.status).toBe(400);
@@ -123,21 +127,23 @@ describe('action.place-order clientAction', () => {
     });
 
     test('returns shippingAddressRequired when a non-empty shipment has no shipping address', async () => {
-        vi.mocked(getBasket).mockReturnValue({
-            basketId: 'b1',
-            customerInfo: { email: 'test@example.com' },
-            productItems: [{ itemId: 'i1', productId: 'p1', quantity: 1, shipmentId: 'me' }],
-            shipments: [
-                {
-                    shipmentId: 'me',
-                    // no shippingAddress
-                    shippingMethod: { id: 'ground', name: 'Ground' },
-                },
-            ],
+        vi.mocked(getBasket).mockResolvedValue({
+            current: {
+                basketId: 'b1',
+                customerInfo: { email: 'test@example.com' },
+                productItems: [{ itemId: 'i1', productId: 'p1', quantity: 1, shipmentId: 'me' }],
+                shipments: [
+                    {
+                        shipmentId: 'me',
+                        // no shippingAddress
+                        shippingMethod: { id: 'ground', name: 'Ground' },
+                    },
+                ],
+            },
         } as any);
 
         const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {});
-        const response = await clientAction({ request, context: mockContext, params: {} });
+        const response = await action({ request, context: mockContext, params: {} } as ActionFunctionArgs);
 
         expect(response.status).toBe(400);
         const body = await parsePlaceOrderResponse(response);

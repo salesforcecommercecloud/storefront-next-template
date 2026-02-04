@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ActionFunctionArgs } from 'react-router';
-import { getBasket, updateBasket } from '@/middlewares/basket.client';
+import type { RouterContextProvider } from 'react-router';
+import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { createPaymentSchema, parsePaymentFromFormData } from '@/lib/checkout-schemas';
 import { addPaymentInstrumentToBasket, updateBillingAddressForBasket } from '@/lib/api/basket';
 import { detectCardType } from '@/lib/payment-utils';
 import { getTranslation } from '@/lib/i18next';
 
-// eslint-disable-next-line custom/no-client-actions
-export async function clientAction({ request, context }: ActionFunctionArgs) {
+/**
+ * Server action for submitting checkout payment information.
+ */
+export async function action(formData: FormData, context: RouterContextProvider) {
     const { t } = getTranslation();
-
-    const formData = await request.formData();
 
     // Parse and validate using shared schema
     // This ensures server-side validation matches client-side validation exactly
@@ -56,7 +56,9 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
     // Note: CVV is not stored for security reasons
 
     // Get current basket first (needed for payment amount)
-    const basket = getBasket(context);
+    const basketResource = await getBasket(context);
+    const basket = basketResource.current;
+    const basketId = basket?.basketId ?? basketResource.snapshot?.basketId;
 
     let paymentInfo;
 
@@ -118,8 +120,9 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
           };
 
     // Add payment instrument to basket via Commerce API
+    let finalUpdatedBasket;
     try {
-        if (!basket.basketId) {
+        if (!basketId || !basket) {
             return Response.json(
                 {
                     success: false,
@@ -131,20 +134,20 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
         }
 
         // First add the payment instrument
-        const updatedBasket = await addPaymentInstrumentToBasket(context, basket.basketId, paymentInfo);
+        const updatedBasket = await addPaymentInstrumentToBasket(context, basketId, paymentInfo);
 
         // Then update the billing address (this should also trigger calculations)
-        const finalBasket = await updateBillingAddressForBasket(context, basket.basketId, billingAddress);
+        const finalBasket = await updateBillingAddressForBasket(context, basketId, billingAddress);
 
         // Update basket with the final state from billing address API call
         // This should include payment instruments, billing address, and calculated totals
-        const currentBasket = getBasket(context);
+        const currentBasket = basket;
 
         // Check if payment instruments are preserved in the final response
         if (!finalBasket.paymentInstruments?.[0]) {
             // Payment instruments missing from API response, using updatedBasket data
             // Use the payment instrument from the earlier addPaymentInstrument call
-            const preservedBasket = {
+            finalUpdatedBasket = {
                 ...currentBasket,
                 // Update with calculated totals from finalBasket
                 orderTotal: finalBasket.orderTotal,
@@ -156,10 +159,10 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
                 paymentInstruments: updatedBasket.paymentInstruments,
                 billingAddress: finalBasket.billingAddress,
             };
-            updateBasket(context, preservedBasket);
+            updateBasketResource(context, finalUpdatedBasket);
         } else {
             // Payment instruments are preserved, use the complete final basket
-            const finalUpdatedBasket = {
+            finalUpdatedBasket = {
                 ...currentBasket,
                 // Update all relevant fields from the API response
                 orderTotal: finalBasket.orderTotal,
@@ -170,7 +173,7 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
                 paymentInstruments: finalBasket.paymentInstruments,
                 billingAddress: finalBasket.billingAddress,
             };
-            updateBasket(context, finalUpdatedBasket);
+            updateBasketResource(context, finalUpdatedBasket);
         }
     } catch {
         return Response.json(
@@ -183,15 +186,11 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
         );
     }
 
-    // Store payment info - step progression computed from basket state
-    if (typeof sessionStorage !== 'undefined') {
-        sessionStorage.setItem('checkoutPayment', JSON.stringify(paymentInfo));
-    }
-
-    // Return success data as JSON
+    // Return success data as JSON with updated basket for direct context updates
     return Response.json({
         success: true,
         step: 'payment',
         data: { paymentInfo },
+        basket: finalUpdatedBasket,
     });
 }

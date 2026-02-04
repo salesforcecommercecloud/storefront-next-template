@@ -28,6 +28,19 @@ export const CHECKOUT_STEPS = {
 
 export type CheckoutStep = (typeof CHECKOUT_STEPS)[keyof typeof CHECKOUT_STEPS];
 
+/**
+ * Action intent values for checkout form submissions
+ * Maps to the checkout step keys in camelCase format
+ */
+export const CHECKOUT_ACTION_INTENTS = {
+    CONTACT_INFO: 'contactInfo',
+    SHIPPING_ADDRESS: 'shippingAddress',
+    SHIPPING_OPTIONS: 'shippingOptions',
+    PAYMENT: 'payment',
+} as const;
+
+export type CheckoutActionIntent = (typeof CHECKOUT_ACTION_INTENTS)[keyof typeof CHECKOUT_ACTION_INTENTS];
+
 export interface CustomerProfile {
     customer?: ShopperCustomers.schemas['Customer'];
     addresses: ShopperCustomers.schemas['CustomerAddress'][];

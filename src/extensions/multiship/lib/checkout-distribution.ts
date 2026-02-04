@@ -60,7 +60,7 @@ export type MultiShipmentDistribution = {
  *
  * @example
  * ```tsx
- * const basket = getBasket(context);
+ * const basket = (await getBasket(context)).current;
  * const distribution = getMultiShipmentDistribution(basket);
  *
  * if (distribution.hasMultipleDeliveryAddresses) {

@@ -176,7 +176,7 @@ export const PickupSelected: Story = {
 
             return (
                 <AllProvidersWrapper>
-                    <BasketProvider value={mockBasketWithPickup}>
+                    <BasketProvider basket={mockBasketWithPickup}>
                         <ActionLogger>
                             <Story />
                         </ActionLogger>

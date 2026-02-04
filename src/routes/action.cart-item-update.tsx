@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 // React Router
-import type { ClientActionFunctionArgs } from 'react-router';
+import type { ActionFunctionArgs } from 'react-router';
 
 // Commerce SDK
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 
 // Middlewares
-import { getBasket, updateBasket } from '@/middlewares/basket.client';
+import { ensureBasketId, updateBasketResource } from '@/middlewares/basket.server';
 
 // API
 import { createApiClients } from '@/lib/api-clients';
@@ -38,7 +38,7 @@ import { getTranslation } from '@/lib/i18next';
 import { handleCartItemDeliveryOptionChange } from '@/extensions/bopis/lib/actions/cart-item-delivery-option-handler';
 
 /**
- * Client action for updating a cart item (variant and/or quantity)
+ * Server action for updating a cart item (variant and/or quantity)
  *
  * This action handles updating an existing item in the user's shopping basket.
  * It can update:
@@ -70,15 +70,14 @@ import { handleCartItemDeliveryOptionChange } from '@/extensions/bopis/lib/actio
  * @throws Error if form data validation fails (invalid itemId, productId, or quantity)
  * @throws Error if no basket is found in the session
  */
-// eslint-disable-next-line custom/no-client-actions
-export async function clientAction({ request, context }: ClientActionFunctionArgs): Promise<BasketActionResponse> {
+export async function action({ request, context }: ActionFunctionArgs): Promise<BasketActionResponse> {
     const { t } = getTranslation();
 
     if (request.method !== 'PATCH') {
         throw new Response(t('errors:methodNotAllowed'), { status: 405 });
     }
 
-    const { basketId } = getBasket(context);
+    const basketId = await ensureBasketId(context);
     if (!basketId) {
         return createBasketErrorResponse(t('errors:noBasketFound'));
     }
@@ -127,7 +126,7 @@ export async function clientAction({ request, context }: ClientActionFunctionArg
         });
 
         // Update the basket cache to reflect the changes
-        updateBasket(context, updatedBasket);
+        updateBasketResource(context, updatedBasket);
 
         return createBasketSuccessResponse(updatedBasket);
     } catch (error) {

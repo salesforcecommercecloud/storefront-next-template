@@ -13,90 +13,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from 'react-router';
 import { use } from 'react';
-import { getAuth as getAuthServer } from '@/middlewares/auth.server';
-import {
-    getServerCustomerProfileData,
-    getServerShippingMethodsMapData,
-    clientLoader as getClientLoaderData,
-    type CheckoutPageData,
-} from '@/lib/checkout-loaders';
+import type { ActionFunctionArgs } from 'react-router';
+import { loader, type CheckoutPageData } from '@/lib/checkout-loaders';
 import { createPage, type RouteComponentProps } from '@/components/create-page';
 import CheckoutFormPage from '@/components/checkout/checkout-form-page';
 import CheckoutProvider from '@/components/checkout/utils/checkout-context';
 import { CheckoutErrorBoundary } from '@/components/checkout-error-boundary';
 import { Skeleton } from '@/components/ui/skeleton';
-import Loading from '@/components/loading';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import PickupProvider from '@/extensions/bopis/context/pickup-context';
 import GoogleCloudApiProvider from '@/providers/google-cloud-api';
+import { CHECKOUT_ACTION_INTENTS } from '@/components/checkout/utils/checkout-context-types';
+import { action as submitContactInfo } from '@/lib/actions/action.submit-contact-info.server';
+import { action as submitShippingAddress } from '@/lib/actions/action.submit-shipping-address.server';
+import { action as submitShippingOptions } from '@/lib/actions/action.submit-shipping-options.server';
+import { action as submitPayment } from '@/lib/actions/action.submit-payment.server';
+
+// Re-export the comprehensive loader from checkout-loaders
+// It handles: basket loading, product map, promotions, customer profile prefill, shipping methods
+// eslint-disable-next-line react-refresh/only-export-components
+export { loader };
 
 /**
- * Server-side loader function for checkout route
- *
- * This function runs on the server during SSR and prepares checkout data:
- * - Uses server middleware for authenticated data access
- * - Handles errors gracefully with fallback to empty data
- *
- * @returns Object containing checkout data promises
+ * Unified action handler for all checkout form submissions.
+ * Routes to the appropriate server action based on the 'intent' field.
  */
 // eslint-disable-next-line react-refresh/only-export-components
-export function loader(args: LoaderFunctionArgs): CheckoutPageData {
-    const { context } = args;
+export async function action({ request, context }: ActionFunctionArgs) {
+    const formData = await request.formData();
+    const intent = formData.get('intent')?.toString();
 
-    try {
-        const authSession = getAuthServer(context);
-        const isRegistered = authSession?.userType === 'registered';
-
-        // Fetch customer profile for registered users
-        // TODO: Right now basket middleware is client-side only. Revisit this after the server side basket is available
-        const customerProfilePromise = isRegistered
-            ? getServerCustomerProfileData(context, authSession)
-            : Promise.resolve(null);
-
-        const shippingMethodsMapPromise = getServerShippingMethodsMapData(context, authSession);
-
-        return {
-            customerProfile: customerProfilePromise,
-            shippingMethodsMap: shippingMethodsMapPromise,
-            productMap: Promise.resolve({}),
-            promotions: Promise.resolve({}),
-            isRegisteredCustomer: isRegistered,
-        };
-    } catch {
-        // Fallback to minimal data
-        return {
-            customerProfile: Promise.resolve(null),
-            shippingMethodsMap: Promise.resolve({}),
-            productMap: Promise.resolve({}),
-            promotions: Promise.resolve({}),
-            isRegisteredCustomer: false,
-        };
+    switch (intent) {
+        case CHECKOUT_ACTION_INTENTS.CONTACT_INFO:
+            return submitContactInfo(formData, context);
+        case CHECKOUT_ACTION_INTENTS.SHIPPING_ADDRESS:
+            return submitShippingAddress(formData, context);
+        case CHECKOUT_ACTION_INTENTS.SHIPPING_OPTIONS:
+            return submitShippingOptions(formData, context);
+        case CHECKOUT_ACTION_INTENTS.PAYMENT:
+            return submitPayment(formData, context);
+        default:
+            return Response.json({ success: false, error: 'Invalid action intent' }, { status: 400 });
     }
 }
-
-/**
- * Client-side loader function for checkout route
- *
- * This function handles data loading for client-side navigation:
- * - Uses client middleware for basket and auth data
- * - Initializes basket for returning customers
- * - Handles errors gracefully with fallback to empty data
- * @returns Object containing checkout data promises
- */
-// eslint-disable-next-line react-refresh/only-export-components,custom/no-client-loaders
-export function clientLoader(args: ClientLoaderFunctionArgs): CheckoutPageData {
-    return getClientLoaderData(args);
-}
-
-/**
- * Force client loader to run on every page load. Basket + shipping data live only
- * in client middleware (localStorage), so SSR can’t hydrate them. Without hydrate=true
- * we reuse empty server data, leading to stale prices/NaN totals and missing shipping
- * methods on hard page refresh. The small perf cost ensures checkout always has fresh basket state.
- */
-clientLoader.hydrate = true as const;
 
 /**
  * Skeleton loader for checkout sections
@@ -136,18 +96,6 @@ function CheckoutSkeleton() {
             </div>
         </div>
     );
-}
-
-/**
- * Hydrate fallback component displayed during client-side hydration
- *
- * This component is shown when the checkout route gets called/rendered directly on the server
- * during the hydration process, providing a loading state while the client-side data loads.
- *
- * @returns JSX element representing the checkout loading state
- */
-export function HydrateFallback() {
-    return <Loading />;
 }
 
 /**

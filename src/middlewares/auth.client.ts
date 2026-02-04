@@ -158,14 +158,14 @@ export function getAuthDataFromCookies(): Partial<AuthStorageData> | undefined {
         //   3. Server renders HTML with trackingConsent=undefined
         //   4. Server → Response with Set-Cookie: dw_dnt=; Max-Age=0 (deletion)
         //   5. ⚠️  BUT during hydration, client reads cookies BEFORE processing Set-Cookie header
-        //   6. Client sees old invalid cookie (dw_dnt=0) in bootstrapAuth
+        //   6. Client sees old invalid cookie (dw_dnt=0) in getBootstrapSession
         //   7. Without client validation → Hydration mismatch! Server rendered with undefined, client has '0'
         //
         // The Set-Cookie header only takes effect AFTER the response is fully processed,
         // but hydration happens DURING response processing. Client-side validation ensures
         // getAuthDataFromCookies() returns the same result as server middleware.
         //
-        // TODO: When revisiting auth architecture, consider moving bootstrapAuth from module-level
+        // TODO: When revisiting auth architecture, consider moving getBootstrapSession from module-level
         // constant to a function that reads cookies during render, or explore other strategies
         // to eliminate this timing issue entirely.
         //

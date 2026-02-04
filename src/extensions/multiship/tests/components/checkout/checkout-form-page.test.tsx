@@ -382,7 +382,7 @@ describe('CheckoutFormPage - multiship', () => {
         expect(screen.queryByTestId('store-pickup')).not.toBeInTheDocument();
         await waitFor(() => {
             expect(screen.getByTestId('shipping-address')).toBeInTheDocument();
+            expect(screen.getByTestId('shipping-options')).toBeInTheDocument();
         });
-        expect(screen.getByTestId('shipping-options')).toBeInTheDocument();
     });
 });

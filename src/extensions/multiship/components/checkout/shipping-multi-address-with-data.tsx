@@ -33,6 +33,7 @@ export default function ShippingMultiAddressWithData({
     handleToggleShippingAddressMode,
     onEdit,
     onSubmit,
+    isCompleted,
     hasMultipleDeliveryAddresses,
     ...shippingAddressState
 }: {
@@ -45,6 +46,7 @@ export default function ShippingMultiAddressWithData({
     handleToggleShippingAddressMode: () => void;
     onEdit: () => void;
     onSubmit: (formData: FormData) => void;
+    isCompleted?: boolean;
     hasMultipleDeliveryAddresses?: boolean;
 }) {
     // Only resolve the productMap promise when editing; pass undefined for summary view since product details aren't needed
@@ -61,6 +63,7 @@ export default function ShippingMultiAddressWithData({
             handleToggleShippingAddressMode={handleToggleShippingAddressMode}
             onEdit={onEdit}
             onSubmit={onSubmit}
+            isCompleted={isCompleted}
             hasMultipleDeliveryAddresses={hasMultipleDeliveryAddresses}
             {...shippingAddressState}
         />

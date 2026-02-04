@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ClientLoaderFunctionArgs, LoaderFunctionArgs } from 'react-router';
-import { getBasket } from '@/middlewares/basket.client';
+import type { LoaderFunctionArgs } from 'react-router';
+import { getBasket } from '@/middlewares/basket.server';
 import { createApiClients } from '@/lib/api-clients';
 import { getConfig } from '@/config';
 import type { ProductWithPromotions } from '@/hooks/use-basket-with-promotions';
@@ -24,10 +24,9 @@ import type { ProductWithPromotions } from '@/hooks/use-basket-with-promotions';
  * Fetches product promotion data for all items in the basket
  * Returns a mapping of productId to product data with promotions
  */
-async function fetchBasketProductsPromotions(
-    context: LoaderFunctionArgs['context']
-): Promise<Record<string, ProductWithPromotions>> {
-    const basket = getBasket(context);
+// eslint-disable-next-line custom/no-async-page-loader
+export async function loader({ context }: LoaderFunctionArgs): Promise<Record<string, ProductWithPromotions>> {
+    const basket = (await getBasket(context)).current;
 
     if (!basket?.productItems?.length) {
         return {};
@@ -77,13 +76,4 @@ async function fetchBasketProductsPromotions(
         // Return empty object on error - component will not show callout text
         return {};
     }
-}
-
-export function loader({ context }: LoaderFunctionArgs) {
-    return fetchBasketProductsPromotions(context);
-}
-
-// eslint-disable-next-line custom/no-client-loaders
-export function clientLoader({ context }: ClientLoaderFunctionArgs) {
-    return fetchBasketProductsPromotions(context);
 }

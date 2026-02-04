@@ -22,6 +22,7 @@ import { updateBasketWithCustomerInfoFallback } from '@/extensions/multiship/lib
 import { isRegisteredCustomer, getCurrentCustomer, saveShippingAddressToCustomer } from '@/lib/api/customer';
 import { getAddressKey, isAddressEqual } from '@/extensions/multiship/lib/address-utils';
 import { getTranslation } from '@/lib/i18next';
+import { fetchShippingMethodsMapForBasket } from '@/lib/checkout-loaders';
 
 /**
  * Handle multi-shipment shipping address submission
@@ -212,10 +213,18 @@ export async function handleMultiShipShippingAddress(
             sessionStorage.setItem('checkoutShippingAddress', 'NOT_USED');
         }
 
+        // Fetch shipping methods for all shipments (now that addresses are set)
+        const shippingMethodsMap = await fetchShippingMethodsMapForBasket(context, updatedBasket);
+
+        // Return success with basket for client-side state update and step advancement
         return Response.json({
             success: true,
             step: 'shippingAddress',
-            data: { addresses: Object.keys(addressToItemsMap) },
+            data: {
+                addresses: Object.keys(addressToItemsMap),
+                shippingMethodsMap,
+            },
+            basket: updatedBasket,
             profileUpdateError,
         });
     } catch (error) {

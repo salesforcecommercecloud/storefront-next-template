@@ -16,7 +16,7 @@
 
 import type { RouterContextProvider } from 'react-router';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
-import { getBasket, updateBasket } from '@/middlewares/basket.client';
+import { basketResourceContext, updateBasketResource } from '@/middlewares/basket.server';
 
 /**
  * Generates a unique id string for shipment
@@ -50,11 +50,11 @@ export function updateBasketWithCustomerInfoFallback(
     context: Readonly<RouterContextProvider>,
     updatedBasket: ShopperBasketsV2.schemas['Basket']
 ): void {
-    const currentBasket = getBasket(context);
+    const currentBasket = context.get(basketResourceContext)?.current ?? null;
 
-    if (!updatedBasket.customerInfo?.email && currentBasket.customerInfo?.email) {
+    if (!updatedBasket.customerInfo?.email && currentBasket?.customerInfo?.email) {
         // Customer info missing from API response, merging with current basket
-        updateBasket(context, {
+        updateBasketResource(context, {
             ...currentBasket,
             shipments: updatedBasket.shipments || currentBasket.shipments,
             orderTotal: updatedBasket.orderTotal || currentBasket.orderTotal,
@@ -64,6 +64,6 @@ export function updateBasketWithCustomerInfoFallback(
             taxTotal: updatedBasket.taxTotal || currentBasket.taxTotal,
         });
     } else {
-        updateBasket(context, updatedBasket);
+        updateBasketResource(context, updatedBasket);
     }
 }

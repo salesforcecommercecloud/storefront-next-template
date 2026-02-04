@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getBasket, updateBasket } from '@/middlewares/basket.client';
+import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { createApiClients } from '@/lib/api-clients';
 import { findOrCreateDeliveryShipment } from '@/extensions/multiship/lib/api/basket';
 import { findOrCreatePickupShipment } from '@/extensions/bopis/lib/api/shipment';
@@ -36,8 +36,9 @@ export async function handleCartItemDeliveryOptionChange(
     if (!deliveryOption) return null;
 
     try {
-        const freshBasket = getBasket(context);
-        if (!freshBasket.basketId) {
+        const basketResource = await getBasket(context);
+        const freshBasket = basketResource.current;
+        if (!freshBasket?.basketId) {
             return createBasketErrorResponse('Basket ID is required.');
         }
         const clients = createApiClients(context);
@@ -66,7 +67,7 @@ export async function handleCartItemDeliveryOptionChange(
         const basket = await clients.shopperBasketsV2.getBasket({
             params: { path: { basketId: freshBasket.basketId } },
         });
-        updateBasket(context, basket.data);
+        updateBasketResource(context, basket.data);
         return createBasketSuccessResponse(basket.data);
     } catch (error) {
         if (error instanceof ApiError) {

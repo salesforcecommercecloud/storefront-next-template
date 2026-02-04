@@ -870,4 +870,40 @@ export const flashAuth = (context: Readonly<RouterContextProvider>, message?: st
     storage.set('error', message ?? '');
 };
 
+/**
+ * Clear invalid session and restore a fresh guest session.
+ * This is useful when a customer is deleted or session is corrupted.
+ * Cookies are deleted via the 'isDestroyed' flag, which triggers
+ * the middleware's response section to send Set-Cookie deletion headers.
+ */
+export const clearInvalidSessionAndRestoreGuest = async (context: Readonly<RouterContextProvider>): Promise<void> => {
+    const { t } = getTranslation();
+    const storage = context.get(authStorageContext);
+    const cache = context.get(authCacheContext);
+    const promiseCache = context.get(authContext);
+
+    if (!storage || !cache || !promiseCache) {
+        throw new Error('clearInvalidSessionAndRestoreGuest must be used within auth middleware');
+    }
+
+    // Clear in-memory storage and cache
+    clearStorage(storage);
+    cache.ref = undefined;
+
+    try {
+        // Get new guest session (no usid - start completely fresh)
+        const tokenResponse = await loginGuestUser(context, { usid: undefined });
+        await updateStorageAndCache(context, storage, cache, tokenResponse, 'guest');
+        promiseCache.ref = createAuthPromise(context, cache.ref);
+
+        // Mark for destruction - triggers cookie deletion in response section
+        storage.set('isDestroyed', true);
+    } catch (error) {
+        // If guest login fails, still mark for destruction and set error
+        storage.set('isDestroyed', true);
+        storage.set('error', t('errors:guestAccessTokenFailed'));
+        throw error;
+    }
+};
+
 export default authMiddleware;

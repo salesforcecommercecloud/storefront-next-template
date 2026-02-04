@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { redirect, type ActionFunctionArgs } from 'react-router';
-import { getBasket, updateBasket, destroyBasket } from '@/middlewares/basket.client';
-import { getAuth } from '@/middlewares/auth.client';
+import { getBasket, updateBasketResource, destroyBasket } from '@/middlewares/basket.server';
+import { getAuth } from '@/middlewares/auth.server';
 import { createApiClients } from '@/lib/api-clients';
 import {
     calculateBasket,
@@ -37,8 +37,10 @@ import { getTranslation } from '@/lib/i18next';
 // @sfdc-extension-line SFDC_EXT_MULTISHIP
 import { resolveEmptyShipments } from '@/extensions/multiship/lib/api/basket';
 
-// eslint-disable-next-line custom/no-client-actions
-export async function clientAction({ request, context }: ActionFunctionArgs) {
+/**
+ * Server action for placing an order.
+ */
+export async function action({ request, context }: ActionFunctionArgs) {
     const { t } = getTranslation();
 
     try {
@@ -47,7 +49,9 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
         const shouldCreateAccount = formData.get('shouldCreateAccount') === 'true';
 
         // Get current basket
-        const basket = getBasket(context);
+        const basketResource = await getBasket(context);
+        const basket = basketResource.current;
+
         if (!basket || !basket.basketId) {
             return Response.json(
                 {
@@ -160,7 +164,7 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
                                 paymentInstruments: updatedBasket.paymentInstruments || finalBasket.paymentInstruments,
                                 billingAddress: finalBasket.billingAddress,
                             };
-                            updateBasket(context, preservedBasket);
+                            updateBasketResource(context, preservedBasket);
                         } else {
                             return Response.json(
                                 {
@@ -203,9 +207,10 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
             }
         }
 
-        const updatedBasket = getBasket(context);
+        // Get the updated basket after potential payment application
+        const updatedBasket = (await getBasket(context)).current;
 
-        if (!updatedBasket.billingAddress) {
+        if (!updatedBasket?.billingAddress) {
             return Response.json(
                 {
                     success: false,
@@ -221,7 +226,7 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
 
         const currency = getBasketCurrency(context, updatedBasket);
 
-        if (!updatedBasket.basketId) {
+        if (!updatedBasket?.basketId) {
             return Response.json(
                 {
                     success: false,
@@ -234,7 +239,8 @@ export async function clientAction({ request, context }: ActionFunctionArgs) {
 
         const calculatedBasket = await calculateBasket(context, updatedBasket.basketId, currency);
 
-        updateBasket(context, calculatedBasket);
+        // Update local basket state with calculated totals
+        updateBasketResource(context, calculatedBasket);
 
         const clients = createApiClients(context);
 

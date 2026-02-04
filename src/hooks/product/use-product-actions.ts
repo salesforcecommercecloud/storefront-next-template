@@ -27,13 +27,12 @@ import { getStoreIdForBasketItem } from '@/extensions/bopis/lib/basket-utils';
 import { isSelectedDeliveryOptionValid } from '@/extensions/bopis/lib/product-actions';
 import { getPickupStoreFromMap } from '@/extensions/bopis/lib/store-utils';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
-import { useBasket } from '@/providers/basket';
+import { useBasket, useBasketUpdater } from '@/providers/basket';
 import { useItemFetcher } from '@/hooks/use-item-fetcher';
 import { useRequireAuth } from '@/hooks/use-require-auth';
 import { isProductSet, isProductBundle } from '@/lib/product-utils';
 import { useAnalytics } from '../use-analytics';
 import { getEffectiveStockLevel, getEffectiveInventory, isInStock as isProductInStock } from '@/lib/inventory-utils';
-
 interface ProductSelectionValues {
     product: ShopperProducts.schemas['Product'];
     variant?: ShopperProducts.schemas['Variant'];
@@ -169,6 +168,9 @@ export function useProductActions({
         storeInventoryId,
     ]);
 
+    // Used basket data in sync when this fetcher targets shopperBasketsV2 and succeeds.
+    const updateBasket = useBasketUpdater();
+
     const isInStock = useMemo(() => {
         return isProductInStock({
             product,
@@ -292,6 +294,9 @@ export function useProductActions({
             return;
         }
         if (cartFetcher.data?.success && cartFetcher.data.basket) {
+            const basketData = cartFetcher.data?.basket as unknown as ShopperBasketsV2.schemas['Basket'];
+            updateBasket(basketData);
+
             setIsAddingToOrUpdatingCart(false);
             // Only show toast for add to cart action, not edit cart
             if (!itemId) {
@@ -456,7 +461,7 @@ export function useProductActions({
         const price = productToAdd?.price;
 
         // @sfdc-extension-block-start SFDC_EXT_BOPIS
-        const pickupInfo = pickupContext?.pickupBasketItems?.get(itemProductId);
+        const pickupInfo = pickupContext?.pickupBasketItems?.get(itemProductId ?? '');
         const storeId = pickupInfo?.storeId ?? null;
 
         // Validate pickup/delivery compatibility with existing basket items

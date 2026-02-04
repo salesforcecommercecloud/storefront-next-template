@@ -15,12 +15,13 @@
  */
 
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { clientAction } from './action.cart-bundle-add';
-import { getBasket } from '@/middlewares/basket.client';
+import { action } from './action.cart-bundle-add';
+import { ensureBasketId } from '@/middlewares/basket.server';
 import { createApiClients } from '@/lib/api-clients';
 import { getConfig } from '@/config';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
+vi.mock('@/middlewares/basket.server');
 // Hoist dependencies for use in vi.mock (avoids async imports which fail on Windows)
 const { createContext: reactCreateContext, actualReactRouter } = vi.hoisted(() => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -30,7 +31,6 @@ const { createContext: reactCreateContext, actualReactRouter } = vi.hoisted(() =
     return { createContext: React.createContext, actualReactRouter: reactRouter };
 });
 
-vi.mock('@/middlewares/basket.client');
 vi.mock('@/lib/api-clients');
 vi.mock('@/config');
 vi.mock('@/lib/i18next', () => ({
@@ -88,12 +88,12 @@ describe('action.cart-bundle-add', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        vi.mocked(getBasket).mockReturnValue(mockBasket);
+        vi.mocked(ensureBasketId).mockResolvedValue(mockBasket.basketId);
         vi.mocked(createApiClients).mockReturnValue(mockClients as any);
         vi.mocked(getConfig).mockReturnValue(mockConfig as any);
     });
 
-    describe('clientAction', () => {
+    describe('action', () => {
         test('adds bundle with standard products to cart', async () => {
             const bundleItem = { productId: 'bundle-123', quantity: 1 };
             const childSelections = [
@@ -116,7 +116,7 @@ describe('action.cart-bundle-add', () => {
                 childSelections: JSON.stringify(childSelections),
             });
 
-            const response = await clientAction({
+            const response = await action({
                 request,
                 context: {} as any,
                 params: {},
@@ -151,7 +151,7 @@ describe('action.cart-bundle-add', () => {
                 childSelections: JSON.stringify(childSelections),
             });
 
-            const response = await clientAction({
+            const response = await action({
                 request,
                 context: {} as any,
                 params: {},
@@ -184,7 +184,7 @@ describe('action.cart-bundle-add', () => {
                 childSelections: JSON.stringify(childSelections),
             });
 
-            const response = await clientAction({
+            const response = await action({
                 request,
                 context: {} as any,
                 params: {},
@@ -214,7 +214,7 @@ describe('action.cart-bundle-add', () => {
         test('returns error when bundle data is missing', async () => {
             const request = createFormDataRequest('http://localhost/action/cart-bundle-add', 'POST', {});
 
-            const response = await clientAction({
+            const response = await action({
                 request,
                 context: {} as any,
                 params: {},
@@ -231,7 +231,7 @@ describe('action.cart-bundle-add', () => {
             });
 
             await expect(
-                clientAction({
+                action({
                     request,
                     context: {} as any,
                     params: {},

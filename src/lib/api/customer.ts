@@ -17,7 +17,7 @@ import type { ActionFunctionArgs } from 'react-router';
 import { type ShopperBasketsV2, type ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { customAlphabet, nanoid } from 'nanoid';
 import { createApiClients } from '@/lib/api-clients';
-import { getAuth, updateAuth, clearInvalidSessionAndRestoreGuest } from '@/middlewares/auth.client';
+import { getAuth, updateAuth, clearInvalidSessionAndRestoreGuest } from '@/middlewares/auth.server';
 import { extractResponseError } from '@/lib/utils';
 import { getTranslation } from '@/lib/i18next';
 
@@ -186,11 +186,10 @@ export async function getCurrentCustomer(
             // - Using cookies from a different environment (e.g., staging → production)
             // - Token/customer data sync issues
             //
-            // Clean up invalid session and set up a new guest session.
-            // This ensures the browser has valid cookies and a fresh guest token.
-            // The cleanup runs in the background (no await) to avoid blocking the checkout flow.
+            // Clear the invalid session and get fresh guest tokens
+            // The auth middleware will delete cookies via Set-Cookie headers
             clearInvalidSessionAndRestoreGuest(context).catch(() => {
-                // Silently catch errors - the auth middleware will retry on the next request
+                // Ignore errors - we'll return null and let the caller handle it
             });
         }
         return null;
@@ -747,11 +746,10 @@ export async function getCustomerProfileForCheckout(
             // - Using cookies from a different environment (e.g., staging → production)
             // - Token/customer data sync issues
             //
-            // Clean up invalid session and set up a new guest session.
-            // This ensures the browser has valid cookies and a fresh guest token.
-            // The cleanup runs in the background (no await) to avoid blocking the checkout flow.
+            // Clear the invalid session and get fresh guest tokens
+            // The auth middleware will delete cookies via Set-Cookie headers
             clearInvalidSessionAndRestoreGuest(context).catch(() => {
-                // Silently catch errors - the auth middleware will retry on the next request
+                // Ignore errors - we'll return null and let the caller handle it
             });
 
             // Return null to indicate no customer profile available.

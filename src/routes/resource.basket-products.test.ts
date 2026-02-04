@@ -19,7 +19,7 @@ import { loader } from './resource.basket-products';
 import { createTestContext } from '@/lib/test-utils';
 
 // Mock getBasket
-vi.mock('@/middlewares/basket.client', () => ({
+vi.mock('@/middlewares/basket.server', () => ({
     getBasket: vi.fn(),
 }));
 
@@ -44,7 +44,7 @@ vi.mock('@/config', async (importOriginal) => {
     };
 });
 
-import { getBasket } from '@/middlewares/basket.client';
+import { getBasket } from '@/middlewares/basket.server';
 import { createApiClients } from '@/lib/api-clients';
 
 describe('resource.basket-products', () => {
@@ -86,7 +86,7 @@ describe('resource.basket-products', () => {
     });
 
     it('should return empty object when basket is undefined', async () => {
-        vi.mocked(getBasket).mockReturnValue(undefined as any);
+        vi.mocked(getBasket).mockResolvedValue({ current: undefined } as any);
 
         const result = await loader(createLoaderArgs());
 
@@ -95,10 +95,9 @@ describe('resource.basket-products', () => {
     });
 
     it('should return empty object when basket has no product items', async () => {
-        vi.mocked(getBasket).mockReturnValue({
-            basketId: 'basket-123',
-            productItems: [],
-        });
+        vi.mocked(getBasket).mockResolvedValue({
+            current: { basketId: 'basket-123', productItems: [] },
+        } as any);
 
         const result = await loader(createLoaderArgs());
 
@@ -107,13 +106,15 @@ describe('resource.basket-products', () => {
     });
 
     it('should return empty object when basket has product items without productId', async () => {
-        vi.mocked(getBasket).mockReturnValue({
-            basketId: 'basket-123',
-            productItems: [
-                { itemId: 'item-1', quantity: 1 },
-                { itemId: 'item-2', quantity: 2 },
-            ],
-        });
+        vi.mocked(getBasket).mockResolvedValue({
+            current: {
+                basketId: 'basket-123',
+                productItems: [
+                    { itemId: 'item-1', quantity: 1 },
+                    { itemId: 'item-2', quantity: 2 },
+                ],
+            },
+        } as any);
 
         const result = await loader(createLoaderArgs());
 
@@ -122,13 +123,15 @@ describe('resource.basket-products', () => {
     });
 
     it('should fetch and return products by ID', async () => {
-        vi.mocked(getBasket).mockReturnValue({
-            basketId: 'basket-123',
-            productItems: [
-                { itemId: 'item-1', productId: 'product-1', quantity: 1 },
-                { itemId: 'item-2', productId: 'product-2', quantity: 2 },
-            ],
-        });
+        vi.mocked(getBasket).mockResolvedValue({
+            current: {
+                basketId: 'basket-123',
+                productItems: [
+                    { itemId: 'item-1', productId: 'product-1', quantity: 1 },
+                    { itemId: 'item-2', productId: 'product-2', quantity: 2 },
+                ],
+            },
+        } as any);
 
         mockGetProducts.mockResolvedValue({
             data: {
@@ -160,10 +163,12 @@ describe('resource.basket-products', () => {
     });
 
     it('should handle API errors gracefully', async () => {
-        vi.mocked(getBasket).mockReturnValue({
-            basketId: 'basket-123',
-            productItems: [{ itemId: 'item-1', productId: 'product-1', quantity: 1 }],
-        });
+        vi.mocked(getBasket).mockResolvedValue({
+            current: {
+                basketId: 'basket-123',
+                productItems: [{ itemId: 'item-1', productId: 'product-1', quantity: 1 }],
+            },
+        } as any);
 
         mockGetProducts.mockRejectedValue(new Error('API Error'));
 
@@ -173,10 +178,12 @@ describe('resource.basket-products', () => {
     });
 
     it('should return empty object when API returns no data', async () => {
-        vi.mocked(getBasket).mockReturnValue({
-            basketId: 'basket-123',
-            productItems: [{ itemId: 'item-1', productId: 'product-1', quantity: 1 }],
-        });
+        vi.mocked(getBasket).mockResolvedValue({
+            current: {
+                basketId: 'basket-123',
+                productItems: [{ itemId: 'item-1', productId: 'product-1', quantity: 1 }],
+            },
+        } as any);
 
         mockGetProducts.mockResolvedValue({
             data: { data: null },
@@ -188,14 +195,16 @@ describe('resource.basket-products', () => {
     });
 
     it('should filter out items without productId', async () => {
-        vi.mocked(getBasket).mockReturnValue({
-            basketId: 'basket-123',
-            productItems: [
-                { itemId: 'item-1', productId: 'product-1', quantity: 1 },
-                { itemId: 'item-2', quantity: 2 }, // No productId
-                { itemId: 'item-3', productId: '', quantity: 3 }, // Empty productId
-            ],
-        });
+        vi.mocked(getBasket).mockResolvedValue({
+            current: {
+                basketId: 'basket-123',
+                productItems: [
+                    { itemId: 'item-1', productId: 'product-1', quantity: 1 },
+                    { itemId: 'item-2', quantity: 2 }, // No productId
+                    { itemId: 'item-3', productId: '', quantity: 3 }, // Empty productId
+                ],
+            },
+        } as any);
 
         mockGetProducts.mockResolvedValue({
             data: {

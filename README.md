@@ -143,6 +143,9 @@ src/
 - 🌍 [Internationalization (i18n)](./README-I18N.md)
 - 🧪 [Tests & Coverage](./README-TESTS.md)
 - 🔍 [ESLint Configuration & TypeScript Enforcement](./README-ESLINT.md)
+- ⚡ [Performance](./docs/README-PERFORMANCE.md)
+- 🔌 [Adapter Pattern Implementation Guide](./docs/README-ADAPTER-PATTERN-GUIDE.md)
+- 📖 [Story Coverage & Code Quality Enforcement](./docs/README-STORY-COVERAGE.md)
 
 ## Contributing
 

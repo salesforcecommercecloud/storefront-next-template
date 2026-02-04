@@ -71,14 +71,14 @@ export async function setAddressAndMethodForPickup(
     store: ShopperStores.schemas['Store'],
     shipmentId: string = PICKUP_SHIPMENT_ID
 ): Promise<ShopperBasketsV2.schemas['Basket']> {
-    const { t } = getTranslation();
+    const { t } = getTranslation(context);
     const clients = createApiClients(context);
 
     if (!basketId) {
         throw new Error(t('errors:noBasketFound'));
     }
 
-    const storeAddress = orderAddressFromStoreAddress(store);
+    const storeAddress = orderAddressFromStoreAddress(store, context);
 
     // Update both shipping address and method in one call
     const { data: updatedBasket } = await clients.shopperBasketsV2.updateShipmentForBasket({

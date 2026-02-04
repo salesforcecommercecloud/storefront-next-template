@@ -16,7 +16,7 @@
 import { type ReactElement, use } from 'react';
 
 // React Router
-import type { ClientLoaderFunction, ClientLoaderFunctionArgs } from 'react-router';
+import type { ClientLoaderFunctionArgs, LoaderFunction, LoaderFunctionArgs } from 'react-router';
 
 // Commerce SDK
 import {
@@ -28,7 +28,7 @@ import {
 } from '@salesforce/storefront-next-runtime/scapi';
 
 // Middlewares
-import { getBasket } from '@/middlewares/basket.client';
+import { getBasket } from '@/middlewares/basket.server';
 
 // API
 import { createApiClients } from '@/lib/api-clients';
@@ -278,15 +278,14 @@ export function HydrateFallback() {
  * @returns Promise resolving to cart page data with basket and product details
  * TODO: Implement server loader to have the cart page take part in the SSR phase
  */
-// eslint-disable-next-line react-refresh/only-export-components,custom/no-client-loaders
-export const clientLoader: ClientLoaderFunction = ({ context }: ClientLoaderFunctionArgs): CartPageData => {
-    const basket = getBasket(context);
+// eslint-disable-next-line react-refresh/only-export-components, custom/no-async-page-loader
+export const loader: LoaderFunction = async ({ context }: LoaderFunctionArgs): Promise<CartPageData> => {
+    const basket = (await getBasket(context)).current;
     const productItems = basket?.productItems ?? [];
-
     const productsData = fetchProductsInBasket(context, basket);
 
     return {
-        basket,
+        basket: basket ?? ({} as ShopperBasketsV2.schemas['Basket']),
         productsByItemId: productsData.then((d) => d.productsByItemId),
         bonusProductsById: productsData.then((d) => d.bonusProductsById),
         promotions: fetchPromotionsForBasket(context, productItems),
