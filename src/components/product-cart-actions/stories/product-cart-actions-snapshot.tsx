@@ -24,6 +24,11 @@ vi.mock('@/hooks/use-item-fetcher', () => ({
     useItemFetcher: () => ({ Form: (props: any) => <form {...props} />, state: 'idle', submit: vi.fn() }),
 }));
 
+// Mock ExpressPayments to avoid Suspense fallback in snapshots
+vi.mock('@/components/checkout/components/express-payments', () => ({
+    default: () => null, // Don't render ExpressPayments in snapshots
+}));
+
 // Mock react-router for useFetcher called directly in useProductActions
 const fetcherMock = {
     data: null,

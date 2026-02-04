@@ -278,6 +278,10 @@
         "addingToWishlist": "Adding to Wishlist...",
         "addToWishlist": "Add to Wishlist",
         "share": "Share",
+        "expressPayments": {
+            "separatorBuyWith": "Or buy with",
+            "venmoUnavailable": "Venmo is not available on this device."
+        },
         "productSetNotice": "This is a product set. Select individual items below to add to cart.",
         "productBundleNotice": "This is a product bundle. All items will be added together.",
         "productDetails": "Product Details",
@@ -572,6 +576,10 @@
             "summarySavedLabel": "Saved payment method: {{methodLabel}} ending in {{lastDigits}}",
             "noPaymentMethodSaved": "No payment method saved",
             "billingSummaryTitle": "Billing Address"
+        },
+        "expressPayments": {
+            "separator": "Or",
+            "venmoUnavailable": "Venmo is not available on this device."
         },
         "common": {
             "edit": "Edit",

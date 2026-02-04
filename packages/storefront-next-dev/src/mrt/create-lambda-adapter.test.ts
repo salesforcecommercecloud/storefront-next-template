@@ -55,15 +55,62 @@ function createMockWritable(): Writable & EventEmitter {
         return true;
     });
 
-    stream.end = vi.fn((chunk?: any) => {
-        if (destroyed) return stream;
-        if (chunk) {
-            chunks.push(Buffer.from(chunk));
+    stream.end = vi.fn((chunk?: any, encoding?: any, callback?: any) => {
+        if (destroyed) {
+            // If callback is provided, call it
+            if (typeof chunk === 'function') {
+                chunk();
+            } else if (typeof encoding === 'function') {
+                encoding();
+            } else if (typeof callback === 'function') {
+                callback();
+            }
+            return stream;
         }
+
+        // Handle different call signatures:
+        // end() - no arguments
+        // end(callback) - callback function only
+        // end(chunk) - data chunk only
+        // end(chunk, encoding) - data chunk with encoding
+        // end(chunk, callback) - data chunk with callback
+        // end(chunk, encoding, callback) - data chunk with encoding and callback
+
+        let actualCallback: (() => void) | undefined;
+
+        if (typeof chunk === 'function') {
+            // end(callback) - first arg is callback
+            actualCallback = chunk;
+        } else if (chunk !== undefined && chunk !== null) {
+            // end(chunk) or end(chunk, encoding) or end(chunk, callback) or end(chunk, encoding, callback)
+            // Only push to chunks if it's not a function
+            if (typeof chunk !== 'function') {
+                chunks.push(Buffer.from(chunk, encoding));
+            }
+
+            // Check if second arg is callback
+            if (typeof encoding === 'function') {
+                actualCallback = encoding;
+            } else if (typeof callback === 'function') {
+                actualCallback = callback;
+            }
+        } else if (typeof encoding === 'function') {
+            // end(undefined, callback) - unlikely but handle it
+            actualCallback = encoding;
+        } else if (typeof callback === 'function') {
+            actualCallback = callback;
+        }
+
         ended = true;
         stream.writableEnded = true;
         stream.writableFinished = true;
         stream.emit('finish');
+
+        // Call callback if provided
+        if (actualCallback) {
+            actualCallback();
+        }
+
         return stream;
     });
 

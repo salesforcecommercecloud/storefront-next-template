@@ -217,56 +217,6 @@ export default function CheckoutFormPage({
     const handleShippingOptionsSubmit = submitShippingOptions;
     const handlePaymentSubmit = submitPayment;
 
-    // Apple Pay Express Checkout handler
-    const handleApplePayClick = () => {
-        // TODO: Implement Apple Pay integration
-        // For now, show an alert to demonstrate the integration point
-        // eslint-disable-next-line no-alert
-        alert(
-            'Apple Pay express checkout would be processed here. This would skip all form steps and go directly to payment confirmation.'
-        );
-    };
-
-    // Google Pay Express Checkout handler
-    const handleGooglePayClick = () => {
-        // TODO: Implement Google Pay integration
-        // For now, show an alert to demonstrate the integration point
-        // eslint-disable-next-line no-alert
-        alert(
-            'Google Pay express checkout would be processed here. This would skip all form steps and go directly to payment confirmation.'
-        );
-    };
-
-    // Amazon Pay Express Checkout handler
-    const handleAmazonPayClick = () => {
-        // TODO: Implement Amazon Pay integration
-        // For now, show an alert to demonstrate the integration point
-        // eslint-disable-next-line no-alert
-        alert(
-            'Amazon Pay express checkout would be processed here. This would skip all form steps and go directly to payment confirmation.'
-        );
-    };
-
-    // Venmo Express Checkout handler
-    const handleVenmoClick = () => {
-        // TODO: Implement Venmo integration
-        // For now, show an alert to demonstrate the integration point
-        // eslint-disable-next-line no-alert
-        alert(
-            'Venmo express checkout would be processed here. This would skip all form steps and go directly to payment confirmation.'
-        );
-    };
-
-    // PayPal Express Checkout handler
-    const handlePayPalClick = () => {
-        // TODO: Implement PayPal integration
-        // For now, show an alert to demonstrate the integration point
-        // eslint-disable-next-line no-alert
-        alert(
-            'PayPal express checkout would be processed here. This would skip all form steps and go directly to payment confirmation.'
-        );
-    };
-
     // Step state logic - centralized in container for single page layout
     // For single page layout: show all steps, current step is editable, completed steps show summary
     const contactInfoState = {
@@ -438,13 +388,7 @@ export default function CheckoutFormPage({
                         <Suspense fallback={<div className="h-20 bg-muted animate-pulse rounded" />}>
                             <PluginComponent pluginId="checkout.expressPayments.before" />
                             <PluginComponent pluginId="checkout.expressPayments">
-                                <ExpressPayments
-                                    onApplePayClick={handleApplePayClick}
-                                    onGooglePayClick={handleGooglePayClick}
-                                    onAmazonPayClick={handleAmazonPayClick}
-                                    onVenmoClick={handleVenmoClick}
-                                    onPayPalClick={handlePayPalClick}
-                                />
+                                <ExpressPayments separatorText={t('expressPayments.separator')} />
                             </PluginComponent>
                             <PluginComponent pluginId="checkout.expressPayments.after" />
                         </Suspense>

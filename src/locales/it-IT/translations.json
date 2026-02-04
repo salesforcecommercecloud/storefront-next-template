@@ -267,6 +267,9 @@
         "addingToWishlist": "Aggiunta alla lista desideri in corso...",
         "addToWishlist": "Aggiungi alla lista desideri",
         "share": "Condividi",
+        "expressPayments": {
+            "separatorBuyWith": "Oppure acquista con"
+        },
         "productSetNotice": "Questo è un set di prodotti. Selezioni gli articoli singoli qui sotto per aggiungerli al carrello.",
         "productBundleNotice": "Questo è un bundle di prodotti. Tutti gli articoli verranno aggiunti insieme.",
         "productDetails": "Dettagli prodotto",
@@ -561,6 +564,9 @@
             "summarySavedLabel": "Metodo di pagamento salvato: {{methodLabel}} che termina con {{lastDigits}}",
             "noPaymentMethodSaved": "Nessun metodo di pagamento salvato",
             "billingSummaryTitle": "Indirizzo di fatturazione"
+        },
+        "expressPayments": {
+            "separator": "Oppure"
         },
         "common": {
             "edit": "Modifica",
