@@ -138,11 +138,14 @@ src/
 
 ## Documentation
 
-- 📊 [Data Fetching](./README-DATA.md)
-- 🔐 [Authentication](./README-AUTH.md)
-- 🌍 [Internationalization](./README-I18N.md)
-- 🧪 [Testing](./README-TESTS.md)
-- 🔍 [ESLint](./README-ESLINT.md)
+- 📊 [Data Fetching](./docs/README-DATA.md)
+- 🔐 [Authentication](./docs/README-AUTH.md)
+- 🌍 [Internationalization](./docs/README-I18N.md)
+- 🧪 [Testing](./docs/README-TESTS.md)
+- 🔍 [ESLint](./docs/README-ESLINT.md)
+- ⚡ [Performance](./docs/README-PERFORMANCE.md)
+- 🔌 [Adapter Pattern](./docs/README-ADAPTER-PATTERN-GUIDE.md)
+- 📖 [Storybook Coverage](./docs/README-STORY-COVERAGE.md)
 
 ## Contributing
 

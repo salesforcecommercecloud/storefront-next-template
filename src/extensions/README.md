@@ -129,7 +129,7 @@ export function MyExtensionComponent() {
 }
 ```
 
-For complete documentation on i18n, including usage patterns, best practices, and examples, see [README-I18N.md](../../README-I18N.md#extension-translations).
+For complete documentation on i18n, including usage patterns, best practices, and examples, see [README-I18N.md](../../docs/README-I18N.md#extension-translations).
 
 ## Generating Installation/Uninstallation Instructions
 If you’re building an extension for customer distribution, you can generate installation and uninstallation instructions that both humans and LLMs can follow to complete the install/uninstall steps.
