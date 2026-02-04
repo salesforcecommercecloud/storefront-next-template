@@ -171,7 +171,11 @@ export function createApiClients(context: RouterContextProvider | Readonly<Route
     clients.use(correlationMiddleware);
     clients.use(authMiddleware);
     clients.use(identifyingHeadersMiddleware);
-    clients.use(maintenanceMiddleware);
-
+    // We only detect the maintenance mode from the server, where we actually get data
+    // We currently don't do it from client data access, which will require a client router middleware
+    // Client calls to SCAPI should be rare (basket?), and often shadowed by server calls regarding maintenance
+    if (typeof window === 'undefined') {
+        clients.use(maintenanceMiddleware);
+    }
     return clients;
 }

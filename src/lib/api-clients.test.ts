@@ -159,7 +159,8 @@ describe('createApiClients', () => {
             createApiClients(mockContextProvider);
 
             // Four middlewares in use: correlation, auth, identifying headers, and maintenance
-            expect(mockUse).toHaveBeenCalledTimes(4);
+            // 3 with the middleware disabled
+            expect(mockUse).toHaveBeenCalledTimes(3);
             expect(mockUse).toHaveBeenCalledWith(
                 expect.objectContaining({
                     onRequest: expect.any(Function),
