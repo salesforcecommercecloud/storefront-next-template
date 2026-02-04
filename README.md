@@ -138,11 +138,11 @@ src/
 
 ## Documentation
 
-- 📊 [Data Fetching](./README-DATA.md)
-- 🔐 [Authentication](./README-AUTH.md)
-- 🌍 [Internationalization](./README-I18N.md)
-- 🧪 [Testing](./README-TESTS.md)
-- 🔍 [ESLint](./README-ESLINT.md)
+- 📊 [Data Retrieval](./README-DATA.md)
+- 🔐 [Authentication & Session Management](./README-AUTH.md)
+- 🌍 [Internationalization (i18n)](./README-I18N.md)
+- 🧪 [Tests & Coverage](./README-TESTS.md)
+- 🔍 [ESLint Configuration & TypeScript Enforcement](./README-ESLINT.md)
 
 ## Contributing
 
@@ -157,9 +157,9 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
 
 ## Support
 
-- 📖 [Documentation](https://github.com/SalesforceCommerceCloud/storefront-next/tree/main/docs)
+- 📖 [Documentation (Pilot)](https://d1ahe7q2dhpmux.cloudfront.net/docs/commerce/storefront-next/overview)
+  - Use the username and password that were shared with you in the pilot Slack channel
 - 🐛 [Report Issues](https://github.com/SalesforceCommerceCloud/storefront-next/issues)
-- 💬 [Discussions](https://github.com/SalesforceCommerceCloud/storefront-next/discussions)
 
 ## License
 
