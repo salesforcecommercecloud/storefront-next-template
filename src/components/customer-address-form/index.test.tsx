@@ -270,6 +270,105 @@ describe('customerAddressFormSchema', () => {
         });
     });
 
+    describe('address2 validation', () => {
+        it('should accept address with address2 provided', () => {
+            const validData = {
+                addressId: 'Home',
+                firstName: 'John',
+                lastName: 'Doe',
+                phone: '1234567890',
+                countryCode: 'US' as const,
+                address1: '123 Main St',
+                address2: 'Apt 4B',
+                city: 'New York',
+                stateCode: 'NY',
+                postalCode: '10001',
+                preferred: false,
+            };
+
+            const result = customerAddressFormSchema.safeParse(validData);
+            expect(result.success).toBe(true);
+        });
+
+        it('should accept address without address2 (optional field)', () => {
+            const validData = {
+                addressId: 'Home',
+                firstName: 'John',
+                lastName: 'Doe',
+                phone: '1234567890',
+                countryCode: 'US' as const,
+                address1: '123 Main St',
+                city: 'New York',
+                stateCode: 'NY',
+                postalCode: '10001',
+                preferred: false,
+            };
+
+            const result = customerAddressFormSchema.safeParse(validData);
+            expect(result.success).toBe(true);
+        });
+
+        it('should accept empty string for address2', () => {
+            const validData = {
+                addressId: 'Home',
+                firstName: 'John',
+                lastName: 'Doe',
+                phone: '1234567890',
+                countryCode: 'US' as const,
+                address1: '123 Main St',
+                address2: '',
+                city: 'New York',
+                stateCode: 'NY',
+                postalCode: '10001',
+                preferred: false,
+            };
+
+            const result = customerAddressFormSchema.safeParse(validData);
+            expect(result.success).toBe(true);
+        });
+
+        it('should reject when address2 exceeds 256 characters', () => {
+            const invalidData = {
+                addressId: 'Home',
+                firstName: 'John',
+                lastName: 'Doe',
+                phone: '1234567890',
+                countryCode: 'US' as const,
+                address1: '123 Main St',
+                address2: 'A'.repeat(257), // 257 characters, exceeds max
+                city: 'New York',
+                stateCode: 'NY',
+                postalCode: '10001',
+                preferred: false,
+            };
+
+            const result = customerAddressFormSchema.safeParse(invalidData);
+            expect(result.success).toBe(false);
+            if (!result.success) {
+                expect(result.error.issues.some((issue) => issue.path.includes('address2'))).toBe(true);
+            }
+        });
+
+        it('should accept address2 with exactly 256 characters', () => {
+            const validData = {
+                addressId: 'Home',
+                firstName: 'John',
+                lastName: 'Doe',
+                phone: '1234567890',
+                countryCode: 'US' as const,
+                address1: '123 Main St',
+                address2: 'A'.repeat(256), // exactly 256 characters
+                city: 'New York',
+                stateCode: 'NY',
+                postalCode: '10001',
+                preferred: false,
+            };
+
+            const result = customerAddressFormSchema.safeParse(validData);
+            expect(result.success).toBe(true);
+        });
+    });
+
     describe('address1 validation', () => {
         it('should reject when address1 is empty', () => {
             const invalidData = {

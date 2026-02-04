@@ -71,15 +71,13 @@ export default function AddressCard({
 }: AddressCardProps): ReactElement {
     const { t } = useTranslation(['account', 'actionCard']);
 
-    // Format the name for display
-    const displayName = `${address.firstName || ''} ${address.lastName || ''}`.trim();
-
     const isLoading = isRemoving || isSettingDefault;
 
     return (
         <Card className={`gap-0 py-4 relative ${isPreferred ? 'border-primary border-2' : 'border-border'}`}>
             <CardHeader className="pb-1">
                 <CardTitle className="text-left flex items-center gap-2">
+                    {/* Show address.addressId as the Address Title */}
                     {address.addressId}
                     {isPreferred && (
                         <Badge
@@ -89,10 +87,9 @@ export default function AddressCard({
                         </Badge>
                     )}
                 </CardTitle>
-                {displayName && <p className="text-sm text-muted-foreground">{displayName}</p>}
             </CardHeader>
-            <CardContent className="px-6 py-2">
-                <AddressDisplay address={address} />
+            <CardContent className="px-6">
+                <AddressDisplay address={address} showName={true} />
             </CardContent>
             {(onEdit || onRemove || onSetDefault) && (
                 <CardFooter className="gap-4 px-6 pt-2">

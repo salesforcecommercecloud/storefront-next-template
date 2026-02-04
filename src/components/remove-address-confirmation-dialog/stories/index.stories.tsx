@@ -19,6 +19,28 @@ import { action } from 'storybook/actions';
 import { expect } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
+import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+
+const mockAddress: ShopperCustomers.schemas['CustomerAddress'] = {
+    addressId: 'home-address',
+    firstName: 'John',
+    lastName: 'Doe',
+    address1: '123 Main Street',
+    city: 'San Francisco',
+    stateCode: 'CA',
+    postalCode: '94105',
+    countryCode: 'US',
+    preferred: false,
+};
+
+const mockPreferredAddress: ShopperCustomers.schemas['CustomerAddress'] = {
+    ...mockAddress,
+    addressId: 'work-address',
+    firstName: 'Jane',
+    lastName: 'Smith',
+    address1: '456 Office Blvd',
+    preferred: true,
+};
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -89,9 +111,9 @@ const meta: Meta<typeof RemoveAddressConfirmationDialog> = {
             description: 'Callback when dialog open state changes',
             action: 'onOpenChange',
         },
-        addressId: {
-            description: 'The address ID to remove',
-            control: 'text',
+        address: {
+            description: 'The address object to remove',
+            control: 'object',
         },
         customerId: {
             description: 'Customer ID for the remove operation',
@@ -111,7 +133,21 @@ export const Default: Story = {
     args: {
         open: true,
         onOpenChange: action('onOpenChange'),
-        addressId: 'Home',
+        address: mockAddress,
+        customerId: 'customer-123',
+        onSuccess: action('onSuccess'),
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        await expect(canvasElement).toBeInTheDocument();
+    },
+};
+
+export const PreferredAddress: Story = {
+    args: {
+        open: true,
+        onOpenChange: action('onOpenChange'),
+        address: mockPreferredAddress,
         customerId: 'customer-123',
         onSuccess: action('onSuccess'),
     },
@@ -125,7 +161,7 @@ export const Closed: Story = {
     args: {
         open: false,
         onOpenChange: action('onOpenChange'),
-        addressId: 'Work',
+        address: mockAddress,
         customerId: 'customer-123',
         onSuccess: action('onSuccess'),
     },

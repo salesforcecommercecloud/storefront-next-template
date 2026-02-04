@@ -41,6 +41,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { Typography } from '@/components/typography';
 import { useToast } from '@/components/toast';
 import AddressDisplay from '@/components/address-display';
 
@@ -85,7 +86,6 @@ export function RemoveAddressConfirmationDialog({
 
     const addressId = address?.addressId || '';
     const isDefault = address?.preferred || false;
-    const displayName = `${address?.firstName || ''} ${address?.lastName || ''}`.trim() || addressId;
 
     // Create fetcher for removing this specific address
     // The fetcher is stable because addressId doesn't change while modal is open
@@ -136,9 +136,9 @@ export function RemoveAddressConfirmationDialog({
 
                 {/* Address Card */}
                 <Card className="border-border">
-                    <CardContent className="p-4">
+                    <CardContent className="px-4">
                         <div className="flex items-center gap-2 mb-2">
-                            <span className="font-semibold">{displayName}</span>
+                            <Typography variant="h6">{address.addressId}</Typography>
                             {isDefault && (
                                 <Badge
                                     variant="secondary"
@@ -147,7 +147,7 @@ export function RemoveAddressConfirmationDialog({
                                 </Badge>
                             )}
                         </div>
-                        <AddressDisplay address={address} />
+                        <AddressDisplay address={address} showName={true} />
                     </CardContent>
                 </Card>
 
@@ -159,7 +159,7 @@ export function RemoveAddressConfirmationDialog({
                     </div>
                 )}
 
-                <DialogFooter className="gap-2 sm:gap-0">
+                <DialogFooter className="gap-2">
                     <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
                         {t('addresses.removeCancelButton')}
                     </Button>

@@ -19,6 +19,26 @@ import { describe, test, expect } from 'vitest';
 import AddressDisplay from './index';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 
+const mockUSMinimalAddress: ShopperCustomers.schemas['CustomerAddress'] = {
+    addressId: 'address-1',
+    firstName: 'John',
+    lastName: 'Doe',
+    address1: '123 Main Street',
+    city: 'New York',
+    stateCode: 'NY',
+    postalCode: '10001',
+    countryCode: 'US',
+};
+
+const mockUSCompleteAddress: ShopperCustomers.schemas['CustomerAddress'] = {
+    ...mockUSMinimalAddress,
+    address2: 'Apt 4B',
+    phone: '555-123-4567',
+    preferred: false,
+    title: 'Mr.',
+    companyName: 'Acme Inc.',
+};
+
 describe('AddressDisplay', () => {
     describe('when no address is provided', () => {
         test('user sees "No address provided" message', () => {
@@ -36,18 +56,7 @@ describe('AddressDisplay', () => {
     });
 
     describe('when complete address with all fields is provided', () => {
-        const completeAddress: ShopperCustomers.schemas['CustomerAddress'] = {
-            addressId: 'address-1',
-            firstName: 'John',
-            lastName: 'Doe',
-            address1: '123 Main Street',
-            address2: 'Apt 4B',
-            city: 'New York',
-            stateCode: 'NY',
-            postalCode: '10001',
-            countryCode: 'US',
-            phone: '555-123-4567',
-        };
+        const completeAddress = mockUSCompleteAddress;
 
         test('renders address1 and location line', () => {
             render(<AddressDisplay address={completeAddress} />);
@@ -58,24 +67,38 @@ describe('AddressDisplay', () => {
             expect(screen.getByText('10001, New York, New York, United States')).toBeInTheDocument();
         });
 
-        test('does not display name, address2, or phone', () => {
+        test('displays name by default (showName defaults to true), but not address2 or phone', () => {
             const { container } = render(<AddressDisplay address={completeAddress} />);
 
-            // These fields are not displayed in the new format
-            expect(container.textContent).not.toContain('John Doe');
+            // Name is displayed by default (showName defaults to true)
+            expect(container.textContent).toContain('John Doe');
+            // address2 and phone are not displayed in the format
             expect(container.textContent).not.toContain('Apt 4B');
             expect(container.textContent).not.toContain('555-123-4567');
+        });
+
+        test('displays full name when showName is true', () => {
+            render(<AddressDisplay address={completeAddress} showName />);
+
+            expect(screen.getByText('John Doe')).toBeInTheDocument();
+            expect(screen.getByText('123 Main Street')).toBeInTheDocument();
+        });
+
+        test('does not display name when showName is false', () => {
+            const { container } = render(<AddressDisplay address={completeAddress} showName={false} />);
+
+            expect(container.textContent).not.toContain('John Doe');
         });
     });
 
     describe('when address has only required fields', () => {
         const minimalAddress: ShopperCustomers.schemas['CustomerAddress'] = {
-            addressId: 'address-2',
-            countryCode: 'US',
-            firstName: 'Jane',
-            lastName: 'Smith',
+            addressId: 'address-minimal',
+            firstName: 'John',
+            lastName: 'Doe',
             address1: '456 Oak Avenue',
             city: 'Seattle',
+            countryCode: 'US',
         };
 
         test('user sees address1 and city with country', () => {
@@ -88,13 +111,13 @@ describe('AddressDisplay', () => {
 
     describe('when address has city with state but no postal code', () => {
         const addressWithState: ShopperCustomers.schemas['CustomerAddress'] = {
-            addressId: 'address-3',
-            countryCode: 'US',
-            firstName: 'Bob',
-            lastName: 'Johnson',
+            addressId: 'address-state',
+            firstName: 'John',
+            lastName: 'Doe',
             address1: '789 Pine Road',
             city: 'Austin',
             stateCode: 'TX',
+            countryCode: 'US',
         };
 
         test('user sees city, state name, and country', () => {
@@ -107,13 +130,13 @@ describe('AddressDisplay', () => {
 
     describe('when address has city with postal code but no state', () => {
         const addressWithPostal: ShopperCustomers.schemas['CustomerAddress'] = {
-            addressId: 'address-4',
-            countryCode: 'US',
-            firstName: 'Alice',
-            lastName: 'Williams',
+            addressId: 'address-postal',
+            firstName: 'John',
+            lastName: 'Doe',
             address1: '321 Elm Boulevard',
             city: 'Boston',
             postalCode: '02101',
+            countryCode: 'US',
         };
 
         test('user sees postal code, city, and country', () => {
@@ -126,14 +149,14 @@ describe('AddressDisplay', () => {
 
     describe('when address has all location fields', () => {
         const fullCityAddress: ShopperCustomers.schemas['CustomerAddress'] = {
-            addressId: 'address-5',
-            countryCode: 'US',
-            firstName: 'Charlie',
-            lastName: 'Brown',
+            addressId: 'address-full',
+            firstName: 'John',
+            lastName: 'Doe',
             address1: '555 Maple Lane',
             city: 'Chicago',
             stateCode: 'IL',
             postalCode: '60601',
+            countryCode: 'US',
         };
 
         test('user sees postal code, city, state name, and country name', () => {
@@ -146,15 +169,15 @@ describe('AddressDisplay', () => {
 
     describe('when address has empty string values', () => {
         const addressWithEmptyStrings: ShopperCustomers.schemas['CustomerAddress'] = {
-            addressId: 'address-6',
-            firstName: 'Test',
-            lastName: 'User',
+            addressId: 'address-empty',
+            firstName: 'John',
+            lastName: 'Doe',
             address1: '999 Test Street',
             address2: '',
             city: 'Portland',
-            stateCode: '',
+            stateCode: 'OR',
             postalCode: '',
-            countryCode: '',
+            countryCode: 'US',
             phone: '',
         };
 
@@ -162,7 +185,53 @@ describe('AddressDisplay', () => {
             render(<AddressDisplay address={addressWithEmptyStrings} />);
 
             expect(screen.getByText('999 Test Street')).toBeInTheDocument();
-            expect(screen.getByText('Portland')).toBeInTheDocument();
+            // With stateCode but empty postalCode, we get city + state + country
+            expect(screen.getByText('Portland, Oregon, United States')).toBeInTheDocument();
+        });
+    });
+
+    describe('showName prop edge cases', () => {
+        test('displays only firstName when lastName is missing', () => {
+            const addressWithFirstNameOnly: ShopperCustomers.schemas['CustomerAddress'] = {
+                ...mockUSMinimalAddress,
+                firstName: 'Jane',
+                lastName: '',
+            };
+
+            render(<AddressDisplay address={addressWithFirstNameOnly} showName />);
+
+            expect(screen.getByText('Jane')).toBeInTheDocument();
+        });
+
+        test('displays only lastName when firstName is missing', () => {
+            const addressWithLastNameOnly: ShopperCustomers.schemas['CustomerAddress'] = {
+                ...mockUSMinimalAddress,
+                lastName: 'Smith',
+                firstName: undefined,
+            };
+
+            render(<AddressDisplay address={addressWithLastNameOnly} showName />);
+
+            expect(screen.getByText('Smith')).toBeInTheDocument();
+        });
+
+        test('does not render name element when both firstName and lastName are missing', () => {
+            const addressWithoutName: ShopperCustomers.schemas['CustomerAddress'] = {
+                addressId: 'address-no-name',
+                firstName: undefined,
+                lastName: '',
+                address1: '300 Test St',
+                city: 'Phoenix',
+                stateCode: 'AZ',
+                postalCode: '85001',
+                countryCode: 'US',
+            };
+
+            const { container } = render(<AddressDisplay address={addressWithoutName} showName />);
+
+            // Should only have address1 and location line, no name
+            expect(container.textContent).toContain('300 Test St');
+            expect(container.textContent).toContain('Phoenix');
         });
     });
 

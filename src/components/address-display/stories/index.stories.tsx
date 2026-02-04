@@ -208,3 +208,32 @@ Handles the case when no address is provided.
         await expect(message).toBeInTheDocument();
     },
 };
+
+export const WithName: Story = {
+    render: () => <AddressDisplay address={mockAddress} showName />,
+    parameters: {
+        docs: {
+            story: `
+Address display with the name visible.
+
+### Features:
+- Shows full name (firstName + lastName) at the top
+- Address line 1
+- Location line (postal code, city, state, country)
+            `,
+        },
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Check for full name
+        const name = await canvas.findByText(/gurpreet saini/i, {}, { timeout: 5000 });
+        await expect(name).toBeInTheDocument();
+
+        // Check for address
+        const address = await canvas.findByText(/123 main st/i, {}, { timeout: 5000 });
+        await expect(address).toBeInTheDocument();
+    },
+};

@@ -165,10 +165,11 @@ describe('RemoveAddressConfirmationDialog', () => {
         expect(screen.queryByText(t('account:addresses.removeDialogTitle'))).not.toBeInTheDocument();
     });
 
-    test('displays address name in dialog', () => {
+    test('displays addressId in dialog', () => {
         render(<RemoveAddressConfirmationDialog {...defaultProps} />);
 
-        expect(screen.getByText('John Doe')).toBeInTheDocument();
+        // Dialog displays addressId in the heading
+        expect(screen.getByText('address-123')).toBeInTheDocument();
     });
 
     test('displays default badge when address is preferred', () => {

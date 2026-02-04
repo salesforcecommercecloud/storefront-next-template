@@ -191,19 +191,29 @@ export const CustomerAddressForm = ({
         const shouldSetPreferred = isFirstAddress && !initialData;
 
         // Prepare address data in the format expected by Commerce SDK
-        const addressData = {
+        // Only include optional fields if they have values to prevent "undefined" string serialization
+        const addressData: Record<string, string | boolean> = {
             addressId,
             firstName: data.firstName,
             lastName: data.lastName,
-            phone: data.phone || undefined,
             countryCode: data.countryCode,
             address1: data.address1,
-            address2: data.address2 || undefined,
             city: data.city,
-            stateCode: data.stateCode || undefined,
             postalCode: data.postalCode,
             preferred: shouldSetPreferred ? true : Boolean(data.preferred),
         };
+
+        // Only include optional fields if they have truthy values
+        // This prevents undefined values from being serialized as "undefined" strings in FormData
+        if (data.phone) {
+            addressData.phone = data.phone;
+        }
+        if (data.address2) {
+            addressData.address2 = data.address2;
+        }
+        if (data.stateCode) {
+            addressData.stateCode = data.stateCode;
+        }
 
         // Submit the update request - response will be handled by parent component's fetcher effect
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

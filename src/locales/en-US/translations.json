@@ -735,7 +735,7 @@
         },
         "addresses": {
             "subtitle": "Manage your shipping addresses",
-            "empty": "No addresses saved. Add an address to make checkout faster!",
+            "empty": "Add an address to make checkout faster!",
             "noSavedAddresses": "No Saved Addresses",
             "addAddress": "Add Address",
             "addNewAddress": "Add new address",

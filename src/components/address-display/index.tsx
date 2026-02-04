@@ -19,9 +19,10 @@ import type { ShopperBasketsV2, ShopperCustomers } from '@salesforce/storefront-
 
 interface AddressDisplayProps {
     address: ShopperBasketsV2.schemas['OrderAddress'] | ShopperCustomers.schemas['CustomerAddress'];
+    showName?: boolean;
 }
 
-export default function AddressDisplay({ address }: AddressDisplayProps) {
+export default function AddressDisplay({ address, showName = true }: AddressDisplayProps) {
     if (!address) {
         return (
             <Typography variant="small" className="text-muted-foreground">
@@ -45,8 +46,15 @@ export default function AddressDisplay({ address }: AddressDisplayProps) {
         locationParts.push(countryName || address.countryCode);
     }
 
+    const fullName = [address.firstName, address.lastName].filter(Boolean).join(' ');
+
     return (
         <div className="space-y-1">
+            {showName && fullName && (
+                <Typography variant="p" className="font-medium">
+                    {fullName}
+                </Typography>
+            )}
             <Typography variant="small" className="text-muted-foreground">
                 {address.address1}
             </Typography>

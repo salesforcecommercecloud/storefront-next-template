@@ -53,21 +53,23 @@ describe('AddressCard', () => {
         test('renders address card with address data', () => {
             render(<AddressCard address={mockAddress} />);
 
-            // Card title now shows displayName (firstName + lastName)
-            expect(screen.getByText('John Doe')).toBeInTheDocument();
+            // Card title shows addressId
+            expect(screen.getByText('address-123')).toBeInTheDocument();
             expect(screen.getByTestId('address-display')).toBeInTheDocument();
         });
 
-        test('displays full name in card title', () => {
+        test('displays addressId in card title', () => {
             const addressWithCustomName: ShopperCustomers.schemas['CustomerAddress'] = {
                 ...mockAddress,
+                addressId: 'custom-address-id',
                 firstName: 'Jane',
                 lastName: 'Smith',
             };
 
             render(<AddressCard address={addressWithCustomName} />);
 
-            expect(screen.getByText('Jane Smith')).toBeInTheDocument();
+            // Card title shows addressId, name is in AddressDisplay
+            expect(screen.getByText('custom-address-id')).toBeInTheDocument();
         });
 
         test('renders AddressDisplay component with address prop', () => {
@@ -208,7 +210,8 @@ describe('AddressCard', () => {
         test('card header contains title and default badge', () => {
             render(<AddressCard address={mockAddress} isPreferred={true} />);
 
-            expect(screen.getByText('John Doe')).toBeInTheDocument();
+            // Card title shows addressId
+            expect(screen.getByText('address-123')).toBeInTheDocument();
             expect(screen.getByText(t('account:addresses.default'))).toBeInTheDocument();
         });
 
