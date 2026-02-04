@@ -15,6 +15,9 @@
  */
 import type { CustomerInterestsPreferencesAdapter } from './customer-preferences-types';
 
+/** Default adapter name for the customer preferences mock (used by provider and lazy registration) */
+export const CUSTOMER_PREFERENCES_MOCK_ADAPTER_NAME = 'customer-preferences-mock' as const;
+
 // Global customer preferences adapter store
 const customerPreferencesAdapterStore = new Map<string, CustomerInterestsPreferencesAdapter>();
 
