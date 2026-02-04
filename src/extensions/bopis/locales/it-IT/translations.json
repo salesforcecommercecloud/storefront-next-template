@@ -57,6 +57,7 @@
             "missingStoreIdOrInventoryIdError": "ID negozio o ID inventario mancante. Selezioni un negozio valido."
         },
         "deliveryOptionChangeError": "Impossibile cambiare opzione di consegna. {{error}}",
+        "deliveryOptionProductUnavailable": "Non abbiamo potuto aggiornare l'opzione di consegna per \"{{productName}}\" perché non c'è abbastanza stock per {{quantity}} articoli. Prova a ridurre la quantità o scegli un altro negozio.",
         "addToCartValidation": {
             "changeStoreError": "Ha già un articolo nel carrello da un negozio diverso.",
             "changeToDeliveryError": "Ha già un articolo nel carrello contrassegnato per il ritiro.",
