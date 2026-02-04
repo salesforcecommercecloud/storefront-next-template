@@ -23,7 +23,7 @@ import {
     createReactComponentDesignDecorator,
     type ComponentDesignMetadata,
 } from '@salesforce/storefront-next-runtime/design/react';
-import { PageDesignerStyles } from '@/page-designer-styles';
+import { PageDesignerInit } from '@/page-designer-init';
 import { PageDesignerHostProvider } from '@/test-utils/page-designer-host-provider';
 import { RegionWrapper } from '@/components/region/region-wrapper';
 import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
@@ -445,7 +445,10 @@ function DesignLayerStory({
                                         <DecoratedPlaceholderComponent
                                             key={component.id}
                                             designMetadata={designMetadata}
-                                            title={(component.data?.title as string) || `Component ${component.id}`}
+                                            title={
+                                                (component.data?.title as string | undefined) ||
+                                                `Component ${component.id}`
+                                            }
                                             description={`Component ID: ${component.id} | Type: ${component.typeId}`}
                                             typeId={component.typeId}
                                         />
@@ -506,7 +509,7 @@ function ModeDecorator({ Story, mode }: { Story: React.ComponentType; mode: Desi
 
     return (
         <PageDesignerProvider clientId="storybook-client" targetOrigin="*" clientLogger={clientLogger}>
-            <PageDesignerStyles />
+            <PageDesignerInit />
             <PageDesignerHostProvider expose={true} logEvents={true} />
             <Story />
         </PageDesignerProvider>

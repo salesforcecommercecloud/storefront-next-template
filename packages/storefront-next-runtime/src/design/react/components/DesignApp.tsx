@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type React from 'react';
 import { useGlobalListeners } from '../hooks/useGlobalListeners';
+import { useGlobalAnchorBlock } from '../hooks/useGlobalAnchorBlock';
 
 /**
  * Containes any global setup logic for the design layer.
  */
 export const DesignApp = ({ children }: React.PropsWithChildren<unknown>): React.JSX.Element => {
     useGlobalListeners();
+    useGlobalAnchorBlock();
 
     return <>{children}</>;
 };

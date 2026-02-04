@@ -630,12 +630,30 @@ function useGlobalListeners() {
 }
 
 //#endregion
+//#region src/design/react/hooks/useGlobalAnchorBlock.ts
+/**
+* React hook that prevents all <a> (anchor) navigation by default in the document,
+* unless the anchor has the attribute `data-pd-allow-link`.
+*/
+function useGlobalAnchorBlock() {
+	useEffect(() => {
+		function preventAnchorClicks(event) {
+			const anchor = event.target.closest("a");
+			if (anchor && !anchor.hasAttribute("data-pd-allow-link")) event.preventDefault();
+		}
+		document.addEventListener("click", preventAnchorClicks);
+		return () => document.removeEventListener("click", preventAnchorClicks);
+	}, []);
+}
+
+//#endregion
 //#region src/design/react/components/DesignApp.tsx
 /**
 * Containes any global setup logic for the design layer.
 */
 const DesignApp = ({ children }) => {
 	useGlobalListeners();
+	useGlobalAnchorBlock();
 	return /* @__PURE__ */ jsx(Fragment, { children });
 };
 

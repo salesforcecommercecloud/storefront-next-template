@@ -94,7 +94,7 @@ import { EINSTEIN_ADAPTER_NAME } from '@/adapters/einstein';
 import favicon from '/favicon.ico';
 
 // Styles
-import { PageDesignerStyles } from '@/page-designer-styles';
+import { PageDesignerInit } from '@/page-designer-init';
 import appStylesHref from './app.css?url';
 
 // Extensions
@@ -361,7 +361,7 @@ export default function App({
         <>
             <AuthActionExecutor />
             <PageDesignerProvider clientId="odyssey" targetOrigin="*" usid={sessionData?.usid} mode={pageDesignerMode}>
-                <PageDesignerStyles />
+                <PageDesignerInit />
                 <Outlet />
             </PageDesignerProvider>
             <TrackingConsentBanner />
