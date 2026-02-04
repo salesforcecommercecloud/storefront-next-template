@@ -194,7 +194,7 @@ export function CustomerAddressFields({ form }: CustomerAddressFieldsProps) {
                 control={form.control}
                 name="countryCode"
                 render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="[&_[data-slot=native-select-wrapper]]:w-full">
                         <FormLabel className="text-sm font-medium text-foreground">
                             {t('addressForm.countryLabel')}
                         </FormLabel>
@@ -300,7 +300,7 @@ export function CustomerAddressFields({ form }: CustomerAddressFieldsProps) {
                     control={form.control}
                     name="stateCode"
                     render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="[&_[data-slot=native-select-wrapper]]:w-full">
                             <FormLabel className="text-sm font-medium text-foreground">{stateLabel}</FormLabel>
                             <FormControl>
                                 <NativeSelect

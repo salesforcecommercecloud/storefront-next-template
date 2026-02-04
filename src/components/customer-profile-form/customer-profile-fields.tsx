@@ -150,7 +150,7 @@ export function CustomerProfileFields({ form, updateFetcher, onCancel }: Custome
                     control={form.control}
                     name="gender"
                     render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="[&_[data-slot=native-select-wrapper]]:w-full">
                             <FormLabel className="text-sm font-medium text-foreground">{t('profile.gender')}</FormLabel>
                             <FormControl>
                                 <NativeSelect

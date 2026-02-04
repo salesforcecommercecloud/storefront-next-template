@@ -115,7 +115,7 @@ exports[`CustomerAddressForm stories snapshot > Default story renders and matche
           />
         </div>
         <div
-          class="grid gap-2"
+          class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
           data-slot="form-item"
         >
           <label
@@ -127,7 +127,7 @@ exports[`CustomerAddressForm stories snapshot > Default story renders and matche
             Country
           </label>
           <div
-            class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+            class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
             data-slot="native-select-wrapper"
           >
             <select
@@ -271,7 +271,7 @@ exports[`CustomerAddressForm stories snapshot > Default story renders and matche
             />
           </div>
           <div
-            class="grid gap-2"
+            class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
             data-slot="form-item"
           >
             <label
@@ -283,7 +283,7 @@ exports[`CustomerAddressForm stories snapshot > Default story renders and matche
               State
             </label>
             <div
-              class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+              class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
               data-slot="native-select-wrapper"
             >
               <select
@@ -723,7 +723,7 @@ exports[`CustomerAddressForm stories snapshot > Loading story renders and matche
           />
         </div>
         <div
-          class="grid gap-2"
+          class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
           data-slot="form-item"
         >
           <label
@@ -735,7 +735,7 @@ exports[`CustomerAddressForm stories snapshot > Loading story renders and matche
             Country
           </label>
           <div
-            class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+            class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
             data-slot="native-select-wrapper"
           >
             <select
@@ -879,7 +879,7 @@ exports[`CustomerAddressForm stories snapshot > Loading story renders and matche
             />
           </div>
           <div
-            class="grid gap-2"
+            class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
             data-slot="form-item"
           >
             <label
@@ -891,7 +891,7 @@ exports[`CustomerAddressForm stories snapshot > Loading story renders and matche
               State
             </label>
             <div
-              class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+              class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
               data-slot="native-select-wrapper"
             >
               <select
@@ -1341,7 +1341,7 @@ exports[`CustomerAddressForm stories snapshot > WithInitialData story renders an
           />
         </div>
         <div
-          class="grid gap-2"
+          class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
           data-slot="form-item"
         >
           <label
@@ -1353,7 +1353,7 @@ exports[`CustomerAddressForm stories snapshot > WithInitialData story renders an
             Country
           </label>
           <div
-            class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+            class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
             data-slot="native-select-wrapper"
           >
             <select
@@ -1497,7 +1497,7 @@ exports[`CustomerAddressForm stories snapshot > WithInitialData story renders an
             />
           </div>
           <div
-            class="grid gap-2"
+            class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
             data-slot="form-item"
           >
             <label
@@ -1509,7 +1509,7 @@ exports[`CustomerAddressForm stories snapshot > WithInitialData story renders an
               State
             </label>
             <div
-              class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+              class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
               data-slot="native-select-wrapper"
             >
               <select

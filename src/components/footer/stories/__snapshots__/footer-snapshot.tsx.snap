@@ -62,7 +62,7 @@ exports[`Footer stories snapshot > DarkBackground story renders and matches snap
                       class="*:not-first:mt-2"
                     >
                       <div
-                        class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+                        class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
                         data-slot="native-select-wrapper"
                       >
                         <select
@@ -118,7 +118,7 @@ exports[`Footer stories snapshot > DarkBackground story renders and matches snap
                   class="*:not-first:mt-2"
                 >
                   <div
-                    class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+                    class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
                     data-slot="native-select-wrapper"
                   >
                     <select
@@ -170,7 +170,7 @@ exports[`Footer stories snapshot > DarkBackground story renders and matches snap
               >
                 <div>
                   <div
-                    class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+                    class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
                     data-slot="native-select-wrapper"
                   >
                     <select
@@ -458,7 +458,7 @@ exports[`Footer stories snapshot > Default story renders and matches snapshot 1`
                     class="*:not-first:mt-2"
                   >
                     <div
-                      class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+                      class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
                       data-slot="native-select-wrapper"
                     >
                       <select
@@ -514,7 +514,7 @@ exports[`Footer stories snapshot > Default story renders and matches snapshot 1`
                 class="*:not-first:mt-2"
               >
                 <div
-                  class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+                  class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
                   data-slot="native-select-wrapper"
                 >
                   <select
@@ -566,7 +566,7 @@ exports[`Footer stories snapshot > Default story renders and matches snapshot 1`
             >
               <div>
                 <div
-                  class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+                  class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
                   data-slot="native-select-wrapper"
                 >
                   <select
@@ -940,7 +940,7 @@ exports[`Footer stories snapshot > LongPage story renders and matches snapshot 1
                       class="*:not-first:mt-2"
                     >
                       <div
-                        class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+                        class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
                         data-slot="native-select-wrapper"
                       >
                         <select
@@ -996,7 +996,7 @@ exports[`Footer stories snapshot > LongPage story renders and matches snapshot 1
                   class="*:not-first:mt-2"
                 >
                   <div
-                    class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+                    class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
                     data-slot="native-select-wrapper"
                   >
                     <select
@@ -1048,7 +1048,7 @@ exports[`Footer stories snapshot > LongPage story renders and matches snapshot 1
               >
                 <div>
                   <div
-                    class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+                    class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
                     data-slot="native-select-wrapper"
                   >
                     <select
@@ -1336,7 +1336,7 @@ exports[`Footer stories snapshot > MobileView story renders and matches snapshot
                     class="*:not-first:mt-2"
                   >
                     <div
-                      class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+                      class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
                       data-slot="native-select-wrapper"
                     >
                       <select
@@ -1392,7 +1392,7 @@ exports[`Footer stories snapshot > MobileView story renders and matches snapshot
                 class="*:not-first:mt-2"
               >
                 <div
-                  class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+                  class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
                   data-slot="native-select-wrapper"
                 >
                   <select
@@ -1444,7 +1444,7 @@ exports[`Footer stories snapshot > MobileView story renders and matches snapshot
             >
               <div>
                 <div
-                  class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+                  class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
                   data-slot="native-select-wrapper"
                 >
                   <select

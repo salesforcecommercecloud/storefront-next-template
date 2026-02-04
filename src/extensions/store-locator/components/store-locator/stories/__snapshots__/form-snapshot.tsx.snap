@@ -28,7 +28,7 @@ exports[`StoreLocatorForm stories snapshot > Default story renders and matches s
           id="_r_0_-form-item"
         >
           <div
-            class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+            class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
             data-slot="native-select-wrapper"
           >
             <select
@@ -171,7 +171,7 @@ exports[`StoreLocatorForm stories snapshot > DesktopLayout story renders and mat
           id="_r_4_-form-item"
         >
           <div
-            class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+            class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
             data-slot="native-select-wrapper"
           >
             <select
@@ -314,7 +314,7 @@ exports[`StoreLocatorForm stories snapshot > MobileLayout story renders and matc
           id="_r_2_-form-item"
         >
           <div
-            class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+            class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
             data-slot="native-select-wrapper"
           >
             <select

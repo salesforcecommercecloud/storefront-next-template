@@ -123,7 +123,7 @@ exports[`CustomerProfileForm stories snapshot > Default story renders and matche
             class="grid grid-cols-1 md:grid-cols-2 gap-4"
           >
             <div
-              class="grid gap-2"
+              class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
               data-slot="form-item"
             >
               <label
@@ -135,7 +135,7 @@ exports[`CustomerProfileForm stories snapshot > Default story renders and matche
                 Gender
               </label>
               <div
-                class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+                class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
                 data-slot="native-select-wrapper"
               >
                 <select
@@ -353,7 +353,7 @@ exports[`CustomerProfileForm stories snapshot > Interactive story renders and ma
             class="grid grid-cols-1 md:grid-cols-2 gap-4"
           >
             <div
-              class="grid gap-2"
+              class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
               data-slot="form-item"
             >
               <label
@@ -365,7 +365,7 @@ exports[`CustomerProfileForm stories snapshot > Interactive story renders and ma
                 Gender
               </label>
               <div
-                class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+                class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
                 data-slot="native-select-wrapper"
               >
                 <select
@@ -583,7 +583,7 @@ exports[`CustomerProfileForm stories snapshot > WithInitialData story renders an
             class="grid grid-cols-1 md:grid-cols-2 gap-4"
           >
             <div
-              class="grid gap-2"
+              class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
               data-slot="form-item"
             >
               <label
@@ -595,7 +595,7 @@ exports[`CustomerProfileForm stories snapshot > WithInitialData story renders an
                 Gender
               </label>
               <div
-                class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+                class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
                 data-slot="native-select-wrapper"
               >
                 <select

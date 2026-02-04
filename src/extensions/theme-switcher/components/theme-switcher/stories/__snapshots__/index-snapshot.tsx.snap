@@ -6,7 +6,7 @@ exports[`ThemeSwitcher stories snapshot > Default story renders and matches snap
     class="*:not-first:mt-2"
   >
     <div
-      class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+      class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
       data-slot="native-select-wrapper"
     >
       <select
@@ -56,7 +56,7 @@ exports[`ThemeSwitcher stories snapshot > DesktopLayout story renders and matche
     class="*:not-first:mt-2"
   >
     <div
-      class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+      class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
       data-slot="native-select-wrapper"
     >
       <select
@@ -106,7 +106,7 @@ exports[`ThemeSwitcher stories snapshot > MobileLayout story renders and matches
     class="*:not-first:mt-2"
   >
     <div
-      class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+      class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
       data-slot="native-select-wrapper"
     >
       <select
@@ -156,7 +156,7 @@ exports[`ThemeSwitcher stories snapshot > WithThemeChange story renders and matc
     class="*:not-first:mt-2"
   >
     <div
-      class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+      class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
       data-slot="native-select-wrapper"
     >
       <select

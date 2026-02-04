@@ -109,7 +109,7 @@ exports[`CustomerAddressFields stories snapshot > Default story renders and matc
       />
     </div>
     <div
-      class="grid gap-2"
+      class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
       data-slot="form-item"
     >
       <label
@@ -121,7 +121,7 @@ exports[`CustomerAddressFields stories snapshot > Default story renders and matc
         Country
       </label>
       <div
-        class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+        class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
         data-slot="native-select-wrapper"
       >
         <select
@@ -265,7 +265,7 @@ exports[`CustomerAddressFields stories snapshot > Default story renders and matc
         />
       </div>
       <div
-        class="grid gap-2"
+        class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
         data-slot="form-item"
       >
         <label
@@ -277,7 +277,7 @@ exports[`CustomerAddressFields stories snapshot > Default story renders and matc
           State
         </label>
         <div
-          class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+          class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
           data-slot="native-select-wrapper"
         >
           <select
@@ -684,7 +684,7 @@ exports[`CustomerAddressFields stories snapshot > WithCanadianAddress story rend
       />
     </div>
     <div
-      class="grid gap-2"
+      class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
       data-slot="form-item"
     >
       <label
@@ -696,7 +696,7 @@ exports[`CustomerAddressFields stories snapshot > WithCanadianAddress story rend
         Country
       </label>
       <div
-        class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+        class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
         data-slot="native-select-wrapper"
       >
         <select
@@ -839,7 +839,7 @@ exports[`CustomerAddressFields stories snapshot > WithCanadianAddress story rend
         />
       </div>
       <div
-        class="grid gap-2"
+        class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
         data-slot="form-item"
       >
         <label
@@ -851,7 +851,7 @@ exports[`CustomerAddressFields stories snapshot > WithCanadianAddress story rend
           Province
         </label>
         <div
-          class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+          class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
           data-slot="native-select-wrapper"
         >
           <select
@@ -1068,7 +1068,7 @@ exports[`CustomerAddressFields stories snapshot > WithInitialData story renders 
       />
     </div>
     <div
-      class="grid gap-2"
+      class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
       data-slot="form-item"
     >
       <label
@@ -1080,7 +1080,7 @@ exports[`CustomerAddressFields stories snapshot > WithInitialData story renders 
         Country
       </label>
       <div
-        class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+        class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
         data-slot="native-select-wrapper"
       >
         <select
@@ -1224,7 +1224,7 @@ exports[`CustomerAddressFields stories snapshot > WithInitialData story renders 
         />
       </div>
       <div
-        class="grid gap-2"
+        class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
         data-slot="form-item"
       >
         <label
@@ -1236,7 +1236,7 @@ exports[`CustomerAddressFields stories snapshot > WithInitialData story renders 
           State
         </label>
         <div
-          class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+          class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
           data-slot="native-select-wrapper"
         >
           <select

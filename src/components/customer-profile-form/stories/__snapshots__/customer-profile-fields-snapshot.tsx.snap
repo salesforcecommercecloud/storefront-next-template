@@ -120,7 +120,7 @@ exports[`CustomerProfileFields stories snapshot > Default story renders and matc
           class="grid grid-cols-1 md:grid-cols-2 gap-4"
         >
           <div
-            class="grid gap-2"
+            class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
             data-slot="form-item"
           >
             <label
@@ -132,7 +132,7 @@ exports[`CustomerProfileFields stories snapshot > Default story renders and matc
               Gender
             </label>
             <div
-              class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+              class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
               data-slot="native-select-wrapper"
             >
               <select
@@ -346,7 +346,7 @@ exports[`CustomerProfileFields stories snapshot > Desktop story renders and matc
           class="grid grid-cols-1 md:grid-cols-2 gap-4"
         >
           <div
-            class="grid gap-2"
+            class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
             data-slot="form-item"
           >
             <label
@@ -358,7 +358,7 @@ exports[`CustomerProfileFields stories snapshot > Desktop story renders and matc
               Gender
             </label>
             <div
-              class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+              class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
               data-slot="native-select-wrapper"
             >
               <select
@@ -572,7 +572,7 @@ exports[`CustomerProfileFields stories snapshot > Interactive story renders and 
           class="grid grid-cols-1 md:grid-cols-2 gap-4"
         >
           <div
-            class="grid gap-2"
+            class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
             data-slot="form-item"
           >
             <label
@@ -584,7 +584,7 @@ exports[`CustomerProfileFields stories snapshot > Interactive story renders and 
               Gender
             </label>
             <div
-              class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+              class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
               data-slot="native-select-wrapper"
             >
               <select
@@ -798,7 +798,7 @@ exports[`CustomerProfileFields stories snapshot > Mobile story renders and match
           class="grid grid-cols-1 md:grid-cols-2 gap-4"
         >
           <div
-            class="grid gap-2"
+            class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
             data-slot="form-item"
           >
             <label
@@ -810,7 +810,7 @@ exports[`CustomerProfileFields stories snapshot > Mobile story renders and match
               Gender
             </label>
             <div
-              class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+              class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
               data-slot="native-select-wrapper"
             >
               <select
@@ -1024,7 +1024,7 @@ exports[`CustomerProfileFields stories snapshot > Submitting story renders and m
           class="grid grid-cols-1 md:grid-cols-2 gap-4"
         >
           <div
-            class="grid gap-2"
+            class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
             data-slot="form-item"
           >
             <label
@@ -1036,7 +1036,7 @@ exports[`CustomerProfileFields stories snapshot > Submitting story renders and m
               Gender
             </label>
             <div
-              class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+              class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
               data-slot="native-select-wrapper"
             >
               <select
@@ -1251,7 +1251,7 @@ exports[`CustomerProfileFields stories snapshot > Tablet story renders and match
           class="grid grid-cols-1 md:grid-cols-2 gap-4"
         >
           <div
-            class="grid gap-2"
+            class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
             data-slot="form-item"
           >
             <label
@@ -1263,7 +1263,7 @@ exports[`CustomerProfileFields stories snapshot > Tablet story renders and match
               Gender
             </label>
             <div
-              class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+              class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
               data-slot="native-select-wrapper"
             >
               <select
@@ -1477,7 +1477,7 @@ exports[`CustomerProfileFields stories snapshot > WithCancelButton story renders
           class="grid grid-cols-1 md:grid-cols-2 gap-4"
         >
           <div
-            class="grid gap-2"
+            class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
             data-slot="form-item"
           >
             <label
@@ -1489,7 +1489,7 @@ exports[`CustomerProfileFields stories snapshot > WithCancelButton story renders
               Gender
             </label>
             <div
-              class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+              class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
               data-slot="native-select-wrapper"
             >
               <select
@@ -1712,7 +1712,7 @@ exports[`CustomerProfileFields stories snapshot > WithInitialValues story render
           class="grid grid-cols-1 md:grid-cols-2 gap-4"
         >
           <div
-            class="grid gap-2"
+            class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
             data-slot="form-item"
           >
             <label
@@ -1724,7 +1724,7 @@ exports[`CustomerProfileFields stories snapshot > WithInitialValues story render
               Gender
             </label>
             <div
-              class="group/native-select relative w-full has-[select:disabled]:opacity-50"
+              class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
               data-slot="native-select-wrapper"
             >
               <select
