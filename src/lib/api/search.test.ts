@@ -16,203 +16,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createApiClients } from '@/lib/api-clients';
 import { createTestContext } from '@/lib/test-utils';
-import { fetchSearchProducts, fetchSearchSuggestions } from './search';
+import { fetchSearchProducts } from './search';
 
 vi.mock('@/lib/api-clients', () => ({
     createApiClients: vi.fn(),
 }));
 
 describe('', () => {
-    describe('fetchSearchSuggestions', () => {
-        const mockGetSearchSuggestions = vi.fn();
-        const mockClients = {
-            shopperSearch: {
-                getSearchSuggestions: mockGetSearchSuggestions,
-            },
-            use: vi.fn(),
-        };
-
-        const mockContext = createTestContext();
-
-        beforeEach(() => {
-            vi.clearAllMocks();
-            vi.mocked(createApiClients).mockReturnValue(mockClients as never);
-        });
-
-        it('should call getSearchSuggestions with basic parameters', async () => {
-            const mockResult = { searchPhrase: 'dress' };
-            mockGetSearchSuggestions.mockResolvedValue({ data: mockResult });
-
-            const result = await fetchSearchSuggestions(mockContext, { q: 'dress', currency: 'USD' });
-
-            expect(createApiClients).toHaveBeenCalledWith(mockContext);
-            expect(mockGetSearchSuggestions).toHaveBeenCalledWith({
-                params: {
-                    query: {
-                        q: 'dress',
-                        currency: 'USD',
-                    },
-                },
-            });
-            expect(result).toBe(mockResult);
-        });
-
-        it('should call getSearchSuggestions with all parameters', async () => {
-            const mockResult = { searchPhrase: 'shirt' };
-            mockGetSearchSuggestions.mockResolvedValue({ data: mockResult });
-
-            await fetchSearchSuggestions(mockContext, {
-                q: 'shirt',
-                expand: ['images', 'prices'],
-                limit: 10,
-                currency: 'EUR',
-            });
-
-            expect(mockGetSearchSuggestions).toHaveBeenCalledWith({
-                params: {
-                    query: {
-                        q: 'shirt',
-                        expand: ['images', 'prices'],
-                        limit: 10,
-                        currency: 'EUR',
-                    },
-                },
-            });
-        });
-
-        it('should exclude undefined optional parameters', async () => {
-            const mockResult = { searchPhrase: 'jacket' };
-            mockGetSearchSuggestions.mockResolvedValue({ data: mockResult });
-
-            await fetchSearchSuggestions(mockContext, {
-                q: 'jacket',
-                expand: undefined,
-                limit: undefined,
-                currency: 'USD',
-            });
-
-            expect(mockGetSearchSuggestions).toHaveBeenCalledWith({
-                params: {
-                    query: {
-                        q: 'jacket',
-                        currency: 'USD',
-                    },
-                },
-            });
-        });
-
-        it('should include includeEinsteinSuggestedPhrases when true', async () => {
-            const mockResult = { searchPhrase: 'shoes' };
-            mockGetSearchSuggestions.mockResolvedValue({ data: mockResult });
-
-            await fetchSearchSuggestions(mockContext, {
-                q: 'shoes',
-                includeEinsteinSuggestedPhrases: true,
-                currency: 'USD',
-            });
-
-            expect(mockGetSearchSuggestions).toHaveBeenCalledWith({
-                params: {
-                    query: {
-                        q: 'shoes',
-                        currency: 'USD',
-                        includeEinsteinSuggestedPhrases: true,
-                    },
-                },
-            });
-        });
-
-        it('should include includeEinsteinSuggestedPhrases when false', async () => {
-            const mockResult = { searchPhrase: 'shoes' };
-            mockGetSearchSuggestions.mockResolvedValue({ data: mockResult });
-
-            await fetchSearchSuggestions(mockContext, {
-                q: 'shoes',
-                includeEinsteinSuggestedPhrases: false,
-                currency: 'USD',
-            });
-
-            expect(mockGetSearchSuggestions).toHaveBeenCalledWith({
-                params: {
-                    query: {
-                        q: 'shoes',
-                        currency: 'USD',
-                        includeEinsteinSuggestedPhrases: false,
-                    },
-                },
-            });
-        });
-
-        it('should exclude includeEinsteinSuggestedPhrases when undefined', async () => {
-            const mockResult = { searchPhrase: 'shoes' };
-            mockGetSearchSuggestions.mockResolvedValue({ data: mockResult });
-
-            await fetchSearchSuggestions(mockContext, {
-                q: 'shoes',
-                includeEinsteinSuggestedPhrases: undefined,
-                currency: 'USD',
-            });
-
-            expect(mockGetSearchSuggestions).toHaveBeenCalledWith({
-                params: {
-                    query: {
-                        q: 'shoes',
-                        currency: 'USD',
-                    },
-                },
-            });
-        });
-
-        it('should handle includeEinsteinSuggestedPhrases with all other parameters', async () => {
-            const mockResult = { searchPhrase: 'accessories' };
-            mockGetSearchSuggestions.mockResolvedValue({ data: mockResult });
-
-            await fetchSearchSuggestions(mockContext, {
-                q: 'accessories',
-                expand: ['images', 'prices'],
-                limit: 15,
-                includeEinsteinSuggestedPhrases: true,
-                currency: 'EUR',
-            });
-
-            expect(mockGetSearchSuggestions).toHaveBeenCalledWith({
-                params: {
-                    query: {
-                        q: 'accessories',
-                        expand: ['images', 'prices'],
-                        limit: 15,
-                        currency: 'EUR',
-                        includeEinsteinSuggestedPhrases: true,
-                    },
-                },
-            });
-        });
-
-        it('should handle includeEinsteinSuggestedPhrases with mixed undefined parameters', async () => {
-            const mockResult = { searchPhrase: 'bags' };
-            mockGetSearchSuggestions.mockResolvedValue({ data: mockResult });
-
-            await fetchSearchSuggestions(mockContext, {
-                q: 'bags',
-                expand: ['images'],
-                limit: undefined,
-                includeEinsteinSuggestedPhrases: false,
-                currency: 'USD',
-            });
-
-            expect(mockGetSearchSuggestions).toHaveBeenCalledWith({
-                params: {
-                    query: {
-                        q: 'bags',
-                        expand: ['images'],
-                        currency: 'USD',
-                        includeEinsteinSuggestedPhrases: false,
-                    },
-                },
-            });
-        });
-    });
-
     describe('fetchSearchProducts', () => {
         const mockProductSearch = vi.fn();
         const mockClients = {
@@ -251,6 +61,7 @@ describe('', () => {
                         limit: 24,
                         offset: 0,
                         expand: ['promotions', 'variations', 'prices', 'images', 'page_meta_tags', 'custom_properties'],
+                        refine: ['orderable_only=true'],
                         currency: 'EUR',
                         allImages: true,
                         allVariationProperties: true,
@@ -298,7 +109,7 @@ describe('', () => {
             expect(new Set(refineArg).size).toBe(refineArg.length);
         });
 
-        it('should omit refine when no categoryId, filters, or refine provided', async () => {
+        it('should use default refine when no categoryId, filters, or refine provided', async () => {
             const mockContext = createTestContext();
             mockProductSearch.mockResolvedValue({ data: { hits: [] } });
 
@@ -312,8 +123,8 @@ describe('', () => {
 
             expect(mockProductSearch).toHaveBeenCalledWith({
                 params: {
-                    query: expect.not.objectContaining({
-                        refine: expect.anything(),
+                    query: expect.objectContaining({
+                        refine: ['orderable_only=true'],
                     }),
                 },
             });
@@ -374,6 +185,7 @@ describe('', () => {
                         limit: 12,
                         offset: 24,
                         expand: ['prices'],
+                        refine: ['orderable_only=true'],
                         currency: expect.any(String),
                         allImages: false,
                         allVariationProperties: false,
@@ -389,6 +201,34 @@ describe('', () => {
             mockProductSearch.mockRejectedValue(err);
 
             await expect(fetchSearchProducts(mockContext, { q: 'x' })).rejects.toThrow('boom');
+        });
+
+        it('should not include orderable_only when config has orderableOnly=false', async () => {
+            const mockContext = createTestContext({
+                appConfig: {
+                    search: {
+                        products: {
+                            orderableOnly: false,
+                        },
+                    },
+                } as any,
+            });
+
+            mockProductSearch.mockResolvedValue({ data: { hits: [] } });
+
+            await fetchSearchProducts(mockContext, {
+                q: 'dress',
+                categoryId: 'womens',
+                currency: 'USD',
+            });
+
+            expect(mockProductSearch).toHaveBeenCalledWith({
+                params: {
+                    query: expect.objectContaining({
+                        refine: ['cgid=womens'], // <-- orderable_only=true not included
+                    }),
+                },
+            });
         });
     });
 });

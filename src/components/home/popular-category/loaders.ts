@@ -17,7 +17,7 @@ import { fetchCategory } from '@/lib/api/categories';
 import type { LoaderFunctionArgs } from 'react-router';
 import type { ShopperProducts, ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 
-const dataLoader = async (args: {
+const dataLoader = (args: {
     componentData: unknown;
     context: LoaderFunctionArgs['context'];
 }): Promise<ShopperProducts.schemas['Category']> => {
@@ -40,5 +40,4 @@ const dataLoader = async (args: {
 
 export const loader = {
     server: dataLoader,
-    client: dataLoader,
 };

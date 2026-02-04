@@ -17,10 +17,7 @@ import { fetchSearchProducts } from '@/lib/api/search';
 import type { LoaderFunctionArgs } from 'react-router';
 import { currencyContext } from '@/lib/currency';
 
-const dataLoader = async (args: {
-    componentData: { [key: string]: unknown };
-    context: LoaderFunctionArgs['context'];
-}) => {
+const dataLoader = (args: { componentData: { [key: string]: unknown }; context: LoaderFunctionArgs['context'] }) => {
     const { componentData, context: routeContext } = args;
     const currency = routeContext.get(currencyContext) as string;
 
@@ -38,5 +35,4 @@ const dataLoader = async (args: {
 
 export const loader = {
     server: dataLoader,
-    client: dataLoader,
 };

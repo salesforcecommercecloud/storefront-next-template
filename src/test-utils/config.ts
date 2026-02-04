@@ -180,6 +180,11 @@ export const mockBuildConfig: Config = {
             formats: ['webp'],
             fallbackFormat: 'jpg',
         },
+        search: {
+            products: {
+                orderableOnly: true,
+            },
+        },
         performance: {
             caching: { apiCacheTtl: 300, staticAssetCacheTtl: 31536000 },
             metrics: {

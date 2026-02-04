@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { AppConfig } from '@/config';
 
 /**
  * Schema.org CollectionPage with ItemList for Product Listing Pages
@@ -41,6 +42,7 @@ export interface CategorySchema extends Record<string, unknown> {
                     '@type': 'Offer';
                     price?: string;
                     priceCurrency?: string;
+                    availability?: string;
                     url?: string;
                 };
             };
@@ -57,22 +59,44 @@ export interface CategorySchema extends Record<string, unknown> {
     };
 }
 
+function determineAvailability(
+    product: ShopperSearch.schemas['ProductSearchHit'],
+    config?: AppConfig
+): string | undefined {
+    // Make sure explicit `orderable` property takes precedence over `orderableOnly` config
+    if (product?.orderable === true) {
+        return 'https://schema.org/InStock';
+    } else if (product?.orderable === false) {
+        return 'https://schema.org/OutOfStock';
+    }
+    return config?.search?.products?.orderableOnly === true ? 'https://schema.org/InStock' : undefined;
+}
+
 /**
  * Generates JSON-LD schema for a Product Listing Page (PLP) / Category page.
  * Creates a CollectionPage with ItemList containing products.
  *
- * @param category - Category data from SFCC
- * @param searchResult - Product search results from SFCC
- * @param pageUrl - Full URL of the category page
- * @param defaultCurrency - Site's default currency to use as fallback (e.g., from config.site.currency)
+ * @param data - Object containing category, searchResult, pageUrl, and defaultCurrency
+ * @param data.category - Category data from SFCC
+ * @param data.searchResult - Product search results from SFCC
+ * @param data.pageUrl - Full URL of the category page
+ * @param data.defaultCurrency - Site's default currency to use as fallback (e.g., from config.site.currency)
+ * @param [data.config] - The site configuration
  * @returns JSON-LD schema object for CollectionPage/ItemList
  */
-export function generateCategorySchema(
-    category: ShopperProducts.schemas['Category'],
-    searchResult: ShopperSearch.schemas['ProductSearchResult'] | null | undefined,
-    pageUrl: string,
-    defaultCurrency: string
-): CategorySchema {
+export function generateCategorySchema({
+    category,
+    searchResult,
+    pageUrl,
+    defaultCurrency,
+    config,
+}: {
+    category: ShopperProducts.schemas['Category'];
+    searchResult: ShopperSearch.schemas['ProductSearchResult'] | null | undefined;
+    pageUrl: string;
+    defaultCurrency: string;
+    config?: AppConfig | undefined;
+}): CategorySchema {
     // Validate and parse pageUrl to avoid errors
     let baseUrl: string;
     try {
@@ -129,6 +153,11 @@ export function generateCategorySchema(
         const price = product.price;
         const currency = product.currency || defaultCurrency;
 
+        // Check availability using the `orderableOnly` flag from the global search config.
+        // Only include `availability` if `orderableOnly` is explicitly set to true. Then we can implicitly assume
+        // that all products listed in the search results are in stock.
+        const availability = determineAvailability(product, config);
+
         return {
             '@type': 'ListItem' as const,
             position: index + 1,
@@ -142,6 +171,7 @@ export function generateCategorySchema(
                         '@type': 'Offer' as const,
                         price: price.toString(),
                         priceCurrency: currency,
+                        ...(availability && { availability }),
                         ...(productUrl && { url: productUrl }),
                     },
                 }),
@@ -149,7 +179,7 @@ export function generateCategorySchema(
         };
     });
 
-    const schema: CategorySchema = {
+    return {
         '@context': 'https://schema.org',
         '@type': 'CollectionPage',
         name: category.name || category.id,
@@ -167,6 +197,4 @@ export function generateCategorySchema(
             },
         }),
     };
-
-    return schema;
 }

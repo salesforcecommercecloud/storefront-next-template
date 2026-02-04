@@ -16,7 +16,7 @@
 import { fetchCategories } from '@/lib/api/categories';
 import type { LoaderFunctionArgs } from 'react-router';
 
-const dataLoader = async (args: { componentData: unknown; context: LoaderFunctionArgs['context'] }) => {
+const dataLoader = (args: { componentData: unknown; context: LoaderFunctionArgs['context'] }) => {
     const { componentData, context: routeContext } = args;
 
     // Extract parentId from component data, default to 'root'
@@ -27,5 +27,4 @@ const dataLoader = async (args: { componentData: unknown; context: LoaderFunctio
 
 export const loader = {
     server: dataLoader,
-    client: dataLoader,
 };

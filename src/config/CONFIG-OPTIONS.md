@@ -16,6 +16,7 @@ This reference provides detailed documentation for all configuration options ava
   - [global](#global) - Global UI and component settings
   - [links](#links) - Link hints for browser resource loading
   - [images](#images) - Salesforce [Dynamic Imaging Service](https://help.salesforce.com/s/articleView?id=cc.b2c_image_transformation_service.htm&type=5) settings
+  - [search](#search) - Search-specific settings
   - [performance](#performance) - Performance optimization settings
   - [engagement](#engagement) - Analytics and engagement adapters
   - [development](#development) - Development tools and features
@@ -1011,6 +1012,29 @@ While modern web-optimized image formats such as WebP and AVIF are widely suppor
 Example:
 ```bash
 PUBLIC__app__images__fallbackFormat='png'
+```
+
+---
+
+## search
+
+Search-specific configuration options.
+
+### search.products.orderableOnly
+
+Type: `boolean` Optional | Default: `true`
+
+Property to define whether to only return search results with products that are currently orderable, i.e., in stock. By default, we only search for orderable products, which for downstream components and functionalities (e.g., JSON-LD for SEO) means that the orderability/availability of the returned search results can implicitly be assumed.
+
+* [SCAPI Server-Side Web-Tier Caching
+  ](https://developer.salesforce.com/docs/commerce/commerce-api/guide/server-side-web-tier-caching.html)
+  * [Default Cache Expiration and Personalization Settings](https://developer.salesforce.com/docs/commerce/commerce-api/guide/server-side-web-tier-caching.html#default-cache-expiration-and-personalization-settings)
+  * ["expand" Parameter Impact on Cache Hit Rates](https://developer.salesforce.com/docs/commerce/commerce-api/guide/server-side-web-tier-caching.html#expand-parameter-impact-on-cache-hit-rates)
+* [shopper-search/product-search](https://developer.salesforce.com/docs/commerce/commerce-api/references/shopper-search?meta=productSearch)
+
+Example:
+```bash
+PUBLIC__app__search__orderableOnly=true
 ```
 
 ---

@@ -235,8 +235,6 @@ function CategoryGridContent({
 
 /* eslint-disable-next-line react-refresh/only-export-components*/
 export const loader = loaders.server;
-/* eslint-disable-next-line react-refresh/only-export-components*/
-export const clientLoader = loaders.client;
 
 /**
  * Popular Categories component that displays a grid of category cards

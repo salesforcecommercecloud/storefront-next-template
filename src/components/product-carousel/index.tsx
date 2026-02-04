@@ -22,9 +22,7 @@
  * @fileoverview Exports for product carousel functionality including loading states and Suspense boundaries
  */
 import { AttributeDefinition, Component } from '@/lib/decorators';
-import { fetchSearchProducts } from '@/lib/api/search';
-import type { LoaderFunctionArgs } from 'react-router';
-import { currencyContext } from '@/lib/currency';
+import { loader as loaders } from './loaders';
 
 // Skeleton component for loading states
 export { default as ProductCarouselSkeleton } from './skeleton';
@@ -48,21 +46,7 @@ export class ProductCarouselWithSuspenseMetadata {
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
-export function loader(args: { componentData: { [key: string]: unknown }; context: LoaderFunctionArgs['context'] }) {
-    const { componentData, context: routeContext } = args;
-    const currency = routeContext.get(currencyContext) as string;
-
-    // Extract configuration from component data
-    // ToDo: The fallback should be removed and put in the component default data instead
-    const categoryId = (componentData?.categoryId as string) || 'mens-clothing-shorts';
-    const limit = (componentData?.limit as number) || 12;
-
-    return fetchSearchProducts(routeContext, {
-        categoryId,
-        limit,
-        currency,
-    });
-}
+export const loader = loaders.server;
 
 // eslint-disable-next-line react-refresh/only-export-components
 export { default as fallback } from './skeleton';

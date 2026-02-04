@@ -329,6 +329,13 @@ export default defineConfig({
             formats: ['webp'],
             fallbackFormat: 'jpg',
         },
+        // Search-specific settings
+        // See CONFIG-OPTIONS.md#search for detailed documentation
+        search: {
+            products: {
+                orderableOnly: true,
+            },
+        },
         // Performance optimization settings
         // See CONFIG-OPTIONS.md#performance for detailed documentation
         performance: {

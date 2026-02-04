@@ -53,8 +53,6 @@ export class PopularCategoryMetadata {
 
 /* eslint-disable-next-line react-refresh/only-export-components*/
 export const loader = loaders.server;
-/* eslint-disable-next-line react-refresh/only-export-components*/
-export const clientLoader = loaders.client;
 
 /**
  * PopularCategory component that displays a single category as a content card

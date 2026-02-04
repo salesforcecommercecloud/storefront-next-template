@@ -124,12 +124,12 @@ export function loader(args: LoaderFunctionArgs): CategoryPageData {
         .then(([category, searchResult]) => {
             try {
                 const url = new URL(args.request.url);
-                const categoryUrl = `${url.origin}${url.pathname}${url.search}`;
+                const pageUrl = `${url.origin}${url.pathname}${url.search}`;
                 // Validate inputs before generating schema
                 if (!category || !searchResult) {
                     return null;
                 }
-                return generateCategorySchema(category, searchResult, categoryUrl, currency);
+                return generateCategorySchema({ category, searchResult, config, pageUrl, defaultCurrency: currency });
             } catch (error) {
                 // eslint-disable-next-line no-console
                 console.error('Error generating category schema in loader:', error);

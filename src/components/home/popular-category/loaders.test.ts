@@ -49,10 +49,9 @@ describe('PopularCategory loader', () => {
             id: 'component-1',
             typeId: 'odyssey_base.popularCategory',
             data: {
-                category: 'newarrivals',
+                category: 'newarrivals' as never,
             },
             regions: [],
-            visible: true,
         };
 
         const result = await loader.server({
@@ -64,86 +63,55 @@ describe('PopularCategory loader', () => {
         expect(result).toEqual(mockCategory);
     });
 
-    test('throws error when categoryId is missing', async () => {
+    test('throws error when categoryId is missing', () => {
         const componentData: ShopperExperience.schemas['Component'] = {
             id: 'component-1',
             typeId: 'odyssey_base.popularCategory',
             data: {},
             regions: [],
-            visible: true,
         };
 
-        await expect(
-            loader.server({
+        expect(() => {
+            void loader.server({
                 componentData,
                 context: mockContext,
-            })
-        ).rejects.toThrow('Category ID is required for PopularCategory component');
+            });
+        }).toThrow('Category ID is required for PopularCategory component');
     });
 
-    test('throws error when categoryId is not a string', async () => {
+    test('throws error when categoryId is not a string', () => {
         const componentData: ShopperExperience.schemas['Component'] = {
             id: 'component-1',
             typeId: 'odyssey_base.popularCategory',
             data: {
-                category: 123 as any,
+                category: 123 as never,
             },
             regions: [],
-            visible: true,
         };
 
-        await expect(
-            loader.server({
+        expect(() => {
+            void loader.server({
                 componentData,
                 context: mockContext,
-            })
-        ).rejects.toThrow('Category ID is required for PopularCategory component');
+            });
+        }).toThrow('Category ID is required for PopularCategory component');
     });
 
-    test('throws error when categoryId is empty string', async () => {
+    test('throws error when categoryId is empty string', () => {
         const componentData: ShopperExperience.schemas['Component'] = {
             id: 'component-1',
             typeId: 'odyssey_base.popularCategory',
             data: {
-                category: '',
+                category: '' as never,
             },
             regions: [],
-            visible: true,
         };
 
-        await expect(
-            loader.server({
+        expect(() => {
+            void loader.server({
                 componentData,
                 context: mockContext,
-            })
-        ).rejects.toThrow('Category ID is required for PopularCategory component');
-    });
-
-    test('client loader works the same as server loader', async () => {
-        const mockCategory: ShopperProducts.schemas['Category'] = {
-            id: 'womens',
-            name: 'Womens',
-            pageDescription: 'Test description',
-        };
-
-        mockFetchCategory.mockResolvedValue(mockCategory);
-
-        const componentData: ShopperExperience.schemas['Component'] = {
-            id: 'component-1',
-            typeId: 'odyssey_base.popularCategory',
-            data: {
-                category: 'womens',
-            },
-            regions: [],
-            visible: true,
-        };
-
-        const result = await loader.client({
-            componentData,
-            context: mockContext,
-        });
-
-        expect(mockFetchCategory).toHaveBeenCalledWith(mockContext, 'womens', 0);
-        expect(result).toEqual(mockCategory);
+            });
+        }).toThrow('Category ID is required for PopularCategory component');
     });
 });

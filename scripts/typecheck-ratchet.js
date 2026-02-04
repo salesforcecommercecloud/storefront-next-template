@@ -52,16 +52,16 @@
  * - PASSES if count <= BASELINE_ERROR_COUNT (no regression)
  */
 
-import { spawn } from 'child_process';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { spawn } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const packageDir = join(__dirname, '..');
 
 // Baseline error count - update this when fixing TypeScript errors
-const BASELINE_ERROR_COUNT = 779;
+const BASELINE_ERROR_COUNT = 751;
 
 /**
  * Run a command and capture its output

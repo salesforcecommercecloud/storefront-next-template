@@ -17,6 +17,7 @@
 import { useMemo, useEffect } from 'react';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
+import { useConfig } from '@/config';
 
 const DEFAULT_BONUS_PRODUCT_SEARCH_PARAMS = { limit: 25, offset: 0 };
 
@@ -37,10 +38,15 @@ export function useRuleBasedBonusProducts(
 ) {
     const { enabled = true, limit, offset } = options;
 
+    const appConfig = useConfig();
     const parameters = useMemo(() => {
         // Build refine array with all promotion IDs and the bonus product type filter
-        const refine =
-            promotionIds && promotionIds.length > 0 ? [...promotionIds.map((id) => `pmid=${id}`), 'pmpt=bonus'] : [];
+        const refine = [
+            ...(appConfig.search?.products?.orderableOnly === true ? ['orderable_only=true'] : []),
+            ...(Array.isArray(promotionIds) && promotionIds.length
+                ? [...promotionIds.map((id) => `pmid=${id}`), 'pmpt=bonus']
+                : []),
+        ];
         return {
             params: {
                 query: {
@@ -50,7 +56,7 @@ export function useRuleBasedBonusProducts(
                 },
             },
         };
-    }, [promotionIds, limit, offset]);
+    }, [appConfig, promotionIds, limit, offset]);
 
     const fetcher = useScapiFetcher('shopperSearch', 'productSearch', parameters);
 

@@ -19,11 +19,12 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useRuleBasedBonusProducts } from './use-rule-based-bonus-products';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
+import { useConfig } from '@/config';
 
 const mockLoad = vi.fn();
 const mockFetcher = {
     load: mockLoad,
-    state: 'idle' as const,
+    state: 'idle',
     data: undefined as ShopperSearch.schemas['ProductSearchResult'] | undefined,
     errors: null,
     success: false,
@@ -31,6 +32,16 @@ const mockFetcher = {
 
 vi.mock('@/hooks/use-scapi-fetcher', () => ({
     useScapiFetcher: vi.fn(() => mockFetcher),
+}));
+
+vi.mock('@/config', () => ({
+    useConfig: vi.fn(() => ({
+        search: {
+            products: {
+                orderableOnly: true,
+            },
+        },
+    })),
 }));
 
 describe('useRuleBasedBonusProducts', () => {
@@ -53,7 +64,7 @@ describe('useRuleBasedBonusProducts', () => {
                 expect.objectContaining({
                     params: {
                         query: expect.objectContaining({
-                            refine: ['pmid=test-promo-id', 'pmpt=bonus'],
+                            refine: ['orderable_only=true', 'pmid=test-promo-id', 'pmpt=bonus'],
                         }),
                     },
                 })
@@ -69,14 +80,20 @@ describe('useRuleBasedBonusProducts', () => {
                 expect.objectContaining({
                     params: {
                         query: expect.objectContaining({
-                            refine: ['pmid=promo-1', 'pmid=promo-2', 'pmid=promo-3', 'pmpt=bonus'],
+                            refine: [
+                                'orderable_only=true',
+                                'pmid=promo-1',
+                                'pmid=promo-2',
+                                'pmid=promo-3',
+                                'pmpt=bonus',
+                            ],
                         }),
                     },
                 })
             );
         });
 
-        it('should build empty refine array when promotionIds is null', () => {
+        it('should build default refine array when promotionIds is null', () => {
             renderHook(() => useRuleBasedBonusProducts(null));
 
             expect(vi.mocked(useScapiFetcher)).toHaveBeenCalledWith(
@@ -85,14 +102,14 @@ describe('useRuleBasedBonusProducts', () => {
                 expect.objectContaining({
                     params: {
                         query: expect.objectContaining({
-                            refine: [],
+                            refine: ['orderable_only=true'],
                         }),
                     },
                 })
             );
         });
 
-        it('should build empty refine array when promotionIds is empty array', () => {
+        it('should build default refine array when promotionIds is empty array', () => {
             renderHook(() => useRuleBasedBonusProducts([]));
 
             expect(vi.mocked(useScapiFetcher)).toHaveBeenCalledWith(
@@ -101,7 +118,31 @@ describe('useRuleBasedBonusProducts', () => {
                 expect.objectContaining({
                     params: {
                         query: expect.objectContaining({
-                            refine: [],
+                            refine: ['orderable_only=true'],
+                        }),
+                    },
+                })
+            );
+        });
+
+        it('should not include orderable_only when config has orderableOnly=false', () => {
+            vi.mocked(useConfig).mockReturnValueOnce({
+                search: {
+                    products: {
+                        orderableOnly: false,
+                    },
+                },
+            } as any);
+
+            renderHook(() => useRuleBasedBonusProducts(['test-promo-id']));
+
+            expect(vi.mocked(useScapiFetcher)).toHaveBeenCalledWith(
+                'shopperSearch',
+                'productSearch',
+                expect.objectContaining({
+                    params: {
+                        query: expect.objectContaining({
+                            refine: ['pmid=test-promo-id', 'pmpt=bonus'],
                         }),
                     },
                 })
@@ -165,6 +206,12 @@ describe('useRuleBasedBonusProducts', () => {
             mockFetcher.data = {
                 hits: mockProducts,
                 total: 2,
+                query: '',
+                limit: 20,
+                offset: 0,
+                refinements: [],
+                searchPhraseSuggestions: { suggestedTerms: [] },
+                sortingOptions: [],
             };
 
             const { result } = renderHook(() => useRuleBasedBonusProducts(['test-promo-id']));

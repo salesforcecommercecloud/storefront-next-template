@@ -15,6 +15,8 @@
  */
 import { describe, it, expect } from 'vitest';
 import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import { mockBuildConfig } from '@/test-utils/config';
+import { type Config, createAppConfig } from '@/config';
 import { generateCategorySchema } from './category-schema';
 
 describe('generateCategorySchema', () => {
@@ -40,7 +42,12 @@ describe('generateCategorySchema', () => {
     const defaultCurrency = 'USD';
 
     it('should generate a valid CollectionPage schema with required fields', () => {
-        const schema = generateCategorySchema(baseCategory, baseSearchResult, validPageUrl, defaultCurrency);
+        const schema = generateCategorySchema({
+            category: baseCategory,
+            searchResult: baseSearchResult,
+            pageUrl: validPageUrl,
+            defaultCurrency,
+        });
 
         expect(schema['@context']).toBe('https://schema.org');
         expect(schema['@type']).toBe('CollectionPage');
@@ -54,7 +61,12 @@ describe('generateCategorySchema', () => {
             pageDescription: 'Test category description',
         };
 
-        const schema = generateCategorySchema(categoryWithDescription, baseSearchResult, validPageUrl, defaultCurrency);
+        const schema = generateCategorySchema({
+            category: categoryWithDescription,
+            searchResult: baseSearchResult,
+            pageUrl: validPageUrl,
+            defaultCurrency,
+        });
 
         expect(schema.description).toBe('Test category description');
     });
@@ -65,7 +77,12 @@ describe('generateCategorySchema', () => {
             name: undefined,
         };
 
-        const schema = generateCategorySchema(categoryWithoutName, baseSearchResult, validPageUrl, defaultCurrency);
+        const schema = generateCategorySchema({
+            category: categoryWithoutName,
+            searchResult: baseSearchResult,
+            pageUrl: validPageUrl,
+            defaultCurrency,
+        });
 
         expect(schema.name).toBe('test-category-123');
     });
@@ -79,7 +96,12 @@ describe('generateCategorySchema', () => {
             ],
         };
 
-        const schema = generateCategorySchema(categoryWithParents, baseSearchResult, validPageUrl, defaultCurrency);
+        const schema = generateCategorySchema({
+            category: categoryWithParents,
+            searchResult: baseSearchResult,
+            pageUrl: validPageUrl,
+            defaultCurrency,
+        });
 
         expect(schema.breadcrumb).toBeDefined();
         expect(schema.breadcrumb?.['@type']).toBe('BreadcrumbList');
@@ -95,7 +117,12 @@ describe('generateCategorySchema', () => {
     });
 
     it('should include current category in breadcrumb even without parentCategoryTree', () => {
-        const schema = generateCategorySchema(baseCategory, baseSearchResult, validPageUrl, defaultCurrency);
+        const schema = generateCategorySchema({
+            category: baseCategory,
+            searchResult: baseSearchResult,
+            pageUrl: validPageUrl,
+            defaultCurrency,
+        });
 
         expect(schema.breadcrumb).toBeDefined();
         expect(schema.breadcrumb?.itemListElement).toHaveLength(1);
@@ -131,7 +158,12 @@ describe('generateCategorySchema', () => {
             count: 2,
         } as ShopperSearch.schemas['ProductSearchResult'];
 
-        const schema = generateCategorySchema(baseCategory, searchResultWithProducts, validPageUrl, defaultCurrency);
+        const schema = generateCategorySchema({
+            category: baseCategory,
+            searchResult: searchResultWithProducts,
+            pageUrl: validPageUrl,
+            defaultCurrency,
+        });
 
         expect(schema.mainEntity).toBeDefined();
         expect(schema.mainEntity?.['@type']).toBe('ItemList');
@@ -169,12 +201,12 @@ describe('generateCategorySchema', () => {
             count: 25,
         } as ShopperSearch.schemas['ProductSearchResult'];
 
-        const schema = generateCategorySchema(
-            baseCategory,
-            searchResultWithManyProducts,
-            validPageUrl,
-            defaultCurrency
-        );
+        const schema = generateCategorySchema({
+            category: baseCategory,
+            searchResult: searchResultWithManyProducts,
+            pageUrl: validPageUrl,
+            defaultCurrency,
+        });
 
         expect(schema.mainEntity?.itemListElement).toHaveLength(20);
     });
@@ -199,7 +231,12 @@ describe('generateCategorySchema', () => {
             count: 1,
         } as ShopperSearch.schemas['ProductSearchResult'];
 
-        const schema = generateCategorySchema(baseCategory, searchResultWithoutIds, validPageUrl, defaultCurrency);
+        const schema = generateCategorySchema({
+            category: baseCategory,
+            searchResult: searchResultWithoutIds,
+            pageUrl: validPageUrl,
+            defaultCurrency,
+        });
 
         const items = schema.mainEntity?.itemListElement || [];
         expect(items[0].item.url).toBeUndefined();
@@ -227,7 +264,12 @@ describe('generateCategorySchema', () => {
             count: 1,
         } as ShopperSearch.schemas['ProductSearchResult'];
 
-        const schema = generateCategorySchema(baseCategory, searchResultWithoutImages, validPageUrl, defaultCurrency);
+        const schema = generateCategorySchema({
+            category: baseCategory,
+            searchResult: searchResultWithoutImages,
+            pageUrl: validPageUrl,
+            defaultCurrency,
+        });
 
         const items = schema.mainEntity?.itemListElement || [];
         expect(items[0].item.image).toBeUndefined();
@@ -253,16 +295,172 @@ describe('generateCategorySchema', () => {
             count: 1,
         } as ShopperSearch.schemas['ProductSearchResult'];
 
-        const schema = generateCategorySchema(baseCategory, searchResultWithoutPrices, validPageUrl, defaultCurrency);
+        const schema = generateCategorySchema({
+            category: baseCategory,
+            searchResult: searchResultWithoutPrices,
+            pageUrl: validPageUrl,
+            defaultCurrency,
+        });
 
         const items = schema.mainEntity?.itemListElement || [];
         expect(items[0].item.offers).toBeUndefined();
     });
 
+    it('should set availability to InStock when config.products.orderableOnly is true', () => {
+        const searchResultWithStock: ShopperSearch.schemas['ProductSearchResult'] = {
+            hits: [
+                {
+                    productId: 'product-1',
+                    productName: 'Product 1',
+                    price: 29.99,
+                    currency: 'USD',
+                },
+            ] as ShopperSearch.schemas['ProductSearchHit'][],
+            total: 1,
+            query: '',
+            refinements: [],
+            searchPhraseSuggestions: { suggestedTerms: [] },
+            sortingOptions: [],
+            offset: 0,
+            limit: 1,
+            start: 0,
+            count: 1,
+        } as ShopperSearch.schemas['ProductSearchResult'];
+
+        const schema = generateCategorySchema({
+            category: baseCategory,
+            searchResult: searchResultWithStock,
+            pageUrl: validPageUrl,
+            defaultCurrency,
+            config: createAppConfig({
+                ...mockBuildConfig,
+                ...({ app: { search: { products: { orderableOnly: true } } } } as Partial<Config>),
+            }),
+        });
+
+        const items = schema.mainEntity?.itemListElement || [];
+        expect(items[0].item.offers?.availability).toBe('https://schema.org/InStock');
+    });
+
+    it('should omit availability when config.products.orderableOnly is false', () => {
+        const searchResultOutOfStock: ShopperSearch.schemas['ProductSearchResult'] = {
+            hits: [
+                {
+                    productId: 'product-1',
+                    productName: 'Product 1',
+                    price: 29.99,
+                    currency: 'USD',
+                },
+            ] as ShopperSearch.schemas['ProductSearchHit'][],
+            total: 1,
+            query: '',
+            refinements: [],
+            searchPhraseSuggestions: { suggestedTerms: [] },
+            sortingOptions: [],
+            offset: 0,
+            limit: 1,
+            start: 0,
+            count: 1,
+        } as ShopperSearch.schemas['ProductSearchResult'];
+
+        const schema = generateCategorySchema({
+            category: baseCategory,
+            searchResult: searchResultOutOfStock,
+            pageUrl: validPageUrl,
+            defaultCurrency,
+            config: createAppConfig({
+                ...mockBuildConfig,
+                ...({ app: { search: { products: { orderableOnly: false } } } } as Partial<Config>),
+            }),
+        });
+
+        const items = schema.mainEntity?.itemListElement || [];
+        expect(items[0].item.offers?.availability).toBeUndefined();
+    });
+
+    it('should set availability to OutOfStock when orderable is false, though config.products.orderableOnly is true', () => {
+        const searchResultWithoutOrderable: ShopperSearch.schemas['ProductSearchResult'] = {
+            hits: [
+                {
+                    productId: 'product-1',
+                    productName: 'Product 1',
+                    price: 29.99,
+                    currency: 'USD',
+                    orderable: false,
+                },
+            ] as ShopperSearch.schemas['ProductSearchHit'][],
+            total: 1,
+            query: '',
+            refinements: [],
+            searchPhraseSuggestions: { suggestedTerms: [] },
+            sortingOptions: [],
+            offset: 0,
+            limit: 1,
+            start: 0,
+            count: 1,
+        } as ShopperSearch.schemas['ProductSearchResult'];
+
+        const schema = generateCategorySchema({
+            category: baseCategory,
+            searchResult: searchResultWithoutOrderable,
+            pageUrl: validPageUrl,
+            defaultCurrency,
+            config: createAppConfig({
+                ...mockBuildConfig,
+                ...({ app: { search: { products: { orderableOnly: true } } } } as Partial<Config>),
+            }),
+        });
+
+        const items = schema.mainEntity?.itemListElement || [];
+        expect(items[0].item.offers?.availability).toBe('https://schema.org/OutOfStock');
+    });
+
+    it('should set availability to X when orderable is true, though config.products.orderableOnly is false', () => {
+        const searchResultWithoutOrderable: ShopperSearch.schemas['ProductSearchResult'] = {
+            hits: [
+                {
+                    productId: 'product-1',
+                    productName: 'Product 1',
+                    price: 29.99,
+                    currency: 'USD',
+                    orderable: true,
+                },
+            ] as ShopperSearch.schemas['ProductSearchHit'][],
+            total: 1,
+            query: '',
+            refinements: [],
+            searchPhraseSuggestions: { suggestedTerms: [] },
+            sortingOptions: [],
+            offset: 0,
+            limit: 1,
+            start: 0,
+            count: 1,
+        } as ShopperSearch.schemas['ProductSearchResult'];
+
+        const schema = generateCategorySchema({
+            category: baseCategory,
+            searchResult: searchResultWithoutOrderable,
+            pageUrl: validPageUrl,
+            defaultCurrency,
+            config: createAppConfig({
+                ...mockBuildConfig,
+                ...({ app: { search: { products: { orderableOnly: false } } } } as Partial<Config>),
+            }),
+        });
+
+        const items = schema.mainEntity?.itemListElement || [];
+        expect(items[0].item.offers?.availability).toBe('https://schema.org/InStock');
+    });
+
     it('should handle invalid pageUrl gracefully', () => {
         const invalidUrl = 'not-a-valid-url';
 
-        const schema = generateCategorySchema(baseCategory, baseSearchResult, invalidUrl, defaultCurrency);
+        const schema = generateCategorySchema({
+            category: baseCategory,
+            searchResult: baseSearchResult,
+            pageUrl: invalidUrl,
+            defaultCurrency,
+        });
 
         expect(schema.url).toBe(invalidUrl);
         // Breadcrumb items should not have URLs when baseUrl is invalid
@@ -289,7 +487,12 @@ describe('generateCategorySchema', () => {
             count: 0,
         } as ShopperSearch.schemas['ProductSearchResult'];
 
-        const schema = generateCategorySchema(baseCategory, emptySearchResult, validPageUrl, defaultCurrency);
+        const schema = generateCategorySchema({
+            category: baseCategory,
+            searchResult: emptySearchResult,
+            pageUrl: validPageUrl,
+            defaultCurrency,
+        });
 
         expect(schema.mainEntity).toBeDefined();
         expect(schema.mainEntity?.numberOfItems).toBe(0);
@@ -301,7 +504,12 @@ describe('generateCategorySchema', () => {
             total: 0,
         } as ShopperSearch.schemas['ProductSearchResult'];
 
-        const schema = generateCategorySchema(baseCategory, searchResultWithoutHits, validPageUrl, defaultCurrency);
+        const schema = generateCategorySchema({
+            category: baseCategory,
+            searchResult: searchResultWithoutHits,
+            pageUrl: validPageUrl,
+            defaultCurrency,
+        });
 
         expect(schema.mainEntity).toBeDefined();
         expect(schema.mainEntity?.itemListElement).toBeUndefined();
@@ -329,7 +537,12 @@ describe('generateCategorySchema', () => {
             count: 1,
         } as ShopperSearch.schemas['ProductSearchResult'];
 
-        const schema = generateCategorySchema(baseCategory, searchResultWithDisBaseLink, validPageUrl, defaultCurrency);
+        const schema = generateCategorySchema({
+            category: baseCategory,
+            searchResult: searchResultWithDisBaseLink,
+            pageUrl: validPageUrl,
+            defaultCurrency,
+        });
 
         const items = schema.mainEntity?.itemListElement || [];
         expect(items[0].item.image).toBe('https://example.com/dis-image1.jpg');
@@ -360,7 +573,12 @@ describe('generateCategorySchema', () => {
             count: 1,
         } as ShopperSearch.schemas['ProductSearchResult'];
 
-        const schema = generateCategorySchema(baseCategory, searchResultWithBothLinks, validPageUrl, defaultCurrency);
+        const schema = generateCategorySchema({
+            category: baseCategory,
+            searchResult: searchResultWithBothLinks,
+            pageUrl: validPageUrl,
+            defaultCurrency,
+        });
 
         const items = schema.mainEntity?.itemListElement || [];
         expect(items[0].item.image).toBe('https://example.com/image1.jpg');
@@ -372,12 +590,12 @@ describe('generateCategorySchema', () => {
             parentCategoryTree: [{ name: 'Parent Without ID' }],
         };
 
-        const schema = generateCategorySchema(
-            categoryWithParentsWithoutIds,
-            baseSearchResult,
-            validPageUrl,
-            defaultCurrency
-        );
+        const schema = generateCategorySchema({
+            category: categoryWithParentsWithoutIds,
+            searchResult: baseSearchResult,
+            pageUrl: validPageUrl,
+            defaultCurrency,
+        });
 
         const breadcrumbs = schema.breadcrumb?.itemListElement || [];
         expect(breadcrumbs[0].name).toBe('Parent Without ID');
@@ -404,7 +622,12 @@ describe('generateCategorySchema', () => {
             count: 1,
         } as ShopperSearch.schemas['ProductSearchResult'];
 
-        const schema = generateCategorySchema(baseCategory, searchResultWithoutCurrency, validPageUrl, defaultCurrency);
+        const schema = generateCategorySchema({
+            category: baseCategory,
+            searchResult: searchResultWithoutCurrency,
+            pageUrl: validPageUrl,
+            defaultCurrency,
+        });
 
         const items = schema.mainEntity?.itemListElement || [];
         expect(items[0].item.offers?.priceCurrency).toBe(defaultCurrency);

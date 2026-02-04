@@ -16,6 +16,7 @@
 import type { LoaderFunctionArgs } from 'react-router';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { createApiClients } from '@/lib/api-clients';
+import { getConfig } from '@/config';
 
 export const fetchSearchProducts = (
     context: LoaderFunctionArgs['context'],
@@ -42,7 +43,26 @@ export const fetchSearchProducts = (
         sort = 'best-matches',
         limit = 24,
         offset = 0,
-        expand = ['promotions', 'variations', 'prices', 'images', 'page_meta_tags', 'custom_properties'],
+        /**
+         * Please be very careful when modifying this array. The different expansion values have different, sometimes
+         * significant, effects on the caching behavior of the resulting responses. The optional availability expansion
+         * has the greatest impact here. If used, it enforces a TTL of only 60 seconds for the entire response, which
+         * is why its use should be carefully considered due to its comprehensive effects on performance, scalability,
+         * and cost-to-serve. In our out-of-the-box setting, we therefore only search for orderable products (see
+         * `orderable_only` below), which means that consuming components can implicitly assume that the products found
+         * are orderable.
+         * @see {@link https://developer.salesforce.com/docs/commerce/commerce-api/references/shopper-search?meta=productSearch}
+         * @see {@link https://developer.salesforce.com/docs/commerce/commerce-api/guide/server-side-web-tier-caching.html#default-cache-expiration-and-personalization-settings}
+         * @see {@link https://developer.salesforce.com/docs/commerce/commerce-api/guide/server-side-web-tier-caching.html#expand-parameter-impact-on-cache-hit-rates}
+         */
+        expand = [
+            'promotions', // <-- TTL = 900s
+            'variations', // <-- TTL = 900s
+            'prices', // <-- TTL = 900s
+            'images', // <-- TTL = 900s
+            'page_meta_tags',
+            'custom_properties',
+        ],
         refine = [],
         allImages = true,
         allVariationProperties = true,
@@ -50,8 +70,15 @@ export const fetchSearchProducts = (
         currency,
     } = parameters || {};
 
-    // Build refinements for product search
+    /**
+     * Build refinements for product search. As indicated above, in our out-of-the-box setting we only search for
+     * currently orderable products.
+     */
     const refineSet = new Set<string>(refine);
+    const appConfig = getConfig(context);
+    if (appConfig?.search?.products?.orderableOnly === true) {
+        refineSet.add('orderable_only=true');
+    }
     if (categoryId) {
         refineSet.add(`cgid=${categoryId}`);
     }
@@ -64,7 +91,6 @@ export const fetchSearchProducts = (
     }
 
     const clients = createApiClients(context);
-
     return clients.shopperSearch
         .productSearch({
             params: {
@@ -74,41 +100,12 @@ export const fetchSearchProducts = (
                     limit,
                     offset,
                     expand,
-
                     // This is a known type limitation, the API intelligently serializes the refine parameter (array) automatically, but the OAS types refers to string.
                     ...(refineSet.size > 0 && { refine: [...refineSet] as unknown as string }),
                     currency,
                     allImages,
                     allVariationProperties,
                     perPricebook,
-                },
-            },
-        })
-        .then(({ data }) => data);
-};
-
-export const fetchSearchSuggestions = (
-    context: LoaderFunctionArgs['context'],
-    parameters: {
-        q: ShopperSearch.operations['getSearchSuggestions']['parameters']['query']['q'];
-        expand?: ShopperSearch.operations['getSearchSuggestions']['parameters']['query']['expand'];
-        limit?: ShopperSearch.operations['getSearchSuggestions']['parameters']['query']['limit'];
-        includeEinsteinSuggestedPhrases?: boolean;
-        currency?: string;
-    }
-): Promise<ShopperSearch.schemas['SuggestionResult']> => {
-    const { q, expand, limit, includeEinsteinSuggestedPhrases, currency } = parameters;
-    const clients = createApiClients(context);
-
-    return clients.shopperSearch
-        .getSearchSuggestions({
-            params: {
-                query: {
-                    q,
-                    ...(expand && { expand }),
-                    ...(limit && { limit }),
-                    currency,
-                    ...(includeEinsteinSuggestedPhrases !== undefined && { includeEinsteinSuggestedPhrases }),
                 },
             },
         })
