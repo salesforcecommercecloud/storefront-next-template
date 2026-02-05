@@ -95,7 +95,7 @@ pnpm build
 pnpm push
 ```
 
-See the [Deployment Guide](https://github.com/SalesforceCommerceCloud/storefront-next/blob/main/packages/storefront-next-dev/README.md#push-bundle) for all options and configuration.
+See the [Deployment Guide](https://www.npmjs.com/package/@salesforce/storefront-next-dev?activeTab=readme) for all options and configuration.
 
 ## Available Scripts
 
