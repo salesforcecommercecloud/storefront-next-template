@@ -22,8 +22,8 @@ import InfoModal, { type InfoModalData } from '@/components/info-modal';
  * BuyNowPayLater component displays buy now pay later installment information.
  *
  * This is the default fallback component that displays when no custom extension
- * is registered for the plugin point. Customers can override this by registering
- * their own component via the plugin system.
+ * is registered for the target. Customers can override this by registering
+ * their own component via the target system.
  *
  * @returns ReactElement
  */

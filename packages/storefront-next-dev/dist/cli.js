@@ -2228,11 +2228,11 @@ function trimExtensions(directory, selectedExtensions, extensionConfig, verboseO
 	verbose = verboseOverride ?? false;
 	const configuredExtensions = extensionConfig?.extensions || {};
 	const extensions = {};
-	Object.keys(configuredExtensions).forEach((pluginKey) => {
-		extensions[pluginKey] = Boolean(selectedExtensions?.[pluginKey]) || false;
+	Object.keys(configuredExtensions).forEach((targetKey) => {
+		extensions[targetKey] = Boolean(selectedExtensions?.[targetKey]) || false;
 	});
 	if (Object.keys(extensions).length === 0) {
-		if (verbose) console.log("No plugins found, skipping trim");
+		if (verbose) console.log("No targets found, skipping trim");
 		return;
 	}
 	const processDirectory = (dir) => {

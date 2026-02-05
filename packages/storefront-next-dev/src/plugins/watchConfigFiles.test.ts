@@ -60,7 +60,7 @@ describe('watchConfigFilesPlugin', () => {
         plugin.configureServer(fakeServer);
 
         // Assert - should use 'src' as default root
-        expect(add).toHaveBeenCalledWith('src/extensions/**/plugin-config.json');
+        expect(add).toHaveBeenCalledWith('src/extensions/**/target-config.json');
     });
 
     it('should add glob pattern and register event listeners', () => {
@@ -83,13 +83,13 @@ describe('watchConfigFilesPlugin', () => {
         plugin.configureServer(fakeServer);
 
         // Assert
-        expect(add).toHaveBeenCalledWith('src/extensions/**/plugin-config.json');
+        expect(add).toHaveBeenCalledWith('src/extensions/**/target-config.json');
         expect(watcherOn).toHaveBeenCalledWith('add', expect.any(Function));
         expect(watcherOn).toHaveBeenCalledWith('change', expect.any(Function));
         expect(watcherOn).toHaveBeenCalledWith('unlink', expect.any(Function));
     });
 
-    it('should call server.restart() when plugin-config.json changes', () => {
+    it('should call server.restart() when target-config.json changes', () => {
         // Arrange
         const add = vi.fn();
         const restart = vi.fn();
@@ -115,14 +115,14 @@ describe('watchConfigFilesPlugin', () => {
         plugin.configResolved(resolvedConfig);
         plugin.configureServer(fakeServer);
 
-        // Simulate change event
-        handlers.change('/abs/path/src/extensions/foo/plugin-config.json');
+        // Simulate change event for target-config.json
+        handlers.change('/abs/path/src/extensions/foo/target-config.json');
 
         // Assert
         expect(restart).toHaveBeenCalled();
     });
 
-    it('should not restart server for non-plugin-config.json files', () => {
+    it('should not restart server for non-extension-config files', () => {
         // Arrange
         const add = vi.fn();
         const restart = vi.fn();

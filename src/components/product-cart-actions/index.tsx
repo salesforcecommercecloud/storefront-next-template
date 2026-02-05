@@ -25,7 +25,7 @@ import { isProductSet, isProductBundle } from '@/lib/product-utils';
 import { ShareButton } from '@/components/buttons/share-button';
 import { useCheckAndExecutePendingAction } from '@/hooks/check-and-execute-pending-action';
 import { useTranslation } from 'react-i18next';
-import { PluginComponent } from '@/plugins/plugin-component';
+import { UITarget } from '@/targets/ui-target';
 import BuyNowPayLater from '@/components/buy-now-pay-later';
 
 const ExpressPayments = lazy(() => import('@/components/checkout/components/express-payments'));
@@ -160,7 +160,6 @@ export default function ProductCartActions({
                         {isEditMode ? t('updateCart') : isAddingToOrUpdatingCart ? t('addingToCart') : t('addToCart')}
                     </Button>
                 )}
-
                 {/* Express Payments - Vertical layout for PDP */}
                 {!isProductASet && !isProductABundle && !isEditMode && shouldLoadExpressPayments && (
                     <Suspense fallback={null}>
@@ -173,9 +172,9 @@ export default function ProductCartActions({
                     </Suspense>
                 )}
 
-                <PluginComponent pluginId="pdp.after.addToCart">
+                <UITarget targetId="pdp.after.addToCart">
                     <BuyNowPayLater />
-                </PluginComponent>
+                </UITarget>
 
                 {!isEditMode && (
                     <div className="grid grid-cols-2 gap-3">

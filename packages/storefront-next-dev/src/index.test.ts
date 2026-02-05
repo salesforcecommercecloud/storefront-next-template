@@ -14,32 +14,32 @@
  * limitations under the License.
  */
 import { describe, it, expect } from 'vitest';
-import storefrontNextPlugins, { type StorefrontNextPluginsConfig } from './index';
+import storefrontNextTargets, { type StorefrontNextTargetsConfig } from './index';
 
 describe('index', () => {
-    it('should export the storefrontNextPlugins function', () => {
-        expect(storefrontNextPlugins).toBeDefined();
-        expect(typeof storefrontNextPlugins).toBe('function');
+    it('should export the storefrontNextTargets function', () => {
+        expect(storefrontNextTargets).toBeDefined();
+        expect(typeof storefrontNextTargets).toBe('function');
     });
 
-    it('should return an array of plugins', () => {
-        const plugins = storefrontNextPlugins();
-        expect(Array.isArray(plugins)).toBe(true);
+    it('should return an array of targets', () => {
+        const targets = storefrontNextTargets();
+        expect(Array.isArray(targets)).toBe(true);
     });
 
-    it('should return plugins with default config', () => {
-        const plugins = storefrontNextPlugins();
-        expect(plugins.length).toBeGreaterThan(0);
-        plugins.forEach((plugin) => {
-            expect(plugin).toHaveProperty('name');
+    it('should return targets with default config', () => {
+        const targets = storefrontNextTargets();
+        expect(targets.length).toBeGreaterThan(0);
+        targets.forEach((target) => {
+            expect(target).toHaveProperty('name');
         });
     });
 
-    it('should accept StorefrontNextPluginsConfig type', () => {
-        const config: StorefrontNextPluginsConfig = {
+    it('should accept StorefrontNextTargetsConfig type', () => {
+        const config: StorefrontNextTargetsConfig = {
             readableChunkNames: true,
         };
-        const plugins = storefrontNextPlugins(config);
-        expect(plugins.length).toBeGreaterThan(0);
+        const targets = storefrontNextTargets(config);
+        expect(targets.length).toBeGreaterThan(0);
     });
 });

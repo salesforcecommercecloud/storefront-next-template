@@ -1,5 +1,5 @@
 {
-  "message": "main: e4d2c9c8",
+  "message": "main: 47e0f9b2",
   "encoding": "base64",
   "ssr_parameters": {
     "ssrFunctionNodeVersion": "24.x"
@@ -570,5 +570,5 @@
       "wait-on": "^8.0.1"
     }
   },
-  "data_size": 22909952
+  "data_size": 22908928
 }

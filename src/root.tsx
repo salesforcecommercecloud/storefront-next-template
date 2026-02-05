@@ -100,7 +100,7 @@ import appStylesHref from './app.css?url';
 import { HybridProxyNavigationInterceptor } from '@/extensions/hybrid-proxy/navigation-interceptor';
 /** @sfdc-extension-line SFDC_EXT_HYBRID_PROXY */
 import { isProxyPath } from '@/extensions/hybrid-proxy/config';
-import { PluginProviders } from '@/plugins/plugin-providers';
+import { TargetProviders } from '@/targets/target-providers';
 import { MAINTENANCE_ERROR } from './lib/api-clients';
 import { type Maintenance, maintenanceContext } from '@/lib/maintenance';
 
@@ -362,7 +362,7 @@ export default function App({
 
     return (
         <ComposeProviders providers={providers}>
-            <PluginProviders>{content}</PluginProviders>
+            <TargetProviders>{content}</TargetProviders>
         </ComposeProviders>
     );
 }

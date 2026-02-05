@@ -802,7 +802,7 @@ describe('trim-extensions', () => {
             trimExt('/mock/dir', {}, { extensions: {} }, true);
 
             // Should log early return message
-            expect(console.log).toHaveBeenCalledWith('No plugins found, skipping trim');
+            expect(console.log).toHaveBeenCalledWith('No targets found, skipping trim');
             const content = readFile('/mock/dir/src/components/test.tsx');
             expect(content).toContain('@sfdc-extension-line SFDC_EXT_featureA');
             consoleSpy.mockRestore();

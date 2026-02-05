@@ -44,13 +44,13 @@ export default function trimExtensions(
     // read available extensions from config file
     const configuredExtensions: Record<string, unknown> = extensionConfig?.extensions || {};
     const extensions: ExtensionsSelection = {};
-    Object.keys(configuredExtensions).forEach((pluginKey) => {
-        extensions[pluginKey] = Boolean(selectedExtensions?.[pluginKey]) || false;
+    Object.keys(configuredExtensions).forEach((targetKey) => {
+        extensions[targetKey] = Boolean(selectedExtensions?.[targetKey]) || false;
     });
 
     if (Object.keys(extensions).length === 0) {
         if (verbose) {
-            console.log('No plugins found, skipping trim');
+            console.log('No targets found, skipping trim');
         }
         return;
     }

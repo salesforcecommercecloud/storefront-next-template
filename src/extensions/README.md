@@ -6,29 +6,29 @@ This folder contains **feature extensions** that allow you to enhance and custom
 
 The `extensions` directory is the central place for developing and managing reusable application extensions, such as UI widgets, backend integrations, or business logic add-ons. Files under each is self-contained and can be included individually, making it easy to add new features or integrations to your retail application. 
 
-## Extension Plugin
+## Extension Target
 
 ### Component
-Extension components can be inserted into plugin points defined in the main application. These plugin points are marked with the `PluginComponent` element, each identified by a unique plugId. For example:
+Extension components can be inserted into target points defined in the main application. These target points are marked with the `UITarget` element, each identified by a unique targetId. For example:
 
 ```
-<PluginComponent pluginId='header.before.cart' />
+<UITarget targetId='header.before.cart' />
 ```
 
-To insert a component into a plugin point, configure the `plugin-config.json` file under `src/extensions/<your-extension>` folder. For example: 
+To insert a component into a target point, configure the `target-config.json` file under `src/extensions/<your-extension>` folder. For example: 
 
 ```
 {
     "components": [
         {
-            "pluginId": "header.before.cart",
+            "targetId": "header.before.cart",
             "path": "extensions/store-locator/components/header/store-locator-badge.tsx",
             "order": 0
         }
     ]
 }
 ```
-When more than one components target the same pluginId, they'll be rendered in ascending order as specified.
+When more than one components target the same targetId, they'll be rendered in ascending order as specified.
 
 ### Context provider
 

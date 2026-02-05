@@ -66,12 +66,12 @@ interface EventInstrumentationValidatorConfig {
   verbose?: boolean;
 }
 //#endregion
-//#region src/plugin.d.ts
+//#region src/storefront-next-targets.d.ts
 
 /**
  * Configuration options for the Storefront Next Vite plugin.
  */
-interface StorefrontNextPluginsConfig {
+interface StorefrontNextTargetsConfig {
   /**
    * Enable human-readable chunk file names for easier debugging in production builds.
    * When enabled, chunk files will be named based on their source location
@@ -125,19 +125,19 @@ interface StorefrontNextPluginsConfig {
  * @example
  * // With default options
  * export default defineConfig({
- *   plugins: [storefrontNextPlugins()]
+ *   plugins: [storefrontNextTargets()]
  * })
  *
  * @example
  * // Disable readable chunk names
  * export default defineConfig({
- *   plugins: [storefrontNextPlugins({ readableChunkNames: false })]
+ *   plugins: [storefrontNextTargets({ readableChunkNames: false })]
  * })
  */
-declare function storefrontNextPlugins(config?: StorefrontNextPluginsConfig): Plugin[];
+declare function storefrontNextTargets(config?: StorefrontNextTargetsConfig): Plugin[];
 //#endregion
-//#region src/plugins/transformPlugins.d.ts
-declare function transformPluginPlaceholderPlugin(): {
+//#region src/plugins/transformTargets.d.ts
+declare function transformTargetPlaceholderPlugin(): {
   name: string;
   enforce: "pre";
   configResolved(config: ResolvedConfig): void;
@@ -323,5 +323,5 @@ interface GenerateMetadataResult {
 }
 declare function generateMetadata(projectDirectory: string, metadataDirectory: string, options?: GenerateMetadataOptions): Promise<GenerateMetadataResult>;
 //#endregion
-export { type GenerateMetadataOptions, type GenerateMetadataResult, type PushOptions, type StorefrontNextPluginsConfig, createServer, storefrontNextPlugins as default, generateMetadata, loadConfigFromEnv, loadProjectConfig, push, transformPluginPlaceholderPlugin, trimExtensions };
+export { type GenerateMetadataOptions, type GenerateMetadataResult, type PushOptions, type StorefrontNextTargetsConfig, createServer, storefrontNextTargets as default, generateMetadata, loadConfigFromEnv, loadProjectConfig, push, transformTargetPlaceholderPlugin, trimExtensions };
 //# sourceMappingURL=index.d.ts.map

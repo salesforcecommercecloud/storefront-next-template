@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// Default export: Vite plugin (for tree-shaking, plugin users won't bundle CLI code)
-export { storefrontNextPlugins as default, type StorefrontNextPluginsConfig } from './plugin';
+// Default export: Vite plugin (for tree-shaking, consumers won't bundle CLI code)
+export { storefrontNextTargets as default, type StorefrontNextTargetsConfig } from './storefront-next-targets';
 
-// Named export: Transform plugin placeholder components (PluginComponent & ProviderProviders)
-export { transformPluginPlaceholderPlugin } from './plugins/transformPlugins';
+// Named export: Transform target placeholder components (UITarget & TargetProviders)
+export { transformTargetPlaceholderPlugin } from './plugins/transformTargets';
 
 // Named export: Push function for programmatic usage
 // For better tree-shaking, import from './commands/push' subpath export instead

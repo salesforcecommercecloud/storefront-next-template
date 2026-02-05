@@ -68,12 +68,12 @@ The BuyNowPayLater component displays buy now pay later installment information.
 **Features:**
 - Displays installment payment message
 - Opens modal when "Learn more" is clicked
-- Plugin component style - can be overridden by customers
+- Target component style - can be overridden by customers
 - Default fallback component when no custom extension is registered
 
 **Usage:**
 This component is typically placed below the "Add to Cart" button on product detail pages.
-It uses the plugin system, allowing customers to register their own custom components.
+It uses the target system, allowing customers to register their own custom components.
                 `,
             },
         },

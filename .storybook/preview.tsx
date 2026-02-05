@@ -6,7 +6,7 @@ import { applyProviders } from '../src/lib/provider-utils';
 import { storybookProviders } from './storybook-providers';
 import { inBasketProductDetails } from '../src/components/__mocks__/basket-with-dress';
 import '../src/app.css'; // Import global CSS
-import { PluginProviders } from '@/plugins/plugin-providers';
+import { TargetProviders } from '@/targets/target-providers';
 
 // Create HOC that applies all Storybook providers
 // This uses the real provider components with mock data injected via wrapper components
@@ -26,9 +26,9 @@ const RouterWrapper = ({ Story }: { Story: ComponentType }) => {
         // Wrap Story with providers
         const WrappedStory = (  
             <StorybookWrapper>
-                <PluginProviders>
+                <TargetProviders>
                     <Story />
-                </PluginProviders>
+                </TargetProviders>
             </StorybookWrapper>
         );
 

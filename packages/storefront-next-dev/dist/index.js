@@ -275,18 +275,18 @@ const patchReactRouterPlugin = () => {
 };
 
 //#endregion
-//#region src/extensibility/plugin-utils.ts
+//#region src/extensibility/target-utils.ts
 const traverse = traverseModule.default || traverseModule;
-const PLUGIN_COMPONENT_TAG = "PluginComponent";
-const PLUGIN_PROVIDERS_TAG = "PluginProviders";
-const PLUGIN_ID_ATTRIBUTE = "pluginId";
+const TARGET_COMPONENT_TAG = "UITarget";
+const TARGET_PROVIDERS_TAG = "TargetProviders";
+const TARGET_ID_ATTRIBUTE = "targetId";
 /**
-* Find and replace the PluginProviders tags with the corresponding context providers
+* Find and replace the TargetProviders tags with the corresponding context providers
 * @param element - the AST element to replace
 * @param contextProviders - the context providers to replace
 */
 function findAndReplaceProviders(element, contextProviders) {
-	if (isJSXIdentifier(element.node.openingElement.name, { name: PLUGIN_PROVIDERS_TAG })) if (contextProviders.length > 0) {
+	if (isJSXIdentifier(element.node.openingElement.name, { name: TARGET_PROVIDERS_TAG })) if (contextProviders.length > 0) {
 		let nested = element.node.children;
 		for (let i = contextProviders.length - 1; i >= 0; i--) {
 			const componentName = contextProviders[i].componentName;
@@ -296,49 +296,49 @@ function findAndReplaceProviders(element, contextProviders) {
 	} else element.replaceWith(jsxFragment(jsxOpeningFragment(), jsxClosingFragment(), element.node.children));
 }
 /**
-* Find and replace the plugin component with the replacement code
+* Find and replace the target component with the replacement code
 * @param componentName - the name of the component to replace
 * @param element - the AST element as the replacement candidate
-* @param pluginRegistry - the plugin registry
-* @returns the pluginId that was replaced, or null if no replacement was found
+* @param targetRegistry - the target registry
+* @returns the targetId that was replaced, or null if no replacement was found
 */
-function findAndReplaceComponent(componentName, element, pluginRegistry) {
-	let pluginIdReplaced = null;
+function findAndReplaceComponent(componentName, element, targetRegistry) {
+	let targetIdReplaced = null;
 	if (isJSXIdentifier(element.node.openingElement.name, { name: componentName })) {
 		let replaced = false;
 		if (Array.isArray(element.node.openingElement.attributes)) {
-			const attr = element.node.openingElement.attributes.find((a) => isJSXAttribute(a) && isJSXIdentifier(a.name, { name: PLUGIN_ID_ATTRIBUTE }));
-			const pluginId = attr && isJSXAttribute(attr) && attr.value && "value" in attr.value ? attr.value.value : void 0;
-			if (pluginId == null) throw new Error(`PluginComponent must contain a pluginId attribute`);
-			if (pluginRegistry[pluginId] && pluginRegistry[pluginId].length > 0) {
-				const components = pluginRegistry[pluginId].map((pluginComponent) => {
-					return jsxElement(jsxOpeningElement(jsxIdentifier(pluginComponent.componentName), [], true), null, [], true);
+			const attr = element.node.openingElement.attributes.find((a) => isJSXAttribute(a) && isJSXIdentifier(a.name, { name: TARGET_ID_ATTRIBUTE }));
+			const targetId = attr && isJSXAttribute(attr) && attr.value && "value" in attr.value ? attr.value.value : void 0;
+			if (targetId == null) throw new Error(`UITarget must contain a targetId attribute`);
+			if (targetRegistry[targetId] && targetRegistry[targetId].length > 0) {
+				const components = targetRegistry[targetId].map((targetComponent) => {
+					return jsxElement(jsxOpeningElement(jsxIdentifier(targetComponent.componentName), [], true), null, [], true);
 				});
 				if (components.length > 1) element.replaceWith(jsxFragment(jsxOpeningFragment(), jsxClosingFragment(), components));
 				else element.replaceWith(components[0]);
-				pluginIdReplaced = pluginId;
+				targetIdReplaced = targetId;
 				replaced = true;
 			}
 		}
 		if (!replaced) if (element.node.children && element.node.children.length > 0) element.replaceWithMultiple(element.node.children);
 		else element.remove();
 	}
-	return pluginIdReplaced;
+	return targetIdReplaced;
 }
 /**
 * Run a replacement pass on the AST
 * @param ast - the AST to traverse
 * @param tagName - the name of the tag to replace
-* @param pluginRegistry - the plugin registry
+* @param targetRegistry - the target registry
 * @param contextProviders - the context providers to replace
-* @returns a set of pluginIds that were replaced
+* @returns a set of targetIds that were replaced
 */
-function runReplacementPass(ast, tagName, pluginRegistry = null, contextProviders = null) {
-	const pluginIdsReplaced = /* @__PURE__ */ new Set();
+function runReplacementPass(ast, tagName, targetRegistry = null, contextProviders = null) {
+	const targetIdsReplaced = /* @__PURE__ */ new Set();
 	const applyReplacement = (pathToReplace) => {
-		if (pluginRegistry) {
-			const replacedId = findAndReplaceComponent(tagName, pathToReplace, pluginRegistry);
-			if (replacedId) pluginIdsReplaced.add(replacedId);
+		if (targetRegistry) {
+			const replacedId = findAndReplaceComponent(tagName, pathToReplace, targetRegistry);
+			if (replacedId) targetIdsReplaced.add(replacedId);
 		} else if (contextProviders) findAndReplaceProviders(pathToReplace, contextProviders);
 	};
 	traverse(ast, {
@@ -366,24 +366,24 @@ function runReplacementPass(ast, tagName, pluginRegistry = null, contextProvider
 			} });
 		}
 	});
-	return pluginIdsReplaced;
+	return targetIdsReplaced;
 }
 /**
-* Build the import statements for the plugin components
-* @param pluginIds - the pluginIds that were replaced
-* @param pluginRegistry - the plugin registry
+* Build the import statements for the target components
+* @param targetIds - the targetIds that were replaced
+* @param targetRegistry - the target registry
 * @returns the import statements
 */
-function buildReplacementImportStatements(pluginIds, pluginRegistry) {
+function buildReplacementImportStatements(targetIds, targetRegistry) {
 	const importStatements = /* @__PURE__ */ new Set();
-	for (const pluginId of pluginIds) {
-		const pluginComponents = pluginRegistry[pluginId];
-		for (const pluginComponent of pluginComponents) importStatements.add(`import ${pluginComponent.componentName} from '@/${pluginComponent.path.replace(".tsx", "")}';`);
+	for (const targetId of targetIds) {
+		const targetComponents = targetRegistry[targetId];
+		for (const targetComponent of targetComponents) importStatements.add(`import ${targetComponent.componentName} from '@/${targetComponent.path.replace(".tsx", "")}';`);
 	}
 	return Array.from(importStatements).join("\n");
 }
-function transformPlugins(code, pluginRegistry, contextProviders) {
-	if (!code.includes(PLUGIN_COMPONENT_TAG) && !code.includes(PLUGIN_PROVIDERS_TAG)) return null;
+function transformTargets(code, targetRegistry, contextProviders) {
+	if (!code.includes(TARGET_COMPONENT_TAG) && !code.includes(TARGET_PROVIDERS_TAG)) return null;
 	const ast = parse(code, {
 		sourceType: "module",
 		plugins: [
@@ -392,30 +392,30 @@ function transformPlugins(code, pluginRegistry, contextProviders) {
 			"decorators-legacy"
 		]
 	});
-	if (code.includes(PLUGIN_COMPONENT_TAG)) {
-		const replacementImportStatements = buildReplacementImportStatements(runReplacementPass(ast, PLUGIN_COMPONENT_TAG, pluginRegistry, null), pluginRegistry);
+	if (code.includes(TARGET_COMPONENT_TAG)) {
+		const replacementImportStatements = buildReplacementImportStatements(runReplacementPass(ast, TARGET_COMPONENT_TAG, targetRegistry, null), targetRegistry);
 		traverse(ast, { ImportDeclaration(nodePath) {
-			if (nodePath.node.source.value.includes("@/plugins/plugin-component")) nodePath.replaceWith(jsxText(replacementImportStatements));
+			if (nodePath.node.source.value.includes("@/targets/ui-target")) nodePath.replaceWith(jsxText(replacementImportStatements));
 		} });
 	}
-	if (code.includes(PLUGIN_PROVIDERS_TAG)) {
+	if (code.includes(TARGET_PROVIDERS_TAG)) {
 		const importStatements = /* @__PURE__ */ new Set();
 		for (const contextProvider of contextProviders) importStatements.add(`import ${contextProvider.componentName} from '@/${contextProvider.path.replace(".tsx", "")}';`);
 		const replacementImportStatements = Array.from(importStatements).join("\n");
 		traverse(ast, { ImportDeclaration(nodePath) {
-			if (nodePath.node.source.value.includes("@/plugins/plugin-providers")) nodePath.replaceWith(jsxText(replacementImportStatements));
+			if (nodePath.node.source.value.includes("@/targets/target-providers")) nodePath.replaceWith(jsxText(replacementImportStatements));
 		} });
-		runReplacementPass(ast, PLUGIN_PROVIDERS_TAG, null, contextProviders);
+		runReplacementPass(ast, TARGET_PROVIDERS_TAG, null, contextProviders);
 	}
 	return generate(ast).code;
 }
 /**
-* Build the plugin registry from the extension directories
+* Build the target registry from the extension directories
 * @param rootDir - the root directory of the project
 * @param sourceDir - the source directory of the project
-* @returns the plugin registry
+* @returns the target registry
 */
-function buildPluginRegistry(rootDir) {
+function buildTargetRegistry(rootDir) {
 	const componentRegistry = {};
 	const contextProviders = [];
 	const extensionDirPath = path$1.join(rootDir, "extensions");
@@ -427,17 +427,18 @@ function buildPluginRegistry(rootDir) {
 			componentName: `${namespace}_${(filePath.split("/").pop()?.replace(".tsx", ""))?.split("-").map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join("")}`
 		};
 	};
+	const TARGET_CONFIG_FILENAME = "target-config.json";
 	for (const dir of extensionDirs) if (dir.isDirectory()) {
-		const configPath = path$1.join(extensionDirPath, dir.name, "plugin-config.json");
+		const configPath = path$1.join(extensionDirPath, dir.name, TARGET_CONFIG_FILENAME);
 		if (fs.existsSync(configPath)) {
-			const pluginConfig = fs.readJsonSync(configPath);
-			if (pluginConfig && pluginConfig.components) for (const pluginComponent of pluginConfig.components) {
-				const { pluginId, path: componentPath, order = 0 } = pluginComponent;
-				if (pluginId && componentPath) {
-					if (!componentRegistry[pluginId]) componentRegistry[pluginId] = [];
+			const extensionConfig = fs.readJsonSync(configPath);
+			if (extensionConfig && extensionConfig.components) for (const component of extensionConfig.components) {
+				const { targetId, path: componentPath, order = 0 } = component;
+				if (targetId && componentPath) {
+					if (!componentRegistry[targetId]) componentRegistry[targetId] = [];
 					const { namespace, componentName } = getNamespaceAndComponentName(dir, componentPath);
-					componentRegistry[pluginId].push({
-						pluginId,
+					componentRegistry[targetId].push({
+						targetId,
 						path: componentPath,
 						order,
 						namespace,
@@ -445,7 +446,7 @@ function buildPluginRegistry(rootDir) {
 					});
 				}
 			}
-			if (pluginConfig && pluginConfig.contextProviders) for (const contextProvider of pluginConfig.contextProviders) {
+			if (extensionConfig && extensionConfig.contextProviders) for (const contextProvider of extensionConfig.contextProviders) {
 				const { path: providerPath, order = 0 } = contextProvider;
 				if (providerPath) {
 					const { namespace, componentName } = getNamespaceAndComponentName(dir, providerPath);
@@ -459,7 +460,7 @@ function buildPluginRegistry(rootDir) {
 			}
 		}
 	}
-	for (const pluginId in componentRegistry) componentRegistry[pluginId].sort((a, b) => a.order - b.order);
+	for (const targetId in componentRegistry) componentRegistry[targetId].sort((a, b) => a.order - b.order);
 	contextProviders.sort((a, b) => a.order - b.order);
 	return {
 		componentRegistry,
@@ -468,30 +469,30 @@ function buildPluginRegistry(rootDir) {
 }
 
 //#endregion
-//#region src/plugins/transformPlugins.ts
-function transformPluginPlaceholderPlugin() {
+//#region src/plugins/transformTargets.ts
+function transformTargetPlaceholderPlugin() {
 	let componentRegistry;
 	let contextProviders;
 	let sourceDir;
 	return {
-		name: "odyssey:transform-plugin-placeholder",
+		name: "odyssey:transform-target-placeholder",
 		enforce: "pre",
 		configResolved(config) {
 			sourceDir = config.resolve.alias.find((alias) => alias.find === "@")?.replacement || path$1.resolve(__dirname, "./src");
 		},
 		buildStart() {
-			({componentRegistry, contextProviders} = buildPluginRegistry(sourceDir));
+			({componentRegistry, contextProviders} = buildTargetRegistry(sourceDir));
 		},
 		transform(code, id) {
 			try {
-				const transformedCode = transformPlugins(code, componentRegistry, contextProviders);
+				const transformedCode = transformTargets(code, componentRegistry, contextProviders);
 				if (transformedCode) return {
 					code: transformedCode,
 					map: null
 				};
 				return null;
 			} catch (err) {
-				console.error(`PluginComponent replace ERROR in ${id}: ${err instanceof Error ? err.stack : String(err)}`);
+				console.error(`UITarget replace ERROR in ${id}: ${err instanceof Error ? err.stack : String(err)}`);
 				throw err;
 			}
 		}
@@ -510,11 +511,11 @@ const watchConfigFilesPlugin = () => {
 		configureServer(server) {
 			const aliases = viteConfig.resolve.alias;
 			const root = Object.values(aliases).find((alias) => alias.find === "@")?.replacement || "src";
-			const glob$1 = path$1.posix.join(root, "extensions", "**", "plugin-config.json");
+			const glob$1 = path$1.posix.join(root, "extensions", "**", "target-config.json");
 			server.watcher.add(glob$1);
 			const onChange = (file) => {
-				if (file.endsWith("plugin-config.json")) {
-					console.log(`🔁 plugin-config.json changed: ${file}`);
+				if (file.endsWith("target-config.json")) {
+					console.log(`🔁 target-config.json changed: ${file}`);
 					server.restart();
 				}
 			};
@@ -943,7 +944,7 @@ const eventInstrumentationValidatorPlugin = (config = {}) => {
 };
 
 //#endregion
-//#region src/plugin.ts
+//#region src/storefront-next-targets.ts
 /**
 * Storefront Next Vite plugin that powers the React Router RSC app.
 * Supports building and optimizing for the managed runtime environment.
@@ -954,16 +955,16 @@ const eventInstrumentationValidatorPlugin = (config = {}) => {
 * @example
 * // With default options
 * export default defineConfig({
-*   plugins: [storefrontNextPlugins()]
+*   plugins: [storefrontNextTargets()]
 * })
 *
 * @example
 * // Disable readable chunk names
 * export default defineConfig({
-*   plugins: [storefrontNextPlugins({ readableChunkNames: false })]
+*   plugins: [storefrontNextTargets({ readableChunkNames: false })]
 * })
 */
-function storefrontNextPlugins(config = {}) {
+function storefrontNextTargets(config = {}) {
 	const { readableChunkNames = false, staticRegistry = {
 		componentPath: "",
 		registryPath: "",
@@ -978,7 +979,7 @@ function storefrontNextPlugins(config = {}) {
 		managedRuntimeBundlePlugin(),
 		fixReactRouterManifestUrlsPlugin(),
 		patchReactRouterPlugin(),
-		transformPluginPlaceholderPlugin(),
+		transformTargetPlaceholderPlugin(),
 		watchConfigFilesPlugin()
 	];
 	if (staticRegistry?.componentPath && staticRegistry?.registryPath) plugins.push(staticRegistryPlugin(staticRegistry));
@@ -1848,11 +1849,11 @@ function trimExtensions(directory, selectedExtensions, extensionConfig, verboseO
 	verbose = verboseOverride ?? false;
 	const configuredExtensions = extensionConfig?.extensions || {};
 	const extensions = {};
-	Object.keys(configuredExtensions).forEach((pluginKey) => {
-		extensions[pluginKey] = Boolean(selectedExtensions?.[pluginKey]) || false;
+	Object.keys(configuredExtensions).forEach((targetKey) => {
+		extensions[targetKey] = Boolean(selectedExtensions?.[targetKey]) || false;
 	});
 	if (Object.keys(extensions).length === 0) {
-		if (verbose) console.log("No plugins found, skipping trim");
+		if (verbose) console.log("No targets found, skipping trim");
 		return;
 	}
 	const processDirectory = (dir) => {
@@ -2602,5 +2603,5 @@ async function generateMetadata(projectDirectory, metadataDirectory, options) {
 }
 
 //#endregion
-export { createServer, storefrontNextPlugins as default, generateMetadata, loadConfigFromEnv, loadProjectConfig, push, transformPluginPlaceholderPlugin, trimExtensions };
+export { createServer, storefrontNextTargets as default, generateMetadata, loadConfigFromEnv, loadProjectConfig, push, transformTargetPlaceholderPlugin, trimExtensions };
 //# sourceMappingURL=index.js.map

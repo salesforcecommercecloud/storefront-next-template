@@ -27,13 +27,13 @@ export const watchConfigFilesPlugin = () => {
             const aliases = viteConfig.resolve.alias;
             const root = Object.values(aliases).find((alias) => alias.find === '@')?.replacement || 'src';
             // Use path.posix.join to ensure forward slashes for glob patterns (required even on Windows)
-            const glob = path.posix.join(root, 'extensions', '**', 'plugin-config.json');
+            const glob = path.posix.join(root, 'extensions', '**', 'target-config.json');
             server.watcher.add(glob);
 
             const onChange = (file: string) => {
-                if (file.endsWith('plugin-config.json')) {
+                if (file.endsWith('target-config.json')) {
                     // eslint-disable-next-line no-console
-                    console.log(`🔁 plugin-config.json changed: ${file}`);
+                    console.log(`🔁 target-config.json changed: ${file}`);
                     void server.restart();
                 }
             };
