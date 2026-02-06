@@ -15,6 +15,19 @@
  */
 import type React from 'react';
 
+/**
+ * Default component constructor interface.
+ * Used to define default components that should be instantiated in a region.
+ */
+export interface DefaultComponentConstructor {
+    /** Unique identifier for the component instance */
+    id: string;
+    /** Component type ID to instantiate */
+    typeId: string;
+    /** Component data/attributes */
+    data: Record<string, unknown>;
+}
+
 export interface RegionDesignMetadata {
     /**
      * The id of the component or region.
@@ -25,17 +38,29 @@ export interface RegionDesignMetadata {
      */
     name?: string;
     /**
+     * Optional description for the region.
+     */
+    description?: string;
+    /**
+     * Maximum number of components allowed in the region.
+     */
+    maxComponents?: number;
+    /**
      * A list of component ids that are part of this region.
      */
-    componentIds: string[];
+    componentIds?: string[];
     /**
      * A list of allowed component types in this region.
      */
-    componentTypeInclusions: string[];
+    componentTypeInclusions?: string[];
     /**
      * A list of forbidden component types in this region.
      */
-    componentTypeExclusions: string[];
+    componentTypeExclusions?: string[];
+    /**
+     * Default components to instantiate when the region is created.
+     */
+    defaultComponentConstructors?: DefaultComponentConstructor[];
 }
 
 export interface ComponentDesignMetadata {
@@ -59,16 +84,22 @@ export interface ComponentDesignMetadata {
      * The name of the component or region.
      */
     name?: string;
+    /**
+     * The region definitions for this component.
+     */
+    regionDefinitions?: RegionDesignMetadata[];
 }
 
 export type ComponentDecoratorProps<TProps> = React.PropsWithChildren<
     {
-        designMetadata: ComponentDesignMetadata;
+        designMetadata?: ComponentDesignMetadata;
+        visible?: boolean;
+        localized?: boolean;
     } & TProps
 >;
 
 export type RegionDecoratorProps<TProps> = React.PropsWithChildren<
     {
-        designMetadata: RegionDesignMetadata;
+        designMetadata?: RegionDesignMetadata;
     } & TProps
 >;

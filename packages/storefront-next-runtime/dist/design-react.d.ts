@@ -32,6 +32,18 @@ interface DesignContextType {
 declare const useDesignContext: () => DesignContextType;
 //#endregion
 //#region src/design/react/components/component.types.d.ts
+/**
+ * Default component constructor interface.
+ * Used to define default components that should be instantiated in a region.
+ */
+interface DefaultComponentConstructor {
+  /** Unique identifier for the component instance */
+  id: string;
+  /** Component type ID to instantiate */
+  typeId: string;
+  /** Component data/attributes */
+  data: Record<string, unknown>;
+}
 interface RegionDesignMetadata {
   /**
    * The id of the component or region.
@@ -42,17 +54,29 @@ interface RegionDesignMetadata {
    */
   name?: string;
   /**
+   * Optional description for the region.
+   */
+  description?: string;
+  /**
+   * Maximum number of components allowed in the region.
+   */
+  maxComponents?: number;
+  /**
    * A list of component ids that are part of this region.
    */
-  componentIds: string[];
+  componentIds?: string[];
   /**
    * A list of allowed component types in this region.
    */
-  componentTypeInclusions: string[];
+  componentTypeInclusions?: string[];
   /**
    * A list of forbidden component types in this region.
    */
-  componentTypeExclusions: string[];
+  componentTypeExclusions?: string[];
+  /**
+   * Default components to instantiate when the region is created.
+   */
+  defaultComponentConstructors?: DefaultComponentConstructor[];
 }
 interface ComponentDesignMetadata {
   /**
@@ -75,12 +99,18 @@ interface ComponentDesignMetadata {
    * The name of the component or region.
    */
   name?: string;
+  /**
+   * The region definitions for this component.
+   */
+  regionDefinitions?: RegionDesignMetadata[];
 }
 type ComponentDecoratorProps<TProps> = React.PropsWithChildren<{
-  designMetadata: ComponentDesignMetadata;
+  designMetadata?: ComponentDesignMetadata;
+  visible?: boolean;
+  localized?: boolean;
 } & TProps>;
 type RegionDecoratorProps<TProps> = React.PropsWithChildren<{
-  designMetadata: RegionDesignMetadata;
+  designMetadata?: RegionDesignMetadata;
 } & TProps>;
 //#endregion
 //#region src/design/react/components/ComponentDecorator.d.ts
@@ -97,6 +127,26 @@ declare function createReactComponentDesignDecorator<TProps>(Component: React.Co
 //#endregion
 //#region src/design/react/components/RegionDecorator.d.ts
 declare function createReactRegionDesignDecorator<TProps>(Region: React.ComponentType<TProps>): (props: RegionDecoratorProps<TProps>) => React.JSX.Element;
+//#endregion
+//#region src/design/react/components/page.types.d.ts
+interface PageDesignMetadata {
+  id: string;
+  name: string;
+  description?: string;
+  archType?: 'controller' | 'headless';
+  route?: string;
+  supportedAspectTypes?: string[];
+  regionDefinitions?: RegionDesignMetadata[];
+  attributeDefinitionGroups?: {
+    id: string;
+    name?: string;
+    description?: string;
+    attributeDefinitions?: Record<string, unknown>[];
+  }[];
+}
+type PageDecoratorProps<TProps> = React.PropsWithChildren<{
+  designMetadata?: PageDesignMetadata;
+} & TProps>;
 //#endregion
 //#region src/design/react/registry/adapter.d.ts
 type ReactComponentModule<TProps> = ComponentModule<TProps, ReactDesignComponentType<TProps>>;
@@ -126,5 +176,5 @@ declare class ReactAdapter<TProps> implements FrameworkAdapter<TProps, ReactDesi
  */
 declare function createReactAdapter<TProps>(): ReactAdapter<TProps>;
 //#endregion
-export { type ComponentDecoratorProps, type ComponentDesignMetadata, type DesignContextType, type ReactDesignComponentType, type RegionDecoratorProps, type RegionDesignMetadata, createReactAdapter, createReactComponentDesignDecorator, createReactRegionDesignDecorator, useDesignContext };
+export { type ComponentDecoratorProps, type ComponentDesignMetadata, type DefaultComponentConstructor, type DesignContextType, type PageDecoratorProps, type PageDesignMetadata, type ReactDesignComponentType, type RegionDecoratorProps, type RegionDesignMetadata, createReactAdapter, createReactComponentDesignDecorator, createReactRegionDesignDecorator, useDesignContext };
 //# sourceMappingURL=design-react.d.ts.map

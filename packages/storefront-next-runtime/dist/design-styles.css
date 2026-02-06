@@ -15,7 +15,7 @@
   --pd-design-fallback-badge-color: rgb(172, 47, 109);
   --pd-design-region-border-color: #3e3e3c;
   --pd-design-drop-target-offset: 10px;
-  --pd-design-base-z-index: 30;
+  --pd-design-base-z-index: 50;
 }
 
 .pd-design__component,
@@ -134,6 +134,7 @@
 
 .pd-design__frame.pd-design__frame--visible > .pd-design__frame__label {
   display: inline-flex;
+  z-index: calc(var(--pd-design-base-z-index) + 3);
 }
 
 .pd-design__component.pd-design__decorator--selected {

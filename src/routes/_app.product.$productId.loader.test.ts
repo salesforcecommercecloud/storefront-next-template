@@ -16,15 +16,15 @@
 
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import type { RouterContextProvider } from 'react-router';
-import type { ShopperProducts, ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { loader } from './_app.product.$productId';
 import { appConfigContext } from '@/config';
 import { authContext } from '@/middlewares/auth.utils';
 import { currencyContext } from '@/lib/currency';
 
-// Mock the API client creation
-const mockGetProduct = vi.fn();
-const mockGetCategory = vi.fn();
+// Mock the API client creation - use vi.hoisted to avoid hoisting issues
+const mockGetProduct = vi.hoisted(() => vi.fn());
+const mockGetCategory = vi.hoisted(() => vi.fn());
 
 vi.mock('@/lib/api-clients', () => ({
     createApiClients: vi.fn(() => ({
@@ -35,23 +35,22 @@ vi.mock('@/lib/api-clients', () => ({
     })),
 }));
 
-// Mock Page Designer functions
-const mockFetchPageFromLoader = vi.fn(
-    (): Promise<ShopperExperience.schemas['Page']> =>
+// Mock Page Designer functions - use vi.hoisted to avoid hoisting issues
+const mockFetchPageWithComponentData = vi.hoisted(() =>
+    vi.fn(() =>
         Promise.resolve({
             id: 'pdp',
             typeId: 'page',
             aspectTypeId: 'pdp',
             name: 'Product Detail Page',
             regions: [],
+            componentData: {},
         })
+    )
 );
 
-const mockCollectComponentDataPromises = vi.fn(() => Promise.resolve({}));
-
-vi.mock('@/lib/page-designer', () => ({
-    fetchPageFromLoader: mockFetchPageFromLoader,
-    collectComponentDataPromises: mockCollectComponentDataPromises,
+vi.mock('@/lib/util/pageLoader', () => ({
+    fetchPageWithComponentData: mockFetchPageWithComponentData,
 }));
 
 // @sfdc-extension-block-start SFDC_EXT_BOPIS

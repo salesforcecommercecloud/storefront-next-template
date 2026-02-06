@@ -22,91 +22,151 @@ import {
     PageDesignerPageMetadataProvider,
     useRegionContext,
 } from '@salesforce/storefront-next-runtime/design/react/core';
+import type {
+    ComponentDecoratorProps,
+    PageDecoratorProps,
+    RegionDesignMetadata,
+} from '@salesforce/storefront-next-runtime/design/react';
+import { ComponentDataProvider, useComponentData } from './component-data-context';
 
-interface RegionProps extends React.HTMLAttributes<HTMLDivElement> {
-    page: Promise<ShopperExperience.schemas['Page'] | ShopperExperience.schemas['Component']>;
+export type { RegionDesignMetadata };
+
+// Extended Page type with design metadata
+type PageWithDesignMetadata = PageDecoratorProps<ShopperExperience.schemas['Page']> & {
+    componentData?: Record<string, Promise<unknown>>;
+};
+
+// Props when rendering a page-level region
+interface PageRegionProps extends React.HTMLAttributes<HTMLDivElement> {
+    page: Promise<PageWithDesignMetadata> | PageWithDesignMetadata;
+    component?: never;
     regionId: string;
-    componentData?: Promise<Record<string, Promise<unknown>>>;
     fallbackElement?: ReactNode;
     errorElement?: ReactNode;
+}
+
+export type ComponentType = ComponentDecoratorProps<ShopperExperience.schemas['Component']>;
+
+// Props when rendering a component-level region (nested)
+interface ComponentRegionProps extends React.HTMLAttributes<HTMLDivElement> {
+    page?: never;
+    component: ComponentType;
+    regionId: string;
+    fallbackElement?: ReactNode;
+    errorElement?: ReactNode;
+}
+
+// Discriminated union
+export type RegionProps = PageRegionProps | ComponentRegionProps;
+
+// Helper: Extract design metadata from region definition
+function getDesignMetadata(regionId: string, metadata?: RegionDesignMetadata) {
+    return {
+        id: regionId,
+        componentTypeExclusions: metadata?.componentTypeExclusions ?? [],
+        componentTypeInclusions: metadata?.componentTypeInclusions ?? [],
+    };
+}
+
+// Helper: Render region wrapper with components
+function renderRegionContent(
+    region: ShopperExperience.schemas['Region'],
+    regionId: string,
+    metadata: RegionDesignMetadata | undefined,
+    className: string,
+    rest: React.HTMLAttributes<HTMLDivElement>
+) {
+    return (
+        <RegionWrapper
+            region={region}
+            className={className}
+            designMetadata={getDesignMetadata(regionId, metadata)}
+            {...rest}>
+            {region.components?.map(
+                (comp) => comp.id && <Component key={comp.id} component={comp as ComponentType} regionId={region.id} />
+            )}
+        </RegionWrapper>
+    );
 }
 
 /**
  * Region - Renders a Page Designer region from Salesforce's ShopperExperience API data
  *
+ * This component supports two distinct modes via a discriminated union:
+ *
+ * 1. **Page Mode** - For route-level regions:
+ *    ```tsx
+ *    <Region page={loaderData.page} regionId="main" fallbackElement={<Skeleton />} />
+ *    ```
+ *    - Accepts page (Promise<PageWithComponentData> or PageWithComponentData)
+ *    - Wraps in Suspense for async loading
+ *    - Provides ComponentDataContext at page level
+ *    - Registers PageDesignerPageMetadataProvider for root regions
+ *
+ * 2. **Component Mode** - For nested regions in layout components:
+ *    ```tsx
+ *    <Region component={component} regionId="main" errorElement={children} />
+ *    ```
+ *    - Accepts component (ShopperExperience.schemas['Component'])
+ *    - Synchronous rendering (no Suspense overhead)
+ *    - Inherits ComponentDataContext from parent
+ *    - No PageDesignerPageMetadataProvider (only for page-level)
+ *
  * Key Functionality:
- * - Takes a page promise and region ID to locate and render a specific region
- * - Handles Suspense and Await logic internally for streaming/async rendering
- * - Finds the region within the page by ID
- * - Creates a container structure with proper CSS classes and the region's ID
- * - Renders all components within the region by mapping through the components array
- * - Uses the Component wrapper to render each individual component
- * - Supports region-specific fallback components for Suspense boundaries
- * - Supports region-specific error components for ErrorBoundary
+ * - TypeScript enforces you pass EITHER page OR component, never both
+ * - Finds the region by ID within the page or component
+ * - Renders all components within the region using the Component wrapper
+ * - Supports region-specific fallback and error elements
+ * - Handles metadata for component type inclusions/exclusions
  *
- * Use Case: This is a foundational component in Salesforce's Page Designer system that allows
- * content managers to organize page content into logical regions, each containing multiple
- * components that can be managed through the Page Designer interface.
- *
- * In Practice: Layout components (like grids) use this Region component to render content areas,
- * making pages flexible and manageable without requiring code changes.
+ * Use Case: Foundational component in Salesforce's Page Designer system for rendering
+ * regions that can contain multiple components managed through the Page Designer interface.
  */
-
 export function Region(props: RegionProps) {
-    const { page, regionId, className = '', componentData, errorElement, fallbackElement = <div />, ...rest } = props;
+    const { regionId, className = '', errorElement, fallbackElement = <div />, ...rest } = props;
     const regionContext = useRegionContext();
+    const existingComponentData = useComponentData();
+
+    // COMPONENT MODE: Rendering a component-level region (nested)
+    if (props.component !== undefined) {
+        const region = props.component.regions?.find((r) => r.id === regionId);
+        if (!region) {
+            return errorElement ?? null;
+        }
+
+        const metadata = props.component.designMetadata?.regionDefinitions?.find((r) => r.id === regionId);
+        return renderRegionContent(region, regionId, metadata, className, rest);
+    }
+
+    // PAGE MODE: Rendering a page-level region
+    const pagePromise = Promise.resolve(props.page);
 
     return (
         <Suspense fallback={fallbackElement}>
-            <Await resolve={componentData ?? Promise.resolve(undefined)} errorElement={errorElement}>
-                {(resolvedComponentData) => (
-                    <Await resolve={page} errorElement={errorElement}>
-                        {(resolvedPage) => {
-                            // Find the region within the page
-                            const region = resolvedPage?.regions?.find((r) => r.id === regionId);
-                            const metadata = resolvedPage?.designMetadata?.regionDefinitions?.find(
-                                (r) => r.id === regionId
-                            );
+            <Await resolve={pagePromise} errorElement={errorElement}>
+                {(resolvedPage) => {
+                    const region = resolvedPage?.regions?.find((r) => r.id === regionId);
+                    if (!region) {
+                        return errorElement ?? null;
+                    }
 
-                            // If region not found, return fallback
-                            if (!region) {
-                                return errorElement ?? null;
-                            }
+                    const metadata = resolvedPage.designMetadata?.regionDefinitions?.find((r) => r.id === regionId);
+                    const { componentData: pageComponentData, ...pageData } = resolvedPage;
 
-                            return (
-                                <>
-                                    {/* Only register page metadata if we are at the root of the page
-                                The provider will dedupe strictly equal object */}
-                                    {!regionContext && <PageDesignerPageMetadataProvider page={resolvedPage} />}
-                                    <RegionWrapper
-                                        region={region}
-                                        className={className}
-                                        designMetadata={{
-                                            id: region.id,
-                                            componentTypeExclusions:
-                                                metadata?.componentTypeExclusions?.map((c) => c.typeId) ?? [],
-                                            componentTypeInclusions:
-                                                metadata?.componentTypeInclusions?.map((c) => c.typeId) ?? [],
-                                        }}
-                                        {...rest}>
-                                        {region.components?.map(
-                                            (component) =>
-                                                component.id && (
-                                                    <Component
-                                                        key={component.id}
-                                                        page={resolvedPage}
-                                                        component={component}
-                                                        componentData={resolvedComponentData}
-                                                        regionId={region.id}
-                                                    />
-                                                )
-                                        )}
-                                    </RegionWrapper>
-                                </>
-                            );
-                        }}
-                    </Await>
-                )}
+                    const content = (
+                        <>
+                            {!regionContext && <PageDesignerPageMetadataProvider page={pageData} />}
+                            {renderRegionContent(region, regionId, metadata, className, rest)}
+                        </>
+                    );
+
+                    // Provide ComponentDataContext at page level only
+                    if (pageComponentData && !existingComponentData) {
+                        return <ComponentDataProvider value={pageComponentData}>{content}</ComponentDataProvider>;
+                    }
+
+                    return content;
+                }}
             </Await>
         </Suspense>
     );
@@ -115,3 +175,8 @@ export function Region(props: RegionProps) {
 // Re-export RegionWrapper for direct usage if needed
 export { RegionWrapper } from './region-wrapper';
 export type { RegionRendererProps } from './region-wrapper';
+
+// Re-export component data context utilities
+// eslint-disable-next-line react-refresh/only-export-components
+export { ComponentDataProvider, useComponentData, useComponentDataById } from './component-data-context';
+export type { ComponentDataMap } from './component-data-context';

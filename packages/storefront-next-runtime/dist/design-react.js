@@ -241,7 +241,7 @@ DesignFrame.defaultProps = {
 //#region src/design/react/components/DesignComponent.tsx
 function DesignComponent(props) {
 	const { designMetadata, children } = props;
-	const { id, name, isFragment, isVisible, isLocalized } = designMetadata;
+	const { id = "", name, isFragment = false, isVisible = true, isLocalized = false } = designMetadata ?? {};
 	const componentId = id;
 	const componentType = useComponentType(componentId);
 	const componentName = componentType?.label || name || "Component";
@@ -383,7 +383,7 @@ function useRegionDecoratorClasses({ regionId, componentTypeInclusions, componen
 //#region src/design/react/components/DesignRegion.tsx
 function DesignRegion(props) {
 	const { designMetadata, children } = props;
-	const { name, id, componentIds, componentTypeInclusions, componentTypeExclusions } = designMetadata;
+	const { name, id = "", componentIds = [], componentTypeInclusions = [], componentTypeExclusions = [] } = designMetadata ?? {};
 	const nodeRef = React.useRef(null);
 	const classes = useRegionDecoratorClasses({
 		regionId: id,

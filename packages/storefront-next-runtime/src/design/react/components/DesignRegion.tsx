@@ -26,7 +26,13 @@ import { isComponentTypeAllowedInRegion } from '../utils/regionUtils';
 
 export function DesignRegion(props: RegionDecoratorProps<unknown>): React.JSX.Element {
     const { designMetadata, children } = props;
-    const { name, id, componentIds, componentTypeInclusions, componentTypeExclusions } = designMetadata;
+    const {
+        name,
+        id = '',
+        componentIds = [],
+        componentTypeInclusions = [],
+        componentTypeExclusions = [],
+    } = designMetadata ?? {};
     const nodeRef = React.useRef<HTMLDivElement>(null);
     const classes = useRegionDecoratorClasses({
         regionId: id,

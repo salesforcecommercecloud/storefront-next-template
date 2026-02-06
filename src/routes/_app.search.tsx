@@ -15,7 +15,7 @@
  */
 import { Suspense, useEffect, useRef, useCallback } from 'react';
 import { Await, type LoaderFunctionArgs } from 'react-router';
-import type { ShopperSearch, ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchSearchProducts } from '@/lib/api/search';
 import { getConfig, useConfig } from '@/config';
 import { currencyContext } from '@/lib/currency';
@@ -29,7 +29,7 @@ import { useAnalytics } from '@/hooks/use-analytics';
 import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 import { Region } from '@/components/region';
-import { collectComponentDataPromises, fetchPageFromLoader } from '@/lib/util/pageLoader';
+import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/util/pageLoader';
 
 @PageType({
     name: 'Search Results Page',
@@ -62,8 +62,7 @@ export type SearchPageData = {
     searchTerm: string;
     refinements: Promise<ShopperSearch.schemas['ProductSearchResult']>;
     searchResult: Promise<ShopperSearch.schemas['ProductSearchResult']>;
-    page: Promise<ShopperExperience.schemas['Page']>;
-    componentData: Promise<Record<string, Promise<unknown>>>;
+    page: Promise<PageWithComponentData>;
 };
 
 /**
@@ -80,12 +79,6 @@ export function loader(args: LoaderFunctionArgs): SearchPageData {
     const refine = searchParams.getAll('refine');
     const currency = args.context.get(currencyContext) as string;
     const limit = getConfig(args.context).global.productListing.productsPerPage;
-
-    const pagePromise = fetchPageFromLoader(args, {
-        pageId: 'search',
-    });
-
-    const componentDataPromises = collectComponentDataPromises(args, pagePromise);
 
     return {
         searchTerm: q,
@@ -108,13 +101,14 @@ export function loader(args: LoaderFunctionArgs): SearchPageData {
             refine: refine as unknown as string,
             currency,
         }),
-        page: pagePromise,
-        componentData: componentDataPromises,
+        page: fetchPageWithComponentData(args, {
+            pageId: 'search',
+        }),
     };
 }
 
 export default function SearchPage({
-    loaderData: { searchTerm, refinements, searchResult, page, componentData },
+    loaderData: { searchTerm, refinements, searchResult, page },
 }: {
     loaderData: SearchPageData;
 }) {
@@ -185,12 +179,7 @@ export default function SearchPage({
 
                 {/* searchTopFullWidth */}
                 <div className="mb-8">
-                    <Region
-                        page={page}
-                        regionId="searchTopFullWidth"
-                        componentData={componentData}
-                        errorElement={<div />}
-                    />
+                    <Region page={page} regionId="searchTopFullWidth" errorElement={<div />} />
                 </div>
 
                 <div className="flex flex-col lg:flex-row gap-8">
@@ -205,12 +194,7 @@ export default function SearchPage({
                     <div className="flex-grow">
                         {/* searchTopContent */}
                         <div className="mb-8">
-                            <Region
-                                page={page}
-                                regionId="searchTopContent"
-                                componentData={componentData}
-                                errorElement={<div />}
-                            />
+                            <Region page={page} regionId="searchTopContent" errorElement={<div />} />
                         </div>
                         <Suspense fallback={<CategorySkeleton />}>
                             <Await resolve={searchResult}>
@@ -232,12 +216,7 @@ export default function SearchPage({
 
                         {/* searchBottom */}
                         <div className="mt-8">
-                            <Region
-                                page={page}
-                                regionId="searchBottom"
-                                componentData={componentData}
-                                errorElement={<div />}
-                            />
+                            <Region page={page} regionId="searchBottom" errorElement={<div />} />
                         </div>
                     </div>
                 </div>

@@ -74,6 +74,8 @@ describe('design/react/ComponentDecorator', () => {
                         designMetadata: {
                             id: 'test-1',
                             isFragment: true,
+                            isVisible: true,
+                            isLocalized: true,
                         },
                     },
                     regionMetadata: {
@@ -93,6 +95,8 @@ describe('design/react/ComponentDecorator', () => {
                         designMetadata: {
                             id: 'test-1',
                             isFragment: false,
+                            isVisible: true,
+                            isLocalized: true,
                         },
                     },
                     regionMetadata: {
@@ -217,6 +221,8 @@ describe('design/react/ComponentDecorator', () => {
                         designMetadata: {
                             id: 'test-1',
                             isFragment: false,
+                            isVisible: true,
+                            isLocalized: true,
                         },
                     },
                     regionMetadata: {
@@ -264,6 +270,8 @@ describe('design/react/ComponentDecorator', () => {
                             id: 'test-1',
                             name: 'FallbackName',
                             isFragment: false,
+                            isVisible: true,
+                            isLocalized: true,
                         },
                     },
                     configFactory: () =>
@@ -300,6 +308,8 @@ describe('design/react/ComponentDecorator', () => {
                             id: 'test-1',
                             name: 'FallbackName',
                             isFragment: false,
+                            isVisible: true,
+                            isLocalized: true,
                         },
                     },
                     configFactory: () =>
@@ -330,6 +340,8 @@ describe('design/react/ComponentDecorator', () => {
                         designMetadata: {
                             id: 'test-1',
                             isFragment: false,
+                            isVisible: true,
+                            isLocalized: true,
                         },
                     },
                     configFactory: () =>
@@ -569,6 +581,37 @@ describe('design/react/ComponentDecorator', () => {
 
                 expect(component.classList.contains(`pd-design__drop-target__${axis}-${insertType}`)).toBe(true);
             });
+        });
+
+        it('should not allow dropping a component on itself', async () => {
+            mockRect = { left: 0, top: 0, width: 600, height: 600 };
+
+            const { element } = await testBed.render(TestComponent, {
+                props: {
+                    designMetadata: {
+                        id: 'test-1',
+                        isFragment: false,
+                        isVisible: true,
+                        isLocalized: true,
+                    },
+                },
+            });
+
+            // Click on move icon to start dragging
+            const moveButton = await testBed.findBySelector(element, '.pd-design__frame__toolbox-button');
+            fireEvent.mouseDown(moveButton);
+            fireEvent.dragStart(moveButton);
+
+            // Try to drag over itself
+            const dragOverEvent = Object.assign(new DragEvent('dragover'), {
+                clientX: 300,
+                clientY: 300,
+                preventDefault: vi.fn(),
+            });
+            fireEvent(element, dragOverEvent);
+
+            // preventDefault should not be called since we're dragging over the same component
+            expect(dragOverEvent.preventDefault).not.toHaveBeenCalled();
         });
     });
 });

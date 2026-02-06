@@ -103,6 +103,11 @@ const EXCLUDED_COMPONENTS = new Set([
     'product-view/index',
     'theme-switcher/components/footer/index',
     'store-locator/components/footer/index',
+    // Page Designer Region and Component Wrapper, there is no value in having storybook stories for these
+    'region/component',
+    'region/component-data-context',
+    'region/index',
+    'region/region-wrapper',
 ]);
 // Ensure OUTPUT DIR exists
 if (!fs.existsSync(OUTPUT_DIR)) {

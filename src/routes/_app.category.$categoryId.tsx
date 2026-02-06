@@ -15,7 +15,7 @@
  */
 import { Fragment, Suspense, useEffect, useMemo, useRef, use } from 'react';
 import { Await, type LoaderFunctionArgs, useLocation } from 'react-router';
-import type { ShopperProducts, ShopperSearch, ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchCategory } from '@/lib/api/categories';
 import { fetchSearchProducts } from '@/lib/api/search';
 import { getAllQueryParams, getQueryParam, PRODUCT_SEARCH_QUERY_PARAMS } from '@/lib/query-params';
@@ -35,7 +35,7 @@ import { useAnalytics } from '@/hooks/use-analytics';
 import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 import { Region } from '@/components/region';
-import { collectComponentDataPromises, fetchPageFromLoader } from '@/lib/util/pageLoader';
+import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/util/pageLoader';
 import { JsonLd } from '@/components/json-ld';
 import { generateCategorySchema } from '@/utils/category-schema';
 
@@ -70,8 +70,7 @@ type CategoryPageData = {
     category: Promise<ShopperProducts.schemas['Category']>;
     refinements: Promise<ShopperSearch.schemas['ProductSearchResult']>;
     searchResult: Promise<ShopperSearch.schemas['ProductSearchResult']>;
-    page: Promise<ShopperExperience.schemas['Page']>;
-    componentData: Promise<Record<string, Promise<unknown>>>;
+    page: Promise<PageWithComponentData>;
     categoryId: string;
     currency: string;
     locale: string;
@@ -103,7 +102,7 @@ export function loader(args: LoaderFunctionArgs): CategoryPageData {
     const locale = currentSite.defaultLocale;
     const limit = config.global.productListing.productsPerPage;
 
-    const pagePromise = fetchPageFromLoader(args, {
+    const pagePromise = fetchPageWithComponentData(args, {
         pageId: 'plp',
         categoryId: safeCategoryId,
     });
@@ -156,7 +155,6 @@ export function loader(args: LoaderFunctionArgs): CategoryPageData {
         searchResult: searchResultPromise,
         category: categoryPromise,
         page: pagePromise,
-        componentData: collectComponentDataPromises(args, pagePromise),
         categoryId: safeCategoryId,
         currency,
         locale,
@@ -183,17 +181,7 @@ function CategoryJsonLdWrapper({
 }
 
 export default function CategoryPage({
-    loaderData: {
-        category,
-        refinements,
-        searchResult,
-        page,
-        componentData,
-        categoryId,
-        locale,
-        currency,
-        categorySchema,
-    },
+    loaderData: { category, refinements, searchResult, page, categoryId, locale, currency, categorySchema },
 }: {
     loaderData: CategoryPageData;
 }) {
@@ -283,12 +271,7 @@ export default function CategoryPage({
 
                     {/* plpTopFullWidth */}
                     <div className="mb-8">
-                        <Region
-                            page={page}
-                            regionId="plpTopFullWidth"
-                            componentData={componentData}
-                            errorElement={<div />}
-                        />
+                        <Region page={page} regionId="plpTopFullWidth" errorElement={<div />} />
                     </div>
 
                     <div className="flex flex-col lg:flex-row gap-8">
@@ -304,12 +287,7 @@ export default function CategoryPage({
 
                         {/* plpTopContent */}
                         <div className="mb-8">
-                            <Region
-                                page={page}
-                                regionId="plpTopContent"
-                                componentData={componentData}
-                                errorElement={<div />}
-                            />
+                            <Region page={page} regionId="plpTopContent" errorElement={<div />} />
                         </div>
 
                         <div className="flex-grow">
@@ -349,12 +327,7 @@ export default function CategoryPage({
 
                             {/* plpBottom */}
                             <div className="mt-8">
-                                <Region
-                                    page={page}
-                                    regionId="plpBottom"
-                                    componentData={componentData}
-                                    errorElement={<div />}
-                                />
+                                <Region page={page} regionId="plpBottom" errorElement={<div />} />
                             </div>
                         </div>
                     </div>

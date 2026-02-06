@@ -27,7 +27,7 @@ import { useComponentType } from '../hooks/useComponentType';
 
 export function DesignComponent(props: ComponentDecoratorProps<unknown>): React.JSX.Element {
     const { designMetadata, children } = props;
-    const { id, name, isFragment, isVisible, isLocalized } = designMetadata;
+    const { id = '', name, isFragment = false, isVisible = true, isLocalized = false } = designMetadata ?? {};
     const componentId = id;
     const componentType = useComponentType(componentId);
     const componentName = componentType?.label || name || 'Component';

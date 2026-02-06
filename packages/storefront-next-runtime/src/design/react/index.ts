@@ -24,6 +24,8 @@ export type {
     RegionDecoratorProps,
     ComponentDesignMetadata,
     RegionDesignMetadata,
+    DefaultComponentConstructor,
 } from './components/component.types';
+export type { PageDecoratorProps, PageDesignMetadata } from './components/page.types';
 
 export { createReactAdapter, type ReactDesignComponentType } from './registry/adapter';

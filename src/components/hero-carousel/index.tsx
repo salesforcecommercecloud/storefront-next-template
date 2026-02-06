@@ -23,8 +23,8 @@ import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
 import withSuspense from '@/components/with-suspense';
 import HeroCarouselSkeleton from './skeleton';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
-import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import heroImage from '/images/hero-cube.webp';
+import type { ComponentType } from '@/components/region';
 
 @Component('heroCarousel', {
     name: 'Hero Carousel',
@@ -114,7 +114,7 @@ interface HeroCarouselProps {
     showDots?: boolean;
     showNavigation?: boolean;
     /** Component data containing regions from Page Designer */
-    component?: ShopperExperience.schemas['Component'];
+    component?: ComponentType;
 }
 
 export function HeroCarouselPlain({

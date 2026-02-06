@@ -22,6 +22,7 @@ import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
 import { useTranslation } from 'react-i18next';
 import heroImage from '/images/hero-cube.webp';
 import { loader as loaders } from './loaders';
+import type { ComponentType } from '@/components/region';
 
 interface PopularCategoryProps extends ComponentProps<'div'> {
     // Category data from Page Designer (via loader) or programmatic use
@@ -29,7 +30,7 @@ interface PopularCategoryProps extends ComponentProps<'div'> {
     // Page Designer props (passed by Component wrapper, must be extracted to avoid passing to DOM)
     regionId?: string;
     page?: ShopperExperience.schemas['Page'];
-    component?: ShopperExperience.schemas['Component'];
+    component?: ComponentType;
     componentData?: Record<string, Promise<unknown>>;
     designMetadata?: ComponentDesignMetadata;
     // Loader data - full category object fetched by loader

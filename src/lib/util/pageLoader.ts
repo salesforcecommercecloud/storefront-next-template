@@ -19,6 +19,12 @@ import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scap
 import { registry } from '@/lib/registry';
 import { isDesignModeActive, isPreviewModeActive } from '@salesforce/storefront-next-runtime/design/mode';
 
+export type Page = ShopperExperience.schemas['Page'];
+
+export type PageWithComponentData = Page & {
+    componentData?: Record<string, Promise<unknown>>;
+};
+
 type PageParams = Omit<PageDesignerPageParams, 'mode' | 'pdToken'>;
 export function fetchPageFromLoader(
     { context, request }: LoaderFunctionArgs,
@@ -78,18 +84,37 @@ function collectFromRegions(
     }
 }
 
-export function collectComponentDataPromises(
-    ctx: LoaderFunctionArgs,
-    pagePromise: Promise<ShopperExperience.schemas['Page']>
-): Promise<Record<string, Promise<unknown>>> {
-    // Return a promise that resolves to a map of component data promises
-    // This allows the page to load in parallel with other data fetching
-    return pagePromise.then((page) => {
-        const map: Record<string, Promise<unknown>> = {};
+/**
+ * Fetches a page and attaches componentData promises as a nested property.
+ * This follows the React Router nested promise pattern where the outer promise
+ * resolves to an object containing nested promises that can be awaited separately.
+ *
+ * Usage:
+ * ```tsx
+ * // In loader:
+ * return { page: fetchPageWithComponentData(args, { pageId: 'homepage' }) };
+ *
+ * // In component:
+ * <Await resolve={loaderData.page}>
+ *   {(page) => (
+ *     <Await resolve={page.componentData[componentId]}>
+ *       {(data) => <Component data={data} />}
+ *     </Await>
+ *   )}
+ * </Await>
+ * ```
+ */
+export async function fetchPageWithComponentData(
+    args: LoaderFunctionArgs,
+    params: PageParams
+): Promise<PageWithComponentData> {
+    const page = await fetchPageFromLoader(args, params);
 
-        // Process top-level regions and recursively process nested regions
-        collectFromRegions(ctx, page.regions, map);
-
-        return map;
-    });
+    const componentData: Record<string, Promise<unknown>> = {};
+    // Process top-level regions and recursively process nested regions
+    collectFromRegions(args, page.regions, componentData);
+    return {
+        ...page,
+        componentData,
+    };
 }
