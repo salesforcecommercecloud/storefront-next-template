@@ -144,6 +144,7 @@
         "morgan": "1.10.1",
         "msw": "2.11.3",
         "playwright": "1.55.1",
+        "prettier": "3.6.2",
         "rollup-plugin-visualizer": "6.0.4",
         "source-map-support": "0.5.21",
         "storybook": "10.0.6",

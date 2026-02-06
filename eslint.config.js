@@ -67,8 +67,8 @@ const baseConfig = defineConfig([
     includeIgnoreFile(gitignorePath, 'Imported .gitignore patterns'),
     jsonc.configs['flat/recommended-with-json'],
     {
-        // Ignore generated SCAPI client files and ejected shadcn/ui components
-        ignores: ['**/src/scapi-client/generated/**', '**/src/components/ui/**'],
+        // Ignore generated SCAPI client files, ejected shadcn/ui components, and Claude settings
+        ignores: ['**/src/scapi-client/generated/**', '**/src/components/ui/**', '.claude/**'],
     },
     {
         files: ['**/*.js'],
@@ -278,7 +278,8 @@ const baseConfig = defineConfig([
                 },
             ],
         },
-    },// Prettier should be last to override formatting rules
+    },
+    // Prettier should be last to override formatting rules
     eslintPluginPrettierRecommended,
 ]);
 
