@@ -16,7 +16,7 @@ export default defineConfig([
             index: 'src/index.ts',
         },
         platform: 'node',
-        target: 'node22',
+        target: 'node24',
         format: ['esm'],
         dts: true,
         outDir: 'dist',
@@ -44,7 +44,7 @@ export default defineConfig([
             ssr: 'src/mrt/ssr.ts',
         },
         platform: 'node',
-        target: 'node22',
+        target: 'node24',
         format: ['esm'],
         outExtensions: () => {
             return {
@@ -73,7 +73,7 @@ export default defineConfig([
             streamingHandler: 'src/mrt/streamingHandler.ts',
         },
         platform: 'node',
-        target: 'node22',
+        target: 'node24',
         format: ['esm'],
         outExtensions: () => {
             return {
@@ -102,7 +102,7 @@ export default defineConfig([
             'react-router.config': 'src/configs/react-router.config.ts',
         },
         platform: 'node',
-        target: 'node22',
+        target: 'node24',
         format: ['esm'],
         dts: true,
         outDir: 'dist/configs',
@@ -116,7 +116,7 @@ export default defineConfig([
             index: 'src/cartridge-services/index.ts',
         },
         platform: 'node',
-        target: 'node22',
+        target: 'node24',
         format: ['esm'],
         dts: true,
         outDir: 'dist/cartridge-services',
@@ -130,7 +130,7 @@ export default defineConfig([
             cli: 'src/cli.ts',
         },
         platform: 'node',
-        target: 'node22',
+        target: 'node24',
         format: ['esm'],
         banner: {
             js: '#!/usr/bin/env node',
