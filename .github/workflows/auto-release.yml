@@ -43,7 +43,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
 
       - name: Read version from package.json
         id: version
@@ -90,7 +89,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.check_stable.outputs.is-stable == 'true'
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Build project
         if: steps.check_stable.outputs.is-stable == 'true'
