@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import applePayLogo from '/images/apple-pay-logo.svg';
+
 /**
  * Apple Pay Logo SVG Component
  * Official Apple Pay logo matching SDK button appearance
@@ -22,7 +24,7 @@
 export default function ApplePayLogo({ className }: { className?: string }) {
     return (
         <img
-            src="/images/apple-pay-logo.svg"
+            src={applePayLogo}
             alt="Apple Pay"
             className={`${className || ''} h-4 w-auto`}
             style={{

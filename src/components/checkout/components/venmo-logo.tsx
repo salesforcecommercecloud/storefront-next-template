@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import venmoLogo from '/images/venmo.svg';
+
 /**
  * Venmo Logo SVG Component
  * Official Venmo wordmark logo matching SDK button appearance
@@ -22,7 +24,7 @@
 export default function VenmoLogo({ className }: { className?: string }) {
     return (
         <img
-            src="/images/venmo.svg"
+            src={venmoLogo}
             alt="Venmo"
             className={`${className || ''} h-3 w-auto`}
             style={{

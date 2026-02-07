@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import googlePayLogo from '/images/google-pay-logo.svg';
+
 /**
  * Google Pay Logo SVG Component
  * Official Google Pay logo matching SDK button appearance
@@ -22,7 +24,7 @@
 export default function GooglePayLogo({ className }: { className?: string }) {
     return (
         <img
-            src="/images/google-pay-logo.svg"
+            src={googlePayLogo}
             alt="Google Pay"
             className={`${className || ''} h-4 w-auto`}
             style={{ objectFit: 'contain' }}

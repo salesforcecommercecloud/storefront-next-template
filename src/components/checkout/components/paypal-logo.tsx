@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import paypalLogo from '/images/paypal.svg';
+
 /**
  * PayPal Logo SVG Component
  * Official PayPal wordmark logo matching SDK button appearance
@@ -22,7 +24,7 @@
 export default function PayPalLogo({ className }: { className?: string }) {
     return (
         <img
-            src="/images/paypal.svg"
+            src={paypalLogo}
             alt="PayPal"
             className={`${className || ''} h-4 w-auto`}
             style={{ objectFit: 'contain' }}
