@@ -17,7 +17,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { customerLookup, getCustomerProfileForCheckout } from './customer';
 import { getAuth } from '@/middlewares/auth.server';
 import { createApiClients } from '@/lib/api-clients';
-import type { ActionFunctionArgs } from 'react-router';
 import { createTestContext } from '@/lib/test-utils';
 
 // Define proper types for the mock client
@@ -34,7 +33,7 @@ const mockClient: MockShopperCustomersClient = {
 vi.mock('@/middlewares/auth.server');
 vi.mock('@/lib/api-clients');
 
-const mockContext = createTestContext() as ActionFunctionArgs['context'];
+const mockContext = createTestContext();
 
 describe('Customer Lookup Functions', () => {
     beforeEach(() => {

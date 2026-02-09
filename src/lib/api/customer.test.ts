@@ -25,13 +25,12 @@ import {
 import { getAuth } from '@/middlewares/auth.server';
 import { createApiClients } from '@/lib/api-clients';
 import { getTranslation } from '@/lib/i18next';
-import type { ActionFunctionArgs } from 'react-router';
 import { createTestContext } from '@/lib/test-utils';
 
 vi.mock('@/middlewares/auth.server');
 vi.mock('@/lib/api-clients');
 
-const mockContext = createTestContext() as ActionFunctionArgs['context'];
+const mockContext = createTestContext();
 const { t } = getTranslation();
 
 describe('Customer API', () => {
