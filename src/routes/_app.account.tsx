@@ -15,7 +15,7 @@
  */
 import { useMemo, type ReactElement } from 'react';
 import { Outlet, type LoaderFunctionArgs, redirect, type ShouldRevalidateFunctionArgs } from 'react-router';
-import { House, User, Heart, ShoppingBag, MapPin, LogOut } from 'lucide-react';
+import { House, User, Heart, ShoppingBag, MapPin, Building, LogOut } from 'lucide-react';
 import { getAuth as getAuthServer } from '@/middlewares/auth.server';
 import { getCustomer } from '@/lib/api/customer';
 import { Card, CardContent } from '@/components/ui/card';
@@ -104,6 +104,11 @@ export default function AccountPage({ loaderData }: { loaderData: AccountPageDat
                 path: '/account/addresses',
                 icon: MapPin,
                 label: t('navigation.addresses'),
+            },
+            {
+                path: '/account/store-preferences',
+                icon: Building,
+                label: t('navigation.storePreferences'),
             },
         ],
         [t]

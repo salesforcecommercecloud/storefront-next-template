@@ -705,7 +705,17 @@
             "wishlist": "Wishlist",
             "orderHistory": "Order History",
             "addresses": "Addresses",
+            "storePreferences": "Store Preferences",
             "logOut": "Log Out"
+        },
+        "storePreferences": {
+            "title": "Store Preferences",
+            "subtitle": "Manage your preferred store locations and pickup preferences",
+            "preferredStore": {
+                "heading": "Preferred Store for Pickup",
+                "description": "Select your preferred store for in-store pickup orders",
+                "changeStore": "Change store"
+            }
         },
         "overview": {
             "welcomeBack": "Welcome back, {{name}}!",

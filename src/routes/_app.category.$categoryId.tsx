@@ -312,6 +312,7 @@ export default function CategoryPage({
                                             <>
                                                 <ProductGrid
                                                     products={searchResultData.hits ?? []}
+                                                    critical={4}
                                                     handleProductClick={handleProductClick}
                                                 />
                                                 {searchResultData.total > 1 && (

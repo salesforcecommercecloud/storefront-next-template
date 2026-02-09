@@ -690,7 +690,17 @@
             "wishlist": "Lista desideri",
             "orderHistory": "Storico ordini",
             "addresses": "Indirizzi",
+            "storePreferences": "Preferenze negozio",
             "logOut": "Esci"
+        },
+        "storePreferences": {
+            "title": "Preferenze negozio",
+            "subtitle": "Gestisci le tue sedi preferite e le preferenze di ritiro",
+            "preferredStore": {
+                "heading": "Negozio preferito per il ritiro",
+                "description": "Seleziona il negozio preferito per gli ordini con ritiro in negozio",
+                "changeStore": "Cambia negozio"
+            }
         },
         "wishlist": {
             "empty": "La Sua lista desideri è vuota. Inizi ad aggiungere articoli che Le piacciono!",

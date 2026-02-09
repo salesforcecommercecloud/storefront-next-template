@@ -120,7 +120,7 @@ export default function CategorySkeleton() {
     );
 }
 
-function ProductTileSkeleton() {
+export function ProductTileSkeleton() {
     return (
         <Card className="ring-secondary/40 bg-muted/50">
             <CardContent className="text-secondary border-destructive/30">

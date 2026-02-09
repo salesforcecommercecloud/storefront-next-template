@@ -102,7 +102,7 @@ const DEFAULT_SESSION_DATA: SessionData = {
  * });
  * ```
  */
-export function createTestContext(testConfig: TestContextConfig = {}): RouterContextProvider {
+export function createTestContext(testConfig: TestContextConfig = {}): Readonly<RouterContextProvider> {
     const {
         authSession = DEFAULT_SESSION_DATA,
         performanceTimer = undefined,

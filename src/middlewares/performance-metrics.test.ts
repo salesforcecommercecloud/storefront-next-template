@@ -18,7 +18,6 @@ import { createTestContext, type TestContextConfig } from '@/lib/test-utils';
 import type { Config } from '@/config/schema';
 import type { DataStrategyResult, MiddlewareFunction, RouterContext } from 'react-router';
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 type PerformanceTimerType = typeof import('./performance-metrics').PerformanceTimer;
 
 // Mutable mock config that tests can modify - use vi.hoisted for access in vi.mock
@@ -391,7 +390,7 @@ describe('Performance Metrics Middlewares', () => {
             const mockContext = createTestContext();
 
             const result = await performanceMetricsMiddlewareServer(
-                { request: mockRequest, context: mockContext, params: {} },
+                { request: mockRequest, context: mockContext, params: {}, unstable_pattern: '/' },
                 mockNext
             );
 
@@ -411,7 +410,7 @@ describe('Performance Metrics Middlewares', () => {
             const setSpy = vi.spyOn(mockContext, 'set');
 
             const result = await performanceMetricsMiddlewareServer(
-                { request: mockRequest, context: mockContext, params: {} },
+                { request: mockRequest, context: mockContext, params: {}, unstable_pattern: '/' },
                 mockNext
             );
 
@@ -440,7 +439,7 @@ describe('Performance Metrics Middlewares', () => {
             });
 
             await performanceMetricsMiddlewareServer(
-                { request: mockRequest, context: mockContext, params: {} },
+                { request: mockRequest, context: mockContext, params: {}, unstable_pattern: '/' },
                 mockNext
             );
 
@@ -461,7 +460,7 @@ describe('Performance Metrics Middlewares', () => {
             const mockContext = createTestContext();
 
             await performanceMetricsMiddlewareClient(
-                { context: mockContext, params: {}, request: {} as Request },
+                { context: mockContext, params: {}, request: {} as Request, unstable_pattern: '/' },
                 mockNext
             );
 
@@ -479,7 +478,7 @@ describe('Performance Metrics Middlewares', () => {
             const setSpy = vi.spyOn(mockContext, 'set');
 
             await performanceMetricsMiddlewareClient(
-                { context: mockContext, params: {}, request: {} as Request },
+                { context: mockContext, params: {}, request: {} as Request, unstable_pattern: '/' },
                 mockNext
             );
 
@@ -506,7 +505,7 @@ describe('Performance Metrics Middlewares', () => {
             });
 
             await performanceMetricsMiddlewareClient(
-                { context: mockContext, params: {}, request: {} as Request },
+                { context: mockContext, params: {}, request: {} as Request, unstable_pattern: '/' },
                 mockNext
             );
 
@@ -559,7 +558,7 @@ describe('Performance Metrics Middlewares', () => {
             const firstContext = createTestContext({ appConfig: appConfigOverride });
 
             await performanceMetricsMiddlewareClient(
-                { context: firstContext, params: {}, request: {} as Request },
+                { context: firstContext, params: {}, request: {} as Request, unstable_pattern: '/' },
                 firstNext
             );
 
@@ -597,7 +596,7 @@ describe('Performance Metrics Middlewares', () => {
             const secondNext = vi.fn().mockResolvedValue(undefined);
             const secondContext = createTestContext({ appConfig: appConfigOverride });
             await performanceMetricsMiddlewareClient(
-                { context: secondContext, params: {}, request: {} as Request },
+                { context: secondContext, params: {}, request: {} as Request, unstable_pattern: '/' },
                 secondNext
             );
 

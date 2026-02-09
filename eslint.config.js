@@ -227,6 +227,7 @@ const baseConfig = defineConfig([
             },
         },
         rules: {
+            '@typescript-eslint/consistent-type-imports': 'off',
             '@typescript-eslint/no-empty-function': 'off',
             '@typescript-eslint/no-explicit-any': 'off',
             'no-console': 'off',

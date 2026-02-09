@@ -23,7 +23,6 @@ import type { RouterContextProvider } from 'react-router';
 let mockMaintenancePromise: Promise<boolean> = Promise.resolve(false);
 
 vi.mock('@/lib/maintenance', async (importOriginal) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
     const actual = await importOriginal<typeof import('@/lib/maintenance')>();
     return {
         ...actual,
