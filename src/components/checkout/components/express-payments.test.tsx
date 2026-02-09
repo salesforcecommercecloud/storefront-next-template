@@ -688,7 +688,9 @@ describe('ExpressPayments Integration Tests', () => {
                 render(<PayPalLogo />);
                 const image = screen.getByAltText('PayPal');
                 expect(image).toBeInTheDocument();
-                expect(image).toHaveAttribute('src', '/images/paypal.svg');
+                // SVG is imported as a module and inlined as data URL
+                expect(image).toHaveAttribute('src');
+                expect(image.getAttribute('src')).toContain('data:image/svg+xml');
             });
 
             test('applies custom className', () => {
@@ -711,7 +713,9 @@ describe('ExpressPayments Integration Tests', () => {
                 render(<VenmoLogo />);
                 const image = screen.getByAltText('Venmo');
                 expect(image).toBeInTheDocument();
-                expect(image).toHaveAttribute('src', '/images/venmo.svg');
+                // SVG is imported as a module and inlined as data URL
+                expect(image).toHaveAttribute('src');
+                expect(image.getAttribute('src')).toContain('data:image/svg+xml');
             });
 
             test('applies custom className', () => {

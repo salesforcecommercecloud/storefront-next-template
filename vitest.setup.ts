@@ -26,6 +26,23 @@ import resources from '@/locales';
 vi.mock('/favicon.ico', () => ({ default: '/favicon.ico' }));
 vi.mock('/images/GoogleMaps_Logo_Gray_4x.png', () => ({ default: '/images/GoogleMaps_Logo_Gray_4x.png' }));
 vi.mock('/images/hero-cube.webp', () => ({ default: '/images/hero-cube.webp' }));
+// Payment logo SVGs (added in PR #909) - return data URLs to match Vite's test environment behavior
+vi.mock('/images/apple-pay-logo.svg', () => ({
+    default:
+        'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4=',
+}));
+vi.mock('/images/google-pay-logo.svg', () => ({
+    default:
+        'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4=',
+}));
+vi.mock('/images/paypal.svg', () => ({
+    default:
+        'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4=',
+}));
+vi.mock('/images/venmo.svg', () => ({
+    default:
+        'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4=',
+}));
 
 // Clear engagement-related PUBLIC__ env vars before any modules load
 // The engagement config is protected from env var overrides, so these must be cleared
