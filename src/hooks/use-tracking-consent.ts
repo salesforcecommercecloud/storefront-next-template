@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useFetcher } from 'react-router';
 import { useConfig } from '@/config/get-config';
 import { useAuth } from '@/providers/auth';
-import { getAuthDataFromCookies, handleRefreshToken } from '@/middlewares/auth.client';
 import { TrackingConsent } from '@/types/tracking-consent';
 
 /**
@@ -24,9 +24,16 @@ import { TrackingConsent } from '@/types/tracking-consent';
  * Provides utilities for reading and setting tracking consent values, checking if banner should be shown,
  * and managing the consent flow.
  *
- * ⚠️ **Client-only hook**: This hook uses React Context (`useConfig`, `useAuth`) and browser APIs
- * (`document.cookie`), so it can only be used in client components. Mark your component with
+ * ⚠️ **Client-only hook**: This hook uses React Context (`useConfig`, `useAuth`) and React Router's
+ * `useFetcher`, so it can only be used in client components. Mark your component with
  * `'use client'` directive.
+ *
+ * **Data Flow (Server-Only Auth Architecture):**
+ * - Tracking consent is read from `useAuth()` which provides client-safe session data.
+ * - The root loader reads from cookies on the server and extracts non-sensitive fields.
+ * - Updates are sent to the server via the `/action/update-tracking-consent` action route,
+ *   which refreshes the auth token and sets the cookie via Set-Cookie headers.
+ * - After updates, the next navigation/loader run will reflect the new consent value.
  *
  * @returns Object containing tracking consent state and utility functions
  *
@@ -49,6 +56,7 @@ import { TrackingConsent } from '@/types/tracking-consent';
  */
 export function useTrackingConsent() {
     const config = useConfig();
+    const fetcher = useFetcher();
     const auth = useAuth();
 
     // Extract tracking consent config to avoid repeated property access
@@ -65,37 +73,32 @@ export function useTrackingConsent() {
     // Track if user has responded in this session (for immediate banner dismissal)
     const [hasResponded, setHasResponded] = useState(false);
 
-    // Read tracking consent value from auth context (source of truth for showing banner)
-    // Auth context is synced with cookies by middleware, so this reflects current cookie state
-    // SessionData.trackingConsent is already TrackingConsent enum (read at cookie boundary)
-    const trackingConsent = useMemo(() => {
-        if (!isTrackingConsentEnabled) {
-            return undefined;
-        }
-        return auth?.trackingConsent;
-    }, [auth?.trackingConsent, isTrackingConsentEnabled]);
+    // Read tracking consent from auth context (source of truth)
+    // Auth data is provided by AuthProvider which receives clientAuth from the root loader
+    // This ensures server/client consistency and avoids hydration mismatches
+    const trackingConsent = isTrackingConsentEnabled ? auth?.trackingConsent : undefined;
 
-    // Reset hasResponded when auth context shows no tracking consent value (e.g., after logout/login)
+    // Reset hasResponded when session shows no tracking consent value (e.g., after logout/login)
     // This allows banner to show again if needed
     useEffect(() => {
         if (!isTrackingConsentEnabled) {
             setHasResponded(false);
             return;
         }
-        // If auth context shows no tracking consent value, reset hasResponded so banner can show again
+        // If session shows no tracking consent value, reset hasResponded so banner can show again
         if (trackingConsent === undefined) {
             setHasResponded(false);
         }
     }, [trackingConsent, isTrackingConsentEnabled]);
 
     // Determine if banner should be shown
-    // Banner shows if: feature is enabled AND user hasn't responded (no tracking consent value in auth context)
-    // We hide immediately when user responds (hasResponded), but rely on auth context to show it
+    // Banner shows if: feature is enabled AND user hasn't responded (no tracking consent in session)
+    // We hide immediately when user responds (hasResponded), but rely on session to show it
     const shouldShowBanner = useMemo(() => {
         if (!isTrackingConsentEnabled) {
             return false;
         }
-        // Show banner if no tracking consent value exists in auth context AND user hasn't responded in this session
+        // Show banner if no tracking consent in session AND user hasn't responded in this session
         return trackingConsent === undefined && !hasResponded;
     }, [isTrackingConsentEnabled, trackingConsent, hasResponded]);
 
@@ -105,34 +108,36 @@ export function useTrackingConsent() {
     }, [trackingConsentConfig?.defaultTrackingConsent]);
 
     /**
-     * Set tracking consent value by refreshing the SLAS token with the new tracking consent preference.
-     * This updates the server-side token and cookie.
-     * Hides banner immediately when user responds, then relies on auth context to show it again if needed.
+     * Set tracking consent value by submitting to the server action.
+     * The server action refreshes the SLAS token with the new tracking consent preference
+     * and sets cookies via Set-Cookie headers.
+     * Banner hides immediately when called. If the request fails, the banner will
+     * reappear on the next navigation when the loader re-reads cookies.
      *
      * @param consent - TrackingConsent.Accepted if user accepts tracking, TrackingConsent.Declined if declined
-     * @returns Promise that resolves when token refresh completes
+     * @returns Promise that resolves when the fetcher becomes idle (request completes)
      */
-    const setTrackingConsent = async (consent: TrackingConsent): Promise<void> => {
-        if (!isTrackingConsentEnabled) {
-            return;
-        }
+    const setTrackingConsent = useCallback(
+        (consent: TrackingConsent): Promise<void> => {
+            if (!isTrackingConsentEnabled) {
+                return Promise.resolve();
+            }
 
-        // Get refresh token from auth data
-        // Auth is always initialized before page becomes interactive, so refresh token will always exist
-        const authData = getAuthDataFromCookies();
-        const refreshToken = authData?.refresh_token;
+            // Hide banner immediately for better UX
+            setHasResponded(true);
 
-        if (!refreshToken) {
-            throw new Error('No refresh token available. User must be authenticated.');
-        }
-
-        // Hide banner when user responds
-        setHasResponded(true);
-
-        // Server will set dw_dnt cookie via Set-Cookie header (server is source of truth)
-        // Auth context will update on next navigation/revalidation, but we don't need to wait
-        await handleRefreshToken(refreshToken, consent);
-    };
+            // Submit to server action - server handles token refresh and cookie updates
+            // Return the promise so callers can await completion
+            return fetcher.submit(
+                { trackingConsent: consent },
+                {
+                    method: 'POST',
+                    action: '/action/update-tracking-consent',
+                }
+            );
+        },
+        [isTrackingConsentEnabled, fetcher]
+    );
 
     return {
         trackingConsent,

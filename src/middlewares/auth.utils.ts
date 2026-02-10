@@ -15,7 +15,7 @@
  */
 import { createContext, type RouterContextProvider } from 'react-router';
 import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
-import type { SessionData as AuthData } from '@/lib/api/types';
+import type { SessionData as AuthData, PublicSessionData } from '@/lib/api/types';
 import {
     clearStorage,
     type StorageErrorData,
@@ -65,6 +65,26 @@ export const COOKIE_DWSID = 'dwsid'; // Hybrid storefront session ID (for sessio
 export function isTrackingConsentEnabled(context?: Readonly<RouterContextProvider>): boolean {
     const appConfig = getConfig(context);
     return appConfig.engagement?.analytics?.trackingConsent?.enabled ?? false;
+}
+
+/**
+ * Extract public (non-sensitive) session data from full session data.
+ *
+ * This is the SINGLE AUDITED PLACE where the public auth shape is defined.
+ * All code that needs to expose session data to the client should use this function
+ * to ensure only non-sensitive fields are included.
+ *
+ * @param session - Full session data from server auth context
+ * @returns PublicSessionData containing only non-sensitive fields safe for client exposure
+ */
+export function getPublicSessionData(session: AuthData): PublicSessionData {
+    return {
+        userType: session.userType,
+        customer_id: session.customer_id,
+        usid: session.usid,
+        enc_user_id: session.enc_user_id,
+        trackingConsent: session.trackingConsent,
+    };
 }
 
 /**
