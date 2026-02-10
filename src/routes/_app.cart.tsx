@@ -356,7 +356,10 @@ export default function Cart(): ReactElement {
     return (
         <Suspense
             fallback={
-                <CartSkeleton isRegistered={false} productItemCount={pageData.basketSnapshot?.itemsCount ?? 0} />
+                <CartSkeleton
+                    isRegistered={false}
+                    productItemCount={pageData.basketSnapshot?.uniqueProductCount ?? 0}
+                />
             }>
             {finalContent}
         </Suspense>
