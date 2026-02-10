@@ -50,6 +50,9 @@
     /* -- separator colors -- */
     --color-separator: var(--separator);
     --color-separator-foreground: var(--separator-foreground);
+    /* -- rating colors -- */
+    --color-rating: var(--rating);
+    --color-rating-foreground: var(--rating-foreground);
     /* -- payment provider colors -- */
     --color-paypal-gold: var(--paypal-gold);
     --color-venmo-blue: var(--venmo-blue);
@@ -94,6 +97,10 @@ html.dark [data-theme='inverse'] {
     /* separator colors */
     --separator: #eeeeee; /* For divider lines between sections */
     --separator-foreground: #9e9e9e; /* For text on or near separators */
+
+    /* rating colors */
+    --rating: #facc15; /* yellow-400 for star ratings */
+    --rating-foreground: #ffffff; /* white text on rating background */
 
     /* charts */
     --chart-1: #3b82f6;
@@ -175,6 +182,10 @@ html:not(.dark) [data-theme='inverse'] {
     /* separator colors */
     --separator: #525252; /* Adjusted for dark mode visibility */
     --separator-foreground: #a3a3a3; /* Adjusted for dark mode visibility */
+
+    /* rating colors */
+    --rating: #facc15; /* yellow-400 for star ratings (same in dark mode) */
+    --rating-foreground: #18181b; /* dark background text on rating */
 
     /* charts */
     --chart-1: #60a5fa;

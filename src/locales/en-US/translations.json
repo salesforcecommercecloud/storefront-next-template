@@ -263,7 +263,9 @@
         },
         "rating": {
             "starContainerAriaLabel": "{{rating}} out of {{total}} stars, {{count}} reviews",
-            "viewAllReviews": "View all reviews"
+            "viewAllReviews": "View all reviews",
+            "distributionAriaLabel": "{{rating}} stars: {{percentage}} percent of reviews",
+            "distributionsAriaLabel": "Star rating distribution, {{total}} total reviews"
         },
         "from": "from",
         "outOfStock": "Out of stock for {{productName}}",

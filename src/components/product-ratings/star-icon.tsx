@@ -33,7 +33,7 @@ export interface StarIconProps extends SVGProps<SVGSVGElement> {
 export const StarIcon = forwardRef<SVGSVGElement, StarIconProps>(({ opacity, filled, className, ...props }, ref) => (
     <svg
         ref={ref}
-        className={cn(filled ? 'text-yellow-400' : 'text-muted-foreground/30', className)}
+        className={cn(filled ? 'text-rating' : 'text-muted-foreground/30', className)}
         fill="currentColor"
         viewBox="0 0 20 20"
         style={{ opacity }}

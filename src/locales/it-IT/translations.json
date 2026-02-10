@@ -252,7 +252,9 @@
         },
         "rating": {
             "starContainerAriaLabel": "{{rating}} su {{total}} stelle, {{count}} recensioni",
-            "viewAllReviews": "Visualizza tutte le recensioni"
+            "viewAllReviews": "Visualizza tutte le recensioni",
+            "distributionAriaLabel": "{{rating}} stelle: {{percentage}} percento delle recensioni",
+            "distributionsAriaLabel": "Distribuzione delle valutazioni in stelle, {{total}} recensioni totali"
         },
         "from": "da",
         "outOfStock": "Esaurito per {{productName}}",

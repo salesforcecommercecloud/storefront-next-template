@@ -86,7 +86,7 @@ export const FilledStar: Story = {
 A fully filled star with 100% opacity. This represents a full star in a rating display.
 
 ### Features:
-- **Yellow color**: Uses text-yellow-400 (#FBBF24)
+- **Yellow color**: Uses text-rating semantic token (#FACC15 / yellow-400)
 - **Full opacity**: 100% visible
 - **Standard size**: 32px (w-8 h-8) for visibility
 
@@ -105,8 +105,8 @@ A fully filled star with 100% opacity. This represents a full star in a rating d
         const star = canvasElement.querySelector('svg');
         await expect(star).toBeInTheDocument();
 
-        // Test that star has yellow color class
-        await expect(star).toHaveClass('text-yellow-400');
+        // Test that star has rating color class
+        await expect(star).toHaveClass('text-rating');
 
         // Test opacity is 1
         await expect(star).toHaveStyle({ opacity: '1' });
@@ -166,7 +166,7 @@ export const PartialStar: Story = {
 A partially filled star at 50% opacity. This represents a half-star in a rating display.
 
 ### Features:
-- **Yellow color**: Uses text-yellow-400
+- **Yellow color**: Uses text-rating semantic token
 - **Reduced opacity**: 50% visible for partial fill
 - **Smooth gradient**: Opacity creates visual gradient effect
 
@@ -183,7 +183,7 @@ A partially filled star at 50% opacity. This represents a half-star in a rating 
 
         const star = canvasElement.querySelector('svg');
         await expect(star).toBeInTheDocument();
-        await expect(star).toHaveClass('text-yellow-400');
+        await expect(star).toHaveClass('text-rating');
         await expect(star).toHaveStyle({ opacity: '0.5' });
     },
 };
@@ -357,7 +357,7 @@ Comparison of filled, unfilled, and mixed star displays.
 
         // Test first row has all yellow stars
         for (let i = 0; i < 5; i++) {
-            await expect(stars[i]).toHaveClass('text-yellow-400');
+            await expect(stars[i]).toHaveClass('text-rating');
         }
 
         // Test second row has all gray stars
@@ -366,10 +366,10 @@ Comparison of filled, unfilled, and mixed star displays.
         }
 
         // Test third row has mixed colors
-        await expect(stars[10]).toHaveClass('text-yellow-400'); // 1st filled
-        await expect(stars[11]).toHaveClass('text-yellow-400'); // 2nd filled
-        await expect(stars[12]).toHaveClass('text-yellow-400'); // 3rd filled
-        await expect(stars[13]).toHaveClass('text-yellow-400'); // 4th partial
+        await expect(stars[10]).toHaveClass('text-rating'); // 1st filled
+        await expect(stars[11]).toHaveClass('text-rating'); // 2nd filled
+        await expect(stars[12]).toHaveClass('text-rating'); // 3rd filled
+        await expect(stars[13]).toHaveClass('text-rating'); // 4th partial
         await expect(stars[14]).toHaveClass('text-muted-foreground/30'); // 5th unfilled
     },
 };

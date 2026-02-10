@@ -43,7 +43,7 @@ describe('StarIcon', () => {
         test('applies yellow color when filled is true', () => {
             const { container } = render(<StarIcon opacity={1} filled={true} />);
             const svg = container.querySelector('svg');
-            expect(svg).toHaveClass('text-yellow-400');
+            expect(svg).toHaveClass('text-rating');
         });
 
         test('applies muted color when filled is false', () => {
@@ -61,7 +61,7 @@ describe('StarIcon', () => {
         test('does not have yellow color when filled is false', () => {
             const { container } = render(<StarIcon opacity={1} filled={false} />);
             const svg = container.querySelector('svg');
-            expect(svg).not.toHaveClass('text-yellow-400');
+            expect(svg).not.toHaveClass('text-rating');
         });
     });
 
@@ -111,7 +111,7 @@ describe('StarIcon', () => {
         test('preserves base classes with custom className', () => {
             const { container } = render(<StarIcon opacity={1} filled={true} className="w-8 h-8" />);
             const svg = container.querySelector('svg');
-            expect(svg).toHaveClass('text-yellow-400', 'w-8', 'h-8');
+            expect(svg).toHaveClass('text-rating', 'w-8', 'h-8');
         });
 
         test('can override color with custom className', () => {
@@ -162,7 +162,7 @@ describe('StarIcon', () => {
         test('renders filled star with partial opacity', () => {
             const { container } = render(<StarIcon opacity={0.6} filled={true} />);
             const svg = container.querySelector('svg');
-            expect(svg).toHaveClass('text-yellow-400');
+            expect(svg).toHaveClass('text-rating');
             expect(svg).toHaveStyle({ opacity: '0.6' });
         });
 
@@ -176,7 +176,7 @@ describe('StarIcon', () => {
         test('renders filled star with custom size', () => {
             const { container } = render(<StarIcon opacity={1} filled={true} className="w-12 h-12" />);
             const svg = container.querySelector('svg');
-            expect(svg).toHaveClass('text-yellow-400', 'w-12', 'h-12');
+            expect(svg).toHaveClass('text-rating', 'w-12', 'h-12');
             expect(svg).toHaveStyle({ opacity: '1' });
         });
 
