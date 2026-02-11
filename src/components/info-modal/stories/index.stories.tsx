@@ -90,7 +90,7 @@ The InfoModal is a generic, reusable modal component that displays informational
 - Themeable and accessible
 
 **Modal Type:**
-- **Payment Schedule**: Displays title, description, payment schedule timeline, "How it works" steps, disclaimer, links, and Close button
+- **Payment Schedule**: Displays title, description, payment schedule timeline, "How it works" steps, disclaimer, and Close button
 
 **Usage:**
 The modal accepts structured data with type 'payment-schedule' and transforms it into the payment schedule UI.
@@ -182,10 +182,6 @@ export const PaymentScheduleType: Story = {
                 { number: 3, text: "Use autopay for the rest of your payments. It's easy!" },
             ],
             disclaimer: 'Subject to credit approval. Terms apply.',
-            links: [
-                { text: 'Find more disclosures related to Pay in 4', url: '#', openInNewTab: true },
-                { text: 'See other ways to pay over time', url: '#', openInNewTab: true },
-            ],
         },
     },
     play: async ({ canvasElement }) => {

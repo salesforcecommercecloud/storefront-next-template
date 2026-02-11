@@ -265,11 +265,16 @@ export interface WriteReviewFormData {
     reviewTitle: {
         label: string;
         placeholder: string;
+        /** Max characters allowed (e.g. 250). Optional; no client-side cap if omitted. */
+        maxCharacters?: number;
     };
     reviewBody: {
         label: string;
         placeholder: string;
+        /** Min characters required (e.g. 50). */
         minCharacters: number;
+        /** Max characters allowed (e.g. 2000). Optional; no client-side cap if omitted. */
+        maxCharacters?: number;
     };
     recommend: {
         label: string;

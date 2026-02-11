@@ -42,11 +42,6 @@ function mapLearnMoreToInfoModalData(learnMore: BuyNowPayLaterLearnMoreData): In
         },
         steps: learnMore.howItWorks.map((text, i) => ({ number: i + 1, text })),
         disclaimer: learnMore.disclosures,
-        links: learnMore.disclosureLinks?.map((l) => ({
-            text: l.label,
-            url: '',
-            openInNewTab: false,
-        })),
     };
 }
 

@@ -19,23 +19,21 @@ import { type ReactElement } from 'react';
 import { formatCurrency } from '@/lib/currency';
 import { Typography } from '@/components/typography';
 import { cn } from '@/lib/utils';
-import type { PaymentSchedule, StepInfo, ModalLink } from '../types';
+import type { PaymentSchedule, StepInfo } from '../types';
 
 /**
  * Renders payment schedule modal content (e.g., "Pay in 4").
- * Layout: Payment Schedule (timeline row + amounts row), How it works (numbered list), disclaimer box with links.
+ * Layout: Payment Schedule (timeline row + amounts row), How it works (numbered list), disclaimer box.
  */
 export function PaymentScheduleModalContent({
     paymentSchedule,
     steps,
     disclaimer,
-    links,
     currency,
 }: {
     paymentSchedule?: PaymentSchedule;
     steps?: StepInfo[];
     disclaimer?: string;
-    links?: ModalLink[];
     currency: string;
 }): ReactElement {
     return (
@@ -158,35 +156,11 @@ export function PaymentScheduleModalContent({
                 </div>
             )}
 
-            {(disclaimer != null || (links != null && links.length > 0)) && (
-                <div className="rounded-lg bg-muted p-4 space-y-3">
-                    {disclaimer != null && disclaimer !== '' && (
-                        <Typography variant="muted" className="text-xs leading-relaxed">
-                            {disclaimer}
-                        </Typography>
-                    )}
-                    {links != null && links.length > 0 && (
-                        <div className="space-y-2">
-                            {links.map((link) =>
-                                link.url ? (
-                                    <a
-                                        key={link.url}
-                                        href={link.url}
-                                        target={link.openInNewTab ? '_blank' : undefined}
-                                        rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
-                                        className="text-primary text-xs text-left block cursor-pointer no-underline hover:underline">
-                                        {link.text}
-                                    </a>
-                                ) : (
-                                    <span
-                                        key={link.text}
-                                        className="text-primary text-xs text-left block cursor-pointer no-underline hover:underline">
-                                        {link.text}
-                                    </span>
-                                )
-                            )}
-                        </div>
-                    )}
+            {disclaimer != null && disclaimer !== '' && (
+                <div className="rounded-lg bg-muted p-4">
+                    <Typography variant="muted" className="text-xs leading-relaxed">
+                        {disclaimer}
+                    </Typography>
                 </div>
             )}
         </>

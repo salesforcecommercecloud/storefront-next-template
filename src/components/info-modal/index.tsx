@@ -16,9 +16,9 @@
 'use client';
 
 import { type ReactElement } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useTranslation } from 'react-i18next';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Typography } from '@/components/typography';
 import { useCurrency } from '@/providers/currency';
 import { cn } from '@/lib/utils';
 import type { InfoModalProps } from './types';
@@ -29,13 +29,12 @@ export type {
     InfoModalProps,
     PaymentSchedule,
     StepInfo,
-    ModalLink,
     PaymentScheduleModalData,
+    WriteReviewModalData,
 } from './types';
 
 import { PaymentScheduleModalContent } from './renderers/payment-schedule-modal-content';
-
-const INFO_MODAL_DESCRIPTION_ID = 'info-modal-description';
+import { WriteReviewModalContent } from './renderers/write-review-modal-content';
 
 /** Escapes a string for safe use inside a RegExp. */
 function escapeRegex(s: string): string {
@@ -66,17 +65,16 @@ function getCurrencySymbolForRegex(currencyCode: string): string {
  */
 export default function InfoModal({ open, onOpenChange, data, className }: InfoModalProps): ReactElement {
     const currency = useCurrency() || 'USD';
+    const { t } = useTranslation('infoModal');
 
     if (!data) {
         return (
             <Dialog open={open} onOpenChange={onOpenChange}>
-                <DialogContent className={className} aria-describedby={INFO_MODAL_DESCRIPTION_ID}>
+                <DialogContent className={className}>
                     <DialogHeader>
                         <DialogTitle>Information</DialogTitle>
                     </DialogHeader>
-                    <Typography variant="muted" as="p" id={INFO_MODAL_DESCRIPTION_ID} className="mt-4">
-                        No data available.
-                    </Typography>
+                    <DialogDescription className="mt-4">No data available.</DialogDescription>
                 </DialogContent>
             </Dialog>
         );
@@ -85,8 +83,14 @@ export default function InfoModal({ open, onOpenChange, data, className }: InfoM
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent
-                className={cn('max-w-2xl sm:max-w-2xl gap-0 p-0 border-0', className)}
-                aria-describedby={INFO_MODAL_DESCRIPTION_ID}>
+                className={cn(
+                    data.type === 'write-review' ? 'max-w-lg sm:max-w-lg' : 'max-w-2xl sm:max-w-2xl',
+                    'gap-0 p-0 border-0',
+                    className
+                )}>
+                <DialogDescription className="sr-only">
+                    {data.type === 'payment-schedule' ? t('paymentScheduleDescription') : t('writeReviewDescription')}
+                </DialogDescription>
                 {data.type === 'payment-schedule' && (
                     <>
                         <DialogHeader className="p-6 pt-8 pb-0 pr-12 text-left">
@@ -99,40 +103,31 @@ export default function InfoModal({ open, onOpenChange, data, className }: InfoM
                         <div className="mt-4 border-b border-muted-foreground/25" aria-hidden />
                         <div className="overflow-y-auto max-h-[calc(90vh-180px)]">
                             <div className="p-6 space-y-6">
-                                {data.description != null ? (
-                                    (() => {
-                                        const desc = data.description;
-                                        const symbol = escapeRegex(getCurrencySymbolForRegex(currency));
-                                        const amountPattern = new RegExp(`^(.*?)(${symbol}\\d[\\d,.]*)(.*)$`);
-                                        const match = desc.match(amountPattern);
-                                        if (match) {
-                                            const [, before, amount, after] = match;
-                                            return (
-                                                <p
-                                                    id={INFO_MODAL_DESCRIPTION_ID}
-                                                    className="text-sm text-muted-foreground">
-                                                    {before}
-                                                    <strong className="font-semibold text-foreground">{amount}</strong>
-                                                    {after}
-                                                </p>
-                                            );
-                                        }
-                                        return (
-                                            <p id={INFO_MODAL_DESCRIPTION_ID} className="text-sm text-muted-foreground">
-                                                {desc}
-                                            </p>
-                                        );
-                                    })()
-                                ) : (
-                                    <span id={INFO_MODAL_DESCRIPTION_ID} className="sr-only">
-                                        Payment schedule details
-                                    </span>
-                                )}
+                                {data.description != null
+                                    ? (() => {
+                                          const desc = data.description;
+                                          const symbol = escapeRegex(getCurrencySymbolForRegex(currency));
+                                          const amountPattern = new RegExp(`^(.*?)(${symbol}\\d[\\d,.]*)(.*)$`);
+                                          const match = desc.match(amountPattern);
+                                          if (match) {
+                                              const [, before, amount, after] = match;
+                                              return (
+                                                  <p className="text-sm text-muted-foreground">
+                                                      {before}
+                                                      <strong className="font-semibold text-foreground">
+                                                          {amount}
+                                                      </strong>
+                                                      {after}
+                                                  </p>
+                                              );
+                                          }
+                                          return <p className="text-sm text-muted-foreground">{desc}</p>;
+                                      })()
+                                    : null}
                                 <PaymentScheduleModalContent
                                     paymentSchedule={data.paymentSchedule}
                                     steps={data.steps}
                                     disclaimer={data.disclaimer}
-                                    links={data.links}
                                     currency={currency}
                                 />
                             </div>
@@ -141,6 +136,26 @@ export default function InfoModal({ open, onOpenChange, data, className }: InfoM
                             <Button className="w-full" onClick={() => onOpenChange(false)}>
                                 Close
                             </Button>
+                        </div>
+                    </>
+                )}
+                {data.type === 'write-review' && (
+                    <>
+                        {data.formConfig != null && (
+                            <DialogHeader className="p-6 pt-8 pb-0 pr-12 text-left">
+                                <DialogTitle className="text-[1.5rem] font-semibold text-foreground">
+                                    {data.formConfig.title}
+                                </DialogTitle>
+                            </DialogHeader>
+                        )}
+                        <div className="mt-4 border-b border-muted-foreground/25" aria-hidden />
+                        <div className="overflow-y-auto max-h-[calc(90vh-180px)]">
+                            {/* Key forces remount when modal opens so form state resets. */}
+                            <WriteReviewModalContent
+                                key={open ? 'open' : 'closed'}
+                                onClose={() => onOpenChange(false)}
+                                formConfig={data.formConfig}
+                            />
                         </div>
                     </>
                 )}

@@ -18,7 +18,7 @@ import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import { PaymentScheduleModalContent } from '../../payment-schedule-modal-content';
-import type { PaymentSchedule, StepInfo, ModalLink } from '../../../types';
+import type { PaymentSchedule, StepInfo } from '../../../types';
 import { ConfigProvider } from '@/config/context';
 import { CurrencyProvider } from '@/providers/currency';
 import { mockConfig } from '@/test-utils/config';
@@ -28,13 +28,11 @@ function PaymentScheduleModalContentWrapper({
     paymentSchedule,
     steps,
     disclaimer,
-    links,
     currency = 'USD',
 }: {
     paymentSchedule?: PaymentSchedule;
     steps?: StepInfo[];
     disclaimer?: string;
-    links?: ModalLink[];
     currency?: string;
 }): ReactElement {
     const inRouter = useInRouterContext();
@@ -46,7 +44,6 @@ function PaymentScheduleModalContentWrapper({
                         paymentSchedule={paymentSchedule}
                         steps={steps}
                         disclaimer={disclaimer}
-                        links={links}
                         currency={currency}
                     />
                 </div>
@@ -86,7 +83,6 @@ This component is used internally by InfoModal when the modal type is 'payment-s
 - Payment schedule with amounts and due dates
 - "How it works" steps
 - Disclaimer text
-- Footer links
                 `,
             },
         },
@@ -115,10 +111,6 @@ export const Default: Story = {
             { number: 4, text: 'Pay over time, interest-free' },
         ],
         disclaimer: 'Subject to credit approval. Terms apply.',
-        links: [
-            { text: 'Learn more', url: '/payment-info', openInNewTab: false },
-            { text: 'Terms and conditions', url: '/terms', openInNewTab: true },
-        ],
         currency: 'USD',
     },
     play: async ({ canvasElement }) => {
@@ -127,7 +119,6 @@ export const Default: Story = {
         await expect(canvas.getByText('Payment Schedule')).toBeInTheDocument();
         await expect(canvas.getByText('How it works')).toBeInTheDocument();
         await expect(canvas.getByText('Subject to credit approval. Terms apply.')).toBeInTheDocument();
-        await expect(canvas.getByText('Learn more')).toBeInTheDocument();
     },
 };
 
@@ -167,21 +158,5 @@ export const StepsOnly: Story = {
         const canvas = within(canvasElement);
         await expect(canvas.getByText('How it works')).toBeInTheDocument();
         await expect(canvas.getByText('Select payment method at checkout')).toBeInTheDocument();
-    },
-};
-
-export const WithLinks: Story = {
-    args: {
-        links: [
-            { text: 'Learn more about payment plans', url: '/payment', openInNewTab: false },
-            { text: 'Terms and conditions', url: '/terms', openInNewTab: true },
-        ],
-        currency: 'USD',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        await expect(canvas.getByText('Learn more about payment plans')).toBeInTheDocument();
-        await expect(canvas.getByText('Terms and conditions')).toBeInTheDocument();
     },
 };

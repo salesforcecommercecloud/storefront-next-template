@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { WriteReviewFormData } from '@/lib/adapters/product-content-data-types';
+
 /**
  * Payment schedule data for installment payment modal
  */
@@ -41,18 +43,6 @@ export interface StepInfo {
     text: string;
 }
 
-/**
- * Link information for footer links
- */
-export interface ModalLink {
-    /** Link text */
-    text: string;
-    /** Link URL */
-    url: string;
-    /** Whether to open in new tab */
-    openInNewTab?: boolean;
-}
-
 /** Shared fields for modal header */
 interface InfoModalDataBase {
     title?: string;
@@ -65,14 +55,20 @@ export interface PaymentScheduleModalData extends InfoModalDataBase {
     paymentSchedule?: PaymentSchedule;
     steps?: StepInfo[];
     disclaimer?: string;
-    links?: ModalLink[];
+}
+
+/** Data for write a review modal */
+export interface WriteReviewModalData extends InfoModalDataBase {
+    type: 'write-review';
+    /** Form labels, placeholders, and config from product content adapter (e.g. getWriteReviewForm). Optional until loaded. */
+    formConfig?: WriteReviewFormData;
 }
 
 /**
  * Structured data for the info modal. Add new modal types by defining a new variant
  * (e.g. SizeGuideModalData) and extending this union.
  */
-export type InfoModalData = PaymentScheduleModalData;
+export type InfoModalData = PaymentScheduleModalData | WriteReviewModalData;
 
 export interface InfoModalProps {
     open: boolean;

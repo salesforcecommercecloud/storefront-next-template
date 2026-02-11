@@ -56,6 +56,9 @@
     /* -- payment provider colors -- */
     --color-paypal-gold: var(--paypal-gold);
     --color-venmo-blue: var(--venmo-blue);
+    /* -- brand button (e.g. Write a Review) -- */
+    --color-brand-primary: var(--brand-primary);
+    --color-brand-primary-hover: var(--brand-primary-hover);
 }
 /*---break---*/
 :root,
@@ -138,6 +141,10 @@ html.dark [data-theme='inverse'] {
     /* payment provider colors */
     --paypal-gold: #FFC439; /* PayPal official gold button color */
     --venmo-blue: #3D95CE; /* Venmo official blue color */
+
+    /* brand primary (e.g. Write a Review button) */
+    --brand-primary: #4285f4;
+    --brand-primary-hover: #3367d6;
 
     body {
         @apply bg-background text-foreground;
@@ -223,6 +230,10 @@ html:not(.dark) [data-theme='inverse'] {
     /* payment provider colors */
     --paypal-gold: #FFC439; /* PayPal official gold button color */
     --venmo-blue: #3D95CE; /* Venmo official blue color */
+
+    /* brand primary (e.g. Write a Review button) */
+    --brand-primary: #4285f4;
+    --brand-primary-hover: #3367d6;
 
     body {
         @apply bg-background text-foreground;

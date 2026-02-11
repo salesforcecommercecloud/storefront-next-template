@@ -1222,5 +1222,20 @@
         "suggested": "SUGGESTED",
         "closeSuggestions": "Close suggestions",
         "loading": "Loading suggestions..."
+    },
+    "infoModal": {
+        "paymentScheduleDescription": "Payment schedule details",
+        "writeReviewDescription": "Write a review form"
+    },
+    "writeReview": {
+        "validation": {
+            "ratingRequired": "Please select a rating",
+            "reviewRequired": "Please fill out this field.",
+            "reviewMinLength": "Please enter at least {{count}} characters.",
+            "reviewMaxLength": "Please enter no more than {{count}} characters.",
+            "titleMaxLength": "Please enter no more than {{count}} characters."
+        },
+        "minCharactersHint": "Minimum {{count}} characters.",
+        "maxCharactersHint": "Maximum {{count}} characters."
     }
 }

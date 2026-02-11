@@ -344,11 +344,13 @@ const MOCK_WRITE_REVIEW_FORM_DATA: WriteReviewFormData = {
     reviewTitle: {
         label: 'Review Title',
         placeholder: 'Summarize your experience',
+        maxCharacters: 250,
     },
     reviewBody: {
         label: 'Your Review',
         placeholder: 'What did you like or dislike about this product?',
         minCharacters: 50,
+        maxCharacters: 2000,
     },
     recommend: {
         label: 'Would you recommend this product?',

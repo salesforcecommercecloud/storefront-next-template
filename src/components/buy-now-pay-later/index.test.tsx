@@ -132,10 +132,6 @@ describe('InfoModal - Payment Schedule Type', () => {
                 { number: 4, text: 'Pay over time, interest-free' },
             ],
             disclaimer: 'Subject to credit approval. Terms apply.',
-            links: [
-                { text: 'Learn more', url: '/payment-info', openInNewTab: false },
-                { text: 'Terms and conditions', url: '/terms', openInNewTab: true },
-            ],
         };
 
         const mockOnOpenChange = vi.fn();
@@ -175,9 +171,5 @@ describe('InfoModal - Payment Schedule Type', () => {
 
         // Verify disclaimer
         expect(screen.getByText('Subject to credit approval. Terms apply.')).toBeInTheDocument();
-
-        // Verify links
-        expect(screen.getByText('Learn more')).toBeInTheDocument();
-        expect(screen.getByText('Terms and conditions')).toBeInTheDocument();
     });
 });

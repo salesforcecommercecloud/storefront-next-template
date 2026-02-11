@@ -186,6 +186,8 @@ describe('ProductContentMockAdapter', () => {
             expect(data.title).toBe('Write a Review');
             expect(data.overallRating.label).toBe('Overall Rating');
             expect(data.reviewBody.minCharacters).toBe(50);
+            expect(data.reviewBody.maxCharacters).toBe(2000);
+            expect(data.reviewTitle.maxCharacters).toBe(250);
             expect(data.recommend.yesLabel).toBe('Yes');
             expect(data.submitLabel).toBe('Submit Review');
             expect(data).not.toHaveProperty('name');
