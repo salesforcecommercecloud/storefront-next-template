@@ -330,6 +330,9 @@ importers:
       vitest:
         specifier: 4.0.18
         version: 4.0.18(@types/node@24.10.13)(@vitest/ui@4.0.18)(happy-dom@20.0.10)(jiti@2.6.1)(jsdom@27.4.0)(lightningcss@1.30.1)(msw@2.11.3(@types/node@24.10.13)(typescript@5.9.3))(tsx@4.21.0)
+      vitest-localstorage-mock:
+        specifier: ^0.1.2
+        version: 0.1.2(vitest@4.0.18)
       wait-on:
         specifier: ^8.0.1
         version: 8.0.5
@@ -1247,8 +1250,8 @@ packages:
     resolution: {integrity: sha512-Z5kJ+wU3oA7MMIqVR9tyZRtjYPr4OC004Q4Rw7pgOKUOKkJfZ3O24nz3WYfGRpMDNmcOi3TwQOmgm7B7Tpii0w==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@exodus/bytes@1.12.0':
-    resolution: {integrity: sha512-BuCOHA/EJdPN0qQ5MdgAiJSt9fYDHbghlgrj33gRdy/Yp1/FMCDhU6vJfcKrLC0TPWGSrfH3vYXBQWmFHxlddw==}
+  '@exodus/bytes@1.13.0':
+    resolution: {integrity: sha512-VnfL2lS43Z9F8li1faMH9hDZwqfrF5JvOePmrF8oESfo0ijaujnT81zYtienQRpoFa+FJbq0E5rrnMWEW73gOw==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
     peerDependencies:
       '@noble/hashes': ^1.8.0 || ^2.0.0
@@ -7668,6 +7671,11 @@ packages:
       yaml:
         optional: true
 
+  vitest-localstorage-mock@0.1.2:
+    resolution: {integrity: sha512-1oee6iDWhhquzVogssbpwQi6a2F3L+nCKF2+qqyCs5tH0sOYRyTqnsfj2dtmEQiL4xtJkHLn42hEjHGESlsJHw==}
+    peerDependencies:
+      vitest: '*'
+
   vitest@4.0.18:
     resolution: {integrity: sha512-hOQuK7h0FGKgBAas7v0mSAsnvrIgAvWmRFjmzpJ7SwFHH3g1k2u37JtYwOwmEKhK6ZO3v9ggDBBm0La1LCK4uQ==}
     engines: {node: ^20.0.0 || ^22.0.0 || >=24.0.0}
@@ -8528,7 +8536,7 @@ snapshots:
       '@eslint/core': 0.15.2
       levn: 0.4.1
 
-  '@exodus/bytes@1.12.0': {}
+  '@exodus/bytes@1.13.0': {}
 
   '@floating-ui/core@1.7.4':
     dependencies:
@@ -12841,7 +12849,7 @@ snapshots:
 
   html-encoding-sniffer@6.0.0:
     dependencies:
-      '@exodus/bytes': 1.12.0
+      '@exodus/bytes': 1.13.0
     transitivePeerDependencies:
       - '@noble/hashes'
 
@@ -13945,7 +13953,7 @@ snapshots:
     dependencies:
       '@acemir/cssom': 0.9.31
       '@asamuzakjp/dom-selector': 6.7.8
-      '@exodus/bytes': 1.12.0
+      '@exodus/bytes': 1.13.0
       cssstyle: 5.3.7
       data-urls: 6.0.1
       decimal.js: 10.6.0
@@ -15995,6 +16003,10 @@ snapshots:
       jiti: 2.6.1
       lightningcss: 1.30.1
       tsx: 4.21.0
+
+  vitest-localstorage-mock@0.1.2(vitest@4.0.18):
+    dependencies:
+      vitest: 4.0.18(@types/node@24.10.13)(@vitest/ui@4.0.18)(happy-dom@20.0.10)(jiti@2.6.1)(jsdom@27.4.0)(lightningcss@1.30.1)(msw@2.11.3(@types/node@24.10.13)(typescript@5.9.3))(tsx@4.21.0)
 
   vitest@4.0.18(@types/node@24.10.13)(@vitest/ui@4.0.18)(happy-dom@20.0.10)(jiti@2.6.1)(jsdom@27.4.0)(lightningcss@1.30.1)(msw@2.11.3(@types/node@24.10.13)(typescript@5.9.3))(tsx@4.21.0):
     dependencies:

@@ -20,6 +20,7 @@ import { mockConfig } from '@/test-utils/config';
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import resources from '@/locales';
+import 'vitest-localstorage-mock';
 
 // Mock static asset imports that fail on Windows due to absolute path resolution
 // Windows converts '/path' to 'file:///path' which is invalid (missing drive letter)
