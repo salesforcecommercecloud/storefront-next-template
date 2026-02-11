@@ -702,6 +702,50 @@
                 "heading": "Negozio preferito per il ritiro",
                 "description": "Seleziona il negozio preferito per gli ordini con ritiro in negozio",
                 "changeStore": "Cambia negozio"
+            },
+            "authorizedPickupPeople": {
+                "heading": "Persone autorizzate al ritiro",
+                "description": "Aggiungi persone autorizzate a ritirare gli ordini per tuo conto",
+                "addPerson": "Aggiungi persona",
+                "idNote": "Le persone autorizzate al ritiro dovranno esibire un documento d'identità valido con il nome registrato al ritiro degli ordini.",
+                "modal": {
+                    "addTitle": "Aggiungi persona autorizzata",
+                    "editTitle": "Modifica persona autorizzata",
+                    "firstName": "Nome",
+                    "firstNamePlaceholder": "Nome",
+                    "lastName": "Cognome",
+                    "lastNamePlaceholder": "Cognome",
+                    "email": "Indirizzo email",
+                    "emailPlaceholder": "email@example.com",
+                    "relationship": "Relazione",
+                    "relationshipPlaceholder": "Seleziona relazione",
+                    "modalNote": "Questa persona sarà autorizzata a ritirare gli ordini per tuo conto. Dovrà esibire un documento d'identità valido con il nome fornito al ritiro degli ordini.",
+                    "cancel": "Annulla",
+                    "save": "Salva",
+                    "firstNameRequired": "Il nome è obbligatorio",
+                    "firstNameMax": "Il nome deve essere di massimo 50 caratteri",
+                    "lastNameRequired": "Il cognome è obbligatorio",
+                    "lastNameMax": "Il cognome deve essere di massimo 50 caratteri",
+                    "emailRequired": "L'email è obbligatoria",
+                    "emailInvalid": "Inserisci un indirizzo email valido",
+                    "emailMax": "L'email deve essere di massimo 100 caratteri",
+                    "relationshipRequired": "Seleziona una relazione"
+                },
+                "statusActive": "Attivo",
+                "relationshipLabel": "Relazione: {{relationship}}",
+                "edit": "Modifica",
+                "delete": "Elimina",
+                "emptyState": "Nessuna persona autorizzata al ritiro. Aggiungi qualcuno che possa ritirare gli ordini per tuo conto.",
+                "deleteConfirmTitle": "Rimuovi persona autorizzata",
+                "deleteConfirmDescription": "Sei sicuro di voler rimuovere {{name}}? Non potrà più ritirare gli ordini per tuo conto.",
+                "deleteConfirmCancel": "Annulla",
+                "deleteConfirmRemove": "Rimuovi",
+                "relationships": {
+                    "spouse": "Coniuge",
+                    "familyMember": "Familiare",
+                    "friend": "Amico",
+                    "other": "Altro"
+                }
             }
         },
         "wishlist": {

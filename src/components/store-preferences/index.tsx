@@ -17,10 +17,11 @@ import { type ReactElement } from 'react';
 import { Card } from '@/components/ui/card';
 import { useTranslation } from 'react-i18next';
 import PreferredStore from './preferred-store';
+import AuthorizedPickupPeople from './authorized-pickup-people';
 
 /**
- * Store Preferences page content. Displays the Store Preferences header and
- * Preferred Store for Pickup section.
+ * Store Preferences page content. Displays the Store Preferences header,
+ * Preferred Store for Pickup, and Authorized Pickup People sections.
  */
 export default function StorePreferences(): ReactElement {
     const { t } = useTranslation('account');
@@ -36,6 +37,7 @@ export default function StorePreferences(): ReactElement {
             </Card>
 
             <PreferredStore />
+            <AuthorizedPickupPeople />
         </div>
     );
 }

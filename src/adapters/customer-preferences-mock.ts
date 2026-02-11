@@ -315,7 +315,7 @@ export function resetMockCustomerPreferencesData(): void {
 export function seedMockCustomerData(
     customerId: string,
     interests?: string[],
-    preferences?: Record<string, boolean | string>
+    preferences?: Record<string, boolean | string | string[]>
 ): void {
     if (interests) {
         customerInterestsStore.set(customerId, interests);

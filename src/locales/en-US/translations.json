@@ -717,6 +717,50 @@
                 "heading": "Preferred Store for Pickup",
                 "description": "Select your preferred store for in-store pickup orders",
                 "changeStore": "Change store"
+            },
+            "authorizedPickupPeople": {
+                "heading": "Authorized Pickup People",
+                "description": "Add people who are authorized to pick up orders on your behalf",
+                "addPerson": "Add Person",
+                "idNote": "Authorized pickup people will need to show a valid ID matching the name on file when picking up orders.",
+                "modal": {
+                    "addTitle": "Add Authorized Person",
+                    "editTitle": "Edit Authorized Person",
+                    "firstName": "First Name",
+                    "firstNamePlaceholder": "First Name",
+                    "lastName": "Last Name",
+                    "lastNamePlaceholder": "Last Name",
+                    "email": "Email Address",
+                    "emailPlaceholder": "email@example.com",
+                    "relationship": "Relationship",
+                    "relationshipPlaceholder": "Select Relationship",
+                    "modalNote": "This person will be authorized to pick up orders on your behalf. They will need to show a valid ID matching the name provided when picking up orders.",
+                    "cancel": "Cancel",
+                    "save": "Save",
+                    "firstNameRequired": "First name is required",
+                    "firstNameMax": "First name must be 50 characters or less",
+                    "lastNameRequired": "Last name is required",
+                    "lastNameMax": "Last name must be 50 characters or less",
+                    "emailRequired": "Email is required",
+                    "emailInvalid": "Please enter a valid email address",
+                    "emailMax": "Email must be 100 characters or less",
+                    "relationshipRequired": "Please select a relationship"
+                },
+                "statusActive": "Active",
+                "relationshipLabel": "Relationship: {{relationship}}",
+                "edit": "Edit",
+                "delete": "Delete",
+                "emptyState": "No authorized pickup people yet. Add someone who can pick up orders on your behalf.",
+                "deleteConfirmTitle": "Remove authorized person",
+                "deleteConfirmDescription": "Are you sure you want to remove {{name}}? They will no longer be able to pick up orders on your behalf.",
+                "deleteConfirmCancel": "Cancel",
+                "deleteConfirmRemove": "Remove",
+                "relationships": {
+                    "spouse": "Spouse",
+                    "familyMember": "Family Member",
+                    "friend": "Friend",
+                    "other": "Other"
+                }
             }
         },
         "overview": {
