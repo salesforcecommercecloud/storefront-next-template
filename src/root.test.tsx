@@ -27,7 +27,7 @@ let ErrorBoundary: typeof RootErrorBoundary;
 let Layout: typeof RootLayout;
 let loader: typeof RootLoader;
 const defaultClientAuth: PublicSessionData = {
-    customer_id: 'test-customer',
+    customerId: 'test-customer',
     userType: 'registered',
 };
 import { mockConfig } from '@/test-utils/config';
@@ -129,8 +129,8 @@ vi.mock('@/middlewares/auth.client', async () => ({
     ...(await vi.importActual('@/middlewares/auth.client')),
     default: vi.fn(),
     getAuth: vi.fn(() => ({
-        access_token: 'test-token',
-        customer_id: 'test-customer',
+        accessToken: 'test-token',
+        customerId: 'test-customer',
         userType: 'registered',
     })),
 }));
@@ -440,7 +440,7 @@ describe('root.tsx', () => {
                     HydrateFallback,
                     loader: () => ({
                         clientAuth: {
-                            customer_id: 'test-customer',
+                            customerId: 'test-customer',
                             userType: 'registered',
                         },
                         basketSnapshot: null,
@@ -466,7 +466,7 @@ describe('root.tsx', () => {
             const { AuthContext } = await import('@/providers/auth');
 
             const mockInitialAuth: PublicSessionData = {
-                customer_id: 'initial-customer',
+                customerId: 'initial-customer',
                 userType: 'guest',
             };
 
@@ -520,7 +520,7 @@ describe('root.tsx', () => {
                     HydrateFallback,
                     loader: () => ({
                         clientAuth: {
-                            customer_id: 'test-customer',
+                            customerId: 'test-customer',
                             userType: 'registered',
                         },
                         basketSnapshot: null,
@@ -565,7 +565,7 @@ describe('root.tsx', () => {
                         HydrateFallback,
                         loader: () => ({
                             clientAuth: {
-                                customer_id: 'test-customer',
+                                customerId: 'test-customer',
                                 userType: 'registered',
                             },
                             basketSnapshot: null,
@@ -608,7 +608,7 @@ describe('root.tsx', () => {
                         HydrateFallback,
                         loader: () => ({
                             clientAuth: {
-                                customer_id: 'test-customer',
+                                customerId: 'test-customer',
                                 userType: 'registered',
                             },
                             basketSnapshot: null,
@@ -680,7 +680,7 @@ describe('root.tsx', () => {
             const resources = await import('@/locales');
 
             const mockClientAuth: PublicSessionData = {
-                customer_id: 'test-customer',
+                customerId: 'test-customer',
                 userType: 'registered',
             };
 
@@ -711,8 +711,8 @@ describe('root.tsx', () => {
 
             // clientAuth should contain only non-sensitive fields
             expect(result.clientAuth).toEqual(expect.objectContaining(mockClientAuth));
-            expect(result.clientAuth).not.toHaveProperty('access_token');
-            expect(result.clientAuth).not.toHaveProperty('refresh_token');
+            expect(result.clientAuth).not.toHaveProperty('accessToken');
+            expect(result.clientAuth).not.toHaveProperty('refreshToken');
             expect(result.appConfig).toBeDefined();
             expect(result.locale).toBe('en-US');
             expect(typeof result.getI18next).toBe('function');

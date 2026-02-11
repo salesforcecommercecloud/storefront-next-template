@@ -119,7 +119,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
         if (!basket.paymentInstruments?.[0]) {
             // Check if this is a returning customer with saved payment methods
             const auth = getAuth(context);
-            const customerId = auth.customer_id;
+            const customerId = auth.customerId;
 
             if (customerId) {
                 try {

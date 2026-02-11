@@ -171,9 +171,9 @@ export const useRecommenders = (isEnabled: boolean = true) => {
             params.cookieId = auth.usid;
         }
 
-        // Include userId (customer_id) only for registered users
-        if (auth?.userType === 'registered' && auth?.customer_id) {
-            params.userId = auth.customer_id;
+        // Include userId (customerId) only for registered users
+        if (auth?.userType === 'registered' && auth?.customerId) {
+            params.userId = auth.customerId;
         }
 
         return params;

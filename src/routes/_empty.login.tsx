@@ -64,13 +64,13 @@ export function loader({ request, context }: LoaderFunctionArgs) {
     const returnUrl = url.searchParams.get('returnUrl');
 
     // If user is already logged in as registered user, redirect to returnUrl or home
-    const { access_token, access_token_expiry, userType, customer_id } = session;
+    const { accessToken, accessTokenExpiry, userType, customerId } = session;
     if (
-        access_token &&
-        typeof access_token_expiry === 'number' &&
-        access_token_expiry >= Date.now() &&
+        accessToken &&
+        typeof accessTokenExpiry === 'number' &&
+        accessTokenExpiry >= Date.now() &&
         userType === 'registered' &&
-        customer_id
+        customerId
     ) {
         return redirect(returnUrl || '/');
     }

@@ -16,14 +16,13 @@
 import { describe, expect, it } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import AuthProvider, { useAuth } from './auth';
-import type { SessionData } from '@/lib/api/types';
+import type { PublicSessionData } from '@/lib/api/types';
 
 describe('providers/auth.tsx', () => {
     describe('AuthProvider', () => {
         it('should provide session data to children via useAuth hook', () => {
-            const mockSessionData: SessionData = {
-                access_token: 'test-token',
-                customer_id: 'test-customer',
+            const mockSessionData: PublicSessionData = {
+                customerId: 'test-customer',
                 userType: 'registered',
                 usid: 'test-usid',
             };
@@ -33,8 +32,8 @@ describe('providers/auth.tsx', () => {
             });
 
             expect(result.current).toEqual(mockSessionData);
-            expect(result.current?.access_token).toBe('test-token');
-            expect(result.current?.customer_id).toBe('test-customer');
+            // PublicSessionData doesn't include accessToken - it's server-only
+            expect(result.current?.customerId).toBe('test-customer');
             expect(result.current?.userType).toBe('registered');
         });
 

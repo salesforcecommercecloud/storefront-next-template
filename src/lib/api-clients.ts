@@ -102,7 +102,7 @@ export function createApiClients(context: RouterContextProvider | Readonly<Route
             if (!session) {
                 throw new Error('No session found');
             }
-            request.headers.set('Authorization', `Bearer ${session.access_token}`);
+            request.headers.set('Authorization', `Bearer ${session.accessToken}`);
             if (session.dwsid) {
                 request.headers.set(DWSID_HEADER, session.dwsid);
             }

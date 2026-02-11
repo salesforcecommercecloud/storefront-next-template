@@ -115,7 +115,7 @@ describe('Checkout Loaders', () => {
             vi.mocked(isRegisteredCustomer).mockReturnValue(true);
             vi.mocked(getAuth).mockReturnValue({
                 userType: 'registered',
-                customer_id: 'customer-123',
+                customerId: 'customer-123',
             } as any);
             vi.mocked(getBasket).mockResolvedValue({
                 current: {
@@ -174,7 +174,7 @@ describe('Checkout Loaders', () => {
             const mockContext = {} as any;
             const authSession = {
                 userType: 'registered',
-                customer_id: undefined,
+                customerId: undefined,
             } as any;
 
             const result = await getServerCustomerProfileData(mockContext, authSession);
@@ -184,7 +184,7 @@ describe('Checkout Loaders', () => {
         it('should return null when userType is not registered', async () => {
             const mockContext = {} as any;
             const authSession = {
-                customer_id: 'test-123',
+                customerId: 'test-123',
                 userType: 'guest',
             } as any;
 
@@ -199,7 +199,7 @@ describe('Checkout Loaders', () => {
                 },
             } as any;
             const authSession = {
-                customer_id: 'test-123',
+                customerId: 'test-123',
                 userType: 'registered',
             } as any;
 
@@ -240,7 +240,7 @@ describe('Checkout Loaders', () => {
             } as any);
 
             const mockContext = {} as any;
-            const authSession = { customer_id: 'test-123', userType: 'registered' } as any;
+            const authSession = { customerId: 'test-123', userType: 'registered' } as any;
 
             const result = await getServerShippingMethodsMapData(mockContext, authSession);
 

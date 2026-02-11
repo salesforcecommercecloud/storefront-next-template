@@ -50,7 +50,7 @@ describe('action.update-tracking-consent', () => {
         mockContextProvider = new RouterContextProvider();
         // Default mocks
         mockIsTrackingConsentEnabled.mockReturnValue(true);
-        mockGetAuth.mockReturnValue({ userType: 'guest', refresh_token: 'test-refresh-token' } as never);
+        mockGetAuth.mockReturnValue({ userType: 'guest', refreshToken: 'test-refresh-token' } as never);
     });
 
     afterEach(() => {
@@ -103,7 +103,7 @@ describe('action.update-tracking-consent', () => {
         });
 
         it('should successfully update tracking consent to Declined', async () => {
-            mockGetAuth.mockReturnValue({ userType: 'registered', refresh_token: 'test-refresh-token' } as never);
+            mockGetAuth.mockReturnValue({ userType: 'registered', refreshToken: 'test-refresh-token' } as never);
             mockRefreshAccessToken.mockResolvedValue(mockTokenResponse);
 
             const result = (await action(createActionArgs(TrackingConsent.Declined))) as DataWithResponseInit<{
@@ -164,7 +164,7 @@ describe('action.update-tracking-consent', () => {
         });
 
         it('should throw error when no refresh token is available', async () => {
-            mockGetAuth.mockReturnValue({ userType: 'guest' } as never); // No refresh_token
+            mockGetAuth.mockReturnValue({ userType: 'guest' } as never); // No refreshToken
 
             await expect(action(createActionArgs(TrackingConsent.Accepted))).rejects.toThrow(Response);
 
@@ -193,7 +193,7 @@ describe('action.update-tracking-consent', () => {
 
     describe('userType preservation', () => {
         it('should preserve guest userType after update', async () => {
-            mockGetAuth.mockReturnValue({ userType: 'guest', refresh_token: 'test-refresh-token' } as never);
+            mockGetAuth.mockReturnValue({ userType: 'guest', refreshToken: 'test-refresh-token' } as never);
             mockRefreshAccessToken.mockResolvedValue(mockTokenResponse);
 
             await action(createActionArgs(TrackingConsent.Accepted));
@@ -204,7 +204,7 @@ describe('action.update-tracking-consent', () => {
         });
 
         it('should preserve registered userType after update', async () => {
-            mockGetAuth.mockReturnValue({ userType: 'registered', refresh_token: 'test-refresh-token' } as never);
+            mockGetAuth.mockReturnValue({ userType: 'registered', refreshToken: 'test-refresh-token' } as never);
             mockRefreshAccessToken.mockResolvedValue(mockTokenResponse);
 
             await action(createActionArgs(TrackingConsent.Declined));
@@ -215,7 +215,7 @@ describe('action.update-tracking-consent', () => {
         });
 
         it('should default to guest userType if not present', async () => {
-            mockGetAuth.mockReturnValue({ refresh_token: 'test-refresh-token' } as never); // No userType
+            mockGetAuth.mockReturnValue({ refreshToken: 'test-refresh-token' } as never); // No userType
             mockRefreshAccessToken.mockResolvedValue(mockTokenResponse);
 
             await action(createActionArgs(TrackingConsent.Accepted));

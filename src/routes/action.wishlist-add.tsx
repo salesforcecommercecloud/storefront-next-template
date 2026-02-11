@@ -128,7 +128,7 @@ async function addToWishlist(
     }
 
     const session = getAuth(context);
-    if (!session.customer_id) {
+    if (!session.customerId) {
         return {
             success: false,
             error: t('errors:customer.notAuthenticated'),
@@ -136,7 +136,7 @@ async function addToWishlist(
     }
 
     try {
-        const customerId = session.customer_id;
+        const customerId = session.customerId;
         const clients = createApiClients(context);
 
         // Get or create the wishlist

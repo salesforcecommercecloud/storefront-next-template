@@ -163,7 +163,7 @@ describe('Social Login', () => {
     describe('loginIDPUser', () => {
         it('calls helper with correct args (public client, no clientSecret)', async () => {
             mockAuthSocial.exchangeCode.mockResolvedValue(
-                getMockAuthResponse({ access_token: 'at', refresh_token: 'rt' }, 'social-dwsid')
+                getMockAuthResponse({ accessToken: 'at', refreshToken: 'rt' }, 'social-dwsid')
             );
 
             const result = await loginIDPUser(mockContext, {
@@ -188,7 +188,7 @@ describe('Social Login', () => {
                 commerce: { api: { privateKeyEnabled: true, callback: '/callback' } },
             } as any);
             (process as any).env.COMMERCE_API_SLAS_SECRET = 'super-secret';
-            mockAuthSocial.exchangeCode.mockResolvedValue(getMockAuthResponse({ access_token: 'at' }));
+            mockAuthSocial.exchangeCode.mockResolvedValue(getMockAuthResponse({ accessToken: 'at' }));
 
             await loginIDPUser(mockContext, {
                 code: 'auth-code',
@@ -212,7 +212,7 @@ describe('Social Login', () => {
                 trackingConsent: TrackingConsent.Declined, // Enum value representing 'do not track'
             } as any);
             mockIsTrackingConsentEnabled.mockReturnValue(true);
-            mockAuthSocial.exchangeCode.mockResolvedValue(getMockAuthResponse({ access_token: 'at' }));
+            mockAuthSocial.exchangeCode.mockResolvedValue(getMockAuthResponse({ accessToken: 'at' }));
 
             await loginIDPUser(mockContext, {
                 code: 'auth-code',
@@ -235,7 +235,7 @@ describe('Social Login', () => {
                 trackingConsent: TrackingConsent.Declined, // Enum value
             } as any);
             mockIsTrackingConsentEnabled.mockReturnValue(false);
-            mockAuthSocial.exchangeCode.mockResolvedValue(getMockAuthResponse({ access_token: 'at' }));
+            mockAuthSocial.exchangeCode.mockResolvedValue(getMockAuthResponse({ accessToken: 'at' }));
 
             await loginIDPUser(mockContext, {
                 code: 'auth-code',
@@ -258,7 +258,7 @@ describe('Social Login', () => {
                 // No trackingConsent property
             } as any);
             mockIsTrackingConsentEnabled.mockReturnValue(true);
-            mockAuthSocial.exchangeCode.mockResolvedValue(getMockAuthResponse({ access_token: 'at' }));
+            mockAuthSocial.exchangeCode.mockResolvedValue(getMockAuthResponse({ accessToken: 'at' }));
 
             await loginIDPUser(mockContext, {
                 code: 'auth-code',
@@ -281,7 +281,7 @@ describe('Social Login', () => {
                 trackingConsent: TrackingConsent.Accepted, // Enum value representing tracking accepted
             } as any);
             mockIsTrackingConsentEnabled.mockReturnValue(true);
-            mockAuthSocial.exchangeCode.mockResolvedValue(getMockAuthResponse({ access_token: 'at' }));
+            mockAuthSocial.exchangeCode.mockResolvedValue(getMockAuthResponse({ accessToken: 'at' }));
 
             await loginIDPUser(mockContext, {
                 code: 'auth-code',
@@ -336,7 +336,7 @@ describe('handleSocialLoginCallback', () => {
         mockAuthSocial.getAuthorizationUrl.mockReset();
         mockAuthSocial.exchangeCode.mockReset();
         mockAuthSocial.exchangeCode.mockResolvedValue(
-            getMockAuthResponse({ access_token: 'at', refresh_token: 'rt' }, 'social-callback-dwsid')
+            getMockAuthResponse({ accessToken: 'at', refreshToken: 'rt' }, 'social-callback-dwsid')
         );
         mockGetAuth.mockReturnValue({ usid: 'session-usid', codeVerifier: 'stored-code-verifier' } as any);
 

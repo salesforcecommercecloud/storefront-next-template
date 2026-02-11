@@ -70,7 +70,7 @@ export function getServerCustomerProfileData(
     authSession: SessionData | null
 ): Promise<CustomerProfile | null> {
     try {
-        if (!authSession || !authSession.customer_id || authSession.userType !== 'registered') {
+        if (!authSession || !authSession.customerId || authSession.userType !== 'registered') {
             return Promise.resolve(null);
         }
 
@@ -564,9 +564,9 @@ export async function loader(args: LoaderFunctionArgs): Promise<CheckoutPageData
         // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
         // IMPORTANT: For returning shopper must prefill basket before fetching shipping methods
-        if (userIsRegistered && session.customer_id) {
+        if (userIsRegistered && session.customerId) {
             // Step 1: Fetch customer profile (await for saved addresses)
-            const customerProfile = await getCustomerProfileForCheckout(context, session.customer_id).catch(() => null);
+            const customerProfile = await getCustomerProfileForCheckout(context, session.customerId).catch(() => null);
 
             if (customerProfile) {
                 // @sfdc-extension-block-start SFDC_EXT_BOPIS

@@ -311,10 +311,10 @@ export default function App({
     }
 
     // In server-only auth architecture:
-    // - clientAuth contains only non-sensitive fields (userType, customer_id, usid, etc.)
+    // - clientAuth contains only non-sensitive fields (userType, customerId, usid, etc.)
     // - These values are serialized directly from the server loader
     // - No client middleware or bootstrap needed - server is the single source of truth
-    // - Tokens (access_token, refresh_token) stay server-side only
+    // - Tokens (accessToken, refreshToken) stay server-side only
 
     // Initialize Page Designer components
     initializeRegistry();

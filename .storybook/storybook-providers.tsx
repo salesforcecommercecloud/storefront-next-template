@@ -45,7 +45,7 @@ void i18next.use(initReactI18next).init({
  */
 const mockSessionData: SessionData = {
     userType: 'guest',
-    customer_id: undefined,
+    customerId: undefined,
 };
 
 /**

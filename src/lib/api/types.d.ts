@@ -17,24 +17,24 @@ import type { TrackingConsent } from '@/types/tracking-consent';
 
 // TODO: (Re)move
 export type SessionData = {
-    access_token?: string;
-    access_token_expiry?: number;
-    refresh_token?: string;
-    refresh_token_expiry?: number;
+    accessToken?: string;
+    accessTokenExpiry?: number;
+    refreshToken?: string;
+    refreshTokenExpiry?: number;
 
-    customer_id?: string;
+    customerId?: string;
     userType?: 'guest' | 'registered';
     usid?: string;
-    enc_user_id?: string;
+    encUserId?: string;
 
     // social login - OAuth2 PKCE code verifier (server-side only, ephemeral)
     codeVerifier?: string;
 
     // IDP tokens (for social login)
-    idp_access_token?: string;
-    idp_access_token_expiry?: number;
+    idpAccessToken?: string;
+    idpAccessTokenExpiry?: number;
 
-    //hybrid
+    // hybrid
     dwsid?: string;
 
     /**
@@ -50,7 +50,7 @@ export type SessionData = {
 /**
  * Public (non-sensitive) session data that can be safely exposed to the client.
  * This type is used for data that can be safely serialized and sent to the client.
- * It excludes sensitive fields like access_token, refresh_token, and codeVerifier.
+ * It excludes sensitive fields like accessToken, refreshToken, and codeVerifier.
  *
  * Derived from SessionData using Pick to ensure type safety - if the underlying
  * fields change in SessionData, PublicSessionData will automatically stay in sync.
@@ -60,10 +60,7 @@ export type SessionData = {
  * - AuthProvider to provide user info context
  * - Components that need user info without access to tokens
  */
-export type PublicSessionData = Pick<
-    SessionData,
-    'customer_id' | 'userType' | 'usid' | 'enc_user_id' | 'trackingConsent'
->;
+export type PublicSessionData = Pick<SessionData, 'customerId' | 'userType' | 'usid' | 'encUserId' | 'trackingConsent'>;
 
 export type CustomQueryParameters = {
     [key in `c_${string}`]: string | number | boolean | string[] | number[];

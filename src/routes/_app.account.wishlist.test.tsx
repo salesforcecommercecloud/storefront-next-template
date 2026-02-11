@@ -563,12 +563,12 @@ describe('account.wishlist loaders', () => {
         vi.clearAllMocks();
         mockGetAuthServer.mockReturnValue({
             userType: 'registered',
-            customer_id: 'test-customer-id',
-            access_token: 'test-token',
-            access_token_expiry: Date.now() + 3600000, // 1 hour from now
+            customerId: 'test-customer-id',
+            accessToken: 'test-token',
+            accessTokenExpiry: Date.now() + 3600000, // 1 hour from now
         });
         mockGetAuth.mockReturnValue({
-            customer_id: 'test-customer-id',
+            customerId: 'test-customer-id',
         });
         mockIsRegisteredCustomer.mockReturnValue(true);
         mockGetConfig.mockReturnValue({
@@ -594,7 +594,7 @@ describe('account.wishlist loaders', () => {
         test('should return empty wishlist when user is not authenticated', async () => {
             mockGetAuthServer.mockReturnValue({
                 userType: 'guest',
-                customer_id: null,
+                customerId: null,
             });
 
             const result = await loader({
@@ -613,9 +613,9 @@ describe('account.wishlist loaders', () => {
         test('should return empty wishlist when access token is expired', async () => {
             mockGetAuthServer.mockReturnValue({
                 userType: 'registered',
-                customer_id: 'test-customer-id',
-                access_token: 'test-token',
-                access_token_expiry: Date.now() - 1000, // Expired
+                customerId: 'test-customer-id',
+                accessToken: 'test-token',
+                accessTokenExpiry: Date.now() - 1000, // Expired
             });
 
             const result = await loader({

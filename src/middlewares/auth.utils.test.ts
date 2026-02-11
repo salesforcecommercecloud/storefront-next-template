@@ -474,18 +474,18 @@ describe('auth.utils', () => {
     describe('getPublicSessionData', () => {
         it('should extract only non-sensitive fields from session data', () => {
             const fullSession: SessionData = {
-                access_token: 'secret-access-token',
-                refresh_token: 'secret-refresh-token',
-                access_token_expiry: 1234567890,
-                refresh_token_expiry: 9876543210,
-                customer_id: 'customer-123',
+                accessToken: 'secret-access-token',
+                refreshToken: 'secret-refresh-token',
+                accessTokenExpiry: 1234567890,
+                refreshTokenExpiry: 9876543210,
+                customerId: 'customer-123',
                 userType: 'registered',
                 usid: 'usid-456',
-                enc_user_id: 'enc-user-789',
+                encUserId: 'enc-user-789',
                 trackingConsent: TrackingConsent.Accepted,
                 codeVerifier: 'secret-code-verifier',
-                idp_access_token: 'secret-idp-token',
-                idp_access_token_expiry: 1111111111,
+                idpAccessToken: 'secret-idp-token',
+                idpAccessTokenExpiry: 1111111111,
                 dwsid: 'secret-dwsid',
             };
 
@@ -493,18 +493,18 @@ describe('auth.utils', () => {
 
             // Should include only these non-sensitive fields
             expect(publicData).toEqual({
-                customer_id: 'customer-123',
+                customerId: 'customer-123',
                 userType: 'registered',
                 usid: 'usid-456',
-                enc_user_id: 'enc-user-789',
+                encUserId: 'enc-user-789',
                 trackingConsent: TrackingConsent.Accepted,
             });
 
             // Verify sensitive fields are NOT present
-            expect(publicData).not.toHaveProperty('access_token');
-            expect(publicData).not.toHaveProperty('refresh_token');
+            expect(publicData).not.toHaveProperty('accessToken');
+            expect(publicData).not.toHaveProperty('refreshToken');
             expect(publicData).not.toHaveProperty('codeVerifier');
-            expect(publicData).not.toHaveProperty('idp_access_token');
+            expect(publicData).not.toHaveProperty('idpAccessToken');
             expect(publicData).not.toHaveProperty('dwsid');
         });
     });

@@ -27,11 +27,11 @@ export const AuthContext = createContext<PublicSessionData | undefined>(undefine
  *
  * In a server-only auth architecture:
  * - Server middleware reads cookies and populates full session data
- * - Root loader extracts only non-sensitive fields (userType, customer_id, usid, etc.)
+ * - Root loader extracts only non-sensitive fields (userType, customerId, usid, etc.)
  * - These non-sensitive fields are serialized and sent to the client
  * - AuthProvider makes this data available to components via useAuth()
  *
- * This provider does NOT have access to sensitive data like access_token or refresh_token.
+ * This provider does NOT have access to sensitive data like accessToken or refreshToken.
  * Server actions should use getAuth(context) from auth.server.ts for authenticated operations.
  */
 const AuthProvider = ({ children, value }: PropsWithChildren<{ value?: PublicSessionData }>) => {
@@ -41,7 +41,7 @@ const AuthProvider = ({ children, value }: PropsWithChildren<{ value?: PublicSes
 /**
  * Hook to access public (non-sensitive) session data.
  *
- * Returns non-sensitive user info: userType, customer_id, usid, enc_user_id, trackingConsent.
+ * Returns non-sensitive user info: userType, customerId, usid, encUserId, trackingConsent.
  * Does NOT include tokens - those are server-only.
  *
  * @returns PublicSessionData or undefined if not available

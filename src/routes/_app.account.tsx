@@ -40,19 +40,19 @@ type AccountPageData = {
 // eslint-disable-next-line react-refresh/only-export-components
 export function loader(args: LoaderFunctionArgs) {
     const session = getAuthServer(args.context);
-    const { access_token, access_token_expiry, userType, customer_id } = session;
+    const { accessToken, accessTokenExpiry, userType, customerId } = session;
 
     if (
-        !access_token ||
-        typeof access_token_expiry !== 'number' ||
-        access_token_expiry < Date.now() ||
+        !accessToken ||
+        typeof accessTokenExpiry !== 'number' ||
+        accessTokenExpiry < Date.now() ||
         userType !== 'registered' ||
-        !customer_id
+        !customerId
     ) {
         throw redirect('/login');
     }
 
-    const customer = getCustomer(args.context, customer_id);
+    const customer = getCustomer(args.context, customerId);
 
     return { customer };
 }

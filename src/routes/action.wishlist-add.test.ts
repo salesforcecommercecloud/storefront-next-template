@@ -126,7 +126,7 @@ describe('action.wishlist-add', () => {
         // Setup default mocks
         mockIsRegisteredCustomer.mockReturnValue(true);
         mockGetAuth.mockReturnValue({
-            customer_id: 'customer-123',
+            customerId: 'customer-123',
             userType: 'registered',
             access_token: 'token-123',
         } as any);

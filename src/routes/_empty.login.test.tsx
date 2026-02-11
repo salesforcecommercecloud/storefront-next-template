@@ -138,10 +138,10 @@ describe('Login Route', () => {
     describe('loader', () => {
         it('should redirect to home if user is already logged in', () => {
             mockGetAuth.mockReturnValue({
-                access_token: 'valid-token',
-                access_token_expiry: Date.now() + 10000,
+                accessToken: 'valid-token',
+                accessTokenExpiry: Date.now() + 10000,
                 userType: 'registered',
-                customer_id: 'customer-123',
+                customerId: 'customer-123',
             });
 
             const mockRequest = new Request('http://localhost:5173/login');
@@ -163,10 +163,10 @@ describe('Login Route', () => {
 
         it('should redirect to returnUrl if user is already logged in and returnUrl is provided', () => {
             mockGetAuth.mockReturnValue({
-                access_token: 'valid-token',
-                access_token_expiry: Date.now() + 10000,
+                accessToken: 'valid-token',
+                accessTokenExpiry: Date.now() + 10000,
                 userType: 'registered',
-                customer_id: 'customer-123',
+                customerId: 'customer-123',
             });
 
             const mockRequest = new Request('http://localhost:5173/login?returnUrl=/product/123');
@@ -268,8 +268,8 @@ describe('Login Route', () => {
             // Mock getAuth to return registered user auth after successful login
             mockGetAuth.mockReturnValue({
                 userType: 'registered',
-                customer_id: 'test-customer-123',
-                access_token: 'test-token',
+                customerId: 'test-customer-123',
+                accessToken: 'test-token',
             });
             mockLoginRegisteredUser.mockResolvedValue({ success: true });
 
@@ -306,8 +306,8 @@ describe('Login Route', () => {
         it('should redirect to returnUrl on successful login', async () => {
             mockGetAuth.mockReturnValue({
                 userType: 'registered',
-                customer_id: 'test-customer-123',
-                access_token: 'test-token',
+                customerId: 'test-customer-123',
+                accessToken: 'test-token',
             });
             mockLoginRegisteredUser.mockResolvedValue({ success: true });
 
@@ -340,8 +340,8 @@ describe('Login Route', () => {
         it('should preserve action and actionParams in returnUrl on successful login', async () => {
             mockGetAuth.mockReturnValue({
                 userType: 'registered',
-                customer_id: 'test-customer-123',
-                access_token: 'test-token',
+                customerId: 'test-customer-123',
+                accessToken: 'test-token',
             });
             mockLoginRegisteredUser.mockResolvedValue({ success: true });
 
@@ -690,7 +690,7 @@ describe('Login Route', () => {
         it('should update auth and redirect on successful login', async () => {
             const mockServerAction = vi.fn().mockResolvedValue({
                 redirectUrl: '/',
-                auth: { userType: 'registered', customer_id: 'test-123' },
+                auth: { userType: 'registered', customerId: 'test-123' },
             });
             mockGetClientAuth.mockReturnValue({ userType: 'guest' });
 
@@ -712,7 +712,7 @@ describe('Login Route', () => {
             const mockBasket = { basketId: 'merged-basket', productItems: [] };
             const mockServerAction = vi.fn().mockResolvedValue({
                 redirectUrl: '/',
-                auth: { userType: 'registered', customer_id: 'test-123' },
+                auth: { userType: 'registered', customerId: 'test-123' },
             });
             mockGetClientAuth.mockReturnValue({ userType: 'guest' });
             mockMergeBasket.mockResolvedValue(mockBasket);
@@ -734,7 +734,7 @@ describe('Login Route', () => {
         it('should not merge basket if already registered', async () => {
             const mockServerAction = vi.fn().mockResolvedValue({
                 redirectUrl: '/',
-                auth: { userType: 'registered', customer_id: 'test-123' },
+                auth: { userType: 'registered', customerId: 'test-123' },
             });
             mockGetClientAuth.mockReturnValue({ userType: 'registered' });
 
@@ -754,7 +754,7 @@ describe('Login Route', () => {
         it('should handle basket merge errors gracefully', async () => {
             const mockServerAction = vi.fn().mockResolvedValue({
                 redirectUrl: '/',
-                auth: { userType: 'registered', customer_id: 'test-123' },
+                auth: { userType: 'registered', customerId: 'test-123' },
             });
             mockGetClientAuth.mockReturnValue({ userType: 'guest' });
             mockMergeBasket.mockRejectedValue(new Error('Basket merge failed'));

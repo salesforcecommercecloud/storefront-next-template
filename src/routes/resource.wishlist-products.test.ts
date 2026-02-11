@@ -85,7 +85,7 @@ describe('resource.wishlist-products', () => {
         // Default mocks
         mockIsRegisteredCustomer.mockReturnValue(true);
         mockGetAuth.mockReturnValue({
-            customer_id: 'test-customer-id',
+            customerId: 'test-customer-id',
         });
         mockGetConfig.mockReturnValue({
             global: {
@@ -124,7 +124,7 @@ describe('resource.wishlist-products', () => {
 
         test('should return empty result when customer_id is missing', async () => {
             mockGetAuth.mockReturnValue({
-                customer_id: null,
+                customerId: null,
             });
 
             const result = await loader({

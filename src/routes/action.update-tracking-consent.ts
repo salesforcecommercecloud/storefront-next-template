@@ -47,7 +47,7 @@ export const action: ActionFunction = async ({ request, context }) => {
 
     // Get current auth to retrieve refresh token
     const currentAuth = getAuth(context);
-    const refreshToken = currentAuth.refresh_token;
+    const refreshToken = currentAuth.refreshToken;
 
     if (!refreshToken) {
         throw new Response('No refresh token available. User must be authenticated.', { status: 401 });

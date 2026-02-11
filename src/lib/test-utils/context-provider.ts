@@ -55,9 +55,9 @@ const ACCESS_TOKEN_VALIDITY_MS = 1800000; // 30 minutes
  * Default session data for tests
  */
 const DEFAULT_SESSION_DATA: SessionData = {
-    access_token: 'test-access-token',
-    access_token_expiry: Date.now() + ACCESS_TOKEN_VALIDITY_MS,
-    customer_id: 'test-customer-id',
+    accessToken: 'test-access-token',
+    accessTokenExpiry: Date.now() + ACCESS_TOKEN_VALIDITY_MS,
+    customerId: 'test-customer-id',
     userType: 'registered',
 } as const;
 

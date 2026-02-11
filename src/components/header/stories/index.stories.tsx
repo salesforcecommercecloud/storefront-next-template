@@ -173,7 +173,7 @@ const guestSession: SessionData = {
 
 const registeredSession: SessionData = {
     userType: 'registered',
-    customer_id: 'test-customer-1',
+    customerId: 'test-customer-1',
 };
 
 export const Guest: Story = {

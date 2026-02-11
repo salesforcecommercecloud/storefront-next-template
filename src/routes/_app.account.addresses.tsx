@@ -64,7 +64,7 @@ function AccountAddressesContent({
     }, [customer?.addresses]);
     const { addToast } = useToast();
     const auth = useAuth();
-    const customerId = auth?.customer_id;
+    const customerId = auth?.customerId;
     const [addressToRemove, setAddressToRemove] = useState<ShopperCustomers.schemas['CustomerAddress'] | null>(null);
     const [editingAddressId, setEditingAddressId] = useState<EditingAddressId>(null);
     const [settingDefaultAddress, setSettingDefaultAddress] = useState<
