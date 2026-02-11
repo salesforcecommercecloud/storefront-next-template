@@ -26,5 +26,5 @@
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true
     },
-    "exclude": ["dist", "node_modules"]
+    "exclude": ["dist", "node_modules", "**/*-snapshot.tsx", ".storybook/tests/generated-stories/**"]
 }

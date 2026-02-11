@@ -199,27 +199,27 @@ export const createProductUrl = (
 
 /**
  * Get images filtered by color variation attribute
- *
- * @param {ShopperProducts.schemas['Product']} product - The product containing image groups
- * @param {string | null} selectedColor - The selected color value to filter by
- * @returns {ShopperProducts.schemas['Image'][]} Array of images matching the color, or default images
- *
+ * @param product - The product containing image groups
+ * @param selectedColor - The selected color value to filter by
+ * @param [viewType='large'] - The image view type to filter by
+ * @returns Array of images matching the color, or default images
  * @example
  * const images = getImagesForColor(product, 'red');
  * // Returns images for the red color variant, or default images if no match
  */
 export function getImagesForColor(
-    product: ShopperProducts.schemas['Product'],
-    selectedColor: string | null
+    product: ShopperProducts.schemas['Product'] | ShopperSearch.schemas['ProductSearchHit'],
+    selectedColor: string | null,
+    viewType = 'large'
 ): ShopperProducts.schemas['Image'][] {
     // Return all images if no color is selected or no image groups exist
     if (!selectedColor || !product.imageGroups) {
-        return product.imageGroups?.find((group) => group.viewType === 'large')?.images || [];
+        return product.imageGroups?.find((group) => group.viewType === viewType)?.images || [];
     }
 
     // Find image group that matches the selected color
     const imageGroup = findImageGroupBy(product.imageGroups, {
-        viewType: 'large',
+        viewType,
         selectedVariationAttributes: {
             color: selectedColor,
         },

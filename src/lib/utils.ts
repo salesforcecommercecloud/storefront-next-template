@@ -283,8 +283,7 @@ export const resolveAssetUrl = (url: string): string => {
     }
 
     // Determine the bundle ID
-    // Falls back to 'local' if _BUNDLE_ID is undefined (e.g., in dev mode where bundle config isn't injected)
-    const bundleId = (typeof window !== 'undefined' ? window._BUNDLE_ID : process.env.BUNDLE_ID) || 'local';
+    const bundleId = typeof window !== 'undefined' ? window._BUNDLE_ID : process.env.BUNDLE_ID || 'local';
 
     // In local development, don't prepend bundle path
     if (bundleId === 'local') {

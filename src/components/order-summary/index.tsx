@@ -37,7 +37,7 @@ import { formatCurrency } from '@/lib/currency';
 import { useTranslation } from 'react-i18next';
 import PromoPopover from '@/components/promo-popover';
 import { useCurrency } from '@/providers/currency';
-import { PluginComponent } from '@/plugins/plugin-component';
+import { UITarget } from '@/targets/ui-target';
 
 /**
  * Props for the OrderSummary component
@@ -197,7 +197,7 @@ export default function OrderSummary({
                 <div className="space-y-5" data-testid="sf-order-summary">
                     {showHeading && (
                         <>
-                            <PluginComponent pluginId="checkout.myCart.header.before" />
+                            <UITarget targetId="checkout.myCart.header.before" />
                             <Typography variant="h4" as="h3" id="order-summary-heading">
                                 {t('summary.orderSummary')}
                             </Typography>
@@ -219,18 +219,18 @@ export default function OrderSummary({
                         {/* Order Summary Details */}
                         <div className="space-y-4 text-sm">
                             {/* Subtotal */}
-                            <PluginComponent pluginId="orderSummary.subtotal.before" />
-                            <PluginComponent pluginId="orderSummary.subtotal">
+                            <UITarget targetId="orderSummary.subtotal.before" />
+                            <UITarget targetId="orderSummary.subtotal">
                                 <div className="flex justify-between items-center">
                                     <span>{t('summary.subtotal')}</span>
                                     <span>{formatCurrency(basket?.productSubTotal ?? 0, i18n.language, currency)}</span>
                                 </div>
-                            </PluginComponent>
-                            <PluginComponent pluginId="orderSummary.subtotal.after" />
+                            </UITarget>
+                            <UITarget targetId="orderSummary.subtotal.after" />
 
                             {/* Order Price Adjustments */}
-                            <PluginComponent pluginId="orderSummary.adjustments.before" />
-                            <PluginComponent pluginId="orderSummary.adjustments">
+                            <UITarget targetId="orderSummary.adjustments.before" />
+                            <UITarget targetId="orderSummary.adjustments">
                                 {basket.orderPriceAdjustments?.map((adjustment) => (
                                     <div
                                         key={adjustment.priceAdjustmentId}
@@ -241,12 +241,12 @@ export default function OrderSummary({
                                         </span>
                                     </div>
                                 ))}
-                            </PluginComponent>
-                            <PluginComponent pluginId="orderSummary.adjustments.after" />
+                            </UITarget>
+                            <UITarget targetId="orderSummary.adjustments.after" />
 
                             {/* Shipping */}
-                            <PluginComponent pluginId="orderSummary.shipping.before" />
-                            <PluginComponent pluginId="orderSummary.shipping">
+                            <UITarget targetId="orderSummary.shipping.before" />
+                            <UITarget targetId="orderSummary.shipping">
                                 <div className="flex justify-between items-center">
                                     <div className="flex items-center">
                                         <span>
@@ -269,12 +269,12 @@ export default function OrderSummary({
                                     </div>
                                     {renderShippingInfo()}
                                 </div>
-                            </PluginComponent>
-                            <PluginComponent pluginId="orderSummary.shipping.after" />
+                            </UITarget>
+                            <UITarget targetId="orderSummary.shipping.after" />
 
                             {/* Tax */}
-                            <PluginComponent pluginId="orderSummary.tax.before" />
-                            <PluginComponent pluginId="orderSummary.tax">
+                            <UITarget targetId="orderSummary.tax.before" />
+                            <UITarget targetId="orderSummary.tax">
                                 <div className="flex justify-between items-center">
                                     <span>{t('summary.tax')}</span>
                                     {typeof basket.taxTotal === 'number' && basket.taxTotal >= 0 ? (
@@ -283,13 +283,13 @@ export default function OrderSummary({
                                         <span className="text-muted-foreground">{t('summary.taxTbd')}</span>
                                     )}
                                 </div>
-                            </PluginComponent>
-                            <PluginComponent pluginId="orderSummary.tax.after" />
+                            </UITarget>
+                            <UITarget targetId="orderSummary.tax.after" />
                         </div>
 
                         {/* Total */}
-                        <PluginComponent pluginId="orderSummary.total.before" />
-                        <PluginComponent pluginId="orderSummary.total">
+                        <UITarget targetId="orderSummary.total.before" />
+                        <UITarget targetId="orderSummary.total">
                             <div className="space-y-4 w-full text-sm">
                                 <div className="flex w-full justify-between items-center">
                                     <span className="font-bold">
@@ -304,15 +304,15 @@ export default function OrderSummary({
                                     </span>
                                 </div>
                             </div>
-                        </PluginComponent>
-                        <PluginComponent pluginId="orderSummary.total.after" />
+                        </UITarget>
+                        <UITarget targetId="orderSummary.total.after" />
 
                         {/* Promo Code Form */}
-                        <PluginComponent pluginId="orderSummary.promoCode.before" />
-                        <PluginComponent pluginId="orderSummary.promoCode">
+                        <UITarget targetId="orderSummary.promoCode.before" />
+                        <UITarget targetId="orderSummary.promoCode">
                             {showPromoCodeForm ? <PromoCodeForm basket={basket} /> : <Separator className="w-full" />}
-                        </PluginComponent>
-                        <PluginComponent pluginId="orderSummary.promoCode.after" />
+                        </UITarget>
+                        <UITarget targetId="orderSummary.promoCode.after" />
 
                         {/* Checkout Action */}
                         {showCheckoutAction && (

@@ -16,7 +16,7 @@
 import { vi, expect, test, describe, afterEach } from 'vitest';
 import { composeStories } from '@storybook/react-vite';
 import * as ProductTileStories from './product-tile.stories';
-import { render, cleanup } from '@testing-library/react';
+import { render, cleanup, waitFor } from '@testing-library/react';
 
 vi.mock('react-router', async (importOriginal) => {
     const actual = await importOriginal<typeof import('react-router')>();
@@ -47,8 +47,12 @@ afterEach(() => {
 
 describe('ProductTile stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
-        test(`${storyName} story renders and matches snapshot`, () => {
+        test(`${storyName} story renders and matches snapshot`, async () => {
             const { container } = render(<Story />);
+            // Wait for lazy-loaded swatches to resolve through <Suspense/>
+            await waitFor(() => {
+                expect(container.querySelector('[data-slot="skeleton"]')).toBeNull();
+            });
             expect(container.firstChild).toMatchSnapshot();
         });
     }

@@ -20,7 +20,7 @@ import CartBadge from './cart-badge';
 import UserActions from './user-actions/user-actions';
 import { useTranslation } from 'react-i18next';
 import logo from '/images/market-logo.svg';
-import { PluginComponent } from '@/plugins/plugin-component';
+import { UITarget } from '@/targets/ui-target';
 
 export default function Header({ children }: PropsWithChildren): ReactElement {
     const { t } = useTranslation('header');
@@ -41,7 +41,7 @@ export default function Header({ children }: PropsWithChildren): ReactElement {
                     {/* Search, Account Icon, Cart */}
                     <div className="flex items-center space-x-4">
                         <Search key={`${location.pathname}${location.search}`} />
-                        <PluginComponent pluginId="header.before.cart" />
+                        <UITarget targetId="header.before.cart" />
                         <UserActions />
                         <CartBadge />
                     </div>

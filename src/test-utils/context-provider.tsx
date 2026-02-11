@@ -17,7 +17,7 @@
 import type { ReactNode } from 'react';
 import { ConfigProvider, type AppConfig } from '@/config/context';
 import { mockConfig } from './context-provider-utils';
-import { PluginProviders } from '@/plugins/plugin-providers';
+import { TargetProviders } from '@/targets/target-providers';
 import { CurrencyProvider } from '@/providers/currency';
 // @sfdc-extension-line SFDC_EXT_STORE_LOCATOR
 import StoreLocatorProvider from '@/extensions/store-locator/providers/store-locator';
@@ -76,7 +76,7 @@ export function AllProvidersWrapper({
             <CurrencyWrapper currency={currency}>
                 {/* @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */}
                 <StoreLocatorProvider>
-                    <PluginProviders>{children}</PluginProviders>
+                    <TargetProviders>{children}</TargetProviders>
                     {/* @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */}
                 </StoreLocatorProvider>
             </CurrencyWrapper>

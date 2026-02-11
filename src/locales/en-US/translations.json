@@ -261,6 +261,12 @@
             "completeTheLook": "Complete the look",
             "recentlyViewed": "Recently viewed"
         },
+        "rating": {
+            "starContainerAriaLabel": "{{rating}} out of {{total}} stars, {{count}} reviews",
+            "viewAllReviews": "View all reviews",
+            "distributionAriaLabel": "{{rating}} stars: {{percentage}} percent of reviews",
+            "distributionsAriaLabel": "Star rating distribution, {{total}} total reviews"
+        },
         "from": "from",
         "outOfStock": "Out of stock for {{productName}}",
         "onlyLeft": "Only {{stockLevel}} left for {{productName}}!",
@@ -278,6 +284,10 @@
         "addingToWishlist": "Adding to Wishlist...",
         "addToWishlist": "Add to Wishlist",
         "share": "Share",
+        "expressPayments": {
+            "separatorBuyWith": "Or buy with",
+            "venmoUnavailable": "Venmo is not available on this device."
+        },
         "productSetNotice": "This is a product set. Select individual items below to add to cart.",
         "productBundleNotice": "This is a product bundle. All items will be added together.",
         "productDetails": "Product Details",
@@ -573,6 +583,10 @@
             "noPaymentMethodSaved": "No payment method saved",
             "billingSummaryTitle": "Billing Address"
         },
+        "expressPayments": {
+            "separator": "Or",
+            "venmoUnavailable": "Venmo is not available on this device."
+        },
         "common": {
             "edit": "Edit",
             "submitting": "Submitting",
@@ -693,7 +707,17 @@
             "wishlist": "Wishlist",
             "orderHistory": "Order History",
             "addresses": "Addresses",
+            "storePreferences": "Store Preferences",
             "logOut": "Log Out"
+        },
+        "storePreferences": {
+            "title": "Store Preferences",
+            "subtitle": "Manage your preferred store locations and pickup preferences",
+            "preferredStore": {
+                "heading": "Preferred Store for Pickup",
+                "description": "Select your preferred store for in-store pickup orders",
+                "changeStore": "Change store"
+            }
         },
         "overview": {
             "welcomeBack": "Welcome back, {{name}}!",
@@ -731,7 +755,24 @@
                 "amount": "Amount",
                 "actions": "Actions"
             },
-            "viewDetails": "View Details"
+            "viewDetails": "View Details",
+            "orderDetailsTitle": "Order",
+            "orderDetailsPageTitle": "Order Details",
+            "status": {
+                "new": "New",
+                "inTransit": "In Transit",
+                "delivered": "Delivered"
+            },
+            "shipmentNumber": "Shipment {{n}}",
+            "itemsOrdered": "Items Ordered",
+            "orderSummary": "Order Summary",
+            "backToOrderHistory": "Back to Order History",
+            "orderNotFound": "Order Not Found",
+            "orderNotFoundDescription": "We couldn't find the order you're looking for.",
+            "buyAgain": "Buy Again",
+            "emptyItemsFallback": "No items.",
+            "productPlaceholderInitial": "Item",
+            "quantityLabel": "Qty: {{count}}"
         },
         "addresses": {
             "subtitle": "Manage your shipping addresses",
@@ -1181,5 +1222,20 @@
         "suggested": "SUGGESTED",
         "closeSuggestions": "Close suggestions",
         "loading": "Loading suggestions..."
+    },
+    "infoModal": {
+        "paymentScheduleDescription": "Payment schedule details",
+        "writeReviewDescription": "Write a review form"
+    },
+    "writeReview": {
+        "validation": {
+            "ratingRequired": "Please select a rating",
+            "reviewRequired": "Please fill out this field.",
+            "reviewMinLength": "Please enter at least {{count}} characters.",
+            "reviewMaxLength": "Please enter no more than {{count}} characters.",
+            "titleMaxLength": "Please enter no more than {{count}} characters."
+        },
+        "minCharactersHint": "Minimum {{count}} characters.",
+        "maxCharactersHint": "Maximum {{count}} characters."
     }
 }

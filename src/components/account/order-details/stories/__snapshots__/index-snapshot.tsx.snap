@@ -1,0 +1,217 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`OrderDetails stories snapshot > Default story renders and matches snapshot 1`] = `
+<div
+  data-section="order-details"
+>
+  <a
+    class="inline-block text-sm text-muted-foreground hover:text-foreground mb-5"
+    data-discover="true"
+    href="/account/orders"
+  >
+    &lt; 
+    Back to Order History
+  </a>
+  <div
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 shadow-sm rounded-none"
+    data-slot="card"
+  >
+    <div
+      class="px-6 pt-0 pb-6 space-y-6"
+      data-slot="card-content"
+    >
+      <div
+        class="flex flex-col items-start gap-4 sm:flex-row sm:justify-between"
+      >
+        <div>
+          <h1
+            class="text-2xl font-bold"
+          >
+            Order Details
+          </h1>
+          <p
+            class="mt-1 text-base font-medium text-muted-foreground"
+          >
+            Order
+            <span>
+               #
+              INO001
+            </span>
+          </p>
+        </div>
+        <span
+          class="inline-flex w-fit items-center bg-primary/10 px-3 py-1 text-sm font-medium text-primary shrink-0"
+        >
+          New
+        </span>
+      </div>
+      <div
+        aria-hidden="true"
+        class="border-t border-muted-foreground/20"
+      />
+      <div
+        class="grid grid-cols-1 lg:grid-cols-3 gap-6"
+      >
+        <div
+          class="lg:col-span-2 space-y-4"
+        >
+          <h2
+            class="text-lg font-semibold"
+          >
+            Items Ordered
+          </h2>
+          <div
+            class="bg-card text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none p-0 overflow-visible"
+            data-slot="card"
+          >
+            <div
+              class="p-0"
+              data-slot="card-content"
+            >
+              <div
+                class=""
+                data-shipment-id="me"
+              >
+                <div
+                  class="px-3 py-2 bg-muted rounded-none"
+                >
+                  <p
+                    class="text-sm"
+                  >
+                    <span
+                      class="font-medium"
+                    >
+                      Shipment 1
+                    </span>
+                    <span
+                      class="text-xs text-muted-foreground"
+                    >
+                       → 
+                      John Snow
+                    </span>
+                  </p>
+                </div>
+                <div
+                  class="p-3"
+                >
+                  <ul
+                    class="space-y-4"
+                  >
+                    <li>
+                      <div
+                        class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 sm:flex-row sm:items-center"
+                      >
+                        <div
+                          class="h-24 w-24 shrink-0 overflow-hidden rounded-none bg-muted flex items-center justify-center text-sm font-semibold text-muted-foreground"
+                        >
+                          <div
+                            class="h-full w-full object-cover"
+                          >
+                            <img
+                              alt="First Product"
+                              fetchpriority="auto"
+                              loading="lazy"
+                              src="https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dw97734cd6/images/large/PG.33330DAN84Q.CHARCWL.PZ.jpg"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="min-w-0 flex-1 space-y-1"
+                        >
+                          <p
+                            class="text-sm font-semibold"
+                          >
+                            First Product
+                          </p>
+                          <p
+                            class="text-xs text-muted-foreground"
+                          >
+                            Size
+                            : 
+                            M
+                          </p>
+                          <p
+                            class="text-xs text-muted-foreground"
+                          >
+                            Color
+                            : 
+                            Navy
+                          </p>
+                          <p
+                            class="text-xs text-muted-foreground"
+                          >
+                            Qty: 1
+                          </p>
+                        </div>
+                        <div
+                          class="flex shrink-0 flex-col items-end gap-1 sm:self-start"
+                        >
+                          $61.99
+                          <a
+                            class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 gap-1.5 px-3 has-[>svg]:px-2.5 rounded-none bg-foreground text-background hover:bg-foreground/90 text-xs"
+                            data-discover="true"
+                            data-size="sm"
+                            data-slot="button"
+                            data-variant="default"
+                            href="/product/701643108633M"
+                          >
+                            Buy Again
+                          </a>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="mt-6 border-t border-muted-foreground/20 pt-4"
+          >
+            <div
+              class="grid grid-cols-1 sm:grid-cols-2 gap-3"
+            >
+              <div
+                class="text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none min-h-[4rem] p-0 bg-card"
+                data-slot="card"
+              >
+                <div
+                  class="p-3"
+                  data-slot="card-content"
+                />
+              </div>
+              <div
+                class="text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none min-h-[4rem] p-0 bg-card"
+                data-slot="card"
+              >
+                <div
+                  class="p-3"
+                  data-slot="card-content"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="space-y-4"
+        >
+          <h3
+            class="text-lg font-semibold"
+          >
+            Order Summary
+          </h3>
+          <div
+            class="bg-card text-card-foreground flex flex-col gap-6 border py-6 shadow-sm rounded-none"
+            data-slot="card"
+          >
+            <div
+              class="px-6"
+              data-slot="card-content"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

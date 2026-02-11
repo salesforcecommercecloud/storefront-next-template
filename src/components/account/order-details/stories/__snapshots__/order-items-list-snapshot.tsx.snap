@@ -1,0 +1,157 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`OrderItemsList stories snapshot > Default story renders and matches snapshot 1`] = `
+<ul
+  class="space-y-4"
+>
+  <li>
+    <div
+      class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 sm:flex-row sm:items-center"
+    >
+      <div
+        class="h-24 w-24 shrink-0 overflow-hidden rounded-none bg-muted flex items-center justify-center text-sm font-semibold text-muted-foreground"
+      >
+        S
+      </div>
+      <div
+        class="min-w-0 flex-1 space-y-1"
+      >
+        <p
+          class="text-sm font-semibold"
+        >
+          Sweater
+        </p>
+        <p
+          class="text-xs text-muted-foreground"
+        >
+          Size
+          : 
+          M
+        </p>
+        <p
+          class="text-xs text-muted-foreground"
+        >
+          Color
+          : 
+          Navy
+        </p>
+        <p
+          class="text-xs text-muted-foreground"
+        >
+          Qty: 3
+        </p>
+      </div>
+      <div
+        class="flex shrink-0 flex-col items-end gap-1 sm:self-start"
+      >
+        $61.99
+        <a
+          class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 gap-1.5 px-3 has-[>svg]:px-2.5 rounded-none bg-foreground text-background hover:bg-foreground/90 text-xs"
+          data-discover="true"
+          data-size="sm"
+          data-slot="button"
+          data-variant="default"
+          href="/product/701643108633M"
+        >
+          Buy Again
+        </a>
+      </div>
+    </div>
+  </li>
+</ul>
+`;
+
+exports[`OrderItemsList stories snapshot > Empty story renders and matches snapshot 1`] = `
+<p
+  class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground"
+>
+  No items.
+</p>
+`;
+
+exports[`OrderItemsList stories snapshot > MultipleItems story renders and matches snapshot 1`] = `
+<ul
+  class="space-y-4"
+>
+  <li>
+    <div
+      class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 sm:flex-row sm:items-center"
+    >
+      <div
+        class="h-24 w-24 shrink-0 overflow-hidden rounded-none bg-muted flex items-center justify-center text-sm font-semibold text-muted-foreground"
+      >
+        P
+      </div>
+      <div
+        class="min-w-0 flex-1 space-y-1"
+      >
+        <p
+          class="text-sm font-semibold"
+        >
+          Product One
+        </p>
+        <p
+          class="text-xs text-muted-foreground"
+        >
+          Qty: 1
+        </p>
+      </div>
+      <div
+        class="flex shrink-0 flex-col items-end gap-1 sm:self-start"
+      >
+        $10.00
+        <a
+          class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 gap-1.5 px-3 has-[>svg]:px-2.5 rounded-none bg-foreground text-background hover:bg-foreground/90 text-xs"
+          data-discover="true"
+          data-size="sm"
+          data-slot="button"
+          data-variant="default"
+          href="/product/prod-1"
+        >
+          Buy Again
+        </a>
+      </div>
+    </div>
+  </li>
+  <li>
+    <div
+      class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 sm:flex-row sm:items-center"
+    >
+      <div
+        class="h-24 w-24 shrink-0 overflow-hidden rounded-none bg-muted flex items-center justify-center text-sm font-semibold text-muted-foreground"
+      >
+        P
+      </div>
+      <div
+        class="min-w-0 flex-1 space-y-1"
+      >
+        <p
+          class="text-sm font-semibold"
+        >
+          Product Two
+        </p>
+        <p
+          class="text-xs text-muted-foreground"
+        >
+          Qty: 1
+        </p>
+      </div>
+      <div
+        class="flex shrink-0 flex-col items-end gap-1 sm:self-start"
+      >
+        $20.00
+        <a
+          class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 gap-1.5 px-3 has-[>svg]:px-2.5 rounded-none bg-foreground text-background hover:bg-foreground/90 text-xs"
+          data-discover="true"
+          data-size="sm"
+          data-slot="button"
+          data-variant="default"
+          href="/product/prod-2"
+        >
+          Buy Again
+        </a>
+      </div>
+    </div>
+  </li>
+</ul>
+`;

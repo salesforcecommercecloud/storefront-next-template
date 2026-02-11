@@ -499,17 +499,22 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
               class="text-sm text-muted-foreground"
             >
               <span>
-                Pay in 4 interest-free payments of 
+                Pay in 
+                4
+                 interest-free payments of
+                 
                 <span
                   class="font-bold text-foreground"
                 >
-                  $12.25
+                  $
+                  12.25
                 </span>
                 .
                  
               </span>
               <button
-                class="text-primary hover:underline font-medium cursor-pointer"
+                class="cursor-pointer font-normal text-primary hover:underline"
+                type="button"
               >
                 Learn more
               </button>
@@ -534,7 +539,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                 data-slot="dropdown-menu-trigger"
                 data-state="closed"
                 data-variant="outline"
-                id="radix-_r_5_"
+                id="radix-_r_2_"
                 type="button"
               >
                 Share
@@ -997,17 +1002,22 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
               class="text-sm text-muted-foreground"
             >
               <span>
-                Pay in 4 interest-free payments of 
+                Pay in 
+                4
+                 interest-free payments of
+                 
                 <span
                   class="font-bold text-foreground"
                 >
-                  $12.25
+                  $
+                  12.25
                 </span>
                 .
                  
               </span>
               <button
-                class="text-primary hover:underline font-medium cursor-pointer"
+                class="cursor-pointer font-normal text-primary hover:underline"
+                type="button"
               >
                 Learn more
               </button>
@@ -1032,7 +1042,7 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
                 data-slot="dropdown-menu-trigger"
                 data-state="closed"
                 data-variant="outline"
-                id="radix-_r_c_"
+                id="radix-_r_6_"
                 type="button"
               >
                 Share

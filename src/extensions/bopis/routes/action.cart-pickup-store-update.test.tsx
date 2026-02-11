@@ -108,7 +108,13 @@ describe('action.cart-pickup-store-update', () => {
     };
 
     const createBasketResource = (basket?: Partial<ShopperBasketsV2.schemas['Basket']> | null) => ({
-        snapshot: basket?.basketId ? { basketId: basket.basketId, itemsCount: basket.productItems?.length ?? 0 } : null,
+        snapshot: basket?.basketId
+            ? {
+                  basketId: basket.basketId,
+                  totalItemCount: (basket.productItems ?? []).reduce((sum, item) => sum + (item.quantity ?? 0), 0),
+                  uniqueProductCount: basket.productItems?.length ?? 0,
+              }
+            : null,
         current: basket ?? null,
         hydrated: Boolean(basket),
         error: null,

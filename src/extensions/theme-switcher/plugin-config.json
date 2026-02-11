@@ -1,9 +1,0 @@
-{
-    "components": [
-        {
-            "pluginId": "footer.customersupport.end",
-            "path": "extensions/theme-switcher/components/footer/index.tsx",
-            "order": 0
-        }
-    ]
-}

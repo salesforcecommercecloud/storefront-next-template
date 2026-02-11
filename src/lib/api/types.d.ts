@@ -47,6 +47,24 @@ export type SessionData = {
     trackingConsent?: TrackingConsent;
 };
 
+/**
+ * Public (non-sensitive) session data that can be safely exposed to the client.
+ * This type is used for data that can be safely serialized and sent to the client.
+ * It excludes sensitive fields like access_token, refresh_token, and codeVerifier.
+ *
+ * Derived from SessionData using Pick to ensure type safety - if the underlying
+ * fields change in SessionData, PublicSessionData will automatically stay in sync.
+ *
+ * Used by:
+ * - Root loader to return auth data to client components
+ * - AuthProvider to provide user info context
+ * - Components that need user info without access to tokens
+ */
+export type PublicSessionData = Pick<
+    SessionData,
+    'customer_id' | 'userType' | 'usid' | 'enc_user_id' | 'trackingConsent'
+>;
+
 export type CustomQueryParameters = {
     [key in `c_${string}`]: string | number | boolean | string[] | number[];
 };

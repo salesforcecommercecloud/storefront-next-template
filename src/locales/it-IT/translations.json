@@ -250,6 +250,12 @@
             "completeTheLook": "Completa il look",
             "recentlyViewed": "Visualizzati di recente"
         },
+        "rating": {
+            "starContainerAriaLabel": "{{rating}} su {{total}} stelle, {{count}} recensioni",
+            "viewAllReviews": "Visualizza tutte le recensioni",
+            "distributionAriaLabel": "{{rating}} stelle: {{percentage}} percento delle recensioni",
+            "distributionsAriaLabel": "Distribuzione delle valutazioni in stelle, {{total}} recensioni totali"
+        },
         "from": "da",
         "outOfStock": "Esaurito per {{productName}}",
         "onlyLeft": "Ne rimangono solo {{stockLevel}} per {{productName}}!",
@@ -267,6 +273,9 @@
         "addingToWishlist": "Aggiunta alla lista desideri in corso...",
         "addToWishlist": "Aggiungi alla lista desideri",
         "share": "Condividi",
+        "expressPayments": {
+            "separatorBuyWith": "Oppure acquista con"
+        },
         "productSetNotice": "Questo è un set di prodotti. Selezioni gli articoli singoli qui sotto per aggiungerli al carrello.",
         "productBundleNotice": "Questo è un bundle di prodotti. Tutti gli articoli verranno aggiunti insieme.",
         "productDetails": "Dettagli prodotto",
@@ -562,6 +571,9 @@
             "noPaymentMethodSaved": "Nessun metodo di pagamento salvato",
             "billingSummaryTitle": "Indirizzo di fatturazione"
         },
+        "expressPayments": {
+            "separator": "Oppure"
+        },
         "common": {
             "edit": "Modifica",
             "submitting": "Invio in corso",
@@ -680,7 +692,17 @@
             "wishlist": "Lista desideri",
             "orderHistory": "Storico ordini",
             "addresses": "Indirizzi",
+            "storePreferences": "Preferenze negozio",
             "logOut": "Esci"
+        },
+        "storePreferences": {
+            "title": "Preferenze negozio",
+            "subtitle": "Gestisci le tue sedi preferite e le preferenze di ritiro",
+            "preferredStore": {
+                "heading": "Negozio preferito per il ritiro",
+                "description": "Seleziona il negozio preferito per gli ordini con ritiro in negozio",
+                "changeStore": "Cambia negozio"
+            }
         },
         "wishlist": {
             "empty": "La Sua lista desideri è vuota. Inizi ad aggiungere articoli che Le piacciono!",
@@ -694,7 +716,33 @@
             "mustLoginToRemove": "Deve essere connesso per rimuovere articoli dalla Sua lista desideri"
         },
         "orders": {
-            "empty": "Nessun ordine trovato. Inizi a fare shopping per vedere lo storico dei Suoi ordini!"
+            "empty": "Nessun ordine trovato. Inizi a fare shopping per vedere lo storico dei Suoi ordini!",
+            "subtitle": "Visualizza e monitora i Suoi ordini",
+            "tableHeaders": {
+                "orderNumber": "Numero ordine",
+                "status": "Stato",
+                "method": "Metodo",
+                "amount": "Importo",
+                "actions": "Azioni"
+            },
+            "viewDetails": "Dettagli",
+            "orderDetailsTitle": "Ordine",
+            "orderDetailsPageTitle": "Dettaglio ordine",
+            "status": {
+                "new": "Nuovo",
+                "inTransit": "In transito",
+                "delivered": "Consegnato"
+            },
+            "shipmentNumber": "Spedizione {{n}}",
+            "orderSummary": "Riepilogo ordine",
+            "itemsOrdered": "Articoli ordinati",
+            "backToOrderHistory": "Torna allo storico ordini",
+            "orderNotFound": "Ordine non trovato",
+            "orderNotFoundDescription": "Impossibile trovare l'ordine richiesto.",
+            "buyAgain": "Acquista di nuovo",
+            "emptyItemsFallback": "Nessun articolo.",
+            "productPlaceholderInitial": "Articolo",
+            "quantityLabel": "Qtà: {{count}}"
         },
         "addresses": {
             "empty": "Nessun indirizzo salvato. Aggiunga un indirizzo per rendere il checkout più veloce!",
@@ -1012,5 +1060,20 @@
         "suggested": "SUGGERITO",
         "closeSuggestions": "Chiudi suggerimenti",
         "loading": "Caricamento suggerimenti..."
+    },
+    "infoModal": {
+        "paymentScheduleDescription": "Dettagli piano di pagamento",
+        "writeReviewDescription": "Modulo per scrivere una recensione"
+    },
+    "writeReview": {
+        "validation": {
+            "ratingRequired": "Seleziona una valutazione",
+            "reviewRequired": "Compila questo campo.",
+            "reviewMinLength": "Inserisci almeno {{count}} caratteri.",
+            "reviewMaxLength": "Inserisci al massimo {{count}} caratteri.",
+            "titleMaxLength": "Inserisci al massimo {{count}} caratteri."
+        },
+        "minCharactersHint": "Minimo {{count}} caratteri.",
+        "maxCharactersHint": "Massimo {{count}} caratteri."
     }
 }

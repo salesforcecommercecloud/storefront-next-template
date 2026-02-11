@@ -16,178 +16,231 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { usePayPalSDK } from '@/hooks/use-paypal-sdk';
-import PayPalButton from './paypal-button';
-import VenmoButton from './venmo-button';
+import StaticPayPalButton from './static-paypal-button';
+import StaticVenmoButton from './static-venmo-button';
+import ApplePayLogo from './apple-pay-logo';
+import GooglePayLogo from './google-pay-logo';
 
 interface ExpressPaymentsProps {
-    onApplePayClick: () => void;
-    onGooglePayClick: () => void;
-    onAmazonPayClick: () => void;
-    onVenmoClick: () => void;
-    onPayPalClick: () => void;
     disabled?: boolean;
+    /**
+     * Layout orientation for the payment buttons
+     * - 'horizontal': Responsive grid layout (1 col mobile, 2 cols tablet, 4 cols desktop)
+     * - 'vertical': Stacked vertical layout (all buttons in single column)
+     * @default 'horizontal'
+     */
+    layout?: 'horizontal' | 'vertical';
+    /**
+     * Position of the separator divider
+     * - 'top': Displays separator above the payment buttons
+     * - 'bottom': Displays separator below the payment buttons
+     * @default 'bottom'
+     */
+    separatorPosition?: 'top' | 'bottom';
+    /**
+     * Custom text for the separator divider
+     * @default 'Or'
+     */
+    separatorText?: string;
 }
 
 /**
- * Express Payments Component
- * Provides Apple Pay, Google Pay, Amazon Pay, PayPal, and Venmo express checkout options
- * Note: Venmo only appears on mobile devices in US markets (PayPal SDK eligibility)
- * Based on Figma design system
+ * Express Payments Component (Placeholder Implementation)
  *
- * PayPal SDK is lazy-loaded only when this component is rendered (checkout page only)
+ * This is a PLACEHOLDER component that provides visual representations of express payment buttons
+ * (Apple Pay, Google Pay, Amazon Pay, PayPal, and Venmo) with alert messages instead of real
+ * payment processing. It serves as a UI demonstration and should be replaced with actual payment
+ * provider integrations in production.
+ *
+ * IMPORTANT: This component uses translation keys that should be REMOVED if this component is replaced.
+ *
+ * ## Translation Keys Used:
+ *
+ * ### Checkout Page (checkout namespace):
+ * - `checkout.expressPayments.separator` - "Or" text between buttons and form
+ * - `checkout.expressPayments.venmoUnavailable` - Venmo unavailable message (currently unused)
+ *
+ * ### Product Page (product namespace):
+ * - `product.expressPayments.separatorBuyWith` - "Or buy with" text on PDP
+ * - `product.expressPayments.venmoUnavailable` - Venmo unavailable message (currently unused)
+ *
+ * ## Where It's Used:
+ * - Checkout page: `src/components/checkout/checkout-form-page.tsx` (line ~382)
+ * - Product page: `src/components/product-cart-actions/index.tsx` (line ~170)
+ *
+ * ## Files to Update When Removing This Component:
+ *
+ * ### 1. Translation Files (Remove the `expressPayments` objects):
+ * - `src/locales/en-US/translations.json` (lines 281-284, 580-583)
+ * - `src/locales/it-IT/translations.json` (lines 281-284, 580-583)
+ * - Any additional locale files in `src/locales/`
+ *
+ * ### 2. Parent Components (Remove ExpressPayments usage):
+ * - `src/components/checkout/checkout-form-page.tsx`
+ * - `src/components/product-cart-actions/index.tsx`
+ *
+ * ### 3. Test Files:
+ * - `src/components/checkout/components/express-payments.test.tsx`
+ * - Update any tests in parent components that reference express payments
+ *
+ * ### 4. Related Component Files:
+ * - `src/components/checkout/components/static-paypal-button.tsx`
+ * - `src/components/checkout/components/static-venmo-button.tsx`
+ * - `src/components/checkout/components/apple-pay-logo.tsx`
+ * - `src/components/checkout/components/google-pay-logo.tsx`
+ * - `src/components/checkout/components/paypal-logo.tsx`
+ * - `src/components/checkout/components/venmo-logo.tsx`
+ *
+ * ## Example: Removing Translation Keys
+ *
+ * In `src/locales/en-US/translations.json`, remove these blocks:
+ *
+ * ```json
+ * // Remove from "product" namespace (lines ~281-284)
+ * "expressPayments": {
+ *     "separatorBuyWith": "Or buy with",
+ *     "venmoUnavailable": "Venmo is not available on this device."
+ * },
+ *
+ * // Remove from "checkout" namespace (lines ~580-583)
+ * "expressPayments": {
+ *     "separator": "Or",
+ *     "venmoUnavailable": "Venmo is not available on this device."
+ * },
+ * ```
+ *
+ * ## Replacement Guidelines:
+ * When implementing real payment providers (Stripe, Adyen, etc.), create new components that:
+ * 1. Load actual payment SDKs
+ * 2. Handle real payment processing
+ * 3. Use provider-specific translation keys (e.g., `payment.stripe.*`, `payment.adyen.*`)
+ * 4. Implement proper error handling and security
+ *
+ * All express payment handlers are self-contained within this component to avoid duplication
+ * across PDP and checkout pages.
  */
 export default function ExpressPayments({
-    onApplePayClick,
-    onGooglePayClick,
-    onAmazonPayClick,
-    onVenmoClick,
-    onPayPalClick,
     disabled = false,
+    layout = 'horizontal',
+    separatorPosition = 'bottom',
+    separatorText = 'Or',
 }: ExpressPaymentsProps) {
-    // Lazy load PayPal SDK - only loads when checkout page is accessed
-    // Disable Pay Later and Credit to show only PayPal and Venmo buttons
-    const { isLoading: isPayPalSDKLoading, error: paypalSDKError } = usePayPalSDK('test', 'buttons', 'paylater,credit');
     const handleApplePayClick = () => {
         if (!disabled) {
-            onApplePayClick();
+            // eslint-disable-next-line no-alert
+            alert(
+                'Apple Pay express checkout would be processed here. This would skip all form steps and go directly to payment confirmation.'
+            );
         }
     };
 
     const handleGooglePayClick = () => {
         if (!disabled) {
-            onGooglePayClick();
+            // eslint-disable-next-line no-alert
+            alert(
+                'Google Pay express checkout would be processed here. This would skip all form steps and go directly to payment confirmation.'
+            );
         }
     };
 
     const handleAmazonPayClick = () => {
         if (!disabled) {
-            onAmazonPayClick();
+            // eslint-disable-next-line no-alert
+            alert(
+                'Amazon Pay express checkout would be processed here. This would skip all form steps and go directly to payment confirmation.'
+            );
         }
     };
 
     const handleVenmoClick = () => {
         if (!disabled) {
-            onVenmoClick();
+            // eslint-disable-next-line no-alert
+            alert(
+                'Venmo express checkout would be processed here. This would skip all form steps and go directly to payment confirmation.'
+            );
         }
     };
 
     const handlePayPalClick = () => {
         if (!disabled) {
-            onPayPalClick();
+            // eslint-disable-next-line no-alert
+            alert(
+                'PayPal express checkout would be processed here. This would skip all form steps and go directly to payment confirmation.'
+            );
         }
     };
 
+    // Determine grid layout classes based on layout prop
+    const gridClasses =
+        layout === 'vertical'
+            ? 'grid grid-cols-1 gap-3' // Vertical: Single column, tighter spacing
+            : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'; // Horizontal: Responsive grid
+
+    // Separator component (reusable for top or bottom placement)
+    const separator = (
+        <div className="relative flex items-center py-2">
+            {/* Left line */}
+            <div className="flex-1 h-[2px] bg-separator" />
+            {/* Text */}
+            <span className="px-4 text-separator-foreground font-medium uppercase text-sm whitespace-nowrap">
+                {separatorText}
+            </span>
+            {/* Right line */}
+            <div className="flex-1 h-[2px] bg-separator" />
+        </div>
+    );
+
     return (
-        <div className="space-y-2">
-            {/* Express Payment Buttons - 4 buttons on desktop (Venmo hidden), 5 on mobile (Venmo visible) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="space-y-2" data-testid="express-payments">
+            {/* Separator at top (if configured) */}
+            {separatorPosition === 'top' && separator}
+
+            {/* Express Payment Buttons - Horizontal: 4 buttons on desktop (Venmo hidden), 5 on mobile (Venmo visible) | Vertical: All buttons stacked */}
+            <div className={gridClasses}>
                 {/* Apple Pay Button */}
                 <Button
                     onClick={handleApplePayClick}
                     disabled={disabled}
-                    className="w-full h-12 bg-foreground hover:bg-foreground/90 text-background border-0 rounded-lg flex items-center justify-center gap-3 transition-colors"
-                    size="lg">
-                    {/* Apple Pay Icon */}
-                    <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="flex-shrink-0">
-                        <path
-                            d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.09997 22C7.78997 22.05 6.79997 20.68 5.95997 19.47C4.24997 17 2.93997 12.45 4.69997 9.39C5.56997 7.87 7.12997 6.91 8.81997 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"
-                            fill="currentColor"
-                        />
-                    </svg>
-
-                    {/* Apple Pay Text */}
-                    <span className="text-sm font-medium">Pay</span>
+                    className="w-full h-12 bg-foreground hover:bg-foreground/90 text-background border-0 rounded-lg flex items-center justify-center transition-colors"
+                    size="lg"
+                    aria-label="Apple Pay">
+                    <ApplePayLogo className="flex-shrink-0" />
                 </Button>
 
                 {/* Google Pay Button */}
                 <Button
                     onClick={handleGooglePayClick}
                     disabled={disabled}
-                    className="w-full h-12 bg-background hover:bg-muted text-foreground border-2 border-border hover:border-primary transition-colors rounded-lg flex items-center justify-center gap-3"
-                    size="lg">
-                    {/* Google Pay Icon */}
-                    <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="flex-shrink-0">
-                        <path
-                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                            fill="#4285F4"
-                        />
-                        <path
-                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                            fill="#34A853"
-                        />
-                        <path
-                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                            fill="#FBBC05"
-                        />
-                        <path
-                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                            fill="#EA4335"
-                        />
-                    </svg>
-
-                    {/* Google Pay Text */}
-                    <span className="text-sm font-medium">Pay</span>
+                    className="w-full h-12 bg-background hover:bg-muted text-foreground border-2 border-border hover:border-primary transition-colors rounded-lg flex items-center justify-center"
+                    size="lg"
+                    aria-label="Google Pay">
+                    <GooglePayLogo className="flex-shrink-0" />
                 </Button>
 
                 {/* Amazon Pay Button - Official Amazon Pay styling per iOS documentation */}
                 <Button
                     onClick={handleAmazonPayClick}
                     disabled={disabled}
-                    className="w-full h-12 bg-[#FFD814] hover:bg-[#F7CA00] border-[#FFD814] border-[1.5px] rounded-[4px] flex items-center justify-center transition-colors"
-                    size="lg">
+                    className="w-full h-12 bg-[#FFD814] hover:bg-[#F7CA00] border-[#FFD814] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
+                    size="lg"
+                    aria-label="Amazon Pay">
                     {/* Amazon Pay Official Logo from https://m.media-amazon.com/images/G/01/AmazonPay/ux/squid_ink_pwa.svg */}
                     <img
                         src="https://m.media-amazon.com/images/G/01/AmazonPay/ux/squid_ink_pwa.svg"
                         alt="Amazon Pay"
-                        className="h-6"
+                        className="h-5 w-auto"
+                        style={{ objectFit: 'contain' }}
                     />
                 </Button>
 
-                {/* PayPal Button - Official PayPal SDK Button */}
-                {paypalSDKError ? (
-                    <div className="w-full h-12 bg-destructive/10 border border-destructive/20 rounded flex items-center justify-center text-sm text-destructive">
-                        PayPal unavailable
-                    </div>
-                ) : isPayPalSDKLoading ? (
-                    <div className="w-full h-12 bg-muted animate-pulse rounded" />
-                ) : (
-                    <PayPalButton onApprove={handlePayPalClick} disabled={disabled} />
-                )}
-
-                {/* Venmo Button - Official PayPal SDK Button (Mobile only, US markets) */}
-                {paypalSDKError ? (
-                    <div className="w-full h-12 bg-destructive/10 border border-destructive/20 rounded flex items-center justify-center text-sm text-destructive">
-                        Venmo unavailable
-                    </div>
-                ) : isPayPalSDKLoading ? (
-                    <div className="w-full h-12 bg-muted animate-pulse rounded" />
-                ) : (
-                    <VenmoButton onApprove={handleVenmoClick} disabled={disabled} />
-                )}
+                {/* PayPal & Venmo Static Buttons - Always visible, never replaced */}
+                {/* SDK loads in background on click to customize Venmo message if needed */}
+                <StaticPayPalButton onClick={handlePayPalClick} disabled={disabled} />
+                <StaticVenmoButton onClick={handleVenmoClick} disabled={disabled} />
             </div>
 
-            {/* Seamless "Or" Divider */}
-            <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-border" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                    <span className="px-4 bg-background text-muted-foreground font-medium">Or</span>
-                </div>
-            </div>
+            {/* Separator at bottom (if configured) */}
+            {separatorPosition === 'bottom' && separator}
         </div>
     );
 }

@@ -10,21 +10,21 @@ exports[`HeroCarousel stories snapshot > Default story renders and matches snaps
   >
     <div
       aria-roledescription="carousel"
-      class="relative w-full h-full"
+      class="relative w-full h-full [&_[data-slot=carousel-content]]:h-full [&_[data-slot=carousel-item]]:h-full"
       data-slot="carousel"
       role="region"
     >
       <div
-        class="overflow-hidden h-full"
+        class="overflow-hidden"
         data-slot="carousel-content"
       >
         <div
-          class="flex h-full -ml-4"
+          class="flex -ml-4 h-full"
           style="transform: translate3d(0px,0px,0px);"
         >
           <div
             aria-roledescription="slide"
-            class="min-w-0 shrink-0 grow-0 basis-full h-full pl-4"
+            class="min-w-0 shrink-0 grow-0 basis-full pl-4 h-full"
             data-slot="carousel-item"
             role="group"
           >
@@ -77,7 +77,7 @@ exports[`HeroCarousel stories snapshot > Default story renders and matches snaps
           </div>
           <div
             aria-roledescription="slide"
-            class="min-w-0 shrink-0 grow-0 basis-full h-full pl-4"
+            class="min-w-0 shrink-0 grow-0 basis-full pl-4 h-full"
             data-slot="carousel-item"
             role="group"
           >
@@ -130,7 +130,7 @@ exports[`HeroCarousel stories snapshot > Default story renders and matches snaps
           </div>
           <div
             aria-roledescription="slide"
-            class="min-w-0 shrink-0 grow-0 basis-full h-full pl-4"
+            class="min-w-0 shrink-0 grow-0 basis-full pl-4 h-full"
             data-slot="carousel-item"
             role="group"
           >
@@ -285,21 +285,21 @@ exports[`HeroCarousel stories snapshot > WithoutAutoPlay story renders and match
   >
     <div
       aria-roledescription="carousel"
-      class="relative w-full h-full"
+      class="relative w-full h-full [&_[data-slot=carousel-content]]:h-full [&_[data-slot=carousel-item]]:h-full"
       data-slot="carousel"
       role="region"
     >
       <div
-        class="overflow-hidden h-full"
+        class="overflow-hidden"
         data-slot="carousel-content"
       >
         <div
-          class="flex h-full -ml-4"
+          class="flex -ml-4 h-full"
           style="transform: translate3d(0px,0px,0px);"
         >
           <div
             aria-roledescription="slide"
-            class="min-w-0 shrink-0 grow-0 basis-full h-full pl-4"
+            class="min-w-0 shrink-0 grow-0 basis-full pl-4 h-full"
             data-slot="carousel-item"
             role="group"
           >
@@ -352,7 +352,7 @@ exports[`HeroCarousel stories snapshot > WithoutAutoPlay story renders and match
           </div>
           <div
             aria-roledescription="slide"
-            class="min-w-0 shrink-0 grow-0 basis-full h-full pl-4"
+            class="min-w-0 shrink-0 grow-0 basis-full pl-4 h-full"
             data-slot="carousel-item"
             role="group"
           >
@@ -405,7 +405,7 @@ exports[`HeroCarousel stories snapshot > WithoutAutoPlay story renders and match
           </div>
           <div
             aria-roledescription="slide"
-            class="min-w-0 shrink-0 grow-0 basis-full h-full pl-4"
+            class="min-w-0 shrink-0 grow-0 basis-full pl-4 h-full"
             data-slot="carousel-item"
             role="group"
           >
@@ -560,21 +560,21 @@ exports[`HeroCarousel stories snapshot > WithoutDots story renders and matches s
   >
     <div
       aria-roledescription="carousel"
-      class="relative w-full h-full"
+      class="relative w-full h-full [&_[data-slot=carousel-content]]:h-full [&_[data-slot=carousel-item]]:h-full"
       data-slot="carousel"
       role="region"
     >
       <div
-        class="overflow-hidden h-full"
+        class="overflow-hidden"
         data-slot="carousel-content"
       >
         <div
-          class="flex h-full -ml-4"
+          class="flex -ml-4 h-full"
           style="transform: translate3d(0px,0px,0px);"
         >
           <div
             aria-roledescription="slide"
-            class="min-w-0 shrink-0 grow-0 basis-full h-full pl-4"
+            class="min-w-0 shrink-0 grow-0 basis-full pl-4 h-full"
             data-slot="carousel-item"
             role="group"
           >
@@ -627,7 +627,7 @@ exports[`HeroCarousel stories snapshot > WithoutDots story renders and matches s
           </div>
           <div
             aria-roledescription="slide"
-            class="min-w-0 shrink-0 grow-0 basis-full h-full pl-4"
+            class="min-w-0 shrink-0 grow-0 basis-full pl-4 h-full"
             data-slot="carousel-item"
             role="group"
           >
@@ -680,7 +680,7 @@ exports[`HeroCarousel stories snapshot > WithoutDots story renders and matches s
           </div>
           <div
             aria-roledescription="slide"
-            class="min-w-0 shrink-0 grow-0 basis-full h-full pl-4"
+            class="min-w-0 shrink-0 grow-0 basis-full pl-4 h-full"
             data-slot="carousel-item"
             role="group"
           >
@@ -808,21 +808,21 @@ exports[`HeroCarousel stories snapshot > WithoutNavigation story renders and mat
   >
     <div
       aria-roledescription="carousel"
-      class="relative w-full h-full"
+      class="relative w-full h-full [&_[data-slot=carousel-content]]:h-full [&_[data-slot=carousel-item]]:h-full"
       data-slot="carousel"
       role="region"
     >
       <div
-        class="overflow-hidden h-full"
+        class="overflow-hidden"
         data-slot="carousel-content"
       >
         <div
-          class="flex h-full -ml-4"
+          class="flex -ml-4 h-full"
           style="transform: translate3d(0px,0px,0px);"
         >
           <div
             aria-roledescription="slide"
-            class="min-w-0 shrink-0 grow-0 basis-full h-full pl-4"
+            class="min-w-0 shrink-0 grow-0 basis-full pl-4 h-full"
             data-slot="carousel-item"
             role="group"
           >
@@ -875,7 +875,7 @@ exports[`HeroCarousel stories snapshot > WithoutNavigation story renders and mat
           </div>
           <div
             aria-roledescription="slide"
-            class="min-w-0 shrink-0 grow-0 basis-full h-full pl-4"
+            class="min-w-0 shrink-0 grow-0 basis-full pl-4 h-full"
             data-slot="carousel-item"
             role="group"
           >
@@ -928,7 +928,7 @@ exports[`HeroCarousel stories snapshot > WithoutNavigation story renders and mat
           </div>
           <div
             aria-roledescription="slide"
-            class="min-w-0 shrink-0 grow-0 basis-full h-full pl-4"
+            class="min-w-0 shrink-0 grow-0 basis-full pl-4 h-full"
             data-slot="carousel-item"
             role="group"
           >

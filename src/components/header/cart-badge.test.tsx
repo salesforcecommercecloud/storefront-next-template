@@ -42,7 +42,11 @@ describe('CartBadge', () => {
     });
 
     it('renders a badge with the snapshot count', () => {
-        mockUseBasketSnapshot.mockReturnValue({ basketId: 'basket-123', itemsCount: 2 });
+        mockUseBasketSnapshot.mockReturnValue({
+            basketId: 'basket-123',
+            totalItemCount: 2,
+            uniqueProductCount: 2,
+        });
 
         render(<CartBadge />);
 
@@ -60,7 +64,11 @@ describe('CartBadge', () => {
     });
 
     it('shows the cart sheet after the first click', async () => {
-        mockUseBasketSnapshot.mockReturnValue({ basketId: 'basket-123', itemsCount: 1 });
+        mockUseBasketSnapshot.mockReturnValue({
+            basketId: 'basket-123',
+            totalItemCount: 1,
+            uniqueProductCount: 1,
+        });
 
         render(<CartBadge />);
 

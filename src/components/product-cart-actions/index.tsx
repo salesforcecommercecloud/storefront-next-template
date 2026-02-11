@@ -16,7 +16,7 @@
 
 'use client';
 
-import { type ReactElement } from 'react';
+import { type ReactElement, Suspense, lazy, startTransition, useState, useEffect } from 'react';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { Button } from '@/components/ui/button';
 import { useProductView } from '@/providers/product-view';
@@ -25,8 +25,10 @@ import { isProductSet, isProductBundle } from '@/lib/product-utils';
 import { ShareButton } from '@/components/buttons/share-button';
 import { useCheckAndExecutePendingAction } from '@/hooks/check-and-execute-pending-action';
 import { useTranslation } from 'react-i18next';
-import { PluginComponent } from '@/plugins/plugin-component';
+import { UITarget } from '@/targets/ui-target';
 import BuyNowPayLater from '@/components/buy-now-pay-later';
+
+const ExpressPayments = lazy(() => import('@/components/checkout/components/express-payments'));
 
 interface ProductCartActionsProps {
     product: ShopperProducts.schemas['Product'];
@@ -75,7 +77,7 @@ export default function ProductCartActions({
 
     // Get product ID for pending action matching
     const productToCheck = isMasterOrVariantProduct ? currentVariant : product;
-    const currentProductId = productToCheck?.productId || productToCheck?.id || product.id;
+    const currentProductId = productToCheck?.productId || product.id;
 
     // Check for pending actions and execute if they match this product
     // This handles actions that were initiated before authentication (e.g., addToWishlist)
@@ -130,6 +132,16 @@ export default function ProductCartActions({
         }
     };
 
+    // Defer ExpressPayments loading until after initial render to improve Lighthouse performance
+    const [shouldLoadExpressPayments, setShouldLoadExpressPayments] = useState(false);
+
+    useEffect(() => {
+        // Use startTransition to mark this as non-urgent, allowing initial render to complete first
+        startTransition(() => {
+            setShouldLoadExpressPayments(true);
+        });
+    }, []);
+
     return (
         <div className="mt-6">
             {/* Options Selection Message */}
@@ -148,9 +160,21 @@ export default function ProductCartActions({
                         {isEditMode ? t('updateCart') : isAddingToOrUpdatingCart ? t('addingToCart') : t('addToCart')}
                     </Button>
                 )}
-                <PluginComponent pluginId="pdp.after.addToCart">
-                    <BuyNowPayLater />
-                </PluginComponent>
+                {/* Express Payments - Vertical layout for PDP */}
+                {!isProductASet && !isProductABundle && !isEditMode && shouldLoadExpressPayments && (
+                    <Suspense fallback={null}>
+                        <ExpressPayments
+                            layout="vertical"
+                            separatorPosition="top"
+                            separatorText={t('expressPayments.separatorBuyWith')}
+                            disabled={!canAddToCart}
+                        />
+                    </Suspense>
+                )}
+
+                <UITarget targetId="pdp.after.addToCart">
+                    {currentProductId && <BuyNowPayLater productId={String(currentProductId)} />}
+                </UITarget>
 
                 {!isEditMode && (
                     <div className="grid grid-cols-2 gap-3">

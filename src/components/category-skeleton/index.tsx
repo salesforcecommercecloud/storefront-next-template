@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Skeleton } from '@/components/ui/skeleton';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 export function CategoryBreadcrumbsSkeleton() {
@@ -120,34 +120,58 @@ export default function CategorySkeleton() {
     );
 }
 
-function ProductTileSkeleton() {
+export function ProductTileSwatchesSkeleton({ count = 2 }: { count?: number }) {
     return (
-        <Card className="ring-secondary/40 bg-muted/50">
-            <CardContent className="text-secondary border-destructive/30">
-                <div className="group bg-accent/30">
-                    {/* Product image skeleton */}
-                    <Skeleton className="aspect-square w-full rounded-md" />
+        <div className="flex flex-wrap gap-2">
+            {Array.from({ length: count }, (_, i) => (
+                <Skeleton key={i} className="h-7 w-7 rounded-full" />
+            ))}
+        </div>
+    );
+}
 
-                    {/* Swatches skeleton */}
-                    <div className="mt-2 flex space-x-1">
-                        <Skeleton className="h-4 w-4 rounded-full" />
-                        <Skeleton className="h-4 w-4 rounded-full" />
-                        <Skeleton className="h-4 w-4 rounded-full" />
-                        <Skeleton className="h-4 w-4 rounded-full" />
-                    </div>
+export function ProductTileSkeleton() {
+    return (
+        <Card className="border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0">
+            {/* Footer - "More Options" button */}
+            <CardFooter className="px-6 pb-6 pt-6 flex-1 flex flex-col justify-end">
+                <Skeleton className="h-9 w-full rounded-md" />
+            </CardFooter>
+
+            {/* Price */}
+            <CardContent>
+                <div className="mt-2">
+                    <Skeleton className="h-5 w-16" />
                 </div>
             </CardContent>
 
-            <CardFooter>
-                <div className="block w-full">
-                    {/* Product title skeleton */}
-                    <Skeleton className="h-5 w-full mb-2" />
-                    <Skeleton className="h-5 w-3/4 mb-2" />
+            {/* Product name + swatches + badges */}
+            <CardContent className="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16">
+                <div className="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full">
+                    {/* Product name (2 lines) */}
+                    <div className="h-10 flex flex-col gap-1 items-start justify-start w-full">
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-3/4" />
+                    </div>
 
-                    {/* Product price skeleton */}
-                    <Skeleton className="h-6 w-20" />
+                    {/* Swatches */}
+                    <div className="h-8 flex items-end">
+                        <ProductTileSwatchesSkeleton count={2} />
+                    </div>
                 </div>
-            </CardFooter>
+
+                {/* Badge placeholder */}
+                <div className="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max">
+                    <Skeleton className="h-5 w-12 rounded-full" />
+                </div>
+            </CardContent>
+
+            {/* Product image */}
+            <CardHeader className="py-8 px-6 flex flex-col gap-4 items-center justify-center">
+                <div className="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full">
+                    <Skeleton className="aspect-square w-full" />
+                </div>
+            </CardHeader>
         </Card>
     );
 }

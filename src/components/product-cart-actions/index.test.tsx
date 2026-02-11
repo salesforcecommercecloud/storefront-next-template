@@ -105,7 +105,6 @@ const { mockHandleAddToCart, mockHandleUpdateCart, mockHandleAddToWishlist } = v
 });
 
 vi.mock('@/hooks/product/use-product-actions', async () => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
     const actual = await vi.importActual<typeof import('@/hooks/product/use-product-actions')>(
         '@/hooks/product/use-product-actions'
     );

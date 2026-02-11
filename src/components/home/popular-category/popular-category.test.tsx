@@ -20,7 +20,6 @@ import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi'
 
 // Mock decorators (minimal mocking to avoid testing them)
 vi.mock('@/lib/decorators/component', async (importOriginal) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
     const actual = await importOriginal<typeof import('@/lib/decorators/component')>();
     return {
         ...actual,

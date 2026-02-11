@@ -60,7 +60,7 @@ describe('ensureAdaptersInitialized', () => {
         resetAdaptersInitialization();
         // Ensure getAllAdapters returns empty array initially
         mockGetAllAdapters.mockReturnValue([]);
-        mockInitializeEngagementAdapters.mockImplementation(() => {});
+        mockInitializeEngagementAdapters.mockResolvedValue(undefined);
     });
 
     afterEach(() => {
@@ -83,7 +83,7 @@ describe('ensureAdaptersInitialized', () => {
     describe('successful initialization', () => {
         it('should initialize adapters when none are present', async () => {
             mockGetAllAdapters.mockReturnValue([]);
-            mockInitializeEngagementAdapters.mockImplementation(() => {});
+            mockInitializeEngagementAdapters.mockResolvedValue(undefined);
 
             await ensureAdaptersInitialized(mockAppConfig);
 
@@ -92,7 +92,7 @@ describe('ensureAdaptersInitialized', () => {
 
         it('should not call initializeEngagementAdapters when appConfig is undefined', async () => {
             mockGetAllAdapters.mockReturnValue([]);
-            mockInitializeEngagementAdapters.mockImplementation(() => {});
+            mockInitializeEngagementAdapters.mockResolvedValue(undefined);
 
             await ensureAdaptersInitialized(undefined as any);
 
@@ -104,7 +104,7 @@ describe('ensureAdaptersInitialized', () => {
     describe('concurrent initialization', () => {
         it('should be idempotent - multiple concurrent calls should only initialize once', async () => {
             mockGetAllAdapters.mockReturnValue([]);
-            mockInitializeEngagementAdapters.mockImplementation(() => {});
+            mockInitializeEngagementAdapters.mockResolvedValue(undefined);
 
             // Call multiple times concurrently
             await Promise.all([
@@ -121,31 +121,18 @@ describe('ensureAdaptersInitialized', () => {
     describe('error handling', () => {
         it('should handle errors gracefully and not throw', async () => {
             mockGetAllAdapters.mockReturnValue([]);
+            mockInitializeEngagementAdapters.mockRejectedValue(new Error('Initialization failed'));
 
-            const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-
-            // Make initializeEngagementAdapters throw
-            const error = new Error('Initialization failed');
-            mockInitializeEngagementAdapters.mockImplementation(() => {
-                throw error;
-            });
-
-            // Should not throw, but should resolve
+            // initializeEngagementAdapters is called with void (fire-and-forget), so its rejection
+            // is not awaited. ensureAdaptersInitialized still resolves and does not throw.
             await expect(ensureAdaptersInitialized(mockAppConfig)).resolves.toBeUndefined();
-
-            // Should warn in dev mode
-            if (import.meta.env.DEV) {
-                expect(consoleWarnSpy).toHaveBeenCalledWith('Failed to initialize engagement adapters:', error);
-            }
-
-            consoleWarnSpy.mockRestore();
         });
     });
 
     describe('idempotency', () => {
         it('should exit early when adapters are already initialized', async () => {
             mockGetAllAdapters.mockReturnValue([]);
-            mockInitializeEngagementAdapters.mockImplementation(() => {});
+            mockInitializeEngagementAdapters.mockResolvedValue(undefined);
 
             // First initialization
             await ensureAdaptersInitialized(mockAppConfig);

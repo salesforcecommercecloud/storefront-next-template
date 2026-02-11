@@ -84,17 +84,16 @@ const meta: Meta<typeof InfoModalWrapper> = {
 The InfoModal is a generic, reusable modal component that displays informational content.
 
 **Features:**
-- Supports multiple modal types: payment schedule and generic content
+- Supports payment-schedule modal type (e.g. Pay in 4)
 - Accepts structured data from adapters
 - Handles all rendering logic internally
 - Themeable and accessible
 
-**Modal Types:**
-- **Payment Schedule**: Displays payment schedule, steps, disclaimer, and links
-- **Generic**: Displays custom React content
+**Modal Type:**
+- **Payment Schedule**: Displays title, description, payment schedule timeline, "How it works" steps, disclaimer, and Close button
 
 **Usage:**
-The modal accepts structured data (not React components) and transforms it into the appropriate UI structure.
+The modal accepts structured data with type 'payment-schedule' and transforms it into the payment schedule UI.
                 `,
             },
         },
@@ -154,9 +153,10 @@ export const NoData: Story = {
         await userEvent.click(openButton);
 
         const documentBody = within(document.body);
-        await expect(documentBody.getByRole('dialog')).toBeInTheDocument();
+        const dialog = documentBody.getByRole('dialog');
+        await expect(dialog).toBeInTheDocument();
         await expect(documentBody.getByText('Information')).toBeInTheDocument();
-        await expect(documentBody.getByText('No data available.')).toBeInTheDocument();
+        await expect(within(dialog).getByText('No data available.')).toBeInTheDocument();
     },
 };
 
@@ -164,8 +164,8 @@ export const PaymentScheduleType: Story = {
     args: {
         data: {
             type: 'payment-schedule',
-            title: 'Pay in 4',
-            description: 'Split your purchase into 4 interest-free payments',
+            title: 'Pay in 4 interest-free payments',
+            description: 'Split your purchase of $49.00 into 4 with no impact on credit score and no late fees.',
             paymentSchedule: {
                 totalAmount: 59.0,
                 numberOfPayments: 4,
@@ -177,16 +177,11 @@ export const PaymentScheduleType: Story = {
                 ],
             },
             steps: [
-                { number: 1, text: 'Select payment method at checkout' },
-                { number: 2, text: 'Choose Pay in 4' },
-                { number: 3, text: 'Complete your purchase' },
-                { number: 4, text: 'Pay over time, interest-free' },
+                { number: 1, text: 'Choose BNPL at checkout to pay later with Pay in 4.' },
+                { number: 2, text: 'Complete your purchase with a 25% down payment.' },
+                { number: 3, text: "Use autopay for the rest of your payments. It's easy!" },
             ],
             disclaimer: 'Subject to credit approval. Terms apply.',
-            links: [
-                { text: 'Learn more', url: '/payment-info', openInNewTab: false },
-                { text: 'Terms and conditions', url: '/terms', openInNewTab: true },
-            ],
         },
     },
     play: async ({ canvasElement }) => {
@@ -197,47 +192,13 @@ export const PaymentScheduleType: Story = {
         await userEvent.click(openButton);
 
         const documentBody = within(document.body);
-        await expect(documentBody.getByRole('dialog')).toBeInTheDocument();
-        await expect(documentBody.getByText('Pay in 4')).toBeInTheDocument();
-        await expect(documentBody.getByText('Split your purchase into 4 interest-free payments')).toBeInTheDocument();
-        await expect(documentBody.getByText('How it works')).toBeInTheDocument();
-        await expect(documentBody.getByText('Select payment method at checkout')).toBeInTheDocument();
-        await expect(documentBody.getByText('Subject to credit approval. Terms apply.')).toBeInTheDocument();
-    },
-};
+        const dialog = await documentBody.findByRole('dialog', {}, { timeout: 5000 });
+        const inDialog = within(dialog);
 
-export const GenericType: Story = {
-    args: {
-        data: {
-            type: 'generic',
-            title: 'Custom Information',
-            description: 'This is a generic modal with custom content',
-            content: (
-                <div className="space-y-4">
-                    <p>This is custom content that can be anything you want.</p>
-                    <ul className="list-disc list-inside space-y-2">
-                        <li>Feature one</li>
-                        <li>Feature two</li>
-                        <li>Feature three</li>
-                    </ul>
-                </div>
-            ),
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const openButton = canvas.getByRole('button', { name: /open modal/i });
-        await userEvent.click(openButton);
-
-        const documentBody = within(document.body);
-        await expect(documentBody.getByRole('dialog')).toBeInTheDocument();
-        await expect(documentBody.getByText('Custom Information')).toBeInTheDocument();
-        await expect(documentBody.getByText('This is a generic modal with custom content')).toBeInTheDocument();
-        await expect(
-            documentBody.getByText('This is custom content that can be anything you want.')
-        ).toBeInTheDocument();
+        await expect(inDialog.getByText('Pay in 4 interest-free payments')).toBeInTheDocument();
+        await expect(inDialog.getByText('Payment Schedule')).toBeInTheDocument();
+        await expect(inDialog.getByText('How it works')).toBeInTheDocument();
+        await expect(inDialog.getByText('Subject to credit approval. Terms apply.')).toBeInTheDocument();
     },
 };
 
@@ -268,5 +229,6 @@ export const PaymentScheduleOnly: Story = {
         const documentBody = within(document.body);
         await expect(documentBody.getByRole('dialog')).toBeInTheDocument();
         await expect(documentBody.getByText('Pay in 4')).toBeInTheDocument();
+        await expect(documentBody.getByText('Payment Schedule')).toBeInTheDocument();
     },
 };

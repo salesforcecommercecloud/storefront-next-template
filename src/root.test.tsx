@@ -18,7 +18,7 @@ import { render, waitFor } from '@testing-library/react';
 import { createTestContext } from '@/lib/test-utils';
 import { type PropsWithChildren } from 'react';
 import { createRoutesStub } from 'react-router';
-import type { SessionData } from '@/lib/api/types';
+import type { PublicSessionData } from '@/lib/api/types';
 import type AppComponent from './root';
 import type { ErrorBoundary as RootErrorBoundary, Layout as RootLayout, loader as RootLoader } from './root';
 
@@ -26,14 +26,13 @@ let App: typeof AppComponent;
 let ErrorBoundary: typeof RootErrorBoundary;
 let Layout: typeof RootLayout;
 let loader: typeof RootLoader;
-const defaultSession: SessionData = {
-    access_token: 'test-token',
+const defaultClientAuth: PublicSessionData = {
     customer_id: 'test-customer',
     userType: 'registered',
 };
 import { mockConfig } from '@/test-utils/config';
 // @sfdc-extension-block-start SFDC_EXT_HYBRID_PROXY
-import { isProxyPath } from './extensions/hybrid-proxy/config';
+import { isProxyPath } from '@/extensions/hybrid-proxy/config';
 // @sfdc-extension-block-end SFDC_EXT_HYBRID_PROXY
 
 vi.mock('@/lib/i18next.client', async () => {
@@ -88,7 +87,6 @@ vi.mock('@/extensions/hybrid-proxy/navigation-interceptor', () => ({
 
 vi.mock('@/extensions/hybrid-proxy/config', () => ({
     isProxyPath: vi.fn(),
-    HYBRID_PROXY_CONFIG: { enabled: false },
 }));
 // @sfdc-extension-block-end SFDC_EXT_HYBRID_PROXY
 
@@ -176,9 +174,9 @@ beforeAll(async () => {
 function createLoaderContext(options: Parameters<typeof createTestContext>[0] = {}) {
     const context = createTestContext(options);
     const baseGet = context.get.bind(context);
-    const authFallback = new Map() as Map<string, unknown> & { ref?: SessionData };
+    const authFallback = new Map() as Map<string, unknown> & { ref?: PublicSessionData };
     const authSession =
-        options.authSession === null ? undefined : { ...defaultSession, ...(options.authSession ?? {}) };
+        options.authSession === null ? undefined : { ...defaultClientAuth, ...(options.authSession ?? {}) };
     authFallback.ref = authSession;
 
     context.get = ((key) => {
@@ -441,12 +439,11 @@ describe('root.tsx', () => {
                     Component: App,
                     HydrateFallback,
                     loader: () => ({
-                        auth: () => ({
-                            access_token: 'test-token',
+                        clientAuth: {
                             customer_id: 'test-customer',
                             userType: 'registered',
-                        }),
-                        basket: { basketId: 'test-basket', productItems: [] },
+                        },
+                        basketSnapshot: null,
                         appConfig: mockConfig,
                         locale: 'en-US',
                         currency: 'USD',
@@ -465,16 +462,15 @@ describe('root.tsx', () => {
             });
         });
 
-        it.skip('should fall back to AuthContext default value when auth is undefined', async () => {
+        it.skip('should fall back to AuthContext default value when clientAuth is undefined', async () => {
             const { AuthContext } = await import('@/providers/auth');
 
-            const mockInitialAuth: SessionData = {
-                access_token: 'initial-hydration-token',
+            const mockInitialAuth: PublicSessionData = {
                 customer_id: 'initial-customer',
                 userType: 'guest',
             };
 
-            // Simulate the context having a default value (in production, this comes from getAuthDataFromCookies())
+            // Simulate the context having a default value
             // In tests, we can wrap with a provider to override the default
             const TestApp = (props: any) => (
                 <AuthContext.Provider value={mockInitialAuth}>
@@ -488,8 +484,8 @@ describe('root.tsx', () => {
                     path: '/',
                     Component: TestApp,
                     loader: () => ({
-                        auth: undefined, // No auth from loader, should fall back to context default
-                        basket: { basketId: 'test-basket', productItems: [] },
+                        clientAuth: undefined, // No auth from loader, should fall back to context default
+                        basketSnapshot: null,
                         appConfig: mockConfig,
                     }),
                 },
@@ -523,13 +519,11 @@ describe('root.tsx', () => {
                     Component: App,
                     HydrateFallback,
                     loader: () => ({
-                        auth: () =>
-                            ({
-                                access_token: 'test-token',
-                                customer_id: 'test-customer',
-                                userType: 'registered',
-                            }) as any,
-                        basket: { basketId: 'test-basket', productItems: [] },
+                        clientAuth: {
+                            customer_id: 'test-customer',
+                            userType: 'registered',
+                        },
+                        basketSnapshot: null,
                         locale: 'en-US',
                         currency: 'USD',
                         getI18next: () => testI18nInstance,
@@ -570,13 +564,11 @@ describe('root.tsx', () => {
                         Component: App,
                         HydrateFallback,
                         loader: () => ({
-                            auth: () =>
-                                ({
-                                    access_token: 'test-token',
-                                    customer_id: 'test-customer',
-                                    userType: 'registered',
-                                }) as any,
-                            basket: { basketId: 'test-basket', productItems: [] },
+                            clientAuth: {
+                                customer_id: 'test-customer',
+                                userType: 'registered',
+                            },
+                            basketSnapshot: null,
                             appConfig: mockConfig,
                             locale: 'en-US',
                             currency: 'USD',
@@ -615,13 +607,11 @@ describe('root.tsx', () => {
                         Component: App,
                         HydrateFallback,
                         loader: () => ({
-                            auth: () =>
-                                ({
-                                    access_token: 'test-token',
-                                    customer_id: 'test-customer',
-                                    userType: 'registered',
-                                }) as any,
-                            basket: { basketId: 'test-basket', productItems: [] },
+                            clientAuth: {
+                                customer_id: 'test-customer',
+                                userType: 'registered',
+                            },
+                            basketSnapshot: null,
                             appConfig: mockConfig,
                             locale: 'en-US',
                             currency: 'USD',
@@ -639,181 +629,11 @@ describe('root.tsx', () => {
                 });
             });
         });
-
-        describe('BackNavigationRevalidator', () => {
-            beforeEach(() => {
-                vi.mocked(isProxyPath).mockReturnValue(false);
-            });
-
-            it('calls revalidate once when hybrid is enabled and navigation type is back_forward', async () => {
-                const revalidateMock = vi.fn();
-                const reactRouter = await import('react-router');
-                vi.spyOn(reactRouter, 'useRevalidator').mockReturnValue({
-                    state: 'idle',
-                    revalidate: revalidateMock,
-                } as ReturnType<typeof reactRouter.useRevalidator>);
-
-                vi.stubGlobal('performance', {
-                    getEntriesByType: (type: string) => (type === 'navigation' ? [{ type: 'back_forward' }] : []),
-                } as unknown as Performance);
-
-                const i18next = await import('i18next');
-                const { initReactI18next } = await import('react-i18next');
-                const testI18nInstance = i18next.default.createInstance();
-                await testI18nInstance.use(initReactI18next).init({
-                    lng: 'en-US',
-                    fallbackLng: 'en-US',
-                    resources: { 'en-US': { translation: {} } },
-                });
-
-                const appConfigWithHybrid = { ...mockConfig, site: { hybrid: { enabled: true } } };
-
-                const Stub = createRoutesStub([
-                    {
-                        id: 'root',
-                        path: '/',
-                        Component: App,
-                        HydrateFallback,
-                        loader: () => ({
-                            auth: () => ({
-                                access_token: 'test-token',
-                                customer_id: 'test-customer',
-                                userType: 'registered',
-                            }),
-                            basket: { basketId: 'test-basket', productItems: [] },
-                            appConfig: appConfigWithHybrid,
-                            locale: 'en-US',
-                            currency: 'USD',
-                            getI18next: () => testI18nInstance,
-                        }),
-                    },
-                ]);
-
-                render(<Stub initialEntries={['/']} />);
-
-                await waitFor(() => {
-                    expect(revalidateMock).toHaveBeenCalledTimes(1);
-                });
-
-                vi.unstubAllGlobals();
-                vi.restoreAllMocks();
-            });
-
-            it('does not call revalidate when navigation type is not back_forward', async () => {
-                const revalidateMock = vi.fn();
-                const reactRouter = await import('react-router');
-                vi.spyOn(reactRouter, 'useRevalidator').mockReturnValue({
-                    state: 'idle',
-                    revalidate: revalidateMock,
-                } as ReturnType<typeof reactRouter.useRevalidator>);
-
-                vi.stubGlobal('performance', {
-                    getEntriesByType: (type: string) => (type === 'navigation' ? [{ type: 'navigate' }] : []),
-                } as unknown as Performance);
-
-                const i18next = await import('i18next');
-                const { initReactI18next } = await import('react-i18next');
-                const testI18nInstance = i18next.default.createInstance();
-                await testI18nInstance.use(initReactI18next).init({
-                    lng: 'en-US',
-                    fallbackLng: 'en-US',
-                    resources: { 'en-US': { translation: {} } },
-                });
-
-                const appConfigWithHybrid = { ...mockConfig, site: { hybrid: { enabled: true } } };
-
-                const Stub = createRoutesStub([
-                    {
-                        id: 'root',
-                        path: '/',
-                        Component: App,
-                        HydrateFallback,
-                        loader: () => ({
-                            auth: () => ({
-                                access_token: 'test-token',
-                                customer_id: 'test-customer',
-                                userType: 'registered',
-                            }),
-                            basket: { basketId: 'test-basket', productItems: [] },
-                            appConfig: appConfigWithHybrid,
-                            locale: 'en-US',
-                            currency: 'USD',
-                            getI18next: () => testI18nInstance,
-                        }),
-                    },
-                ]);
-
-                const { getByTestId } = render(<Stub initialEntries={['/']} />);
-
-                await waitFor(() => {
-                    expect(getByTestId('page-designer-provider')).toBeInTheDocument();
-                });
-
-                expect(revalidateMock).not.toHaveBeenCalled();
-
-                vi.unstubAllGlobals();
-                vi.restoreAllMocks();
-            });
-
-            it('does not call revalidate when hybrid is disabled', async () => {
-                const revalidateMock = vi.fn();
-                const reactRouter = await import('react-router');
-                vi.spyOn(reactRouter, 'useRevalidator').mockReturnValue({
-                    state: 'idle',
-                    revalidate: revalidateMock,
-                } as ReturnType<typeof reactRouter.useRevalidator>);
-
-                vi.stubGlobal('performance', {
-                    getEntriesByType: (type: string) => (type === 'navigation' ? [{ type: 'back_forward' }] : []),
-                } as unknown as Performance);
-
-                const i18next = await import('i18next');
-                const { initReactI18next } = await import('react-i18next');
-                const testI18nInstance = i18next.default.createInstance();
-                await testI18nInstance.use(initReactI18next).init({
-                    lng: 'en-US',
-                    fallbackLng: 'en-US',
-                    resources: { 'en-US': { translation: {} } },
-                });
-
-                const Stub = createRoutesStub([
-                    {
-                        id: 'root',
-                        path: '/',
-                        Component: App,
-                        HydrateFallback,
-                        loader: () => ({
-                            auth: () => ({
-                                access_token: 'test-token',
-                                customer_id: 'test-customer',
-                                userType: 'registered',
-                            }),
-                            basket: { basketId: 'test-basket', productItems: [] },
-                            appConfig: mockConfig,
-                            locale: 'en-US',
-                            currency: 'USD',
-                            getI18next: () => testI18nInstance,
-                        }),
-                    },
-                ]);
-
-                const { getByTestId } = render(<Stub initialEntries={['/']} />);
-
-                await waitFor(() => {
-                    expect(getByTestId('page-designer-provider')).toBeInTheDocument();
-                });
-
-                expect(revalidateMock).not.toHaveBeenCalled();
-
-                vi.unstubAllGlobals();
-                vi.restoreAllMocks();
-            });
-        });
         // @sfdc-extension-block-end SFDC_EXT_HYBRID_PROXY
     });
 
     describe('loader function', () => {
-        it('should promises and auth function', async () => {
+        it('should return clientAuth and other loader data', async () => {
             const { i18nextContext } = await import('@/lib/i18next');
             const i18next = await import('i18next');
             const { initReactI18next } = await import('react-i18next');
@@ -844,23 +664,22 @@ describe('root.tsx', () => {
                 unstable_pattern: '/',
             }) as any;
 
-            expect(result).toHaveProperty('auth');
+            expect(result).toHaveProperty('clientAuth');
             expect(result).toHaveProperty('appConfig');
             expect(result).toHaveProperty('locale');
             expect(result).toHaveProperty('getI18next');
-            expect(typeof result.auth).toBe('function');
+            expect(typeof result.clientAuth).toBe('object');
             expect(typeof result.getI18next).toBe('function');
             expect(result.locale).toBe('en-US');
         });
 
-        it('should return auth session data', async () => {
+        it('should return clientAuth with non-sensitive session data', async () => {
             const { i18nextContext } = await import('@/lib/i18next');
             const i18next = await import('i18next');
             const { initReactI18next } = await import('react-i18next');
             const resources = await import('@/locales');
 
-            const mockSession: SessionData = {
-                access_token: 'test-token',
+            const mockClientAuth: PublicSessionData = {
                 customer_id: 'test-customer',
                 userType: 'registered',
             };
@@ -876,7 +695,7 @@ describe('root.tsx', () => {
                 },
             });
 
-            const context = createLoaderContext({ authSession: mockSession });
+            const context = createLoaderContext({ authSession: mockClientAuth });
             // Set up i18next context with bound functions
             context.set(i18nextContext, {
                 getLocale: () => 'en-US',
@@ -890,7 +709,10 @@ describe('root.tsx', () => {
                 unstable_pattern: '/',
             }) as any;
 
-            expect(result.auth()).toEqual(mockSession);
+            // clientAuth should contain only non-sensitive fields
+            expect(result.clientAuth).toEqual(expect.objectContaining(mockClientAuth));
+            expect(result.clientAuth).not.toHaveProperty('access_token');
+            expect(result.clientAuth).not.toHaveProperty('refresh_token');
             expect(result.appConfig).toBeDefined();
             expect(result.locale).toBe('en-US');
             expect(typeof result.getI18next).toBe('function');

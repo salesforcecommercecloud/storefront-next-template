@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type PropsWithChildren, useEffect, useMemo, useRef } from 'react';
+import { type PropsWithChildren, useMemo } from 'react';
 
 // React Router
 import {
@@ -31,7 +31,6 @@ import {
     /** @sfdc-extension-line SFDC_EXT_HYBRID_PROXY */
     useLocation,
     useMatches,
-    useRevalidator,
     useRouteLoaderData,
 } from 'react-router';
 
@@ -44,6 +43,7 @@ import { isDesignModeActive, isPreviewModeActive } from '@salesforce/storefront-
 // Middlewares
 import authMiddlewareServer, { getAuth as getAuthServer } from '@/middlewares/auth.server';
 import authMiddlewareClient from '@/middlewares/auth.client';
+import { getPublicSessionData } from '@/middlewares/auth.utils';
 import createBasketMiddleware, { basketResourceContext, type BasketSnapshot } from '@/middlewares/basket.server';
 import shopperContextMiddlewareServer from '@/middlewares/shopper-context.server';
 import shopperContextMiddlewareClient from '@/middlewares/shopper-context.client';
@@ -62,7 +62,7 @@ import { modeDetectionMiddlewareServer, modeDetectionMiddlewareClient } from '@/
 import { maintenanceMiddleware } from '@/middlewares/maintenance.server';
 
 // Providers
-import AuthProvider, { getBootstrapSession } from '@/providers/auth';
+import AuthProvider from '@/providers/auth';
 import BasketProvider from '@/providers/basket';
 import { ComposeProviders } from '@/providers/compose-providers';
 import { type AppConfig, ConfigProvider, getConfig } from '@/config';
@@ -79,7 +79,7 @@ import { TrackingConsentBanner } from '@/components/tracking-consent-banner';
 import { useExecutePendingAction } from '@/hooks/use-execute-pending-action';
 
 // Lib/Utils
-import type { SessionData } from '@/lib/api/types';
+import type { PublicSessionData } from '@/lib/api/types';
 import { i18nextContext } from '@/lib/i18next';
 import { initI18next } from '@/lib/i18next.client';
 import { PageViewTracker } from '@/lib/analytics/page-view-tracker';
@@ -100,8 +100,8 @@ import appStylesHref from './app.css?url';
 /** @sfdc-extension-line SFDC_EXT_HYBRID_PROXY */
 import { HybridProxyNavigationInterceptor } from '@/extensions/hybrid-proxy/navigation-interceptor';
 /** @sfdc-extension-line SFDC_EXT_HYBRID_PROXY */
-import { HYBRID_PROXY_CONFIG, isProxyPath } from '@/extensions/hybrid-proxy/config';
-import { PluginProviders } from '@/plugins/plugin-providers';
+import { isProxyPath } from '@/extensions/hybrid-proxy/config';
+import { TargetProviders } from '@/targets/target-providers';
 import { MAINTENANCE_ERROR } from './lib/api-clients';
 import { type Maintenance, maintenanceContext } from '@/lib/maintenance';
 
@@ -149,7 +149,8 @@ export const loader = ({
     context,
     request,
 }: LoaderFunctionArgs): {
-    auth: () => SessionData; // Use a function to prevent state serialization
+    // Public auth data - only non-sensitive fields, safe to serialize
+    clientAuth: PublicSessionData;
     appConfig: AppConfig;
     basketSnapshot: BasketSnapshot | null;
     maintenance: Maintenance;
@@ -190,6 +191,9 @@ export const loader = ({
     // Get maintenance data from middleware
     const maintenance = context.get(maintenanceContext);
 
+    // Extract only non-sensitive fields for client - tokens stay server-side only
+    const clientAuth = getPublicSessionData(session);
+
     return {
         appConfig,
         basketSnapshot,
@@ -197,8 +201,7 @@ export const loader = ({
         currency,
         correlationId,
         maintenance,
-        // Wrap these returned objects with a function, to avoid React Router serialization
-        auth: () => session,
+        clientAuth,
         getI18next: () => i18next,
         pageDesignerMode: isDesignModeActive(request) ? 'EDIT' : isPreviewModeActive(request) ? 'PREVIEW' : undefined,
     };
@@ -290,7 +293,7 @@ export function ErrorBoundary({ error }: { error: unknown }) {
 }
 
 export default function App({
-    loaderData: { auth, basketSnapshot, getI18next, currency, correlationId, pageDesignerMode },
+    loaderData: { clientAuth, basketSnapshot, getI18next, currency, correlationId, pageDesignerMode },
 }: {
     loaderData: LoaderData;
 }) {
@@ -307,19 +310,11 @@ export default function App({
         throw new Error('App configuration not available - check server loader and window.__APP_CONFIG__');
     }
 
-    // **Important:** As intentionally we are not using a `HydrateFallback` at this root layout level, we have to deal
-    // with the behavior that the initial rendering during hydration is executed **before** the `clientMiddleware` and
-    // the `clientLoader` (which is annotated with `hydrate=true`) execute.
-    //
-    // For app config: We set it via <ConfigProvider> below to ensure it's available during the initial render cycle,
-    // before the client middleware runs. This prevents timing issues when components access config during hydration.
-    //
-    // For auth: During initial hydration (before clientLoader runs), auth?.() returns undefined.
-    // We fall back to a bootstrap auth value derived from cookies (on the client) so that hydration
-    // has access to auth data. Once clientLoader runs and provides session data, that loader-based
-    // value becomes the single source of truth.
-    const loaderSession = auth?.();
-    const sessionData = loaderSession ?? getBootstrapSession();
+    // In server-only auth architecture:
+    // - clientAuth contains only non-sensitive fields (userType, customer_id, usid, etc.)
+    // - These values are serialized directly from the server loader
+    // - No client middleware or bootstrap needed - server is the single source of truth
+    // - Tokens (access_token, refresh_token) stay server-side only
 
     // Initialize Page Designer components
     initializeRegistry();
@@ -333,24 +328,18 @@ export default function App({
                 [I18nextProvider, { i18n: i18next }],
                 [ConfigProvider, { config: appConfig }],
                 [CurrencyProvider, { value: currency }],
-                [AuthProvider, { value: sessionData }],
+                [AuthProvider, { value: clientAuth }],
                 [BasketProvider, { snapshot: basketSnapshot }],
                 [RecommendersProvider, { adapterName: EINSTEIN_ADAPTER_NAME }],
                 [CorrelationProvider, { value: correlationId }],
             ] as const,
-        [correlationId, i18next, appConfig, currency, sessionData, basketSnapshot]
+        [correlationId, i18next, appConfig, currency, clientAuth, basketSnapshot]
     );
-
-    // App config "hybrid" (site.hybrid.enabled); hybrid-proxy adds its check in extension block below
-    let hybridEnabled = Boolean(appConfig?.site?.hybrid?.enabled);
-    // @sfdc-extension-line SFDC_EXT_HYBRID_PROXY
-    hybridEnabled = hybridEnabled || Boolean(HYBRID_PROXY_CONFIG?.enabled);
 
     let content = (
         <>
             <AuthActionExecutor />
-            {hybridEnabled && <BackNavigationRevalidator />}
-            <PageDesignerProvider clientId="odyssey" targetOrigin="*" usid={sessionData?.usid} mode={pageDesignerMode}>
+            <PageDesignerProvider clientId="odyssey" targetOrigin="*" usid={clientAuth?.usid} mode={pageDesignerMode}>
                 <PageDesignerInit />
                 <Outlet />
             </PageDesignerProvider>
@@ -369,7 +358,7 @@ export default function App({
 
     return (
         <ComposeProviders providers={providers}>
-            <PluginProviders>{content}</PluginProviders>
+            <TargetProviders>{content}</TargetProviders>
         </ComposeProviders>
     );
 }
@@ -380,24 +369,5 @@ export default function App({
  */
 function AuthActionExecutor() {
     useExecutePendingAction();
-    return null;
-}
-
-/**
- * Revalidates loader data once on back/forward (e.g. back from SFRA). Mounted only when
- * hybrid or hybrid-proxy is on; ensures UI is fresh after a full-page redirect. No-op when both are off.
- */
-function BackNavigationRevalidator() {
-    const revalidator = useRevalidator();
-    const didRevalidateRef = useRef(false);
-    useEffect(() => {
-        if (didRevalidateRef.current) return;
-        const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
-        if (nav?.type === 'back_forward' && revalidator.state === 'idle') {
-            didRevalidateRef.current = true;
-            void revalidator.revalidate();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
     return null;
 }

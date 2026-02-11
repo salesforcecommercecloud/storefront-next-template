@@ -14,126 +14,164 @@
  * limitations under the License.
  */
 import type { ReactElement } from 'react';
-
-// Components
-import { ProductItemSkeleton } from '@/components/product-item-skeleton';
 import { Card, CardContent } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 
-function OrderSummarySkeleton(): ReactElement {
+function CartEmptySkeleton({ isRegistered = false }: { isRegistered?: boolean }): ReactElement {
     return (
-        <Card data-testid="cart-order-summary">
-            <CardContent className="p-6">
-                <div className="space-y-5">
-                    {/* Order Summary Title Skeleton */}
-                    <Skeleton className="h-6 w-32" />
+        <div className="bg-muted flex-1 min-w-full w-full" data-testid="sf-cart-empty-skeleton">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-14">
+                <Card className="max-w-md mx-auto">
+                    <CardContent className="p-8 text-center">
+                        <div className="space-y-6">
+                            {/* Empty Cart Icon Skeleton */}
+                            <div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center">
+                                <Skeleton className="w-8 h-8 rounded" />
+                            </div>
 
-                    <div className="space-y-4">
-                        {/* Cart Items Accordion Skeleton */}
-                        <div className="border border-border rounded">
-                            <div className="p-4 flex items-center justify-between">
-                                <Skeleton className="h-4 w-24" />
-                                <Skeleton className="h-4 w-4" />
+                            {/* Empty Cart Message Skeleton */}
+                            <div className="space-y-2 flex flex-col items-center">
+                                <Skeleton className="h-7 w-40" />
+                                <Skeleton className="h-5 w-72" />
+                                <Skeleton className="h-5 w-64" />
+                            </div>
+
+                            {/* Action Buttons Skeleton */}
+                            <div className="space-y-3">
+                                <Skeleton className="h-9 w-full rounded-md" />
+                                {!isRegistered && <Skeleton className="h-9 w-full rounded-md" />}
                             </div>
                         </div>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    );
+}
 
-                        {/* Order Summary Details Skeleton */}
-                        <div className="space-y-4">
-                            {/* Subtotal */}
-                            <div className="flex justify-between items-center">
-                                <Skeleton className="h-4 w-16" />
-                                <Skeleton className="h-4 w-20" />
-                            </div>
+export default function CartSkeleton({
+    isRegistered = false,
+    productItemCount,
+}: {
+    isRegistered?: boolean;
+    productItemCount?: number;
+}): ReactElement {
+    if (!productItemCount) {
+        return <CartEmptySkeleton isRegistered={isRegistered} />;
+    }
 
-                            {/* Shipping */}
-                            <div className="flex justify-between items-center">
-                                <Skeleton className="h-4 w-20" />
-                                <Skeleton className="h-4 w-16" />
-                            </div>
+    const productItemSkeletonIds = Array.from(
+        { length: productItemCount },
+        (_, index) => `sf-product-item-skeleton-${index + 1}`
+    );
 
-                            {/* Tax */}
-                            <div className="flex justify-between items-center">
-                                <Skeleton className="h-4 w-12" />
-                                <Skeleton className="h-4 w-16" />
-                            </div>
-                        </div>
+    return (
+        <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-skeleton">
+            <div className="max-w-7xl mx-auto px-6">
+                <div className="my-6">
+                    <Skeleton className="h-8 w-48" />
+                </div>
 
-                        {/* Promo Code Form Skeleton */}
-                        <div className="space-y-2">
-                            <Skeleton className="h-10 w-full" />
-                            <Skeleton className="h-8 w-20" />
-                        </div>
-
-                        <Separator className="w-full" />
-
-                        {/* Total Skeleton */}
-                        <div className="flex justify-between items-center">
-                            <Skeleton className="h-5 w-28" />
-                            <Skeleton className="h-5 w-24" />
+                <div className="md:hidden mb-3">
+                    <div className="border rounded-md bg-card px-5 py-3">
+                        <div className="flex items-center justify-between">
+                            <Skeleton className="h-6 w-48" />
+                            <Skeleton className="h-4 w-4" />
                         </div>
                     </div>
                 </div>
-            </CardContent>
-        </Card>
-    );
-}
 
-function CartCtaSkeleton(): ReactElement {
-    return (
-        <>
-            {/* Button Skeleton - matches Button component styling */}
-            <div className="w-full sm:w-[95%] lg:w-full mt-6 sm:mt-6 lg:mt-2 mb-4">
-                <Skeleton className="h-10 w-full rounded-md lg:bg-background" />
-            </div>
-
-            {/* Credit Card Icons Skeleton - matches actual icon dimensions */}
-            <div className="flex justify-center gap-2">
-                <Skeleton className="w-10 h-8 rounded lg:bg-background" />
-                <Skeleton className="w-10 h-8 rounded lg:bg-background" />
-                <Skeleton className="w-10 h-8 rounded lg:bg-background" />
-                <Skeleton className="w-10 h-8 rounded lg:bg-background" />
-            </div>
-        </>
-    );
-}
-
-export default function CartSkeleton(): ReactElement {
-    return (
-        <div className="bg-muted flex-1" data-testid="sf-cart-container">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-14">
-                <div className="space-y-24">
-                    <div className="space-y-4">
-                        {/* Cart Title Skeleton */}
-                        <Skeleton className="h-7 lg:h-8 w-48" data-testid="cart-title-skeleton" />
-
-                        <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] gap-10 xl:gap-20">
-                            {/* Product Items List Skeleton */}
-                            <div className="space-y-4">
-                                <Card className="border border-border shadow-sm" data-testid="cart-product-item">
-                                    <CardContent className="p-4">
-                                        <ProductItemSkeleton />
+                <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
+                    <div className="md:order-2 lg:order-1">
+                        <div className="md:p-8 p-3 border border-border rounded-lg shadow-sm mb-3">
+                            {productItemSkeletonIds.map((id) => (
+                                <Card className="border-none shadow-none" key={id}>
+                                    <CardContent className="px-3 py-4 md:px-6 md:py-7">
+                                        <div className="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0">
+                                            <div className="flex-shrink-0 flex items-center justify-center">
+                                                <Skeleton className="aspect-square md:w-32 w-16 rounded" />
+                                            </div>
+                                            <div className="flex-1 space-y-3 min-w-0">
+                                                <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-6 min-w-0">
+                                                    <div className="min-w-0 space-y-3">
+                                                        <div className="space-y-2">
+                                                            <Skeleton className="h-6 w-3/4" />
+                                                            <Skeleton className="h-4 w-1/2" />
+                                                            <Skeleton className="h-4 w-1/3" />
+                                                        </div>
+                                                        <Skeleton className="h-4 w-full" />
+                                                        <div className="flex gap-2">
+                                                            <Skeleton className="h-8 w-20" />
+                                                            <Skeleton className="h-8 w-16" />
+                                                        </div>
+                                                    </div>
+                                                    <div className="grid gap-4 justify-items-end flex-shrink-0">
+                                                        <Skeleton className="h-10 w-[8.5rem] rounded-full" />
+                                                        <div className="w-full flex flex-col items-end">
+                                                            <Skeleton className="h-4 w-20 mb-2 self-end" />
+                                                            <div className="flex items-center justify-end space-x-1">
+                                                                <Skeleton className="h-8 w-8 rounded-md" />
+                                                                <Skeleton className="h-8 w-11 rounded-md" />
+                                                                <Skeleton className="h-8 w-8 rounded-md" />
+                                                            </div>
+                                                        </div>
+                                                        <Skeleton className="h-5 w-20 hidden md:block" />
+                                                    </div>
+                                                </div>
+                                                <Skeleton className="h-5 w-20 md:hidden" />
+                                            </div>
+                                        </div>
                                     </CardContent>
                                 </Card>
-                            </div>
-
-                            {/* Cart Summary Section Skeleton */}
-                            <div className="space-y-4">
-                                <OrderSummarySkeleton />
-                                <div className="hidden lg:block" data-testid="cart-cta-desktop">
-                                    <CartCtaSkeleton />
-                                </div>
-                            </div>
+                            ))}
                         </div>
                     </div>
-                </div>
-            </div>
 
-            {/* Mobile CTA Skeleton */}
-            <div
-                className="h-32 sticky bottom-0 bg-background flex items-center flex-col lg:hidden"
-                data-testid="cart-cta-mobile">
-                <CartCtaSkeleton />
+                    {/* Order Summary */}
+                    <div className="hidden md:block md:order-1 lg:order-2">
+                        <Card className="border shadow-sm">
+                            <CardContent className="p-6 space-y-5">
+                                <Skeleton className="h-7 w-28" />
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-center">
+                                        <Skeleton className="h-5 w-20" />
+                                        <Skeleton className="h-5 w-16" />
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <Skeleton className="h-5 w-20" />
+                                        <Skeleton className="h-5 w-12" />
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <Skeleton className="h-5 w-12" />
+                                        <Skeleton className="h-5 w-12" />
+                                    </div>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-center">
+                                        <Skeleton className="h-5 w-28" />
+                                        <Skeleton className="h-5 w-16" />
+                                    </div>
+                                </div>
+                                {/* Promo Code Accordion */}
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between py-2">
+                                        <Skeleton className="h-5 w-36" />
+                                        <Skeleton className="h-5 w-4" />
+                                    </div>
+                                </div>
+                                {/* Checkout Button */}
+                                <Skeleton className="h-9 w-full mt-8 mb-5 rounded-md" />
+                                {/* Payment Methods */}
+                                <div className="flex justify-center gap-2">
+                                    <Skeleton className="h-6 w-10 rounded-md" />
+                                    <Skeleton className="h-6 w-10 rounded-md" />
+                                    <Skeleton className="h-6 w-10 rounded-md" />
+                                    <Skeleton className="h-6 w-10 rounded-md" />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
             </div>
         </div>
     );

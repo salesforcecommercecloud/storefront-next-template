@@ -16,13 +16,13 @@
 import { render, screen } from '@testing-library/react';
 import { describe, test, expect } from 'vitest';
 import { MemoryRouter } from 'react-router';
-import AccountOrders from './_app.account.orders';
+import OrderListPage from './_app.account.orders._index';
 
 describe('AccountOrders Page', () => {
     const renderAccountOrders = () => {
         return render(
             <MemoryRouter>
-                <AccountOrders />
+                <OrderListPage />
             </MemoryRouter>
         );
     };

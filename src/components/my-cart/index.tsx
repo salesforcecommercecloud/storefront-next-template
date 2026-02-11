@@ -24,7 +24,7 @@ import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@sale
 // Components
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import ProductItemsList from '@/components/product-items-list';
-import { PluginComponent } from '@/plugins/plugin-component';
+import { UITarget } from '@/targets/ui-target';
 import { useTranslation } from 'react-i18next';
 
 // Utils
@@ -75,7 +75,7 @@ export default function MyCart({
                 className="w-full"
                 defaultValue={itemsExpanded ? 'my-cart-items' : undefined}>
                 <AccordionItem value="my-cart-items" className="border-none">
-                    <PluginComponent pluginId="myCart.header.before" />
+                    <UITarget targetId="myCart.header.before" />
                     <AccordionTrigger className="text-left hover:no-underline py-6">
                         <span className="flex-1 text-left text-lg font-bold text-primary">
                             <ShoppingCart className="inline mr-2 w-5 h-5" />

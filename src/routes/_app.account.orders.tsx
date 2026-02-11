@@ -14,38 +14,13 @@
  * limitations under the License.
  */
 import type { ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
-import { OrderList, type Order } from '@/components/account/order-list';
-
-// Mock order data for UI development
-// API statuses: 'new', 'completed', 'cancelled'
-const MOCK_ORDERS: Order[] = [
-    { orderNo: 'INV001', status: 'new', method: 'Credit Card', amount: 54.0 },
-    { orderNo: 'INV002', status: 'new', method: 'Credit Card', amount: 43.0 },
-    { orderNo: 'INV003', status: 'completed', method: 'Credit Card', amount: 48.38 },
-    { orderNo: 'INV004', status: 'cancelled', method: 'Credit Card', amount: 95.92 },
-    { orderNo: 'INV005', status: 'completed', method: 'Credit Card', amount: 250.0 },
-];
+import { Outlet } from 'react-router';
 
 /**
- * Order history page component that displays a list of customer orders.
- * Uses the reusable OrderList component.
- *
- * @returns JSX element representing the order history page
+ * Layout for /account/orders. Renders child routes:
+ * - _index: order list at /account/orders
+ * - $orderNo: order details at /account/orders/:orderNo
  */
-export default function AccountOrders(): ReactElement {
-    const { t } = useTranslation('account');
-
-    const handleViewDetails = (_order: Order) => {
-        // TODO: Navigate to order details page
-    };
-
-    return (
-        <OrderList
-            title={t('navigation.orderHistory')}
-            subtitle={t('orders.subtitle')}
-            orders={MOCK_ORDERS}
-            onViewDetails={handleViewDetails}
-        />
-    );
+export default function AccountOrdersLayout(): ReactElement {
+    return <Outlet />;
 }

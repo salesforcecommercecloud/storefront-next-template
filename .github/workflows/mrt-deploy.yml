@@ -28,8 +28,6 @@ on:
         required: false
 
 env:
-  NODE_VERSION: '24'
-  PNPM_VERSION: '10.28.0'
   CREDENTIALS_FILE_PATH: '~/.mobify'
   DEFAULT_MESSAGE: 'build ${{ github.run_id }} on ${{ github.ref }} - ${{ github.sha }}'
 
@@ -55,9 +53,6 @@ jobs:
 
       - name: Build Bundle
         uses: './.github/actions/build-bundle'
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          pnpm-version: ${{ env.PNPM_VERSION }}
 
       - name: Create MRT credentials file
         id: create_mrt_credentials

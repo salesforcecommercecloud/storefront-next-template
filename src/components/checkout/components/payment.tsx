@@ -37,7 +37,7 @@ import type { CheckoutActionData } from '../types';
 import CheckoutErrorBanner from './checkout-error-banner';
 import { getCheckoutDisplayError } from './checkout-display-error';
 import { useTranslation } from 'react-i18next';
-import { PluginComponent } from '@/plugins/plugin-component';
+import { UITarget } from '@/targets/ui-target';
 
 interface PaymentProps {
     onSubmit: (data: PaymentData) => void;
@@ -223,8 +223,8 @@ export default function Payment({
 
                         {/* Payment Method Section */}
                         <div className="space-y-4">
-                            <PluginComponent pluginId="checkout.payment.paymentMethods.before" />
-                            <PluginComponent pluginId="checkout.payment.paymentMethods">
+                            <UITarget targetId="checkout.payment.paymentMethods.before" />
+                            <UITarget targetId="checkout.payment.paymentMethods">
                                 <Typography variant="h4" as="h3">
                                     {t('confirmation.fields.paymentMethod')}
                                 </Typography>
@@ -445,16 +445,16 @@ export default function Payment({
                                         </div>
                                     </div>
                                 )}
-                            </PluginComponent>
-                            <PluginComponent pluginId="checkout.payment.paymentMethods.after" />
+                            </UITarget>
+                            <UITarget targetId="checkout.payment.paymentMethods.after" />
                         </div>
 
                         <Separator />
 
                         {/* Billing Address Section */}
                         <div className="space-y-4">
-                            <PluginComponent pluginId="checkout.payment.billingAddress.before" />
-                            <PluginComponent pluginId="checkout.payment.billingAddress">
+                            <UITarget targetId="checkout.payment.billingAddress.before" />
+                            <UITarget targetId="checkout.payment.billingAddress">
                                 {showBillingSameAsShipping && (
                                     <FormField
                                         control={form.control}
@@ -504,8 +504,8 @@ export default function Payment({
                                         />
                                     </div>
                                 )}
-                            </PluginComponent>
-                            <PluginComponent pluginId="checkout.payment.billingAddress.after" />
+                            </UITarget>
+                            <UITarget targetId="checkout.payment.billingAddress.after" />
                         </div>
 
                         <div className="flex justify-end pt-2">

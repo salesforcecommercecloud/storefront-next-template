@@ -68,12 +68,12 @@ The BuyNowPayLater component displays buy now pay later installment information.
 **Features:**
 - Displays installment payment message
 - Opens modal when "Learn more" is clicked
-- Plugin component style - can be overridden by customers
+- Target component style - can be overridden by customers
 - Default fallback component when no custom extension is registered
 
 **Usage:**
 This component is typically placed below the "Add to Cart" button on product detail pages.
-It uses the plugin system, allowing customers to register their own custom components.
+It uses the target system, allowing customers to register their own custom components.
                 `,
             },
         },
@@ -134,6 +134,8 @@ export const Default: Story = {
 export const WithModalInteraction: Story = {
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
+        // Preload the lazy InfoModal chunk so it is ready when "Learn more" is clicked
+        await import('@/components/info-modal');
         const canvas = within(canvasElement);
 
         // Find and click the "Learn more" button
@@ -142,10 +144,11 @@ export const WithModalInteraction: Story = {
 
         await userEvent.click(learnMoreButton);
 
-        // Verify modal opens (check for dialog in document body)
+        // Verify modal opens (dialog in document body via portal)
         const documentBody = within(document.body);
-        await expect(documentBody.getByRole('dialog')).toBeInTheDocument();
+        const dialog = await documentBody.findByRole('dialog', {}, { timeout: 5000 });
+        await expect(dialog).toBeInTheDocument();
         await expect(documentBody.getByText('Information')).toBeInTheDocument();
-        await expect(documentBody.getByText('No data available.')).toBeInTheDocument();
+        await expect(within(dialog).getByText('No data available.')).toBeInTheDocument();
     },
 };

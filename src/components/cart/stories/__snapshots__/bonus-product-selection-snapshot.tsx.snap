@@ -89,15 +89,15 @@ exports[`BonusProductSelection stories snapshot > CombinedProducts story renders
               role="region"
             >
               <div
-                class="overflow-hidden h-full"
+                class="overflow-hidden"
                 data-slot="carousel-content"
               >
                 <div
-                  class="flex h-full -ml-2 justify-start"
+                  class="flex -ml-2 justify-start"
                 >
                   <div
                     aria-roledescription="slide"
-                    class="min-w-0 shrink-0 grow-0 h-full basis-52 pl-2"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
                     data-slot="carousel-item"
                     role="group"
                   >
@@ -159,7 +159,7 @@ exports[`BonusProductSelection stories snapshot > CombinedProducts story renders
                   </div>
                   <div
                     aria-roledescription="slide"
-                    class="min-w-0 shrink-0 grow-0 h-full basis-52 pl-2"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
                     data-slot="carousel-item"
                     role="group"
                   >
@@ -385,15 +385,15 @@ exports[`BonusProductSelection stories snapshot > Default story renders and matc
               role="region"
             >
               <div
-                class="overflow-hidden h-full"
+                class="overflow-hidden"
                 data-slot="carousel-content"
               >
                 <div
-                  class="flex h-full -ml-2 justify-start"
+                  class="flex -ml-2 justify-start"
                 >
                   <div
                     aria-roledescription="slide"
-                    class="min-w-0 shrink-0 grow-0 h-full basis-52 pl-2"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
                     data-slot="carousel-item"
                     role="group"
                   >
@@ -455,7 +455,7 @@ exports[`BonusProductSelection stories snapshot > Default story renders and matc
                   </div>
                   <div
                     aria-roledescription="slide"
-                    class="min-w-0 shrink-0 grow-0 h-full basis-52 pl-2"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
                     data-slot="carousel-item"
                     role="group"
                   >
@@ -517,7 +517,7 @@ exports[`BonusProductSelection stories snapshot > Default story renders and matc
                   </div>
                   <div
                     aria-roledescription="slide"
-                    class="min-w-0 shrink-0 grow-0 h-full basis-52 pl-2"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
                     data-slot="carousel-item"
                     role="group"
                   >
@@ -743,15 +743,15 @@ exports[`BonusProductSelection stories snapshot > Desktop story renders and matc
               role="region"
             >
               <div
-                class="overflow-hidden h-full"
+                class="overflow-hidden"
                 data-slot="carousel-content"
               >
                 <div
-                  class="flex h-full -ml-2 justify-start"
+                  class="flex -ml-2 justify-start"
                 >
                   <div
                     aria-roledescription="slide"
-                    class="min-w-0 shrink-0 grow-0 h-full basis-52 pl-2"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
                     data-slot="carousel-item"
                     role="group"
                   >
@@ -813,7 +813,7 @@ exports[`BonusProductSelection stories snapshot > Desktop story renders and matc
                   </div>
                   <div
                     aria-roledescription="slide"
-                    class="min-w-0 shrink-0 grow-0 h-full basis-52 pl-2"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
                     data-slot="carousel-item"
                     role="group"
                   >
@@ -875,7 +875,7 @@ exports[`BonusProductSelection stories snapshot > Desktop story renders and matc
                   </div>
                   <div
                     aria-roledescription="slide"
-                    class="min-w-0 shrink-0 grow-0 h-full basis-52 pl-2"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
                     data-slot="carousel-item"
                     role="group"
                   >
@@ -1101,15 +1101,15 @@ exports[`BonusProductSelection stories snapshot > Expanded story renders and mat
               role="region"
             >
               <div
-                class="overflow-hidden h-full"
+                class="overflow-hidden"
                 data-slot="carousel-content"
               >
                 <div
-                  class="flex h-full -ml-2 justify-start"
+                  class="flex -ml-2 justify-start"
                 >
                   <div
                     aria-roledescription="slide"
-                    class="min-w-0 shrink-0 grow-0 h-full basis-52 pl-2"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
                     data-slot="carousel-item"
                     role="group"
                   >
@@ -1171,7 +1171,7 @@ exports[`BonusProductSelection stories snapshot > Expanded story renders and mat
                   </div>
                   <div
                     aria-roledescription="slide"
-                    class="min-w-0 shrink-0 grow-0 h-full basis-52 pl-2"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
                     data-slot="carousel-item"
                     role="group"
                   >
@@ -1233,7 +1233,7 @@ exports[`BonusProductSelection stories snapshot > Expanded story renders and mat
                   </div>
                   <div
                     aria-roledescription="slide"
-                    class="min-w-0 shrink-0 grow-0 h-full basis-52 pl-2"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
                     data-slot="carousel-item"
                     role="group"
                   >
@@ -1459,15 +1459,15 @@ exports[`BonusProductSelection stories snapshot > Mobile story renders and match
               role="region"
             >
               <div
-                class="overflow-hidden h-full"
+                class="overflow-hidden"
                 data-slot="carousel-content"
               >
                 <div
-                  class="flex h-full -ml-2 justify-start"
+                  class="flex -ml-2 justify-start"
                 >
                   <div
                     aria-roledescription="slide"
-                    class="min-w-0 shrink-0 grow-0 h-full basis-52 pl-2"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
                     data-slot="carousel-item"
                     role="group"
                   >
@@ -1529,7 +1529,7 @@ exports[`BonusProductSelection stories snapshot > Mobile story renders and match
                   </div>
                   <div
                     aria-roledescription="slide"
-                    class="min-w-0 shrink-0 grow-0 h-full basis-52 pl-2"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
                     data-slot="carousel-item"
                     role="group"
                   >
@@ -1591,7 +1591,7 @@ exports[`BonusProductSelection stories snapshot > Mobile story renders and match
                   </div>
                   <div
                     aria-roledescription="slide"
-                    class="min-w-0 shrink-0 grow-0 h-full basis-52 pl-2"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
                     data-slot="carousel-item"
                     role="group"
                   >
@@ -1817,15 +1817,15 @@ exports[`BonusProductSelection stories snapshot > Tablet story renders and match
               role="region"
             >
               <div
-                class="overflow-hidden h-full"
+                class="overflow-hidden"
                 data-slot="carousel-content"
               >
                 <div
-                  class="flex h-full -ml-2 justify-start"
+                  class="flex -ml-2 justify-start"
                 >
                   <div
                     aria-roledescription="slide"
-                    class="min-w-0 shrink-0 grow-0 h-full basis-52 pl-2"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
                     data-slot="carousel-item"
                     role="group"
                   >
@@ -1887,7 +1887,7 @@ exports[`BonusProductSelection stories snapshot > Tablet story renders and match
                   </div>
                   <div
                     aria-roledescription="slide"
-                    class="min-w-0 shrink-0 grow-0 h-full basis-52 pl-2"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
                     data-slot="carousel-item"
                     role="group"
                   >
@@ -1949,7 +1949,7 @@ exports[`BonusProductSelection stories snapshot > Tablet story renders and match
                   </div>
                   <div
                     aria-roledescription="slide"
-                    class="min-w-0 shrink-0 grow-0 h-full basis-52 pl-2"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
                     data-slot="carousel-item"
                     role="group"
                   >
@@ -2175,15 +2175,15 @@ exports[`BonusProductSelection stories snapshot > WithCarouselNavigation story r
               role="region"
             >
               <div
-                class="overflow-hidden h-full"
+                class="overflow-hidden"
                 data-slot="carousel-content"
               >
                 <div
-                  class="flex h-full -ml-2 justify-start"
+                  class="flex -ml-2 justify-start"
                 >
                   <div
                     aria-roledescription="slide"
-                    class="min-w-0 shrink-0 grow-0 h-full basis-52 pl-2"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
                     data-slot="carousel-item"
                     role="group"
                   >
@@ -2245,7 +2245,7 @@ exports[`BonusProductSelection stories snapshot > WithCarouselNavigation story r
                   </div>
                   <div
                     aria-roledescription="slide"
-                    class="min-w-0 shrink-0 grow-0 h-full basis-52 pl-2"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
                     data-slot="carousel-item"
                     role="group"
                   >
@@ -2307,7 +2307,7 @@ exports[`BonusProductSelection stories snapshot > WithCarouselNavigation story r
                   </div>
                   <div
                     aria-roledescription="slide"
-                    class="min-w-0 shrink-0 grow-0 h-full basis-52 pl-2"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
                     data-slot="carousel-item"
                     role="group"
                   >
@@ -2369,7 +2369,7 @@ exports[`BonusProductSelection stories snapshot > WithCarouselNavigation story r
                   </div>
                   <div
                     aria-roledescription="slide"
-                    class="min-w-0 shrink-0 grow-0 h-full basis-52 pl-2"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
                     data-slot="carousel-item"
                     role="group"
                   >
@@ -2431,7 +2431,7 @@ exports[`BonusProductSelection stories snapshot > WithCarouselNavigation story r
                   </div>
                   <div
                     aria-roledescription="slide"
-                    class="min-w-0 shrink-0 grow-0 h-full basis-52 pl-2"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
                     data-slot="carousel-item"
                     role="group"
                   >
@@ -2493,7 +2493,7 @@ exports[`BonusProductSelection stories snapshot > WithCarouselNavigation story r
                   </div>
                   <div
                     aria-roledescription="slide"
-                    class="min-w-0 shrink-0 grow-0 h-full basis-52 pl-2"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
                     data-slot="carousel-item"
                     role="group"
                   >
@@ -2555,7 +2555,7 @@ exports[`BonusProductSelection stories snapshot > WithCarouselNavigation story r
                   </div>
                   <div
                     aria-roledescription="slide"
-                    class="min-w-0 shrink-0 grow-0 h-full basis-52 pl-2"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
                     data-slot="carousel-item"
                     role="group"
                   >
@@ -2617,7 +2617,7 @@ exports[`BonusProductSelection stories snapshot > WithCarouselNavigation story r
                   </div>
                   <div
                     aria-roledescription="slide"
-                    class="min-w-0 shrink-0 grow-0 h-full basis-52 pl-2"
+                    class="min-w-0 shrink-0 grow-0 basis-52 pl-2"
                     data-slot="carousel-item"
                     role="group"
                   >
