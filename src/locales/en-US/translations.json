@@ -762,6 +762,20 @@
                     "friend": "Friend",
                     "other": "Other"
                 }
+            },
+            "pickupPreferences": {
+                "heading": "Pickup Preferences",
+                "description": "Manage your pickup notification and store preferences",
+                "edit": "Edit",
+                "save": "Save",
+                "cancel": "Cancel",
+                "autoSelectStore": "Auto-select preferred store",
+                "autoSelectStoreDescription": "Automatically use your preferred store for pickup orders",
+                "pickupNotifications": "Pickup notifications",
+                "pickupNotificationsDescription": "Get notified when your order is ready for pickup",
+                "storeEventsPromotions": "Store events & promotions",
+                "storeEventsPromotionsDescription": "Receive updates about events and promotions at your preferred store",
+                "saveSuccess": "Pickup preferences saved successfully"
             }
         },
         "overview": {

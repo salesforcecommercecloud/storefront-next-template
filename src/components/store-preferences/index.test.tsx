@@ -64,5 +64,27 @@ describe('StorePreferences', () => {
             renderStorePreferences();
             expect(screen.getByText('Open today: 10:00 AM - 8:00 PM')).toBeInTheDocument();
         });
+
+        test('renders Pickup Preferences section heading', () => {
+            renderStorePreferences();
+            expect(screen.getByText('Pickup Preferences')).toBeInTheDocument();
+        });
+
+        test('renders Pickup Preferences description', () => {
+            renderStorePreferences();
+            expect(screen.getByText('Manage your pickup notification and store preferences')).toBeInTheDocument();
+        });
+
+        test('renders Edit button in Pickup Preferences', () => {
+            renderStorePreferences();
+            expect(screen.getByRole('button', { name: 'Edit' })).toBeInTheDocument();
+        });
+
+        test('renders all three pickup preference toggles', () => {
+            renderStorePreferences();
+            expect(screen.getByText('Auto-select preferred store')).toBeInTheDocument();
+            expect(screen.getByText('Pickup notifications')).toBeInTheDocument();
+            expect(screen.getByText('Store events & promotions')).toBeInTheDocument();
+        });
     });
 });

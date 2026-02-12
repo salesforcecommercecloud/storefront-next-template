@@ -204,6 +204,11 @@
                 "comment": "Child products component includes Radix UI menu and dropdown dependencies for variant selection"
             },
             {
+                "name": "assets/\\(locales\\)-*-index.*.js",
+                "limit": "55 kB",
+                "comment": "Locales chunks (all locale translations)"
+            },
+            {
                 "name": "**/*",
                 "limit": "50 kB",
                 "comment": "For every built JS chunk that exceeds the baseline limit, you must explicitly approve it above. We must try our best to minimize the bundle size. These are uncompressed numbers (before gzip/brotli)."

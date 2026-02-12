@@ -748,6 +748,20 @@
                     "friend": "Amico",
                     "other": "Altro"
                 }
+            },
+            "pickupPreferences": {
+                "heading": "Preferenze ritiro",
+                "description": "Gestisci le notifiche di ritiro e le preferenze del negozio",
+                "edit": "Modifica",
+                "save": "Salva",
+                "cancel": "Annulla",
+                "autoSelectStore": "Seleziona automaticamente il negozio preferito",
+                "autoSelectStoreDescription": "Usa automaticamente il tuo negozio preferito per gli ordini con ritiro",
+                "pickupNotifications": "Notifiche di ritiro",
+                "pickupNotificationsDescription": "Ricevi una notifica quando il tuo ordine è pronto per il ritiro",
+                "storeEventsPromotions": "Eventi e promozioni del negozio",
+                "storeEventsPromotionsDescription": "Ricevi aggiornamenti su eventi e promozioni nel tuo negozio preferito",
+                "saveSuccess": "Preferenze di ritiro salvate con successo"
             }
         },
         "wishlist": {

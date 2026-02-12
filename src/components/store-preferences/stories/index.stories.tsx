@@ -53,5 +53,8 @@ export const Default: Story = {
         await expect(canvas.getByText('Salesforce Foundations - San Francisco')).toBeInTheDocument();
         await expect(canvas.getByText('415 Mission Street, San Francisco, CA 94105')).toBeInTheDocument();
         await expect(canvas.getByText('Open today: 10:00 AM - 8:00 PM')).toBeInTheDocument();
+        await expect(canvas.getByText('Pickup Preferences')).toBeInTheDocument();
+        await expect(canvas.getByText('Manage your pickup notification and store preferences')).toBeInTheDocument();
+        await expect(canvas.getByRole('button', { name: 'Edit' })).toBeInTheDocument();
     },
 };
