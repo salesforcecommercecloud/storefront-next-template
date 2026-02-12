@@ -59,6 +59,18 @@
     /* -- brand button (e.g. Write a Review) -- */
     --color-brand-primary: var(--brand-primary);
     --color-brand-primary-hover: var(--brand-primary-hover);
+    /* -- order status colors -- */
+    --color-order-status-new: var(--order-status-new);
+    --color-order-status-new-foreground: var(--order-status-new-foreground);
+    --color-order-status-warning: var(--order-status-warning);
+    --color-order-status-warning-foreground: var(--order-status-warning-foreground);
+    --color-order-status-completed: var(--order-status-completed);
+    --color-order-status-completed-foreground: var(--order-status-completed-foreground);
+    --color-order-status-cancelled: var(--order-status-cancelled);
+    --color-order-status-cancelled-foreground: var(--order-status-cancelled-foreground);
+    --color-order-border: var(--order-border);
+    --color-order-pickup: var(--order-pickup);
+    --color-order-pickup-border: var(--order-pickup-border);
 }
 /*---break---*/
 :root,
@@ -145,6 +157,19 @@ html.dark [data-theme='inverse'] {
     /* brand primary (e.g. Write a Review button) */
     --brand-primary: #4285f4;
     --brand-primary-hover: #3367d6;
+
+    /* order status tokens (SCAPI statuses: created, new, failed, failed_with_reopen, completed, cancelled) */
+    --order-status-new: #dbeafe;  /* -blue-100 - for created/new */
+    --order-status-new-foreground: #1d4ed8; /* -blue-700 */
+    --order-status-warning: #fef9c3; /* -yellow-100 - for failed_with_reopen */
+    --order-status-warning-foreground: #a16207; /* -yellow-700 */
+    --order-status-completed: #16a34a;  /* -green-600 - for completed */
+    --order-status-completed-foreground: #ffffff; /* -white */
+    --order-status-cancelled: #fee2e2; /* -red-100 - for cancelled */
+    --order-status-cancelled-foreground: #b91c1c; /* -red-700 */
+    --order-border: #e5e7eb; /* -brand-gray-200 */
+    --order-pickup: #eff6ff; /* -blue-50 */
+    --order-pickup-border: #bfdbfe; /* -blue-200 */
 
     body {
         @apply bg-background text-foreground;
@@ -234,6 +259,19 @@ html:not(.dark) [data-theme='inverse'] {
     /* brand primary (e.g. Write a Review button) */
     --brand-primary: #4285f4;
     --brand-primary-hover: #3367d6;
+
+    /* order status tokens (SCAPI statuses: created, new, failed, failed_with_reopen, completed, cancelled) */
+    --order-status-new: #dbeafe;  /* -blue-100 - for created/new */
+    --order-status-new-foreground: #1d4ed8; /* -blue-700 */
+    --order-status-warning: #fef9c3; /* -yellow-100 - for failed_with_reopen */
+    --order-status-warning-foreground: #a16207; /* -yellow-700 */
+    --order-status-completed: #16a34a;  /* -green-600 - for completed */
+    --order-status-completed-foreground: #ffffff; /* -white */
+    --order-status-cancelled: #fee2e2; /* -red-100 - for cancelled/failed */
+    --order-status-cancelled-foreground: #b91c1c; /* -red-700 */
+    --order-border: #e5e7eb; /* -brand-gray-200 */
+    --order-pickup: #eff6ff; /* -blue-50 */
+    --order-pickup-border: #bfdbfe; /* -blue-200 */
 
     body {
         @apply bg-background text-foreground;

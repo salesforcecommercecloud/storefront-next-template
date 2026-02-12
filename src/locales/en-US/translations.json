@@ -793,6 +793,15 @@
         "orders": {
             "empty": "No orders found. Start shopping to see your order history!",
             "subtitle": "View and track your orders",
+            "orderDate": "Order Date",
+            "total": "Total",
+            "items": "Items",
+            "pickupLocation": "Pickup Location",
+            "location": "Location",
+            "address": "Address",
+            "pickupWindow": "Pickup Window",
+            "viewOrderDetails": "View Order Details",
+            "downloadReceipt": "Download Receipt",
             "tableHeaders": {
                 "orderNumber": "Order Number",
                 "status": "Status",
@@ -804,10 +813,16 @@
             "orderDetailsTitle": "Order",
             "orderDetailsPageTitle": "Order Details",
             "status": {
+                "created": "Created",
                 "new": "New",
-                "inTransit": "In Transit",
-                "delivered": "Delivered"
+                "failed": "Failed",
+                "failedWithReopen": "Failed With Reopen",
+                "completed": "Completed",
+                "cancelled": "Cancelled"
             },
+            "totalOrders_one": "Viewing {{count}} order",
+            "totalOrders_other": "Viewing {{count}} orders",
+            "invalidDate": "Invalid Date",
             "shipmentNumber": "Shipment {{n}}",
             "itemsOrdered": "Items Ordered",
             "orderSummary": "Order Summary",

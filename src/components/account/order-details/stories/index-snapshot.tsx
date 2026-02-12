@@ -15,7 +15,6 @@
  */
 import { expect, test, describe, afterEach } from 'vitest';
 import { composeStories } from '@storybook/react-vite';
-
 import * as OrderDetailsStories from './index.stories';
 import { render, cleanup } from '@testing-library/react';
 

@@ -27,6 +27,7 @@ import 'vitest-localstorage-mock';
 vi.mock('/favicon.ico', () => ({ default: '/favicon.ico' }));
 vi.mock('/images/GoogleMaps_Logo_Gray_4x.png', () => ({ default: '/images/GoogleMaps_Logo_Gray_4x.png' }));
 vi.mock('/images/hero-cube.webp', () => ({ default: '/images/hero-cube.webp' }));
+vi.mock('/images/hero-new-arrivals.webp', () => ({ default: '/images/hero-new-arrivals.webp' }));
 // Payment logo SVGs (added in PR #909) - return data URLs to match Vite's test environment behavior
 vi.mock('/images/apple-pay-logo.svg', () => ({
     default:
