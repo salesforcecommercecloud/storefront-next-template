@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type React from 'react';
-import type { RegionDesignMetadata } from './component.types';
+import type { RegionDesignMetadata } from '../core/component.types';
 
 export interface PageDesignMetadata {
     id: string;

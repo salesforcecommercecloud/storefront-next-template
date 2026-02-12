@@ -16,7 +16,7 @@
 import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest';
 import { createReactComponentRegistry, registry } from './registry';
 import { ComponentRegistry } from '@salesforce/storefront-next-runtime/design';
-import { createReactAdapter } from '@salesforce/storefront-next-runtime/design/react';
+import { createReactAdapter } from '@salesforce/storefront-next-runtime/design/react/core';
 
 // Mock the external dependencies
 vi.mock('@salesforce/storefront-next-runtime/design', () => ({
@@ -25,7 +25,7 @@ vi.mock('@salesforce/storefront-next-runtime/design', () => ({
     }),
 }));
 
-vi.mock('@salesforce/storefront-next-runtime/design/react', () => ({
+vi.mock('@salesforce/storefront-next-runtime/design/react/core', () => ({
     createReactAdapter: vi.fn(() => ({
         createLazyComponent: vi.fn(),
         isDesignModeActive: vi.fn(),

@@ -18,11 +18,9 @@ import React from 'react';
 import {
     PageDesignerProvider,
     PageDesignerPageMetadataProvider,
-} from '@salesforce/storefront-next-runtime/design/react/core';
-import {
     createReactComponentDesignDecorator,
-    type ComponentDesignMetadata,
-} from '@salesforce/storefront-next-runtime/design/react';
+} from '@salesforce/storefront-next-runtime/design/react/core';
+import type { ComponentDesignMetadata } from '@salesforce/storefront-next-runtime/design/react';
 import { PageDesignerInit } from '@/page-designer-init';
 import { PageDesignerHostProvider } from '@/test-utils/page-designer-host-provider';
 import { RegionWrapper } from '@/components/region/region-wrapper';

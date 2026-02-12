@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type React from 'react';
+import { lazy } from 'react';
 import type { RegionDecoratorProps } from './component.types';
-import { DesignRegion } from './DesignRegion';
-import { usePageDesignerMode } from '../core/PageDesignerProvider';
+import { usePageDesignerMode } from './PageDesignerProvider';
+
+const LazyDesignRegion = lazy(() =>
+    import('../components/DesignRegion').then((module) => ({ default: module.DesignRegion }))
+);
 
 export function createReactRegionDesignDecorator<TProps>(
     Region: React.ComponentType<TProps>
@@ -26,9 +29,9 @@ export function createReactRegionDesignDecorator<TProps>(
         const { isDesignMode } = usePageDesignerMode();
 
         return isDesignMode ? (
-            <DesignRegion designMetadata={designMetadata}>
+            <LazyDesignRegion designMetadata={designMetadata}>
                 <Region {...(componentProps as unknown as TProps)}>{children}</Region>
-            </DesignRegion>
+            </LazyDesignRegion>
         ) : (
             <Region {...(componentProps as unknown as TProps)}>{children}</Region>
         );

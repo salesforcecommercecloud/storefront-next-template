@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { useRef, useCallback } from 'react';
-import type { ComponentDecoratorProps } from './component.types';
+import type { ComponentDecoratorProps } from '../core/component.types';
 import { useComponentDecoratorClasses } from '../hooks/useComponentDecoratorClasses';
 import { useDesignState } from '../hooks/useDesignState';
 import { useFocusedComponentHandler } from '../hooks/useFocusedComponentHandler';

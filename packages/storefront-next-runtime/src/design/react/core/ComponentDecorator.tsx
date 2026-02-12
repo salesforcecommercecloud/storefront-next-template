@@ -13,10 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type React from 'react';
+import { lazy } from 'react';
 import type { ComponentDecoratorProps } from './component.types';
-import { DesignComponent } from './DesignComponent';
-import { usePageDesignerMode } from '../core/PageDesignerProvider';
+import { usePageDesignerMode } from './PageDesignerProvider';
+
+// Lazy load so we don't include all design code when not in design mode
+const LazyDesignComponent = lazy(() =>
+    import('../components/DesignComponent').then((module) => ({ default: module.DesignComponent }))
+);
 
 /**
  * Creates a higher-order component that wraps React components with design-time functionality.
@@ -37,9 +41,9 @@ export function createReactComponentDesignDecorator<TProps>(
         const { isDesignMode } = usePageDesignerMode();
 
         return isDesignMode ? (
-            <DesignComponent designMetadata={designMetadata}>
+            <LazyDesignComponent designMetadata={designMetadata}>
                 <Component {...(componentProps as unknown as TProps)}>{children}</Component>
-            </DesignComponent>
+            </LazyDesignComponent>
         ) : (
             <Component {...(componentProps as unknown as TProps)}>{children}</Component>
         );

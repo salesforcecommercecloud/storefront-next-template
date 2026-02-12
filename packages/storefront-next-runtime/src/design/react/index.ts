@@ -17,15 +17,11 @@ export { useDesignContext } from './context/DesignContext';
 export type { DesignContextType } from './context/DesignContext';
 
 // Components
-export { createReactComponentDesignDecorator } from './components/ComponentDecorator';
-export { createReactRegionDesignDecorator } from './components/RegionDecorator';
 export type {
     ComponentDecoratorProps,
     RegionDecoratorProps,
     ComponentDesignMetadata,
     RegionDesignMetadata,
     DefaultComponentConstructor,
-} from './components/component.types';
+} from './core/component.types';
 export type { PageDecoratorProps, PageDesignMetadata } from './components/page.types';
-
-export { createReactAdapter, type ReactDesignComponentType } from './registry/adapter';

@@ -18,15 +18,15 @@ import { render as tlRender, act, waitFor, type RenderResult, cleanup as tlClean
 import type { HostToClientConfiguration } from '../messaging-api/domain-types';
 import type { HostApi } from '../messaging-api/api-types';
 import { createHostApi } from '../messaging-api/host';
-import { createReactComponentDesignDecorator } from '../react/components/ComponentDecorator';
+import { createReactComponentDesignDecorator } from '../react/core/ComponentDecorator';
 import type {
     ComponentDecoratorProps,
     RegionDesignMetadata,
     RegionDecoratorProps,
-} from '../react/components/component.types';
+} from '../react/core/component.types';
 import { PageDesignerProvider } from '../react/core/PageDesignerProvider';
 import { createTestBed } from './test-bed';
-import { createReactRegionDesignDecorator } from '../react/components/RegionDecorator';
+import { createReactRegionDesignDecorator } from '../react/core/RegionDecorator';
 import { ComponentContext } from '../react/core/ComponentContext';
 import { PageDesignerPageMetadataProvider } from '../react/core/PageDesignerPageMetadataProvider';
 import { beforeEach, expect, afterEach } from 'vitest';

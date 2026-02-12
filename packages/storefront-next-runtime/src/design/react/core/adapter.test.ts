@@ -17,9 +17,9 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 import React from 'react';
 import { ReactAdapter, createReactAdapter, type ReactComponentModule } from './adapter';
-import { createReactComponentDesignDecorator } from '../components/ComponentDecorator';
+import { createReactComponentDesignDecorator } from './ComponentDecorator';
 
-vi.mock('../components/ComponentDecorator', () => ({
+vi.mock('./ComponentDecorator', () => ({
     createReactComponentDesignDecorator: vi.fn(),
 }));
 

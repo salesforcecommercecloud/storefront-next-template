@@ -1,5 +1,7 @@
-import { r as ShopperExperience } from "./types.js";
-import { g as IsomorphicConfiguration } from "./index2.js";
+import { n as ComponentModule, o as FrameworkAdapter } from "./types.js";
+import { r as ShopperExperience } from "./types2.js";
+import { g as IsomorphicConfiguration } from "./index.js";
+import { i as RegionDecoratorProps, t as ComponentDecoratorProps } from "./component.types.js";
 import React$1 from "react";
 import * as react_jsx_runtime0 from "react/jsx-runtime";
 
@@ -65,5 +67,48 @@ interface ComponentContextType {
 declare const ComponentContext: React$1.Context<ComponentContextType | null>;
 declare const useComponentContext: () => ComponentContextType | null;
 //#endregion
-export { ComponentContext, PageDesignerPageMetadataProvider, PageDesignerProvider, RegionContext, useComponentContext, usePageDesignerMode, useRegionContext };
+//#region src/design/react/core/ComponentDecorator.d.ts
+/**
+ * Creates a higher-order component that wraps React components with design-time functionality.
+ * In design mode, adds visual indicators, selection handling, and host communication.
+ * In normal mode, renders the component unchanged for optimal performance.
+ *
+ * @template TProps - The props type of the component being decorated
+ * @param Component - The React component to wrap with design functionality
+ * @returns A new component with design-time capabilities
+ */
+declare function createReactComponentDesignDecorator<TProps>(Component: React.ComponentType<TProps>): (props: ComponentDecoratorProps<TProps>) => React.JSX.Element;
+//#endregion
+//#region src/design/react/core/RegionDecorator.d.ts
+declare function createReactRegionDesignDecorator<TProps>(Region: React.ComponentType<TProps>): (props: RegionDecoratorProps<TProps>) => React.JSX.Element;
+//#endregion
+//#region src/design/react/core/adapter.d.ts
+type ReactComponentModule<TProps> = ComponentModule<TProps, ReactDesignComponentType<TProps>>;
+/**
+ * A React component that optionally accepts design metadata.
+ * Any component returned from the registry could potentially accept design metadata.
+ * This includes both regular components and lazy components with their React-specific properties.
+ */
+type ReactDesignComponentType<TProps> = React$1.ComponentType<TProps> | React$1.LazyExoticComponent<React$1.ComponentType<TProps>>;
+/**
+ * React framework adapter that implements React-specific behavior
+ * for the framework-agnostic component registry.
+ */
+declare class ReactAdapter<TProps> implements FrameworkAdapter<TProps, ReactDesignComponentType<TProps>> {
+  /**
+   * Creates a React lazy component from an importer function.
+   */
+  createLazyComponent(importer: () => Promise<ReactComponentModule<TProps>>): ReactDesignComponentType<TProps>;
+  /**
+   * Decorates a React component with design-time capabilities.
+   * Uses the React-specific design decorator directly.
+   */
+  decorateComponent(component: ReactDesignComponentType<TProps>): ReactDesignComponentType<TProps>;
+}
+/**
+ * Creates a React adapter instance with optional configuration.
+ */
+declare function createReactAdapter<TProps>(): ReactAdapter<TProps>;
+//#endregion
+export { ComponentContext, PageDesignerPageMetadataProvider, PageDesignerProvider, type ReactComponentModule, type ReactDesignComponentType, RegionContext, createReactAdapter, createReactComponentDesignDecorator, createReactRegionDesignDecorator, useComponentContext, usePageDesignerMode, useRegionContext };
 //# sourceMappingURL=design-react-core.d.ts.map

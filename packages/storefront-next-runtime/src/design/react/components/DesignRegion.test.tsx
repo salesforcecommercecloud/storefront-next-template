@@ -18,7 +18,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { DesignRegion } from './DesignRegion';
-import type { RegionDecoratorProps } from './component.types';
+import type { RegionDecoratorProps } from '../core/component.types';
 
 // Mock dependencies
 vi.mock('../hooks/useRegionDecoratorClasses', () => ({

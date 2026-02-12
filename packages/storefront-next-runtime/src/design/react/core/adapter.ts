@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import { type ComponentModule, type FrameworkAdapter } from '../../index';
-import { createReactComponentDesignDecorator } from '../index';
+import { type ComponentModule, type FrameworkAdapter } from '../../registry/types';
+import { createReactComponentDesignDecorator } from './ComponentDecorator';
 
 /* ==================== React-Specific Types ==================== */
 

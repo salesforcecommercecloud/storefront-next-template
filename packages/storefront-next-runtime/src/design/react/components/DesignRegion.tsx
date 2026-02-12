@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { useCallback } from 'react';
-import type { RegionDecoratorProps } from './component.types';
+import type { RegionDecoratorProps } from '../core/component.types';
 import { useRegionDecoratorClasses } from '../hooks/useRegionDecoratorClasses';
 import { useNodeToTargetStore } from '../hooks/useNodeToTargetStore';
 import { DesignFrame } from './DesignFrame';

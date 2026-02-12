@@ -17,3 +17,7 @@ export { PageDesignerProvider, usePageDesignerMode } from './PageDesignerProvide
 export { PageDesignerPageMetadataProvider } from './PageDesignerPageMetadataProvider';
 export { RegionContext, useRegionContext } from './RegionContext';
 export { ComponentContext, useComponentContext } from './ComponentContext';
+export { createReactComponentDesignDecorator } from './ComponentDecorator';
+export { createReactRegionDesignDecorator } from './RegionDecorator';
+export { createReactAdapter } from './adapter';
+export type { ReactDesignComponentType, ReactComponentModule } from './adapter';
