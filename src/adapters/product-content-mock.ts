@@ -30,6 +30,9 @@ import type {
     WriteReviewFormData,
 } from '@/lib/adapters/product-content-data-types';
 
+/** Base path for review card images (assets in public/images/) */
+const REVIEW_PHOTOS_BASE = '/images';
+
 /**
  * Mock size guide data for PDP Size Guide modal.
  * Matches the Size Guide UI: conversion chart, how to measure, and size tips.
@@ -283,22 +286,22 @@ const MOCK_TECH_SPECS_DATA: TechSpecsData = {
 
 /**
  * Mock customer reviews (Customer Reviews section for PDP).
- * Matches screenshot: 2 reviews (Name A., Sarah M.) with summary and distribution.
+ * Matches screenshot: 7 reviews with photos, locations, and pagination (5 per page).
  */
 const MOCK_REVIEWS_DATA: ReviewsData = {
     heading: 'Customer Reviews',
-    subtitle: '2 reviews for Pure Cube',
+    subtitle: '7 reviews for Pure Cube',
     writeReviewButtonLabel: 'Write a Review',
     summary: {
-        averageRating: 4.5,
-        totalCount: 2,
-        basedOnLabel: 'Based on 2 reviews',
+        averageRating: 4.9,
+        totalCount: 7,
+        basedOnLabel: 'Based on 7 reviews',
         distribution: {
             oneStar: 0,
             twoStars: 0,
             threeStars: 0,
             fourStars: 1,
-            fiveStars: 1,
+            fiveStars: 6,
         },
     },
     searchPlaceholder: 'Search reviews...',
@@ -307,24 +310,99 @@ const MOCK_REVIEWS_DATA: ReviewsData = {
     reviews: [
         {
             id: 'review-1',
-            authorName: 'Name A.',
+            authorName: 'Alexandra P.',
             verifiedPurchase: true,
-            date: 'June 2022',
+            date: 'February 2025',
+            location: 'Boston, MA',
             rating: 5,
-            headline: 'Excellent quality',
-            body: 'Absolutely love this product! The quality is outstanding and it looks even better in person. Highly recommend to anyone looking for premium design.',
-            helpfulCount: 24,
+            headline: 'A comprehensive review after 6 months of ownership',
+            body: "I've been meaning to write this review for a while now, and after living with my Pure Cube White for six months, I feel I can give a truly comprehensive assessment. First, let me talk about the packaging - it arrived double-boxed with foam inserts that kept it perfectly protected during transit. The unboxing experience itself felt premium. Upon first holding the cube, I was immediately struck by its weight and density. This is not a hollow decorative piece; it has real substance and presence. The matte white finish is absolutely pristine, with no visible seams or imperfections whatsoever. I've placed mine on a walnut console table in my entryway, and it catches the natural light beautifully throughout the day. In the morning sun, it has an almost warm glow, while in the evening it takes on cooler tones. Maintenance has been minimal - I simply dust it weekly with a microfiber cloth. I was initially worried about the white showing fingerprints, but the matte finish does an excellent job of hiding them. My interior designer actually asked where I got it because she wants to recommend it to her other clients. Overall, this is the kind of piece that elevates an entire room. Worth every penny and then some.",
+            photos: [{ url: `${REVIEW_PHOTOS_BASE}/black-cube-photo.svg`, alt: '6 Month Review' }],
+            helpfulCount: 67,
             reportLabel: 'Report',
         },
         {
             id: 'review-2',
-            authorName: 'Sarah M.',
+            authorName: 'David L.',
             verifiedPurchase: true,
-            date: 'May 2022',
+            date: 'January 2025',
+            location: 'Los Angeles, CA',
+            rating: 5,
+            headline: 'Sleek and sophisticated',
+            body: "The black version is absolutely stunning. It has a subtle depth to the finish that photographs don't quite capture. Worth every penny.",
+            photos: [{ url: `${REVIEW_PHOTOS_BASE}/black-cube-photo.svg`, alt: 'Black Cube Photo' }],
+            helpfulCount: 22,
+            reportLabel: 'Report',
+        },
+        {
+            id: 'review-3',
+            authorName: 'James R.',
+            verifiedPurchase: true,
+            date: 'January 2025',
+            location: 'San Francisco, CA',
+            rating: 5,
+            headline: 'Perfect minimalist accent',
+            body: 'The Pure Cube is exactly what I was looking for. The white finish is crisp and clean, and the proportions are spot-on. It sits beautifully on my console table and catches the light perfectly throughout the day.',
+            photos: [
+                { url: `${REVIEW_PHOTOS_BASE}/home-office-setup.svg`, alt: 'Review Photo 1' },
+                { url: `${REVIEW_PHOTOS_BASE}/living-room.svg`, alt: 'Review Photo 2' },
+            ],
+            helpfulCount: 34,
+            reportLabel: 'Report',
+        },
+        {
+            id: 'review-4',
+            authorName: 'Maria S.',
+            verifiedPurchase: true,
+            date: 'December 2024',
+            location: 'New York, NY',
+            rating: 5,
+            headline: 'Museum quality at home',
+            body: "I bought this for my home office and it elevates the entire space. The craftsmanship is impeccable - you can tell this is precision-made. The matte white finish doesn't show fingerprints which is a huge plus.",
+            photos: [{ url: `${REVIEW_PHOTOS_BASE}/home-office-setup.svg`, alt: 'Home Office Setup' }],
+            helpfulCount: 28,
+            reportLabel: 'Report',
+        },
+        {
+            id: 'review-5',
+            authorName: 'Rachel M.',
+            verifiedPurchase: true,
+            date: 'December 2024',
+            location: 'Seattle, WA',
+            rating: 5,
+            headline: 'Great neutral option',
+            body: 'The gray is the perfect middle ground - not too stark like white, not as dramatic as black. Fits seamlessly into my living room.',
+            photos: [{ url: `${REVIEW_PHOTOS_BASE}/living-room.svg`, alt: 'Living Room' }],
+            helpfulCount: 15,
+            reportLabel: 'Report',
+        },
+        {
+            id: 'review-6',
+            authorName: 'Thomas K.',
+            verifiedPurchase: true,
+            date: 'November 2024',
+            location: 'Chicago, IL',
             rating: 4,
-            headline: 'Great design',
-            body: 'Beautiful geometric form that fits perfectly in my living space. The craftsmanship is impeccable. Only giving 4 stars because shipping took a bit longer than expected.',
-            helpfulCount: 18,
+            headline: 'Beautiful but smaller than expected',
+            body: 'Gorgeous piece with excellent build quality. My only note is that I wish I had ordered the Large size - the Medium is a bit smaller than it appeared in photos. That said, the quality is outstanding.',
+            helpfulCount: 19,
+            reportLabel: 'Report',
+        },
+        {
+            id: 'review-7',
+            authorName: 'Emily W.',
+            verifiedPurchase: true,
+            date: 'October 2024',
+            location: 'Portland, OR',
+            rating: 5,
+            headline: 'Bought 3 for my shelving unit',
+            body: 'These cubes arranged on my floating shelves create such a sophisticated look. The white color matches my Scandinavian decor perfectly. Already planning to buy more!',
+            photos: [
+                { url: `${REVIEW_PHOTOS_BASE}/shelf-display.svg`, alt: 'Shelf Display 1' },
+                { url: `${REVIEW_PHOTOS_BASE}/shelf-display.svg`, alt: 'Shelf Display 2' },
+                { url: `${REVIEW_PHOTOS_BASE}/shelf-display.svg`, alt: 'Shelf Display 3' },
+            ],
+            helpfulCount: 41,
             reportLabel: 'Report',
         },
     ],

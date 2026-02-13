@@ -20,6 +20,7 @@ import { useLocation, useNavigate } from 'react-router';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { getPaginationItems } from '@/lib/pagination-utils';
 
 export default function CategoryPagination({
     limit,
@@ -39,36 +40,7 @@ export default function CategoryPagination({
         return Math.floor(result.offset / limit) + 1;
     }, [limit, result.offset]);
 
-    const pageNumbers = useMemo((): (number | 'ellipsis')[] => {
-        const pages: (number | 'ellipsis')[] = [];
-
-        // Always show first page
-        pages.push(1);
-
-        // Logic for middle pages
-        if (current > 3) {
-            pages.push('ellipsis');
-        }
-
-        // Pages around current page
-        for (let i = Math.max(2, current - 1); i <= Math.min(total - 1, current + 1); i++) {
-            if (i > 1 && i < total) {
-                pages.push(i);
-            }
-        }
-
-        // Ellipsis before last page
-        if (current < total - 2) {
-            pages.push('ellipsis');
-        }
-
-        // Always show last page if more than 1 page
-        if (total > 1) {
-            pages.push(total);
-        }
-
-        return pages;
-    }, [total, current]);
+    const pageNumbers = useMemo(() => getPaginationItems(total, current), [total, current]);
 
     const navigatePage = useCallback(
         (page: number) => {
@@ -101,22 +73,21 @@ export default function CategoryPagination({
                 </Button>
 
                 {/* Page numbers */}
-                {pageNumbers.map((page, index) =>
-                    page === 'ellipsis' ? (
-                        // eslint-disable-next-line react/no-array-index-key
-                        <span key={`ellipsis-${index}`} className="px-4 py-2 text-foreground/80">
+                {pageNumbers.map((item) =>
+                    typeof item === 'object' && item.type === 'ellipsis' ? (
+                        <span key={`ellipsis-${item.key}`} className="px-4 py-2 text-foreground/80">
                             ...
                         </span>
                     ) : (
                         <Button
-                            key={page}
-                            onClick={() => void navigatePage(page)}
-                            disabled={current === page}
+                            key={item}
+                            onClick={() => void navigatePage(item)}
+                            disabled={current === item}
                             variant="outline"
                             className="size-9 cursor-pointer"
-                            aria-label={`Page ${page}`}
-                            aria-current={current === page ? 'page' : undefined}>
-                            {page}
+                            aria-label={`Page ${String(item)}`}
+                            aria-current={current === item ? 'page' : undefined}>
+                            {item}
                         </Button>
                     )
                 )}

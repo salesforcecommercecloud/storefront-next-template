@@ -164,17 +164,49 @@ describe('ProductContentMockAdapter', () => {
     });
 
     describe('getReviews', () => {
-        it('should return reviews with summary and 2 review items', async () => {
+        it('should return reviews data matching ReviewsData contract (heading, summary, reviews array with ReviewItem shape)', async () => {
             const data = await adapter.getReviews?.();
             expect(data).toBeDefined();
             if (!data) return;
-            expect(data.heading).toBe('Customer Reviews');
-            expect(data.subtitle).toBe('2 reviews for Pure Cube');
-            expect(data.summary.averageRating).toBe(4.5);
-            expect(data.summary.totalCount).toBe(2);
-            expect(data.reviews).toHaveLength(2);
-            expect(data.reviews[0].authorName).toBe('Name A.');
-            expect(data.reviews[0].headline).toBe('Excellent quality');
+            expect(data).toHaveProperty('heading');
+            expect(typeof data.heading).toBe('string');
+            expect(data).toHaveProperty('subtitle');
+            expect(typeof data.subtitle).toBe('string');
+            expect(data).toHaveProperty('writeReviewButtonLabel');
+            expect(data).toHaveProperty('summary');
+            expect(data.summary).toHaveProperty('averageRating');
+            expect(typeof data.summary.averageRating).toBe('number');
+            expect(data.summary).toHaveProperty('totalCount');
+            expect(typeof data.summary.totalCount).toBe('number');
+            expect(data.summary).toHaveProperty('distribution');
+            expect(data.summary.distribution).toMatchObject({
+                oneStar: expect.any(Number),
+                twoStars: expect.any(Number),
+                threeStars: expect.any(Number),
+                fourStars: expect.any(Number),
+                fiveStars: expect.any(Number),
+            });
+            expect(data).toHaveProperty('reviews');
+            expect(Array.isArray(data.reviews)).toBe(true);
+            if (data.reviews.length > 0) {
+                const review = data.reviews[0];
+                expect(review).toHaveProperty('id');
+                expect(typeof review.id).toBe('string');
+                expect(review).toHaveProperty('authorName');
+                expect(typeof review.authorName).toBe('string');
+                expect(review).toHaveProperty('verifiedPurchase');
+                expect(typeof review.verifiedPurchase).toBe('boolean');
+                expect(review).toHaveProperty('date');
+                expect(typeof review.date).toBe('string');
+                expect(review).toHaveProperty('rating');
+                expect(typeof review.rating).toBe('number');
+                expect(review).toHaveProperty('headline');
+                expect(typeof review.headline).toBe('string');
+                expect(review).toHaveProperty('body');
+                expect(typeof review.body).toBe('string');
+                expect(review).toHaveProperty('helpfulCount');
+                expect(typeof review.helpfulCount).toBe('number');
+            }
         });
     });
 

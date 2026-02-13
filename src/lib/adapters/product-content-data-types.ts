@@ -207,6 +207,16 @@ export interface TechSpecsData {
 // --- Customer Reviews ---
 
 /**
+ * Photo associated with a customer review
+ */
+export interface ReviewPhoto {
+    /** URL or path to the image (e.g. /images/black-cube-photo.svg from public/images/) */
+    url: string;
+    /** Optional alt text for accessibility */
+    alt?: string;
+}
+
+/**
  * Single customer review in the reviews section
  */
 export interface ReviewItem {
@@ -214,9 +224,13 @@ export interface ReviewItem {
     authorName: string;
     verifiedPurchase: boolean;
     date: string;
+    /** Optional location (e.g. "Boston, MA") */
+    location?: string;
     rating: number;
     headline: string;
     body: string;
+    /** Optional photos attached to the review */
+    photos?: ReviewPhoto[];
     helpfulCount: number;
     reportLabel?: string;
 }
