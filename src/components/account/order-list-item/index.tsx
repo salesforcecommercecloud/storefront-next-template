@@ -17,11 +17,10 @@
 import type { ReactElement } from 'react';
 import { Link } from 'react-router';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Typography } from '@/components/typography';
 import { useTranslation } from 'react-i18next';
-import { Check, X, ChevronRight, FileDown, MapPin } from 'lucide-react';
+import { Check, X, ChevronRight, MapPin } from 'lucide-react';
 import { formatCurrency } from '@/lib/currency';
 import { cn } from '@/lib/utils';
 
@@ -70,8 +69,6 @@ export interface PickupLocation {
     city: string;
     state: string;
     postalCode: string;
-    pickupWindowStart?: string;
-    pickupWindowEnd?: string;
 }
 
 /**
@@ -98,8 +95,6 @@ export interface OrderListItemProps {
     maxThumbnails?: number;
     /** Callback when View Details is clicked */
     onViewDetails?: (orderNo: string) => void;
-    /** Callback when Download Receipt is clicked */
-    onDownloadReceipt?: (orderNo: string) => void;
     /** Custom class name */
     className?: string;
 }
@@ -181,75 +176,6 @@ function formatOrderDate(dateString: string, locale: string, invalidDateLabel: s
 }
 
 /**
- * Format pickup window dates using the current locale.
- */
-function formatPickupWindow(startDate?: string, endDate?: string, locale?: string, invalidDateLabel?: string): string {
-    if (!startDate) return '';
-
-    try {
-        // Parse dates correctly to avoid timezone issues
-        // For date-only strings like "2024-09-16", create Date directly from parts
-        const parseDate = (dateStr: string) => {
-            const [year, month, day] = dateStr.split('-').map(Number);
-            // Validate parsed values
-            if (isNaN(year) || isNaN(month) || isNaN(day)) {
-                throw new Error('Invalid date format');
-            }
-            const date = new Date(year, month - 1, day); // month is 0-indexed
-            // Check if date is valid
-            if (isNaN(date.getTime())) {
-                throw new Error('Invalid date');
-            }
-            return date;
-        };
-
-        const start = parseDate(startDate);
-        const end = endDate ? parseDate(endDate) : null;
-        const dateLocale = locale || 'en-US';
-
-        if (end) {
-            const isSameMonth = start.getMonth() === end.getMonth();
-            const isSameYear = start.getFullYear() === end.getFullYear();
-
-            if (isSameMonth && isSameYear) {
-                // Same month and year: "Sep 16-20, 2024"
-                const startDay = start.getDate();
-                const endDay = end.getDate();
-                const month = start.toLocaleDateString(dateLocale, { month: 'short' });
-                return `${month} ${startDay}-${endDay}, ${start.getFullYear()}`;
-            } else if (isSameYear) {
-                // Same year, different months: "Sep 16-Oct 20, 2024"
-                const startFormatted = start.toLocaleDateString(dateLocale, { month: 'short', day: 'numeric' });
-                const endFormatted = end.toLocaleDateString(dateLocale, { month: 'short', day: 'numeric' });
-                return `${startFormatted}-${endFormatted}, ${start.getFullYear()}`;
-            } else {
-                // Different years: "Dec 16, 2024-Jan 20, 2025"
-                const startFormatted = start.toLocaleDateString(dateLocale, {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                });
-                const endFormatted = end.toLocaleDateString(dateLocale, {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                });
-                return `${startFormatted}-${endFormatted}`;
-            }
-        }
-
-        // No end date: "Sep 16, 2024"
-        return start.toLocaleDateString(dateLocale, {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-        });
-    } catch {
-        return invalidDateLabel || startDate;
-    }
-}
-
-/**
  * Status badge component for order status display.
  */
 function OrderStatusBadge({ status, label }: { status: string; label?: string }): ReactElement {
@@ -308,15 +234,8 @@ function OverflowIndicator({ count }: { count: number }): ReactElement {
  * Pickup location card component.
  */
 function PickupLocationCard({ location }: { location: PickupLocation }): ReactElement {
-    const { t, i18n } = useTranslation('account');
-    const invalidDateLabel = t('orders.invalidDate');
+    const { t } = useTranslation('account');
     const fullAddress = `${location.address}, ${location.city}, ${location.state} ${location.postalCode}`;
-    const pickupWindow = formatPickupWindow(
-        location.pickupWindowStart,
-        location.pickupWindowEnd,
-        i18n.language,
-        invalidDateLabel
-    );
 
     return (
         <Card className="bg-order-pickup border-order-pickup-border p-0">
@@ -346,17 +265,6 @@ function PickupLocationCard({ location }: { location: PickupLocation }): ReactEl
                             {fullAddress}
                         </Typography>
                     </div>
-
-                    {pickupWindow && (
-                        <div>
-                            <Typography variant="muted" as="p" className="text-xs">
-                                {t('orders.pickupWindow')}
-                            </Typography>
-                            <Typography variant="small" as="p" className="text-foreground font-normal">
-                                {pickupWindow}
-                            </Typography>
-                        </div>
-                    )}
                 </div>
             </CardContent>
         </Card>
@@ -392,12 +300,9 @@ function PickupLocationCard({ location }: { location: PickupLocation }): ReactEl
  *       city: 'San Francisco',
  *       state: 'CA',
  *       postalCode: '94105',
- *       pickupWindowStart: '2024-09-16',
- *       pickupWindowEnd: '2024-09-20',
  *     },
  *   }}
  *   onViewDetails={(orderNo) => navigate(`/account/orders/${orderNo}`)}
- *   onDownloadReceipt={(orderNo) => downloadReceipt(orderNo)}
  * />
  * ```
  */
@@ -405,7 +310,6 @@ export function OrderListItem({
     order,
     maxThumbnails = 12,
     onViewDetails,
-    onDownloadReceipt,
     className,
 }: OrderListItemProps): ReactElement {
     const { t, i18n } = useTranslation('account');
@@ -469,8 +373,8 @@ export function OrderListItem({
                     {/* Pickup Location (if exists) */}
                     {order.pickupLocation && <PickupLocationCard location={order.pickupLocation} />}
 
-                    {/* Footer: Actions */}
-                    <div className="flex items-center justify-between pt-2">
+                    {/* Footer: View Details Link */}
+                    <div className="pt-2">
                         <Typography
                             variant="small"
                             as="span"
@@ -478,20 +382,6 @@ export function OrderListItem({
                             {t('orders.viewOrderDetails', 'View Order Details')}
                             <ChevronRight className="size-4" />
                         </Typography>
-
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="gap-2 text-muted-foreground hover:text-foreground"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                onDownloadReceipt?.(order.orderNo);
-                            }}>
-                            <FileDown className="size-4" />
-                            {t('orders.downloadReceipt')}
-                        </Button>
                     </div>
                 </CardContent>
             </Card>

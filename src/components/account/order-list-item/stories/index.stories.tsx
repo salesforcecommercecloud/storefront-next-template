@@ -59,7 +59,6 @@ const meta: Meta<typeof OrderListItem> = {
     },
     args: {
         onViewDetails: action('onViewDetails'),
-        onDownloadReceipt: action('onDownloadReceipt'),
     },
 };
 
@@ -88,8 +87,6 @@ export const WithPickupLocation: Story = {
                 city: 'San Francisco',
                 state: 'CA',
                 postalCode: '94105',
-                pickupWindowStart: '2024-09-16',
-                pickupWindowEnd: '2024-09-20',
             },
         },
     },

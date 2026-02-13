@@ -72,8 +72,6 @@ const testOrders: Order[] = [
             city: 'San Francisco',
             state: 'CA',
             postalCode: '94105',
-            pickupWindowStart: '2024-09-16',
-            pickupWindowEnd: '2024-09-20',
         },
     },
     {
@@ -180,10 +178,6 @@ const meta: Meta<typeof OrderList> = {
         onViewDetails: {
             description: 'Callback when View Details is clicked',
             action: 'viewDetails',
-        },
-        onDownloadReceipt: {
-            description: 'Callback when Download Receipt is clicked',
-            action: 'downloadReceipt',
         },
     },
     decorators: [

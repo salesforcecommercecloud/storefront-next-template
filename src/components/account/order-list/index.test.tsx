@@ -114,12 +114,6 @@ describe('OrderList Component', () => {
             const viewDetailsLinks = screen.getAllByText('View Order Details');
             expect(viewDetailsLinks).toHaveLength(testOrders.length);
         });
-
-        test('renders Download Receipt button for each order', () => {
-            renderOrderList();
-            const downloadButtons = screen.getAllByText('Download Receipt');
-            expect(downloadButtons).toHaveLength(testOrders.length);
-        });
     });
 
     describe('Status Badge', () => {
@@ -206,18 +200,6 @@ describe('OrderList Component', () => {
 
             expect(mockOnViewDetails).toHaveBeenCalledTimes(1);
             expect(mockOnViewDetails).toHaveBeenCalledWith('ORD001');
-        });
-
-        test('calls onDownloadReceipt when Download Receipt is clicked', async () => {
-            const user = userEvent.setup();
-            const mockOnDownloadReceipt = vi.fn();
-            renderOrderList({ onDownloadReceipt: mockOnDownloadReceipt });
-
-            const downloadButtons = screen.getAllByText('Download Receipt');
-            await user.click(downloadButtons[0]);
-
-            expect(mockOnDownloadReceipt).toHaveBeenCalledTimes(1);
-            expect(mockOnDownloadReceipt).toHaveBeenCalledWith('ORD001');
         });
     });
 

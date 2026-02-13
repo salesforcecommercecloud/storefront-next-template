@@ -64,8 +64,6 @@ const mockOrderWithPickup: OrderListItemData = {
         city: 'San Francisco',
         state: 'CA',
         postalCode: '94105',
-        pickupWindowStart: '2024-09-16',
-        pickupWindowEnd: '2024-09-20',
     },
 };
 
@@ -110,12 +108,6 @@ describe('OrderListItem', () => {
 
             expect(screen.getByText('View Order Details')).toBeInTheDocument();
         });
-
-        it('renders Download Receipt button', () => {
-            render(<OrderListItem order={mockOrder} />);
-
-            expect(screen.getByText('Download Receipt')).toBeInTheDocument();
-        });
     });
 
     describe('pickup location', () => {
@@ -125,14 +117,6 @@ describe('OrderListItem', () => {
             expect(screen.getByText('Pickup Location')).toBeInTheDocument();
             expect(screen.getByText('Salesforce Foundations San Francisco')).toBeInTheDocument();
             expect(screen.getByText('415 Mission Street, San Francisco, CA 94105')).toBeInTheDocument();
-        });
-
-        it('renders pickup window when provided', () => {
-            render(<OrderListItem order={mockOrderWithPickup} />);
-
-            expect(screen.getByText('Pickup Window')).toBeInTheDocument();
-            // Verify the formatted date range (same month/year: "Sep 16-20, 2024")
-            expect(screen.getByText(/Sep 16-20, 2024/)).toBeInTheDocument();
         });
 
         it('does not render pickup section when not provided', () => {
@@ -190,17 +174,6 @@ describe('OrderListItem', () => {
             await user.click(screen.getByText('View Order Details'));
 
             expect(onViewDetails).toHaveBeenCalledWith('ORD-001-2024');
-        });
-
-        it('calls onDownloadReceipt when Download Receipt is clicked', async () => {
-            const user = userEvent.setup();
-            const onDownloadReceipt = vi.fn();
-
-            render(<OrderListItem order={mockOrder} onDownloadReceipt={onDownloadReceipt} />);
-
-            await user.click(screen.getByText('Download Receipt'));
-
-            expect(onDownloadReceipt).toHaveBeenCalledWith('ORD-001-2024');
         });
     });
 

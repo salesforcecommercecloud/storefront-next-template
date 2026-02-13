@@ -129,7 +129,7 @@ exports[`OrderListItem stories snapshot > Cancelled story renders and matches sn
         </div>
       </div>
       <div
-        class="flex items-center justify-between pt-2"
+        class="pt-2"
       >
         <span
           class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-primary hover:underline"
@@ -153,41 +153,6 @@ exports[`OrderListItem stories snapshot > Cancelled story renders and matches sn
             />
           </svg>
         </span>
-        <button
-          class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent dark:hover:bg-accent/50 h-8 rounded-md px-3 has-[>svg]:px-2.5 gap-2 text-muted-foreground hover:text-foreground"
-          data-size="sm"
-          data-slot="button"
-          data-variant="ghost"
-          type="button"
-        >
-          <svg
-            aria-hidden="true"
-            class="lucide lucide-file-down size-4"
-            fill="none"
-            height="24"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"
-            />
-            <path
-              d="M14 2v4a2 2 0 0 0 2 2h4"
-            />
-            <path
-              d="M12 18v-6"
-            />
-            <path
-              d="m9 15 3 3 3-3"
-            />
-          </svg>
-          Download Receipt
-        </button>
       </div>
     </div>
   </div>
@@ -297,7 +262,7 @@ exports[`OrderListItem stories snapshot > Default story renders and matches snap
         </div>
       </div>
       <div
-        class="flex items-center justify-between pt-2"
+        class="pt-2"
       >
         <span
           class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-primary hover:underline"
@@ -321,41 +286,6 @@ exports[`OrderListItem stories snapshot > Default story renders and matches snap
             />
           </svg>
         </span>
-        <button
-          class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent dark:hover:bg-accent/50 h-8 rounded-md px-3 has-[>svg]:px-2.5 gap-2 text-muted-foreground hover:text-foreground"
-          data-size="sm"
-          data-slot="button"
-          data-variant="ghost"
-          type="button"
-        >
-          <svg
-            aria-hidden="true"
-            class="lucide lucide-file-down size-4"
-            fill="none"
-            height="24"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"
-            />
-            <path
-              d="M14 2v4a2 2 0 0 0 2 2h4"
-            />
-            <path
-              d="M12 18v-6"
-            />
-            <path
-              d="m9 15 3 3 3-3"
-            />
-          </svg>
-          Download Receipt
-        </button>
       </div>
     </div>
   </div>
@@ -633,7 +563,7 @@ exports[`OrderListItem stories snapshot > Delivered story renders and matches sn
         </div>
       </div>
       <div
-        class="flex items-center justify-between pt-2"
+        class="pt-2"
       >
         <span
           class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-primary hover:underline"
@@ -657,41 +587,6 @@ exports[`OrderListItem stories snapshot > Delivered story renders and matches sn
             />
           </svg>
         </span>
-        <button
-          class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent dark:hover:bg-accent/50 h-8 rounded-md px-3 has-[>svg]:px-2.5 gap-2 text-muted-foreground hover:text-foreground"
-          data-size="sm"
-          data-slot="button"
-          data-variant="ghost"
-          type="button"
-        >
-          <svg
-            aria-hidden="true"
-            class="lucide lucide-file-down size-4"
-            fill="none"
-            height="24"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"
-            />
-            <path
-              d="M14 2v4a2 2 0 0 0 2 2h4"
-            />
-            <path
-              d="M12 18v-6"
-            />
-            <path
-              d="m9 15 3 3 3-3"
-            />
-          </svg>
-          Download Receipt
-        </button>
       </div>
     </div>
   </div>
@@ -787,7 +682,7 @@ exports[`OrderListItem stories snapshot > InTransit story renders and matches sn
         </div>
       </div>
       <div
-        class="flex items-center justify-between pt-2"
+        class="pt-2"
       >
         <span
           class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-primary hover:underline"
@@ -811,41 +706,6 @@ exports[`OrderListItem stories snapshot > InTransit story renders and matches sn
             />
           </svg>
         </span>
-        <button
-          class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent dark:hover:bg-accent/50 h-8 rounded-md px-3 has-[>svg]:px-2.5 gap-2 text-muted-foreground hover:text-foreground"
-          data-size="sm"
-          data-slot="button"
-          data-variant="ghost"
-          type="button"
-        >
-          <svg
-            aria-hidden="true"
-            class="lucide lucide-file-down size-4"
-            fill="none"
-            height="24"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"
-            />
-            <path
-              d="M14 2v4a2 2 0 0 0 2 2h4"
-            />
-            <path
-              d="M12 18v-6"
-            />
-            <path
-              d="m9 15 3 3 3-3"
-            />
-          </svg>
-          Download Receipt
-        </button>
       </div>
     </div>
   </div>
@@ -1023,23 +883,11 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
                   415 Mission Street, San Francisco, CA 94105
                 </p>
               </div>
-              <div>
-                <p
-                  class="text-muted-foreground text-left text-xs"
-                >
-                  Pickup Window
-                </p>
-                <p
-                  class="text-sm leading-none text-left text-foreground font-normal"
-                >
-                  Sep 16-20, 2024
-                </p>
-              </div>
             </div>
           </div>
         </div>
         <div
-          class="flex items-center justify-between pt-2"
+          class="pt-2"
         >
           <span
             class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-primary hover:underline"
@@ -1063,41 +911,6 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
               />
             </svg>
           </span>
-          <button
-            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent dark:hover:bg-accent/50 h-8 rounded-md px-3 has-[>svg]:px-2.5 gap-2 text-muted-foreground hover:text-foreground"
-            data-size="sm"
-            data-slot="button"
-            data-variant="ghost"
-            type="button"
-          >
-            <svg
-              aria-hidden="true"
-              class="lucide lucide-file-down size-4"
-              fill="none"
-              height="24"
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"
-              />
-              <path
-                d="M14 2v4a2 2 0 0 0 2 2h4"
-              />
-              <path
-                d="M12 18v-6"
-              />
-              <path
-                d="m9 15 3 3 3-3"
-              />
-            </svg>
-            Download Receipt
-          </button>
         </div>
       </div>
     </div>
@@ -1190,7 +1003,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
           </div>
         </div>
         <div
-          class="flex items-center justify-between pt-2"
+          class="pt-2"
         >
           <span
             class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-primary hover:underline"
@@ -1214,41 +1027,6 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
               />
             </svg>
           </span>
-          <button
-            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent dark:hover:bg-accent/50 h-8 rounded-md px-3 has-[>svg]:px-2.5 gap-2 text-muted-foreground hover:text-foreground"
-            data-size="sm"
-            data-slot="button"
-            data-variant="ghost"
-            type="button"
-          >
-            <svg
-              aria-hidden="true"
-              class="lucide lucide-file-down size-4"
-              fill="none"
-              height="24"
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"
-              />
-              <path
-                d="M14 2v4a2 2 0 0 0 2 2h4"
-              />
-              <path
-                d="M12 18v-6"
-              />
-              <path
-                d="m9 15 3 3 3-3"
-              />
-            </svg>
-            Download Receipt
-          </button>
         </div>
       </div>
     </div>
@@ -1523,7 +1301,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
           </div>
         </div>
         <div
-          class="flex items-center justify-between pt-2"
+          class="pt-2"
         >
           <span
             class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-primary hover:underline"
@@ -1547,41 +1325,6 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
               />
             </svg>
           </span>
-          <button
-            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent dark:hover:bg-accent/50 h-8 rounded-md px-3 has-[>svg]:px-2.5 gap-2 text-muted-foreground hover:text-foreground"
-            data-size="sm"
-            data-slot="button"
-            data-variant="ghost"
-            type="button"
-          >
-            <svg
-              aria-hidden="true"
-              class="lucide lucide-file-down size-4"
-              fill="none"
-              height="24"
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"
-              />
-              <path
-                d="M14 2v4a2 2 0 0 0 2 2h4"
-              />
-              <path
-                d="M12 18v-6"
-              />
-              <path
-                d="m9 15 3 3 3-3"
-              />
-            </svg>
-            Download Receipt
-          </button>
         </div>
       </div>
     </div>
@@ -1732,7 +1475,7 @@ exports[`OrderListItem stories snapshot > PartiallyDelivered story renders and m
         </div>
       </div>
       <div
-        class="flex items-center justify-between pt-2"
+        class="pt-2"
       >
         <span
           class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-primary hover:underline"
@@ -1756,41 +1499,6 @@ exports[`OrderListItem stories snapshot > PartiallyDelivered story renders and m
             />
           </svg>
         </span>
-        <button
-          class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent dark:hover:bg-accent/50 h-8 rounded-md px-3 has-[>svg]:px-2.5 gap-2 text-muted-foreground hover:text-foreground"
-          data-size="sm"
-          data-slot="button"
-          data-variant="ghost"
-          type="button"
-        >
-          <svg
-            aria-hidden="true"
-            class="lucide lucide-file-down size-4"
-            fill="none"
-            height="24"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"
-            />
-            <path
-              d="M14 2v4a2 2 0 0 0 2 2h4"
-            />
-            <path
-              d="M12 18v-6"
-            />
-            <path
-              d="m9 15 3 3 3-3"
-            />
-          </svg>
-          Download Receipt
-        </button>
       </div>
     </div>
   </div>
@@ -1965,23 +1673,11 @@ exports[`OrderListItem stories snapshot > WithPickupLocation story renders and m
                 415 Mission Street, San Francisco, CA 94105
               </p>
             </div>
-            <div>
-              <p
-                class="text-muted-foreground text-left text-xs"
-              >
-                Pickup Window
-              </p>
-              <p
-                class="text-sm leading-none text-left text-foreground font-normal"
-              >
-                Sep 16-20, 2024
-              </p>
-            </div>
           </div>
         </div>
       </div>
       <div
-        class="flex items-center justify-between pt-2"
+        class="pt-2"
       >
         <span
           class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-primary hover:underline"
@@ -2005,41 +1701,6 @@ exports[`OrderListItem stories snapshot > WithPickupLocation story renders and m
             />
           </svg>
         </span>
-        <button
-          class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent dark:hover:bg-accent/50 h-8 rounded-md px-3 has-[>svg]:px-2.5 gap-2 text-muted-foreground hover:text-foreground"
-          data-size="sm"
-          data-slot="button"
-          data-variant="ghost"
-          type="button"
-        >
-          <svg
-            aria-hidden="true"
-            class="lucide lucide-file-down size-4"
-            fill="none"
-            height="24"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"
-            />
-            <path
-              d="M14 2v4a2 2 0 0 0 2 2h4"
-            />
-            <path
-              d="M12 18v-6"
-            />
-            <path
-              d="m9 15 3 3 3-3"
-            />
-          </svg>
-          Download Receipt
-        </button>
       </div>
     </div>
   </div>
@@ -2135,7 +1796,7 @@ exports[`OrderListItem stories snapshot > WithoutImages story renders and matche
         </div>
       </div>
       <div
-        class="flex items-center justify-between pt-2"
+        class="pt-2"
       >
         <span
           class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-primary hover:underline"
@@ -2159,41 +1820,6 @@ exports[`OrderListItem stories snapshot > WithoutImages story renders and matche
             />
           </svg>
         </span>
-        <button
-          class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent dark:hover:bg-accent/50 h-8 rounded-md px-3 has-[>svg]:px-2.5 gap-2 text-muted-foreground hover:text-foreground"
-          data-size="sm"
-          data-slot="button"
-          data-variant="ghost"
-          type="button"
-        >
-          <svg
-            aria-hidden="true"
-            class="lucide lucide-file-down size-4"
-            fill="none"
-            height="24"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"
-            />
-            <path
-              d="M14 2v4a2 2 0 0 0 2 2h4"
-            />
-            <path
-              d="M12 18v-6"
-            />
-            <path
-              d="m9 15 3 3 3-3"
-            />
-          </svg>
-          Download Receipt
-        </button>
       </div>
     </div>
   </div>

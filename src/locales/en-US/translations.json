@@ -685,9 +685,7 @@
             "pickupLocation": "Pickup Location",
             "location": "Location",
             "address": "Address",
-            "pickupWindow": "Pickup Window",
             "viewOrderDetails": "View Order Details",
-            "downloadReceipt": "Download Receipt",
             "tableHeaders": {
                 "orderNumber": "Order Number",
                 "status": "Status",

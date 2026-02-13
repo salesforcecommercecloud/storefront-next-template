@@ -67,8 +67,6 @@ export type OrderListProps = {
     maxThumbnails?: number;
     /** Callback when View Details is clicked */
     onViewDetails?: (orderNo: string) => void;
-    /** Callback when Download Receipt is clicked */
-    onDownloadReceipt?: (orderNo: string) => void;
 };
 
 /**
@@ -102,7 +100,6 @@ function toOrderListItemData(order: Order): OrderListItemData {
  *   subtitle="View and track your orders"
  *   orders={orders}
  *   onViewDetails={(orderNo) => navigate(`/orders/${orderNo}`)}
- *   onDownloadReceipt={(orderNo) => downloadReceipt(orderNo)}
  * />
  * ```
  */
@@ -113,7 +110,6 @@ export function OrderList({
     emptyMessage,
     maxThumbnails = 12,
     onViewDetails,
-    onDownloadReceipt,
 }: OrderListProps): ReactElement {
     const { t } = useTranslation('account');
 
@@ -148,7 +144,6 @@ export function OrderList({
                             order={toOrderListItemData(order)}
                             maxThumbnails={maxThumbnails}
                             onViewDetails={onViewDetails}
-                            onDownloadReceipt={onDownloadReceipt}
                         />
                     ))}
                 </div>
