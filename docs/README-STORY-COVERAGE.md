@@ -182,7 +182,7 @@ The GitHub Actions workflow file is located at:
 **Key workflow details:**
 - **Trigger**: Pull request events (opened, reopened, synchronize, ready_for_review)
 - **Runs on**: `ubuntu-latest`
-- **Node version**: 22
+- **Node version**: 24
 - **Package manager**: pnpm 10.28.0
 - **Permissions**: 
   - `contents: read` - To checkout code

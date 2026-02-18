@@ -17,6 +17,7 @@ import express from "express";
 import { createRequestHandler } from "@react-router/express";
 import { existsSync, readFileSync, unlinkSync } from "node:fs";
 import { basename, extname as extname$1, join, resolve } from "node:path";
+import { pathToFileURL as pathToFileURL$1 } from "node:url";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import compression from "compression";
 import zlib$1 from "node:zlib";
@@ -115,8 +116,8 @@ function printServerConfig(config) {
 	if (enableStaticServing) console.log(`    ${chalk.green("✓")} ${chalk.bold("Static:          ")} ${chalk.dim("enabled")}`);
 	if (enableCompression) console.log(`    ${chalk.green("✓")} ${chalk.bold("Compression:     ")} ${chalk.dim("enabled")}`);
 	const localUrl = `http://localhost:${port}`;
-	const networkAddress = getNetworkAddress();
-	const networkUrl = networkAddress ? `http://${networkAddress}:${port}` : null;
+	const networkAddress = process.env.SHOW_NETWORK === "true" ? getNetworkAddress() : void 0;
+	const networkUrl = networkAddress ? `http://${networkAddress}:${port}` : void 0;
 	console.log();
 	console.log(`  ${chalk.green("➜")}  ${chalk.bold("Local:  ")} ${chalk.cyan(localUrl)}`);
 	if (networkUrl) console.log(`  ${chalk.green("➜")}  ${chalk.bold("Network:")} ${chalk.cyan(networkUrl)}`);
@@ -669,7 +670,11 @@ function parseTsconfigPaths(tsconfigPath, projectDirectory) {
 			}
 		}
 	} catch {}
-	return alias;
+	const sortedAlias = {};
+	Object.keys(alias).sort((a, b) => b.length - a.length).forEach((key) => {
+		sortedAlias[key] = alias[key];
+	});
+	return sortedAlias;
 }
 /**
 * Import a TypeScript file using jiti with proper path alias resolution.
@@ -976,6 +981,16 @@ const ServerModeFeatureMap = {
 
 //#endregion
 //#region src/server/index.ts
+/** Relative path to the middleware registry TypeScript source (development). Must match appDirectory + server dir + filename used by buildMiddlewareRegistry plugin. */
+const RELATIVE_MIDDLEWARE_REGISTRY_SOURCE = "src/server/middleware-registry.ts";
+/** Extensions to try for the built middlewares module (ESM first, then CJS for backwards compatibility). */
+const MIDDLEWARE_REGISTRY_BUILT_EXTENSIONS = [
+	".mjs",
+	".js",
+	".cjs"
+];
+/** All paths to try when loading the built middlewares (base + extension). */
+const RELATIVE_MIDDLEWARE_REGISTRY_BUILT_PATHS = ["bld/server/middleware-registry", "build/server/middleware-registry"].flatMap((base) => MIDDLEWARE_REGISTRY_BUILT_EXTENSIONS.map((ext) => `${base}${ext}`));
 /**
 * Create a unified Express server for development, preview, or production mode
 */
@@ -993,13 +1008,22 @@ async function createServer$1(options) {
 		const bundlePath = getBundlePath(bundleId);
 		app.use(bundlePath, createStaticMiddleware(bundleId, projectDirectory));
 	}
-	const middlewareRegistryPath = resolve(projectDirectory, "src/server/middleware-registry.ts");
-	if (existsSync(middlewareRegistryPath)) {
-		const registry = await importTypescript(middlewareRegistryPath, { projectDirectory });
-		if (registry.customMiddlewares && Array.isArray(registry.customMiddlewares)) registry.customMiddlewares.forEach((middleware) => {
-			app.use(middleware);
-		});
+	let registry = null;
+	if (mode === "development") {
+		const middlewareRegistryPath = resolve(projectDirectory, RELATIVE_MIDDLEWARE_REGISTRY_SOURCE);
+		if (existsSync(middlewareRegistryPath)) registry = await importTypescript(middlewareRegistryPath, { projectDirectory });
+	} else {
+		const possiblePaths = RELATIVE_MIDDLEWARE_REGISTRY_BUILT_PATHS.map((p) => resolve(projectDirectory, p));
+		let builtRegistryPath = null;
+		for (const path$1 of possiblePaths) if (existsSync(path$1)) {
+			builtRegistryPath = path$1;
+			break;
+		}
+		if (builtRegistryPath) registry = await import(pathToFileURL$1(builtRegistryPath).href);
 	}
+	if (registry?.customMiddlewares && Array.isArray(registry.customMiddlewares)) registry.customMiddlewares.forEach((entry) => {
+		app.use(entry.handler);
+	});
 	if (mode === "development" && vite) app.use(vite.middlewares);
 	if (enableProxy) app.use(config.commerce.api.proxy, createCommerceProxyMiddleware(config));
 	app.use(createHostHeaderMiddleware());

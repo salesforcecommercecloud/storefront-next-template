@@ -125,6 +125,31 @@ describe('ts-import', () => {
             });
         });
 
+        it('should prioritize exact aliases over wildcard aliases', () => {
+            mockExistsSync.mockReturnValue(true);
+            mockReadFileSync.mockReturnValue(
+                JSON.stringify({
+                    compilerOptions: {
+                        paths: {
+                            '@/*': ['./src/*'],
+                            '@/config/server': ['./config.server.ts'],
+                        },
+                    },
+                })
+            );
+
+            const result = parseTsconfigPaths('/project/tsconfig.json', '/project');
+            const normalizedResult = Object.fromEntries(
+                Object.entries(result).map(([key, value]) => [key, normalizePath(value)])
+            );
+
+            expect(normalizedResult).toEqual({
+                '@/config/server': '/project/config.server.ts',
+                '@/': '/project/src',
+            });
+            expect(Object.keys(normalizedResult)).toEqual(['@/config/server', '@/']);
+        });
+
         it('should return empty object when paths is not defined', () => {
             mockExistsSync.mockReturnValue(true);
             mockReadFileSync.mockReturnValue(

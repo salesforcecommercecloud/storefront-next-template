@@ -348,7 +348,7 @@ describe('server/index', () => {
 
                 const mockCustomMiddleware = vi.fn();
                 const mockRegistry = {
-                    customMiddlewares: [mockCustomMiddleware],
+                    customMiddlewares: [{ handler: mockCustomMiddleware }],
                 };
 
                 // Mock existsSync to return true

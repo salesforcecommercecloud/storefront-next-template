@@ -20,18 +20,65 @@ import { OrderDetails } from './index';
 import { getTranslation } from '@/lib/i18next';
 import { ConfigWrapper } from '@/test-utils/config';
 import { CurrencyWrapper } from '@/test-utils/context-provider';
-import type { ShopperOrders } from '@salesforce/storefront-next-runtime/scapi';
-import { mockOrderDetailsOrder, mockOrderDetailsProductsById } from './mock-order-details';
+import type { ShopperOrders, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 const { t } = getTranslation();
 
+const defaultOrder: ShopperOrders.schemas['Order'] = {
+    orderNo: 'INO001',
+    status: 'new',
+    orderTotal: 71.38,
+    productSubTotal: 61.99,
+    productTotal: 61.99,
+    productItems: [
+        {
+            itemId: '0066d7441cdaf6f93a64ca7a74',
+            productId: '701643108633M',
+            productName: 'First Product',
+            quantity: 1,
+            basePrice: 61.99,
+            price: 61.99,
+            priceAfterItemDiscount: 61.99,
+            shipmentId: 'me',
+        },
+    ],
+    shipments: [
+        {
+            shipmentId: 'me',
+            shipmentNo: '00002503',
+            trackingNumber: '1234567890',
+            shippingAddress: {
+                address1: '2030 Market street 8th st',
+                city: 'Seattle',
+                countryCode: 'US',
+                firstName: 'John',
+                fullName: 'John Snow',
+                lastName: 'Snow',
+                postalCode: '98121',
+                stateCode: 'WA',
+            },
+            shippingMethod: { id: '001', name: 'Ground', price: 5.99 },
+        },
+    ],
+};
+
+const defaultProductsById: Record<string, ShopperProducts.schemas['Product'] | undefined> = {
+    '701643108633M': {
+        id: '701643108633M',
+        name: 'First Product',
+        imageGroups: [{ viewType: 'small', images: [{ link: '', alt: 'First Product' }] }],
+        variationAttributes: [],
+        variationValues: {},
+    } as ShopperProducts.schemas['Product'],
+};
+
 /** Wraps OrderDetails with required router + config + currency context. */
-function OrderDetailsWithProviders({ order = mockOrderDetailsOrder }: { order?: ShopperOrders.schemas['Order'] }) {
+function OrderDetailsWithProviders({ order = defaultOrder }: { order?: ShopperOrders.schemas['Order'] }) {
     return (
         <MemoryRouter>
             <ConfigWrapper>
                 <CurrencyWrapper>
-                    <OrderDetails order={order} productsById={mockOrderDetailsProductsById} />
+                    <OrderDetails order={order} productsById={defaultProductsById} />
                 </CurrencyWrapper>
             </ConfigWrapper>
         </MemoryRouter>
@@ -39,11 +86,12 @@ function OrderDetailsWithProviders({ order = mockOrderDetailsOrder }: { order?: 
 }
 
 describe('OrderDetails', () => {
-    const renderOrderDetails = (order = mockOrderDetailsOrder) => render(<OrderDetailsWithProviders order={order} />);
+    const renderOrderDetails = (order = defaultOrder) => render(<OrderDetailsWithProviders order={order} />);
 
     test('renders order details section', () => {
-        const { container } = renderOrderDetails();
-        expect(container.querySelector('[data-section="order-details"]')).toBeInTheDocument();
+        renderOrderDetails();
+        expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: /back to order history/i })).toBeInTheDocument();
     });
 
     test('renders page title and order number', () => {
@@ -70,7 +118,7 @@ describe('OrderDetails', () => {
         ];
         cases.forEach(({ status, expectedLabel }) => {
             const { unmount } = renderOrderDetails({
-                ...mockOrderDetailsOrder,
+                ...defaultOrder,
                 status,
             } as ShopperOrders.schemas['Order']);
             expect(screen.getByText(expectedLabel)).toBeInTheDocument();
@@ -78,10 +126,17 @@ describe('OrderDetails', () => {
         });
     });
 
+    test('renders status as-is when status is not new, shipped, or delivered', () => {
+        renderOrderDetails({
+            ...defaultOrder,
+            status: 'cancelled',
+        } as ShopperOrders.schemas['Order']);
+        expect(screen.getByText('cancelled')).toBeInTheDocument();
+    });
+
     test('renders back to order history link with correct text and href', () => {
         renderOrderDetails();
         const link = screen.getByRole('link', { name: /back to order history/i });
-        expect(link).toBeInTheDocument();
         expect(link).toHaveAttribute('href', '/account/orders');
         expect(link).toHaveTextContent(new RegExp(t('account:orders.backToOrderHistory')));
     });
@@ -98,8 +153,7 @@ describe('OrderDetails', () => {
 
     test('renders OrderSummary with subtotal and order total from order', () => {
         renderOrderDetails();
-        const orderSummary = document.querySelector('[data-testid="sf-order-summary"]');
-        expect(orderSummary).toBeInTheDocument();
+        expect(screen.getByTestId('sf-order-summary')).toBeInTheDocument();
         expect(screen.getByText(t('cart:summary.subtotal'))).toBeInTheDocument();
         expect(screen.getByText(t('cart:summary.orderTotal'))).toBeInTheDocument();
         expect(screen.getByText(/71\.38/)).toBeInTheDocument();
@@ -108,7 +162,7 @@ describe('OrderDetails', () => {
     test('renders Shipment 1 with recipient name (Shipment 1 → Name)', () => {
         renderOrderDetails();
         const shipmentLabel = t('account:orders.shipmentNumber', { n: '1' });
-        const recipientName = mockOrderDetailsOrder.shipments?.[0]?.shippingAddress?.fullName ?? '';
+        const recipientName = defaultOrder.shipments?.[0]?.shippingAddress?.fullName ?? '';
         const shipmentHeaderParagraph = screen.getByText((_, element) => {
             const text = element?.textContent ?? '';
             return (
@@ -123,7 +177,7 @@ describe('OrderDetails', () => {
 
     test('renders recipient name from fullName when firstName and lastName are absent', () => {
         const orderWithFullNameOnly = {
-            ...mockOrderDetailsOrder,
+            ...defaultOrder,
             shipments: [
                 {
                     shipmentId: 'me',
@@ -137,7 +191,7 @@ describe('OrderDetails', () => {
                     },
                 },
             ],
-            productItems: mockOrderDetailsOrder.productItems,
+            productItems: defaultOrder.productItems,
         };
         renderOrderDetails(orderWithFullNameOnly as ShopperOrders.schemas['Order']);
         const shipmentSection = document.querySelector('[data-shipment-id="me"]');
@@ -151,7 +205,7 @@ describe('OrderDetails', () => {
     });
 
     test('renders multiple products in a single shipment grouped under Shipment 1', () => {
-        const firstItem = mockOrderDetailsOrder.productItems?.[0];
+        const firstItem = defaultOrder.productItems?.[0];
         if (!firstItem) throw new Error('mock order has no product items');
         const secondItem = {
             itemId: 'item-2',
@@ -164,7 +218,7 @@ describe('OrderDetails', () => {
             shipmentId: 'me',
         };
         const orderWithMultipleItems = {
-            ...mockOrderDetailsOrder,
+            ...defaultOrder,
             productItems: [firstItem, secondItem],
         };
         renderOrderDetails(orderWithMultipleItems);
@@ -227,12 +281,13 @@ describe('OrderDetails', () => {
         expect(screen.getAllByText(/Bob Jones/)).toHaveLength(2); // header + shipping address
         expect(screen.getByText('Product for Alice')).toBeInTheDocument();
         expect(screen.getByText('Product for Bob')).toBeInTheDocument();
-        const section1 = document.querySelector('[data-shipment-id="ship-a"]');
-        const section2 = document.querySelector('[data-shipment-id="ship-b"]');
-        expect(section1).toHaveTextContent('Product for Alice');
-        expect(section1).not.toHaveTextContent('Product for Bob');
-        expect(section2).toHaveTextContent('Product for Bob');
-        expect(section2).not.toHaveTextContent('Product for Alice');
+        const listItems = screen.getAllByRole('listitem');
+        const aliceItem = listItems.find((li) => li.textContent?.includes('Product for Alice'));
+        const bobItem = listItems.find((li) => li.textContent?.includes('Product for Bob'));
+        expect(aliceItem).toBeDefined();
+        expect(bobItem).toBeDefined();
+        expect(aliceItem).not.toHaveTextContent('Product for Bob');
+        expect(bobItem).not.toHaveTextContent('Product for Alice');
     });
 
     test('renders tracking number and shipping address per shipment when present', () => {
@@ -251,10 +306,10 @@ describe('OrderDetails', () => {
 
     test('omits tracking card when trackingNumber is null; omits shipping address card when shippingAddress is missing', () => {
         const orderWithoutTrackingOrAddress = {
-            ...mockOrderDetailsOrder,
+            ...defaultOrder,
             shipments: [
                 {
-                    ...mockOrderDetailsOrder.shipments?.[0],
+                    ...defaultOrder.shipments?.[0],
                     trackingNumber: null,
                     shippingAddress: null,
                     shippingMethod: null,
@@ -262,7 +317,7 @@ describe('OrderDetails', () => {
             ],
         };
         renderOrderDetails(orderWithoutTrackingOrAddress as unknown as ShopperOrders.schemas['Order']);
-        expect(document.querySelector('[data-card="tracking-number"]')).not.toBeInTheDocument();
-        expect(document.querySelector('[data-card="shipping-address"]')).not.toBeInTheDocument();
+        expect(screen.queryByText('1234567890')).not.toBeInTheDocument();
+        expect(screen.queryByText(t('account:orders.shippingAddress'))).not.toBeInTheDocument();
     });
 });

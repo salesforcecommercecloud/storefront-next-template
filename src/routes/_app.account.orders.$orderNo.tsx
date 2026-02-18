@@ -19,13 +19,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Typography } from '@/components/typography';
 import OrderDetails, { type ProductDataById } from '@/components/account/order-details';
-import {
-    mockOrderDetailsOrder,
-    mockOrderDetailsProductsById,
-} from '@/components/account/order-details/mock-order-details';
 import OrderSkeleton from '@/components/order-skeleton';
 import { useTranslation } from 'react-i18next';
 import type { ShopperOrders } from '@salesforce/storefront-next-runtime/scapi';
+import { fetchOrderWithProducts } from '@/lib/api/order';
 
 type OrderDetailsLoaderData = {
     order: ShopperOrders.schemas['Order'];
@@ -36,18 +33,15 @@ type OrderDetailsPageLoaderData = {
     orderData: Promise<OrderDetailsLoaderData>;
 };
 
-/** Loader returns mock order data. Replace with real SCAPI (getOrder + getProducts) when integrating. */
+/** Loader fetches order and product details via SCAPI (getOrder + getProducts). */
 // eslint-disable-next-line react-refresh/only-export-components -- route file exports loader
-export function loader({ params }: LoaderFunctionArgs): OrderDetailsPageLoaderData {
+export function loader({ context, params }: LoaderFunctionArgs): OrderDetailsPageLoaderData {
     const { orderNo } = params;
     if (!orderNo) {
         throw redirect('/account/orders');
     }
 
-    const orderDataPromise = Promise.resolve({
-        order: { ...mockOrderDetailsOrder, orderNo },
-        productsById: mockOrderDetailsProductsById,
-    });
+    const { orderDataPromise } = fetchOrderWithProducts(context, orderNo);
 
     return {
         orderData: orderDataPromise,
@@ -93,7 +87,7 @@ export default function OrderDetailsPage(): ReactElement {
                 <Await
                     resolve={loaderData.orderData}
                     errorElement={
-                        <div className="px-4 py-8">
+                        <div className="px-4 py-8" data-testid="order-not-found">
                             <OrderNotFoundCard />
                         </div>
                     }>

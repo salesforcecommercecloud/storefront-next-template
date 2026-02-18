@@ -165,8 +165,9 @@ export function printServerConfig(config: {
 
     // URLs
     const localUrl = `http://localhost:${port}`;
-    const networkAddress = getNetworkAddress();
-    const networkUrl = networkAddress ? `http://${networkAddress}:${port}` : null;
+    const showNetwork = process.env.SHOW_NETWORK === 'true';
+    const networkAddress = showNetwork ? getNetworkAddress() : undefined;
+    const networkUrl = networkAddress ? `http://${networkAddress}:${port}` : undefined;
 
     console.log();
     console.log(`  ${chalk.green('➜')}  ${chalk.bold('Local:  ')} ${chalk.cyan(localUrl)}`);

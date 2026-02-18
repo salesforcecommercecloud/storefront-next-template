@@ -32,7 +32,9 @@ export const _resetForTest = () => {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const cookieCaptureMiddleware = (_req: any, res: any, next: any) => {
-    if (!HYBRID_PROXY_CONFIG.enabled) return next();
+    if (!HYBRID_PROXY_CONFIG.enabled) {
+        return next();
+    }
 
     // Initialize global fetch patch once
     if (!isFetchPatched) {

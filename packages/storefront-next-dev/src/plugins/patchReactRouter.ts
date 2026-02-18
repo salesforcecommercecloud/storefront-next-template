@@ -26,6 +26,7 @@ const MODULE_TO_PATCH = 'react-router';
  */
 export const patchReactRouterPlugin = (): Plugin => {
     let isTestMode = false;
+    let isDevMode = false;
 
     return {
         name: 'odyssey:patch-react-router',
@@ -38,9 +39,17 @@ export const patchReactRouterPlugin = (): Plugin => {
             // Virtual module IDs with \0 prefix cause path resolution errors on Windows
             // when Vitest tries to resolve them with vi.importActual
             isTestMode = mode === 'test';
+            // Detect dev mode to avoid duplicate React Router instances
+            isDevMode = mode === 'development';
         },
         configEnvironment(name) {
             if (isTestMode) {
+                return;
+            }
+            // Skip noExternal in dev mode to avoid duplicate React Router instances
+            // This is acceptable because bundle config injection is only needed for
+            // MRT production deployments, not local development
+            if (isDevMode) {
                 return;
             }
             if (name === 'ssr') {
@@ -56,7 +65,8 @@ export const patchReactRouterPlugin = (): Plugin => {
         },
         resolveId(id, importer) {
             // Skip patching in test mode to avoid Windows path resolution errors
-            if (isTestMode) {
+            // Skip patching in dev mode to avoid duplicate React Router instances
+            if (isTestMode || isDevMode) {
                 return null;
             }
             if (id === MODULE_TO_PATCH) {
@@ -74,7 +84,8 @@ export const patchReactRouterPlugin = (): Plugin => {
 
         load(id) {
             // Skip patching in test mode
-            if (isTestMode) {
+            // Skip patching in dev mode to avoid duplicate React Router instances
+            if (isTestMode || isDevMode) {
                 return null;
             }
             if (id === VIRTUAL_MODULE_ID) {

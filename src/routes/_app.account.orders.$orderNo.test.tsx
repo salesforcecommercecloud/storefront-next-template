@@ -16,13 +16,27 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { createMemoryRouter, MemoryRouter, RouterProvider } from 'react-router';
+import type { ShopperOrders, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { getTranslation } from '@/lib/i18next';
-import {
-    mockOrderDetailsOrder,
-    mockOrderDetailsProductsById,
-} from '@/components/account/order-details/mock-order-details';
 
 const { t } = getTranslation();
+
+const mockOrder: ShopperOrders.schemas['Order'] = {
+    orderNo: 'INO001',
+    status: 'new',
+    productItems: [],
+};
+
+const mockProductsById: Record<string, ShopperProducts.schemas['Product'] | undefined> = {
+    '701643108633M': {
+        id: '701643108633M',
+        name: 'First Product',
+    } as ShopperProducts.schemas['Product'],
+};
+
+vi.mock('@/lib/api/order', () => ({
+    fetchOrderWithProducts: vi.fn(),
+}));
 
 vi.mock('@/components/account/order-details', () => ({
     default: ({ order, productsById }: { order: any; productsById: any }) => (
@@ -38,19 +52,46 @@ vi.mock('@/components/order-skeleton', () => ({
 }));
 
 import OrderDetailsPage, { loader, ErrorBoundary } from './_app.account.orders.$orderNo';
+import { fetchOrderWithProducts } from '@/lib/api/order';
 
 function createOrderDetailsRouter(orderNo: string) {
+    vi.mocked(fetchOrderWithProducts).mockImplementation((_context, orderNoParam) => ({
+        orderDataPromise: Promise.resolve({
+            order: { ...mockOrder, orderNo: orderNoParam },
+            productsById: mockProductsById,
+        }),
+        orderPromise: Promise.resolve({ ...mockOrder, orderNo: orderNoParam }),
+    }));
     return createMemoryRouter(
         [
             {
                 path: '/account/orders/:orderNo',
                 element: <OrderDetailsPage />,
-                loader: () => ({
-                    orderData: Promise.resolve({
-                        order: { ...mockOrderDetailsOrder, orderNo },
-                        productsById: mockOrderDetailsProductsById,
-                    }),
-                }),
+                loader,
+            },
+        ],
+        { initialEntries: [`/account/orders/${orderNo}`] }
+    );
+}
+
+function createRouterWithRejectingLoader(orderNo: string) {
+    let rejectOrderData: (err: Error) => void;
+    const orderDataPromise = new Promise<never>((_, reject) => {
+        rejectOrderData = reject;
+    });
+    vi.mocked(fetchOrderWithProducts).mockImplementation(() => {
+        setTimeout(() => rejectOrderData(new Error('Order not found')), 0);
+        return {
+            orderDataPromise,
+            orderPromise: new Promise<never>(() => {}),
+        };
+    });
+    return createMemoryRouter(
+        [
+            {
+                path: '/account/orders/:orderNo',
+                element: <OrderDetailsPage />,
+                loader,
             },
         ],
         { initialEntries: [`/account/orders/${orderNo}`] }
@@ -64,12 +105,19 @@ describe('Order Details Route (_app.account.orders.$orderNo)', () => {
 
     describe('loader', () => {
         test('throws redirect when orderNo is missing or undefined', () => {
-            expect(() => loader({ params: {} } as any)).toThrow();
-            expect(() => loader({ params: { orderNo: undefined } } as any)).toThrow();
+            expect(() => loader({ context: {} as any, params: {} } as any)).toThrow();
+            expect(() => loader({ context: {} as any, params: { orderNo: undefined } } as any)).toThrow();
         });
 
-        test('returns orderData promise with order and productsById; merges orderNo from params', async () => {
-            const result = loader({ params: { orderNo: 'ORD-123' } } as any);
+        test('returns orderData promise from fetchOrderWithProducts', async () => {
+            vi.mocked(fetchOrderWithProducts).mockReturnValue({
+                orderDataPromise: Promise.resolve({
+                    order: { ...mockOrder, orderNo: 'ORD-123' },
+                    productsById: mockProductsById,
+                }),
+                orderPromise: Promise.resolve({ ...mockOrder, orderNo: 'ORD-123' }),
+            });
+            const result = loader({ context: {} as any, params: { orderNo: 'ORD-123' } } as any);
 
             expect(result).toHaveProperty('orderData');
             expect(result.orderData).toBeInstanceOf(Promise);
@@ -77,17 +125,24 @@ describe('Order Details Route (_app.account.orders.$orderNo)', () => {
             const data = await result.orderData;
             expect(data.order).toBeDefined();
             expect(data.order.orderNo).toBe('ORD-123');
-            expect(data.productsById).toEqual(mockOrderDetailsProductsById);
+            expect(data.productsById).toEqual(mockProductsById);
 
-            const result2 = loader({ params: { orderNo: 'CUSTOM-456' } } as any);
+            vi.mocked(fetchOrderWithProducts).mockReturnValue({
+                orderDataPromise: Promise.resolve({
+                    order: { ...mockOrder, orderNo: 'CUSTOM-456' },
+                    productsById: mockProductsById,
+                }),
+                orderPromise: Promise.resolve({ ...mockOrder, orderNo: 'CUSTOM-456' }),
+            });
+            const result2 = loader({ context: {} as any, params: { orderNo: 'CUSTOM-456' } } as any);
             const data2 = await result2.orderData;
             expect(data2.order.orderNo).toBe('CUSTOM-456');
         });
     });
 
     describe('ErrorBoundary', () => {
-        test('renders order not found card and layout', () => {
-            const { container } = render(
+        test('renders order not found card and back link', () => {
+            render(
                 <MemoryRouter>
                     <ErrorBoundary />
                 </MemoryRouter>
@@ -99,23 +154,31 @@ describe('Order Details Route (_app.account.orders.$orderNo)', () => {
                 name: t('account:orders.backToOrderHistory'),
             });
             expect(backLink).toHaveAttribute('href', '/account/orders');
-            expect(container.querySelector('.max-w-4xl')).toBeInTheDocument();
-            expect(container.querySelector('.min-h-screen')).toBeInTheDocument();
         });
     });
 
     describe('OrderDetailsPage', () => {
-        test('renders layout, OrderDetails with resolved data, and page container', async () => {
+        test('renders OrderDetails with resolved data', async () => {
             const router = createOrderDetailsRouter('INO001');
-            const { container } = render(<RouterProvider router={router} />);
+            render(<RouterProvider router={router} />);
 
             await screen.findByTestId('order-details');
             expect(screen.getByTestId('order-no')).toHaveTextContent('INO001');
             expect(screen.getByTestId('products-count')).toBeInTheDocument();
+        });
 
-            const pageDiv = container.querySelector('.max-w-4xl.mx-auto');
-            expect(pageDiv).toBeInTheDocument();
-            expect(pageDiv?.className).toMatch(/py-8/);
+        test('shows order not found card when orderData promise rejects (Await errorElement)', async () => {
+            const router = createRouterWithRejectingLoader('BAD-ORDER');
+            render(<RouterProvider router={router} />);
+
+            await screen.findByText(t('account:orders.orderNotFound'), {}, { timeout: 2000 });
+            const errorSection = screen.getByTestId('order-not-found');
+            expect(errorSection).toHaveTextContent(t('account:orders.orderNotFound'));
+            expect(errorSection).toHaveTextContent(t('account:orders.orderNotFoundDescription'));
+            const backLink = screen.getByRole('link', {
+                name: t('account:orders.backToOrderHistory'),
+            });
+            expect(backLink).toHaveAttribute('href', '/account/orders');
         });
     });
 });

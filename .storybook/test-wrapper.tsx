@@ -11,7 +11,7 @@ import BasketProvider from '../src/providers/basket';
 import AuthProvider from '../src/providers/auth';
 import { ConfigProvider } from '../src/config';
 import { mockConfig } from '../src/test-utils/config';
-import { inBasketProductDetails } from '../src/components/__mocks__/basket-with-dress';
+import { inBasketProductDetails } from '@/components/__mocks__/basket-with-dress';
 
 // Transform array of products into Record<productId, product> format
 // expected by useBasketWithProducts hook

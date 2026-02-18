@@ -18,6 +18,7 @@ import chalk from "chalk";
 import express from "express";
 import { createRequestHandler } from "@react-router/express";
 import { existsSync as existsSync$1, readFileSync as readFileSync$1, unlinkSync } from "node:fs";
+import { pathToFileURL as pathToFileURL$1 } from "node:url";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import compression from "compression";
 import zlib from "node:zlib";
@@ -245,18 +246,21 @@ const MODULE_TO_PATCH = "react-router";
 */
 const patchReactRouterPlugin = () => {
 	let isTestMode = false;
+	let isDevMode = false;
 	return {
 		name: "odyssey:patch-react-router",
 		enforce: "pre",
 		config(_config, { mode }) {
 			isTestMode = mode === "test";
+			isDevMode = mode === "development";
 		},
 		configEnvironment(name) {
 			if (isTestMode) return;
+			if (isDevMode) return;
 			if (name === "ssr") return { resolve: { noExternal: ["react-router"] } };
 		},
 		resolveId(id, importer) {
-			if (isTestMode) return null;
+			if (isTestMode || isDevMode) return null;
 			if (id === MODULE_TO_PATCH) {
 				if (importer === VIRTUAL_MODULE_ID || importer?.includes("storefront-next-dev")) return null;
 				return VIRTUAL_MODULE_ID;
@@ -264,7 +268,7 @@ const patchReactRouterPlugin = () => {
 			return null;
 		},
 		load(id) {
-			if (isTestMode) return null;
+			if (isTestMode || isDevMode) return null;
 			if (id === VIRTUAL_MODULE_ID) return `
                     export * from 'react-router';
                     export { Scripts } from '@salesforce/storefront-next-dev/react-router/Scripts';
@@ -944,6 +948,79 @@ const eventInstrumentationValidatorPlugin = (config = {}) => {
 };
 
 //#endregion
+//#region src/plugins/buildMiddlewareRegistry.ts
+/** Source filename for the middleware registry (project source). */
+const MIDDLEWARE_REGISTRY_SOURCE_FILE = "middleware-registry.ts";
+/** Subdirectory under build output where the compiled registry is written (must match server/index.ts expectations). */
+const SERVER_OUT_SUBDIR = "server";
+/**
+* Vite plugin that builds the middleware registry file for production.
+*
+* This plugin reads the template's middleware registry from the app's server directory
+* (e.g. `src/server/middleware-registry.ts` when appDirectory is `./src`) and compiles it
+* into the build output's server directory so the production server (Managed Runtime)
+* can load the custom Express middlewares.
+*
+* Compilation uses tsdown (single TypeScript file → ESM) instead of a full Vite build.
+* Paths are derived from the React Router plugin context (appDirectory, buildDirectory)
+* when available; there are no env vars for these paths in this package.
+*
+* If the middleware registry file does not exist, the plugin silently skips the build step.
+*
+* @returns {Plugin} A Vite plugin that compiles the middleware registry for production
+*
+* @example
+* // In vite.config.ts
+* export default defineConfig({
+*   plugins: [
+*     buildMiddlewareRegistryPlugin()
+*   ]
+* })
+*/
+const buildMiddlewareRegistryPlugin = () => {
+	let resolvedConfig;
+	let buildDirectory;
+	/** App source directory (e.g. 'src' or './src') from React Router config. */
+	let appDirectory;
+	return {
+		name: "odyssey:build-middleware-registry",
+		apply: "build",
+		configResolved(config) {
+			resolvedConfig = config;
+			const rr = config.__reactRouterPluginContext?.reactRouterConfig ?? {};
+			buildDirectory = rr.buildDirectory ?? resolve$1(config.root, "build");
+			appDirectory = rr.appDirectory ?? "src";
+		},
+		buildApp: {
+			order: "post",
+			handler: async () => {
+				const projectRoot = resolvedConfig.root;
+				const middlewareRegistryPath = resolve$1(projectRoot, appDirectory, SERVER_OUT_SUBDIR, MIDDLEWARE_REGISTRY_SOURCE_FILE);
+				if (!existsSync(middlewareRegistryPath)) return;
+				const { build } = await import("tsdown");
+				const serverOutDir = resolve$1(projectRoot, buildDirectory, SERVER_OUT_SUBDIR);
+				await build({
+					cwd: projectRoot,
+					entry: { [MIDDLEWARE_REGISTRY_SOURCE_FILE.replace(/\.ts$/, "")]: middlewareRegistryPath },
+					outDir: serverOutDir,
+					format: ["esm"],
+					platform: "node",
+					outExtensions: () => ({
+						js: ".mjs",
+						dts: ".d.ts"
+					}),
+					dts: false,
+					clean: false,
+					hash: false,
+					noExternal: [/.*/],
+					external: [/^node:/]
+				});
+			}
+		}
+	};
+};
+
+//#endregion
 //#region src/storefront-next-targets.ts
 /**
 * Storefront Next Vite plugin that powers the React Router RSC app.
@@ -980,7 +1057,8 @@ function storefrontNextTargets(config = {}) {
 		fixReactRouterManifestUrlsPlugin(),
 		patchReactRouterPlugin(),
 		transformTargetPlaceholderPlugin(),
-		watchConfigFilesPlugin()
+		watchConfigFilesPlugin(),
+		buildMiddlewareRegistryPlugin()
 	];
 	if (staticRegistry?.componentPath && staticRegistry?.registryPath) plugins.push(staticRegistryPlugin(staticRegistry));
 	if (eventInstrumentationValidator !== false) plugins.push(eventInstrumentationValidatorPlugin(eventInstrumentationValidator));
@@ -1457,7 +1535,11 @@ function parseTsconfigPaths(tsconfigPath, projectDirectory) {
 			}
 		}
 	} catch {}
-	return alias;
+	const sortedAlias = {};
+	Object.keys(alias).sort((a, b) => b.length - a.length).forEach((key) => {
+		sortedAlias[key] = alias[key];
+	});
+	return sortedAlias;
 }
 /**
 * Import a TypeScript file using jiti with proper path alias resolution.
@@ -1764,6 +1846,16 @@ const ServerModeFeatureMap = {
 
 //#endregion
 //#region src/server/index.ts
+/** Relative path to the middleware registry TypeScript source (development). Must match appDirectory + server dir + filename used by buildMiddlewareRegistry plugin. */
+const RELATIVE_MIDDLEWARE_REGISTRY_SOURCE = "src/server/middleware-registry.ts";
+/** Extensions to try for the built middlewares module (ESM first, then CJS for backwards compatibility). */
+const MIDDLEWARE_REGISTRY_BUILT_EXTENSIONS = [
+	".mjs",
+	".js",
+	".cjs"
+];
+/** All paths to try when loading the built middlewares (base + extension). */
+const RELATIVE_MIDDLEWARE_REGISTRY_BUILT_PATHS = ["bld/server/middleware-registry", "build/server/middleware-registry"].flatMap((base) => MIDDLEWARE_REGISTRY_BUILT_EXTENSIONS.map((ext) => `${base}${ext}`));
 /**
 * Create a unified Express server for development, preview, or production mode
 */
@@ -1781,13 +1873,22 @@ async function createServer(options) {
 		const bundlePath = getBundlePath(bundleId);
 		app.use(bundlePath, createStaticMiddleware(bundleId, projectDirectory));
 	}
-	const middlewareRegistryPath = resolve(projectDirectory, "src/server/middleware-registry.ts");
-	if (existsSync$1(middlewareRegistryPath)) {
-		const registry = await importTypescript(middlewareRegistryPath, { projectDirectory });
-		if (registry.customMiddlewares && Array.isArray(registry.customMiddlewares)) registry.customMiddlewares.forEach((middleware) => {
-			app.use(middleware);
-		});
+	let registry = null;
+	if (mode === "development") {
+		const middlewareRegistryPath = resolve(projectDirectory, RELATIVE_MIDDLEWARE_REGISTRY_SOURCE);
+		if (existsSync$1(middlewareRegistryPath)) registry = await importTypescript(middlewareRegistryPath, { projectDirectory });
+	} else {
+		const possiblePaths = RELATIVE_MIDDLEWARE_REGISTRY_BUILT_PATHS.map((p) => resolve(projectDirectory, p));
+		let builtRegistryPath = null;
+		for (const path$2 of possiblePaths) if (existsSync$1(path$2)) {
+			builtRegistryPath = path$2;
+			break;
+		}
+		if (builtRegistryPath) registry = await import(pathToFileURL$1(builtRegistryPath).href);
 	}
+	if (registry?.customMiddlewares && Array.isArray(registry.customMiddlewares)) registry.customMiddlewares.forEach((entry) => {
+		app.use(entry.handler);
+	});
 	if (mode === "development" && vite) app.use(vite.middlewares);
 	if (enableProxy) app.use(config.commerce.api.proxy, createCommerceProxyMiddleware(config));
 	app.use(createHostHeaderMiddleware());

@@ -61,7 +61,15 @@ export function parseTsconfigPaths(tsconfigPath: string, projectDirectory: strin
         // Ignore tsconfig parse errors - caller can work without aliases
     }
 
-    return alias;
+    // Sort by key length descending so specific aliases match before wildcards.
+    const sortedAlias: Record<string, string> = {};
+    Object.keys(alias)
+        .sort((a, b) => b.length - a.length)
+        .forEach((key) => {
+            sortedAlias[key] = alias[key];
+        });
+
+    return sortedAlias;
 }
 
 export interface TsImportOptions {

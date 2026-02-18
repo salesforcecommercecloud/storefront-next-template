@@ -19,6 +19,7 @@ import { type ServerBuild } from 'react-router';
 import type { ViteDevServer } from 'vite';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { loadConfigFromEnv, type ServerConfig } from './config';
 import { importTypescript } from './ts-import';
 import { createCommerceProxyMiddleware } from './middleware/proxy';
@@ -29,6 +30,23 @@ import { createHostHeaderMiddleware } from './middleware/host-header';
 import { patchReactRouterBuild } from './utils';
 import { ServerModeFeatureMap, type ServerMode, type ServerModeFeatures } from './modes';
 import { getBundlePath } from '../utils/paths';
+
+/** Relative path to the middleware registry TypeScript source (development). Must match appDirectory + server dir + filename used by buildMiddlewareRegistry plugin. */
+const RELATIVE_MIDDLEWARE_REGISTRY_SOURCE = 'src/server/middleware-registry.ts';
+
+/** Extensions to try for the built middlewares module (ESM first, then CJS for backwards compatibility). */
+const MIDDLEWARE_REGISTRY_BUILT_EXTENSIONS = ['.mjs', '.js', '.cjs'] as const;
+
+/** Base relative paths for the built middleware registry (production). Order: MRT bundle path, then local build path. */
+const RELATIVE_MIDDLEWARE_REGISTRY_BUILT_BASES: readonly [string, string] = [
+    'bld/server/middleware-registry',
+    'build/server/middleware-registry',
+];
+
+/** All paths to try when loading the built middlewares (base + extension). */
+const RELATIVE_MIDDLEWARE_REGISTRY_BUILT_PATHS: readonly string[] = RELATIVE_MIDDLEWARE_REGISTRY_BUILT_BASES.flatMap(
+    (base) => MIDDLEWARE_REGISTRY_BUILT_EXTENSIONS.map((ext) => `${base}${ext}`)
+);
 
 export interface ServerOptions extends Partial<ServerModeFeatures> {
     /** Server mode: development (with Vite), preview (preview), or production (minimal) */
@@ -106,23 +124,42 @@ export async function createServer(options: ServerOptions): Promise<Express> {
         app.use(bundlePath, createStaticMiddleware(bundleId, projectDirectory));
     }
 
-    // Load and apply custom middlewares from the app's middleware-registry.ts
-    // This allows extensions to inject middleware (e.g. Hybrid Proxy)
-    const middlewareRegistryPath = resolve(projectDirectory, 'src/server/middleware-registry.ts');
-    if (existsSync(middlewareRegistryPath)) {
-        interface MiddlewareRegistry {
-            customMiddlewares?: express.RequestHandler[];
-        }
+    // Load and apply custom middlewares from the middleware registry.
+    // In development, import the TypeScript source via jiti; in production/preview,
+    // dynamically import the pre-built JS from the build output directory.
+    interface MiddlewareRegistry {
+        customMiddlewares?: Array<{ handler: express.RequestHandler }>;
+    }
 
-        const registry = await importTypescript<MiddlewareRegistry>(middlewareRegistryPath, {
-            projectDirectory,
-        });
+    let registry: MiddlewareRegistry | null = null;
 
-        if (registry.customMiddlewares && Array.isArray(registry.customMiddlewares)) {
-            registry.customMiddlewares.forEach((middleware: express.RequestHandler) => {
-                app.use(middleware);
+    if (mode === 'development') {
+        const middlewareRegistryPath = resolve(projectDirectory, RELATIVE_MIDDLEWARE_REGISTRY_SOURCE);
+        if (existsSync(middlewareRegistryPath)) {
+            registry = await importTypescript<MiddlewareRegistry>(middlewareRegistryPath, {
+                projectDirectory,
             });
         }
+    } else {
+        const possiblePaths = RELATIVE_MIDDLEWARE_REGISTRY_BUILT_PATHS.map((p) => resolve(projectDirectory, p));
+
+        let builtRegistryPath: string | null = null;
+        for (const path of possiblePaths) {
+            if (existsSync(path)) {
+                builtRegistryPath = path;
+                break;
+            }
+        }
+
+        if (builtRegistryPath) {
+            registry = (await import(pathToFileURL(builtRegistryPath).href)) as MiddlewareRegistry;
+        }
+    }
+
+    if (registry?.customMiddlewares && Array.isArray(registry.customMiddlewares)) {
+        registry.customMiddlewares.forEach((entry: { handler: express.RequestHandler }) => {
+            app.use(entry.handler);
+        });
     }
 
     if (mode === 'development' && vite) {

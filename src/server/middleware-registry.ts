@@ -21,15 +21,34 @@ import { cookieCaptureMiddleware } from '@/extensions/hybrid-proxy/server/cookie
 import config from '@/config/server';
 
 /**
- * Registry for custom server middlewares.
- * This allows for the injection of middleware from extensions.
- * This setup enables extensions, such as hybrid-proxy, to integrate their own Express middlewares by adding them to an array.
- * This approach keeps the core server logic clean and easy to upgrade.
+ * Registry for custom **Express** server middlewares.
+ *
+ * This file configures the Node/Express HTTP layer (proxy, redirects, cookies, etc.).
+ * It is not for React Router middlewares (auth, basket, i18n, etc.). For those, see
+ * the `middleware` and `clientMiddleware` exports in `root.tsx`.
+ *
+ * Extensions can add Express middlewares here; the framework applies them in order
+ * before the commerce proxy and the React Router SSR handler.
+ *
+ * Note: This file and the middleware modules it imports are loaded only at server startup.
+ * Restart the dev server to pick up edits to this file or to any of the imported middleware
+ * implementations; hot reload does not apply here.
  */
-export const customMiddlewares: RequestHandler[] = [
+export interface CustomMiddlewareEntry {
+    handler: RequestHandler;
+}
+
+export const customMiddlewares: CustomMiddlewareEntry[] = [
     /** @sfdc-extension-block-start SFDC_EXT_HYBRID_PROXY */
     // Cookie capture must run before other middlewares to wrap the request
-    cookieCaptureMiddleware,
-    createHybridProxyMiddleware(config.app.commerce.api.siteId, config.app.commerce.sites[0].defaultLocale),
+    { handler: cookieCaptureMiddleware },
+    {
+        // Express RequestHandler may be async; eslint expects void for object properties
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        handler: createHybridProxyMiddleware(
+            config.app.commerce.api.siteId,
+            config.app.commerce.sites[0].defaultLocale
+        ),
+    },
     /** @sfdc-extension-block-end SFDC_EXT_HYBRID_PROXY */
 ];

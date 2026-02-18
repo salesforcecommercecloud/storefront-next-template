@@ -9,7 +9,7 @@ A production-ready React storefront template for Salesforce Commerce Cloud, buil
 
 Before you begin, ensure you have the following installed:
 
-- **Node.js 22+** — [Download](https://nodejs.org/)
+- **Node.js 24+** — [Download](https://nodejs.org/)
 - **pnpm** — Install via `npm install -g pnpm` or see [pnpm.io](https://pnpm.io/installation)
 
 ## Quick Start

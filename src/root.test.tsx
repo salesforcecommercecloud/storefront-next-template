@@ -32,7 +32,7 @@ const defaultClientAuth: PublicSessionData = {
 };
 import { mockConfig } from '@/test-utils/config';
 // @sfdc-extension-block-start SFDC_EXT_HYBRID_PROXY
-import { isProxyPath } from '@/extensions/hybrid-proxy/config';
+import { isProxyPath } from './extensions/hybrid-proxy/config';
 // @sfdc-extension-block-end SFDC_EXT_HYBRID_PROXY
 
 vi.mock('@/lib/i18next.client', async () => {
@@ -87,6 +87,7 @@ vi.mock('@/extensions/hybrid-proxy/navigation-interceptor', () => ({
 
 vi.mock('@/extensions/hybrid-proxy/config', () => ({
     isProxyPath: vi.fn(),
+    HYBRID_PROXY_CONFIG: { enabled: false },
 }));
 // @sfdc-extension-block-end SFDC_EXT_HYBRID_PROXY
 
@@ -627,6 +628,176 @@ describe('root.tsx', () => {
                     expect(getByTestId('config-provider')).toBeInTheDocument(); // <-- always there
                     expect(queryByTestId('page-designer-provider')).not.toBeInTheDocument(); // <-- part of the conditional App content
                 });
+            });
+        });
+
+        describe('BackNavigationRevalidator', () => {
+            beforeEach(() => {
+                vi.mocked(isProxyPath).mockReturnValue(false);
+            });
+
+            it('calls revalidate once when hybrid is enabled and navigation type is back_forward', async () => {
+                const revalidateMock = vi.fn();
+                const reactRouter = await import('react-router');
+                vi.spyOn(reactRouter, 'useRevalidator').mockReturnValue({
+                    state: 'idle',
+                    revalidate: revalidateMock,
+                } as ReturnType<typeof reactRouter.useRevalidator>);
+
+                vi.stubGlobal('performance', {
+                    getEntriesByType: (type: string) => (type === 'navigation' ? [{ type: 'back_forward' }] : []),
+                } as unknown as Performance);
+
+                const i18next = await import('i18next');
+                const { initReactI18next } = await import('react-i18next');
+                const testI18nInstance = i18next.default.createInstance();
+                await testI18nInstance.use(initReactI18next).init({
+                    lng: 'en-US',
+                    fallbackLng: 'en-US',
+                    resources: { 'en-US': { translation: {} } },
+                });
+
+                const appConfigWithHybrid = { ...mockConfig, site: { hybrid: { enabled: true } } };
+
+                const Stub = createRoutesStub([
+                    {
+                        id: 'root',
+                        path: '/',
+                        Component: App,
+                        HydrateFallback,
+                        loader: () => ({
+                            auth: () => ({
+                                access_token: 'test-token',
+                                customer_id: 'test-customer',
+                                userType: 'registered',
+                            }),
+                            basket: { basketId: 'test-basket', productItems: [] },
+                            appConfig: appConfigWithHybrid,
+                            locale: 'en-US',
+                            currency: 'USD',
+                            getI18next: () => testI18nInstance,
+                        }),
+                    },
+                ]);
+
+                render(<Stub initialEntries={['/']} />);
+
+                await waitFor(() => {
+                    expect(revalidateMock).toHaveBeenCalledTimes(1);
+                });
+
+                vi.unstubAllGlobals();
+                vi.restoreAllMocks();
+            });
+
+            it('does not call revalidate when navigation type is not back_forward', async () => {
+                const revalidateMock = vi.fn();
+                const reactRouter = await import('react-router');
+                vi.spyOn(reactRouter, 'useRevalidator').mockReturnValue({
+                    state: 'idle',
+                    revalidate: revalidateMock,
+                } as ReturnType<typeof reactRouter.useRevalidator>);
+
+                vi.stubGlobal('performance', {
+                    getEntriesByType: (type: string) => (type === 'navigation' ? [{ type: 'navigate' }] : []),
+                } as unknown as Performance);
+
+                const i18next = await import('i18next');
+                const { initReactI18next } = await import('react-i18next');
+                const testI18nInstance = i18next.default.createInstance();
+                await testI18nInstance.use(initReactI18next).init({
+                    lng: 'en-US',
+                    fallbackLng: 'en-US',
+                    resources: { 'en-US': { translation: {} } },
+                });
+
+                const appConfigWithHybrid = { ...mockConfig, site: { hybrid: { enabled: true } } };
+
+                const Stub = createRoutesStub([
+                    {
+                        id: 'root',
+                        path: '/',
+                        Component: App,
+                        HydrateFallback,
+                        loader: () => ({
+                            auth: () => ({
+                                access_token: 'test-token',
+                                customer_id: 'test-customer',
+                                userType: 'registered',
+                            }),
+                            basket: { basketId: 'test-basket', productItems: [] },
+                            appConfig: appConfigWithHybrid,
+                            locale: 'en-US',
+                            currency: 'USD',
+                            getI18next: () => testI18nInstance,
+                        }),
+                    },
+                ]);
+
+                const { getByTestId } = render(<Stub initialEntries={['/']} />);
+
+                await waitFor(() => {
+                    expect(getByTestId('page-designer-provider')).toBeInTheDocument();
+                });
+
+                expect(revalidateMock).not.toHaveBeenCalled();
+
+                vi.unstubAllGlobals();
+                vi.restoreAllMocks();
+            });
+
+            it('does not call revalidate when hybrid is disabled', async () => {
+                const revalidateMock = vi.fn();
+                const reactRouter = await import('react-router');
+                vi.spyOn(reactRouter, 'useRevalidator').mockReturnValue({
+                    state: 'idle',
+                    revalidate: revalidateMock,
+                } as ReturnType<typeof reactRouter.useRevalidator>);
+
+                vi.stubGlobal('performance', {
+                    getEntriesByType: (type: string) => (type === 'navigation' ? [{ type: 'back_forward' }] : []),
+                } as unknown as Performance);
+
+                const i18next = await import('i18next');
+                const { initReactI18next } = await import('react-i18next');
+                const testI18nInstance = i18next.default.createInstance();
+                await testI18nInstance.use(initReactI18next).init({
+                    lng: 'en-US',
+                    fallbackLng: 'en-US',
+                    resources: { 'en-US': { translation: {} } },
+                });
+
+                const Stub = createRoutesStub([
+                    {
+                        id: 'root',
+                        path: '/',
+                        Component: App,
+                        HydrateFallback,
+                        loader: () => ({
+                            auth: () => ({
+                                access_token: 'test-token',
+                                customer_id: 'test-customer',
+                                userType: 'registered',
+                            }),
+                            basket: { basketId: 'test-basket', productItems: [] },
+                            appConfig: mockConfig,
+                            locale: 'en-US',
+                            currency: 'USD',
+                            getI18next: () => testI18nInstance,
+                        }),
+                    },
+                ]);
+
+                const { getByTestId } = render(<Stub initialEntries={['/']} />);
+
+                await waitFor(() => {
+                    expect(getByTestId('page-designer-provider')).toBeInTheDocument();
+                });
+
+                expect(revalidateMock).not.toHaveBeenCalled();
+
+                vi.unstubAllGlobals();
+                vi.restoreAllMocks();
             });
         });
         // @sfdc-extension-block-end SFDC_EXT_HYBRID_PROXY

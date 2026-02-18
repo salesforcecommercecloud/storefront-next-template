@@ -118,6 +118,7 @@
     "vitest": "4.0.18"
   },
   "dependencies": {
+    "tsdown": "^0.15.4",
     "@babel/generator": "7.28.5",
     "@babel/parser": "^7.28.4",
     "@babel/traverse": "^7.28.4",

@@ -24,18 +24,26 @@ declare global {
          * Injected from BUNDLE_ID environment variable, defaults to 'local'.
          * This property is injected by @salesforce/storefront-next-dev package.
          *
-         * @example 'local' | '140'
+         * Note: In development mode, this is undefined since bundle config injection
+         * is skipped to avoid React Router duplicate instance issues. Code should
+         * fall back to 'local' when this is undefined.
+         *
+         * @example 'local' | '140' | undefined (in dev mode)
          */
-        _BUNDLE_ID: string;
+        _BUNDLE_ID?: string;
 
         /**
          * The path to the client bundle assets.
          * Constructed as `/mobify/bundle/${bundleId}/client/`
          * This property is injected by @salesforce/storefront-next-dev package.
          *
-         * @example '/mobify/bundle/local/client/' | '/mobify/bundle/140/client/'
+         * Note: In development mode, this is undefined since bundle config injection
+         * is skipped to avoid React Router duplicate instance issues. Code should
+         * fall back to '/' when this is undefined.
+         *
+         * @example '/mobify/bundle/local/client/' | '/mobify/bundle/140/client/' | undefined (in dev mode)
          */
-        _BUNDLE_PATH: string;
+        _BUNDLE_PATH?: string;
     }
 }
 

@@ -17,32 +17,55 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { HYBRID_PROXY_CONFIG, isProxyPath, getProxyPathConfig } from './config';
 
 describe('Hybrid Proxy Config', () => {
-    let originalEnabled: boolean;
     let originalPaths: typeof HYBRID_PROXY_CONFIG.paths;
+    let originalEnabled: boolean;
 
     beforeEach(() => {
-        originalEnabled = HYBRID_PROXY_CONFIG.enabled;
         originalPaths = [...HYBRID_PROXY_CONFIG.paths];
-        // Ensure proxy is enabled for tests unless specified otherwise
-        HYBRID_PROXY_CONFIG.enabled = true;
+        originalEnabled = HYBRID_PROXY_CONFIG.enabled;
     });
 
     afterEach(() => {
-        HYBRID_PROXY_CONFIG.enabled = originalEnabled;
         HYBRID_PROXY_CONFIG.paths = originalPaths;
+        HYBRID_PROXY_CONFIG.enabled = originalEnabled;
+    });
+
+    describe('enabled property', () => {
+        it('should be a boolean value', () => {
+            expect(typeof HYBRID_PROXY_CONFIG.enabled).toBe('boolean');
+        });
+
+        it('should default to false for safety (must be explicitly enabled)', () => {
+            // Default value should be false for production safety
+            // Users must explicitly set enabled: true to use the proxy
+            expect(HYBRID_PROXY_CONFIG.enabled).toBe(false);
+        });
+
+        it('can be manually set to true for local testing', () => {
+            HYBRID_PROXY_CONFIG.enabled = true;
+            expect(HYBRID_PROXY_CONFIG.enabled).toBe(true);
+        });
     });
 
     describe('isProxyPath', () => {
         it('should return false if proxy is disabled', () => {
+            // Disable proxy
             HYBRID_PROXY_CONFIG.enabled = false;
             expect(isProxyPath('/cart')).toBe(false);
         });
 
+        it('should return true for matching path when proxy is enabled', () => {
+            HYBRID_PROXY_CONFIG.enabled = true;
+            expect(isProxyPath('/cart')).toBe(true);
+        });
+
         it('should return false for non-matching path', () => {
+            HYBRID_PROXY_CONFIG.enabled = true;
             expect(isProxyPath('/non-existent-path')).toBe(false);
         });
 
         it('should return false for partial match that does not start with proxy path', () => {
+            HYBRID_PROXY_CONFIG.enabled = true;
             // Assuming '/cart' is in config, 'my/cart' should not match
             expect(isProxyPath('/my/cart')).toBe(false);
         });

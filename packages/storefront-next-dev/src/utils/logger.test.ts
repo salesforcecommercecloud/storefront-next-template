@@ -346,6 +346,7 @@ describe('logger utils', () => {
                 ],
             });
 
+            process.env.SHOW_NETWORK = 'true';
             printServerConfig({
                 mode: 'development',
                 port: 5173,

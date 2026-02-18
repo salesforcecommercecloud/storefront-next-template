@@ -97,6 +97,9 @@ export const managedRuntimeBundlePlugin = (): Plugin => {
                 experimental: {
                     renderBuiltUrl(filename, { type }) {
                         if (mode !== 'preview' && (type === 'asset' || type === 'public')) {
+                            // WARNING: This runtime code is embedded in the bundle for EVERY asset/public file.
+                            // At large scale (hundreds of assets), this code snippet is duplicated hundreds of times.
+                            // Keep this code as minimal as possible to avoid significant bundle size bloat.
                             const runtimeCode = `(typeof window !== 'undefined' ? window._BUNDLE_PATH : ('/mobify/bundle/'+(process.env.BUNDLE_ID??'local')+'/client/')) + ${JSON.stringify(filename)}`;
 
                             return {

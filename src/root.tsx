@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type PropsWithChildren, useMemo } from 'react';
+import { type PropsWithChildren, useEffect, useMemo, useRef } from 'react';
 
 // React Router
 import {
@@ -31,6 +31,7 @@ import {
     /** @sfdc-extension-line SFDC_EXT_HYBRID_PROXY */
     useLocation,
     useMatches,
+    useRevalidator,
     useRouteLoaderData,
 } from 'react-router';
 
@@ -100,7 +101,7 @@ import appStylesHref from './app.css?url';
 /** @sfdc-extension-line SFDC_EXT_HYBRID_PROXY */
 import { HybridProxyNavigationInterceptor } from '@/extensions/hybrid-proxy/navigation-interceptor';
 /** @sfdc-extension-line SFDC_EXT_HYBRID_PROXY */
-import { isProxyPath } from '@/extensions/hybrid-proxy/config';
+import { HYBRID_PROXY_CONFIG, isProxyPath } from '@/extensions/hybrid-proxy/config';
 import { TargetProviders } from '@/targets/target-providers';
 import { MAINTENANCE_ERROR } from './lib/api-clients';
 import { type Maintenance, maintenanceContext } from '@/lib/maintenance';
@@ -336,9 +337,15 @@ export default function App({
         [correlationId, i18next, appConfig, currency, clientAuth, basketSnapshot]
     );
 
+    // App config "hybrid" (site.hybrid.enabled); hybrid-proxy adds its check in extension block below
+    let hybridEnabled = Boolean(appConfig?.site?.hybrid?.enabled);
+    // @sfdc-extension-line SFDC_EXT_HYBRID_PROXY
+    hybridEnabled = hybridEnabled || Boolean(HYBRID_PROXY_CONFIG?.enabled);
+
     let content = (
         <>
             <AuthActionExecutor />
+            {hybridEnabled && <BackNavigationRevalidator />}
             <PageDesignerProvider clientId="odyssey" targetOrigin="*" usid={clientAuth?.usid} mode={pageDesignerMode}>
                 <PageDesignerInit />
                 <Outlet />
@@ -369,5 +376,24 @@ export default function App({
  */
 function AuthActionExecutor() {
     useExecutePendingAction();
+    return null;
+}
+
+/**
+ * Revalidates loader data once on back/forward (e.g. back from SFRA). Mounted only when
+ * hybrid or hybrid-proxy is on; ensures UI is fresh after a full-page redirect. No-op when both are off.
+ */
+function BackNavigationRevalidator() {
+    const revalidator = useRevalidator();
+    const didRevalidateRef = useRef(false);
+    useEffect(() => {
+        if (didRevalidateRef.current) return;
+        const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
+        if (nav?.type === 'back_forward' && revalidator.state === 'idle') {
+            didRevalidateRef.current = true;
+            void revalidator.revalidate();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
     return null;
 }

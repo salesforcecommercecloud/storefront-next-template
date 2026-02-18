@@ -21,8 +21,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Typography } from '@/components/typography';
 import ProductImage from '@/components/product-image/product-image';
-import { createApiClients } from '@/lib/api-clients';
-import { formatCurrency, currencyContext } from '@/lib/currency';
+import { formatCurrency } from '@/lib/currency';
+import { fetchOrderWithProducts } from '@/lib/api/order';
 import { useCurrency } from '@/providers/currency';
 import { useBasketReset } from '@/providers/basket';
 import { useConfig } from '@/config';
@@ -98,73 +98,22 @@ const getPrimaryImageFromProduct = (product: ShopperProducts.schemas['Product'] 
 // eslint-disable-next-line react-refresh/only-export-components
 export function loader({ context, params }: LoaderFunctionArgs): CheckoutConfirmationLoaderData {
     const { orderNo } = params;
-    const clients = createApiClients(context);
-    const currency = context.get(currencyContext) as string;
-
-    const orderPromise = clients.shopperOrders
-        .getOrder({
-            params: {
-                path: {
-                    orderNo: orderNo as string,
-                },
-            },
-        })
-        .then(({ data }) => data);
+    const { orderDataPromise, orderPromise } = fetchOrderWithProducts(context, orderNo as string);
 
     // @sfdc-extension-line SFDC_EXT_BOPIS
     const storesByStoreIdPromise = orderPromise.then((order) => fetchStoresForOrder(context, order));
 
-    const productsByIdPromise: Promise<ProductDataById> = orderPromise.then(async (order) => {
-        const productIds = Array.from(
-            // prevents duplicate product IDs
-            new Set(
-                (order.productItems ?? [])
-                    .map((item) => item.productId)
-                    .filter((id): id is string => typeof id === 'string' && id.length > 0)
-            )
-        );
-
-        if (!productIds.length) {
-            return {};
-        }
-
-        try {
-            const { data } = await clients.shopperProducts.getProducts({
-                params: {
-                    query: {
-                        ids: productIds,
-                        expand: ['images', 'variations'],
-                        currency,
-                    },
-                },
-            });
-
-            const productsById: ProductDataById = {};
-            (data?.data ?? []).forEach((product) => {
-                productsById[product.id] = product;
-            });
-            return productsById;
-        } catch {
-            // Return empty object on error - allows the page to render without product details
-            return {};
-        }
-    });
-
-    // Combine all promises into a single promise that resolves to an object
     const combinedPromise = Promise.all([
-        orderPromise,
-        productsByIdPromise,
+        orderDataPromise,
         // @sfdc-extension-line SFDC_EXT_BOPIS
         storesByStoreIdPromise,
     ]).then(
         ([
-            order,
-            productsById,
+            orderData,
             // @sfdc-extension-line SFDC_EXT_BOPIS
             storesByStoreId,
         ]) => ({
-            order,
-            productsById,
+            ...orderData,
             // @sfdc-extension-line SFDC_EXT_BOPIS
             storesByStoreId,
         })
