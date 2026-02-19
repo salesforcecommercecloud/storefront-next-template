@@ -209,7 +209,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                     name={getFieldName('firstName')}
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold">
+                            <FormLabel className="text-base font-medium text-foreground">
                                 {t('addressForm.firstNameLabel')}
                             </FormLabel>
                             <FormControl>
@@ -220,7 +220,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                                     {...field}
                                 />
                             </FormControl>
-                            <FormMessage className="text-xl font-bold" />
+                            <FormMessage />
                         </FormItem>
                     )}
                 />
@@ -230,7 +230,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                     name={getFieldName('lastName')}
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold">
+                            <FormLabel className="text-base font-medium text-foreground">
                                 {t('addressForm.lastNameLabel')}
                             </FormLabel>
                             <FormControl>
@@ -241,7 +241,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                                     {...field}
                                 />
                             </FormControl>
-                            <FormMessage className="text-xl font-bold" />
+                            <FormMessage />
                         </FormItem>
                     )}
                 />
@@ -254,7 +254,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                     name={getFieldName('address1')}
                     render={({ field }) => (
                         <FormItem className="relative">
-                            <FormLabel className="text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold">
+                            <FormLabel className="text-base font-medium text-foreground">
                                 {t('addressForm.addressLabel')}
                             </FormLabel>
                             <FormControl>
@@ -268,7 +268,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                                 />
                             </FormControl>
                             {renderAddressAutocomplete()}
-                            <FormMessage className="text-xl font-bold" />
+                            <FormMessage />
                         </FormItem>
                     )}
                 />
@@ -281,7 +281,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                     name={getFieldName('address2')}
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold">
+                            <FormLabel className="text-base font-medium text-foreground">
                                 {t('addressForm.address2Label')}
                             </FormLabel>
                             <FormControl>
@@ -305,7 +305,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                     name={getFieldName('city')}
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold">
+                            <FormLabel className="text-base font-medium text-foreground">
                                 {t('addressForm.cityLabel')}
                             </FormLabel>
                             <FormControl>
@@ -316,7 +316,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                                     {...field}
                                 />
                             </FormControl>
-                            <FormMessage className="text-xl font-bold" />
+                            <FormMessage />
                         </FormItem>
                     )}
                 />
@@ -326,7 +326,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                     name={getFieldName('stateCode')}
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold">
+                            <FormLabel className="text-base font-medium text-foreground">
                                 {t('addressForm.stateLabel')}
                             </FormLabel>
                             <FormControl>
@@ -337,7 +337,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                                     {...field}
                                 />
                             </FormControl>
-                            <FormMessage className="text-xl font-bold" />
+                            <FormMessage />
                         </FormItem>
                     )}
                 />
@@ -347,7 +347,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                     name={getFieldName('postalCode')}
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold">
+                            <FormLabel className="text-base font-medium text-foreground">
                                 {t('addressForm.zipLabel')}
                             </FormLabel>
                             <FormControl>
@@ -358,7 +358,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                                     {...field}
                                 />
                             </FormControl>
-                            <FormMessage className="text-xl font-bold" />
+                            <FormMessage />
                         </FormItem>
                     )}
                 />
@@ -371,7 +371,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                     name={getFieldName('phone')}
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold">
+                            <FormLabel className="text-base font-medium text-foreground">
                                 {t('addressForm.phoneLabel')}
                             </FormLabel>
                             <FormControl>

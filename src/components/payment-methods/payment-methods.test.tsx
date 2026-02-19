@@ -38,6 +38,19 @@ vi.mock('./remove-payment-method-dialog', () => ({
     RemovePaymentMethodDialog: () => <div data-testid="remove-dialog">Remove Dialog</div>,
 }));
 
+vi.mock('react-router', async () => {
+    const actual = await vi.importActual('react-router');
+    return {
+        ...actual,
+        useRevalidator: () => ({ revalidate: vi.fn(), state: 'idle' }),
+        useFetcher: () => ({ state: 'idle', data: null, submit: vi.fn() }),
+    };
+});
+
+vi.mock('@/components/toast', () => ({
+    useToast: () => ({ addToast: vi.fn() }),
+}));
+
 describe('PaymentMethods', () => {
     const mockCustomer: ShopperCustomers.schemas['Customer'] = {
         customerId: 'customer-1',

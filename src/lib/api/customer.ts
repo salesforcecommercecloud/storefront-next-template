@@ -788,13 +788,14 @@ export async function savePaymentMethodToCustomer(
                 ? {
                       // Only include writable properties for customer payment instruments
                       cardType: paymentInstrument.paymentCard.cardType,
-                      creditCardNumber: paymentInstrument.paymentCard.creditCardNumber,
+                      number: paymentInstrument.paymentCard.number,
                       expirationMonth: paymentInstrument.paymentCard.expirationMonth,
                       expirationYear: paymentInstrument.paymentCard.expirationYear,
                       holder: paymentInstrument.paymentCard.holder,
                       // Exclude read-only properties: maskedNumber, issuerNumber, etc.
                   }
                 : undefined,
+            default: paymentInstrument.default,
         };
 
         await clients.shopperCustomers.createCustomerPaymentInstrument({
@@ -803,12 +804,81 @@ export async function savePaymentMethodToCustomer(
                     customerId,
                 },
             },
-            body: customerPaymentInstrument,
+            body: customerPaymentInstrument as ShopperCustomers.schemas['CustomerPaymentInstrumentRequest'],
         });
 
         return true;
     } catch {
         // Failed to save payment method to customer profile
+        return false;
+    }
+}
+
+/**
+ * Delete a payment method from a customer's profile
+ *
+ * @param context - React Router context
+ * @param customerId - The customer ID
+ * @param paymentInstrumentId - The payment instrument ID to delete
+ * @returns Promise<boolean> indicating success
+ */
+export async function deleteCustomerPaymentInstrument(
+    context: ActionFunctionArgs['context'],
+    customerId: string,
+    paymentInstrumentId: string
+): Promise<boolean> {
+    try {
+        const clients = createApiClients(context);
+
+        await clients.shopperCustomers.deleteCustomerPaymentInstrument({
+            params: {
+                path: {
+                    customerId,
+                    paymentInstrumentId,
+                },
+            },
+        });
+
+        return true;
+    } catch {
+        // Failed to delete payment method from customer profile
+        return false;
+    }
+}
+
+/**
+ * Set a payment method as the default for a customer
+ * Note: Payment card details cannot be changed once saved. To update card details,
+ * you must delete the payment method and create a new one.
+ *
+ * @param context - React Router context
+ * @param customerId - The customer ID
+ * @param paymentInstrumentId - The payment instrument ID to set as default
+ * @returns Promise<boolean> indicating success
+ */
+export async function setDefaultPaymentInstrument(
+    context: ActionFunctionArgs['context'],
+    customerId: string,
+    paymentInstrumentId: string
+): Promise<boolean> {
+    try {
+        const clients = createApiClients(context);
+
+        await clients.shopperCustomers.updateCustomerPaymentInstrument({
+            params: {
+                path: {
+                    customerId,
+                    paymentInstrumentId,
+                },
+            },
+            body: {
+                default: true,
+            },
+        });
+
+        return true;
+    } catch {
+        // Failed to set payment method as default
         return false;
     }
 }

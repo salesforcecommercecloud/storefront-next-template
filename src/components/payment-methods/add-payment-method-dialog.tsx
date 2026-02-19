@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { type ReactElement, useState } from 'react';
+import { type ReactElement, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { Plus, X, CreditCard } from 'lucide-react';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -27,63 +29,49 @@ import { type CountryCode } from '@/components/customer-address-form';
 import { AddressFormFields } from '@/components/address-form-fields';
 import { CreditCardInputFields } from '@/components/credit-card-input-fields';
 import { Form } from '@/components/ui/form';
+import { createPaymentSchema, type PaymentData } from '@/lib/checkout-schemas';
+import { detectCardType } from '@/lib/payment-utils';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
-// Define the payment form data type
-interface PaymentFormData {
-    cardholderName: string;
-    cardNumber: string;
-    expiryDate: string;
-    cvv: string;
-    saveAsDefault: boolean;
-}
-
-// Define the address form data type
-interface BillingAddressFormData {
-    billingFirstName: string;
-    billingLastName: string;
-    billingAddress1: string;
-    billingAddress2: string;
-    billingCity: string;
-    billingStateCode: string;
-    billingPostalCode: string;
-    billingPhone: string;
-}
+type AddPaymentData = PaymentData & { saveAsDefault?: boolean };
 
 export interface AddPaymentMethodDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onSubmit?: () => void;
+    /** Submit FormData built from form values (card fields + saveAsDefault) for server action */
+    onSubmitForm: (formData: FormData) => void;
     addresses: ShopperCustomers.schemas['CustomerAddress'][];
+    isLoading?: boolean;
 }
 
 /**
- * Add payment method dialog component
+ * Add payment method dialog. Uses CreditCardInputFields; submits card data via FormData to server action.
  */
 export function AddPaymentMethodDialog({
     open,
     onOpenChange,
-    onSubmit,
+    onSubmitForm,
     addresses,
+    isLoading = false,
 }: AddPaymentMethodDialogProps): ReactElement {
     const { t } = useTranslation('account');
     const [selectedAddress, setSelectedAddress] = useState('');
     const [isAddingNewAddress, setIsAddingNewAddress] = useState(false);
     const [countryCode] = useState<CountryCode>('US');
+    const [formError, setFormError] = useState<string | null>(null);
 
-    // Initialize form for payment data
-    const paymentForm = useForm<PaymentFormData>({
+    const paymentSchema = createPaymentSchema(t as unknown as TFunction);
+    const paymentForm = useForm<AddPaymentData>({
+        resolver: zodResolver(paymentSchema),
+        mode: 'onSubmit',
         defaultValues: {
             cardholderName: '',
             cardNumber: '',
             expiryDate: '',
             cvv: '',
+            billingSameAsShipping: true,
+            useSavedPaymentMethod: false,
             saveAsDefault: false,
-        },
-    });
-
-    // Initialize form for new billing address
-    const addressForm = useForm<BillingAddressFormData>({
-        defaultValues: {
             billingFirstName: '',
             billingLastName: '',
             billingAddress1: '',
@@ -96,37 +84,104 @@ export function AddPaymentMethodDialog({
     });
 
     const handleClose = () => {
+        if (isLoading) return;
         setSelectedAddress('');
         setIsAddingNewAddress(false);
+        setFormError(null);
         paymentForm.reset();
-        addressForm.reset();
         onOpenChange(false);
     };
 
-    const handleSubmit = () => {
-        // TODO: Implement actual payment method addition
-        onSubmit?.();
-        handleClose();
+    const handleSubmit = async () => {
+        setFormError(null);
+
+        if (!isAddingNewAddress && selectedAddress) {
+            const address = addresses.find((a) => a.addressId === selectedAddress);
+            if (address) {
+                paymentForm.setValue('billingFirstName', address.firstName || '');
+                paymentForm.setValue('billingLastName', address.lastName || '');
+                paymentForm.setValue('billingAddress1', address.address1 || '');
+                paymentForm.setValue('billingAddress2', address.address2 || '');
+                paymentForm.setValue('billingCity', address.city || '');
+                paymentForm.setValue('billingStateCode', address.stateCode || '');
+                paymentForm.setValue('billingPostalCode', address.postalCode || '');
+                paymentForm.setValue('billingPhone', address.phone || '');
+            }
+        } else if (!isAddingNewAddress && !selectedAddress) {
+            setFormError(t('paymentMethods.selectAddressError', 'Please select a billing address'));
+            return;
+        }
+
+        const isValid = await paymentForm.trigger();
+        if (!isValid) {
+            setFormError(t('paymentMethods.validationError', 'Please correct the errors in the form'));
+            return;
+        }
+
+        const formData = paymentForm.getValues();
+        // Parse expiry date (mm/yy format)
+        const expiryParts = (formData.expiryDate || '').split('/');
+        if (expiryParts.length !== 2) {
+            setFormError(t('paymentMethods.invalidExpiryFormat', 'Invalid expiry date format'));
+            return;
+        }
+        const expirationMonth = parseInt(expiryParts[0], 10);
+        const expirationYear = parseInt(`20${expiryParts[1]}`, 10);
+        if (
+            Number.isNaN(expirationMonth) ||
+            Number.isNaN(expirationYear) ||
+            expirationMonth < 1 ||
+            expirationMonth > 12
+        ) {
+            setFormError(t('paymentMethods.invalidExpiryFormat', 'Invalid expiry date format'));
+            return;
+        }
+
+        const cardNumber = (formData.cardNumber || '').replace(/\s/g, '');
+        const cardType = detectCardType(cardNumber).toLowerCase().replace(/\s+/g, '_');
+        const formDataToSend = new FormData();
+        formDataToSend.append('cardNumber', cardNumber);
+        formDataToSend.append('cardholderName', formData.cardholderName || '');
+        formDataToSend.append('cardType', cardType);
+        formDataToSend.append('expirationMonth', String(expirationMonth));
+        formDataToSend.append('expirationYear', String(expirationYear));
+        if (paymentForm.getValues('saveAsDefault' as keyof PaymentData)) {
+            formDataToSend.append('saveAsDefault', 'on');
+        }
+        onSubmitForm(formDataToSend);
     };
 
     const handleToggleAddAddress = () => {
-        if (!isAddingNewAddress) {
-            setSelectedAddress(''); // Reset dropdown when opening new address form
-        }
+        if (!isAddingNewAddress) setSelectedAddress('');
         setIsAddingNewAddress(!isAddingNewAddress);
     };
+
+    // Reset form when dialog closes (after successful submit or cancel)
+    useEffect(() => {
+        if (!open) {
+            setSelectedAddress('');
+            setIsAddingNewAddress(false);
+            setFormError(null);
+            paymentForm.reset();
+        }
+    }, [open, paymentForm]);
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
-                <DialogHeader className="mb-6">
+                <DialogHeader>
                     <DialogTitle className="text-xl font-semibold">
                         {t('paymentMethods.addPaymentMethodTitle')}
                     </DialogTitle>
                 </DialogHeader>
 
+                {formError && (
+                    <Alert variant="destructive">
+                        <AlertDescription>{formError}</AlertDescription>
+                    </Alert>
+                )}
+
                 <div className="space-y-5">
-                    {/* Credit Card Radio Option */}
                     <div className="border border-primary rounded-lg bg-background">
                         <label className="flex items-center gap-3 p-4 cursor-pointer">
                             <input
@@ -140,12 +195,10 @@ export function AddPaymentMethodDialog({
                                 <CreditCard className="w-5 h-5 text-primary" />
                             </div>
                         </label>
-
-                        {/* Card Form Fields - Reusing checkout component */}
                         <div className="px-4 pb-4 space-y-3 border-t pt-3">
                             <Form {...paymentForm}>
                                 <CreditCardInputFields
-                                    form={paymentForm}
+                                    form={paymentForm as unknown as Parameters<typeof CreditCardInputFields>[0]['form']}
                                     autoFocus={false}
                                     showIsDefaultOption
                                     defaultOptionLabel={t('paymentMethods.saveAsDefault')}
@@ -154,19 +207,15 @@ export function AddPaymentMethodDialog({
                         </div>
                     </div>
 
-                    {/* Billing Address Section */}
                     <div className="pt-2">
                         <Label className="text-sm font-medium mb-2 block">{t('paymentMethods.billingAddress')}</Label>
-
                         <div className="[&_[data-slot=native-select-wrapper]]:w-full">
                             <NativeSelect
                                 id="billing-address"
                                 value={selectedAddress}
                                 onChange={(e) => {
                                     setSelectedAddress(e.target.value);
-                                    if (e.target.value) {
-                                        setIsAddingNewAddress(false);
-                                    }
+                                    if (e.target.value) setIsAddingNewAddress(false);
                                 }}
                                 required
                                 aria-required="true">
@@ -179,7 +228,6 @@ export function AddPaymentMethodDialog({
                                 ))}
                             </NativeSelect>
                         </div>
-
                         {!isAddingNewAddress ? (
                             <button
                                 type="button"
@@ -197,12 +245,10 @@ export function AddPaymentMethodDialog({
                                     <X className="w-4 h-4" />
                                     {t('paymentMethods.cancel')}
                                 </button>
-
-                                {/* New Address Form - Using AddressFormFields component */}
                                 <div className="mt-4">
-                                    <Form {...addressForm}>
-                                        <AddressFormFields
-                                            form={addressForm}
+                                    <Form {...paymentForm}>
+                                        <AddressFormFields<AddPaymentData>
+                                            form={paymentForm}
                                             fieldPrefix="billing"
                                             showPhone={false}
                                             autoFocus={false}
@@ -213,14 +259,15 @@ export function AddPaymentMethodDialog({
                             </>
                         )}
                     </div>
-                </div>
 
-                {/* Dialog Footer */}
-                <div className="flex items-center justify-end gap-3 mt-2 pt-6 border-t">
-                    <Button variant="outline" onClick={handleClose}>
-                        {t('paymentMethods.cancel')}
-                    </Button>
-                    <Button onClick={handleSubmit}>{t('paymentMethods.save')}</Button>
+                    <div className="flex items-center justify-end gap-3 mt-2 pt-6 border-t">
+                        <Button variant="outline" onClick={handleClose} disabled={isLoading}>
+                            {t('paymentMethods.cancel')}
+                        </Button>
+                        <Button onClick={() => void handleSubmit()} disabled={isLoading}>
+                            {t('paymentMethods.save')}
+                        </Button>
+                    </div>
                 </div>
             </DialogContent>
         </Dialog>

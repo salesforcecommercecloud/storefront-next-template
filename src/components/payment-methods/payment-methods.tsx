@@ -13,39 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ReactElement, useState } from 'react';
+import { type ReactElement, useState, useMemo, useEffect, useRef } from 'react';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import { useRevalidator, useFetcher } from 'react-router';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PaymentMethodCard, type PaymentMethod } from './payment-method-card';
 import { RemovePaymentMethodDialog } from './remove-payment-method-dialog';
 import { AddPaymentMethodDialog } from './add-payment-method-dialog';
 import { useTranslation } from 'react-i18next';
-
-// Mock data for testing
-const mockPaymentMethods: PaymentMethod[] = [
-    {
-        id: '1',
-        type: 'visa',
-        last4: '4242',
-        expiryMonth: '12',
-        expiryYear: '2026',
-        cardholderName: 'John Doe',
-        isDefault: true,
-    },
-    {
-        id: '2',
-        type: 'mastercard',
-        last4: '5555',
-        expiryMonth: '12',
-        expiryYear: '2026',
-        cardholderName: 'John Doe',
-        isDefault: false,
-    },
-];
+import { useToast } from '@/components/toast';
 
 export interface PaymentMethodsProps {
     customer: ShopperCustomers.schemas['Customer'] | null;
+}
+
+/**
+ * Convert SFCC payment instrument to PaymentMethod format
+ */
+function convertToPaymentMethod(
+    instrument: ShopperCustomers.schemas['CustomerPaymentInstrument']
+): PaymentMethod | null {
+    if (!instrument.paymentCard || !instrument.paymentInstrumentId) {
+        return null;
+    }
+
+    const card = instrument.paymentCard;
+    const maskedNumber = card.maskedNumber || card.numberLastDigits || '';
+    const last4 = maskedNumber.slice(-4);
+
+    return {
+        id: instrument.paymentInstrumentId,
+        type: card.cardType || '',
+        last4,
+        expiryMonth: String(card.expirationMonth || ''),
+        expiryYear: String(card.expirationYear || ''),
+        cardholderName: card.holder || '',
+        isDefault: !!instrument.default, // Use the default flag from API
+    };
 }
 
 /**
@@ -53,19 +58,36 @@ export interface PaymentMethodsProps {
  */
 export function PaymentMethods({ customer }: PaymentMethodsProps): ReactElement {
     const { t } = useTranslation('account');
+    const revalidator = useRevalidator();
+    const { addToast } = useToast();
+
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
     const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod | null>(null);
 
-    const hasPaymentMethods = mockPaymentMethods.length > 0;
+    const paymentFetcher = useFetcher<{ success: boolean; error?: string }>();
+    const previousFetcherStateRef = useRef(paymentFetcher.state);
+    const currentIntentRef = useRef<string | null>(null);
 
-    const handleAddClick = () => {
-        setIsAddDialogOpen(true);
-    };
+    const paymentMethods = useMemo(() => {
+        return (customer?.paymentInstruments || [])
+            .map(convertToPaymentMethod)
+            .filter((method): method is PaymentMethod => method !== null)
+            .sort((a, b) => {
+                // Sort default payment methods first
+                if (a.isDefault && !b.isDefault) return -1;
+                if (!a.isDefault && b.isDefault) return 1;
+                return 0;
+            });
+    }, [customer?.paymentInstruments]);
 
-    const handleAddSubmit = () => {
-        // TODO: Implement actual payment method addition
-        setIsAddDialogOpen(false);
+    const hasPaymentMethods = paymentMethods.length > 0;
+
+    const handleAddClick = () => setIsAddDialogOpen(true);
+
+    const handleAddSubmitForm = (formData: FormData) => {
+        currentIntentRef.current = 'add';
+        void paymentFetcher.submit(formData, { method: 'POST', action: '/action/payment-method-add' });
     };
 
     const handleRemoveClick = (method: PaymentMethod) => {
@@ -78,15 +100,55 @@ export function PaymentMethods({ customer }: PaymentMethodsProps): ReactElement 
         setSelectedPaymentMethod(null);
     };
 
-    const handleRemoveConfirm = () => {
-        // TODO: Implement actual payment method removal
-        setIsRemoveDialogOpen(false);
-        setSelectedPaymentMethod(null);
+    const handleRemoveConfirm = (paymentInstrumentId: string) => {
+        currentIntentRef.current = 'delete';
+        const formData = new FormData();
+        formData.append('paymentInstrumentId', paymentInstrumentId);
+        void paymentFetcher.submit(formData, { method: 'POST', action: '/action/payment-method-remove' });
     };
 
-    const handleSetDefault = (_method: PaymentMethod) => {
-        // TODO: Implement set as default
+    const handleSetDefault = (method: PaymentMethod) => {
+        if (!method.id) return;
+        currentIntentRef.current = 'setDefault';
+        const formData = new FormData();
+        formData.append('paymentInstrumentId', method.id);
+        void paymentFetcher.submit(formData, { method: 'POST', action: '/action/payment-method-set-default' });
     };
+
+    useEffect(() => {
+        const stateChanged = previousFetcherStateRef.current !== paymentFetcher.state;
+        previousFetcherStateRef.current = paymentFetcher.state;
+
+        if (stateChanged && paymentFetcher.state === 'idle' && paymentFetcher.data) {
+            const intent = currentIntentRef.current;
+            const { success } = paymentFetcher.data as { success?: boolean };
+
+            const intentHandlers: Record<string, () => void> = {
+                delete: () => {
+                    setIsRemoveDialogOpen(false);
+                    setSelectedPaymentMethod(null);
+                    addToast(t(`paymentMethods.remove${success ? 'Success' : 'Error'}`), success ? 'success' : 'error');
+                },
+                setDefault: () => {
+                    addToast(
+                        t(`paymentMethods.setDefault${success ? 'Success' : 'Error'}`),
+                        success ? 'success' : 'error'
+                    );
+                },
+                add: () => {
+                    addToast(t(`paymentMethods.add${success ? 'Success' : 'Error'}`), success ? 'success' : 'error');
+                    setIsAddDialogOpen(false);
+                },
+            };
+
+            if (intent && intentHandlers[intent]) {
+                intentHandlers[intent]();
+                if (success) void revalidator.revalidate();
+            }
+
+            currentIntentRef.current = null;
+        }
+    }, [paymentFetcher.state, paymentFetcher.data, addToast, t, revalidator]);
 
     return (
         <div className="space-y-4">
@@ -128,7 +190,7 @@ export function PaymentMethods({ customer }: PaymentMethodsProps): ReactElement 
                     ) : (
                         /* Payment Methods List */
                         <div className="space-y-6">
-                            {mockPaymentMethods.map((method) => (
+                            {paymentMethods.map((method) => (
                                 <PaymentMethodCard
                                     key={method.id}
                                     paymentMethod={method}
@@ -145,8 +207,12 @@ export function PaymentMethods({ customer }: PaymentMethodsProps): ReactElement 
             <AddPaymentMethodDialog
                 open={isAddDialogOpen}
                 onOpenChange={setIsAddDialogOpen}
-                onSubmit={handleAddSubmit}
+                onSubmitForm={handleAddSubmitForm}
                 addresses={customer?.addresses || []}
+                isLoading={
+                    (paymentFetcher.state === 'submitting' || paymentFetcher.state === 'loading') &&
+                    currentIntentRef.current === 'add'
+                }
             />
 
             {/* Remove Payment Method Dialog */}
@@ -155,6 +221,10 @@ export function PaymentMethods({ customer }: PaymentMethodsProps): ReactElement 
                 onOpenChange={handleRemoveDialogClose}
                 paymentMethod={selectedPaymentMethod}
                 onConfirm={handleRemoveConfirm}
+                isLoading={
+                    (paymentFetcher.state === 'submitting' || paymentFetcher.state === 'loading') &&
+                    currentIntentRef.current === 'delete'
+                }
             />
         </div>
     );

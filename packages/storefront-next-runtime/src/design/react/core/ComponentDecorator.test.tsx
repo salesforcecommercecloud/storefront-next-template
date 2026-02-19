@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/* eslint-disable @typescript-eslint/consistent-type-imports */
+
 import React from 'react';
 import { cleanup as tlCleanup, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from 'vitest';
