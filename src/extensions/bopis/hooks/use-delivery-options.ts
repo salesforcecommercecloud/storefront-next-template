@@ -71,7 +71,7 @@ interface UseDeliveryOptionsProps {
  */
 export function useDeliveryOptions({ product, quantity, isInBasket, pickupStore }: UseDeliveryOptionsProps) {
     // Local state for delivery options
-    const [selectedDeliveryOption, setSelectedDeliveryOption] = useState<DeliveryOption>(DELIVERY_OPTIONS.DELIVERY);
+    const [selectedDeliveryOption, setSelectedDeliveryOption] = useState<DeliveryOption | undefined>(undefined);
 
     const pickupContext = usePickup();
     const pickupRef = useRef(pickupContext);
@@ -156,7 +156,7 @@ export function useDeliveryOptions({ product, quantity, isInBasket, pickupStore 
     // This ensures pickup items are tracked even if the user doesn't change options
     useEffect(() => {
         // Skip sync for items already in the basket
-        if (isInBasket) return;
+        if (isInBasket || !selectedDeliveryOption) return;
 
         const productId = product?.id;
         const currentPickup = pickupRef.current;
@@ -174,7 +174,7 @@ export function useDeliveryOptions({ product, quantity, isInBasket, pickupStore 
     // This also syncs to pickup context via handleDeliveryOptionChange
     useEffect(() => {
         // Skip auto-change for items already in the basket
-        if (isInBasket) return;
+        if (isInBasket || !selectedDeliveryOption) return;
 
         // Don't auto-switch when dialog is open (user is selecting a store)
         if (isStoreLocatorOpen) {

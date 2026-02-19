@@ -244,58 +244,28 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                   tabindex="0"
                 >
                   <label
-                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-primary"
+                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
                     for="delivery-option"
                   >
                     <button
-                      aria-checked="true"
+                      aria-checked="false"
                       class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
                       data-radix-collection-item=""
                       data-slot="radio-group-item"
-                      data-state="checked"
+                      data-state="unchecked"
                       id="delivery-option"
                       role="radio"
                       tabindex="-1"
                       type="button"
                       value="delivery"
-                    >
-                      <span
-                        class="relative flex items-center justify-center"
-                        data-slot="radio-group-indicator"
-                        data-state="checked"
-                      >
-                        <svg
-                          aria-hidden="true"
-                          class="lucide lucide-circle fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2"
-                          fill="none"
-                          height="24"
-                          stroke="currentColor"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          viewBox="0 0 24 24"
-                          width="24"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <circle
-                            cx="12"
-                            cy="12"
-                            r="10"
-                          />
-                        </svg>
-                      </span>
-                    </button>
+                    />
                     <div
                       class="mt-0.5 shrink-0"
                     >
                       <div
-                        class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-primary"
-                      >
-                        <div
-                          class="w-2.5 h-2.5 rounded-full bg-primary"
-                        />
-                      </div>
+                        class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                      />
                     </div>
                     <div
                       class="flex-1 min-w-0"
@@ -368,11 +338,6 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                     </div>
                   </label>
                 </div>
-              </div>
-              <div
-                class="p-4 text-sm text-muted-foreground"
-              >
-                Loading...
               </div>
             </div>
           </div>
@@ -747,58 +712,28 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
                   tabindex="0"
                 >
                   <label
-                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-primary"
+                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
                     for="delivery-option"
                   >
                     <button
-                      aria-checked="true"
+                      aria-checked="false"
                       class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
                       data-radix-collection-item=""
                       data-slot="radio-group-item"
-                      data-state="checked"
+                      data-state="unchecked"
                       id="delivery-option"
                       role="radio"
                       tabindex="-1"
                       type="button"
                       value="delivery"
-                    >
-                      <span
-                        class="relative flex items-center justify-center"
-                        data-slot="radio-group-indicator"
-                        data-state="checked"
-                      >
-                        <svg
-                          aria-hidden="true"
-                          class="lucide lucide-circle fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2"
-                          fill="none"
-                          height="24"
-                          stroke="currentColor"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          viewBox="0 0 24 24"
-                          width="24"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <circle
-                            cx="12"
-                            cy="12"
-                            r="10"
-                          />
-                        </svg>
-                      </span>
-                    </button>
+                    />
                     <div
                       class="mt-0.5 shrink-0"
                     >
                       <div
-                        class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-primary"
-                      >
-                        <div
-                          class="w-2.5 h-2.5 rounded-full bg-primary"
-                        />
-                      </div>
+                        class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                      />
                     </div>
                     <div
                       class="flex-1 min-w-0"
@@ -871,11 +806,6 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
                     </div>
                   </label>
                 </div>
-              </div>
-              <div
-                class="p-4 text-sm text-muted-foreground"
-              >
-                Loading...
               </div>
             </div>
           </div>

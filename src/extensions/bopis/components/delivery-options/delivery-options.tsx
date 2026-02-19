@@ -15,7 +15,7 @@
  */
 'use client';
 
-import { type ReactElement, useState, lazy, Suspense } from 'react';
+import { type ComponentType, type ReactElement, useState, useEffect, lazy, Suspense } from 'react';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import PickupOrDelivery from './pickup-or-delivery';
 import { useDeliveryOptions } from '@/extensions/bopis/hooks/use-delivery-options';
@@ -23,7 +23,26 @@ import { useStoreLocator } from '@/extensions/store-locator/providers/store-loca
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
 import ProductContentProvider from '@/providers/product-content';
 
-const ShippingCalculator = lazy(() => import('./shipping-calculator'));
+const shippingCalculatorImport = () => import('./shipping-calculator');
+const ShippingCalculator = lazy(shippingCalculatorImport) as ComponentType<{
+    onCalculate: (zipCode: string, days: number) => void;
+    productId: string;
+}>;
+
+/** Skeleton matching ShippingCalculator layout for a smoother loading state */
+function ShippingCalculatorSkeleton() {
+    return (
+        <div className="p-4 border border-muted-foreground/20 rounded-lg bg-card animate-pulse">
+            <div className="space-y-3">
+                <div className="h-4 w-32 rounded bg-muted" />
+                <div className="flex gap-2">
+                    <div className="h-10 flex-1 rounded bg-muted" />
+                    <div className="h-10 w-24 rounded bg-muted" />
+                </div>
+            </div>
+        </div>
+    );
+}
 
 interface DeliveryOptionsProps {
     /** The product to check inventory for */
@@ -78,6 +97,13 @@ export default function DeliveryOptions({
         setDeliveryDays(days);
     };
 
+    // Prefetch shipping calculator chunk as soon as delivery options are shown so it's often ready when user selects "Delivery"
+    useEffect(() => {
+        if (!isInBasket) {
+            shippingCalculatorImport().catch(() => undefined);
+        }
+    }, [isInBasket]);
+
     return (
         <div className={className}>
             <div className="space-y-4">
@@ -97,11 +123,14 @@ export default function DeliveryOptions({
                         {/* Shipping Estimates Calculator - Only show when delivery option is selected */}
                         {/* Lazy loaded to reduce initial bundle size */}
                         {selectedDeliveryOption === 'delivery' && (
-                            <Suspense fallback={<div className="p-4 text-sm text-muted-foreground">Loading...</div>}>
+                            <Suspense fallback={<ShippingCalculatorSkeleton />}>
                                 <ProductContentProvider>
                                     <ShippingCalculator
                                         onCalculate={handleCalculate}
-                                        productId={product.currentVariant?.productId || product.id}
+                                        productId={
+                                            (product.currentVariant as { productId?: string } | undefined)?.productId ??
+                                            product.id
+                                        }
                                     />
                                 </ProductContentProvider>
                             </Suspense>
