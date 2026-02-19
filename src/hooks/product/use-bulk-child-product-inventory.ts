@@ -205,6 +205,7 @@ export function useBulkChildProductInventory({
 
             setEnrichedSelections(newEnrichedSelections);
             lastEnrichedProductIdsRef.current = productIds;
+            // @sfdc-extension-line SFDC_EXT_BOPIS
             lastEnrichedInventoryIdRef.current = inventoryId;
         },
         onError: (errors) => {

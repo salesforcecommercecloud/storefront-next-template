@@ -110,8 +110,16 @@ describe('MiniCartItem', () => {
 
     it('renders variation attributes', () => {
         renderWithRouter(<MiniCartItem product={mockProduct} />);
-        expect(screen.getByText(/Color: Grey/)).toBeInTheDocument();
-        expect(screen.getByText(/Size: XL/)).toBeInTheDocument();
+        expect(
+            screen.getByText((content, element) => {
+                return element?.textContent === 'Color: Grey';
+            })
+        ).toBeInTheDocument();
+        expect(
+            screen.getByText((content, element) => {
+                return element?.textContent === 'Size: XL';
+            })
+        ).toBeInTheDocument();
     });
 
     it('renders pricing with savings', () => {
@@ -187,8 +195,20 @@ describe('MiniCartItem', () => {
             ],
         };
         renderWithRouter(<MiniCartItem product={productWithOnlyColor} />);
-        expect(screen.getByText(/Color: Blue/)).toBeInTheDocument();
-        expect(screen.queryByText(/Size:/)).not.toBeInTheDocument();
+        expect(
+            screen.getByText((content, element) => {
+                return (
+                    element?.textContent === 'Color: Blue' &&
+                    element?.className?.includes('inline-block') &&
+                    element?.className?.includes('w-full')
+                );
+            })
+        ).toBeInTheDocument();
+        expect(
+            screen.queryByText((content, element) => {
+                return element?.textContent?.includes('Size:') || false;
+            })
+        ).not.toBeInTheDocument();
     });
 
     it('renders only size when color is not present', () => {
@@ -206,8 +226,20 @@ describe('MiniCartItem', () => {
             ],
         };
         renderWithRouter(<MiniCartItem product={productWithOnlySize} />);
-        expect(screen.getByText(/Size: M/)).toBeInTheDocument();
-        expect(screen.queryByText(/Color:/)).not.toBeInTheDocument();
+        expect(
+            screen.getByText((content, element) => {
+                return (
+                    element?.textContent === 'Size: M' &&
+                    element?.className?.includes('inline-block') &&
+                    element?.className?.includes('w-full')
+                );
+            })
+        ).toBeInTheDocument();
+        expect(
+            screen.queryByText((content, element) => {
+                return element?.textContent?.includes('Color:') || false;
+            })
+        ).not.toBeInTheDocument();
     });
 
     it('switches to custom input when Custom option is selected', async () => {

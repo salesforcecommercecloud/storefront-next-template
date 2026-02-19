@@ -84,13 +84,17 @@ describe('AddPaymentMethodDialog', () => {
         expect(onOpenChange).toHaveBeenCalledWith(false);
     });
 
-    test('calls onSubmit when save button is clicked', async () => {
+    test('shows error when save is clicked without selecting a billing address', async () => {
         const user = userEvent.setup();
         const onSubmit = vi.fn();
 
         render(<AddPaymentMethodDialog {...defaultProps} onSubmit={onSubmit} />);
 
         await user.click(screen.getByText(t('account:paymentMethods.save')));
-        expect(onSubmit).toHaveBeenCalled();
+
+        expect(
+            screen.getByText(t('account:paymentMethods.selectAddressError', 'Please select a billing address'))
+        ).toBeInTheDocument();
+        expect(onSubmit).not.toHaveBeenCalled();
     });
 });

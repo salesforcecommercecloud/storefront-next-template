@@ -37,6 +37,8 @@ import { getDisplayVariationValues } from '@/lib/product-utils';
 import { useCurrency } from '@/providers/currency';
 import { toImageUrl } from '@/lib/dynamic-image';
 import ProductPrice from '@/components/product-price';
+import PromoCallout from '@/components/product-price/promo-callout';
+import { Typography } from '@/components/typography';
 
 /**
  * Basket item data enriched with product details for mini cart display
@@ -243,11 +245,15 @@ export default function MiniCartItem({ product, onRemove, bonusProductSlot }: Mi
                             </h3>
                         )}
                         {Object.keys(displayVariationValues).length > 0 && (
-                            <div className="text-sm text-muted-foreground mt-1">
+                            <div className="mt-1 space-y-0.5">
                                 {Object.entries(displayVariationValues).map(([name, value]) => (
-                                    <div key={name}>
-                                        {name}: {value}
-                                    </div>
+                                    <Typography
+                                        key={name}
+                                        variant="body-small"
+                                        className="text-muted-foreground inline-block w-full">
+                                        <span>{name}: </span>
+                                        <span>{value}</span>
+                                    </Typography>
                                 ))}
                             </div>
                         )}
@@ -267,6 +273,9 @@ export default function MiniCartItem({ product, onRemove, bonusProductSlot }: Mi
                             listPriceProps={{
                                 className: 'text-base',
                             }}
+                            promoCalloutProps={{
+                                className: 'hidden',
+                            }}
                             className="flex flex-col items-end"
                         />
                     </div>
@@ -285,7 +294,7 @@ export default function MiniCartItem({ product, onRemove, bonusProductSlot }: Mi
                             onBlur={handleCustomInputBlur}
                             onKeyDown={handleCustomInputKeyDown}
                             min="1"
-                            className="w-full border border-border rounded px-2 py-1.5 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                            className="w-full border border-border rounded px-2 py-1.5 text-sm bg-background focus:outline-none focus:border-border"
                             aria-label={tMiniCart('customQuantityAriaLabel')}
                             autoFocus
                         />
@@ -309,7 +318,7 @@ export default function MiniCartItem({ product, onRemove, bonusProductSlot }: Mi
                                 id={`quantity-${product.itemId}`}
                                 value={quantity}
                                 onChange={handleSelectChange}
-                                className="w-full border border-border rounded px-2 py-1.5 pr-8 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring appearance-none cursor-pointer"
+                                className="w-full border border-border rounded px-2 py-1.5 pr-8 text-sm bg-background focus:outline-none focus:border-border appearance-none cursor-pointer"
                                 aria-label={tMiniCart('quantityAriaLabel')}>
                                 {quantityOptions.map((num) => (
                                     <option key={num} value={num}>
@@ -336,6 +345,9 @@ export default function MiniCartItem({ product, onRemove, bonusProductSlot }: Mi
                         </div>
                     )}
                 </div>
+
+                {/* Show promotional message after quantity */}
+                <PromoCallout product={product} className="text-sm text-primary mb-2" />
 
                 {/* Bonus Product Selection Card */}
                 {bonusProductSlot && <div className="mt-3">{bonusProductSlot}</div>}

@@ -74,7 +74,7 @@ describe('useDeliveryOptions', () => {
             useDeliveryOptions({ product: mockProduct, quantity: 1, isInBasket: false, pickupStore: null })
         );
 
-        expect(result.current.selectedDeliveryOption).toBe(DELIVERY_OPTIONS.DELIVERY);
+        expect(result.current.selectedDeliveryOption).toBeUndefined();
         // Pickup is disabled when no store is selected or store is out of stock
         expect(result.current.isStoreOutOfStock).toBe(false);
     });
@@ -87,8 +87,7 @@ describe('useDeliveryOptions', () => {
             useDeliveryOptions({ product: mockProduct, quantity: 1, isInBasket: false, pickupStore: mockStoreInfo })
         );
 
-        // Both options are available, so it should stay with delivery (default)
-        expect(result.current.selectedDeliveryOption).toBe(DELIVERY_OPTIONS.DELIVERY);
+        expect(result.current.selectedDeliveryOption).toBeUndefined();
         expect(result.current.isStoreOutOfStock).toBe(false);
     });
 
@@ -100,8 +99,7 @@ describe('useDeliveryOptions', () => {
             useDeliveryOptions({ product: mockProduct, quantity: 1, isInBasket: false, pickupStore: mockStoreInfo })
         );
 
-        // Pickup is out of stock, delivery is available, so it should stay with delivery
-        expect(result.current.selectedDeliveryOption).toBe(DELIVERY_OPTIONS.DELIVERY);
+        expect(result.current.selectedDeliveryOption).toBeUndefined();
         expect(result.current.isStoreOutOfStock).toBe(true);
     });
 
@@ -157,8 +155,8 @@ describe('useDeliveryOptions', () => {
             useDeliveryOptions({ product: mockProduct, quantity: 1, isInBasket: false, pickupStore: mockStoreInfo })
         );
 
-        // Initially should be delivery (default)
-        expect(result.current.selectedDeliveryOption).toBe(DELIVERY_OPTIONS.DELIVERY);
+        // Initially no option is selected
+        expect(result.current.selectedDeliveryOption).toBeUndefined();
 
         // Switch to pickup
         act(() => {
@@ -186,7 +184,7 @@ describe('useDeliveryOptions', () => {
             })
         );
 
-        expect(result.current.selectedDeliveryOption).toBe(DELIVERY_OPTIONS.DELIVERY);
+        expect(result.current.selectedDeliveryOption).toBeUndefined();
         expect(result.current.isStoreOutOfStock).toBe(false);
     });
 
@@ -370,6 +368,10 @@ describe('useDeliveryOptions', () => {
                 }
             );
 
+            // Explicitly select delivery first
+            act(() => {
+                result.current.setSelectedDeliveryOption(DELIVERY_OPTIONS.DELIVERY);
+            });
             expect(result.current.selectedDeliveryOption).toBe(DELIVERY_OPTIONS.DELIVERY);
 
             // Now make delivery unavailable but pickup available
@@ -406,6 +408,9 @@ describe('useDeliveryOptions', () => {
                 useDeliveryOptions({ product: mockProduct, quantity: 1, isInBasket: false, pickupStore: mockStoreInfo })
             );
 
+            act(() => {
+                result.current.setSelectedDeliveryOption(DELIVERY_OPTIONS.DELIVERY);
+            });
             expect(result.current.selectedDeliveryOption).toBe(DELIVERY_OPTIONS.DELIVERY);
 
             // Now make both unavailable
@@ -473,8 +478,8 @@ describe('useDeliveryOptions', () => {
                 useDeliveryOptions({ product: mockProduct, quantity: 1, isInBasket: false, pickupStore: mockStoreInfo })
             );
 
-            // Initially on DELIVERY, should call removeItem
-            expect(mockRemoveItem).toHaveBeenCalledWith(mockProduct.id);
+            // Initially undefined, no sync should happen
+            expect(mockRemoveItem).not.toHaveBeenCalled();
             expect(mockAddItem).not.toHaveBeenCalled();
 
             mockAddItem.mockClear();

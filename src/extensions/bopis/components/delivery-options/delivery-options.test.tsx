@@ -30,6 +30,7 @@ vi.mock('@/extensions/store-locator/providers/store-locator', () => ({
 
 vi.mock('@/providers/product-content', () => ({
     default: ({ children }: { children: React.ReactNode }) => children,
+    useProductContentAdapter: vi.fn(() => null),
 }));
 
 // Use the mock product from __mocks__ directory

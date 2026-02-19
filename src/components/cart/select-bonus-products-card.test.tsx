@@ -56,9 +56,6 @@ describe('SelectBonusProductsCard', () => {
         const onSelectClick = vi.fn();
         renderWithRouter(<SelectBonusProductsCard promotion={mockPromotion} onSelectClick={onSelectClick} />);
 
-        // Check promotion callout text is displayed
-        expect(screen.getByText('Buy one Classic Fit Shirt, get 2 free ties!')).toBeInTheDocument();
-
         // Check button text
         const button = screen.getByRole('button', { name: /Select bonus products in Cart/i });
         expect(button).toBeInTheDocument();
@@ -84,7 +81,7 @@ describe('SelectBonusProductsCard', () => {
     it('renders without callout text when calloutText is null', () => {
         renderWithRouter(<SelectBonusProductsCard promotion={mockPromotionNoCallout} onSelectClick={vi.fn()} />);
 
-        // Should not show callout text
+        // Callout text is never displayed (shown elsewhere in UI)
         expect(screen.queryByText('Buy one Classic Fit Shirt, get 2 free ties!')).not.toBeInTheDocument();
 
         // Button should still be visible
@@ -100,14 +97,11 @@ describe('SelectBonusProductsCard', () => {
         expect(card).toHaveClass('flex', 'flex-col', 'gap-2');
     });
 
-    it('applies correct styling to callout badge', () => {
+    it('does not render callout badge', () => {
         renderWithRouter(<SelectBonusProductsCard promotion={mockPromotion} onSelectClick={vi.fn()} />);
 
-        const calloutText = screen.getByText('Buy one Classic Fit Shirt, get 2 free ties!');
-        const badge = calloutText.closest('div');
-
-        // Check badge has accent background
-        expect(badge).toHaveClass('bg-accent');
+        // Callout text is not displayed in this component (shown elsewhere in UI)
+        expect(screen.queryByText('Buy one Classic Fit Shirt, get 2 free ties!')).not.toBeInTheDocument();
     });
 
     it('renders button with secondary variant and full width', () => {
@@ -141,12 +135,14 @@ describe('SelectBonusProductsCard', () => {
         expect(button).toBeInTheDocument();
     });
 
-    it('renders callout text with proper typography styling', () => {
+    it('only renders button without promotional text', () => {
         renderWithRouter(<SelectBonusProductsCard promotion={mockPromotion} onSelectClick={vi.fn()} />);
 
-        const calloutText = screen.getByText('Buy one Classic Fit Shirt, get 2 free ties!');
+        // Callout text is not displayed in this component (shown elsewhere in UI)
+        expect(screen.queryByText('Buy one Classic Fit Shirt, get 2 free ties!')).not.toBeInTheDocument();
 
-        // Check text has proper styling classes
-        expect(calloutText).toHaveClass('text-sm', 'text-secondary-foreground', 'text-center', 'leading-tight');
+        // Button should be rendered
+        const button = screen.getByRole('button', { name: /Select bonus products in Cart/i });
+        expect(button).toBeInTheDocument();
     });
 });

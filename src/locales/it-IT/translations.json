@@ -749,7 +749,17 @@
             "removePaymentMethod": "Rimuovi metodo di pagamento",
             "removeConfirmation": "È sicuro di voler rimuovere questo metodo di pagamento?",
             "paymentMethod": "Metodo di pagamento",
-            "defaultRemovalWarning": "Questo è il Suo metodo di pagamento predefinito. La rimozione imposterà automaticamente un altro metodo di pagamento come predefinito, se disponibile."
+            "defaultRemovalWarning": "Questo è il Suo metodo di pagamento predefinito. La rimozione imposterà automaticamente un altro metodo di pagamento come predefinito, se disponibile.",
+            "addSuccess": "Metodo di pagamento aggiunto con successo",
+            "addError": "Impossibile aggiungere il metodo di pagamento",
+            "removeSuccess": "Metodo di pagamento rimosso con successo",
+            "removeError": "Impossibile rimuovere il metodo di pagamento",
+            "setDefaultSuccess": "Metodo di pagamento impostato come predefinito con successo",
+            "setDefaultError": "Impossibile impostare il metodo di pagamento come predefinito",
+            "validationError": "Correggere gli errori nel modulo",
+            "addressValidationError": "Correggere gli errori nell'indirizzo di fatturazione",
+            "selectAddressError": "Selezionare un indirizzo di fatturazione",
+            "invalidExpiryFormat": "Formato della data di scadenza non valido"
         },
         "profile": {
             "title": "Il mio profilo",

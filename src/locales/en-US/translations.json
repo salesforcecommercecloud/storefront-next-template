@@ -774,7 +774,17 @@
             "removePaymentMethod": "Remove Payment Method",
             "removeConfirmation": "Are you sure you want to remove this payment method?",
             "paymentMethod": "Payment Method",
-            "defaultRemovalWarning": "This is your default payment method. Removing it will automatically set another payment method as default if available."
+            "defaultRemovalWarning": "This is your default payment method. Removing it will automatically set another payment method as default if available.",
+            "addSuccess": "Payment method added successfully",
+            "addError": "Failed to add payment method",
+            "removeSuccess": "Payment method removed successfully",
+            "removeError": "Failed to remove payment method",
+            "setDefaultSuccess": "Payment method set as default successfully",
+            "setDefaultError": "Failed to set payment method as default",
+            "validationError": "Please correct the errors in the form",
+            "addressValidationError": "Please correct the errors in the billing address",
+            "selectAddressError": "Please select a billing address",
+            "invalidExpiryFormat": "Invalid expiry date format"
         },
         "addressForm": {
             "addressTitleLabel": "Address Title",

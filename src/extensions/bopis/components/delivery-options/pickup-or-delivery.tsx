@@ -26,8 +26,8 @@ import { getStoreName } from '@/extensions/bopis/lib/store-utils';
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
 
 interface PickupOrDeliveryProps {
-    /** Current selected delivery option */
-    value?: DeliveryOption;
+    /** Current selected delivery option. When undefined, no option is pre-selected. */
+    value?: DeliveryOption | undefined;
     /** Callback function when delivery option changes */
     onChange?: (value: DeliveryOption) => void;
     /** Whether pickup option is disabled */
@@ -62,7 +62,7 @@ interface PickupOrDeliveryProps {
  * ```
  */
 export default function PickupOrDelivery({
-    value = DELIVERY_OPTIONS.DELIVERY,
+    value,
     onChange,
     isPickupDisabled = false,
     pickupStore,

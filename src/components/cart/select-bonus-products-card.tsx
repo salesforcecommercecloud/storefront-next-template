@@ -17,7 +17,6 @@
 
 import { type ReactElement } from 'react';
 import { Button } from '@/components/ui/button';
-import { Typography } from '@/components/typography';
 import type { BonusPromotionInfo } from '@/lib/bonus-product-utils';
 import { useTranslation } from 'react-i18next';
 
@@ -50,15 +49,6 @@ export default function SelectBonusProductsCard({
 
     return (
         <div className="flex flex-col gap-2" data-testid={`select-bonus-products-card-${promotion.promotionId}`}>
-            {/* Promotion Callout Badge */}
-            {promotion.calloutText && (
-                <div className="flex w-full px-2 py-0.5 justify-center items-center gap-1 rounded-[var(--radius)] bg-accent">
-                    <Typography variant="body" className="text-sm text-secondary-foreground text-center leading-tight">
-                        {promotion.calloutText}
-                    </Typography>
-                </div>
-            )}
-
             {/* Select Button */}
             <Button
                 variant="secondary"

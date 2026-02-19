@@ -125,7 +125,7 @@ exports[`Payment stories snapshot > Default story renders and matches snapshot 1
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_0_-form-item"
@@ -159,7 +159,7 @@ exports[`Payment stories snapshot > Default story renders and matches snapshot 1
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_1_-form-item"
@@ -186,7 +186,7 @@ exports[`Payment stories snapshot > Default story renders and matches snapshot 1
                 data-slot="form-item"
               >
                 <label
-                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                   data-error="false"
                   data-slot="form-label"
                   for="_r_2_-form-item"
@@ -211,7 +211,7 @@ exports[`Payment stories snapshot > Default story renders and matches snapshot 1
                 data-slot="form-item"
               >
                 <label
-                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                   data-error="false"
                   data-slot="form-label"
                   for="_r_3_-form-item"
@@ -538,7 +538,7 @@ exports[`Payment stories snapshot > LoadingState story renders and matches snaps
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_a_-form-item"
@@ -572,7 +572,7 @@ exports[`Payment stories snapshot > LoadingState story renders and matches snaps
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_b_-form-item"
@@ -599,7 +599,7 @@ exports[`Payment stories snapshot > LoadingState story renders and matches snaps
                 data-slot="form-item"
               >
                 <label
-                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                   data-error="false"
                   data-slot="form-label"
                   for="_r_c_-form-item"
@@ -624,7 +624,7 @@ exports[`Payment stories snapshot > LoadingState story renders and matches snaps
                 data-slot="form-item"
               >
                 <label
-                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                   data-error="false"
                   data-slot="form-label"
                   for="_r_d_-form-item"
@@ -815,7 +815,7 @@ exports[`Payment stories snapshot > MobileView story renders and matches snapsho
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_u_-form-item"
@@ -849,7 +849,7 @@ exports[`Payment stories snapshot > MobileView story renders and matches snapsho
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_v_-form-item"
@@ -876,7 +876,7 @@ exports[`Payment stories snapshot > MobileView story renders and matches snapsho
                 data-slot="form-item"
               >
                 <label
-                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                   data-error="false"
                   data-slot="form-label"
                   for="_r_10_-form-item"
@@ -901,7 +901,7 @@ exports[`Payment stories snapshot > MobileView story renders and matches snapsho
                 data-slot="form-item"
               >
                 <label
-                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                   data-error="false"
                   data-slot="form-label"
                   for="_r_11_-form-item"
@@ -1080,7 +1080,7 @@ exports[`Payment stories snapshot > TabletView story renders and matches snapsho
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_13_-form-item"
@@ -1114,7 +1114,7 @@ exports[`Payment stories snapshot > TabletView story renders and matches snapsho
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_14_-form-item"
@@ -1141,7 +1141,7 @@ exports[`Payment stories snapshot > TabletView story renders and matches snapsho
                 data-slot="form-item"
               >
                 <label
-                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                   data-error="false"
                   data-slot="form-label"
                   for="_r_15_-form-item"
@@ -1166,7 +1166,7 @@ exports[`Payment stories snapshot > TabletView story renders and matches snapsho
                 data-slot="form-item"
               >
                 <label
-                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                   data-error="false"
                   data-slot="form-label"
                   for="_r_16_-form-item"
@@ -1345,7 +1345,7 @@ exports[`Payment stories snapshot > WithBillingAddress story renders and matches
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_p_-form-item"
@@ -1379,7 +1379,7 @@ exports[`Payment stories snapshot > WithBillingAddress story renders and matches
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_q_-form-item"
@@ -1406,7 +1406,7 @@ exports[`Payment stories snapshot > WithBillingAddress story renders and matches
                 data-slot="form-item"
               >
                 <label
-                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                   data-error="false"
                   data-slot="form-label"
                   for="_r_r_-form-item"
@@ -1431,7 +1431,7 @@ exports[`Payment stories snapshot > WithBillingAddress story renders and matches
                 data-slot="form-item"
               >
                 <label
-                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                   data-error="false"
                   data-slot="form-label"
                   for="_r_s_-form-item"
@@ -1610,7 +1610,7 @@ exports[`Payment stories snapshot > WithExistingPayment story renders and matche
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_5_-form-item"
@@ -1644,7 +1644,7 @@ exports[`Payment stories snapshot > WithExistingPayment story renders and matche
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_6_-form-item"
@@ -1671,7 +1671,7 @@ exports[`Payment stories snapshot > WithExistingPayment story renders and matche
                 data-slot="form-item"
               >
                 <label
-                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                   data-error="false"
                   data-slot="form-label"
                   for="_r_7_-form-item"
@@ -1696,7 +1696,7 @@ exports[`Payment stories snapshot > WithExistingPayment story renders and matche
                 data-slot="form-item"
               >
                 <label
-                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                   data-error="false"
                   data-slot="form-label"
                   for="_r_8_-form-item"
@@ -1882,7 +1882,7 @@ exports[`Payment stories snapshot > WithFormError story renders and matches snap
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_f_-form-item"
@@ -1916,7 +1916,7 @@ exports[`Payment stories snapshot > WithFormError story renders and matches snap
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_g_-form-item"
@@ -1943,7 +1943,7 @@ exports[`Payment stories snapshot > WithFormError story renders and matches snap
                 data-slot="form-item"
               >
                 <label
-                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                   data-error="false"
                   data-slot="form-label"
                   for="_r_h_-form-item"
@@ -1968,7 +1968,7 @@ exports[`Payment stories snapshot > WithFormError story renders and matches snap
                 data-slot="form-item"
               >
                 <label
-                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                   data-error="false"
                   data-slot="form-label"
                   for="_r_i_-form-item"
@@ -2172,7 +2172,7 @@ exports[`Payment stories snapshot > WithValidationErrors story renders and match
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_k_-form-item"
@@ -2206,7 +2206,7 @@ exports[`Payment stories snapshot > WithValidationErrors story renders and match
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_l_-form-item"
@@ -2233,7 +2233,7 @@ exports[`Payment stories snapshot > WithValidationErrors story renders and match
                 data-slot="form-item"
               >
                 <label
-                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                   data-error="false"
                   data-slot="form-label"
                   for="_r_m_-form-item"
@@ -2258,7 +2258,7 @@ exports[`Payment stories snapshot > WithValidationErrors story renders and match
                 data-slot="form-item"
               >
                 <label
-                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive data-[error=true]:text-xl data-[error=true]:font-bold"
+                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                   data-error="false"
                   data-slot="form-label"
                   for="_r_n_-form-item"

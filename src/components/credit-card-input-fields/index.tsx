@@ -69,9 +69,7 @@ export function CreditCardInputFields<TFormValues extends FieldValues & CreditCa
                     const CardIcon = getCardIcon(detectedCardType || t('payment.unknownCardType'));
                     return (
                         <FormItem>
-                            <FormLabel className="data-[error=true]:text-xl data-[error=true]:font-bold">
-                                {t('payment.cardNumberLabel')}
-                            </FormLabel>
+                            <FormLabel>{t('payment.cardNumberLabel')}</FormLabel>
                             <FormControl>
                                 <div className="flex items-center gap-3">
                                     <div className="flex-1">
@@ -97,7 +95,7 @@ export function CreditCardInputFields<TFormValues extends FieldValues & CreditCa
                                     )}
                                 </div>
                             </FormControl>
-                            <FormMessage className="text-xl font-bold" />
+                            <FormMessage />
                         </FormItem>
                     );
                 }}
@@ -108,13 +106,11 @@ export function CreditCardInputFields<TFormValues extends FieldValues & CreditCa
                 name="cardholderName"
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel className="data-[error=true]:text-xl data-[error=true]:font-bold">
-                            {t('payment.cardholderLabel')}
-                        </FormLabel>
+                        <FormLabel>{t('payment.cardholderLabel')}</FormLabel>
                         <FormControl>
                             <Input placeholder={t('payment.cardholderPlaceholder')} autoComplete="cc-name" {...field} />
                         </FormControl>
-                        <FormMessage className="text-xl font-bold" />
+                        <FormMessage />
                     </FormItem>
                 )}
             />
@@ -125,9 +121,7 @@ export function CreditCardInputFields<TFormValues extends FieldValues & CreditCa
                     name="expiryDate"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="data-[error=true]:text-xl data-[error=true]:font-bold">
-                                {t('payment.expiryLabel')}
-                            </FormLabel>
+                            <FormLabel>{t('payment.expiryLabel')}</FormLabel>
                             <FormControl>
                                 <Input
                                     placeholder={t('payment.expiryPlaceholder')}
@@ -140,7 +134,7 @@ export function CreditCardInputFields<TFormValues extends FieldValues & CreditCa
                                     }}
                                 />
                             </FormControl>
-                            <FormMessage className="text-xl font-bold" />
+                            <FormMessage />
                         </FormItem>
                     )}
                 />
@@ -150,9 +144,7 @@ export function CreditCardInputFields<TFormValues extends FieldValues & CreditCa
                     name="cvv"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="data-[error=true]:text-xl data-[error=true]:font-bold">
-                                {t('payment.cvvLabel')}
-                            </FormLabel>
+                            <FormLabel>{t('payment.cvvLabel')}</FormLabel>
                             <FormControl>
                                 <Input
                                     placeholder={t('payment.cvvPlaceholder')}
@@ -165,7 +157,7 @@ export function CreditCardInputFields<TFormValues extends FieldValues & CreditCa
                                     }}
                                 />
                             </FormControl>
-                            <FormMessage className="text-xl font-bold" />
+                            <FormMessage />
                         </FormItem>
                     )}
                 />
