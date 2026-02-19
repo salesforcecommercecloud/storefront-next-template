@@ -35,6 +35,7 @@ import { useTranslation } from 'react-i18next';
 import { findImageGroupBy } from '@/lib/image-groups-utils';
 import { getDisplayVariationValues } from '@/lib/product-utils';
 import { useCurrency } from '@/providers/currency';
+import { toImageUrl } from '@/lib/dynamic-image';
 import ProductPrice from '@/components/product-price';
 
 /**
@@ -115,6 +116,7 @@ export default function MiniCartItem({ product, onRemove, bonusProductSlot }: Mi
         selectedVariationAttributes: product?.variationValues,
     });
     const image = imageGroup?.images?.[0];
+    const optimizedImageUrl = toImageUrl({ image, config }) || '';
 
     // Get display variation values using the helper function (following template pattern)
     const displayVariationValues = useMemo(
@@ -206,14 +208,14 @@ export default function MiniCartItem({ product, onRemove, bonusProductSlot }: Mi
                     productUrl ? (
                         <Link to={productUrl} className="block w-full h-full">
                             <img
-                                src={`${image.disBaseLink || image.link}?sw=160&q=60`}
+                                src={optimizedImageUrl}
                                 alt={image.alt || product?.productName || 'Product'}
                                 className="w-full h-full object-cover rounded"
                             />
                         </Link>
                     ) : (
                         <img
-                            src={`${image.disBaseLink || image.link}?sw=160&q=60`}
+                            src={optimizedImageUrl}
                             alt={image.alt || product?.productName || 'Product'}
                             className="w-full h-full object-cover rounded"
                         />

@@ -17,6 +17,7 @@ import { beforeEach, vi, type Mock } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { mockConfig } from '@/test-utils/config';
 import { isServer } from '@/lib/utils';
+import { useDynamicImageContext } from '@/providers/dynamic-image';
 import { DynamicImage } from './index';
 
 const src =
@@ -44,6 +45,10 @@ vi.mock('@/lib/utils', async (importOriginal) => {
         isServer: vi.fn().mockReturnValue(false),
     };
 });
+
+vi.mock('@/providers/dynamic-image', () => ({
+    useDynamicImageContext: vi.fn().mockReturnValue(null),
+}));
 
 describe('Dynamic Image Component', () => {
     beforeEach(() => {
@@ -479,6 +484,94 @@ describe('Dynamic Image Component', () => {
                     type: 'image/webp',
                 });
             });
+        });
+    });
+
+    describe('DynamicImageContext integration', () => {
+        beforeEach(() => {
+            (useDynamicImageContext as Mock).mockReturnValue(null);
+        });
+
+        test('renders with default priority when no context is available', () => {
+            render(<DynamicImage src={src} alt="Test image" />);
+
+            const img = screen.getByRole('img');
+            expect(img).toHaveAttribute('fetchpriority', 'auto');
+            expect(img).toHaveAttribute('loading', 'lazy');
+        });
+
+        test('renders with high priority when context.hasSource returns true', () => {
+            const mockHasSource = vi.fn().mockReturnValue(true);
+            (useDynamicImageContext as Mock).mockReturnValue({
+                hasSource: mockHasSource,
+                addSource: vi.fn(),
+            });
+
+            render(<DynamicImage src={src} alt="Test image" />);
+
+            const img = screen.getByRole('img');
+            expect(mockHasSource).toHaveBeenCalledWith(src);
+            expect(img).toHaveAttribute('fetchpriority', 'high');
+            expect(img).toHaveAttribute('loading', 'eager');
+        });
+
+        test('renders with default priority when context.hasSource returns false', () => {
+            const mockHasSource = vi.fn().mockReturnValue(false);
+            (useDynamicImageContext as Mock).mockReturnValue({
+                hasSource: mockHasSource,
+                addSource: vi.fn(),
+            });
+
+            render(<DynamicImage src={src} alt="Test image" />);
+
+            const img = screen.getByRole('img');
+            expect(mockHasSource).toHaveBeenCalledWith(src);
+            expect(img).toHaveAttribute('fetchpriority', 'auto');
+            expect(img).toHaveAttribute('loading', 'lazy');
+        });
+
+        test('explicit priority prop overrides context-based priority', () => {
+            const mockHasSource = vi.fn().mockReturnValue(true);
+            (useDynamicImageContext as Mock).mockReturnValue({
+                hasSource: mockHasSource,
+                addSource: vi.fn(),
+            });
+
+            render(<DynamicImage src={src} alt="Test image" priority="low" />);
+
+            const img = screen.getByRole('img');
+            // hasSource should not be called when priority is explicitly set
+            expect(img).toHaveAttribute('fetchpriority', 'low');
+            expect(img).toHaveAttribute('loading', 'lazy');
+        });
+
+        test('renders preload links on server when context.hasSource returns true', () => {
+            (isServer as Mock).mockReturnValue(true);
+            const mockHasSource = vi.fn().mockReturnValue(true);
+            (useDynamicImageContext as Mock).mockReturnValue({
+                hasSource: mockHasSource,
+                addSource: vi.fn(),
+            });
+
+            render(<DynamicImage src={src} alt="Test image" widths={[200]} />);
+
+            const preloadLinks = document.querySelectorAll('link[rel="preload"]');
+            expect(preloadLinks).toHaveLength(1);
+            expect(preloadLinks.item(0)).toHaveAttribute('fetchpriority', 'high');
+        });
+
+        test('does not render preload links on server when context.hasSource returns false', () => {
+            (isServer as Mock).mockReturnValue(true);
+            const mockHasSource = vi.fn().mockReturnValue(false);
+            (useDynamicImageContext as Mock).mockReturnValue({
+                hasSource: mockHasSource,
+                addSource: vi.fn(),
+            });
+
+            render(<DynamicImage src={src} alt="Test image" widths={[200]} />);
+
+            const preloadLinks = document.querySelectorAll('link[rel="preload"]');
+            expect(preloadLinks).toHaveLength(0);
         });
     });
 });

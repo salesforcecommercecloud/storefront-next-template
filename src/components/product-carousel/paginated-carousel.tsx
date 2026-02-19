@@ -26,7 +26,7 @@ import {
     CarouselPrevious,
     type CarouselApi,
 } from '@/components/ui/carousel';
-import { ProductTile } from '@/components/product-tile';
+import { ProductTile, ProductTileProvider } from '@/components/product-tile';
 import { useConfig } from '@/config';
 
 export interface PaginatedProductCarouselProps {
@@ -253,24 +253,25 @@ export default function PaginatedProductCarousel({
                     align: 'start',
                 }}>
                 <CarouselContent className="items-stretch flex-nowrap">
-                    {products.map((product, index) => (
-                        <CarouselItem
-                            key={product?.productId || `placeholder-${index}`}
-                            className="basis-1/2 sm:basis-1/3 md:basis-1/4 py-1 flex justify-center pl-0 min-w-0">
-                            <div
-                                ref={index === products.length - 1 ? lastItemRef : null}
-                                className="w-full max-w-full min-w-0">
-                                {product ? (
-                                    renderProductTile(product, index)
-                                ) : (
-                                    <div className="w-full flex items-center justify-center min-h-[200px]">
-                                        <div className="text-muted-foreground text-sm">{t('loadingMore')}</div>
-                                    </div>
-                                )}
-                            </div>
-                        </CarouselItem>
-                    ))}
-
+                    <ProductTileProvider>
+                        {products.map((product, index) => (
+                            <CarouselItem
+                                key={product?.productId || `placeholder-${index}`}
+                                className="basis-1/2 sm:basis-1/3 md:basis-1/4 py-1 flex justify-center pl-0 min-w-0">
+                                <div
+                                    ref={index === products.length - 1 ? lastItemRef : null}
+                                    className="w-full max-w-full min-w-0">
+                                    {product ? (
+                                        renderProductTile(product, index)
+                                    ) : (
+                                        <div className="w-full flex items-center justify-center min-h-[200px]">
+                                            <div className="text-muted-foreground text-sm">{t('loadingMore')}</div>
+                                        </div>
+                                    )}
+                                </div>
+                            </CarouselItem>
+                        ))}
+                    </ProductTileProvider>
                     {/* Loading indicator - observed by Intersection Observer */}
                     {hasMore && (
                         <CarouselItem

@@ -22,7 +22,7 @@ env:
 jobs:
   auto-release:
     if: github.repository == 'SalesforceCommerceCloud/storefront-next-template'
-    runs-on: ubuntu-latest
+    runs-on: commerce-emu_Ubuntu
     timeout-minutes: 20
     permissions:
       contents: write

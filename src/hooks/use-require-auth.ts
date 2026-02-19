@@ -63,9 +63,7 @@ export function useRequireAuth<T extends (...args: unknown[]) => Promise<unknown
     return useCallback(
         async (...args: Parameters<T>) => {
             // Re-check auth state in case it changed (e.g., after signup/login)
-            const currentIsAuthenticated = Boolean(
-                session?.userType === 'registered' && session?.customer_id && session?.access_token
-            );
+            const currentIsAuthenticated = Boolean(session?.userType === 'registered' && session?.customerId);
 
             // If authenticated, execute action immediately
             if (currentIsAuthenticated) {

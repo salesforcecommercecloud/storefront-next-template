@@ -17,7 +17,7 @@
 import { type ReactElement } from 'react';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { cn } from '@/lib/utils';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, type TFunction } from 'react-i18next';
 
 export const InventoryStatus = {
     IN_STOCK: 'in-stock',
@@ -88,7 +88,7 @@ function getInventoryStatus(
  *
  * TODO: Fix these colors once the UX team has updated the colors.
  */
-function getInventoryMessage(status: InventoryStatusType, t: (key: string) => string) {
+function getInventoryMessage(status: InventoryStatusType, t: TFunction) {
     switch (status) {
         case InventoryStatus.IN_STOCK:
             return {

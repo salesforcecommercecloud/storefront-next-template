@@ -23,8 +23,9 @@ import type {
     CustomerInterests,
     CustomerPreferences,
 } from '@/lib/adapters/customer-preferences-types';
+import { CUSTOMER_PREFERENCES_MOCK_ADAPTER_NAME } from '@/lib/adapters/customer-preferences-store';
 
-export const CUSTOMER_PREFERENCES_MOCK_ADAPTER_NAME = 'customer-preferences-mock' as const;
+export { CUSTOMER_PREFERENCES_MOCK_ADAPTER_NAME };
 
 /**
  * Mock data for interest categories and options
@@ -314,7 +315,7 @@ export function resetMockCustomerPreferencesData(): void {
 export function seedMockCustomerData(
     customerId: string,
     interests?: string[],
-    preferences?: Record<string, boolean | string>
+    preferences?: Record<string, boolean | string | string[]>
 ): void {
     if (interests) {
         customerInterestsStore.set(customerId, interests);

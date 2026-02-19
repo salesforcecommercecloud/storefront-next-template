@@ -13,10 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ReactElement, use } from 'react';
+import { type ReactElement, Suspense } from 'react';
 
 // React Router
-import type { ClientLoaderFunctionArgs, LoaderFunction, LoaderFunctionArgs } from 'react-router';
+import {
+    Await,
+    useLoaderData,
+    type ClientLoaderFunctionArgs,
+    type LoaderFunction,
+    type LoaderFunctionArgs,
+} from 'react-router';
 
 // Commerce SDK
 import {
@@ -28,33 +34,35 @@ import {
 } from '@salesforce/storefront-next-runtime/scapi';
 
 // Middlewares
-import { getBasket } from '@/middlewares/basket.server';
+import { getBasket, getBasketSnapshot, type BasketSnapshot } from '@/middlewares/basket.server';
 
 // API
 import { createApiClients } from '@/lib/api-clients';
 import { currencyContext } from '@/lib/currency';
 
 // Components
-import CartContent from '@/components/cart/cart-content';
-import createPage from '@/components/create-page';
-import CartEmptySkeleton from '@/components/cart/cart-empty-skeleton';
+import CartSkeleton from '@/components/cart/cart-skeleton';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
-import PickupProvider from '@/extensions/bopis/context/pickup-context';
 import { getInventoryIdsFromPickupShipments } from '@/extensions/bopis/lib/basket-utils';
 import { fetchStoresForBasket } from '@/extensions/bopis/lib/api/stores';
+import CartContent from '@/components/cart/cart-content';
+import PickupProvider from '@/extensions/bopis/context/pickup-context';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
 /**
  * Data structure returned by cart loader functions.
  */
 type CartPageData = {
-    basket: ShopperBasketsV2.schemas['Basket'];
-    productsByItemId: Promise<Record<string, ShopperProducts.schemas['Product']>>;
-    bonusProductsById: Promise<Record<string, ShopperProducts.schemas['Product']>>;
-    promotions?: Promise<Record<string, ShopperPromotions.schemas['Promotion']>>;
-    // @sfdc-extension-block-start SFDC_EXT_BOPIS
-    storesByStoreId: Promise<Map<string, ShopperStores.schemas['Store']>>;
-    // @sfdc-extension-block-end SFDC_EXT_BOPIS
+    basketDataPromise: Promise<{
+        basket: ShopperBasketsV2.schemas['Basket'];
+        productsByItemId: Record<string, ShopperProducts.schemas['Product']>;
+        bonusProductsById: Record<string, ShopperProducts.schemas['Product']>;
+        promotions: Record<string, ShopperPromotions.schemas['Promotion']>;
+        // @sfdc-extension-block-start SFDC_EXT_BOPIS
+        storesByStoreId?: Map<string, ShopperStores.schemas['Store']>;
+        // @sfdc-extension-block-end SFDC_EXT_BOPIS
+    }>;
+    basketSnapshot: BasketSnapshot | null;
 };
 
 /**
@@ -256,17 +264,6 @@ async function fetchProductsInBasket(
 }
 
 /**
- * Hydrate fallback component displayed during client-side hydration
- *
- * This component is shown when the cart route gets called/rendered directly on the server
- * during the hydration process, providing a loading state while the client-side data loads.
- * @returns JSX element representing the cart skeleton loading state
- */
-export function HydrateFallback() {
-    return <CartEmptySkeleton isRegistered={false} />;
-}
-
-/**
  * Client-side loader function for cart route
  *
  * This loader function handles cart data loading on the client side:
@@ -276,22 +273,40 @@ export function HydrateFallback() {
  * - Handles errors gracefully with fallback to empty state
  * - Returns promises for async data loading
  * @returns Promise resolving to cart page data with basket and product details
- * TODO: Implement server loader to have the cart page take part in the SSR phase
  */
-// eslint-disable-next-line react-refresh/only-export-components, custom/no-async-page-loader
-export const loader: LoaderFunction = async ({ context }: LoaderFunctionArgs): Promise<CartPageData> => {
-    const basket = (await getBasket(context)).current;
-    const productItems = basket?.productItems ?? [];
-    const productsData = fetchProductsInBasket(context, basket);
+// eslint-disable-next-line react-refresh/only-export-components
+export const loader: LoaderFunction = ({ context }: LoaderFunctionArgs): CartPageData => {
+    const basketPromise = getBasket(context, { ensureBasket: true }).then(
+        (basketResult) => basketResult.current ?? ({} as ShopperBasketsV2.schemas['Basket'])
+    );
+    const basketSnapshot = getBasketSnapshot(context);
+    const productsDataPromise = basketPromise.then((basket) => fetchProductsInBasket(context, basket));
+    const productsByItemIdPromise = productsDataPromise.then((data) => data.productsByItemId);
+    const bonusProductsByIdPromise = productsDataPromise.then((data) => data.bonusProductsById);
+    const promotionsPromise = basketPromise.then((basket) =>
+        fetchPromotionsForBasket(context, basket?.productItems ?? [])
+    );
+    const storesByStoreIdPromise = basketPromise.then((basket) => fetchStoresForBasket(context, basket));
+
+    const basketDataPromise = Promise.all([
+        basketPromise,
+        productsByItemIdPromise,
+        bonusProductsByIdPromise,
+        promotionsPromise,
+        storesByStoreIdPromise,
+    ]).then(([basket, productsByItemId, bonusProductsById, promotions, storesByStoreId]) => ({
+        basket,
+        productsByItemId,
+        bonusProductsById,
+        promotions,
+        // @sfdc-extension-block-start SFDC_EXT_BOPIS
+        storesByStoreId,
+        // @sfdc-extension-block-end SFDC_EXT_BOPIS
+    }));
 
     return {
-        basket: basket ?? ({} as ShopperBasketsV2.schemas['Basket']),
-        productsByItemId: productsData.then((d) => d.productsByItemId),
-        bonusProductsById: productsData.then((d) => d.bonusProductsById),
-        promotions: fetchPromotionsForBasket(context, productItems),
-        // @sfdc-extension-block-start SFDC_EXT_BOPIS
-        storesByStoreId: fetchStoresForBasket(context, basket),
-        // @sfdc-extension-block-end SFDC_EXT_BOPIS
+        basketDataPromise,
+        basketSnapshot,
     };
 };
 
@@ -308,53 +323,45 @@ export const loader: LoaderFunction = async ({ context }: LoaderFunctionArgs): P
  * - CartContent for complete cart functionality
  * @returns JSX element representing the cart page
  */
-function Cart({
-    loaderData: {
-        basket,
-        productsByItemId: productsByItemIdPromise,
-        bonusProductsById: bonusProductsByIdPromise,
-        promotions: promotionsPromise,
-        // @sfdc-extension-line SFDC_EXT_BOPIS
-        storesByStoreId: storesByStoreIdPromise,
-    },
-}: {
-    loaderData: CartPageData;
-}): ReactElement {
-    const productsByItemId = use(productsByItemIdPromise);
-    const bonusProductsById = use(bonusProductsByIdPromise);
-    const promotions = use(promotionsPromise ?? Promise.resolve({}));
-    // @sfdc-extension-line SFDC_EXT_BOPIS
-    const storesByStoreId = use(storesByStoreIdPromise);
-
+export default function Cart(): ReactElement {
+    const pageData = useLoaderData<CartPageData>();
     const content = (
-        <CartContent
-            basket={basket}
-            productsByItemId={productsByItemId}
-            bonusProductsById={bonusProductsById}
-            promotions={promotions}
-        />
+        <Await resolve={pageData.basketDataPromise}>
+            {(basketData) => {
+                return (
+                    <CartContent
+                        basket={basketData.basket}
+                        productsByItemId={basketData.productsByItemId}
+                        bonusProductsById={basketData.bonusProductsById}
+                        promotions={basketData.promotions}
+                    />
+                );
+            }}
+        </Await>
     );
 
     let finalContent = content;
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
     finalContent = (
-        <PickupProvider basket={basket} initialPickupStores={storesByStoreId}>
-            {content}
-        </PickupProvider>
+        <Await resolve={pageData.basketDataPromise}>
+            {({ basket, storesByStoreId }) => (
+                <PickupProvider basket={basket} initialPickupStores={storesByStoreId}>
+                    {content}
+                </PickupProvider>
+            )}
+        </Await>
     );
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
-    return finalContent;
-}
 
-/**
- * Cart page component with loading fallback
- *
- * This creates a page component that wraps the Cart component with a loading fallback.
- * The createPage utility provides consistent loading states and error handling.
- * @returns Page component with cart functionality and loading states
- */
-// eslint-disable-next-line react-refresh/only-export-components
-export default createPage<CartPageData>({
-    component: Cart,
-    fallback: <CartEmptySkeleton isRegistered={false} />,
-});
+    return (
+        <Suspense
+            fallback={
+                <CartSkeleton
+                    isRegistered={false}
+                    productItemCount={pageData.basketSnapshot?.uniqueProductCount ?? 0}
+                />
+            }>
+            {finalContent}
+        </Suspense>
+    );
+}

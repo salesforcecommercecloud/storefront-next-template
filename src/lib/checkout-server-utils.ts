@@ -39,7 +39,7 @@ export function getServerCustomerProfile(
     authSession: AuthData
 ): Promise<CustomerProfile | null> {
     try {
-        if (!authSession || !authSession.customer_id) {
+        if (!authSession || !authSession.customerId) {
             return Promise.resolve(null);
         }
 
@@ -57,7 +57,7 @@ export function getServerCustomerProfile(
             .getCustomer({
                 params: {
                     path: {
-                        customerId: authSession.customer_id,
+                        customerId: authSession.customerId,
                     },
                 },
             })

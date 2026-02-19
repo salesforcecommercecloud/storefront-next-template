@@ -115,7 +115,7 @@ exports[`ProductTile stories snapshot > CustomAction story renders and matches s
                       <div
                         aria-label="Navy"
                         class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
-                        style="background-color: navy; background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.jpg");"
+                        style="background-color: navy; background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70");"
                       />
                     </div>
                   </button>
@@ -134,7 +134,7 @@ exports[`ProductTile stories snapshot > CustomAction story renders and matches s
                       <div
                         aria-label="Charcoal"
                         class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
-                        style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.jpg");"
+                        style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70");"
                       />
                     </div>
                   </button>
@@ -331,7 +331,7 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
                       <div
                         aria-label="Navy"
                         class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
-                        style="background-color: navy; background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.jpg");"
+                        style="background-color: navy; background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70");"
                       />
                     </div>
                   </button>
@@ -350,7 +350,7 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
                       <div
                         aria-label="Charcoal"
                         class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
-                        style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.jpg");"
+                        style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70");"
                       />
                     </div>
                   </button>
@@ -547,7 +547,7 @@ exports[`ProductTile stories snapshot > MasterProductWithSwatches story renders 
                       <div
                         aria-label="Begonia Pink"
                         class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
-                        style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw2b23d065/images/swatch/PG.10217069.JJ5QZXX.CP.jpg");"
+                        style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw2b23d065/images/swatch/PG.10217069.JJ5QZXX.CP.webp?sfrm=jpg&q=70");"
                       />
                     </div>
                   </button>
@@ -566,7 +566,7 @@ exports[`ProductTile stories snapshot > MasterProductWithSwatches story renders 
                       <div
                         aria-label="Grey Heather"
                         class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
-                        style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw747c5f3e/images/swatch/PG.10217069.JJ908XX.CP.jpg");"
+                        style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw747c5f3e/images/swatch/PG.10217069.JJ908XX.CP.webp?sfrm=jpg&q=70");"
                       />
                     </div>
                   </button>
@@ -763,7 +763,7 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
                       <div
                         aria-label="Navy"
                         class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
-                        style="background-color: navy; background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.jpg");"
+                        style="background-color: navy; background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70");"
                       />
                     </div>
                   </button>
@@ -782,7 +782,7 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
                       <div
                         aria-label="Charcoal"
                         class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
-                        style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.jpg");"
+                        style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70");"
                       />
                     </div>
                   </button>

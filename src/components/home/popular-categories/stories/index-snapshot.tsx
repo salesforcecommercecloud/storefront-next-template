@@ -64,8 +64,15 @@ import { composeStories } from '@storybook/react-vite';
 
 import * as PopularCategoriesStories from './index.stories';
 import { render, cleanup } from '@testing-library/react';
+import { ConfigProvider } from '@/config';
+import { mockConfig } from '@/test-utils/config';
+import type { ReactNode } from 'react';
 
 const composed = composeStories(PopularCategoriesStories);
+
+const wrapper = ({ children }: { children: ReactNode }) => (
+    <ConfigProvider config={mockConfig}>{children}</ConfigProvider>
+);
 
 afterEach(() => {
     cleanup();
@@ -77,7 +84,7 @@ describe('PopularCategories stories snapshot', () => {
         if (Story?.parameters?.snapshot === false || /interactiontests?/i.test(storyName)) continue;
 
         test(`${storyName} story renders and matches snapshot`, () => {
-            const { container } = render(<Story />);
+            const { container } = render(<Story />, { wrapper });
             expect(container.firstChild).toMatchSnapshot();
         });
     }

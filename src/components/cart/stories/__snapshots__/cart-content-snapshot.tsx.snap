@@ -115,7 +115,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                             <img
                               alt="Button Front Jacket, Aqua Haze, small"
                               class="h-full w-full object-contain"
-                              src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw99c77d53/images/small/PG.10212871.JJ8OLXX.PZ.jpg?sw=160&q=60"
+                              src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw99c77d53/images/small/PG.10212871.JJ8OLXX.PZ.webp?sfrm=jpg&q=80"
                             />
                           </div>
                         </div>
@@ -877,7 +877,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                             <img
                               alt="Solid Silk Tie, Navy, small"
                               class="h-full w-full object-contain"
-                              src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7832203a/images/small/PG.949432114S.NAVYSI.PZ.jpg?sw=160&q=60"
+                              src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7832203a/images/small/PG.949432114S.NAVYSI.PZ.webp?sfrm=jpg&q=80"
                             />
                           </div>
                         </div>
@@ -1153,7 +1153,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                             <img
                               alt="Floral Ruffle Top, Cardinal Red Multi, small"
                               class="h-full w-full object-contain"
-                              src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw42fb2bdf/images/small/PG.10240939.JJ9DFXX.PZ.jpg?sw=160&q=60"
+                              src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw42fb2bdf/images/small/PG.10240939.JJ9DFXX.PZ.webp?sfrm=jpg&q=80"
                             />
                           </div>
                         </div>
@@ -1933,7 +1933,7 @@ exports[`CartContent stories snapshot > DesktopLayout story renders and matches 
                             <img
                               alt="Solid Silk Tie, Navy, small"
                               class="h-full w-full object-contain"
-                              src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7832203a/images/small/PG.949432114S.NAVYSI.PZ.jpg?sw=160&q=60"
+                              src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7832203a/images/small/PG.949432114S.NAVYSI.PZ.webp?sfrm=jpg&q=80"
                             />
                           </div>
                         </div>
@@ -2209,7 +2209,7 @@ exports[`CartContent stories snapshot > DesktopLayout story renders and matches 
                             <img
                               alt="Floral Ruffle Top, Cardinal Red Multi, small"
                               class="h-full w-full object-contain"
-                              src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw42fb2bdf/images/small/PG.10240939.JJ9DFXX.PZ.jpg?sw=160&q=60"
+                              src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw42fb2bdf/images/small/PG.10240939.JJ9DFXX.PZ.webp?sfrm=jpg&q=80"
                             />
                           </div>
                         </div>
@@ -3106,7 +3106,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                             <img
                               alt="Button Front Jacket, Aqua Haze, small"
                               class="h-full w-full object-contain"
-                              src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw99c77d53/images/small/PG.10212871.JJ8OLXX.PZ.jpg?sw=160&q=60"
+                              src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw99c77d53/images/small/PG.10212871.JJ8OLXX.PZ.webp?sfrm=jpg&q=80"
                             />
                           </div>
                         </div>
@@ -3909,7 +3909,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                             <img
                               alt="Solid Silk Tie, Navy, small"
                               class="h-full w-full object-contain"
-                              src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7832203a/images/small/PG.949432114S.NAVYSI.PZ.jpg?sw=160&q=60"
+                              src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7832203a/images/small/PG.949432114S.NAVYSI.PZ.webp?sfrm=jpg&q=80"
                             />
                           </div>
                         </div>
@@ -4185,7 +4185,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                             <img
                               alt="Floral Ruffle Top, Cardinal Red Multi, small"
                               class="h-full w-full object-contain"
-                              src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw42fb2bdf/images/small/PG.10240939.JJ9DFXX.PZ.jpg?sw=160&q=60"
+                              src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw42fb2bdf/images/small/PG.10240939.JJ9DFXX.PZ.webp?sfrm=jpg&q=80"
                             />
                           </div>
                         </div>
@@ -6451,7 +6451,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                             <img
                               alt="Button Front Jacket, Aqua Haze, small"
                               class="h-full w-full object-contain"
-                              src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw99c77d53/images/small/PG.10212871.JJ8OLXX.PZ.jpg?sw=160&q=60"
+                              src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw99c77d53/images/small/PG.10212871.JJ8OLXX.PZ.webp?sfrm=jpg&q=80"
                             />
                           </div>
                         </div>

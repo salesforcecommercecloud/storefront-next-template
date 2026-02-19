@@ -15,7 +15,7 @@
  */
 import { Suspense } from 'react';
 import { Await } from 'react-router';
-import type { ShopperProducts, ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Typography } from '@/components/typography';
 import { Component } from '@/lib/decorators/component';
@@ -24,7 +24,7 @@ import { RegionDefinition } from '@/lib/decorators';
 import { useTranslation } from 'react-i18next';
 import { loader as loaders } from './loaders';
 import PopularCategory from '@/components/home/popular-category';
-import { Region } from '@/components/region';
+import { type ComponentType, Region } from '@/components/region';
 
 interface PopularCategoriesProps {
     categoriesPromise?: Promise<ShopperProducts.schemas['Category'][]>;
@@ -33,8 +33,7 @@ interface PopularCategoriesProps {
     // Data prop provided by the Page Designer component loader
     data?: ShopperProducts.schemas['Category'][];
     // Page Designer props
-    component?: ShopperExperience.schemas['Component'];
-    componentData?: Record<string, Promise<unknown>>;
+    component?: ComponentType;
 }
 
 /* v8 ignore start - do not test decorators in unit tests, decorator functionality is tested separately*/
@@ -179,17 +178,15 @@ function CategoryGridContent({
     data,
     categoriesPromise,
     component,
-    componentData,
     paddingX,
 }: {
     data?: ShopperProducts.schemas['Category'][];
     categoriesPromise?: Promise<ShopperProducts.schemas['Category'][]>;
-    component?: ShopperExperience.schemas['Component'];
-    componentData?: Record<string, Promise<unknown>>;
+    component?: ComponentType;
     paddingX?: string;
 }) {
-    // If component or componentData are not provided, show fallback categories
-    if (!component || !componentData) {
+    // If component is not provided, show fallback categories
+    if (!component) {
         return (
             <>
                 <CategoryGridTitle />
@@ -222,12 +219,7 @@ function CategoryGridContent({
         <>
             <CategoryGridTitle />
             <div className={gridConfig.className} style={gridConfig.style}>
-                {/* TODO: Refactor <Region/> properties `page` and `componentData` to not expect promises anymore */}
-                <Region
-                    regionId="categories"
-                    page={Promise.resolve(component)}
-                    componentData={Promise.resolve(componentData)}
-                />
+                <Region regionId="categories" component={component} />
             </div>
         </>
     );
@@ -250,14 +242,12 @@ export default function PopularCategories({
     data,
     paddingX = 'px-4 sm:px-6 lg:px-8',
     component,
-    componentData,
 }: PopularCategoriesProps) {
     const content = (
         <CategoryGridContent
             data={data}
             categoriesPromise={categoriesPromise}
             component={component}
-            componentData={componentData}
             paddingX={paddingX}
         />
     );

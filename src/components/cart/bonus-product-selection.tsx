@@ -28,6 +28,7 @@ import { getBonusProductCountsForPromotion } from '@/lib/bonus-product-utils';
 import { requiresVariantSelection, getPrimaryProductImageUrl, isRuleBasedPromotion } from '@/lib/product-utils';
 import { useRuleBasedBonusProducts } from '@/hooks/use-rule-based-bonus-products';
 import { useConfig } from '@/config/get-config';
+import { toImageUrl } from '@/lib/dynamic-image';
 
 interface BonusProductSelectionProps {
     bonusDiscountLineItem: ShopperBasketsV2.schemas['BonusDiscountLineItem'];
@@ -215,7 +216,10 @@ export default function BonusProductSelection({
                                                     <div className="h-36 w-full relative">
                                                         {item.imageUrl ? (
                                                             <img
-                                                                src={item.imageUrl}
+                                                                src={
+                                                                    toImageUrl({ src: item.imageUrl, config }) ??
+                                                                    item.imageUrl
+                                                                }
                                                                 alt=""
                                                                 role="presentation"
                                                                 loading="lazy"

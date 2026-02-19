@@ -15,10 +15,12 @@
  */
 import type { ResourceLanguage } from 'i18next';
 import translations from '@/locales/en-US/translations.json';
+import product from '@/locales/en-US/product.json';
 import extensionTranslations from '@/extensions/locales/en-US/';
 
 const allTranslations = {
     ...translations,
+    product,
     ...extensionTranslations,
 };
 

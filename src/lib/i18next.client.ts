@@ -92,6 +92,15 @@ export function initI18next(options?: { language?: string; instance?: i18n }): i
                   // since the middleware already detected the language server-side
                   detection: { order: ['htmlTag'], caches: [] },
               }),
+        interpolation: {
+            escapeValue: false,
+            format: (value, format) => {
+                if (format === 'number' && typeof value === 'number') {
+                    return value.toLocaleString();
+                }
+                return value;
+            },
+        },
     });
 
     return instance;

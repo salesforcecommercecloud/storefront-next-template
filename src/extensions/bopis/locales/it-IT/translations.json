@@ -22,7 +22,12 @@
             "zipAriaLabel": "CAP",
             "calculateButton": "Calcola",
             "calculateAriaLabel": "Calcola stima di consegna",
-            "free": "Gratuita"
+            "invalidZipCode": "Inserisci un CAP valido di 5 cifre.",
+            "free": "Gratuita",
+            "calculating": "Calcolando...",
+            "errorFetchingEstimates": "Non siamo riusciti a ottenere le stime di consegna al momento. Riprova.",
+            "retry": "Riprova",
+            "shippingCost": "Costo di spedizione:"
         }
     },
     "storeInventoryFilter": {

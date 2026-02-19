@@ -16,12 +16,10 @@
 import type { ComponentPropsWithoutRef } from 'react';
 import { NavLink } from 'react-router';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
-import { type AppConfig, useConfig } from '@/config';
 import { NavigationMenuLink } from '@/components/ui/navigation-menu';
 import CategoryNavigationMenu, { WithCategoryNavigationMenu } from '@/components/navigation-menu';
-
-const disHostName = 'edge.disstg.commercecloud.salesforce.com';
-const imageCache = new WeakMap<ShopperProducts.schemas['Category'], string | undefined>();
+import { toImageUrl } from '@/lib/dynamic-image';
+import { useConfig } from '@/config';
 
 function hasBanner(category?: ShopperProducts.schemas['Category']): category is ShopperProducts.schemas['Category'] {
     return typeof category?.c_headerMenuBanner === 'string' && category?.c_headerMenuBanner?.length > 0;
@@ -32,28 +30,6 @@ function isVertical(category?: ShopperProducts.schemas['Category']): category is
         typeof category?.c_headerMenuOrientation === 'string' &&
         category?.c_headerMenuOrientation?.toLowerCase() === 'vertical'
     );
-}
-
-function getImageHref(category: ShopperProducts.schemas['Category'], config: AppConfig): string | undefined {
-    // Luckily when this gets called, we're always in the browser and can use the `DOMParser`, if available
-    if (!imageCache.has(category) && 'DOMParser' in globalThis) {
-        const organizationId = config.commerce.api.organizationId;
-        const realmId = organizationId.split('_').slice(-2).join('_');
-        const disHost = `https://${disHostName}/dw/image/v2/${realmId}`;
-        const asset = (typeof category.c_headerMenuBanner === 'string' && category.c_headerMenuBanner?.trim?.()) || '';
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(asset, 'text/html');
-        const img = doc.querySelector('img');
-        const src = img?.getAttribute('src') ?? undefined;
-        const srcHost = src ? new URL(src) : undefined;
-        if (srcHost?.hostname !== disHostName) {
-            const srcPath = srcHost?.pathname ?? undefined;
-            imageCache.set(category, srcPath ? `${disHost}${srcPath}?sw=640&q=60` : undefined);
-        } else {
-            imageCache.set(category, src);
-        }
-    }
-    return imageCache.get(category);
 }
 
 /**
@@ -69,8 +45,8 @@ function CategoryBanner({
     category,
     ...props
 }: ComponentPropsWithoutRef<'a'> & { category: ShopperProducts.schemas['Category'] }) {
-    const appConfig = useConfig();
-    const imageSrc = getImageHref(category, appConfig);
+    const config = useConfig();
+    const imageSrc = toImageUrl({ src: (category?.c_slotBannerImage as string) ?? '', config });
 
     return (
         <NavigationMenuLink asChild>

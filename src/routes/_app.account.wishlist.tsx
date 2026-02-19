@@ -52,12 +52,12 @@ export async function loader({ context }: LoaderFunctionArgs): Promise<{
     // Check if user is authenticated as registered customer
     const isRegistered =
         session.userType === 'registered' &&
-        session.customer_id &&
-        session.access_token &&
-        session.access_token_expiry &&
-        session.access_token_expiry > Date.now();
+        session.customerId &&
+        session.accessToken &&
+        session.accessTokenExpiry &&
+        session.accessTokenExpiry > Date.now();
 
-    if (!isRegistered || !session.customer_id) {
+    if (!isRegistered || !session.customerId) {
         return {
             wishlist: null,
             items: [],
@@ -66,7 +66,7 @@ export async function loader({ context }: LoaderFunctionArgs): Promise<{
     }
 
     try {
-        const customerId = session.customer_id;
+        const customerId = session.customerId;
         const config = getConfig(context);
         const initialLimit = config.global.paginatedProductCarousel.defaultLimit;
 

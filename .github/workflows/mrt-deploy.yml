@@ -35,7 +35,7 @@ env:
 
 jobs:
   check-deploy:
-    runs-on: ubuntu-latest
+    runs-on: commerce-emu_Ubuntu
     steps:
       - name: Log deploy skip
         if: ${{ secrets.MRT_CLIENT_API_KEY == '' }}
@@ -45,7 +45,7 @@ jobs:
   deploy:
     needs: check-deploy
     if: ${{ secrets.MRT_CLIENT_API_KEY != '' }}
-    runs-on: ubuntu-latest
+    runs-on: commerce-emu_Ubuntu
     environment: ${{ github.event.inputs.environment || 'Production' }}
     timeout-minutes: 30
 

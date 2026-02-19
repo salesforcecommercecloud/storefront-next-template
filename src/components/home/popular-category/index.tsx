@@ -16,12 +16,15 @@
 import type { ComponentProps } from 'react';
 import type { ShopperProducts, ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import type { ComponentDesignMetadata } from '@salesforce/storefront-next-runtime/design/react';
+import type { ComponentType } from '@/components/region';
 import ContentCard from '@/components/content-card';
 import { Component } from '@/lib/decorators/component';
 import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
+import { toImageUrl } from '@/lib/dynamic-image';
 import { useTranslation } from 'react-i18next';
 import heroImage from '/images/hero-cube.webp';
 import { loader as loaders } from './loaders';
+import { useConfig } from '@/config';
 
 interface PopularCategoryProps extends ComponentProps<'div'> {
     // Category data from Page Designer (via loader) or programmatic use
@@ -29,7 +32,7 @@ interface PopularCategoryProps extends ComponentProps<'div'> {
     // Page Designer props (passed by Component wrapper, must be extracted to avoid passing to DOM)
     regionId?: string;
     page?: ShopperExperience.schemas['Page'];
-    component?: ShopperExperience.schemas['Component'];
+    component?: ComponentType;
     componentData?: Record<string, Promise<unknown>>;
     designMetadata?: ComponentDesignMetadata;
     // Loader data - full category object fetched by loader
@@ -78,6 +81,7 @@ export default function PopularCategory({
     ...props
 }: PopularCategoryProps) {
     const { t } = useTranslation('home');
+    const config = useConfig();
 
     // Use data from loader (Page Designer) or category prop (programmatic use)
     // If category is a string, it's from Page Designer and we should ignore it (wait for loader data)
@@ -107,15 +111,19 @@ export default function PopularCategory({
     const finalDescription = categoryData.pageDescription || categoryData.description || '';
 
     // Determine image URL - priority: category image > category banner > hero fallback
-    const categoryImageUrl = categoryData.image || categoryData.c_slotBannerImage;
-    const finalImageUrl = categoryImageUrl || heroImage;
+    const categoryImageUrl =
+        (typeof categoryData.image === 'string' && categoryData.image) ||
+        (typeof categoryData.c_slotBannerImage === 'string' && categoryData.c_slotBannerImage) ||
+        undefined;
+    const transformedCategoryImage = toImageUrl({ src: categoryImageUrl, config }) ?? categoryImageUrl;
+    const finalImageUrl: string = transformedCategoryImage || heroImage;
     const finalImageAlt = categoryData.name || '';
 
     return (
         <ContentCard
             title={finalName}
             description={finalDescription}
-            imageUrl={finalImageUrl as string}
+            imageUrl={finalImageUrl}
             imageAlt={finalImageAlt}
             buttonText={t('categoryGrid.shopNowButton')}
             buttonLink={`/category/${finalCategoryId}`}

@@ -19,6 +19,8 @@ import type React from 'react';
 import { Link } from 'react-router';
 import { DynamicImage } from '@/components/dynamic-image';
 import { useAnalytics } from '@/hooks/use-analytics';
+import { toImageUrl } from '@/lib/dynamic-image';
+import { useConfig } from '@/config';
 
 interface Suggestion {
     name: string;
@@ -39,6 +41,7 @@ const SearchSuggestionsPopup: React.FC<SearchSuggestionsPopupProps> = ({
     closeAndNavigate,
 }) => {
     const analytics = useAnalytics();
+    const config = useConfig();
     if (!suggestions || suggestions.length === 0) {
         return null;
     }
@@ -69,7 +72,7 @@ const SearchSuggestionsPopup: React.FC<SearchSuggestionsPopupProps> = ({
                                 <div className="w-full relative aspect-[4/3]">
                                     {suggestion.image ? (
                                         <DynamicImage
-                                            src={`${suggestion.image}[?sw={width}]`}
+                                            src={`${toImageUrl({ src: suggestion.image, config })}[?sw={width}]`}
                                             alt=""
                                             imageProps={{
                                                 className: 'absolute inset-0 w-full h-full object-cover block',

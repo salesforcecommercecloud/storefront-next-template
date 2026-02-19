@@ -20,6 +20,8 @@ import { useMemo } from 'react';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import type { GalleryImage } from '@/components/image-gallery';
 import { findImageGroupBy } from '@/lib/image-groups-utils';
+import { toImageUrl } from '@/lib/dynamic-image';
+import { useConfig } from '@/config';
 
 interface UseProductImagesProps {
     product: ShopperProducts.schemas['Product'];
@@ -77,6 +79,8 @@ export function useProductImages({
     selectedAttributes,
     viewType = 'large',
 }: UseProductImagesProps): UseProductImagesReturn {
+    const config = useConfig();
+
     // Get images filtered by selected attributes
     const filteredImages = useMemo(() => {
         // Return default images if no attributes are selected
@@ -100,12 +104,15 @@ export function useProductImages({
             return [];
         }
 
-        return filteredImages.map((image: ShopperProducts.schemas['Image']) => ({
-            src: image.disBaseLink || image.link || '',
-            alt: image.alt || product.name || '',
-            thumbSrc: image.disBaseLink || image.link || '',
-        }));
-    }, [filteredImages, product.name]);
+        return filteredImages.map((image: ShopperProducts.schemas['Image']) => {
+            const optimizedImageUrl = toImageUrl({ image, config }) || '';
+            return {
+                src: optimizedImageUrl,
+                alt: image.alt || product.name || '',
+                thumbSrc: optimizedImageUrl,
+            };
+        });
+    }, [filteredImages, product.name, config]);
 
     return {
         // Transformed images

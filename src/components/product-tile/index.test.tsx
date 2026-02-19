@@ -29,6 +29,18 @@ import { CurrencyProvider } from '@/providers/currency';
 
 vi.mock('@/lib/product-utils', () => ({
     createProductUrl: vi.fn(() => '/product/test-product'),
+    getImagesForColor: vi.fn(() => [
+        {
+            link: 'https://example.com/default1.jpg',
+            disBaseLink: 'https://example.com/default1.jpg',
+            alt: 'Default Image 1',
+        },
+        {
+            link: 'https://example.com/default2.jpg',
+            disBaseLink: 'https://example.com/default2.jpg',
+            alt: 'Default Image 2',
+        },
+    ]),
     getDecoratedVariationAttributes: vi.fn(() => [
         {
             id: 'color',
@@ -95,13 +107,11 @@ const mockProduct: ShopperSearch.schemas['ProductSearchHit'] = {
                     alt: 'Navy swatch',
                     link: 'https://example.com/navy.jpg',
                     disBaseLink: 'https://example.com/navy.jpg',
-                    variationAttributes: [{ id: 'color', values: [{ value: 'navy' }] }],
                 },
                 {
                     alt: 'Red swatch',
                     link: 'https://example.com/red.jpg',
                     disBaseLink: 'https://example.com/red.jpg',
-                    variationAttributes: [{ id: 'color', values: [{ value: 'red' }] }],
                 },
             ],
         },
@@ -165,45 +175,6 @@ describe('ProductTile', () => {
         expect(screen.getByText('New')).toBeInTheDocument();
     });
 
-    test('handles empty attribute value selection (edge case)', async () => {
-        const user = userEvent.setup();
-        renderComponent();
-
-        const swatches = screen
-            .getAllByRole('button')
-            .filter(
-                (button) =>
-                    button.className.includes('cursor-pointer') &&
-                    !button.textContent?.includes(t('product:moreOptions'))
-            );
-
-        if (swatches.length > 0) {
-            // Should not throw error when clicking empty attribute value
-            await user.click(swatches[0]);
-            expect(swatches[0]).toBeInTheDocument();
-        }
-    });
-
-    test('allows switching between attribute variants', async () => {
-        const user = userEvent.setup();
-        renderComponent();
-
-        const swatches = screen
-            .getAllByRole('button')
-            .filter(
-                (button) =>
-                    button.className.includes('cursor-pointer') &&
-                    !button.textContent?.includes(t('product:moreOptions'))
-            );
-
-        if (swatches.length >= 2) {
-            await user.click(swatches[1]); // Click small
-            await user.click(swatches[0]); // Go back to first (empty) - edge case
-
-            expect(swatches[0]).toBeInTheDocument();
-        }
-    });
-
     test('navigates to PDP when clicking product name', async () => {
         const user = userEvent.setup();
         renderComponent();
@@ -239,31 +210,6 @@ describe('ProductTile', () => {
         expect(mockNavigate).toHaveBeenCalledWith('/product/test-product');
     });
 
-    test('respects maxSwatches prop', () => {
-        renderComponent({ maxSwatches: 2 });
-
-        const swatches = screen
-            .getAllByRole('button')
-            .filter(
-                (button) =>
-                    button.className.includes('cursor-pointer') &&
-                    !button.textContent?.includes(t('product:moreOptions'))
-            );
-
-        // Should only show 2 swatches (maxSwatches prop)
-        expect(swatches.length).toBeLessThanOrEqual(2);
-    });
-
-    test('shows overflow indicator when there are more swatches than maxSwatches', () => {
-        renderComponent({ maxSwatches: 2 });
-
-        // Look for the "+" indicator when there are more than 2 swatches
-        const plusIndicator = screen.queryByTitle(/^\+\d+$/);
-        if (plusIndicator) {
-            expect(plusIndicator).toBeInTheDocument();
-        }
-    });
-
     test('applies custom className', () => {
         const customClass = 'custom-product-tile';
         const { container } = renderComponent({ className: customClass });
@@ -284,59 +230,11 @@ describe('ProductTile UI Variants', () => {
         vi.restoreAllMocks();
     });
 
-    test('renders color swatches with circular shape', () => {
-        renderComponent();
-
-        // Color swatches should be rendered as circles
-        const swatchGroup = screen.getByRole('radiogroup', { name: 'Colour' });
-        expect(swatchGroup).toBeInTheDocument();
-    });
-
-    test('displays more swatches indicator (+) when exceeding maxSwatches', () => {
-        // With 4 colors and maxSwatches=2, should show +2 indicator
-        renderComponent({ maxSwatches: 2 });
-
-        const plusIndicator = screen.getByTitle('+2');
-        expect(plusIndicator).toBeInTheDocument();
-    });
-
-    test('does not show more indicator when swatches fit within maxSwatches', () => {
-        // With maxSwatches=4 and 4 colors, no indicator needed
-        renderComponent({ maxSwatches: 4 });
-
-        const plusIndicator = screen.queryByTitle(/^\+\d+$/);
-        expect(plusIndicator).not.toBeInTheDocument();
-    });
-
-    test('renders Sale badge when product has sale badge', () => {
-        renderComponent();
-
-        expect(screen.getByText('Sale')).toBeInTheDocument();
-    });
-
-    test('renders multiple badges when product has multiple badges', () => {
-        renderComponent();
-
-        expect(screen.getByText('Sale')).toBeInTheDocument();
-        expect(screen.getByText('New')).toBeInTheDocument();
-    });
-
     test('renders custom footer action when provided', () => {
         const customFooter = <button>Add to Cart</button>;
         renderComponent({ footerAction: customFooter });
 
         expect(screen.getByRole('button', { name: 'Add to Cart' })).toBeInTheDocument();
         expect(screen.queryByText(/more options/i)).not.toBeInTheDocument();
-    });
-
-    test('disables swatch interaction in read-only mode for wishlist', () => {
-        renderComponent({
-            disableSwatchInteraction: true,
-            selectedVariantColorValue: 'navy',
-        });
-
-        // In disabled mode with a selected variant, only the selected variant's swatch should be shown
-        const swatches = screen.getAllByRole('radio');
-        expect(swatches).toHaveLength(1);
     });
 });

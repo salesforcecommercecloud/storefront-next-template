@@ -30,7 +30,7 @@ export function StoryTestWrapper({ children }: { children: ReactNode }): ReactEl
     // CheckoutProvider needs BasketProvider, which needs AuthProvider
     const content = (
         <ConfigProvider config={mockConfig}>
-            <AuthProvider value={{ userType: 'guest', customer_id: undefined }}>
+            <AuthProvider value={{ userType: 'guest', customerId: undefined }}>
                 <BasketProvider basket={undefined}>
                     <StoreLocatorProvider>
                         <CheckoutOneClickProvider customerProfile={undefined} shippingDefaultSet={Promise.resolve(undefined)}>

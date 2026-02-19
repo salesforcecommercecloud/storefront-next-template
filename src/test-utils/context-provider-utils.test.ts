@@ -71,6 +71,7 @@ describe('context-provider-utils', () => {
 
         it('has correct images configuration', () => {
             expect(mockBuildConfig.app.images).toEqual({
+                host: 'https://edge.disstg.commercecloud.salesforce.com',
                 quality: 80,
                 formats: ['webp'],
                 fallbackFormat: 'jpg',

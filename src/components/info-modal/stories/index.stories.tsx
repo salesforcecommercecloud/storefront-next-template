@@ -84,17 +84,18 @@ const meta: Meta<typeof InfoModalWrapper> = {
 The InfoModal is a generic, reusable modal component that displays informational content.
 
 **Features:**
-- Supports multiple modal types: payment schedule and generic content
+- Supports multiple modal types (payment-schedule, write-review, star-rating-distribution)
 - Accepts structured data from adapters
 - Handles all rendering logic internally
 - Themeable and accessible
 
 **Modal Types:**
-- **Payment Schedule**: Displays payment schedule, steps, disclaimer, and links
-- **Generic**: Displays custom React content
+- **Payment Schedule**: Displays title, description, payment schedule timeline, "How it works" steps, disclaimer, and Close button
+- **Write Review**: Displays a form for submitting product reviews
+- **Star Rating Distribution**: Displays star rating and distribution of ratings across 1-5 stars
 
 **Usage:**
-The modal accepts structured data (not React components) and transforms it into the appropriate UI structure.
+The modal accepts structured data with a specific type and transforms it into the appropriate UI.
                 `,
             },
         },
@@ -154,9 +155,10 @@ export const NoData: Story = {
         await userEvent.click(openButton);
 
         const documentBody = within(document.body);
-        await expect(documentBody.getByRole('dialog')).toBeInTheDocument();
+        const dialog = documentBody.getByRole('dialog');
+        await expect(dialog).toBeInTheDocument();
         await expect(documentBody.getByText('Information')).toBeInTheDocument();
-        await expect(documentBody.getByText('No data available.')).toBeInTheDocument();
+        await expect(within(dialog).getByText('No data available.')).toBeInTheDocument();
     },
 };
 
@@ -164,8 +166,8 @@ export const PaymentScheduleType: Story = {
     args: {
         data: {
             type: 'payment-schedule',
-            title: 'Pay in 4',
-            description: 'Split your purchase into 4 interest-free payments',
+            title: 'Pay in 4 interest-free payments',
+            description: 'Split your purchase of $49.00 into 4 with no impact on credit score and no late fees.',
             paymentSchedule: {
                 totalAmount: 59.0,
                 numberOfPayments: 4,
@@ -177,16 +179,11 @@ export const PaymentScheduleType: Story = {
                 ],
             },
             steps: [
-                { number: 1, text: 'Select payment method at checkout' },
-                { number: 2, text: 'Choose Pay in 4' },
-                { number: 3, text: 'Complete your purchase' },
-                { number: 4, text: 'Pay over time, interest-free' },
+                { number: 1, text: 'Choose BNPL at checkout to pay later with Pay in 4.' },
+                { number: 2, text: 'Complete your purchase with a 25% down payment.' },
+                { number: 3, text: "Use autopay for the rest of your payments. It's easy!" },
             ],
             disclaimer: 'Subject to credit approval. Terms apply.',
-            links: [
-                { text: 'Learn more', url: '/payment-info', openInNewTab: false },
-                { text: 'Terms and conditions', url: '/terms', openInNewTab: true },
-            ],
         },
     },
     play: async ({ canvasElement }) => {
@@ -197,47 +194,13 @@ export const PaymentScheduleType: Story = {
         await userEvent.click(openButton);
 
         const documentBody = within(document.body);
-        await expect(documentBody.getByRole('dialog')).toBeInTheDocument();
-        await expect(documentBody.getByText('Pay in 4')).toBeInTheDocument();
-        await expect(documentBody.getByText('Split your purchase into 4 interest-free payments')).toBeInTheDocument();
-        await expect(documentBody.getByText('How it works')).toBeInTheDocument();
-        await expect(documentBody.getByText('Select payment method at checkout')).toBeInTheDocument();
-        await expect(documentBody.getByText('Subject to credit approval. Terms apply.')).toBeInTheDocument();
-    },
-};
+        const dialog = await documentBody.findByRole('dialog', {}, { timeout: 5000 });
+        const inDialog = within(dialog);
 
-export const GenericType: Story = {
-    args: {
-        data: {
-            type: 'generic',
-            title: 'Custom Information',
-            description: 'This is a generic modal with custom content',
-            content: (
-                <div className="space-y-4">
-                    <p>This is custom content that can be anything you want.</p>
-                    <ul className="list-disc list-inside space-y-2">
-                        <li>Feature one</li>
-                        <li>Feature two</li>
-                        <li>Feature three</li>
-                    </ul>
-                </div>
-            ),
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const openButton = canvas.getByRole('button', { name: /open modal/i });
-        await userEvent.click(openButton);
-
-        const documentBody = within(document.body);
-        await expect(documentBody.getByRole('dialog')).toBeInTheDocument();
-        await expect(documentBody.getByText('Custom Information')).toBeInTheDocument();
-        await expect(documentBody.getByText('This is a generic modal with custom content')).toBeInTheDocument();
-        await expect(
-            documentBody.getByText('This is custom content that can be anything you want.')
-        ).toBeInTheDocument();
+        await expect(inDialog.getByText('Pay in 4 interest-free payments')).toBeInTheDocument();
+        await expect(inDialog.getByText('Payment Schedule')).toBeInTheDocument();
+        await expect(inDialog.getByText('How it works')).toBeInTheDocument();
+        await expect(inDialog.getByText('Subject to credit approval. Terms apply.')).toBeInTheDocument();
     },
 };
 
@@ -268,5 +231,116 @@ export const PaymentScheduleOnly: Story = {
         const documentBody = within(document.body);
         await expect(documentBody.getByRole('dialog')).toBeInTheDocument();
         await expect(documentBody.getByText('Pay in 4')).toBeInTheDocument();
+        await expect(documentBody.getByText('Payment Schedule')).toBeInTheDocument();
+    },
+};
+
+export const StarRatingDistributionType: Story = {
+    args: {
+        data: {
+            type: 'star-rating-distribution',
+            title: '4.8 out of 5',
+            rating: 4.8,
+            reviewCount: 200,
+            distributions: [
+                { rating: 5, count: 120 },
+                { rating: 4, count: 50 },
+                { rating: 3, count: 20 },
+                { rating: 2, count: 8 },
+                { rating: 1, count: 2 },
+            ],
+            onSeeReviewsClick: action('see reviews clicked'),
+        },
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: `
+Star rating distribution modal displaying rating overview and distribution breakdown.
+
+### Features:
+- Modal width: 19rem (304px) to accommodate w-64 (256px) content + padding
+- Content area: w-64 (256px)
+- Star rating with right label and review count
+- Distribution bars showing rating breakdown
+- "See customer reviews" link button (follows project pattern: text-primary hover:underline)
+- X button to close (top right)
+                `,
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const openButton = canvas.getByRole('button', { name: /open modal/i });
+        await userEvent.click(openButton);
+
+        const documentBody = within(document.body);
+        const dialog = await documentBody.findByRole('dialog', {}, { timeout: 5000 });
+        const inDialog = within(dialog);
+
+        // Check modal title (same as right label in star rating)
+        // Note: Text appears twice (DialogTitle with aria-hidden and StarRating label)
+        const ratingTexts = inDialog.getAllByText('4.8 out of 5');
+        await expect(ratingTexts.length).toBeGreaterThanOrEqual(1);
+
+        // Check that star rating component is rendered
+        await expect(inDialog.getByText('Based on 200 reviews')).toBeInTheDocument();
+
+        // Check that stars are rendered
+        const stars = dialog.querySelectorAll('svg');
+        await expect(stars.length).toBeGreaterThan(5);
+    },
+};
+
+export const StarRatingDistributionHighlyRated: Story = {
+    args: {
+        data: {
+            type: 'star-rating-distribution',
+            rating: 4.9,
+            reviewCount: 200,
+            distributions: [
+                { rating: 5, count: 180 },
+                { rating: 4, count: 15 },
+                { rating: 3, count: 3 },
+                { rating: 2, count: 1 },
+                { rating: 1, count: 1 },
+            ],
+            onSeeReviewsClick: action('see reviews clicked'),
+        },
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: `
+Highly rated product with most reviews being 5-star. Demonstrates how the modal handles excellent ratings with heavily skewed distribution.
+
+### Features:
+- 4.9 rating with 90% 5-star reviews
+- Distribution bars show clear visual hierarchy
+- Modal title defaults to rating label when not explicitly provided
+                `,
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const openButton = canvas.getByRole('button', { name: /open modal/i });
+        await userEvent.click(openButton);
+
+        const documentBody = within(document.body);
+        const dialog = await documentBody.findByRole('dialog', {}, { timeout: 5000 });
+        const inDialog = within(dialog);
+
+        // Check modal title defaults to rating label when title is not provided
+        // Note: Text appears twice (DialogTitle with aria-hidden and StarRating label)
+        const ratingTexts = inDialog.getAllByText('4.9 out of 5');
+        await expect(ratingTexts.length).toBeGreaterThanOrEqual(1);
+
+        // Check that star rating is displayed
+        await expect(inDialog.getByText('Based on 200 reviews')).toBeInTheDocument();
     },
 };

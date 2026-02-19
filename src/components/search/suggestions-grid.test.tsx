@@ -17,6 +17,8 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { BrowserRouter } from 'react-router';
 import SearchSuggestionsPopup from './suggestions-grid';
+import { ConfigProvider } from '@/config/context';
+import { mockConfig } from '@/test-utils/config';
 
 // Mock DynamicImage component
 vi.mock('@/components/dynamic-image', () => ({
@@ -32,7 +34,11 @@ vi.mock('@/hooks/use-analytics', () => ({
 }));
 
 const renderWithRouter = (ui: React.ReactElement) => {
-    return render(<BrowserRouter>{ui}</BrowserRouter>);
+    return render(
+        <ConfigProvider config={mockConfig}>
+            <BrowserRouter>{ui}</BrowserRouter>
+        </ConfigProvider>
+    );
 };
 
 describe('SearchSuggestionsPopup Component', () => {
@@ -55,13 +61,13 @@ describe('SearchSuggestionsPopup Component', () => {
 
     it('should render nothing when suggestions are empty, null, or undefined', () => {
         const { container: emptyContainer } = renderWithRouter(<SearchSuggestionsPopup suggestions={[]} />);
-        expect(emptyContainer.firstChild).toBeNull();
+        expect(emptyContainer.querySelector('[data-testid="sf-horizontal-product-suggestions"]')).toBeNull();
 
         const { container: nullContainer } = renderWithRouter(<SearchSuggestionsPopup suggestions={null as any} />);
-        expect(nullContainer.firstChild).toBeNull();
+        expect(nullContainer.querySelector('[data-testid="sf-horizontal-product-suggestions"]')).toBeNull();
 
         const { container: undefinedContainer } = renderWithRouter(<SearchSuggestionsPopup suggestions={undefined} />);
-        expect(undefinedContainer.firstChild).toBeNull();
+        expect(undefinedContainer.querySelector('[data-testid="sf-horizontal-product-suggestions"]')).toBeNull();
     });
 
     it('should render suggestions with correct structure and content', () => {
@@ -124,9 +130,11 @@ describe('SearchSuggestionsPopup Component', () => {
 
         // Should not crash without callback
         rerender(
-            <BrowserRouter>
-                <SearchSuggestionsPopup suggestions={mockSuggestions} closeAndNavigate={undefined} />
-            </BrowserRouter>
+            <ConfigProvider config={mockConfig}>
+                <BrowserRouter>
+                    <SearchSuggestionsPopup suggestions={mockSuggestions} closeAndNavigate={undefined} />
+                </BrowserRouter>
+            </ConfigProvider>
         );
         expect(() => fireEvent.click(screen.getByText('Samsung Galaxy S24'))).not.toThrow();
     });

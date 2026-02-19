@@ -160,10 +160,10 @@ function getProductId(
     product: ShopperProducts.schemas['Product'] | ShopperSearch.schemas['ProductSearchHit']
 ): string | null {
     if ('id' in product && product.id) {
-        return product.id;
+        return typeof product.id === 'string' ? product.id : String(product.id);
     }
     if ('productId' in product && product.productId) {
-        return product.productId;
+        return typeof product.productId === 'string' ? product.productId : String(product.productId);
     }
     return null;
 }

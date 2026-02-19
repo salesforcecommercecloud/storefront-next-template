@@ -191,7 +191,7 @@ describe('passwordless-login', () => {
                     .mockResolvedValueOnce({
                         ok: true,
                         json: vi.fn().mockResolvedValue({
-                            access_token: 'mc-access-token',
+                            accessToken: 'mc-access-token',
                         }),
                     } as any)
                     .mockResolvedValueOnce({
@@ -259,7 +259,7 @@ describe('passwordless-login', () => {
                     .mockResolvedValueOnce({
                         ok: true,
                         json: vi.fn().mockResolvedValue({
-                            access_token: 'mc-access-token',
+                            accessToken: 'mc-access-token',
                         }),
                     } as any)
                     .mockResolvedValueOnce({

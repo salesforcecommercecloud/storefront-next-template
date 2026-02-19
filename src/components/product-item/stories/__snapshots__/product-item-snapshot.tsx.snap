@@ -29,7 +29,7 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
                 <img
                   alt="Men's Classic Deer Gloves, , small"
                   class="h-full w-full object-contain"
-                  src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd4659c06/images/small/TG508_206.jpg?sw=160&q=60"
+                  src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd4659c06/images/small/TG508_206.webp?sfrm=jpg&q=70"
                 />
               </div>
             </div>
@@ -272,7 +272,7 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
                 <img
                   alt="Men's Classic Deer Gloves, , small"
                   class="h-full w-full object-contain"
-                  src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd4659c06/images/small/TG508_206.jpg?sw=160&q=60"
+                  src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd4659c06/images/small/TG508_206.webp?sfrm=jpg&q=70"
                 />
               </div>
             </div>
@@ -529,7 +529,7 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                 <img
                   alt="Men's Classic Deer Gloves, , small"
                   class="h-full w-full object-contain"
-                  src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd4659c06/images/small/TG508_206.jpg?sw=160&q=60"
+                  src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd4659c06/images/small/TG508_206.webp?sfrm=jpg&q=70"
                 />
               </div>
             </div>
@@ -723,7 +723,7 @@ exports[`ProductItem stories snapshot > SummaryVariant story renders and matches
           <img
             alt="Men's Classic Deer Gloves, , small"
             class="h-full w-full object-contain"
-            src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd4659c06/images/small/TG508_206.jpg?sw=160&q=60"
+            src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd4659c06/images/small/TG508_206.webp?sfrm=jpg&q=70"
           />
         </div>
       </div>
@@ -819,7 +819,7 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                 <img
                   alt="Men's Classic Deer Gloves, , small"
                   class="h-full w-full object-contain"
-                  src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd4659c06/images/small/TG508_206.jpg?sw=160&q=60"
+                  src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd4659c06/images/small/TG508_206.webp?sfrm=jpg&q=70"
                 />
               </div>
             </div>

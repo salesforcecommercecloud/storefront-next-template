@@ -206,6 +206,7 @@ export type Config = {
             quality?: number;
             formats?: Array<'avif' | 'gif' | 'jp2' | 'jpg' | 'jpeg' | 'jxr' | 'png' | 'webp'>;
             fallbackFormat?: 'avif' | 'gif' | 'jp2' | 'jpg' | 'jpeg' | 'jxr' | 'png' | 'webp';
+            host?: string;
         };
         search?: {
             products?: {

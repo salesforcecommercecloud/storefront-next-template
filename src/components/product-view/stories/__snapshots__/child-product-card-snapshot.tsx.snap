@@ -61,19 +61,19 @@ exports[`ChildProductCard stories snapshot > Controlled story renders and matche
                   <source
                     media="(min-width: 640px)"
                     sizes="680px"
-                    srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sw=680&q=70&sfrm=jpg 680w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sw=1360&q=70&sfrm=jpg 1360w"
+                    srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=680 680w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=1360 1360w"
                     type="image/webp"
                   />
                   <source
                     sizes="100vw"
-                    srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sw=640&q=70&sfrm=jpg 640w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sw=1280&q=70&sfrm=jpg 1280w"
+                    srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=640 640w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=1280 1280w"
                     type="image/webp"
                   />
                   <img
                     alt="Turquoise and Gold Bracelet, Gold, large"
                     fetchpriority="auto"
                     loading="lazy"
-                    src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.jpg"
+                    src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sfrm=jpg&q=70"
                   />
                 </picture>
               </div>
@@ -202,19 +202,19 @@ exports[`ChildProductCard stories snapshot > Default story renders and matches s
                   <source
                     media="(min-width: 640px)"
                     sizes="680px"
-                    srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sw=680&q=70&sfrm=jpg 680w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sw=1360&q=70&sfrm=jpg 1360w"
+                    srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=680 680w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=1360 1360w"
                     type="image/webp"
                   />
                   <source
                     sizes="100vw"
-                    srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sw=640&q=70&sfrm=jpg 640w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sw=1280&q=70&sfrm=jpg 1280w"
+                    srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=640 640w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=1280 1280w"
                     type="image/webp"
                   />
                   <img
                     alt="Turquoise and Gold Bracelet, Gold, large"
                     fetchpriority="auto"
                     loading="lazy"
-                    src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.jpg"
+                    src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sfrm=jpg&q=70"
                   />
                 </picture>
               </div>

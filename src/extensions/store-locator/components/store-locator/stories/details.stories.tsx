@@ -147,6 +147,18 @@ This component is used in the store locator list to display individual store inf
             description: 'Use compact address format with store name inline',
             control: 'boolean',
         },
+        id: {
+            description: 'ID for accessibility',
+            control: 'text',
+        },
+        mobileLayout: {
+            description: 'Use mobile layout regardless of screen size',
+            control: 'boolean',
+        },
+        primaryAction: {
+            description: 'Optional primary action slot (e.g. button)',
+            control: false,
+        },
     },
     decorators: [
         (Story: React.ComponentType) => (

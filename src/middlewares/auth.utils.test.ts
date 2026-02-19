@@ -21,7 +21,9 @@ import {
     decodeSLASAccessToken,
     getSLASAccessTokenClaims,
     isTrackingConsentEnabled,
+    getPublicSessionData,
 } from './auth.utils';
+import type { SessionData } from '@/lib/api/types';
 import type { AppConfig } from '@/config';
 import { createTestContext } from '@/lib/test-utils';
 import { mockBuildConfig } from '@/test-utils/config';
@@ -466,6 +468,44 @@ describe('auth.utils', () => {
 
                 expect(result).toBe(false);
             });
+        });
+    });
+
+    describe('getPublicSessionData', () => {
+        it('should extract only non-sensitive fields from session data', () => {
+            const fullSession: SessionData = {
+                accessToken: 'secret-access-token',
+                refreshToken: 'secret-refresh-token',
+                accessTokenExpiry: 1234567890,
+                refreshTokenExpiry: 9876543210,
+                customerId: 'customer-123',
+                userType: 'registered',
+                usid: 'usid-456',
+                encUserId: 'enc-user-789',
+                trackingConsent: TrackingConsent.Accepted,
+                codeVerifier: 'secret-code-verifier',
+                idpAccessToken: 'secret-idp-token',
+                idpAccessTokenExpiry: 1111111111,
+                dwsid: 'secret-dwsid',
+            };
+
+            const publicData = getPublicSessionData(fullSession);
+
+            // Should include only these non-sensitive fields
+            expect(publicData).toEqual({
+                customerId: 'customer-123',
+                userType: 'registered',
+                usid: 'usid-456',
+                encUserId: 'enc-user-789',
+                trackingConsent: TrackingConsent.Accepted,
+            });
+
+            // Verify sensitive fields are NOT present
+            expect(publicData).not.toHaveProperty('accessToken');
+            expect(publicData).not.toHaveProperty('refreshToken');
+            expect(publicData).not.toHaveProperty('codeVerifier');
+            expect(publicData).not.toHaveProperty('idpAccessToken');
+            expect(publicData).not.toHaveProperty('dwsid');
         });
     });
 });

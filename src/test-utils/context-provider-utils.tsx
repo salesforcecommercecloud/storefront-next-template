@@ -162,6 +162,7 @@ export const mockBuildConfig: Config = {
             preconnect: ['https://edge.disstg.commercecloud.salesforce.com'],
         },
         images: {
+            host: 'https://edge.disstg.commercecloud.salesforce.com',
             quality: 80,
             formats: ['webp'],
             fallbackFormat: 'jpg',

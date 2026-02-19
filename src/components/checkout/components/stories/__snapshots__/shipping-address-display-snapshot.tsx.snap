@@ -1,0 +1,50 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ShippingAddressDisplay stories snapshot > Default story renders and matches snapshot 1`] = `
+<div
+  class="space-y-2"
+>
+  <p
+    class="text-sm font-medium leading-none text-left text-muted-foreground"
+  >
+    Jane
+     
+    Doe
+  </p>
+  <p
+    class="text-sm font-medium leading-none text-left text-muted-foreground"
+  >
+    123 Main St
+  </p>
+  <p
+    class="text-sm font-medium leading-none text-left text-muted-foreground"
+  >
+    Apt 4
+  </p>
+  <p
+    class="text-sm font-medium leading-none text-left text-muted-foreground"
+  >
+    San Francisco
+    , CA
+     
+    94102
+  </p>
+  <p
+    class="text-sm font-medium leading-none text-left text-muted-foreground"
+  >
+    (555) 123-4567
+  </p>
+</div>
+`;
+
+exports[`ShippingAddressDisplay stories snapshot > NotProvided story renders and matches snapshot 1`] = `
+<div
+  class="space-y-2"
+>
+  <p
+    class="text-sm font-medium leading-none text-left text-muted-foreground"
+  >
+    Shipping address not provided yet
+  </p>
+</div>
+`;

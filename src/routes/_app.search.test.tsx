@@ -23,7 +23,7 @@ import type { ShopperSearch, ShopperExperience } from '@salesforce/storefront-ne
 import SearchPage, { loader, SearchPageMetadata, type SearchPageData } from './_app.search';
 import { createTestContext } from '@/lib/test-utils';
 import { fetchSearchProducts } from '@/lib/api/search';
-import { fetchPageFromLoader, collectComponentDataPromises } from '@/lib/util/pageLoader';
+import { fetchPageWithComponentData } from '@/lib/util/pageLoader';
 import { type AppConfig, getConfig } from '@/config';
 import { getRegionDefinition } from '@/lib/decorators/region-definition';
 import { ConfigWrapper } from '@/test-utils/context-provider';
@@ -142,8 +142,7 @@ vi.mock('@/lib/api/search', () => ({
 }));
 
 vi.mock('@/lib/util/pageLoader', () => ({
-    fetchPageFromLoader: vi.fn(),
-    collectComponentDataPromises: vi.fn(),
+    fetchPageWithComponentData: vi.fn(),
 }));
 
 // Mock analytics
@@ -190,8 +189,10 @@ describe('SearchPage', () => {
         vi.clearAllMocks();
         (getConfig as any).mockReturnValue(mockConfig);
         (fetchSearchProducts as any).mockResolvedValue(mockSearchResult);
-        (fetchPageFromLoader as any).mockResolvedValue(createMockPage());
-        (collectComponentDataPromises as any).mockResolvedValue(Promise.resolve({}));
+        (fetchPageWithComponentData as any).mockResolvedValue({
+            ...createMockPage(),
+            componentData: {},
+        });
     });
 
     describe('Decorators', () => {
@@ -251,7 +252,7 @@ describe('SearchPage', () => {
                 currency: 'USD',
             });
 
-            expect(fetchPageFromLoader).toHaveBeenCalledWith(args, { pageId: 'search' });
+            expect(fetchPageWithComponentData).toHaveBeenCalledWith(args, { pageId: 'search' });
             expect(result.searchTerm).toBe('shoes');
         });
 
@@ -285,8 +286,7 @@ describe('SearchPage', () => {
                 searchTerm: 'shoes',
                 refinements: Promise.resolve(mockSearchResult),
                 searchResult: Promise.resolve(mockSearchResult),
-                page: Promise.resolve(createMockPage()),
-                componentData: Promise.resolve({}),
+                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
             };
 
             render(
@@ -317,8 +317,7 @@ describe('SearchPage', () => {
                 searchTerm: 'shoes',
                 refinements: Promise.resolve(mockSearchResult),
                 searchResult: Promise.resolve(mockSearchResult),
-                page: Promise.resolve(createMockPage([mockRegion])),
-                componentData: Promise.resolve({}),
+                page: Promise.resolve({ ...createMockPage([mockRegion]), componentData: {} }),
             };
 
             render(
@@ -340,7 +339,6 @@ describe('SearchPage', () => {
                 refinements: Promise.resolve(mockSearchResult),
                 searchResult: Promise.resolve(mockSearchResult),
                 page: Promise.resolve(createMockPage([])),
-                componentData: Promise.resolve({}),
             };
 
             render(
@@ -359,8 +357,7 @@ describe('SearchPage', () => {
                 searchTerm: 'shoes',
                 refinements: Promise.resolve(mockSearchResult),
                 searchResult: Promise.resolve({ ...mockSearchResult, total: 50 }),
-                page: Promise.resolve(createMockPage()),
-                componentData: Promise.resolve({}),
+                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
             };
 
             render(
@@ -379,8 +376,7 @@ describe('SearchPage', () => {
                 searchTerm: 'shoes',
                 refinements: Promise.resolve(mockSearchResult),
                 searchResult: Promise.resolve({ ...mockSearchResult, total: 1 }),
-                page: Promise.resolve(createMockPage()),
-                componentData: Promise.resolve({}),
+                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
             };
 
             render(
@@ -399,8 +395,7 @@ describe('SearchPage', () => {
                 searchTerm: 'shoes',
                 refinements: Promise.resolve(mockSearchResult),
                 searchResult: Promise.resolve(mockSearchResult),
-                page: Promise.resolve(createMockPage()),
-                componentData: Promise.resolve({}),
+                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
             };
 
             render(
@@ -428,8 +423,7 @@ describe('SearchPage', () => {
                 searchTerm: 'shoes',
                 refinements: Promise.resolve(mockSearchResult),
                 searchResult: Promise.resolve(mockSearchResult),
-                page: Promise.resolve(createMockPage([mockRegion])),
-                componentData: Promise.resolve({}),
+                page: Promise.resolve({ ...createMockPage([mockRegion]), componentData: {} }),
             };
 
             render(
@@ -461,8 +455,7 @@ describe('SearchPage', () => {
                 searchTerm: 'shoes',
                 refinements: Promise.resolve(mockSearchResult),
                 searchResult: Promise.resolve(mockSearchResult),
-                page: Promise.resolve(createMockPage([mockRegion])),
-                componentData: Promise.resolve({}),
+                page: Promise.resolve({ ...createMockPage([mockRegion]), componentData: {} }),
             };
 
             render(

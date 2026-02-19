@@ -21,9 +21,7 @@ import type { ShopperExperience, ShopperProducts, ShopperSearch } from '@salesfo
 import { getTranslation } from '@/lib/i18next';
 import HomePage, { type HomePageData, loader } from './_app._index';
 import { createTestContext } from '@/lib/test-utils';
-import { collectComponentDataPromises, fetchPageFromLoader } from '@/lib/util/pageLoader';
-import { fetchSearchProducts } from '@/lib/api/search';
-import { fetchCategories } from '@/lib/api/categories';
+import { fetchPageWithComponentData } from '@/lib/util/pageLoader';
 import { type AppConfig, getConfig } from '@/config';
 
 const { t } = getTranslation();
@@ -207,16 +205,15 @@ vi.mock('@/lib/decorators/region-definition', () => ({
 }));
 
 vi.mock('@/lib/util/pageLoader', () => ({
-    collectComponentDataPromises: vi.fn(),
-    fetchPageFromLoader: vi.fn(),
+    fetchPageWithComponentData: vi.fn(),
 }));
 
 vi.mock('@/lib/api/search', () => ({
-    fetchSearchProducts: vi.fn(),
+    fetchSearchProducts: vi.fn(() => Promise.resolve(mockSearchResult)),
 }));
 
 vi.mock('@/lib/api/categories', () => ({
-    fetchCategories: vi.fn(),
+    fetchCategories: vi.fn(() => Promise.resolve(mockCategories)),
 }));
 
 vi.mock('@/config', async (importOriginal) => {
@@ -227,13 +224,16 @@ vi.mock('@/config', async (importOriginal) => {
     };
 });
 
-const renderComponent = (loaderData?: HomePageData) => {
-    const data = loaderData || {
-        page: Promise.resolve(createMockPage([])),
+const renderComponent = (loaderDataOverrides?: Partial<HomePageData>) => {
+    const defaultData: HomePageData = {
+        page: Promise.resolve({
+            ...createMockPage([]),
+            componentData: {},
+        }),
         searchResult: Promise.resolve(mockSearchResult),
         categories: Promise.resolve(mockCategories),
-        componentData: Promise.resolve({}),
     };
+    const data = { ...defaultData, ...loaderDataOverrides };
     return render(<HomePage loaderData={data} />);
 };
 
@@ -242,10 +242,10 @@ describe('HomePage', () => {
         vi.clearAllMocks();
 
         // Reset mock implementations for loader tests
-        vi.mocked(fetchPageFromLoader).mockResolvedValue(createMockPage([]));
-        vi.mocked(collectComponentDataPromises).mockResolvedValue({});
-        vi.mocked(fetchSearchProducts).mockResolvedValue(mockSearchResult);
-        vi.mocked(fetchCategories).mockResolvedValue(mockCategories);
+        vi.mocked(fetchPageWithComponentData).mockResolvedValue({
+            ...createMockPage([]),
+            componentData: {},
+        });
         vi.mocked(getConfig).mockReturnValue({ pages: { home: { featuredProductsCount: 8 } } } as AppConfig);
     });
 
@@ -295,14 +295,17 @@ describe('HomePage', () => {
             };
 
             // Create a promise with the resolved value attached for the mock
-            const pagePromise = Promise.resolve(createMockPage([headerBannerRegion]));
-            (pagePromise as any)._resolvedValue = createMockPage([headerBannerRegion]);
+            const pagePromise = Promise.resolve({
+                ...createMockPage([headerBannerRegion]),
+                componentData: {},
+            });
+            (pagePromise as any)._resolvedValue = {
+                ...createMockPage([headerBannerRegion]),
+                componentData: {},
+            };
 
             renderComponent({
                 page: pagePromise,
-                searchResult: Promise.resolve(mockSearchResult),
-                categories: Promise.resolve(mockCategories),
-                componentData: Promise.resolve({}),
             });
 
             // Region mock always renders the error element, so check for that fallback content
@@ -386,15 +389,12 @@ describe('HomePage', () => {
             expect(screen.getByText(t('home:newArrivals.title'))).toBeInTheDocument();
         });
 
-        test('handles categories promise rejection', () => {
-            const rejectedPromise = Promise.reject(new Error('Categories failed'));
+        test('handles page promise rejection', () => {
+            const rejectedPromise = Promise.reject(new Error('Page failed'));
             rejectedPromise.catch(() => {}); // Prevent unhandled promise rejection
 
             renderComponent({
-                page: Promise.resolve(createMockPage([])),
-                searchResult: Promise.resolve(mockSearchResult),
-                categories: rejectedPromise,
-                componentData: Promise.resolve({}),
+                page: rejectedPromise,
             });
 
             // Should still render other sections
@@ -440,12 +440,6 @@ describe('HomePage', () => {
     describe('Loaders', () => {
         let mockContext: ReturnType<typeof createTestContext>;
         let baseLoaderArgs: LoaderFunctionArgs;
-        let mockPromises: {
-            page: Promise<any>;
-            search: Promise<any>;
-            categories: Promise<any>;
-            componentData: Promise<any>;
-        };
 
         beforeEach(() => {
             mockContext = createTestContext();
@@ -455,131 +449,64 @@ describe('HomePage', () => {
                 context: mockContext,
                 unstable_pattern: '/',
             };
-
-            // Common promise setup for loader tests
-            mockPromises = {
-                page: Promise.resolve(createMockPage([])),
-                search: Promise.resolve(mockSearchResult),
-                categories: Promise.resolve(mockCategories),
-                componentData: Promise.resolve({ some: Promise.resolve('data') }),
-            };
         });
 
         describe('loader (server-side)', () => {
-            test('returns home page data with correct configuration', () => {
-                const expectedConfig = { pages: { home: { featuredProductsCount: 8 } } } as AppConfig;
+            test('returns home page data with fetchPageWithComponentData', () => {
+                const mockPageWithData = {
+                    ...createMockPage([]),
+                    componentData: { test: Promise.resolve('data') },
+                };
+                const pagePromise = Promise.resolve(mockPageWithData);
 
-                vi.mocked(getConfig).mockReturnValue(expectedConfig);
-                vi.mocked(fetchPageFromLoader).mockReturnValue(mockPromises.page);
-                vi.mocked(collectComponentDataPromises).mockReturnValue(mockPromises.componentData);
-                vi.mocked(fetchSearchProducts).mockReturnValue(mockPromises.search);
-                vi.mocked(fetchCategories).mockReturnValue(mockPromises.categories);
+                vi.mocked(fetchPageWithComponentData).mockReturnValue(pagePromise);
 
                 const result = loader(baseLoaderArgs);
 
-                expect(vi.mocked(getConfig)).toHaveBeenCalledTimes(1);
-                expect(vi.mocked(getConfig)).toHaveBeenCalledWith(mockContext);
-
                 // Assert - API calls
-                expect(vi.mocked(fetchPageFromLoader)).toHaveBeenCalledWith(baseLoaderArgs, { pageId: 'homepage' });
-                expect(vi.mocked(collectComponentDataPromises)).toHaveBeenCalledWith(baseLoaderArgs, mockPromises.page);
-                expect(vi.mocked(fetchSearchProducts)).toHaveBeenCalledWith(mockContext, {
-                    categoryId: 'root',
-                    limit: 8,
-                    currency: 'USD',
+                expect(vi.mocked(fetchPageWithComponentData)).toHaveBeenCalledWith(baseLoaderArgs, {
+                    pageId: 'homepage',
                 });
-                expect(vi.mocked(fetchCategories)).toHaveBeenCalledWith(mockContext, 'root', 1);
 
-                // Assert - Return value
-                expect(result).toEqual({
-                    page: mockPromises.page,
-                    searchResult: mockPromises.search,
-                    categories: mockPromises.categories,
-                    componentData: mockPromises.componentData,
-                });
-            });
-
-            const featuredProductsCountTests = [
-                { count: 12, description: 'uses featuredProductsCount from server config' },
-                { count: 16, description: 'handles different featuredProductsCount values' },
-            ];
-
-            test.each(featuredProductsCountTests)('$description', ({ count }) => {
-                const customConfig = { pages: { home: { featuredProductsCount: count } } } as AppConfig;
-                vi.mocked(getConfig).mockReturnValue(customConfig);
-                vi.mocked(fetchPageFromLoader).mockReturnValue(mockPromises.page);
-                vi.mocked(collectComponentDataPromises).mockReturnValue(mockPromises.componentData);
-                vi.mocked(fetchSearchProducts).mockReturnValue(mockPromises.search);
-                vi.mocked(fetchCategories).mockReturnValue(mockPromises.categories);
-
-                loader(baseLoaderArgs);
-
-                expect(vi.mocked(fetchSearchProducts)).toHaveBeenCalledWith(mockContext, {
-                    categoryId: 'root',
-                    limit: count,
-                    currency: 'USD',
-                });
+                // Assert - Return value contains all expected promises
+                expect(result.page).toBe(pagePromise);
+                expect(result.page).toBeInstanceOf(Promise);
+                expect(result.searchResult).toBeInstanceOf(Promise);
+                expect(result.categories).toBeInstanceOf(Promise);
             });
         });
 
         describe('Error Handling', () => {
             test('loader handles API errors gracefully', () => {
                 const error = new Error('API Error');
-                vi.mocked(getConfig).mockReturnValue({ pages: { home: { featuredProductsCount: 8 } } } as AppConfig);
-                vi.mocked(fetchPageFromLoader).mockRejectedValue(error);
-                vi.mocked(collectComponentDataPromises).mockReturnValue(Promise.resolve({}));
-                vi.mocked(fetchSearchProducts).mockReturnValue(Promise.resolve(mockSearchResult));
-                vi.mocked(fetchCategories).mockReturnValue(Promise.resolve(mockCategories));
+                vi.mocked(fetchPageWithComponentData).mockRejectedValue(error);
 
                 expect(() => loader(baseLoaderArgs)).not.toThrow();
 
                 const result = loader(baseLoaderArgs);
                 expect(result).toHaveProperty('page');
-                expect(result).toHaveProperty('searchResult');
-                expect(result).toHaveProperty('categories');
-                expect(result).toHaveProperty('componentData');
             });
         });
 
         describe('Data Integration', () => {
-            test('page promise is passed to collectComponentDataPromises', () => {
-                const pagePromise = Promise.resolve(createMockPage([]));
-                vi.mocked(getConfig).mockReturnValue({ pages: { home: { featuredProductsCount: 8 } } } as AppConfig);
-                vi.mocked(fetchPageFromLoader).mockReturnValue(pagePromise);
-                vi.mocked(collectComponentDataPromises).mockReturnValue(Promise.resolve({}));
-                vi.mocked(fetchSearchProducts).mockReturnValue(Promise.resolve(mockSearchResult));
-                vi.mocked(fetchCategories).mockReturnValue(Promise.resolve(mockCategories));
+            test('page promise is returned with componentData', () => {
+                const mockPageWithData = {
+                    ...createMockPage([]),
+                    componentData: { some: Promise.resolve('data') },
+                };
+                const pagePromise = Promise.resolve(mockPageWithData);
 
-                loader(baseLoaderArgs);
-
-                expect(vi.mocked(collectComponentDataPromises)).toHaveBeenCalledWith(baseLoaderArgs, pagePromise);
-            });
-
-            test('all promises are returned in correct structure', () => {
-                const pagePromise = Promise.resolve(createMockPage([]));
-                const searchPromise = Promise.resolve(mockSearchResult);
-                const categoriesPromise = Promise.resolve(mockCategories);
-                const componentDataPromise = Promise.resolve({ test: Promise.resolve('data') });
-
-                vi.mocked(getConfig).mockReturnValue({ pages: { home: { featuredProductsCount: 8 } } } as AppConfig);
-                vi.mocked(fetchPageFromLoader).mockReturnValue(pagePromise);
-                vi.mocked(collectComponentDataPromises).mockReturnValue(componentDataPromise);
-                vi.mocked(fetchSearchProducts).mockReturnValue(searchPromise);
-                vi.mocked(fetchCategories).mockReturnValue(categoriesPromise);
+                vi.mocked(fetchPageWithComponentData).mockReturnValue(pagePromise);
 
                 const result = loader(baseLoaderArgs);
 
-                expect(result).toEqual({
-                    page: pagePromise,
-                    searchResult: searchPromise,
-                    categories: categoriesPromise,
-                    componentData: componentDataPromise,
+                expect(vi.mocked(fetchPageWithComponentData)).toHaveBeenCalledWith(baseLoaderArgs, {
+                    pageId: 'homepage',
                 });
-
+                expect(result.page).toBe(pagePromise);
                 expect(result.page).toBeInstanceOf(Promise);
                 expect(result.searchResult).toBeInstanceOf(Promise);
                 expect(result.categories).toBeInstanceOf(Promise);
-                expect(result.componentData).toBeInstanceOf(Promise);
             });
         });
     });

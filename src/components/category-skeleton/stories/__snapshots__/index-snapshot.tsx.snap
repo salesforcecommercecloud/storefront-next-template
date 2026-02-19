@@ -34,708 +34,1020 @@ exports[`CategorySkeleton stories snapshot > Default story renders and matches s
     class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-8"
   >
     <div
-      class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm ring-secondary/40 bg-muted/50"
+      class="bg-card text-card-foreground border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0"
       data-slot="card"
     >
       <div
-        class="px-6 text-secondary border-destructive/30"
-        data-slot="card-content"
-      >
-        <div
-          class="group bg-accent/30"
-        >
-          <div
-            class="bg-accent animate-pulse aspect-square w-full rounded-md"
-            data-slot="skeleton"
-          />
-          <div
-            class="mt-2 flex space-x-1"
-          >
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-          </div>
-        </div>
-      </div>
-      <div
-        class="flex items-center px-6 [.border-t]:pt-6"
+        class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
         data-slot="card-footer"
       >
         <div
-          class="block w-full"
+          class="bg-accent animate-pulse h-9 w-full rounded-md"
+          data-slot="skeleton"
+        />
+      </div>
+      <div
+        class="px-6"
+        data-slot="card-content"
+      >
+        <div
+          class="mt-2"
         >
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-full mb-2"
+            class="bg-accent animate-pulse rounded-md h-5 w-16"
             data-slot="skeleton"
           />
+        </div>
+      </div>
+      <div
+        class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+        data-slot="card-content"
+      >
+        <div
+          class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
+        >
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-3/4 mb-2"
+            class="h-10 flex flex-col gap-1 items-start justify-start w-full"
+          >
+            <div
+              class="bg-accent animate-pulse rounded-md h-4 w-full"
+              data-slot="skeleton"
+            />
+            <div
+              class="bg-accent animate-pulse rounded-md h-4 w-3/4"
+              data-slot="skeleton"
+            />
+          </div>
+          <div
+            class="h-8 flex items-end"
+          >
+            <div
+              class="flex flex-wrap gap-2"
+            >
+              <div
+                class="bg-accent animate-pulse h-7 w-7 rounded-full"
+                data-slot="skeleton"
+              />
+              <div
+                class="bg-accent animate-pulse h-7 w-7 rounded-full"
+                data-slot="skeleton"
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
+        >
+          <div
+            class="bg-accent animate-pulse h-5 w-12 rounded-full"
             data-slot="skeleton"
           />
+        </div>
+      </div>
+      <div
+        class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+        data-slot="card-header"
+      >
+        <div
+          class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+        >
           <div
-            class="bg-accent animate-pulse rounded-md h-6 w-20"
+            class="bg-accent animate-pulse rounded-md aspect-square w-full"
             data-slot="skeleton"
           />
         </div>
       </div>
     </div>
     <div
-      class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm ring-secondary/40 bg-muted/50"
+      class="bg-card text-card-foreground border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0"
       data-slot="card"
     >
       <div
-        class="px-6 text-secondary border-destructive/30"
-        data-slot="card-content"
-      >
-        <div
-          class="group bg-accent/30"
-        >
-          <div
-            class="bg-accent animate-pulse aspect-square w-full rounded-md"
-            data-slot="skeleton"
-          />
-          <div
-            class="mt-2 flex space-x-1"
-          >
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-          </div>
-        </div>
-      </div>
-      <div
-        class="flex items-center px-6 [.border-t]:pt-6"
+        class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
         data-slot="card-footer"
       >
         <div
-          class="block w-full"
+          class="bg-accent animate-pulse h-9 w-full rounded-md"
+          data-slot="skeleton"
+        />
+      </div>
+      <div
+        class="px-6"
+        data-slot="card-content"
+      >
+        <div
+          class="mt-2"
         >
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-full mb-2"
+            class="bg-accent animate-pulse rounded-md h-5 w-16"
             data-slot="skeleton"
           />
+        </div>
+      </div>
+      <div
+        class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+        data-slot="card-content"
+      >
+        <div
+          class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
+        >
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-3/4 mb-2"
+            class="h-10 flex flex-col gap-1 items-start justify-start w-full"
+          >
+            <div
+              class="bg-accent animate-pulse rounded-md h-4 w-full"
+              data-slot="skeleton"
+            />
+            <div
+              class="bg-accent animate-pulse rounded-md h-4 w-3/4"
+              data-slot="skeleton"
+            />
+          </div>
+          <div
+            class="h-8 flex items-end"
+          >
+            <div
+              class="flex flex-wrap gap-2"
+            >
+              <div
+                class="bg-accent animate-pulse h-7 w-7 rounded-full"
+                data-slot="skeleton"
+              />
+              <div
+                class="bg-accent animate-pulse h-7 w-7 rounded-full"
+                data-slot="skeleton"
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
+        >
+          <div
+            class="bg-accent animate-pulse h-5 w-12 rounded-full"
             data-slot="skeleton"
           />
+        </div>
+      </div>
+      <div
+        class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+        data-slot="card-header"
+      >
+        <div
+          class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+        >
           <div
-            class="bg-accent animate-pulse rounded-md h-6 w-20"
+            class="bg-accent animate-pulse rounded-md aspect-square w-full"
             data-slot="skeleton"
           />
         </div>
       </div>
     </div>
     <div
-      class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm ring-secondary/40 bg-muted/50"
+      class="bg-card text-card-foreground border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0"
       data-slot="card"
     >
       <div
-        class="px-6 text-secondary border-destructive/30"
-        data-slot="card-content"
-      >
-        <div
-          class="group bg-accent/30"
-        >
-          <div
-            class="bg-accent animate-pulse aspect-square w-full rounded-md"
-            data-slot="skeleton"
-          />
-          <div
-            class="mt-2 flex space-x-1"
-          >
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-          </div>
-        </div>
-      </div>
-      <div
-        class="flex items-center px-6 [.border-t]:pt-6"
+        class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
         data-slot="card-footer"
       >
         <div
-          class="block w-full"
+          class="bg-accent animate-pulse h-9 w-full rounded-md"
+          data-slot="skeleton"
+        />
+      </div>
+      <div
+        class="px-6"
+        data-slot="card-content"
+      >
+        <div
+          class="mt-2"
         >
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-full mb-2"
+            class="bg-accent animate-pulse rounded-md h-5 w-16"
             data-slot="skeleton"
           />
+        </div>
+      </div>
+      <div
+        class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+        data-slot="card-content"
+      >
+        <div
+          class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
+        >
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-3/4 mb-2"
+            class="h-10 flex flex-col gap-1 items-start justify-start w-full"
+          >
+            <div
+              class="bg-accent animate-pulse rounded-md h-4 w-full"
+              data-slot="skeleton"
+            />
+            <div
+              class="bg-accent animate-pulse rounded-md h-4 w-3/4"
+              data-slot="skeleton"
+            />
+          </div>
+          <div
+            class="h-8 flex items-end"
+          >
+            <div
+              class="flex flex-wrap gap-2"
+            >
+              <div
+                class="bg-accent animate-pulse h-7 w-7 rounded-full"
+                data-slot="skeleton"
+              />
+              <div
+                class="bg-accent animate-pulse h-7 w-7 rounded-full"
+                data-slot="skeleton"
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
+        >
+          <div
+            class="bg-accent animate-pulse h-5 w-12 rounded-full"
             data-slot="skeleton"
           />
+        </div>
+      </div>
+      <div
+        class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+        data-slot="card-header"
+      >
+        <div
+          class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+        >
           <div
-            class="bg-accent animate-pulse rounded-md h-6 w-20"
+            class="bg-accent animate-pulse rounded-md aspect-square w-full"
             data-slot="skeleton"
           />
         </div>
       </div>
     </div>
     <div
-      class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm ring-secondary/40 bg-muted/50"
+      class="bg-card text-card-foreground border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0"
       data-slot="card"
     >
       <div
-        class="px-6 text-secondary border-destructive/30"
-        data-slot="card-content"
-      >
-        <div
-          class="group bg-accent/30"
-        >
-          <div
-            class="bg-accent animate-pulse aspect-square w-full rounded-md"
-            data-slot="skeleton"
-          />
-          <div
-            class="mt-2 flex space-x-1"
-          >
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-          </div>
-        </div>
-      </div>
-      <div
-        class="flex items-center px-6 [.border-t]:pt-6"
+        class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
         data-slot="card-footer"
       >
         <div
-          class="block w-full"
+          class="bg-accent animate-pulse h-9 w-full rounded-md"
+          data-slot="skeleton"
+        />
+      </div>
+      <div
+        class="px-6"
+        data-slot="card-content"
+      >
+        <div
+          class="mt-2"
         >
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-full mb-2"
+            class="bg-accent animate-pulse rounded-md h-5 w-16"
             data-slot="skeleton"
           />
+        </div>
+      </div>
+      <div
+        class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+        data-slot="card-content"
+      >
+        <div
+          class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
+        >
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-3/4 mb-2"
+            class="h-10 flex flex-col gap-1 items-start justify-start w-full"
+          >
+            <div
+              class="bg-accent animate-pulse rounded-md h-4 w-full"
+              data-slot="skeleton"
+            />
+            <div
+              class="bg-accent animate-pulse rounded-md h-4 w-3/4"
+              data-slot="skeleton"
+            />
+          </div>
+          <div
+            class="h-8 flex items-end"
+          >
+            <div
+              class="flex flex-wrap gap-2"
+            >
+              <div
+                class="bg-accent animate-pulse h-7 w-7 rounded-full"
+                data-slot="skeleton"
+              />
+              <div
+                class="bg-accent animate-pulse h-7 w-7 rounded-full"
+                data-slot="skeleton"
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
+        >
+          <div
+            class="bg-accent animate-pulse h-5 w-12 rounded-full"
             data-slot="skeleton"
           />
+        </div>
+      </div>
+      <div
+        class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+        data-slot="card-header"
+      >
+        <div
+          class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+        >
           <div
-            class="bg-accent animate-pulse rounded-md h-6 w-20"
+            class="bg-accent animate-pulse rounded-md aspect-square w-full"
             data-slot="skeleton"
           />
         </div>
       </div>
     </div>
     <div
-      class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm ring-secondary/40 bg-muted/50"
+      class="bg-card text-card-foreground border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0"
       data-slot="card"
     >
       <div
-        class="px-6 text-secondary border-destructive/30"
-        data-slot="card-content"
-      >
-        <div
-          class="group bg-accent/30"
-        >
-          <div
-            class="bg-accent animate-pulse aspect-square w-full rounded-md"
-            data-slot="skeleton"
-          />
-          <div
-            class="mt-2 flex space-x-1"
-          >
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-          </div>
-        </div>
-      </div>
-      <div
-        class="flex items-center px-6 [.border-t]:pt-6"
+        class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
         data-slot="card-footer"
       >
         <div
-          class="block w-full"
+          class="bg-accent animate-pulse h-9 w-full rounded-md"
+          data-slot="skeleton"
+        />
+      </div>
+      <div
+        class="px-6"
+        data-slot="card-content"
+      >
+        <div
+          class="mt-2"
         >
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-full mb-2"
+            class="bg-accent animate-pulse rounded-md h-5 w-16"
             data-slot="skeleton"
           />
+        </div>
+      </div>
+      <div
+        class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+        data-slot="card-content"
+      >
+        <div
+          class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
+        >
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-3/4 mb-2"
+            class="h-10 flex flex-col gap-1 items-start justify-start w-full"
+          >
+            <div
+              class="bg-accent animate-pulse rounded-md h-4 w-full"
+              data-slot="skeleton"
+            />
+            <div
+              class="bg-accent animate-pulse rounded-md h-4 w-3/4"
+              data-slot="skeleton"
+            />
+          </div>
+          <div
+            class="h-8 flex items-end"
+          >
+            <div
+              class="flex flex-wrap gap-2"
+            >
+              <div
+                class="bg-accent animate-pulse h-7 w-7 rounded-full"
+                data-slot="skeleton"
+              />
+              <div
+                class="bg-accent animate-pulse h-7 w-7 rounded-full"
+                data-slot="skeleton"
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
+        >
+          <div
+            class="bg-accent animate-pulse h-5 w-12 rounded-full"
             data-slot="skeleton"
           />
+        </div>
+      </div>
+      <div
+        class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+        data-slot="card-header"
+      >
+        <div
+          class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+        >
           <div
-            class="bg-accent animate-pulse rounded-md h-6 w-20"
+            class="bg-accent animate-pulse rounded-md aspect-square w-full"
             data-slot="skeleton"
           />
         </div>
       </div>
     </div>
     <div
-      class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm ring-secondary/40 bg-muted/50"
+      class="bg-card text-card-foreground border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0"
       data-slot="card"
     >
       <div
-        class="px-6 text-secondary border-destructive/30"
-        data-slot="card-content"
-      >
-        <div
-          class="group bg-accent/30"
-        >
-          <div
-            class="bg-accent animate-pulse aspect-square w-full rounded-md"
-            data-slot="skeleton"
-          />
-          <div
-            class="mt-2 flex space-x-1"
-          >
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-          </div>
-        </div>
-      </div>
-      <div
-        class="flex items-center px-6 [.border-t]:pt-6"
+        class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
         data-slot="card-footer"
       >
         <div
-          class="block w-full"
+          class="bg-accent animate-pulse h-9 w-full rounded-md"
+          data-slot="skeleton"
+        />
+      </div>
+      <div
+        class="px-6"
+        data-slot="card-content"
+      >
+        <div
+          class="mt-2"
         >
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-full mb-2"
+            class="bg-accent animate-pulse rounded-md h-5 w-16"
             data-slot="skeleton"
           />
+        </div>
+      </div>
+      <div
+        class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+        data-slot="card-content"
+      >
+        <div
+          class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
+        >
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-3/4 mb-2"
+            class="h-10 flex flex-col gap-1 items-start justify-start w-full"
+          >
+            <div
+              class="bg-accent animate-pulse rounded-md h-4 w-full"
+              data-slot="skeleton"
+            />
+            <div
+              class="bg-accent animate-pulse rounded-md h-4 w-3/4"
+              data-slot="skeleton"
+            />
+          </div>
+          <div
+            class="h-8 flex items-end"
+          >
+            <div
+              class="flex flex-wrap gap-2"
+            >
+              <div
+                class="bg-accent animate-pulse h-7 w-7 rounded-full"
+                data-slot="skeleton"
+              />
+              <div
+                class="bg-accent animate-pulse h-7 w-7 rounded-full"
+                data-slot="skeleton"
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
+        >
+          <div
+            class="bg-accent animate-pulse h-5 w-12 rounded-full"
             data-slot="skeleton"
           />
+        </div>
+      </div>
+      <div
+        class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+        data-slot="card-header"
+      >
+        <div
+          class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+        >
           <div
-            class="bg-accent animate-pulse rounded-md h-6 w-20"
+            class="bg-accent animate-pulse rounded-md aspect-square w-full"
             data-slot="skeleton"
           />
         </div>
       </div>
     </div>
     <div
-      class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm ring-secondary/40 bg-muted/50"
+      class="bg-card text-card-foreground border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0"
       data-slot="card"
     >
       <div
-        class="px-6 text-secondary border-destructive/30"
-        data-slot="card-content"
-      >
-        <div
-          class="group bg-accent/30"
-        >
-          <div
-            class="bg-accent animate-pulse aspect-square w-full rounded-md"
-            data-slot="skeleton"
-          />
-          <div
-            class="mt-2 flex space-x-1"
-          >
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-          </div>
-        </div>
-      </div>
-      <div
-        class="flex items-center px-6 [.border-t]:pt-6"
+        class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
         data-slot="card-footer"
       >
         <div
-          class="block w-full"
+          class="bg-accent animate-pulse h-9 w-full rounded-md"
+          data-slot="skeleton"
+        />
+      </div>
+      <div
+        class="px-6"
+        data-slot="card-content"
+      >
+        <div
+          class="mt-2"
         >
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-full mb-2"
+            class="bg-accent animate-pulse rounded-md h-5 w-16"
             data-slot="skeleton"
           />
+        </div>
+      </div>
+      <div
+        class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+        data-slot="card-content"
+      >
+        <div
+          class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
+        >
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-3/4 mb-2"
+            class="h-10 flex flex-col gap-1 items-start justify-start w-full"
+          >
+            <div
+              class="bg-accent animate-pulse rounded-md h-4 w-full"
+              data-slot="skeleton"
+            />
+            <div
+              class="bg-accent animate-pulse rounded-md h-4 w-3/4"
+              data-slot="skeleton"
+            />
+          </div>
+          <div
+            class="h-8 flex items-end"
+          >
+            <div
+              class="flex flex-wrap gap-2"
+            >
+              <div
+                class="bg-accent animate-pulse h-7 w-7 rounded-full"
+                data-slot="skeleton"
+              />
+              <div
+                class="bg-accent animate-pulse h-7 w-7 rounded-full"
+                data-slot="skeleton"
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
+        >
+          <div
+            class="bg-accent animate-pulse h-5 w-12 rounded-full"
             data-slot="skeleton"
           />
+        </div>
+      </div>
+      <div
+        class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+        data-slot="card-header"
+      >
+        <div
+          class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+        >
           <div
-            class="bg-accent animate-pulse rounded-md h-6 w-20"
+            class="bg-accent animate-pulse rounded-md aspect-square w-full"
             data-slot="skeleton"
           />
         </div>
       </div>
     </div>
     <div
-      class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm ring-secondary/40 bg-muted/50"
+      class="bg-card text-card-foreground border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0"
       data-slot="card"
     >
       <div
-        class="px-6 text-secondary border-destructive/30"
-        data-slot="card-content"
-      >
-        <div
-          class="group bg-accent/30"
-        >
-          <div
-            class="bg-accent animate-pulse aspect-square w-full rounded-md"
-            data-slot="skeleton"
-          />
-          <div
-            class="mt-2 flex space-x-1"
-          >
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-          </div>
-        </div>
-      </div>
-      <div
-        class="flex items-center px-6 [.border-t]:pt-6"
+        class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
         data-slot="card-footer"
       >
         <div
-          class="block w-full"
+          class="bg-accent animate-pulse h-9 w-full rounded-md"
+          data-slot="skeleton"
+        />
+      </div>
+      <div
+        class="px-6"
+        data-slot="card-content"
+      >
+        <div
+          class="mt-2"
         >
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-full mb-2"
+            class="bg-accent animate-pulse rounded-md h-5 w-16"
             data-slot="skeleton"
           />
+        </div>
+      </div>
+      <div
+        class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+        data-slot="card-content"
+      >
+        <div
+          class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
+        >
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-3/4 mb-2"
+            class="h-10 flex flex-col gap-1 items-start justify-start w-full"
+          >
+            <div
+              class="bg-accent animate-pulse rounded-md h-4 w-full"
+              data-slot="skeleton"
+            />
+            <div
+              class="bg-accent animate-pulse rounded-md h-4 w-3/4"
+              data-slot="skeleton"
+            />
+          </div>
+          <div
+            class="h-8 flex items-end"
+          >
+            <div
+              class="flex flex-wrap gap-2"
+            >
+              <div
+                class="bg-accent animate-pulse h-7 w-7 rounded-full"
+                data-slot="skeleton"
+              />
+              <div
+                class="bg-accent animate-pulse h-7 w-7 rounded-full"
+                data-slot="skeleton"
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
+        >
+          <div
+            class="bg-accent animate-pulse h-5 w-12 rounded-full"
             data-slot="skeleton"
           />
+        </div>
+      </div>
+      <div
+        class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+        data-slot="card-header"
+      >
+        <div
+          class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+        >
           <div
-            class="bg-accent animate-pulse rounded-md h-6 w-20"
+            class="bg-accent animate-pulse rounded-md aspect-square w-full"
             data-slot="skeleton"
           />
         </div>
       </div>
     </div>
     <div
-      class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm ring-secondary/40 bg-muted/50"
+      class="bg-card text-card-foreground border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0"
       data-slot="card"
     >
       <div
-        class="px-6 text-secondary border-destructive/30"
-        data-slot="card-content"
-      >
-        <div
-          class="group bg-accent/30"
-        >
-          <div
-            class="bg-accent animate-pulse aspect-square w-full rounded-md"
-            data-slot="skeleton"
-          />
-          <div
-            class="mt-2 flex space-x-1"
-          >
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-          </div>
-        </div>
-      </div>
-      <div
-        class="flex items-center px-6 [.border-t]:pt-6"
+        class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
         data-slot="card-footer"
       >
         <div
-          class="block w-full"
+          class="bg-accent animate-pulse h-9 w-full rounded-md"
+          data-slot="skeleton"
+        />
+      </div>
+      <div
+        class="px-6"
+        data-slot="card-content"
+      >
+        <div
+          class="mt-2"
         >
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-full mb-2"
+            class="bg-accent animate-pulse rounded-md h-5 w-16"
             data-slot="skeleton"
           />
+        </div>
+      </div>
+      <div
+        class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+        data-slot="card-content"
+      >
+        <div
+          class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
+        >
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-3/4 mb-2"
+            class="h-10 flex flex-col gap-1 items-start justify-start w-full"
+          >
+            <div
+              class="bg-accent animate-pulse rounded-md h-4 w-full"
+              data-slot="skeleton"
+            />
+            <div
+              class="bg-accent animate-pulse rounded-md h-4 w-3/4"
+              data-slot="skeleton"
+            />
+          </div>
+          <div
+            class="h-8 flex items-end"
+          >
+            <div
+              class="flex flex-wrap gap-2"
+            >
+              <div
+                class="bg-accent animate-pulse h-7 w-7 rounded-full"
+                data-slot="skeleton"
+              />
+              <div
+                class="bg-accent animate-pulse h-7 w-7 rounded-full"
+                data-slot="skeleton"
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
+        >
+          <div
+            class="bg-accent animate-pulse h-5 w-12 rounded-full"
             data-slot="skeleton"
           />
+        </div>
+      </div>
+      <div
+        class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+        data-slot="card-header"
+      >
+        <div
+          class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+        >
           <div
-            class="bg-accent animate-pulse rounded-md h-6 w-20"
+            class="bg-accent animate-pulse rounded-md aspect-square w-full"
             data-slot="skeleton"
           />
         </div>
       </div>
     </div>
     <div
-      class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm ring-secondary/40 bg-muted/50"
+      class="bg-card text-card-foreground border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0"
       data-slot="card"
     >
       <div
-        class="px-6 text-secondary border-destructive/30"
-        data-slot="card-content"
-      >
-        <div
-          class="group bg-accent/30"
-        >
-          <div
-            class="bg-accent animate-pulse aspect-square w-full rounded-md"
-            data-slot="skeleton"
-          />
-          <div
-            class="mt-2 flex space-x-1"
-          >
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-          </div>
-        </div>
-      </div>
-      <div
-        class="flex items-center px-6 [.border-t]:pt-6"
+        class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
         data-slot="card-footer"
       >
         <div
-          class="block w-full"
+          class="bg-accent animate-pulse h-9 w-full rounded-md"
+          data-slot="skeleton"
+        />
+      </div>
+      <div
+        class="px-6"
+        data-slot="card-content"
+      >
+        <div
+          class="mt-2"
         >
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-full mb-2"
+            class="bg-accent animate-pulse rounded-md h-5 w-16"
             data-slot="skeleton"
           />
+        </div>
+      </div>
+      <div
+        class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+        data-slot="card-content"
+      >
+        <div
+          class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
+        >
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-3/4 mb-2"
+            class="h-10 flex flex-col gap-1 items-start justify-start w-full"
+          >
+            <div
+              class="bg-accent animate-pulse rounded-md h-4 w-full"
+              data-slot="skeleton"
+            />
+            <div
+              class="bg-accent animate-pulse rounded-md h-4 w-3/4"
+              data-slot="skeleton"
+            />
+          </div>
+          <div
+            class="h-8 flex items-end"
+          >
+            <div
+              class="flex flex-wrap gap-2"
+            >
+              <div
+                class="bg-accent animate-pulse h-7 w-7 rounded-full"
+                data-slot="skeleton"
+              />
+              <div
+                class="bg-accent animate-pulse h-7 w-7 rounded-full"
+                data-slot="skeleton"
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
+        >
+          <div
+            class="bg-accent animate-pulse h-5 w-12 rounded-full"
             data-slot="skeleton"
           />
+        </div>
+      </div>
+      <div
+        class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+        data-slot="card-header"
+      >
+        <div
+          class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+        >
           <div
-            class="bg-accent animate-pulse rounded-md h-6 w-20"
+            class="bg-accent animate-pulse rounded-md aspect-square w-full"
             data-slot="skeleton"
           />
         </div>
       </div>
     </div>
     <div
-      class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm ring-secondary/40 bg-muted/50"
+      class="bg-card text-card-foreground border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0"
       data-slot="card"
     >
       <div
-        class="px-6 text-secondary border-destructive/30"
-        data-slot="card-content"
-      >
-        <div
-          class="group bg-accent/30"
-        >
-          <div
-            class="bg-accent animate-pulse aspect-square w-full rounded-md"
-            data-slot="skeleton"
-          />
-          <div
-            class="mt-2 flex space-x-1"
-          >
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-          </div>
-        </div>
-      </div>
-      <div
-        class="flex items-center px-6 [.border-t]:pt-6"
+        class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
         data-slot="card-footer"
       >
         <div
-          class="block w-full"
+          class="bg-accent animate-pulse h-9 w-full rounded-md"
+          data-slot="skeleton"
+        />
+      </div>
+      <div
+        class="px-6"
+        data-slot="card-content"
+      >
+        <div
+          class="mt-2"
         >
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-full mb-2"
+            class="bg-accent animate-pulse rounded-md h-5 w-16"
             data-slot="skeleton"
           />
+        </div>
+      </div>
+      <div
+        class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+        data-slot="card-content"
+      >
+        <div
+          class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
+        >
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-3/4 mb-2"
+            class="h-10 flex flex-col gap-1 items-start justify-start w-full"
+          >
+            <div
+              class="bg-accent animate-pulse rounded-md h-4 w-full"
+              data-slot="skeleton"
+            />
+            <div
+              class="bg-accent animate-pulse rounded-md h-4 w-3/4"
+              data-slot="skeleton"
+            />
+          </div>
+          <div
+            class="h-8 flex items-end"
+          >
+            <div
+              class="flex flex-wrap gap-2"
+            >
+              <div
+                class="bg-accent animate-pulse h-7 w-7 rounded-full"
+                data-slot="skeleton"
+              />
+              <div
+                class="bg-accent animate-pulse h-7 w-7 rounded-full"
+                data-slot="skeleton"
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
+        >
+          <div
+            class="bg-accent animate-pulse h-5 w-12 rounded-full"
             data-slot="skeleton"
           />
+        </div>
+      </div>
+      <div
+        class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+        data-slot="card-header"
+      >
+        <div
+          class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+        >
           <div
-            class="bg-accent animate-pulse rounded-md h-6 w-20"
+            class="bg-accent animate-pulse rounded-md aspect-square w-full"
             data-slot="skeleton"
           />
         </div>
       </div>
     </div>
     <div
-      class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm ring-secondary/40 bg-muted/50"
+      class="bg-card text-card-foreground border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0"
       data-slot="card"
     >
       <div
-        class="px-6 text-secondary border-destructive/30"
-        data-slot="card-content"
-      >
-        <div
-          class="group bg-accent/30"
-        >
-          <div
-            class="bg-accent animate-pulse aspect-square w-full rounded-md"
-            data-slot="skeleton"
-          />
-          <div
-            class="mt-2 flex space-x-1"
-          >
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse h-4 w-4 rounded-full"
-              data-slot="skeleton"
-            />
-          </div>
-        </div>
-      </div>
-      <div
-        class="flex items-center px-6 [.border-t]:pt-6"
+        class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
         data-slot="card-footer"
       >
         <div
-          class="block w-full"
+          class="bg-accent animate-pulse h-9 w-full rounded-md"
+          data-slot="skeleton"
+        />
+      </div>
+      <div
+        class="px-6"
+        data-slot="card-content"
+      >
+        <div
+          class="mt-2"
         >
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-full mb-2"
+            class="bg-accent animate-pulse rounded-md h-5 w-16"
             data-slot="skeleton"
           />
+        </div>
+      </div>
+      <div
+        class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
+        data-slot="card-content"
+      >
+        <div
+          class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
+        >
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-3/4 mb-2"
+            class="h-10 flex flex-col gap-1 items-start justify-start w-full"
+          >
+            <div
+              class="bg-accent animate-pulse rounded-md h-4 w-full"
+              data-slot="skeleton"
+            />
+            <div
+              class="bg-accent animate-pulse rounded-md h-4 w-3/4"
+              data-slot="skeleton"
+            />
+          </div>
+          <div
+            class="h-8 flex items-end"
+          >
+            <div
+              class="flex flex-wrap gap-2"
+            >
+              <div
+                class="bg-accent animate-pulse h-7 w-7 rounded-full"
+                data-slot="skeleton"
+              />
+              <div
+                class="bg-accent animate-pulse h-7 w-7 rounded-full"
+                data-slot="skeleton"
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
+        >
+          <div
+            class="bg-accent animate-pulse h-5 w-12 rounded-full"
             data-slot="skeleton"
           />
+        </div>
+      </div>
+      <div
+        class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+        data-slot="card-header"
+      >
+        <div
+          class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+        >
           <div
-            class="bg-accent animate-pulse rounded-md h-6 w-20"
+            class="bg-accent animate-pulse rounded-md aspect-square w-full"
             data-slot="skeleton"
           />
         </div>

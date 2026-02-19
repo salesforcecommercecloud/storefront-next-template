@@ -16,8 +16,15 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ReactNode } from 'react';
 import userEvent from '@testing-library/user-event';
 import CheckoutPickup from './checkout-pickup';
+import { ConfigProvider } from '@/config/context';
+import { mockConfig } from '@/test-utils/config';
+
+const wrapper = ({ children }: { children: ReactNode }) => (
+    <ConfigProvider config={mockConfig}>{children}</ConfigProvider>
+);
 
 vi.mock('@/components/address-display', () => ({
     __esModule: true,
@@ -125,7 +132,8 @@ describe('CheckoutPickup', () => {
                 onEdit={() => {}}
                 onContinue={() => {}}
                 continueButtonLabel="Continue"
-            />
+            />,
+            { wrapper }
         );
         expect(screen.getByText('checkout.pickUp.title')).toBeInTheDocument();
         expect(screen.getByTestId('address-display')).toHaveTextContent('Test Store');
@@ -140,7 +148,8 @@ describe('CheckoutPickup', () => {
                 onEdit={() => {}}
                 onContinue={() => {}}
                 continueButtonLabel="Continue"
-            />
+            />,
+            { wrapper }
         );
         expect(screen.getByTestId('address-display')).toBeInTheDocument();
         expect(screen.getByText(defaultProduct.name)).toBeInTheDocument();
@@ -156,7 +165,8 @@ describe('CheckoutPickup', () => {
                 onEdit={onEdit}
                 onContinue={() => {}}
                 continueButtonLabel="Continue"
-            />
+            />,
+            { wrapper }
         );
         const editBtn = screen.getByText(/edit/i);
         await userEvent.click(editBtn);
@@ -172,7 +182,8 @@ describe('CheckoutPickup', () => {
                 onEdit={() => {}}
                 onContinue={() => {}}
                 continueButtonLabel="Continue"
-            />
+            />,
+            { wrapper }
         );
         expect(screen.getByText('storePickup.changePickupLocation')).toBeInTheDocument();
     });
@@ -186,7 +197,8 @@ describe('CheckoutPickup', () => {
                 onEdit={() => {}}
                 onContinue={() => {}}
                 continueButtonLabel="Continue"
-            />
+            />,
+            { wrapper }
         );
         expect(screen.queryByText('storePickup.changePickupLocation')).not.toBeInTheDocument();
     });
@@ -200,7 +212,8 @@ describe('CheckoutPickup', () => {
                 onEdit={() => {}}
                 onContinue={() => {}}
                 continueButtonLabel="Continue"
-            />
+            />,
+            { wrapper }
         );
         const changeLink = screen.getByText('storePickup.changePickupLocation');
         await userEvent.click(changeLink);
@@ -223,20 +236,23 @@ describe('CheckoutPickup', () => {
                 onEdit={() => {}}
                 onContinue={() => {}}
                 continueButtonLabel="Continue"
-            />
+            />,
+            { wrapper }
         );
         expect(screen.getByTestId('address-display')).toHaveTextContent(defaultStore.name);
         expect(screen.getByTestId('address-display')).toHaveTextContent(defaultStore.address1);
 
         rerender(
-            <CheckoutPickup
-                cart={cartWithNewStore}
-                productsByItemId={productsByItemId}
-                isEditing={true}
-                onEdit={() => {}}
-                onContinue={() => {}}
-                continueButtonLabel="Continue"
-            />
+            <ConfigProvider config={mockConfig}>
+                <CheckoutPickup
+                    cart={cartWithNewStore}
+                    productsByItemId={productsByItemId}
+                    isEditing={true}
+                    onEdit={() => {}}
+                    onContinue={() => {}}
+                    continueButtonLabel="Continue"
+                />
+            </ConfigProvider>
         );
         expect(screen.getByTestId('address-display')).toHaveTextContent(otherStore.name);
         expect(screen.getByTestId('address-display')).toHaveTextContent(otherStore.address1);
@@ -278,7 +294,8 @@ describe('CheckoutPickup', () => {
                 onEdit={() => {}}
                 onContinue={() => {}}
                 continueButtonLabel="Continue"
-            />
+            />,
+            { wrapper }
         );
         expect(screen.getByText('Black Hat')).toBeInTheDocument();
         expect(screen.getByText('Red Shirt')).toBeInTheDocument();

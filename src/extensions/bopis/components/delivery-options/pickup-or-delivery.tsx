@@ -146,7 +146,7 @@ export default function PickupOrDelivery({
                 <Label
                     htmlFor="pickup-option"
                     onClick={() => {
-                        if (!isPickupDisabled) {
+                        if (!isPickupDisabled && !pickupStore) {
                             openStoreLocator();
                         }
                     }}

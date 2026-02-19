@@ -87,13 +87,13 @@ export async function lookupCustomerByEmail(
         const session = getAuth(context);
 
         // If this is already a registered user session, check if email matches
-        if (session.userType === 'registered' && session.customer_id) {
+        if (session.userType === 'registered' && session.customerId) {
             try {
                 const clients = createApiClients(context);
                 const { data: customer } = await clients.shopperCustomers.getCustomer({
                     params: {
                         path: {
-                            customerId: session.customer_id,
+                            customerId: session.customerId,
                         },
                     },
                 });
@@ -109,7 +109,7 @@ export async function lookupCustomerByEmail(
             } catch {
                 // Customer lookup failed - continue as guest
                 // Don't rethrow the error - just continue with guest flow below
-                // This handles cases where the session has an invalid customer_id
+                // This handles cases where the session has an invalid customerId
             }
         }
 
@@ -138,10 +138,10 @@ export function isRegisteredCustomer(context: ActionFunctionArgs['context']): bo
     const session = getAuth(context);
     return !!(
         session.userType === 'registered' &&
-        session.customer_id &&
-        session.access_token &&
-        session.access_token_expiry &&
-        session.access_token_expiry > Date.now()
+        session.customerId &&
+        session.accessToken &&
+        session.accessTokenExpiry &&
+        session.accessTokenExpiry > Date.now()
     );
 }
 
@@ -161,7 +161,7 @@ export async function getCurrentCustomer(
 
         const session = getAuth(context);
 
-        if (!session.customer_id) {
+        if (!session.customerId) {
             return null;
         }
 
@@ -170,7 +170,7 @@ export async function getCurrentCustomer(
         const { data: customer } = await clients.shopperCustomers.getCustomer({
             params: {
                 path: {
-                    customerId: session.customer_id,
+                    customerId: session.customerId,
                 },
             },
         });
@@ -180,7 +180,7 @@ export async function getCurrentCustomer(
         const { status_code } = await extractResponseError(error);
         // Handle specific error cases
         if (status_code === '404') {
-            // Customer not found (404) - invalid customer_id in auth cookies
+            // Customer not found (404) - invalid customerId in auth cookies
             // This can happen when:
             // - Customer account was deleted from Commerce Cloud
             // - Using cookies from a different environment (e.g., staging → production)
@@ -440,12 +440,12 @@ export async function registerGuestUser(
         const loginResult = await loginCustomerAfterRegistration(context, email, password);
 
         if (loginResult.success) {
-            // Get the updated session after login to retrieve customer_id
+            // Get the updated session after login to retrieve customerId
             const updatedSession = getAuth(context);
 
             return {
                 success: true,
-                customerId: updatedSession.customer_id,
+                customerId: updatedSession.customerId,
                 password,
                 autoLoggedIn: true,
             };
@@ -740,7 +740,7 @@ export async function getCustomerProfileForCheckout(
         const { status_code } = await extractResponseError(error);
         // Handle specific error cases
         if (status_code === '404') {
-            // Customer not found (404) - invalid customer_id in auth cookies
+            // Customer not found (404) - invalid customerId in auth cookies
             // This can happen when:
             // - Customer account was deleted from Commerce Cloud
             // - Using cookies from a different environment (e.g., staging → production)

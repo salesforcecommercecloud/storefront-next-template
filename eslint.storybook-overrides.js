@@ -28,7 +28,7 @@ import storybook from 'eslint-plugin-storybook';
 
 export const storybookOverrides = [
     {
-        // Ignore Storybook config files and build artifacts
+        // Ignore Storybook config files, build artifacts, and generated test files
         ignores: [
             '.storybook/**/*',
             'build/**/*',
@@ -36,11 +36,12 @@ export const storybookOverrides = [
             'storybook-static/**/*',
             '_local/**/*',
             '**/__snapshots__/**/*',
+            '**/*-snapshot.tsx',
         ],
     },
     {
         // Storybook story files
-        files: ['**/*.stories.{ts,tsx,js,jsx}', '**/*-snapshot.{ts,tsx,js,jsx}'],
+        files: ['**/*.stories.{ts,tsx,js,jsx}'],
         plugins: {
             storybook,
         },

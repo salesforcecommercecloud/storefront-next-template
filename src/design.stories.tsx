@@ -18,15 +18,14 @@ import React from 'react';
 import {
     PageDesignerProvider,
     PageDesignerPageMetadataProvider,
-} from '@salesforce/storefront-next-runtime/design/react/core';
-import {
     createReactComponentDesignDecorator,
-    type ComponentDesignMetadata,
-} from '@salesforce/storefront-next-runtime/design/react';
+} from '@salesforce/storefront-next-runtime/design/react/core';
+import type { ComponentDesignMetadata } from '@salesforce/storefront-next-runtime/design/react';
 import { PageDesignerInit } from '@/page-designer-init';
 import { PageDesignerHostProvider } from '@/test-utils/page-designer-host-provider';
 import { RegionWrapper } from '@/components/region/region-wrapper';
 import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
+import type { ComponentType } from '@/components/region';
 
 /**
  * Simple placeholder component for demonstration purposes
@@ -433,7 +432,7 @@ function DesignLayerStory({
                         </h2>
                         <RegionWrapper region={region}>
                             {region.components && region.components.length > 0 ? (
-                                region.components.map((component) => {
+                                region.components.map((component: ComponentType) => {
                                     const designMetadata: ComponentDesignMetadata = {
                                         id: component.id,
                                         name: component.typeId,

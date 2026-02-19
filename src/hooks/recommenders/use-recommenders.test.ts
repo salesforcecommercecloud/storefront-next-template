@@ -35,7 +35,7 @@ vi.mock('@/providers/auth', () => ({
     useAuth: vi.fn().mockReturnValue({
         usid: 'test-usid-123',
         userType: 'guest',
-        customer_id: null,
+        customerId: null,
     }),
 }));
 

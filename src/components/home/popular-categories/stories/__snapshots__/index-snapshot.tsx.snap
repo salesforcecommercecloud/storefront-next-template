@@ -27,22 +27,22 @@ exports[`PopularCategories stories snapshot > CustomPadding story renders and ma
           <div
             data-testid="content-card"
           >
-            {"title":"Jewelry","description":"Elegant jewelry pieces to complement any outfit","imageUrl":"https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.jpg","imageAlt":"Jewelry","buttonText":"Shop Now","buttonLink":"/category/womens-jewelry","showBackground":true,"showBorder":true,"loading":"eager"}
+            {"title":"Jewelry","description":"Elegant jewelry pieces to complement any outfit","imageUrl":"https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70","imageAlt":"Jewelry","buttonText":"Shop Now","buttonLink":"/category/womens-jewelry","showBackground":true,"showBorder":true,"loading":"eager"}
           </div>
           <div
             data-testid="content-card"
           >
-            {"title":"Clothing","description":"Stylish and comfortable men's clothing for every occasion","imageUrl":"https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.jpg","imageAlt":"Clothing","buttonText":"Shop Now","buttonLink":"/category/mens-clothing","showBackground":true,"showBorder":true,"loading":"eager"}
+            {"title":"Clothing","description":"Stylish and comfortable men's clothing for every occasion","imageUrl":"https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70","imageAlt":"Clothing","buttonText":"Shop Now","buttonLink":"/category/mens-clothing","showBackground":true,"showBorder":true,"loading":"eager"}
           </div>
           <div
             data-testid="content-card"
           >
-            {"title":"Electronics","description":"Latest electronics and tech gadgets","imageUrl":"https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.jpg","imageAlt":"Electronics","buttonText":"Shop Now","buttonLink":"/category/electronics","showBackground":true,"showBorder":true,"loading":"eager"}
+            {"title":"Electronics","description":"Latest electronics and tech gadgets","imageUrl":"https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70","imageAlt":"Electronics","buttonText":"Shop Now","buttonLink":"/category/electronics","showBackground":true,"showBorder":true,"loading":"eager"}
           </div>
           <div
             data-testid="content-card"
           >
-            {"title":"Home & Living","description":"Transform your space with our home and living collection","imageUrl":"https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.jpg","imageAlt":"Home & Living","buttonText":"Shop Now","buttonLink":"/category/home-living","showBackground":true,"showBorder":true,"loading":"eager"}
+            {"title":"Home & Living","description":"Transform your space with our home and living collection","imageUrl":"https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70","imageAlt":"Home & Living","buttonText":"Shop Now","buttonLink":"/category/home-living","showBackground":true,"showBorder":true,"loading":"eager"}
           </div>
         </div>
       </div>
@@ -164,22 +164,22 @@ exports[`PopularCategories stories snapshot > MoreThanFourCategories story rende
           <div
             data-testid="content-card"
           >
-            {"title":"Jewelry","description":"Elegant jewelry pieces to complement any outfit","imageUrl":"https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.jpg","imageAlt":"Jewelry","buttonText":"Shop Now","buttonLink":"/category/womens-jewelry","showBackground":true,"showBorder":true,"loading":"eager"}
+            {"title":"Jewelry","description":"Elegant jewelry pieces to complement any outfit","imageUrl":"https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70","imageAlt":"Jewelry","buttonText":"Shop Now","buttonLink":"/category/womens-jewelry","showBackground":true,"showBorder":true,"loading":"eager"}
           </div>
           <div
             data-testid="content-card"
           >
-            {"title":"Clothing","description":"Stylish and comfortable men's clothing for every occasion","imageUrl":"https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.jpg","imageAlt":"Clothing","buttonText":"Shop Now","buttonLink":"/category/mens-clothing","showBackground":true,"showBorder":true,"loading":"eager"}
+            {"title":"Clothing","description":"Stylish and comfortable men's clothing for every occasion","imageUrl":"https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70","imageAlt":"Clothing","buttonText":"Shop Now","buttonLink":"/category/mens-clothing","showBackground":true,"showBorder":true,"loading":"eager"}
           </div>
           <div
             data-testid="content-card"
           >
-            {"title":"Electronics","description":"Latest electronics and tech gadgets","imageUrl":"https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.jpg","imageAlt":"Electronics","buttonText":"Shop Now","buttonLink":"/category/electronics","showBackground":true,"showBorder":true,"loading":"eager"}
+            {"title":"Electronics","description":"Latest electronics and tech gadgets","imageUrl":"https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70","imageAlt":"Electronics","buttonText":"Shop Now","buttonLink":"/category/electronics","showBackground":true,"showBorder":true,"loading":"eager"}
           </div>
           <div
             data-testid="content-card"
           >
-            {"title":"Home & Living","description":"Transform your space with our home and living collection","imageUrl":"https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.jpg","imageAlt":"Home & Living","buttonText":"Shop Now","buttonLink":"/category/home-living","showBackground":true,"showBorder":true,"loading":"eager"}
+            {"title":"Home & Living","description":"Transform your space with our home and living collection","imageUrl":"https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70","imageAlt":"Home & Living","buttonText":"Shop Now","buttonLink":"/category/home-living","showBackground":true,"showBorder":true,"loading":"eager"}
           </div>
         </div>
       </div>
@@ -241,22 +241,22 @@ exports[`PopularCategories stories snapshot > WithDirectData story renders and m
           <div
             data-testid="content-card"
           >
-            {"title":"Jewelry","description":"Elegant jewelry pieces to complement any outfit","imageUrl":"https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.jpg","imageAlt":"Jewelry","buttonText":"Shop Now","buttonLink":"/category/womens-jewelry","showBackground":true,"showBorder":true,"loading":"eager"}
+            {"title":"Jewelry","description":"Elegant jewelry pieces to complement any outfit","imageUrl":"https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70","imageAlt":"Jewelry","buttonText":"Shop Now","buttonLink":"/category/womens-jewelry","showBackground":true,"showBorder":true,"loading":"eager"}
           </div>
           <div
             data-testid="content-card"
           >
-            {"title":"Clothing","description":"Stylish and comfortable men's clothing for every occasion","imageUrl":"https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.jpg","imageAlt":"Clothing","buttonText":"Shop Now","buttonLink":"/category/mens-clothing","showBackground":true,"showBorder":true,"loading":"eager"}
+            {"title":"Clothing","description":"Stylish and comfortable men's clothing for every occasion","imageUrl":"https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70","imageAlt":"Clothing","buttonText":"Shop Now","buttonLink":"/category/mens-clothing","showBackground":true,"showBorder":true,"loading":"eager"}
           </div>
           <div
             data-testid="content-card"
           >
-            {"title":"Electronics","description":"Latest electronics and tech gadgets","imageUrl":"https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.jpg","imageAlt":"Electronics","buttonText":"Shop Now","buttonLink":"/category/electronics","showBackground":true,"showBorder":true,"loading":"eager"}
+            {"title":"Electronics","description":"Latest electronics and tech gadgets","imageUrl":"https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70","imageAlt":"Electronics","buttonText":"Shop Now","buttonLink":"/category/electronics","showBackground":true,"showBorder":true,"loading":"eager"}
           </div>
           <div
             data-testid="content-card"
           >
-            {"title":"Home & Living","description":"Transform your space with our home and living collection","imageUrl":"https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.jpg","imageAlt":"Home & Living","buttonText":"Shop Now","buttonLink":"/category/home-living","showBackground":true,"showBorder":true,"loading":"eager"}
+            {"title":"Home & Living","description":"Transform your space with our home and living collection","imageUrl":"https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70","imageAlt":"Home & Living","buttonText":"Shop Now","buttonLink":"/category/home-living","showBackground":true,"showBorder":true,"loading":"eager"}
           </div>
         </div>
       </div>

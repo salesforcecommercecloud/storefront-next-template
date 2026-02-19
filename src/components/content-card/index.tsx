@@ -15,7 +15,6 @@
  */
 import { forwardRef, type ComponentProps } from 'react';
 import { Link } from 'react-router';
-import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import type { ComponentDesignMetadata } from '@salesforce/storefront-next-runtime/design/react';
 import { cn, resolveAssetUrl } from '@/lib/utils';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -23,6 +22,7 @@ import { Button } from '@/components/ui/button';
 import { Component } from '@/lib/decorators/component';
 import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
 import { type Image } from '@/types';
+import type { ComponentType } from '@/components/region';
 
 interface ContentCardProps extends ComponentProps<'div'> {
     title?: string;
@@ -37,8 +37,7 @@ interface ContentCardProps extends ComponentProps<'div'> {
 
     // Page Designer props (need to be extracted to avoid passing to DOM)
     regionId?: string;
-    page?: ShopperExperience.schemas['Page'];
-    component?: ShopperExperience.schemas['Component'];
+    component?: ComponentType;
     componentData?: Record<string, Promise<unknown>>;
     designMetadata?: ComponentDesignMetadata;
     data?: unknown;
@@ -96,7 +95,6 @@ export const ContentCard = forwardRef<HTMLDivElement, ContentCardProps>(
             showBorder = true,
             loading = 'lazy',
             regionId: _regionId,
-            page: _page,
             component: _component,
             componentData: _componentData,
             designMetadata: _designMetadata,

@@ -35,6 +35,10 @@ vi.mock('@/hooks/product/use-product-actions', () => ({
 vi.mock('@/extensions/store-locator/providers/store-locator', () => ({
     useStoreLocator: vi.fn(),
 }));
+
+vi.mock('@/extensions/bopis/components/delivery-options/delivery-options', () => ({
+    default: () => <div data-testid="delivery-options">Delivery Options</div>,
+}));
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
 vi.mock('./child-product-card', () => ({

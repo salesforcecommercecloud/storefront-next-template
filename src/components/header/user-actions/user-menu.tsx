@@ -15,7 +15,7 @@
  */
 import { type ReactElement, useState, useRef, useEffect } from 'react';
 import { Link, Form } from 'react-router';
-import { House, Heart, ShoppingBag, User, MapPin, LogOut } from 'lucide-react';
+import { House, Heart, ShoppingBag, User, MapPin, CreditCard, Building, LogOut } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
@@ -167,6 +167,20 @@ export function UserMenu({ isAuthenticated, trigger }: UserMenuProps): ReactElem
                                     onMouseEnter={handleMenuItemMouseEnter}>
                                     <MapPin className="h-5 w-5" />
                                     {t('menu.addressBook')}
+                                </Link>
+                                <Link
+                                    to="/account/payment-methods"
+                                    className={menuItemClassName}
+                                    onMouseEnter={handleMenuItemMouseEnter}>
+                                    <CreditCard className="h-5 w-5" />
+                                    {t('menu.paymentMethods')}
+                                </Link>
+                                <Link
+                                    to="/account/store-preferences"
+                                    className={menuItemClassName}
+                                    onMouseEnter={handleMenuItemMouseEnter}>
+                                    <Building className="h-5 w-5" />
+                                    {tAccount('navigation.storePreferences')}
                                 </Link>
                             </div>
                         </div>

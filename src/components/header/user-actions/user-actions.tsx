@@ -27,7 +27,7 @@ export default function UserActions(): ReactElement {
     const { t: tAccount } = useTranslation('account');
     const isAuthenticated: boolean = useMemo(() => {
         // Check if user is authenticated (has valid token and is registered)
-        return Boolean(session?.userType === 'registered' && session?.customer_id);
+        return Boolean(session?.userType === 'registered' && session?.customerId);
     }, [session]);
 
     const accountLink = isAuthenticated ? '/account/overview' : '/login';

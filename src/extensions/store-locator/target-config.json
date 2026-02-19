@@ -1,0 +1,20 @@
+{
+    "components": [
+        {
+            "targetId": "footer.ourcompany.start",
+            "path": "extensions/store-locator/components/footer/index.tsx",
+            "order": 0
+        },
+        {
+            "targetId": "header.before.cart",
+            "path": "extensions/store-locator/components/header/store-locator-badge.tsx",
+            "order": 0
+        }
+    ],
+    "contextProviders": [
+        {
+            "path": "extensions/store-locator/providers/store-locator.tsx",
+            "order": 0
+        }
+    ]
+}

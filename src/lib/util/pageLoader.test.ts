@@ -16,7 +16,7 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { LoaderFunctionArgs } from 'react-router';
 import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
-import { fetchPageFromLoader, collectComponentDataPromises } from './pageLoader';
+import { fetchPageFromLoader, fetchPageWithComponentData } from './pageLoader';
 import { fetchPage } from '@/lib/api/page';
 import { registry } from '@/lib/registry';
 import { isDesignModeActive, isPreviewModeActive } from '@salesforce/storefront-next-runtime/design/mode';
@@ -49,11 +49,12 @@ const MOCK_PAGE_ID = 'test-page';
 const MOCK_PD_TOKEN = 'abc123';
 
 // Test utilities
-const createLoaderArgs = (url: string, context = TEST_CONTEXT): LoaderFunctionArgs => ({
-    request: new Request(url),
-    context,
-    params: {},
-});
+const createLoaderArgs = (url: string, context = TEST_CONTEXT) =>
+    ({
+        request: new Request(url),
+        context,
+        params: {},
+    }) as LoaderFunctionArgs;
 
 const createMockPage = (regions: any[] = []): ShopperExperience.schemas['Page'] =>
     ({
@@ -153,19 +154,22 @@ describe('pageLoader', () => {
         });
     });
 
-    describe('collectComponentDataPromises', () => {
-        test('returns empty map when page has no regions', async () => {
+    describe('fetchPageWithComponentData', () => {
+        test('returns page with empty componentData when page has no regions', async () => {
             const args = createLoaderArgs(BASE_URL);
-            const page = createMockPage([]);
+            const mockPage = createMockPage([]);
+            mockedFetchPage.mockResolvedValue(mockPage);
 
-            const result = await collectComponentDataPromises(args, Promise.resolve(page));
+            const result = await fetchPageWithComponentData(args, { pageId: MOCK_PAGE_ID });
 
-            expect(result).toEqual({});
+            expect(result).toHaveProperty('id', 'mock-page');
+            expect(result).toHaveProperty('componentData', {});
+            expect(fetchPage).toHaveBeenCalledWith(TEST_CONTEXT, { pageId: MOCK_PAGE_ID });
             // eslint-disable-next-line @typescript-eslint/unbound-method
             expect(mockedRegistry.callLoader).toHaveBeenCalledTimes(0);
         });
 
-        test('returns promises only for components with server loaders', async () => {
+        test('returns page with component data promises for components with server loaders', async () => {
             const heroData = { title: 'Hero Title' };
             const footerData = { links: ['home', 'about'] };
 
@@ -184,13 +188,16 @@ describe('pageLoader', () => {
                 createMockComponent('carousel-1', 'carousel'),
                 createMockComponent('footer-1', 'footer'),
             ];
-            const page = createMockPage([createMockRegion(components)]);
+            const mockPage = createMockPage([createMockRegion(components)]);
+            mockedFetchPage.mockResolvedValue(mockPage);
 
-            const result = await collectComponentDataPromises(args, Promise.resolve(page));
+            const result = await fetchPageWithComponentData(args, { pageId: MOCK_PAGE_ID });
 
-            expect(Object.keys(result)).toEqual(['hero-1', 'footer-1']);
-            await expect(result['hero-1']).resolves.toEqual(heroData);
-            await expect(result['footer-1']).resolves.toEqual(footerData);
+            expect(result).toHaveProperty('id', 'mock-page');
+            expect(result).toHaveProperty('componentData');
+            expect(Object.keys(result.componentData)).toEqual(['hero-1', 'footer-1']);
+            await expect(result.componentData['hero-1']).resolves.toEqual(heroData);
+            await expect(result.componentData['footer-1']).resolves.toEqual(footerData);
         });
 
         test('server loader receives componentData and context', async () => {
@@ -200,10 +207,11 @@ describe('pageLoader', () => {
 
             const args = createLoaderArgs(BASE_URL);
             const component = createMockComponent('hero-1', 'hero', { title: 'Hero Title' });
-            const page = createMockPage([createMockRegion([component])]);
+            const mockPage = createMockPage([createMockRegion([component])]);
+            mockedFetchPage.mockResolvedValue(mockPage);
 
-            const dataPromises = await collectComponentDataPromises(args, Promise.resolve(page));
-            const result = await dataPromises['hero-1'];
+            const result = await fetchPageWithComponentData(args, { pageId: MOCK_PAGE_ID });
+            const componentData = await result.componentData['hero-1'];
 
             // eslint-disable-next-line @typescript-eslint/unbound-method
             expect(mockedRegistry.callLoader).toHaveBeenCalledWith(
@@ -214,34 +222,36 @@ describe('pageLoader', () => {
                 },
                 'loader'
             );
-            expect(result).toEqual(expectedData);
+            expect(componentData).toEqual(expectedData);
         });
 
-        test('rejects promise when server loader throws error', async () => {
+        test('component data promise rejects when server loader throws error', async () => {
             const loaderError = new Error('Server loader failed');
             mockedRegistry.hasLoaders.mockReturnValue(true);
             mockedRegistry.callLoader.mockReturnValue(Promise.reject(loaderError));
 
             const args = createLoaderArgs(BASE_URL);
             const component = createMockComponent('failing-component', 'hero');
-            const page = createMockPage([createMockRegion([component])]);
+            const mockPage = createMockPage([createMockRegion([component])]);
+            mockedFetchPage.mockResolvedValue(mockPage);
 
-            const dataPromises = await collectComponentDataPromises(args, Promise.resolve(page));
+            const result = await fetchPageWithComponentData(args, { pageId: MOCK_PAGE_ID });
 
-            await expect(dataPromises['failing-component']).rejects.toThrow('Server loader failed');
+            await expect(result.componentData['failing-component']).rejects.toThrow('Server loader failed');
         });
 
         test('handles regions with null/undefined components gracefully', async () => {
             const args = createLoaderArgs(BASE_URL);
-            const page = createMockPage([
+            const mockPage = createMockPage([
                 { components: null },
                 { components: undefined },
                 createMockRegion([]), // empty array
             ]);
+            mockedFetchPage.mockResolvedValue(mockPage);
 
-            const dataPromises = await collectComponentDataPromises(args, Promise.resolve(page));
+            const result = await fetchPageWithComponentData(args, { pageId: MOCK_PAGE_ID });
 
-            expect(dataPromises).toEqual({});
+            expect(result.componentData).toEqual({});
             // eslint-disable-next-line @typescript-eslint/unbound-method
             expect(mockedRegistry.callLoader).toHaveBeenCalledTimes(0);
         });
@@ -263,25 +273,50 @@ describe('pageLoader', () => {
                 .mockReturnValueOnce(Promise.resolve(footerData));
 
             const args = createLoaderArgs(BASE_URL);
-            const page = createMockPage([
+            const mockPage = createMockPage([
                 createMockRegion([createMockComponent('hero-1', 'hero'), createMockComponent('banner-1', 'banner')]),
                 createMockRegion([
                     createMockComponent('carousel-1', 'carousel'), // no loader
                     createMockComponent('footer-1', 'footer'),
                 ]),
             ]);
+            mockedFetchPage.mockResolvedValue(mockPage);
 
-            const dataPromises = await collectComponentDataPromises(args, Promise.resolve(page));
+            const result = await fetchPageWithComponentData(args, { pageId: MOCK_PAGE_ID });
 
-            expect(Object.keys(dataPromises)).toEqual(['hero-1', 'banner-1', 'footer-1']);
+            expect(Object.keys(result.componentData)).toEqual(['hero-1', 'banner-1', 'footer-1']);
 
             const results = await Promise.all([
-                dataPromises['hero-1'],
-                dataPromises['banner-1'],
-                dataPromises['footer-1'],
+                result.componentData['hero-1'],
+                result.componentData['banner-1'],
+                result.componentData['footer-1'],
             ]);
 
             expect(results).toEqual([heroData, bannerData, footerData]);
+        });
+
+        test('includes design mode parameters when in EDIT mode', async () => {
+            mockedIsDesignModeActive.mockReturnValue(true);
+            const args = createLoaderArgs(`${BASE_URL}?mode=EDIT&pdToken=${MOCK_PD_TOKEN}`);
+            const mockPage = createMockPage([]);
+            mockedFetchPage.mockResolvedValue(mockPage);
+
+            await fetchPageWithComponentData(args, { pageId: MOCK_PAGE_ID });
+
+            expect(fetchPage).toHaveBeenCalledWith(TEST_CONTEXT, {
+                pageId: MOCK_PAGE_ID,
+                mode: 'EDIT',
+                pdToken: MOCK_PD_TOKEN,
+            });
+        });
+
+        test('propagates fetchPage errors', async () => {
+            const error = new Error('API Error');
+            mockedFetchPage.mockRejectedValueOnce(error);
+
+            await expect(
+                fetchPageWithComponentData(createLoaderArgs(BASE_URL), { pageId: MOCK_PAGE_ID })
+            ).rejects.toThrow('API Error');
         });
     });
 });

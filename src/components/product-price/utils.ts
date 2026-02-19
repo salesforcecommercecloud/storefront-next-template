@@ -13,11 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ShopperBasketsV2, ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type {
+    ShopperBasketsV2,
+    ShopperOrders,
+    ShopperProducts,
+    ShopperSearch,
+} from '@salesforce/storefront-next-runtime/scapi';
 
 type Product =
     | ShopperProducts.schemas['Product']
     | (ShopperBasketsV2.schemas['ProductItem'] & Partial<ShopperProducts.schemas['Product']>)
+    | (ShopperOrders.schemas['ProductItem'] & Partial<ShopperProducts.schemas['Product']>)
     | ShopperSearch.schemas['ProductSearchHit'];
 
 // Type for product promotions - based on the commerce SDK structure
@@ -129,7 +135,8 @@ export const getPriceData = (product: Product, opts: { quantity?: number } = {})
 
     if (isBasketItem) {
         // For basket items, use basket-specific price fields
-        const basketItem = product as ShopperBasketsV2.schemas['ProductItem'];
+        const basketItem = product as ShopperBasketsV2.schemas['ProductItem'] | ShopperOrders.schemas['ProductItem'];
+
         const basePrice = basketItem.basePrice ?? 0;
         const unitPrice = basketItem.price ?? basePrice;
         // priceAfterItemDiscount is the final price after all discounts for the line item

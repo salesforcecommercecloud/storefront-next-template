@@ -87,17 +87,17 @@ function expectStorage(data: AuthStorageData = {}): {
 
 function getAuthData(): AuthData {
     return {
-        access_token: 'access_token',
-        access_token_expiry: Date.now() + 1_000,
-        refresh_token: 'refresh_token',
-        refresh_token_expiry: Date.now() + 10_000,
+        accessToken: 'access_token',
+        accessTokenExpiry: Date.now() + 1_000,
+        refreshToken: 'refresh_token',
+        refreshTokenExpiry: Date.now() + 10_000,
         userType: 'guest',
         usid: 'usid',
-        customer_id: 'customer_id',
+        customerId: 'customer_id',
         codeVerifier: 'codeVerifier',
         dwsid: 'dwsid',
-        idp_access_token: 'idp_access_token',
-        idp_access_token_expiry: Date.now() + 1_000,
+        idpAccessToken: 'idp_access_token',
+        idpAccessTokenExpiry: Date.now() + 1_000,
         trackingConsent: TrackingConsent.Declined,
     };
 }
@@ -245,8 +245,8 @@ describe('auth middleware (client)', () => {
             const data = getAuthData();
             const { provider, storage } = expectStorage(data);
             const mockUpdater = vi.fn().mockReturnValue({
-                access_token: 'updated_access_token',
-                refresh_token: 'updated_refresh_token',
+                accessToken: 'updated_access_token',
+                refreshToken: 'updated_refresh_token',
             });
             updateAuth(provider, mockUpdater);
 
@@ -255,8 +255,8 @@ describe('auth middleware (client)', () => {
             // trackingConsent is preserved from existing storage (updateAuthStorageData preserves trackingConsent)
             expect(storage.size).toBe(4);
             expect(Object.fromEntries(storage)).toStrictEqual({
-                access_token: 'updated_access_token',
-                refresh_token: 'updated_refresh_token',
+                accessToken: 'updated_access_token',
+                refreshToken: 'updated_refresh_token',
                 trackingConsent: TrackingConsent.Declined, // Preserved from original data
                 isUpdated: true,
             });
@@ -338,11 +338,11 @@ describe('auth middleware (client)', () => {
 
             // Mock getCookies to return current data values
             vi.mocked(getAllCookies).mockReturnValue({
-                'cc-nx-g': data.refresh_token || '',
+                'cc-nx-g': data.refreshToken || '',
                 'cc-nx_test-site': '',
-                'cc-at': data.access_token || '',
+                'cc-at': data.accessToken || '',
                 usid: data.usid || '',
-                customerId: data.customer_id || '',
+                customerId: data.customerId || '',
                 'cc-idp-at_test-site': '',
             });
 
@@ -354,10 +354,10 @@ describe('auth middleware (client)', () => {
         test('should return true and update storage when cookie has different access token', () => {
             const currentData = getAuthData();
             const { provider, storage } = expectStorage({
-                access_token: 'old_token',
-                access_token_expiry: currentData.access_token_expiry,
-                refresh_token: 'old_refresh_token',
-                refresh_token_expiry: currentData.refresh_token_expiry,
+                accessToken: 'old_token',
+                accessTokenExpiry: currentData.accessTokenExpiry,
+                refreshToken: 'old_refresh_token',
+                refreshTokenExpiry: currentData.refreshTokenExpiry,
                 userType: 'guest',
             });
 
@@ -375,26 +375,26 @@ describe('auth middleware (client)', () => {
             const result = refreshAuthFromCookie(provider);
 
             expect(result).toBe(true);
-            expect(storage.get('access_token')).toBe('new_token');
-            expect(storage.get('refresh_token')).toBe('new_refresh_token');
+            expect(storage.get('accessToken')).toBe('new_token');
+            expect(storage.get('refreshToken')).toBe('new_refresh_token');
             expect(storage.get('userType')).toBe('registered');
-            expect(storage.get('customer_id')).toBe('customer_123');
+            expect(storage.get('customerId')).toBe('customer_123');
             expect(storage.get('isUpdated')).toBe(true);
         });
 
         test('should not update metadata fields (isDestroyed, error, isUpdated)', () => {
             const currentData = getAuthData();
             const { provider, storage } = expectStorage({
-                access_token: 'old_token',
-                access_token_expiry: currentData.access_token_expiry,
-                refresh_token: currentData.refresh_token,
-                refresh_token_expiry: currentData.refresh_token_expiry,
+                accessToken: 'old_token',
+                accessTokenExpiry: currentData.accessTokenExpiry,
+                refreshToken: currentData.refreshToken,
+                refreshTokenExpiry: currentData.refreshTokenExpiry,
                 userType: 'guest',
             });
 
             // Mock getCookies to return new cookie values (guest user)
             vi.mocked(getAllCookies).mockReturnValue({
-                'cc-nx-g': currentData.refresh_token || '',
+                'cc-nx-g': currentData.refreshToken || '',
                 'cc-nx_test-site': '',
                 'cc-at_test-site': 'new_token',
                 'usid_test-site': '',
@@ -451,8 +451,8 @@ describe('auth middleware (client)', () => {
         test('should handle cookie update with additional fields', () => {
             const currentData = getAuthData();
             const { provider, storage } = expectStorage({
-                access_token: 'old_token',
-                access_token_expiry: currentData.access_token_expiry,
+                accessToken: 'old_token',
+                accessTokenExpiry: currentData.accessTokenExpiry,
             });
 
             // Mock getCookies to return new cookie values with additional fields
@@ -467,7 +467,7 @@ describe('auth middleware (client)', () => {
 
             refreshAuthFromCookie(provider);
 
-            expect(storage.get('access_token')).toBe('new_token');
+            expect(storage.get('accessToken')).toBe('new_token');
             expect(storage.get('usid')).toBe('test_usid');
             expect(storage.get('userType')).toBe('guest'); // cc-nx-g exists
         });
@@ -502,10 +502,10 @@ describe('auth middleware (client)', () => {
             const result = getAuthDataFromCookies();
 
             expect(result).toBeDefined();
-            expect(result?.access_token).toBe('access_token');
-            expect(result?.refresh_token).toBe('guest_refresh_token');
+            expect(result?.accessToken).toBe('access_token');
+            expect(result?.refreshToken).toBe('guest_refresh_token');
             expect(result?.usid).toBe('test_usid');
-            expect(result?.customer_id).toBe('guest_customer_id');
+            expect(result?.customerId).toBe('guest_customer_id');
             expect(result?.userType).toBe('guest');
         });
 
@@ -522,10 +522,10 @@ describe('auth middleware (client)', () => {
             const result = getAuthDataFromCookies();
 
             expect(result).toBeDefined();
-            expect(result?.access_token).toBe('access_token');
-            expect(result?.refresh_token).toBe('registered_refresh_token');
+            expect(result?.accessToken).toBe('access_token');
+            expect(result?.refreshToken).toBe('registered_refresh_token');
             expect(result?.usid).toBe('test_usid');
-            expect(result?.customer_id).toBe('registered_customer_id');
+            expect(result?.customerId).toBe('registered_customer_id');
             expect(result?.userType).toBe('registered');
         });
 
@@ -542,7 +542,7 @@ describe('auth middleware (client)', () => {
             const result = getAuthDataFromCookies();
 
             expect(result).toBeDefined();
-            expect(result?.refresh_token).toBe('registered_refresh_token');
+            expect(result?.refreshToken).toBe('registered_refresh_token');
             expect(result?.userType).toBe('registered');
         });
 
@@ -559,8 +559,8 @@ describe('auth middleware (client)', () => {
             const result = getAuthDataFromCookies();
 
             expect(result).toBeDefined();
-            expect(result?.access_token).toBe('access_token_only');
-            expect(result?.refresh_token).toBeUndefined();
+            expect(result?.accessToken).toBe('access_token_only');
+            expect(result?.refreshToken).toBeUndefined();
             expect(result?.userType).toBe('guest');
         });
 
@@ -595,8 +595,8 @@ describe('auth middleware (client)', () => {
             const result = getAuthDataFromCookies();
 
             expect(result).toBeDefined();
-            expect(result?.access_token).toBeUndefined();
-            expect(result?.refresh_token).toBe(
+            expect(result?.accessToken).toBeUndefined();
+            expect(result?.refreshToken).toBe(
                 expectedUserType === 'guest' ? 'guest_refresh_only' : 'registered_refresh_only'
             );
             expect(result?.userType).toBe(expectedUserType);
@@ -616,7 +616,7 @@ describe('auth middleware (client)', () => {
 
             expect(result).toBeDefined();
             expect(result?.usid).toBe('test_usid');
-            expect(result?.customer_id).toBeUndefined();
+            expect(result?.customerId).toBeUndefined();
         });
 
         test('should handle partial cookie data with customerId but no usid', () => {
@@ -633,7 +633,7 @@ describe('auth middleware (client)', () => {
 
             expect(result).toBeDefined();
             expect(result?.usid).toBeUndefined();
-            expect(result?.customer_id).toBe('test_customer_id');
+            expect(result?.customerId).toBe('test_customer_id');
         });
 
         test('should return undefined when only usid/customerId exist without tokens', () => {
@@ -651,7 +651,7 @@ describe('auth middleware (client)', () => {
             expect(result).toBeUndefined();
         });
 
-        test('should extract access_token_expiry from JWT when access token exists', () => {
+        test('should extract accessTokenExpiry from JWT when access token exists', () => {
             // Create a mock JWT with an expiry (simplified for testing)
             // Real JWT structure: header.payload.signature
             const futureExpiry = Math.floor(Date.now() / 1000) + 1800; // 30 minutes from now
@@ -670,11 +670,11 @@ describe('auth middleware (client)', () => {
             const result = getAuthDataFromCookies();
 
             expect(result).toBeDefined();
-            expect(result?.access_token).toBe(mockToken);
-            expect(result?.access_token_expiry).toBeDefined();
-            expect(typeof result?.access_token_expiry).toBe('number');
+            expect(result?.accessToken).toBe(mockToken);
+            expect(result?.accessTokenExpiry).toBeDefined();
+            expect(typeof result?.accessTokenExpiry).toBe('number');
             // Expiry should be in milliseconds
-            expect(result?.access_token_expiry).toBeGreaterThan(Date.now());
+            expect(result?.accessTokenExpiry).toBeGreaterThan(Date.now());
         });
 
         test('should handle IDP access token', () => {
@@ -690,7 +690,7 @@ describe('auth middleware (client)', () => {
             const result = getAuthDataFromCookies();
 
             expect(result).toBeDefined();
-            expect(result?.idp_access_token).toBe('idp_access_token_value');
+            expect(result?.idpAccessToken).toBe('idp_access_token_value');
         });
 
         test('should handle tracking consent cookie value', () => {
@@ -732,26 +732,26 @@ describe('auth middleware (client)', () => {
         test('should populate storage with all auth data fields', () => {
             const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
             const authData: Partial<AuthStorageData> = {
-                access_token: 'test_token',
-                refresh_token: 'test_refresh',
-                access_token_expiry: Date.now() + 1000,
+                accessToken: 'test_token',
+                refreshToken: 'test_refresh',
+                accessTokenExpiry: Date.now() + 1000,
                 usid: 'test_usid',
-                customer_id: 'test_customer',
-                enc_user_id: 'test_enc_user_id',
-                idp_access_token: 'test_idp',
+                customerId: 'test_customer',
+                encUserId: 'test_enc_user_id',
+                idpAccessToken: 'test_idp',
                 userType: 'guest',
                 trackingConsent: TrackingConsent.Declined,
             };
 
             populateAuthStorage(storage, authData);
 
-            expect(storage.get('access_token')).toBe('test_token');
-            expect(storage.get('refresh_token')).toBe('test_refresh');
-            expect(storage.get('access_token_expiry')).toBe(authData.access_token_expiry);
+            expect(storage.get('accessToken')).toBe('test_token');
+            expect(storage.get('refreshToken')).toBe('test_refresh');
+            expect(storage.get('accessTokenExpiry')).toBe(authData.accessTokenExpiry);
             expect(storage.get('usid')).toBe('test_usid');
-            expect(storage.get('customer_id')).toBe('test_customer');
-            expect(storage.get('enc_user_id')).toBe('test_enc_user_id');
-            expect(storage.get('idp_access_token')).toBe('test_idp');
+            expect(storage.get('customerId')).toBe('test_customer');
+            expect(storage.get('encUserId')).toBe('test_enc_user_id');
+            expect(storage.get('idpAccessToken')).toBe('test_idp');
             expect(storage.get('userType')).toBe('guest');
             expect(storage.get('trackingConsent')).toBe(TrackingConsent.Declined);
         });
@@ -759,15 +759,15 @@ describe('auth middleware (client)', () => {
         test('should only populate defined fields', () => {
             const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
             const authData: Partial<AuthStorageData> = {
-                access_token: 'test_token',
+                accessToken: 'test_token',
                 userType: 'registered',
             };
 
             populateAuthStorage(storage, authData);
 
-            expect(storage.get('access_token')).toBe('test_token');
+            expect(storage.get('accessToken')).toBe('test_token');
             expect(storage.get('userType')).toBe('registered');
-            expect(storage.get('refresh_token')).toBeUndefined();
+            expect(storage.get('refreshToken')).toBeUndefined();
             expect(storage.get('usid')).toBeUndefined();
         });
 
@@ -775,7 +775,7 @@ describe('auth middleware (client)', () => {
             const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
             storage.set('trackingConsent', TrackingConsent.Declined);
             const authData: Partial<AuthStorageData> = {
-                access_token: 'test_token',
+                accessToken: 'test_token',
                 trackingConsent: undefined,
             };
 
@@ -787,7 +787,7 @@ describe('auth middleware (client)', () => {
         test('should set trackingConsent when provided', () => {
             const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
             const authData: Partial<AuthStorageData> = {
-                access_token: 'test_token',
+                accessToken: 'test_token',
                 trackingConsent: TrackingConsent.Accepted,
             };
 
@@ -799,6 +799,7 @@ describe('auth middleware (client)', () => {
 
     describe('handleRefreshToken()', () => {
         test('should successfully refresh token', async () => {
+            // SLAS API returns snake_case
             const mockTokenResponse = {
                 access_token: 'new_access_token',
                 refresh_token: 'new_refresh_token',
@@ -831,6 +832,7 @@ describe('auth middleware (client)', () => {
         });
 
         test('should include trackingConsent when provided', async () => {
+            // SLAS API returns snake_case
             const mockTokenResponse = {
                 access_token: 'new_access_token',
                 refresh_token: 'new_refresh_token',
@@ -947,7 +949,7 @@ describe('auth middleware (client)', () => {
                 return value;
             });
 
-            // Mock successful guest login
+            // Mock successful guest login - SLAS API returns snake_case
             vi.mocked(fetch).mockResolvedValueOnce({
                 ok: true,
                 json: () =>
@@ -993,8 +995,8 @@ describe('auth middleware (client)', () => {
             });
 
             // Verify storage was updated with new guest session
-            expect(storage.get('access_token')).toBe('new_guest_token');
-            expect(storage.get('refresh_token')).toBe('new_guest_refresh');
+            expect(storage.get('accessToken')).toBe('new_guest_token');
+            expect(storage.get('refreshToken')).toBe('new_guest_refresh');
             expect(storage.get('usid')).toBe('new_usid');
             expect(cache.ref).toBeDefined();
         });

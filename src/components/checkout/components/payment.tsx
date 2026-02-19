@@ -18,26 +18,25 @@ import { useState, useEffect, useMemo } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ToggleCard, ToggleCardEdit, ToggleCardSummary } from '@/components/toggle-card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Typography } from '@/components/typography';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { useBasket } from '@/providers/basket';
 import { createPaymentSchema, getPaymentDefaultValues, type PaymentData } from '@/lib/checkout-schemas';
-import { formatCardNumber, formatExpiryDate } from '@/lib/form-utils';
-import { getCardTypeDisplay, detectCardType, getLastFourDigits } from '@/lib/payment-utils';
+import { getCardTypeDisplay, getLastFourDigits } from '@/lib/payment-utils';
 import { getCardIcon } from '@/lib/card-icon-utils';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import { getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';
 import { AddressFormFields } from '@/components/address-form-fields';
+import { CreditCardInputFields } from '@/components/credit-card-input-fields';
 import type { CheckoutActionData } from '../types';
 import CheckoutErrorBanner from './checkout-error-banner';
 import { getCheckoutDisplayError } from './checkout-display-error';
 import { useTranslation } from 'react-i18next';
-import { PluginComponent } from '@/plugins/plugin-component';
+import { UITarget } from '@/targets/ui-target';
 
 interface PaymentProps {
     onSubmit: (data: PaymentData) => void;
@@ -61,7 +60,6 @@ export default function Payment({
 }: PaymentProps) {
     const cart = useBasket();
     const customerProfile = useCustomerProfile();
-    const [detectedCardType, setDetectedCardType] = useState<string>('');
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('new'); // 'new' or payment method ID
     const { t } = useTranslation('checkout');
     const paymentFormError = getCheckoutDisplayError(actionData, 'payment');
@@ -223,8 +221,8 @@ export default function Payment({
 
                         {/* Payment Method Section */}
                         <div className="space-y-4">
-                            <PluginComponent pluginId="checkout.payment.paymentMethods.before" />
-                            <PluginComponent pluginId="checkout.payment.paymentMethods">
+                            <UITarget targetId="checkout.payment.paymentMethods.before" />
+                            <UITarget targetId="checkout.payment.paymentMethods">
                                 <Typography variant="h4" as="h3">
                                     {t('confirmation.fields.paymentMethod')}
                                 </Typography>
@@ -317,144 +315,22 @@ export default function Payment({
                                             </Typography>
                                         )}
 
-                                        <FormField
-                                            control={form.control}
-                                            name="cardNumber"
-                                            render={({ field }) => {
-                                                const CardIcon = getCardIcon(
-                                                    detectedCardType || t('payment.unknownCardType')
-                                                );
-                                                return (
-                                                    <FormItem>
-                                                        <FormLabel className="data-[error=true]:text-xl data-[error=true]:font-bold">
-                                                            {t('payment.cardNumberLabel')}
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <div className="flex items-center gap-3">
-                                                                <div className="flex-1">
-                                                                    <Input
-                                                                        placeholder={t('payment.cardNumberPlaceholder')}
-                                                                        autoComplete="cc-number"
-                                                                        maxLength={23} // 19 digits + 4 spaces
-                                                                        autoFocus={
-                                                                            isEditing && selectedPaymentMethod === 'new'
-                                                                        }
-                                                                        {...field}
-                                                                        onChange={(e) => {
-                                                                            const formatted = formatCardNumber(
-                                                                                e.target.value
-                                                                            );
-                                                                            field.onChange(formatted);
-                                                                            // Detect card type in real-time
-                                                                            const cardType = detectCardType(
-                                                                                e.target.value
-                                                                            );
-                                                                            setDetectedCardType(cardType);
-                                                                        }}
-                                                                    />
-                                                                </div>
-                                                                {detectedCardType &&
-                                                                    detectedCardType !==
-                                                                        t('payment.unknownCardType') && (
-                                                                        <div className="flex items-center gap-2 text-sm text-muted-foreground min-w-0">
-                                                                            <CardIcon className="w-8 h-5 flex-shrink-0" />
-                                                                            <span className="font-medium">
-                                                                                {detectedCardType}
-                                                                            </span>
-                                                                        </div>
-                                                                    )}
-                                                            </div>
-                                                        </FormControl>
-                                                        <FormMessage className="text-xl font-bold" />
-                                                    </FormItem>
-                                                );
-                                            }}
+                                        <CreditCardInputFields
+                                            form={form}
+                                            autoFocus={isEditing && selectedPaymentMethod === 'new'}
                                         />
-
-                                        <FormField
-                                            control={form.control}
-                                            name="cardholderName"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel className="data-[error=true]:text-xl data-[error=true]:font-bold">
-                                                        {t('payment.cardholderLabel')}
-                                                    </FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            placeholder={t('payment.cardholderPlaceholder')}
-                                                            autoComplete="cc-name"
-                                                            {...field}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage className="text-xl font-bold" />
-                                                </FormItem>
-                                            )}
-                                        />
-
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <FormField
-                                                control={form.control}
-                                                name="expiryDate"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel className="data-[error=true]:text-xl data-[error=true]:font-bold">
-                                                            {t('payment.expiryLabel')}
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                placeholder={t('payment.expiryPlaceholder')}
-                                                                autoComplete="cc-exp"
-                                                                maxLength={5} // MM/YY
-                                                                {...field}
-                                                                onChange={(e) => {
-                                                                    const formatted = formatExpiryDate(e.target.value);
-                                                                    field.onChange(formatted);
-                                                                }}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage className="text-xl font-bold" />
-                                                    </FormItem>
-                                                )}
-                                            />
-
-                                            <FormField
-                                                control={form.control}
-                                                name="cvv"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel className="data-[error=true]:text-xl data-[error=true]:font-bold">
-                                                            {t('payment.cvvLabel')}
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                placeholder={t('payment.cvvPlaceholder')}
-                                                                autoComplete="cc-csc"
-                                                                maxLength={4} // Max 4 digits for CVV
-                                                                {...field}
-                                                                onChange={(e) => {
-                                                                    // Only allow digits
-                                                                    const digits = e.target.value.replace(/\D/g, '');
-                                                                    field.onChange(digits);
-                                                                }}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage className="text-xl font-bold" />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </div>
                                     </div>
                                 )}
-                            </PluginComponent>
-                            <PluginComponent pluginId="checkout.payment.paymentMethods.after" />
+                            </UITarget>
+                            <UITarget targetId="checkout.payment.paymentMethods.after" />
                         </div>
 
                         <Separator />
 
                         {/* Billing Address Section */}
                         <div className="space-y-4">
-                            <PluginComponent pluginId="checkout.payment.billingAddress.before" />
-                            <PluginComponent pluginId="checkout.payment.billingAddress">
+                            <UITarget targetId="checkout.payment.billingAddress.before" />
+                            <UITarget targetId="checkout.payment.billingAddress">
                                 {showBillingSameAsShipping && (
                                     <FormField
                                         control={form.control}
@@ -504,8 +380,8 @@ export default function Payment({
                                         />
                                     </div>
                                 )}
-                            </PluginComponent>
-                            <PluginComponent pluginId="checkout.payment.billingAddress.after" />
+                            </UITarget>
+                            <UITarget targetId="checkout.payment.billingAddress.after" />
                         </div>
 
                         <div className="flex justify-end pt-2">

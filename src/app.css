@@ -47,6 +47,35 @@
     --color-warning: var(--warning);
     --color-warning-foreground: var(--warning-foreground);
     --color-destructive-foreground: var(--destructive-foreground);
+    /* -- separator colors -- */
+    --color-separator: var(--separator);
+    --color-separator-foreground: var(--separator-foreground);
+    /* -- rating colors -- */
+    --color-rating: var(--rating);
+    --color-rating-foreground: var(--rating-foreground);
+    /* -- payment provider colors -- */
+    --color-paypal-gold: var(--paypal-gold);
+    --color-venmo-blue: var(--venmo-blue);
+    /* -- brand button (e.g. Write a Review) -- */
+    --color-brand-primary: var(--brand-primary);
+    --color-brand-primary-hover: var(--brand-primary-hover);
+    /* -- review card (avatar, links) -- */
+    --color-review-avatar-bg: var(--review-avatar-bg);
+    --color-brand-blue: var(--brand-blue-500);
+    /* -- darkest text (e.g. review author, headline) -- */
+    --color-brand-black: var(--brand-black);
+    /* -- order status colors -- */
+    --color-order-status-new: var(--order-status-new);
+    --color-order-status-new-foreground: var(--order-status-new-foreground);
+    --color-order-status-warning: var(--order-status-warning);
+    --color-order-status-warning-foreground: var(--order-status-warning-foreground);
+    --color-order-status-completed: var(--order-status-completed);
+    --color-order-status-completed-foreground: var(--order-status-completed-foreground);
+    --color-order-status-cancelled: var(--order-status-cancelled);
+    --color-order-status-cancelled-foreground: var(--order-status-cancelled-foreground);
+    --color-order-border: var(--order-border);
+    --color-order-pickup: var(--order-pickup);
+    --color-order-pickup-border: var(--order-pickup-border);
 }
 /*---break---*/
 :root,
@@ -85,6 +114,20 @@ html.dark [data-theme='inverse'] {
     --input: #fafafa;
     --ring: #3b82f6;
 
+    /* separator colors */
+    --separator: #eeeeee; /* For divider lines between sections */
+    --separator-foreground: #9e9e9e; /* For text on or near separators */
+
+    /* rating colors */
+    --rating: #facc15; /* yellow-400 for star ratings */
+    --rating-foreground: #ffffff; /* white text on rating background */
+
+    /* review verified purchase badge (themeable) */
+    --review-verified-bg: #dcfce7; /* green-100 */
+
+    /* review avatar background (themeable) */
+    --review-avatar-bg: #e5e7eb;
+
     /* charts */
     --chart-1: #3b82f6;
     --chart-2: #2563eb;
@@ -117,6 +160,31 @@ html.dark [data-theme='inverse'] {
     --opacity-80: 20%;
     --opacity-50: 50%;
     --opacity-30: 70%;
+
+    /* payment provider colors */
+    --paypal-gold: #FFC439; /* PayPal official gold button color */
+    --venmo-blue: #3D95CE; /* Venmo official blue color */
+
+    /* brand primary (e.g. Write a Review button) */
+    --brand-primary: #4285f4;
+    --brand-primary-hover: #3367d6;
+
+    /* brand typography/UI (e.g. review cards) */
+    --brand-black: oklch(0 0 0);
+    --brand-gray-600: #4b5563;
+    --brand-blue-500: oklch(0.59 0.2 264);
+    /* order status tokens (SCAPI statuses: created, new, failed, failed_with_reopen, completed, cancelled) */
+    --order-status-new: #dbeafe;  /* -blue-100 - for created/new */
+    --order-status-new-foreground: #1d4ed8; /* -blue-700 */
+    --order-status-warning: #fef9c3; /* -yellow-100 - for failed_with_reopen */
+    --order-status-warning-foreground: #a16207; /* -yellow-700 */
+    --order-status-completed: #16a34a;  /* -green-600 - for completed */
+    --order-status-completed-foreground: #ffffff; /* -white */
+    --order-status-cancelled: #fee2e2; /* -red-100 - for cancelled */
+    --order-status-cancelled-foreground: #b91c1c; /* -red-700 */
+    --order-border: #e5e7eb; /* -brand-gray-200 */
+    --order-pickup: #eff6ff; /* -blue-50 */
+    --order-pickup-border: #bfdbfe; /* -blue-200 */
 
     body {
         @apply bg-background text-foreground;
@@ -158,6 +226,20 @@ html:not(.dark) [data-theme='inverse'] {
     --input: #404040;
     --ring: #3b82f6;
 
+    /* separator colors */
+    --separator: #525252; /* Adjusted for dark mode visibility */
+    --separator-foreground: #a3a3a3; /* Adjusted for dark mode visibility */
+
+    /* rating colors */
+    --rating: #facc15; /* yellow-400 for star ratings (same in dark mode) */
+    --rating-foreground: #18181b; /* dark background text on rating */
+
+    /* review verified purchase badge (themeable) */
+    --review-verified-bg: rgb(22 101 52 / 0.3); /* green-900/30 */
+
+    /* review avatar background (themeable) */
+    --review-avatar-bg: #525252;
+
     /* charts */
     --chart-1: #60a5fa;
     --chart-2: #3b82f6;
@@ -190,6 +272,31 @@ html:not(.dark) [data-theme='inverse'] {
     --opacity-80: 20%;
     --opacity-50: 50%;
     --opacity-30: 70%;
+
+    /* payment provider colors */
+    --paypal-gold: #FFC439; /* PayPal official gold button color */
+    --venmo-blue: #3D95CE; /* Venmo official blue color */
+
+    /* brand primary (e.g. Write a Review button) */
+    --brand-primary: #4285f4;
+    --brand-primary-hover: #3367d6;
+
+    /* brand typography/UI (e.g. review cards) */
+    --brand-black: #e5e5e5;
+    --brand-gray-600: #a3a3a3;
+    --brand-blue-500: oklch(0.65 0.2 264);
+    /* order status tokens (SCAPI statuses: created, new, failed, failed_with_reopen, completed, cancelled) */
+    --order-status-new: #dbeafe;  /* -blue-100 - for created/new */
+    --order-status-new-foreground: #1d4ed8; /* -blue-700 */
+    --order-status-warning: #fef9c3; /* -yellow-100 - for failed_with_reopen */
+    --order-status-warning-foreground: #a16207; /* -yellow-700 */
+    --order-status-completed: #16a34a;  /* -green-600 - for completed */
+    --order-status-completed-foreground: #ffffff; /* -white */
+    --order-status-cancelled: #fee2e2; /* -red-100 - for cancelled/failed */
+    --order-status-cancelled-foreground: #b91c1c; /* -red-700 */
+    --order-border: #e5e7eb; /* -brand-gray-200 */
+    --order-pickup: #eff6ff; /* -blue-50 */
+    --order-pickup-border: #bfdbfe; /* -blue-200 */
 
     body {
         @apply bg-background text-foreground;

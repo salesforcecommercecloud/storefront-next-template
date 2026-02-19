@@ -98,7 +98,7 @@ pnpm build
 pnpm push
 ```
 
-See the [Deployment Guide](https://github.com/SalesforceCommerceCloud/storefront-next/blob/main/packages/storefront-next-dev/README.md#push-bundle) for all options and configuration.
+See the [Deployment Guide](https://www.npmjs.com/package/@salesforce/storefront-next-dev?activeTab=readme) for all options and configuration.
 
 ## Available Scripts
 
@@ -141,14 +141,14 @@ src/
 
 ## Documentation
 
-- 📊 [Data Fetching](./docs/README-DATA.md)
-- 🔐 [Authentication](./docs/README-AUTH.md)
-- 🌍 [Internationalization](./docs/README-I18N.md)
-- 🧪 [Testing](./docs/README-TESTS.md)
-- 🔍 [ESLint](./docs/README-ESLINT.md)
+- 📊 [Data Retrieval](./README-DATA.md)
+- 🔐 [Authentication & Session Management](./README-AUTH.md)
+- 🌍 [Internationalization (i18n)](./README-I18N.md)
+- 🧪 [Tests & Coverage](./README-TESTS.md)
+- 🔍 [ESLint Configuration & TypeScript Enforcement](./README-ESLINT.md)
 - ⚡ [Performance](./docs/README-PERFORMANCE.md)
-- 🔌 [Adapter Pattern](./docs/README-ADAPTER-PATTERN-GUIDE.md)
-- 📖 [Storybook Coverage](./docs/README-STORY-COVERAGE.md)
+- 🔌 [Adapter Pattern Implementation Guide](./docs/README-ADAPTER-PATTERN-GUIDE.md)
+- 📖 [Story Coverage & Code Quality Enforcement](./docs/README-STORY-COVERAGE.md)
 
 ## Contributing
 
@@ -163,9 +163,9 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
 
 ## Support
 
-- 📖 [Documentation](https://github.com/SalesforceCommerceCloud/storefront-next/tree/main/docs)
+- 📖 [Documentation (Pilot)](https://d1ahe7q2dhpmux.cloudfront.net/docs/commerce/storefront-next/overview)
+  - Use the username and password that were shared with you in the pilot Slack channel
 - 🐛 [Report Issues](https://github.com/SalesforceCommerceCloud/storefront-next/issues)
-- 💬 [Discussions](https://github.com/SalesforceCommerceCloud/storefront-next/discussions)
 
 ## License
 

@@ -258,8 +258,8 @@ describe('PageViewTracker', () => {
 
         it('should track page view for registered user', async () => {
             const mockAuth: SessionData = {
-                access_token: 'test-token',
-                customer_id: 'test-customer',
+                accessToken: 'test-token',
+                customerId: 'test-customer',
                 usid: 'test-usid',
                 userType: 'registered',
             };
@@ -428,8 +428,8 @@ describe('PageViewTracker', () => {
 
         it('should handle undefined usid gracefully', async () => {
             const mockAuth: SessionData = {
-                access_token: 'test-token',
-                customer_id: 'test-customer',
+                accessToken: 'test-token',
+                customerId: 'test-customer',
                 userType: 'registered',
                 usid: undefined,
             };

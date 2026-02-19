@@ -16,7 +16,7 @@
 import { type LoaderFunctionArgs } from 'react-router';
 import type { ShopperCustomers, ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { getAuth } from '@/middlewares/auth.server';
-import { isRegisteredCustomer } from '@/lib/api/customer.server';
+import { isRegisteredCustomer } from '@/lib/api/customer';
 import { convertProductToProductSearchHit } from '@/lib/product-conversion';
 import { fetchProductsForWishlist, getWishlist } from '@/lib/api/wishlist';
 import { getConfig } from '@/config';
@@ -44,7 +44,7 @@ export async function loader({ request, context }: LoaderFunctionArgs): Promise<
     }
 
     const session = getAuth(context);
-    if (!session.customer_id) {
+    if (!session.customerId) {
         return {
             products: [],
             productsByProductId: {},
@@ -71,7 +71,7 @@ export async function loader({ request, context }: LoaderFunctionArgs): Promise<
         throw new Error(`Invalid limit parameter: must be a positive integer not exceeding ${maxLimit}`);
     }
 
-    const customerId = session.customer_id;
+    const customerId = session.customerId;
 
     const { wishlist, items: allItems, id: listId } = await getWishlist(context, customerId);
 

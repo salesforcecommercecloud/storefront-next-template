@@ -98,7 +98,7 @@ export function PageViewTracker() {
                     path: pathname,
                     payload: {
                         userType: auth.userType ?? 'guest',
-                        encUserId: auth.enc_user_id ?? undefined,
+                        encUserId: auth.encUserId ?? undefined,
                         usid: auth.usid,
                     },
                 });

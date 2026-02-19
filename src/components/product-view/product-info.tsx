@@ -21,6 +21,8 @@ import { SwatchGroup, Swatch } from '@/components/swatch-group';
 import { useVariationAttributes } from '@/hooks/product/use-variation-attributes';
 import { useProductView } from '@/providers/product-view';
 import { useCurrency } from '@/providers/currency';
+import { toImageUrl } from '@/lib/dynamic-image';
+import { useConfig } from '@/config';
 import ProductPrice from '../product-price';
 import { isProductSet, isProductBundle } from '@/lib/product-utils';
 import ProductFeatures from './product-features';
@@ -71,6 +73,7 @@ export default function ProductInfo({
     variationValues,
     hideVariantSelection = false,
 }: ProductInfoProps): ReactElement {
+    const config = useConfig();
     const isProductASet = isProductSet(product);
     const isProductABundle = isProductBundle(product);
     // Use variation attributes hook for URL-aware swatches
@@ -129,10 +132,11 @@ export default function ProductInfo({
 
                 const swatches = swatchesToShow.map((value) => {
                     const { href, name: valueName, image, value: swatchValue, orderable } = value;
+                    const swatchImageUrl = (image && toImageUrl({ image, config })) || '';
                     const content = image ? (
                         <div
                             className="w-full h-full bg-cover bg-center bg-no-repeat rounded-full"
-                            style={{ backgroundImage: `url(${image.link})` }}
+                            style={{ backgroundImage: swatchImageUrl ? `url(${swatchImageUrl})` : undefined }}
                             aria-label={image.alt || valueName}
                         />
                     ) : (
@@ -174,7 +178,7 @@ export default function ProductInfo({
             {/* @sfdc-extension-block-start SFDC_EXT_BOPIS */}
             {/* Delivery Options - For individual products */}
             {/* Hide for non-pickup items when opened from cart page */}
-            {(mode !== 'edit' || basketPickupStore) && !(isProductABundle || isProductASet) && (
+            {!isOutOfStock && (mode !== 'edit' || basketPickupStore) && !(isProductABundle || isProductASet) && (
                 <DeliveryOptions
                     product={product}
                     quantity={quantity}

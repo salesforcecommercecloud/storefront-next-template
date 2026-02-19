@@ -86,7 +86,7 @@ export function CartItemEditModal({
 
     // Reset state when modal opens using shared hook
     useModalStateReset({
-        open: props.open,
+        open: props.open ?? false,
         onReset: useCallback(() => {
             setCurrentProduct(initialProduct);
             setVariationValues(initialProduct.variationValues || {});

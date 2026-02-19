@@ -133,20 +133,20 @@ export function getAuthDataFromCookies(): Partial<AuthStorageData> | undefined {
     }
 
     const authData: Partial<AuthStorageData> = {
-        access_token: accessToken || undefined,
-        refresh_token: refreshToken || undefined,
+        accessToken: accessToken || undefined,
+        refreshToken: refreshToken || undefined,
         usid: usid || undefined,
-        customer_id: customerId || undefined,
-        enc_user_id: encUserId || undefined,
+        customerId: customerId || undefined,
+        encUserId: encUserId || undefined,
         userType,
-        idp_access_token: idpAccessToken || undefined,
+        idpAccessToken: idpAccessToken || undefined,
         dwsid: dwsid || undefined,
     };
 
-    // Inject access_token_expiry from JWT (source of truth) for fast runtime checks
+    // Inject accessTokenExpiry from JWT (source of truth) for fast runtime checks
     if (accessToken) {
         const claims = getSLASAccessTokenClaims(accessToken);
-        if (claims.expiry) authData.access_token_expiry = claims.expiry;
+        if (claims.expiry) authData.accessTokenExpiry = claims.expiry;
 
         // Validate tracking consent value from token matches cookie - if they differ, treat as undefined
         // This matches server-side validation logic to prevent hydration mismatches
@@ -261,9 +261,9 @@ const retrieveAuthStorageData = async (
 ): Promise<void> => {
     const { t } = getTranslation();
 
-    const accessToken = storage.get('access_token');
-    const accessTokenExpiry = storage.get('access_token_expiry');
-    const refreshToken = storage.get('refresh_token');
+    const accessToken = storage.get('accessToken');
+    const accessTokenExpiry = storage.get('accessTokenExpiry');
+    const refreshToken = storage.get('refreshToken');
     const performanceTimer = context.get(performanceTimerContext);
 
     // Check if access token exists and is not expired
@@ -337,13 +337,13 @@ export const populateAuthStorage = (
     storage: Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>,
     authData: Partial<AuthStorageData>
 ): void => {
-    if (authData.refresh_token) storage.set('refresh_token', authData.refresh_token);
-    if (authData.access_token) storage.set('access_token', authData.access_token);
-    if (authData.access_token_expiry) storage.set('access_token_expiry', authData.access_token_expiry);
+    if (authData.refreshToken) storage.set('refreshToken', authData.refreshToken);
+    if (authData.accessToken) storage.set('accessToken', authData.accessToken);
+    if (authData.accessTokenExpiry) storage.set('accessTokenExpiry', authData.accessTokenExpiry);
     if (authData.usid) storage.set('usid', authData.usid);
-    if (authData.customer_id) storage.set('customer_id', authData.customer_id);
-    if (authData.enc_user_id) storage.set('enc_user_id', authData.enc_user_id);
-    if (authData.idp_access_token) storage.set('idp_access_token', authData.idp_access_token);
+    if (authData.customerId) storage.set('customerId', authData.customerId);
+    if (authData.encUserId) storage.set('encUserId', authData.encUserId);
+    if (authData.idpAccessToken) storage.set('idpAccessToken', authData.idpAccessToken);
     if (authData.userType) storage.set('userType', authData.userType);
     if (authData.dwsid) storage.set('dwsid', authData.dwsid);
     // Always set tracking consent value (even if undefined) to reflect cookie state
@@ -545,8 +545,8 @@ export const refreshAuthFromCookie = (context: Readonly<RouterContextProvider>):
     readClientAuthCookies(tempStorage);
 
     const cookieSession = unpackStorage<AuthData>(tempStorage);
-    const cookieAccessToken = cookieSession.access_token;
-    const currentAccessToken = storage.get('access_token') || cache.ref?.access_token;
+    const cookieAccessToken = cookieSession.accessToken;
+    const currentAccessToken = storage.get('accessToken') || cache.ref?.accessToken;
 
     // If the cookie has a different access token AND we have a current token, update the auth middleware
     // We only refresh if we have a current token to compare against. If there's no current token,
@@ -563,7 +563,7 @@ export const refreshAuthFromCookie = (context: Readonly<RouterContextProvider>):
 /**
  * Clear invalid auth session and set up a new guest session.
  *
- * This function is called when we detect an invalid customer_id in auth cookies
+ * This function is called when we detect an invalid customerId in auth cookies
  * (e.g., customer account deleted, cookies from different environment, token/customer sync issues).
  *
  * Steps:

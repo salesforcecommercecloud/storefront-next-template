@@ -16,7 +16,12 @@
 
 import type { ComponentProps } from 'react';
 import { cn } from '@/lib/utils';
-import type { ShopperBasketsV2, ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type {
+    ShopperBasketsV2,
+    ShopperOrders,
+    ShopperProducts,
+    ShopperSearch,
+} from '@salesforce/storefront-next-runtime/scapi';
 import CurrentPrice from './current-price';
 import ListPrice from './list-price';
 import PromoCallout from './promo-callout';
@@ -25,6 +30,7 @@ import { getPriceData } from './utils';
 type Product =
     | ShopperProducts.schemas['Product']
     | (ShopperBasketsV2.schemas['ProductItem'] & Partial<ShopperProducts.schemas['Product']>)
+    | (ShopperOrders.schemas['ProductItem'] & Partial<ShopperProducts.schemas['Product']>)
     | ShopperSearch.schemas['ProductSearchHit'];
 
 interface ProductPriceProps {

@@ -18,7 +18,7 @@ import { type ShopperCustomers, ApiError } from '@salesforce/storefront-next-run
 import { getAuth } from '@/middlewares/auth.server';
 import { extractStatusCode } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients';
-import { isRegisteredCustomer } from '@/lib/api/customer.server';
+import { isRegisteredCustomer } from '@/lib/api/customer';
 import { getTranslation } from '@/lib/i18next';
 import { getWishlist } from '@/lib/api/wishlist';
 
@@ -128,7 +128,7 @@ async function addToWishlist(
     }
 
     const session = getAuth(context);
-    if (!session.customer_id) {
+    if (!session.customerId) {
         return {
             success: false,
             error: t('errors:customer.notAuthenticated'),
@@ -136,7 +136,7 @@ async function addToWishlist(
     }
 
     try {
-        const customerId = session.customer_id;
+        const customerId = session.customerId;
         const clients = createApiClients(context);
 
         // Get or create the wishlist

@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 import { type ComponentPropsWithoutRef, type CSSProperties, type ReactNode, forwardRef } from 'react';
-import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import type { ComponentDesignMetadata } from '@salesforce/storefront-next-runtime/design/react';
 import { cn } from '@/lib/utils';
 import { Component } from '@/lib/decorators/component';
 import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
 import { RegionDefinition } from '@/lib/decorators';
-import { Region } from '@/components/region';
+import { type ComponentType, Region } from '@/components/region';
 
 // Based on Radix UI Themes Grid component API
 // Reference: https://www.radix-ui.com/themes/docs/components/grid
@@ -63,9 +62,7 @@ interface GridProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
 
     // Page Designer props (need to be extracted to avoid passing to DOM)
     regionId?: string;
-    page?: ShopperExperience.schemas['Page'];
-    component?: ShopperExperience.schemas['Component'];
-    componentData?: Record<string, Promise<unknown>>;
+    component?: ComponentType;
     designMetadata?: ComponentDesignMetadata;
     data?: unknown;
 }
@@ -102,9 +99,7 @@ const Grid = forwardRef<HTMLDivElement, GridProps>(
             style,
             children,
             regionId: _regionId,
-            page: _page,
             component,
-            componentData,
             designMetadata: _designMetadata,
             data: _data,
             ...props
@@ -144,17 +139,7 @@ const Grid = forwardRef<HTMLDivElement, GridProps>(
 
         return (
             <ComponentElement ref={ref} className={classes} style={gridStyles} data-slot="grid" {...props}>
-                {/* TODO: Refactor <Region/> properties `page` and `componentData` to not expect promises anymore */}
-                {component ? (
-                    <Region
-                        regionId="main"
-                        page={Promise.resolve(component)}
-                        componentData={componentData ? Promise.resolve(componentData) : undefined}
-                        errorElement={children}
-                    />
-                ) : (
-                    children
-                )}
+                {component ? <Region regionId="main" component={component} errorElement={children} /> : children}
             </ComponentElement>
         );
     }

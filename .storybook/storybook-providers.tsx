@@ -36,6 +36,12 @@ void i18next.use(initReactI18next).init({
     resources,
     interpolation: {
         escapeValue: false,
+        format: (value, format) => {
+            if (format === 'number' && typeof value === 'number') {
+                return value.toLocaleString('en-US');
+            }
+            return value;
+        },
     },
 });
 
@@ -45,7 +51,7 @@ void i18next.use(initReactI18next).init({
  */
 const mockSessionData: SessionData = {
     userType: 'guest',
-    customer_id: undefined,
+    customerId: undefined,
 };
 
 /**

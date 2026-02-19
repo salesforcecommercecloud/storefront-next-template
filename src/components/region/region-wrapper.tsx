@@ -15,11 +15,11 @@
  */
 
 import { type ReactNode } from 'react';
-import { usePageDesignerMode } from '@salesforce/storefront-next-runtime/design/react/core';
 import {
+    usePageDesignerMode,
     createReactRegionDesignDecorator,
-    type RegionDesignMetadata,
-} from '@salesforce/storefront-next-runtime/design/react';
+} from '@salesforce/storefront-next-runtime/design/react/core';
+import type { RegionDesignMetadata } from '@salesforce/storefront-next-runtime/design/react';
 import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 
 /**

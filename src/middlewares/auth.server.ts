@@ -305,9 +305,9 @@ const retrieveAuthStorageData = async (
 ): Promise<void> => {
     const { t } = getTranslation(context);
 
-    const accessToken = storage.get('access_token');
-    const accessTokenExpiry = storage.get('access_token_expiry');
-    const refreshToken = storage.get('refresh_token');
+    const accessToken = storage.get('accessToken');
+    const accessTokenExpiry = storage.get('accessTokenExpiry');
+    const refreshToken = storage.get('refreshToken');
     const performanceTimer = context.get(performanceTimerContext);
 
     // Check if access token exists and is not expired
@@ -479,12 +479,12 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
     // Note: expiry times are NOT persisted in cookies - they're derived from JWT tokens at runtime
     // This decodes once during middleware initialization for fast numeric comparison later
     const authData: Partial<AuthStorageData> = {};
-    if (refreshToken) authData.refresh_token = refreshToken;
+    if (refreshToken) authData.refreshToken = refreshToken;
     if (accessToken) {
-        authData.access_token = accessToken;
+        authData.accessToken = accessToken;
         // Extract claims from JWT (source of truth) - decode once for efficiency
         const claims = getSLASAccessTokenClaims(accessToken);
-        if (claims.expiry) authData.access_token_expiry = claims.expiry;
+        if (claims.expiry) authData.accessTokenExpiry = claims.expiry;
 
         // Validate tracking consent value from token matches cookie - if they differ, mark cookie for deletion
         // Only validate if tracking consent feature is enabled
@@ -498,10 +498,10 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         }
     }
     if (usid) authData.usid = usid;
-    if (customerId) authData.customer_id = customerId;
-    if (encUserId) authData.enc_user_id = encUserId;
+    if (customerId) authData.customerId = customerId;
+    if (encUserId) authData.encUserId = encUserId;
     // Add IDP access token for social login (if present)
-    if (idpAccessToken) authData.idp_access_token = idpAccessToken;
+    if (idpAccessToken) authData.idpAccessToken = idpAccessToken;
     // Add code verifier for OAuth2 PKCE flow (if present)
     if (codeVerifier) authData.codeVerifier = codeVerifier;
     // Add dwsid for hybrid storefronts (if present)
@@ -590,8 +590,8 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         authPromiseCache.ref = createAuthPromise(context, entry);
 
         // Get expiry times (calculated from token response) and user type
-        const accessTokenExpiryValue = authStorage.get('access_token_expiry') as number | undefined;
-        const refreshTokenExpiryValue = authStorage.get('refresh_token_expiry') as number | undefined;
+        const accessTokenExpiryValue = authStorage.get('accessTokenExpiry') as number | undefined;
+        const refreshTokenExpiryValue = authStorage.get('refreshTokenExpiry') as number | undefined;
         const userTypeValue = authStorage.get('userType') as 'guest' | 'registered' | undefined;
 
         // Set refresh token cookie with refresh token expiry
@@ -600,7 +600,7 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         // NOTE: userType itself is NOT written to cookies - only the refresh token is written
         // to the appropriate cookie name (cc-nx-g or cc-nx). On next request, userType will
         // be derived from which cookie exists.
-        const refreshTokenValue = authStorage.get('refresh_token');
+        const refreshTokenValue = authStorage.get('refreshToken');
         if (refreshTokenValue && typeof refreshTokenValue === 'string' && refreshTokenExpiryValue && userTypeValue) {
             const refreshTokenCookie =
                 userTypeValue === 'guest' ? refreshTokenGuestCookie : refreshTokenRegisteredCookie;
@@ -635,7 +635,7 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         }
 
         // Set access token cookie with access token expiry
-        const accessTokenValue = authStorage.get('access_token');
+        const accessTokenValue = authStorage.get('accessToken');
         if (accessTokenValue && typeof accessTokenValue === 'string' && accessTokenExpiryValue) {
             response.headers.append(
                 'Set-Cookie',
@@ -669,7 +669,7 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         }
 
         // Set customerId cookie with refresh token expiry (same as refresh token)
-        const customerIdValue = authStorage.get('customer_id');
+        const customerIdValue = authStorage.get('customerId');
         if (customerIdValue && typeof customerIdValue === 'string' && refreshTokenExpiryValue) {
             response.headers.append(
                 'Set-Cookie',
@@ -686,7 +686,7 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         }
 
         // Set encUserId cookie with refresh token expiry (same as refresh token)
-        const encUserIdValue = authStorage.get('enc_user_id');
+        const encUserIdValue = authStorage.get('encUserId');
         if (encUserIdValue && typeof encUserIdValue === 'string' && refreshTokenExpiryValue) {
             response.headers.append(
                 'Set-Cookie',
@@ -703,8 +703,8 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         }
 
         // Set IDP access token cookie with access token expiry (for social login)
-        const idpAccessTokenValue = authStorage.get('idp_access_token');
-        const idpAccessTokenExpiryValue = authStorage.get('idp_access_token_expiry') as number | undefined;
+        const idpAccessTokenValue = authStorage.get('idpAccessToken');
+        const idpAccessTokenExpiryValue = authStorage.get('idpAccessTokenExpiry') as number | undefined;
         if (idpAccessTokenValue && typeof idpAccessTokenValue === 'string' && idpAccessTokenExpiryValue) {
             response.headers.append(
                 'Set-Cookie',

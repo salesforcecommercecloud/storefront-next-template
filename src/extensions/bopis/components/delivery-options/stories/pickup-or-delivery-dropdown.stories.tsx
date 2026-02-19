@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { expect, within, userEvent } from 'storybook/test';
+import { waitForStorybookReady } from '@storybook/test-utils';
 import { action } from 'storybook/actions';
 import PickupOrDeliveryDropdown from '../pickup-or-delivery-dropdown';
 import { DELIVERY_OPTIONS, type DeliveryOption } from '@/extensions/bopis/constants';
@@ -41,6 +43,14 @@ Includes custom states, accessibility support, and styled to match UI guidelines
             options: [DELIVERY_OPTIONS.DELIVERY, DELIVERY_OPTIONS.PICKUP],
         },
         onChange: { description: 'Change handler', action: 'onChange' },
+        isPickupDisabled: {
+            description: 'Whether the Pick up in store option is disabled',
+            control: 'boolean',
+        },
+        isDeliveryDisabled: {
+            description: 'Whether the Ship to address option is disabled',
+            control: 'boolean',
+        },
     },
 };
 export default meta;
@@ -58,6 +68,33 @@ export const Default: Story = {
             description: { story: 'Delivery selected, both options enabled.' },
         },
     },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const trigger = await canvas.findByRole('button', { name: /delivery/i }, { timeout: 5000 });
+        await expect(trigger).toBeInTheDocument();
+
+        await userEvent.click(trigger);
+
+        const documentBody = within(document.body);
+        const shipToAddress = await documentBody.findByRole(
+            'menuitem',
+            { name: /ship to address/i },
+            { timeout: 5000 }
+        );
+        const storePickup = await documentBody.findByRole(
+            'menuitem',
+            { name: /pick up in store|store pickup/i },
+            {
+                timeout: 5000,
+            }
+        );
+        await expect(shipToAddress).toBeInTheDocument();
+        await expect(storePickup).toBeInTheDocument();
+
+        await userEvent.click(storePickup);
+    },
 };
 
 export const PickupSelected: Story = {
@@ -72,6 +109,37 @@ export const PickupSelected: Story = {
             description: { story: 'Pickup selected, both options enabled.' },
         },
     },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const trigger = await canvas.findByRole(
+            'button',
+            { name: /pick up in store|store pickup/i },
+            { timeout: 5000 }
+        );
+        await expect(trigger).toBeInTheDocument();
+
+        await userEvent.click(trigger);
+
+        const documentBody = within(document.body);
+        const shipToAddress = await documentBody.findByRole(
+            'menuitem',
+            { name: /ship to address/i },
+            { timeout: 5000 }
+        );
+        const storePickup = await documentBody.findByRole(
+            'menuitem',
+            { name: /pick up in store|store pickup/i },
+            {
+                timeout: 5000,
+            }
+        );
+        await expect(shipToAddress).toBeInTheDocument();
+        await expect(storePickup).toBeInTheDocument();
+
+        await userEvent.click(shipToAddress);
+    },
 };
 
 export const CustomClass: Story = {
@@ -83,7 +151,36 @@ export const CustomClass: Story = {
     },
     parameters: {
         docs: {
-            description: { story: 'Menu with a custom CSS class for styling.' },
+            description: {
+                story: 'Menu with a custom CSS class for styling. Play function opens the dropdown via keyboard (Tab + Enter) and verifies menu items are present.',
+            },
         },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const trigger = await canvas.findByRole('button', { name: /delivery/i }, { timeout: 5000 });
+        await expect(trigger).toBeInTheDocument();
+
+        trigger.focus();
+        await expect(trigger).toHaveFocus();
+        await userEvent.keyboard('{Enter}');
+
+        const documentBody = within(document.body);
+        const shipToAddress = await documentBody.findByRole(
+            'menuitem',
+            { name: /ship to address/i },
+            { timeout: 5000 }
+        );
+        const storePickup = await documentBody.findByRole(
+            'menuitem',
+            { name: /pick up in store|store pickup/i },
+            {
+                timeout: 5000,
+            }
+        );
+        await expect(shipToAddress).toBeInTheDocument();
+        await expect(storePickup).toBeInTheDocument();
     },
 };

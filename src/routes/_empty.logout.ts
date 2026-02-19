@@ -24,13 +24,13 @@ import { destroyBasket } from '@/middlewares/basket.server';
  */
 export async function action({ context }: ActionFunctionArgs) {
     const session = getAuth(context);
-    const { access_token, refresh_token } = session;
-    if (access_token && refresh_token) {
+    const { accessToken, refreshToken } = session;
+    if (accessToken && refreshToken) {
         try {
             const clients = createApiClients(context);
             await clients.auth.logout({
-                accessToken: access_token,
-                refreshToken: refresh_token,
+                accessToken,
+                refreshToken,
             });
         } catch {
             // SLAS logout failed, but continue with redirect

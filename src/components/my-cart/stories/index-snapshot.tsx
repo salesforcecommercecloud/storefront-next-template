@@ -50,8 +50,15 @@ import { composeStories } from '@storybook/react-vite';
 
 import * as MyCartStories from './index.stories';
 import { render, cleanup } from '@testing-library/react';
+import { ConfigProvider } from '@/config';
+import { mockConfig } from '@/test-utils/config';
+import type { ReactNode } from 'react';
 
 const composed = composeStories(MyCartStories);
+
+const wrapper = ({ children }: { children: ReactNode }) => (
+    <ConfigProvider config={mockConfig}>{children}</ConfigProvider>
+);
 
 afterEach(() => {
     cleanup();
@@ -60,7 +67,7 @@ afterEach(() => {
 describe('MyCart stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
         test(`${storyName} story renders and matches snapshot`, () => {
-            const { container } = render(<Story />);
+            const { container } = render(<Story />, { wrapper });
             // Normalize dynamic Radix IDs so snapshots are stable across runs
             const root = container as unknown as HTMLElement;
             const attrs = ['id', 'aria-controls', 'aria-labelledby'];

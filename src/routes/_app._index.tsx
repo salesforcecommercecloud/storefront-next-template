@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { type LoaderFunctionArgs } from 'react-router';
-import type { ShopperExperience, ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchSearchProducts } from '@/lib/api/search';
 import { fetchCategories } from '@/lib/api/categories';
 import { currencyContext } from '@/lib/currency';
@@ -26,7 +26,7 @@ import { getConfig } from '@/config';
 import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 
-import { collectComponentDataPromises, fetchPageFromLoader } from '@/lib/util/pageLoader';
+import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/util/pageLoader';
 
 import heroNewArrivals from '/images/hero-new-arrivals.webp';
 import HeroCarousel, { HeroCarouselSkeleton, type HeroSlide } from '@/components/hero-carousel';
@@ -56,10 +56,9 @@ import { useTranslation } from 'react-i18next';
 export class HomePageMetadata {}
 
 export type HomePageData = {
-    page: Promise<ShopperExperience.schemas['Page']>;
+    page: Promise<PageWithComponentData>;
     searchResult: Promise<ShopperSearch.schemas['ProductSearchResult']>;
     categories: Promise<ShopperProducts.schemas['Category'][]>;
-    componentData: Promise<Record<string, Promise<unknown>>>;
 };
 
 /**
@@ -70,19 +69,17 @@ export type HomePageData = {
 // eslint-disable-next-line react-refresh/only-export-components
 export function loader(args: LoaderFunctionArgs): HomePageData {
     const currency = args.context.get(currencyContext) as string;
-    const pagePromise = fetchPageFromLoader(args, {
-        pageId: 'homepage',
-    });
 
     return {
-        page: pagePromise,
+        page: fetchPageWithComponentData(args, {
+            pageId: 'homepage',
+        }),
         searchResult: fetchSearchProducts(args.context, {
             categoryId: 'root',
             limit: getConfig(args.context).pages.home.featuredProductsCount,
             currency: currency ?? undefined,
         }),
         categories: fetchCategories(args.context, 'root', 1),
-        componentData: collectComponentDataPromises(args, pagePromise),
     };
 }
 
@@ -131,7 +128,6 @@ export default function HomePage({ loaderData }: { loaderData: HomePageData }) {
                 <Region
                     page={loaderData.page}
                     regionId="headerbanner"
-                    componentData={loaderData.componentData}
                     fallbackElement={
                         <>
                             {/* Provide fallback skeletons for the above the fold content */}
@@ -191,7 +187,6 @@ export default function HomePage({ loaderData }: { loaderData: HomePageData }) {
                     <Region
                         page={loaderData.page}
                         regionId="main"
-                        componentData={loaderData.componentData}
                         errorElement={
                             <>
                                 {/* Popular Categories - handles its own Suspense internally */}

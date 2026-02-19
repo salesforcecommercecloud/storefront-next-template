@@ -15,9 +15,10 @@
  */
 import { render, screen, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
-import { Region } from './index';
+import { type ComponentType, Region, type RegionDesignMetadata } from './index';
 import type { RegionDefinitionConfig } from '@/lib/decorators';
 import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
+import type { PageWithComponentData } from '@/lib/util/pageLoader';
 import {
     useRegionContext,
     PageDesignerPageMetadataProvider,
@@ -35,7 +36,7 @@ let capturedDesignMetadata: any = null;
 vi.mock('./region-wrapper', () => ({
     RegionWrapper: ({ designMetadata, children }: any) => {
         capturedDesignMetadata = designMetadata;
-        // RegionRenderer just returns children without wrapper
+        // In non-design mode, RegionWrapper just returns children (Fragment)
         return <>{children}</>;
     },
 }));
@@ -65,7 +66,7 @@ describe('Region', () => {
                 data: { text: 'Test Banner' },
             },
         ],
-    };
+    } as unknown as ShopperExperience.schemas['Region'];
 
     const mockPage: ShopperExperience.schemas['Page'] = {
         id: 'test-page',
@@ -73,8 +74,8 @@ describe('Region', () => {
         regions: [mockRegion],
     };
 
-    it('renders region with correct id and className', async () => {
-        render(<Region page={Promise.resolve(mockPage)} regionId="test-region" className="custom-class" />);
+    it('renders page region with correct id and className', async () => {
+        render(<Region page={mockPage} regionId="test-region" className="custom-class" />);
 
         // RegionWrapper no longer renders a wrapper div, it just returns children
         // Check that components are rendered (async)
@@ -89,8 +90,8 @@ describe('Region', () => {
         });
     });
 
-    it('renders all components within the region', async () => {
-        render(<Region page={Promise.resolve(mockPage)} regionId="test-region" />);
+    it('renders all components within the page region', async () => {
+        render(<Region page={mockPage} regionId="test-region" />);
 
         await waitFor(() => {
             expect(screen.getByTestId('component-component-1')).toBeInTheDocument();
@@ -100,8 +101,67 @@ describe('Region', () => {
         });
     });
 
-    it('renders container div for components', async () => {
-        render(<Region page={Promise.resolve(mockPage)} regionId="test-region" />);
+    it('renders component region synchronously without Suspense', () => {
+        const mockComponent = {
+            id: 'grid-component',
+            typeId: 'grid',
+            regions: [mockRegion],
+        } as ComponentType;
+
+        render(<Region component={mockComponent} regionId="test-region" />);
+
+        // Component mode is synchronous - no waiting needed
+        expect(screen.getByTestId('component-component-1')).toBeInTheDocument();
+        expect(screen.getByTestId('component-component-2')).toBeInTheDocument();
+    });
+
+    it('component region can have metadata', () => {
+        const mockComponent: ShopperExperience.schemas['Component'] & { designMetadata: any } = {
+            id: 'grid-component',
+            typeId: 'grid',
+            regions: [mockRegion],
+            designMetadata: {
+                id: 'grid-component',
+                regionDefinitions: [
+                    {
+                        id: 'test-region',
+                        name: 'Test Region',
+                        componentTypeInclusions: [{ typeId: 'commerce_layouts.carousel' }],
+                        componentTypeExclusions: [{ typeId: 'commerce_layouts.hero' }],
+                    },
+                ],
+            },
+        };
+
+        render(<Region component={mockComponent} regionId="test-region" />);
+
+        // Verify designMetadata is properly extracted from component (objects are passed through as-is)
+        expect(capturedDesignMetadata).toMatchObject({
+            id: 'test-region',
+            componentTypeExclusions: [{ typeId: 'commerce_layouts.hero' }],
+            componentTypeInclusions: [{ typeId: 'commerce_layouts.carousel' }],
+        });
+    });
+
+    it('component region without metadata uses empty arrays', () => {
+        const mockComponent = {
+            id: 'grid-component',
+            typeId: 'grid',
+            regions: [mockRegion],
+        } as ComponentType;
+
+        render(<Region component={mockComponent} regionId="test-region" />);
+
+        // Verify designMetadata has empty arrays when no metadata provided
+        expect(capturedDesignMetadata).toMatchObject({
+            id: 'test-region',
+            componentTypeExclusions: [],
+            componentTypeInclusions: [],
+        });
+    });
+
+    it('renders container for page region components', async () => {
+        render(<Region page={mockPage} regionId="test-region" />);
 
         // RegionWrapper no longer renders a container div
         // Just verify components are rendered (async)
@@ -110,34 +170,45 @@ describe('Region', () => {
         });
     });
 
-    it('handles empty components array', () => {
+    it('handles empty components array in page region', async () => {
         const emptyRegion = { id: 'empty-region', components: [] };
         const emptyPage = { id: 'page', typeId: 'page', regions: [emptyRegion] };
-        const { container } = render(<Region page={Promise.resolve(emptyPage)} regionId="empty-region" />);
+        render(<Region page={emptyPage} regionId="empty-region" />);
 
-        // RegionWrapper no longer renders a wrapper, so check container is not empty
-        expect(container.firstChild).toBeTruthy();
+        // Wait for async rendering to complete
+        await waitFor(() => {
+            // In non-design mode, empty region renders nothing (empty Fragment)
+            expect(screen.queryByTestId(/component-/)).not.toBeInTheDocument();
+        });
+    });
+
+    it('handles empty components array in component region', () => {
+        const emptyRegion = { id: 'empty-region', components: [] };
+        const mockComponent = {
+            id: 'test-component',
+            typeId: 'grid',
+            regions: [emptyRegion],
+        } as ComponentType;
+        render(<Region component={mockComponent} regionId="empty-region" />);
+
+        // In non-design mode, empty region renders nothing (empty Fragment)
         expect(screen.queryByTestId(/component-/)).not.toBeInTheDocument();
     });
 
-    it('handles undefined components', () => {
+    it('handles undefined components in page region', async () => {
         const regionWithoutComponents = { id: 'no-components', components: [] };
         const pageWithRegion = { id: 'page', typeId: 'page', regions: [regionWithoutComponents] };
-        const { container } = render(<Region page={Promise.resolve(pageWithRegion)} regionId="no-components" />);
+        render(<Region page={pageWithRegion} regionId="no-components" />);
 
-        // RegionWrapper no longer renders a wrapper, so check container is not empty
-        expect(container.firstChild).toBeTruthy();
+        // Wait for async rendering to complete
+        await waitFor(() => {
+            // In non-design mode, empty region renders nothing (empty Fragment)
+            expect(screen.queryByTestId(/component-/)).not.toBeInTheDocument();
+        });
     });
 
-    it('passes additional props to the region div', async () => {
-        render(
-            <Region
-                page={Promise.resolve(mockPage)}
-                regionId="test-region"
-                data-custom="test-value"
-                aria-label="Test Region"
-            />
-        );
+    it('passes additional props to the page region', async () => {
+        render(<Region page={mockPage} regionId="test-region" data-custom="test-value" aria-label="Test Region" />);
 
         // RegionWrapper no longer renders a wrapper div, props are not passed down
         // Just verify components are rendered (async)
@@ -146,8 +217,8 @@ describe('Region', () => {
         });
     });
 
-    it('renders without className when not provided', async () => {
-        render(<Region page={Promise.resolve(mockPage)} regionId="test-region" />);
+    it('renders page region without className when not provided', async () => {
+        render(<Region page={mockPage} regionId="test-region" />);
 
         // RegionWrapper no longer renders a wrapper div with className
         // Just verify components are rendered (async)
@@ -156,11 +227,11 @@ describe('Region', () => {
         });
     });
 
-    it('uses component id as key for mapping', () => {
+    it('uses component id as key for mapping in page region', () => {
         const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
         // This test ensures React keys are properly set
-        render(<Region page={Promise.resolve(mockPage)} regionId="test-region" />);
+        render(<Region page={mockPage} regionId="test-region" />);
 
         // If keys weren't set properly, React would warn about missing keys
         expect(consoleSpy).not.toHaveBeenCalledWith(
@@ -170,14 +241,32 @@ describe('Region', () => {
         consoleSpy.mockRestore();
     });
 
+    it('uses component id as key for mapping in component region', () => {
+        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+        const mockComponent = {
+            id: 'grid-component',
+            typeId: 'grid',
+            regions: [mockRegion],
+        } as ComponentType;
+
+        render(<Region component={mockComponent} regionId="test-region" />);
+
+        expect(consoleSpy).not.toHaveBeenCalledWith(
+            expect.stringContaining('Warning: Each child in a list should have a unique "key" prop')
+        );
+
+        consoleSpy.mockRestore();
+    });
+
     describe('page designer page metadata provider', () => {
-        describe('when there is no region context', () => {
+        describe('when rendering page region with no region context', () => {
             beforeEach(() => {
                 vi.mocked(useRegionContext).mockReturnValue(null);
             });
 
             it('renders the page designer page metadata provider', async () => {
-                render(<Region page={Promise.resolve(mockPage)} regionId="test-region" />);
+                render(<Region page={mockPage} regionId="test-region" />);
 
                 await waitFor(() => {
                     expect(PageDesignerPageMetadataProvider).toHaveBeenCalled();
@@ -185,12 +274,12 @@ describe('Region', () => {
             });
         });
 
-        describe('when there is a region context', () => {
+        describe('when rendering page region with region context', () => {
             beforeEach(() => {
                 vi.mocked(useRegionContext).mockReturnValue({ regionId: 'test-region', componentIds: [] });
             });
-            it('does not renders the page designer page metadata provider', async () => {
-                render(<Region page={Promise.resolve(mockPage)} regionId="test-region" />);
+            it('does not render the page designer page metadata provider', async () => {
+                render(<Region page={mockPage} regionId="test-region" />);
 
                 const result = waitFor(
                     () => {
@@ -200,6 +289,26 @@ describe('Region', () => {
                 );
 
                 await expect(result).rejects.toThrow();
+            });
+        });
+
+        describe('when rendering component region', () => {
+            beforeEach(() => {
+                vi.mocked(useRegionContext).mockReturnValue(null);
+                vi.clearAllMocks();
+            });
+
+            it('does not render the page designer page metadata provider', () => {
+                const mockComponent = {
+                    id: 'grid-component',
+                    typeId: 'grid',
+                    regions: [mockRegion],
+                } as ComponentType;
+
+                render(<Region component={mockComponent} regionId="test-region" />);
+
+                // Component mode is synchronous and should never call PageDesignerPageMetadataProvider
+                expect(PageDesignerPageMetadataProvider).not.toHaveBeenCalled();
             });
         });
     });
@@ -213,15 +322,15 @@ describe('Region', () => {
                     name: 'Test Mixed Region',
                     componentTypeInclusions: [{ typeId: 'commerce_layouts.carousel' }],
                     componentTypeExclusions: [{ typeId: 'commerce_layouts.hero' }],
-                } as ShopperExperience.schemas['RegionDefinition'],
+                } as unknown as RegionDesignMetadata,
                 expectedDesignMetadata: {
                     id: 'test-region',
-                    componentTypeInclusions: ['commerce_layouts.carousel'],
-                    componentTypeExclusions: ['commerce_layouts.hero'],
+                    componentTypeInclusions: [{ typeId: 'commerce_layouts.carousel' }],
+                    componentTypeExclusions: [{ typeId: 'commerce_layouts.hero' }],
                 },
             },
             {
-                description: 'passes undefined for both when metadata is empty object',
+                description: 'passes empty arrays when metadata has no inclusions/exclusions',
                 metadata: {
                     id: 'test-region',
                     name: 'Test Empty Region',
@@ -251,12 +360,14 @@ describe('Region', () => {
         it.each(metadataTestCases)('$description', async ({ metadata, expectedDesignMetadata }) => {
             render(
                 <Region
-                    page={Promise.resolve({
-                        ...mockPage,
-                        designMetadata: {
-                            regionDefinitions: [metadata],
-                        },
-                    } as ShopperExperience.schemas['Page'])}
+                    page={
+                        {
+                            ...mockPage,
+                            designMetadata: {
+                                regionDefinitions: [metadata],
+                            },
+                        } as ShopperExperience.schemas['Page']
+                    }
                     regionId="test-region"
                 />
             );
@@ -264,6 +375,286 @@ describe('Region', () => {
             // Wait for async rendering to complete
             await waitFor(() => {
                 expect(capturedDesignMetadata).toEqual(expectedDesignMetadata);
+            });
+        });
+    });
+
+    describe('ComponentDataProvider handling with sibling regions', () => {
+        const mockComponentData = {
+            'component-1': Promise.resolve({ foo: 'bar' }),
+            'component-2': Promise.resolve({ baz: 'qux' }),
+        };
+
+        const mockRegion1 = {
+            id: 'region-1',
+            components: [
+                {
+                    id: 'component-1',
+                    typeId: 'commerce_layouts.carousel',
+                },
+            ],
+        };
+
+        const mockRegion2 = {
+            id: 'region-2',
+            components: [
+                {
+                    id: 'component-2',
+                    typeId: 'commerce_layouts.banner',
+                },
+            ],
+        };
+
+        const mockPageWithMultipleRegions: PageWithComponentData = {
+            id: 'test-page',
+            typeId: 'testPage',
+            regions: [mockRegion1, mockRegion2],
+            componentData: mockComponentData,
+        };
+
+        it('renders components from multiple regions', async () => {
+            render(
+                <div>
+                    <Region page={mockPageWithMultipleRegions} regionId="region-1" />
+                    <Region page={mockPageWithMultipleRegions} regionId="region-2" />
+                </div>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByTestId('component-component-1')).toBeInTheDocument();
+                expect(screen.getByTestId('component-component-2')).toBeInTheDocument();
+            });
+        });
+
+        it('renders components when page has componentData', async () => {
+            render(
+                <div>
+                    <Region page={mockPageWithMultipleRegions} regionId="region-1" />
+                </div>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByTestId('component-component-1')).toBeInTheDocument();
+            });
+        });
+
+        it('renders components when page lacks componentData', async () => {
+            const pageWithoutComponentData: ShopperExperience.schemas['Page'] = {
+                id: 'test-page',
+                typeId: 'testPage',
+                regions: [mockRegion1],
+            };
+
+            render(
+                <div>
+                    <Region page={pageWithoutComponentData} regionId="region-1" />
+                </div>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByTestId('component-component-1')).toBeInTheDocument();
+            });
+        });
+    });
+
+    describe('Error handling - Region not found', () => {
+        describe('Component mode', () => {
+            it('returns custom errorElement when region not found in component', () => {
+                const mockComponent: ComponentType = {
+                    id: 'test-component',
+                    typeId: 'grid',
+                    regions: [
+                        {
+                            id: 'existing-region',
+                            components: [],
+                        },
+                    ],
+                };
+
+                render(
+                    <Region
+                        component={mockComponent}
+                        regionId="non-existent-region"
+                        errorElement={<div data-testid="error-fallback">Region not found</div>}
+                    />
+                );
+
+                // Should render the custom error element
+                expect(screen.getByTestId('error-fallback')).toBeInTheDocument();
+                expect(screen.getByText('Region not found')).toBeInTheDocument();
+            });
+
+            it('returns null when region not found and no errorElement provided', () => {
+                const mockComponent: ComponentType = {
+                    id: 'test-component',
+                    typeId: 'grid',
+                    regions: [
+                        {
+                            id: 'existing-region',
+                            components: [],
+                        },
+                    ],
+                };
+
+                const { container } = render(<Region component={mockComponent} regionId="non-existent-region" />);
+
+                // Should render nothing (null)
+                expect(container.firstChild).toBeNull();
+            });
+
+            it('returns errorElement when component has no regions array', () => {
+                const mockComponent: ComponentType = {
+                    id: 'test-component',
+                    typeId: 'simple',
+                    // No regions property
+                };
+
+                render(
+                    <Region
+                        component={mockComponent}
+                        regionId="any-region"
+                        errorElement={<div data-testid="no-regions-error">No regions available</div>}
+                    />
+                );
+
+                expect(screen.getByTestId('no-regions-error')).toBeInTheDocument();
+            });
+
+            it('returns null when component has empty regions array and no errorElement', () => {
+                const mockComponent: ComponentType = {
+                    id: 'test-component',
+                    typeId: 'simple',
+                    regions: [],
+                };
+
+                const { container } = render(<Region component={mockComponent} regionId="any-region" />);
+
+                expect(container.firstChild).toBeNull();
+            });
+        });
+
+        describe('Page mode', () => {
+            it('returns custom errorElement when region not found in page', async () => {
+                const pageWithDifferentRegion: ShopperExperience.schemas['Page'] = {
+                    id: 'test-page',
+                    typeId: 'testPage',
+                    regions: [
+                        {
+                            id: 'existing-region',
+                            components: [],
+                        },
+                    ],
+                };
+
+                render(
+                    <Region
+                        page={pageWithDifferentRegion}
+                        regionId="non-existent-region"
+                        errorElement={<div data-testid="page-error-fallback">Page region not found</div>}
+                    />
+                );
+
+                // Wait for async rendering
+                await waitFor(() => {
+                    expect(screen.getByTestId('page-error-fallback')).toBeInTheDocument();
+                    expect(screen.getByText('Page region not found')).toBeInTheDocument();
+                });
+            });
+
+            it('returns null when region not found in page and no errorElement provided', async () => {
+                const pageWithDifferentRegion: ShopperExperience.schemas['Page'] = {
+                    id: 'test-page',
+                    typeId: 'testPage',
+                    regions: [
+                        {
+                            id: 'existing-region',
+                            components: [],
+                        },
+                    ],
+                };
+
+                const { container } = render(<Region page={pageWithDifferentRegion} regionId="non-existent-region" />);
+
+                // Wait for async rendering to complete
+                await waitFor(() => {
+                    // Suspense fallback should be gone
+                    expect(container.querySelector('[data-testid]')).not.toBeInTheDocument();
+                });
+
+                // Should render nothing (null) after Suspense resolves
+                // The container will have the Suspense wrapper but nothing inside
+                expect(screen.queryByTestId(/component-/)).not.toBeInTheDocument();
+            });
+
+            it('returns errorElement when page has no regions array', async () => {
+                const pageWithoutRegions: ShopperExperience.schemas['Page'] = {
+                    id: 'test-page',
+                    typeId: 'testPage',
+                    // No regions property
+                };
+
+                render(
+                    <Region
+                        page={pageWithoutRegions}
+                        regionId="any-region"
+                        errorElement={<div data-testid="page-no-regions-error">No regions in page</div>}
+                    />
+                );
+
+                await waitFor(() => {
+                    expect(screen.getByTestId('page-no-regions-error')).toBeInTheDocument();
+                });
+            });
+
+            it('returns errorElement when page has empty regions array', async () => {
+                const pageWithEmptyRegions: ShopperExperience.schemas['Page'] = {
+                    id: 'test-page',
+                    typeId: 'testPage',
+                    regions: [],
+                };
+
+                render(
+                    <Region
+                        page={pageWithEmptyRegions}
+                        regionId="any-region"
+                        errorElement={<div data-testid="empty-regions-error">Region list is empty</div>}
+                    />
+                );
+
+                await waitFor(() => {
+                    expect(screen.getByTestId('empty-regions-error')).toBeInTheDocument();
+                });
+            });
+
+            it('handles region not found with custom fallback element during loading', async () => {
+                const pageWithDifferentRegion: ShopperExperience.schemas['Page'] = {
+                    id: 'test-page',
+                    typeId: 'testPage',
+                    regions: [
+                        {
+                            id: 'other-region',
+                            components: [],
+                        },
+                    ],
+                };
+
+                render(
+                    <Region
+                        page={Promise.resolve(pageWithDifferentRegion)}
+                        regionId="missing-region"
+                        fallbackElement={<div data-testid="loading">Loading...</div>}
+                        errorElement={<div data-testid="not-found-error">Region missing</div>}
+                    />
+                );
+
+                // Should show fallback first
+                expect(screen.getByTestId('loading')).toBeInTheDocument();
+
+                // Then show error after resolution
+                await waitFor(() => {
+                    expect(screen.queryByTestId('loading')).not.toBeInTheDocument();
+                    expect(screen.getByTestId('not-found-error')).toBeInTheDocument();
+                });
             });
         });
     });

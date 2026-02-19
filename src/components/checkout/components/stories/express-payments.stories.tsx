@@ -68,29 +68,23 @@ const meta: Meta<typeof ExpressPayments> = {
         ),
     ],
     argTypes: {
-        onApplePayClick: {
-            description: 'Callback when Apple Pay button is clicked',
-            action: 'onApplePayClick',
-        },
-        onGooglePayClick: {
-            description: 'Callback when Google Pay button is clicked',
-            action: 'onGooglePayClick',
-        },
-        onAmazonPayClick: {
-            description: 'Callback when Amazon Pay button is clicked',
-            action: 'onAmazonPayClick',
-        },
-        onVenmoClick: {
-            description: 'Callback when Venmo button is clicked',
-            action: 'onVenmoClick',
-        },
-        onPayPalClick: {
-            description: 'Callback when PayPal button is clicked',
-            action: 'onPayPalClick',
-        },
         disabled: {
             description: 'Whether all payment buttons should be disabled',
             control: 'boolean',
+        },
+        layout: {
+            description: 'Layout orientation for the payment buttons',
+            control: 'radio',
+            options: ['horizontal', 'vertical'],
+        },
+        separatorPosition: {
+            description: 'Position of the separator divider',
+            control: 'radio',
+            options: ['top', 'bottom'],
+        },
+        separatorText: {
+            description: 'Custom text for the separator divider',
+            control: 'text',
         },
     },
 };
@@ -100,21 +94,15 @@ type Story = StoryObj<typeof ExpressPayments>;
 
 export const Default: Story = {
     args: {
-        onApplePayClick: action('onApplePayClick'),
-        onGooglePayClick: action('onGooglePayClick'),
-        onAmazonPayClick: action('onAmazonPayClick'),
-        onVenmoClick: action('onVenmoClick'),
-        onPayPalClick: action('onPayPalClick'),
         disabled: false,
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Check for Apple Pay button (first button with "Pay" text)
-        const buttons = canvas.getAllByRole('button');
-        const applePayButton = buttons.find((btn) => btn.textContent?.includes('Pay'));
-        await expect(applePayButton).toBeInTheDocument();
+        // Check for Apple Pay logo
+        const applePayLogo = await canvas.findByAltText('Apple Pay');
+        await expect(applePayLogo).toBeInTheDocument();
 
         // Check for "Or" divider
         const orDivider = await canvas.findByText(/or/i);
@@ -124,11 +112,6 @@ export const Default: Story = {
 
 export const Disabled: Story = {
     args: {
-        onApplePayClick: action('onApplePayClick'),
-        onGooglePayClick: action('onGooglePayClick'),
-        onAmazonPayClick: action('onAmazonPayClick'),
-        onVenmoClick: action('onVenmoClick'),
-        onPayPalClick: action('onPayPalClick'),
         disabled: true,
     },
     play: async ({ canvasElement }) => {
@@ -145,11 +128,6 @@ export const Disabled: Story = {
 
 export const WithPayPalSDKLoading: Story = {
     args: {
-        onApplePayClick: action('onApplePayClick'),
-        onGooglePayClick: action('onGooglePayClick'),
-        onAmazonPayClick: action('onAmazonPayClick'),
-        onVenmoClick: action('onVenmoClick'),
-        onPayPalClick: action('onPayPalClick'),
         disabled: false,
     },
     play: async ({ canvasElement }) => {
@@ -162,11 +140,6 @@ export const WithPayPalSDKLoading: Story = {
 
 export const WithPayPalSDKError: Story = {
     args: {
-        onApplePayClick: action('onApplePayClick'),
-        onGooglePayClick: action('onGooglePayClick'),
-        onAmazonPayClick: action('onAmazonPayClick'),
-        onVenmoClick: action('onVenmoClick'),
-        onPayPalClick: action('onPayPalClick'),
         disabled: false,
     },
     play: async ({ canvasElement }) => {
@@ -174,5 +147,141 @@ export const WithPayPalSDKError: Story = {
         // Component should render even when PayPal SDK has errors
         const container = canvasElement.firstChild;
         await expect(container).toBeInTheDocument();
+    },
+};
+
+export const VerticalLayout: Story = {
+    args: {
+        disabled: false,
+        layout: 'vertical',
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Express payment buttons stacked vertically in a single column, useful for sidebars or narrow containers. Used on product detail pages.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for Apple Pay logo
+        const applePayLogo = await canvas.findByAltText('Apple Pay');
+        await expect(applePayLogo).toBeInTheDocument();
+
+        // Check for "Or" divider
+        const orDivider = await canvas.findByText(/or/i);
+        await expect(orDivider).toBeInTheDocument();
+    },
+};
+
+export const VenmoEligibility: Story = {
+    args: {
+        disabled: false,
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: `Venmo button eligibility is determined by the PayPal SDK at runtime. 
+                
+**Venmo appears when:**
+- User is in the United States
+- Device is mobile (phone or tablet)
+- Browser supports Venmo integration
+- PayPal SDK detects eligibility
+
+**Venmo is hidden when:**
+- User is on desktop (most cases)
+- User is outside the US
+- Browser doesn't support Venmo
+- PayPal SDK reports not eligible
+
+This automatic eligibility check prevents showing an unusable payment option and avoids empty spacing in the layout.`,
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // PayPal button should always be present
+        const buttons = canvas.getAllByRole('button');
+        await expect(buttons.length).toBeGreaterThan(0);
+
+        // Note: Venmo may or may not be visible depending on browser eligibility
+        // This is expected behavior based on PayPal SDK's runtime checks
+    },
+};
+
+export const SeparatorAtTop: Story = {
+    args: {
+        disabled: false,
+        separatorPosition: 'top',
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Separator displayed above the payment buttons. Useful when express payments are at the bottom of a form.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for "Or" divider
+        const orDivider = await canvas.findByText(/or/i);
+        await expect(orDivider).toBeInTheDocument();
+    },
+};
+
+export const CustomSeparatorText: Story = {
+    args: {
+        disabled: false,
+        separatorText: 'Or continue with card',
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Custom separator text to provide context (automatically displayed in uppercase via CSS). Common variations: "Or continue with card", "Or pay another way", "Express checkout".',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for custom divider text (displayed uppercase via CSS)
+        const customDivider = await canvas.findByText('Or continue with card');
+        await expect(customDivider).toBeInTheDocument();
+    },
+};
+
+export const VerticalWithTopSeparator: Story = {
+    args: {
+        disabled: false,
+        layout: 'vertical',
+        separatorPosition: 'top',
+        separatorText: 'Express checkout',
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Vertical layout with separator at top and custom text (automatically displayed in uppercase via CSS). Ideal for product detail pages or narrow sidebars.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Check for custom divider text (displayed uppercase via CSS)
+        const customDivider = await canvas.findByText('Express checkout');
+        await expect(customDivider).toBeInTheDocument();
+
+        // Check for Apple Pay logo
+        const applePayLogo = await canvas.findByAltText('Apple Pay');
+        await expect(applePayLogo).toBeInTheDocument();
     },
 };

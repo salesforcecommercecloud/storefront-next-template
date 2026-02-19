@@ -1,0 +1,56 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ProductTileContext stories snapshot > Default story renders and matches snapshot 1`] = `
+<dl
+  data-testid="context-consumer"
+>
+  <dt>
+    currency
+  </dt>
+  <dd
+    data-testid="currency"
+  >
+    undefined
+  </dd>
+  <dt>
+    swatchMode
+  </dt>
+  <dd
+    data-testid="swatch-mode"
+  >
+    click
+  </dd>
+  <dt>
+    translation
+  </dt>
+  <dd
+    data-testid="translation"
+  >
+    More Options
+  </dd>
+  <dt>
+    config.defaultSiteId
+  </dt>
+  <dd
+    data-testid="default-site-id"
+  >
+    RefArchGlobal
+  </dd>
+  <dt>
+    hasBadges
+  </dt>
+  <dd
+    data-testid="has-badges"
+  >
+    true
+  </dd>
+  <dt>
+    badges
+  </dt>
+  <dd
+    data-testid="badges"
+  >
+    Sale
+  </dd>
+</dl>
+`;

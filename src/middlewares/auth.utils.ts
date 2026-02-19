@@ -15,7 +15,7 @@
  */
 import { createContext, type RouterContextProvider } from 'react-router';
 import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
-import type { SessionData as AuthData } from '@/lib/api/types';
+import type { SessionData as AuthData, PublicSessionData } from '@/lib/api/types';
 import {
     clearStorage,
     type StorageErrorData,
@@ -65,6 +65,26 @@ export const COOKIE_DWSID = 'dwsid'; // Hybrid storefront session ID (for sessio
 export function isTrackingConsentEnabled(context?: Readonly<RouterContextProvider>): boolean {
     const appConfig = getConfig(context);
     return appConfig.engagement?.analytics?.trackingConsent?.enabled ?? false;
+}
+
+/**
+ * Extract public (non-sensitive) session data from full session data.
+ *
+ * This is the SINGLE AUDITED PLACE where the public auth shape is defined.
+ * All code that needs to expose session data to the client should use this function
+ * to ensure only non-sensitive fields are included.
+ *
+ * @param session - Full session data from server auth context
+ * @returns PublicSessionData containing only non-sensitive fields safe for client exposure
+ */
+export function getPublicSessionData(session: AuthData): PublicSessionData {
+    return {
+        userType: session.userType,
+        customerId: session.customerId,
+        usid: session.usid,
+        encUserId: session.encUserId,
+        trackingConsent: session.trackingConsent,
+    };
 }
 
 /**
@@ -144,29 +164,30 @@ export const updateAuthStorageDataByTokenResponse = (
 ): void => {
     const now = Date.now();
 
-    storage.set('access_token', tokenResponse?.access_token);
-    storage.set('refresh_token', tokenResponse?.refresh_token);
+    // Transform SLAS API response (snake_case) to internal storage (camelCase)
+    storage.set('accessToken', tokenResponse?.access_token);
+    storage.set('refreshToken', tokenResponse?.refresh_token);
 
     // Get expiry from JWT token itself (source of truth) rather than calculating from expires_in
     // This decodes once during storage and allows fast numeric comparison at runtime
-    const accessTokenExpiry = tokenResponse?.access_token
+    const accessTokenExpiryValue = tokenResponse?.access_token
         ? getSLASAccessTokenClaims(tokenResponse.access_token).expiry
         : null;
-    storage.set('access_token_expiry', accessTokenExpiry ?? now + Number(tokenResponse?.expires_in) * 1_000);
+    storage.set('accessTokenExpiry', accessTokenExpiryValue ?? now + Number(tokenResponse?.expires_in) * 1_000);
 
     // Get final refresh token expiry (with environment override if configured)
     const apiResponseExpirySeconds = Number(tokenResponse?.refresh_token_expires_in);
     const refreshTokenExpirySeconds = getRefreshTokenExpiry(apiResponseExpirySeconds, userType, appConfig);
-    storage.set('refresh_token_expiry', now + refreshTokenExpirySeconds * 1_000);
+    storage.set('refreshTokenExpiry', now + refreshTokenExpirySeconds * 1_000);
 
     // Store customer info if available (for registered users)
     if (tokenResponse?.customer_id) {
-        storage.set('customer_id', tokenResponse.customer_id);
+        storage.set('customerId', tokenResponse.customer_id);
     }
 
     // Store customer encoded user id if available (for registered users)
     if (tokenResponse?.enc_user_id) {
-        storage.set('enc_user_id', tokenResponse.enc_user_id);
+        storage.set('encUserId', tokenResponse.enc_user_id);
     }
 
     // Store user session identifier if available
@@ -178,11 +199,11 @@ export const updateAuthStorageDataByTokenResponse = (
     // IDP token doesn't come with its own expiry, so we use the SLAS access token expiry as a reasonable proxy
     // If the SLAS session expires, the IDP token becomes less useful anyway
     if (tokenResponse?.idp_access_token) {
-        storage.set('idp_access_token', tokenResponse.idp_access_token);
+        storage.set('idpAccessToken', tokenResponse.idp_access_token);
         // Use same expiry as SLAS access token for IDP access token
-        const idpAccessTokenExpiry = storage.get('access_token_expiry');
-        if (idpAccessTokenExpiry && typeof idpAccessTokenExpiry === 'number') {
-            storage.set('idp_access_token_expiry', idpAccessTokenExpiry);
+        const idpAccessTokenExpiryValue = storage.get('accessTokenExpiry');
+        if (idpAccessTokenExpiryValue && typeof idpAccessTokenExpiryValue === 'number') {
+            storage.set('idpAccessTokenExpiry', idpAccessTokenExpiryValue);
         }
     }
 

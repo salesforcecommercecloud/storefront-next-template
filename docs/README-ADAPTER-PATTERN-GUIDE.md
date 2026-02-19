@@ -7,14 +7,15 @@
 1. [Introduction](#introduction)
 2. [Why Use Adapters?](#why-use-adapters)
 3. [Architecture Overview](#architecture-overview)
-4. [Core Patterns](#core-patterns)
-5. [Step-by-Step Implementation](#step-by-step-implementation)
-6. [Product Recommendations Example](#product-recommendations-example)
-7. [Code Templates](#code-templates)
-8. [Testing Strategies](#testing-strategies)
-9. [Best Practices](#best-practices)
-10. [Common Pitfalls](#common-pitfalls)
-11. [Configuration Reference](#configuration-reference)
+4. [Lazy Loading, Dynamic Import, and Bundle Size](#lazy-loading-dynamic-import-and-bundle-size)
+5. [Core Patterns](#core-patterns)
+6. [Step-by-Step Implementation](#step-by-step-implementation)
+7. [Product Recommendations Example](#product-recommendations-example)
+8. [Code Templates](#code-templates)
+9. [Testing Strategies](#testing-strategies)
+10. [Best Practices](#best-practices)
+11. [Common Pitfalls](#common-pitfalls)
+12. [Configuration Reference](#configuration-reference)
 
 ---
 
@@ -126,6 +127,50 @@ Adapter Instance (EinsteinAdapter)
    ↓ (calls)
 External API (Einstein SCAPI)
 ```
+
+---
+
+## Lazy Loading, Dynamic Import, and Bundle Size
+
+Adapters use **lazy loading** and **dynamic imports** so that adapter code (and any heavy dependencies) are not in the initial JavaScript bundle. This keeps the first load small and fast; adapter code is fetched only when needed.
+
+### Why Lazy Load Adapters?
+
+- **Smaller initial bundle**: The main app chunk does not include Einstein, Active Data, or mock adapter implementations.
+- **Faster first load**: Users download less JavaScript before the page becomes interactive.
+- **Route- or feature-based loading**: Adapters that are only used on certain pages (e.g. product content on PDP, customer preferences on account) are loaded when the user reaches those flows.
+
+### How Dynamic Import Works
+
+Instead of top-level `import` (which pulls code into the main bundle), adapters use **dynamic `import()`** so the bundler emits a separate chunk that is loaded at runtime:
+
+```typescript
+// ❌ Static import – adapter code is in the main bundle
+import { initializeEngagementAdapters } from '@/adapters';
+
+// ✅ Dynamic import – adapter code is in a separate chunk, loaded when this runs
+const { initializeEngagementAdapters } = await import('@/adapters');
+```
+
+- **Engagement adapters** (Einstein, Active Data): The `@/adapters` module is loaded only when `ensureAdaptersInitialized()` runs (e.g. when a provider that needs engagement adapters first mounts). See `src/lib/adapters/initialize-adapters.ts`.
+- **Product content adapter**: The product-content-mock module is loaded only when the Product Content provider mounts (e.g. on the PDP). Registration is done via `ensureProductContentAdapterRegistered()` in `src/lib/adapters/ensure-product-content-adapter.ts`, which uses `await import('@/adapters/product-content-mock')`.
+- **Customer preferences adapter**: The customer-preferences-mock module is loaded only when the Customer Preferences provider mounts. Registration is done via `ensureCustomerPreferencesAdapterRegistered()` in `src/lib/adapters/ensure-customer-preferences-adapter.ts`, which uses `await import('@/adapters/customer-preferences-mock')`.
+
+### Bundle Size Impact
+
+| What | When it loads | Bundle impact |
+|------|----------------|----------------|
+| Engagement adapters (`@/adapters`: Einstein, Active Data) | When `ensureAdaptersInitialized()` is first called (e.g. by a provider that uses engagement adapters) | Separate chunk; not in initial bundle |
+| Product content mock | When Product Content provider mounts (e.g. PDP) | Separate chunk; not in initial bundle |
+| Customer preferences mock | When Customer Preferences provider mounts | Separate chunk; not in initial bundle |
+
+Constants (e.g. adapter names) used by providers are kept in small shared modules (e.g. `product-content-store.ts`, `customer-preferences-store.ts`) so providers do not statically import the mock modules just to read a name; that would pull the mock into the main bundle and defeat lazy loading.
+
+### Summary
+
+- **Lazy loading**: Adapter code runs and is registered only when needed (when the corresponding provider or initialization runs).
+- **Dynamic import**: `await import('...')` ensures adapter modules are in separate chunks and loaded at runtime.
+- **Bundle size**: Initial bundle stays smaller; adapter and mock code live in separate chunks that load on demand.
 
 ---
 

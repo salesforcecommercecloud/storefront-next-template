@@ -40,6 +40,11 @@ import { TrackingConsent } from '@/types/tracking-consent';
  *    - Configuration Options Reference: `src/config/CONFIG-OPTIONS.md`
  */
 
+// DIS hosts:
+// - Staging: https://edge.disstg.commercecloud.salesforce.com
+// - Production: https://edge.dis.commercecloud.salesforce.com
+const DIS_DEFAULT_HOST = 'https://edge.disstg.commercecloud.salesforce.com';
+
 export default defineConfig({
     // Project identification and metadata
     // See CONFIG-OPTIONS.md#metadata for detailed documentation
@@ -320,14 +325,21 @@ export default defineConfig({
         // Link hints for browser resource loading
         // See CONFIG-OPTIONS.md#links for detailed documentation
         links: {
-            preconnect: ['https://edge.disstg.commercecloud.salesforce.com'],
+            // DIS hosts:
+            // - Staging: https://edge.disstg.commercecloud.salesforce.com
+            // - Production: https://edge.dis.commercecloud.salesforce.com
+            preconnect: [DIS_DEFAULT_HOST],
         },
         // Salesforce Dynamic Imaging Service settings
         // See CONFIG-OPTIONS.md#images for detailed documentation
+        // DIS hosts:
+        // - Staging: https://edge.disstg.commercecloud.salesforce.com
+        // - Production: https://edge.dis.commercecloud.salesforce.com
         images: {
             quality: 70,
             formats: ['webp'],
             fallbackFormat: 'jpg',
+            host: DIS_DEFAULT_HOST,
         },
         // Search-specific settings
         // See CONFIG-OPTIONS.md#search for detailed documentation

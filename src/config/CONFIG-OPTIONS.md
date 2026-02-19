@@ -919,12 +919,24 @@ Type: `string[]` Optional | Default: `['https://edge.disstg.commercecloud.salesf
 
 An array of origin URLs to preconnect to. The browser establishes early connections (DNS lookup, TCP handshake, TLS negotiation) to these origins before they're needed, reducing latency when fetching resources.
 
-Example:
+**Available DIS Hosts:**
+
+| Environment | Host URL |
+|-------------|----------|
+| **Staging** | `https://edge.disstg.commercecloud.salesforce.com` |
+| **Production** | `https://edge.dis.commercecloud.salesforce.com` |
+
+Example for staging (default):
 ```bash
-PUBLIC__app__links__preconnect='["https://edge.commercecloud.salesforce.com"]'
+PUBLIC__app__links__preconnect='["https://edge.disstg.commercecloud.salesforce.com"]'
 ```
 
-**Important:** The default value uses the staging DIS (Dynamic Image Service) origin. For production deployments, update this to your production DIS origin (e.g., `https://edge.commercecloud.salesforce.com`).
+Example for production:
+```bash
+PUBLIC__app__links__preconnect='["https://edge.dis.commercecloud.salesforce.com"]'
+```
+
+**Important:** The default value uses the staging DIS (Dynamic Image Service) origin. For production deployments, update this to the production DIS origin. This should match your `images.host` configuration.
 
 **Note:** Only provide origin URLs (scheme + host + port), not full paths. Any path in the URL will be ignored by the browser.
 
@@ -1013,6 +1025,30 @@ Example:
 ```bash
 PUBLIC__app__images__fallbackFormat='png'
 ```
+
+---
+
+### images.host
+
+Type: `string` | Default: `https://edge.disstg.commercecloud.salesforce.com`
+
+The Salesforce Dynamic Imaging Service (DIS) host URL. This is the CDN endpoint that serves optimized images with on-the-fly transformations (resizing, format conversion, quality adjustment).
+
+**Available DIS Hosts:**
+
+| Environment | Host URL |
+|-------------|----------|
+| **Staging** | `https://edge.disstg.commercecloud.salesforce.com` |
+| **Production** | `https://edge.dis.commercecloud.salesforce.com` |
+
+Example for production:
+```bash
+PUBLIC__app__images__host='https://edge.dis.commercecloud.salesforce.com'
+```
+
+**Important:** When deploying to production, update this value to the production DIS host. Using the staging host in production may result in slower image loading or availability issues.
+
+**Note:** Also update the corresponding `links.preconnect` value to match, so browsers can establish early connections to the correct DIS host.
 
 ---
 

@@ -15,39 +15,73 @@
  */
 'use client';
 
-import { type ReactElement, useState } from 'react';
+import { type ReactElement, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AlertCircle, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useProductContentAdapter } from '@/providers/product-content';
+import type { ShippingEstimate } from '@/lib/adapters/product-content-data-types';
 
 // US Postal Code validation (5 digits or 5+4 format)
 const US_POSTAL_CODE_REGEX = /^\d{5}(-\d{4})?$/;
 
 interface ShippingCalculatorProps {
     onCalculate: (zipCode: string, deliveryDays: number) => void;
+    productId: string;
 }
 
-export default function ShippingCalculator({ onCalculate }: ShippingCalculatorProps): ReactElement {
+export default function ShippingCalculator({ onCalculate, productId }: ShippingCalculatorProps): ReactElement | null {
     const { t } = useTranslation('extBopis');
     const [inputValue, setInputValue] = useState('');
-    const [deliveryDays, setDeliveryDays] = useState<number | null>(null);
     const [showResult, setShowResult] = useState(false);
+    const [deliveryEstimate, setDeliveryEstimate] = useState<ShippingEstimate | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<Error | null>(null);
+    const [showInvalidZipError, setShowInvalidZipError] = useState(false);
+
+    const adapter = useProductContentAdapter();
+
+    // All hooks must be called before any conditional returns
+    const clearError = useCallback(() => {
+        setError(null);
+    }, []);
+
+    // Early return after all hooks
+    if (!adapter?.getShippingEstimates) {
+        return null;
+    }
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value.replace(/\D/g, '').slice(0, 5);
         setInputValue(val);
-        if (val.length !== 5) {
-            setShowResult(false);
-        }
+        setShowResult(false);
+        clearError();
+        setShowInvalidZipError(false);
     };
 
     const isValidZip = US_POSTAL_CODE_REGEX.test(inputValue);
 
-    const handleCalculate = () => {
-        if (isValidZip) {
-            const days = 3;
-            setDeliveryDays(days);
+    const handleCalculate = async () => {
+        if (!isValidZip) {
+            setShowInvalidZipError(true);
+            return;
+        }
+
+        if (!adapter?.getShippingEstimates) return;
+
+        clearError();
+        setShowResult(false);
+        setIsLoading(true);
+
+        try {
+            const estimate = await adapter.getShippingEstimates(productId, inputValue);
+            setDeliveryEstimate(estimate);
+            onCalculate(inputValue, estimate.days);
             setShowResult(true);
-            onCalculate(inputValue, days);
+        } catch (err) {
+            setError(err instanceof Error ? err : new Error('An unknown error occurred'));
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -67,9 +101,20 @@ export default function ShippingCalculator({ onCalculate }: ShippingCalculatorPr
                             maxLength={5}
                             placeholder={t('deliveryOptions.pickupOrDelivery.zipPlaceholder')}
                             aria-label={t('deliveryOptions.pickupOrDelivery.zipAriaLabel')}
-                            aria-invalid={inputValue.length > 0 && !isValidZip}
-                            aria-describedby={showResult ? 'delivery-result' : 'delivery-message'}
-                            className="w-full px-3 py-2 text-sm border border-muted-foreground/20 rounded-lg transition-colors focus:border-ring focus:ring-ring bg-background focus:outline-none focus:ring-2"
+                            aria-invalid={showInvalidZipError}
+                            aria-describedby={
+                                showResult
+                                    ? 'delivery-result'
+                                    : showInvalidZipError
+                                      ? 'validation-error'
+                                      : 'delivery-message'
+                            }
+                            className={cn(
+                                'w-full px-3 py-2 text-sm border rounded-lg transition-colors focus:outline-none focus:ring-2 bg-background',
+                                showInvalidZipError
+                                    ? 'border-destructive focus:border-destructive focus:ring-destructive/20'
+                                    : 'border-muted-foreground/20 focus:border-ring focus:ring-ring'
+                            )}
                             type="text"
                             value={inputValue}
                             onChange={handleInputChange}
@@ -77,49 +122,71 @@ export default function ShippingCalculator({ onCalculate }: ShippingCalculatorPr
                     </div>
                     <button
                         type="button"
-                        className={cn(
-                            'px-4 py-2 text-sm font-medium rounded-lg transition-colors whitespace-nowrap',
-                            isValidZip
-                                ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                                : 'bg-muted text-muted-foreground cursor-not-allowed'
-                        )}
-                        disabled={!isValidZip}
-                        onClick={handleCalculate}
+                        className="px-4 py-2 text-sm font-medium rounded-lg transition-colors whitespace-nowrap bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed"
+                        disabled={isLoading}
+                        onClick={() => void handleCalculate()}
                         aria-label={t('deliveryOptions.pickupOrDelivery.calculateAriaLabel')}>
-                        {t('deliveryOptions.pickupOrDelivery.calculateButton')}
+                        {isLoading
+                            ? t('deliveryOptions.pickupOrDelivery.calculating')
+                            : t('deliveryOptions.pickupOrDelivery.calculateButton')}
                     </button>
                 </div>
 
-                {!showResult && (
+                {showInvalidZipError && (
+                    <p id="validation-error" className="text-xs text-destructive" role="alert">
+                        {t('deliveryOptions.pickupOrDelivery.invalidZipCode')}
+                    </p>
+                )}
+
+                {!showResult && !isLoading && !error && !showInvalidZipError && (
                     <p id="delivery-message" className="text-xs text-muted-foreground">
                         {t('deliveryOptions.pickupOrDelivery.calculatorInstructionMessage')}
                     </p>
                 )}
 
-                {showResult && deliveryDays !== null && (
+                {error && (
+                    <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3">
+                        <div className="flex items-start gap-2">
+                            <AlertCircle className="w-4 h-4 text-destructive mt-0.5 flex-shrink-0" />
+                            <div className="flex-1">
+                                <p className="text-sm text-destructive">
+                                    {t('deliveryOptions.pickupOrDelivery.errorFetchingEstimates')}
+                                </p>
+                                <button
+                                    type="button"
+                                    onClick={() => void handleCalculate()}
+                                    className="text-sm text-destructive underline hover:no-underline mt-1">
+                                    {t('deliveryOptions.pickupOrDelivery.retry')}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {showResult && !error && (
                     <div
                         id="delivery-result"
                         role="status"
                         aria-live="polite"
                         className="bg-success/10 border border-success/20 rounded-lg p-3">
                         <div className="flex items-start gap-2">
-                            <svg
-                                className="w-4 h-4 text-success mt-0.5 flex-shrink-0"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                            </svg>
+                            <Check className="w-4 h-4 text-success mt-0.5 flex-shrink-0" />
                             <div className="flex-1 space-y-1">
                                 <p className="text-sm text-success">
                                     {t('deliveryOptions.pickupOrDelivery.estimatedDeliveryInDays', {
-                                        days: deliveryDays,
+                                        days: deliveryEstimate?.days,
                                     })}
                                 </p>
-                                <p className="text-sm text-success">
-                                    Shipping:{' '}
-                                    <span className="font-semibold">{t('deliveryOptions.pickupOrDelivery.free')}</span>
-                                    <span className="ml-1.5 text-xs text-success">✓</span>
+                                <p className="text-sm text-success flex items-center gap-1">
+                                    <span>
+                                        {t('deliveryOptions.pickupOrDelivery.shippingCost')}{' '}
+                                        <span className="font-semibold">
+                                            {deliveryEstimate && deliveryEstimate.cost > 0
+                                                ? `$${deliveryEstimate.cost.toFixed(2)}`
+                                                : t('deliveryOptions.pickupOrDelivery.free')}
+                                        </span>
+                                    </span>
+                                    {deliveryEstimate && deliveryEstimate.cost === 0 && <Check className="w-4 h-4" />}
                                 </p>
                             </div>
                         </div>

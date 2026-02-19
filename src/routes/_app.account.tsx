@@ -15,7 +15,7 @@
  */
 import { useMemo, type ReactElement } from 'react';
 import { Outlet, type LoaderFunctionArgs, redirect, type ShouldRevalidateFunctionArgs } from 'react-router';
-import { House, User, Heart, ShoppingBag, MapPin, LogOut } from 'lucide-react';
+import { House, User, Heart, ShoppingBag, MapPin, CreditCard, Building, LogOut } from 'lucide-react';
 import { getAuth as getAuthServer } from '@/middlewares/auth.server';
 import { getCustomer } from '@/lib/api/customer';
 import { Card, CardContent } from '@/components/ui/card';
@@ -40,19 +40,19 @@ type AccountPageData = {
 // eslint-disable-next-line react-refresh/only-export-components
 export function loader(args: LoaderFunctionArgs) {
     const session = getAuthServer(args.context);
-    const { access_token, access_token_expiry, userType, customer_id } = session;
+    const { accessToken, accessTokenExpiry, userType, customerId } = session;
 
     if (
-        !access_token ||
-        typeof access_token_expiry !== 'number' ||
-        access_token_expiry < Date.now() ||
+        !accessToken ||
+        typeof accessTokenExpiry !== 'number' ||
+        accessTokenExpiry < Date.now() ||
         userType !== 'registered' ||
-        !customer_id
+        !customerId
     ) {
         throw redirect('/login');
     }
 
-    const customer = getCustomer(args.context, customer_id);
+    const customer = getCustomer(args.context, customerId);
 
     return { customer };
 }
@@ -104,6 +104,16 @@ export default function AccountPage({ loaderData }: { loaderData: AccountPageDat
                 path: '/account/addresses',
                 icon: MapPin,
                 label: t('navigation.addresses'),
+            },
+            {
+                path: '/account/payment-methods',
+                icon: CreditCard,
+                label: t('navigation.paymentMethods'),
+            },
+            {
+                path: '/account/store-preferences',
+                icon: Building,
+                label: t('navigation.storePreferences'),
             },
         ],
         [t]

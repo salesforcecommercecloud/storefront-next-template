@@ -143,9 +143,10 @@ describe('ProductItem', () => {
             expect(link).toHaveTextContent('Test Product');
 
             // image
+            // Note: toDisImageUrl only transforms SFCC URLs, so example.com URLs pass through unchanged
             const image = screen.getByRole('img');
             expect(image).toBeInTheDocument();
-            expect(image).toHaveAttribute('src', 'https://example.com/image.jpg?sw=160&q=60');
+            expect(image).toHaveAttribute('src', 'https://example.com/image.jpg');
             expect(image).toHaveAttribute('alt', 'Product image');
 
             expect(screen.getByText('Color: Red')).toBeInTheDocument();

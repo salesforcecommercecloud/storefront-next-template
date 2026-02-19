@@ -18,17 +18,16 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ToggleCard, ToggleCardEdit, ToggleCardSummary } from '@/components/toggle-card';
 import { Button } from '@/components/ui/button';
-import { Typography } from '@/components/typography';
 import { Form } from '@/components/ui/form';
 import { useBasket } from '@/providers/basket';
 import { createShippingAddressSchema, type ShippingAddressData } from '@/lib/checkout-schemas';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import { getShippingAddressFromCustomer } from '@/lib/customer-profile-utils';
-import { isAddressEmpty } from '@/components/checkout/utils/checkout-addresses';
 import { AddressFormFields } from '@/components/address-form-fields';
 import type { CheckoutActionData } from '../types';
 import CheckoutErrorBanner from './checkout-error-banner';
 import { getCheckoutDisplayError } from './checkout-display-error';
+import ShippingAddressDisplay from './shipping-address-display';
 import { useTranslation } from 'react-i18next';
 
 interface ShippingAddressProps {
@@ -152,38 +151,11 @@ export default function ShippingAddress({
 
             <ToggleCardSummary>
                 <div className="space-y-2">
-                    {/* If address is cleared, the addreess object will still exist with an id field, so we additionally check for empty fields */}
-                    {shippingAddress && !isAddressEmpty(shippingAddress) ? (
-                        <div className="space-y-2">
-                            <Typography variant="small" className="text-muted-foreground">
-                                {shippingAddress.firstName} {shippingAddress.lastName}
-                            </Typography>
-                            <Typography variant="small" className="text-muted-foreground">
-                                {shippingAddress.address1}
-                            </Typography>
-                            {shippingAddress.address2 && (
-                                <Typography variant="small" className="text-muted-foreground">
-                                    {shippingAddress.address2}
-                                </Typography>
-                            )}
-                            <Typography variant="small" className="text-muted-foreground">
-                                {shippingAddress.city}
-                                {shippingAddress.stateCode && `, ${shippingAddress.stateCode}`}{' '}
-                                {shippingAddress.postalCode}
-                            </Typography>
-                            {prioritizedPhoneNumber && (
-                                <Typography variant="small" className="text-muted-foreground">
-                                    {prioritizedPhoneNumber}
-                                </Typography>
-                            )}
-                        </div>
-                    ) : (
-                        <div className="space-y-2">
-                            <Typography variant="small" className="text-muted-foreground">
-                                {t('shippingAddress.notProvided')}
-                            </Typography>
-                        </div>
-                    )}
+                    <ShippingAddressDisplay
+                        address={shippingAddress}
+                        displayPhone={prioritizedPhoneNumber || undefined}
+                        notProvidedText={t('shippingAddress.notProvided')}
+                    />
                 </div>
             </ToggleCardSummary>
         </ToggleCard>

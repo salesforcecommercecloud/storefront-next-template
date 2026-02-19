@@ -1,0 +1,472 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Swatches stories snapshot > ColorSwatches story renders and matches snapshot 1`] = `
+<div
+  class="w-64"
+>
+  <div
+    class="space-y-3"
+  >
+    <div
+      aria-label="Colour"
+      class="flex flex-col gap-3"
+      role="radiogroup"
+    >
+      <div
+        class="flex flex-wrap gap-2 focus:outline-none"
+      >
+        <button
+          aria-checked="true"
+          aria-label="Navy"
+          class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-black"
+          position="relative"
+          role="radio"
+          tabindex="0"
+          type="button"
+        >
+          <div
+            class="flex items-center justify-center w-full h-full text-sm font-medium"
+          >
+            <div
+              aria-label="Navy"
+              class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+              style="background-color: navy; background-image: url("https://example.com/navy.jpg");"
+            />
+          </div>
+        </button>
+        <button
+          aria-checked="false"
+          aria-label="Red"
+          class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+          position="relative"
+          role="radio"
+          tabindex="-1"
+          type="button"
+        >
+          <div
+            class="flex items-center justify-center w-full h-full text-sm font-medium"
+          >
+            <div
+              aria-label="Red"
+              class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+              style="background-color: red; background-image: url("https://example.com/red.jpg");"
+            />
+          </div>
+        </button>
+        <button
+          aria-checked="false"
+          aria-label="Blue"
+          class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+          position="relative"
+          role="radio"
+          tabindex="-1"
+          type="button"
+        >
+          <div
+            class="flex items-center justify-center w-full h-full text-sm font-medium"
+          >
+            <div
+              aria-label="Blue"
+              class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+              style="background-color: blue; background-image: url("https://example.com/blue.jpg");"
+            />
+          </div>
+        </button>
+        <button
+          aria-checked="false"
+          aria-label="Black"
+          class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+          position="relative"
+          role="radio"
+          tabindex="-1"
+          type="button"
+        >
+          <div
+            class="flex items-center justify-center w-full h-full text-sm font-medium"
+          >
+            <div
+              aria-label="Black"
+              class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+              style="background-color: black; background-image: url("https://example.com/black.jpg");"
+            />
+          </div>
+        </button>
+        <button
+          aria-checked="false"
+          aria-label="Green"
+          class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+          position="relative"
+          role="radio"
+          tabindex="-1"
+          type="button"
+        >
+          <div
+            class="flex items-center justify-center w-full h-full text-sm font-medium"
+          >
+            <div
+              aria-label="Green"
+              class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+              style="background-color: green; background-image: url("https://example.com/green.jpg");"
+            />
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Swatches stories snapshot > ColorSwatchesWithOverflow story renders and matches snapshot 1`] = `
+<div
+  class="w-64"
+>
+  <div
+    class="space-y-3"
+  >
+    <div
+      aria-label="Colour"
+      class="flex flex-col gap-3"
+      role="radiogroup"
+    >
+      <div
+        class="flex flex-wrap gap-2 focus:outline-none"
+      >
+        <button
+          aria-checked="false"
+          aria-label="Navy"
+          class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+          position="relative"
+          role="radio"
+          tabindex="-1"
+          type="button"
+        >
+          <div
+            class="flex items-center justify-center w-full h-full text-sm font-medium"
+          >
+            <div
+              aria-label="Navy"
+              class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+              style="background-color: navy; background-image: url("https://example.com/navy.jpg");"
+            />
+          </div>
+        </button>
+        <button
+          aria-checked="true"
+          aria-label="Red"
+          class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-black"
+          position="relative"
+          role="radio"
+          tabindex="0"
+          type="button"
+        >
+          <div
+            class="flex items-center justify-center w-full h-full text-sm font-medium"
+          >
+            <div
+              aria-label="Red"
+              class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+              style="background-color: red; background-image: url("https://example.com/red.jpg");"
+            />
+          </div>
+        </button>
+        <button
+          aria-checked="false"
+          aria-label="Blue"
+          class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+          position="relative"
+          role="radio"
+          tabindex="-1"
+          type="button"
+        >
+          <div
+            class="flex items-center justify-center w-full h-full text-sm font-medium"
+          >
+            <div
+              aria-label="Blue"
+              class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+              style="background-color: blue; background-image: url("https://example.com/blue.jpg");"
+            />
+          </div>
+        </button>
+        <div
+          class="relative shrink-0 rounded-full border-2 border-border bg-background flex items-center justify-center cursor-pointer w-7 h-7"
+          title="+2"
+        >
+          <svg
+            class="text-muted-foreground w-3 h-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M12 4v16m8-8H4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Swatches stories snapshot > EmptyAttributes story renders and matches snapshot 1`] = `
+<div
+  class="w-64"
+/>
+`;
+
+exports[`Swatches stories snapshot > NoSelection story renders and matches snapshot 1`] = `
+<div
+  class="w-64"
+>
+  <div
+    class="space-y-3"
+  >
+    <div
+      aria-label="Colour"
+      class="flex flex-col gap-3"
+      role="radiogroup"
+    >
+      <div
+        class="flex flex-wrap gap-2 focus:outline-none"
+      >
+        <button
+          aria-checked="false"
+          aria-label="Navy"
+          class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+          position="relative"
+          role="radio"
+          tabindex="0"
+          type="button"
+        >
+          <div
+            class="flex items-center justify-center w-full h-full text-sm font-medium"
+          >
+            <div
+              aria-label="Navy"
+              class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+              style="background-color: navy; background-image: url("https://example.com/navy.jpg");"
+            />
+          </div>
+        </button>
+        <button
+          aria-checked="false"
+          aria-label="Red"
+          class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+          position="relative"
+          role="radio"
+          tabindex="-1"
+          type="button"
+        >
+          <div
+            class="flex items-center justify-center w-full h-full text-sm font-medium"
+          >
+            <div
+              aria-label="Red"
+              class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+              style="background-color: red; background-image: url("https://example.com/red.jpg");"
+            />
+          </div>
+        </button>
+        <button
+          aria-checked="false"
+          aria-label="Blue"
+          class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+          position="relative"
+          role="radio"
+          tabindex="-1"
+          type="button"
+        >
+          <div
+            class="flex items-center justify-center w-full h-full text-sm font-medium"
+          >
+            <div
+              aria-label="Blue"
+              class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+              style="background-color: blue; background-image: url("https://example.com/blue.jpg");"
+            />
+          </div>
+        </button>
+        <button
+          aria-checked="false"
+          aria-label="Black"
+          class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+          position="relative"
+          role="radio"
+          tabindex="-1"
+          type="button"
+        >
+          <div
+            class="flex items-center justify-center w-full h-full text-sm font-medium"
+          >
+            <div
+              aria-label="Black"
+              class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+              style="background-color: black; background-image: url("https://example.com/black.jpg");"
+            />
+          </div>
+        </button>
+        <button
+          aria-checked="false"
+          aria-label="Green"
+          class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+          position="relative"
+          role="radio"
+          tabindex="-1"
+          type="button"
+        >
+          <div
+            class="flex items-center justify-center w-full h-full text-sm font-medium"
+          >
+            <div
+              aria-label="Green"
+              class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+              style="background-color: green; background-image: url("https://example.com/green.jpg");"
+            />
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Swatches stories snapshot > SizeSwatches story renders and matches snapshot 1`] = `
+<div
+  class="w-64"
+>
+  <div
+    class="space-y-3"
+  >
+    <div
+      aria-label="Size"
+      class="inline-flex flex-col gap-3"
+      role="radiogroup"
+    >
+      <div
+        class="inline-flex flex-wrap gap-2 focus:outline-none bg-gray-100 dark:bg-muted rounded-lg p-1"
+      >
+        <button
+          aria-checked="false"
+          aria-label="S"
+          class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+          position="relative"
+          role="radio"
+          tabindex="-1"
+          type="button"
+        >
+          <div
+            class="flex items-center justify-center w-full h-full text-sm font-medium"
+          >
+            <span
+              class="text-xs font-medium truncate"
+            >
+              S
+            </span>
+          </div>
+        </button>
+        <button
+          aria-checked="true"
+          aria-label="M"
+          class="text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-md px-3 py-1 cursor-pointer bg-white dark:bg-muted border border-gray-300 dark:border-2 dark:border-input shadow-sm dark:shadow-none"
+          position="relative"
+          role="radio"
+          tabindex="0"
+          type="button"
+        >
+          <div
+            class="flex items-center justify-center w-full h-full text-sm font-medium"
+          >
+            <span
+              class="text-xs font-medium truncate"
+            >
+              M
+            </span>
+          </div>
+        </button>
+        <button
+          aria-checked="false"
+          aria-label="L"
+          class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+          position="relative"
+          role="radio"
+          tabindex="-1"
+          type="button"
+        >
+          <div
+            class="flex items-center justify-center w-full h-full text-sm font-medium"
+          >
+            <span
+              class="text-xs font-medium truncate"
+            >
+              L
+            </span>
+          </div>
+        </button>
+        <button
+          aria-checked="false"
+          aria-label="XL"
+          class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+          position="relative"
+          role="radio"
+          tabindex="-1"
+          type="button"
+        >
+          <div
+            class="flex items-center justify-center w-full h-full text-sm font-medium"
+          >
+            <span
+              class="text-xs font-medium truncate"
+            >
+              XL
+            </span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Swatches stories snapshot > VariantReadOnly story renders and matches snapshot 1`] = `
+<div
+  class="w-64"
+>
+  <div
+    class="space-y-3"
+  >
+    <div
+      aria-label="Colour"
+      class="flex flex-col gap-3"
+      role="radiogroup"
+    >
+      <div
+        class="flex flex-wrap gap-2 focus:outline-none"
+      >
+        <button
+          aria-checked="false"
+          aria-label="Navy"
+          class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+          position="relative"
+          role="radio"
+          tabindex="0"
+          type="button"
+        >
+          <div
+            class="flex items-center justify-center w-full h-full text-sm font-medium"
+          >
+            <div
+              aria-label="Navy"
+              class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+              style="background-color: navy; background-image: url("https://example.com/navy.jpg");"
+            />
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;

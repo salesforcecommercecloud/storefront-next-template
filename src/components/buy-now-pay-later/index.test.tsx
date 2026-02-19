@@ -15,7 +15,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import type React from 'react';
@@ -132,10 +132,6 @@ describe('InfoModal - Payment Schedule Type', () => {
                 { number: 4, text: 'Pay over time, interest-free' },
             ],
             disclaimer: 'Subject to credit approval. Terms apply.',
-            links: [
-                { text: 'Learn more', url: '/payment-info', openInNewTab: false },
-                { text: 'Terms and conditions', url: '/terms', openInNewTab: true },
-            ],
         };
 
         const mockOnOpenChange = vi.fn();
@@ -152,8 +148,8 @@ describe('InfoModal - Payment Schedule Type', () => {
             expect(screen.getByRole('dialog')).toBeInTheDocument();
         });
 
-        // Verify title and description
-        expect(screen.getByText('Pay in 4')).toBeInTheDocument();
+        // Verify title (heading) and description
+        expect(screen.getByRole('heading', { name: 'Pay in 4' })).toBeInTheDocument();
         expect(screen.getByText('Split your purchase into 4 interest-free payments')).toBeInTheDocument();
 
         // Verify payment schedule amounts are displayed (formatCurrency will format as $14.75)
@@ -164,18 +160,16 @@ describe('InfoModal - Payment Schedule Type', () => {
         expect(screen.getByText('4 weeks')).toBeInTheDocument();
         expect(screen.getByText('6 weeks')).toBeInTheDocument();
 
-        // Verify "How it works" section
+        // Verify "How it works" section (step text "Choose Pay in 4" is split as "Choose " + <strong>Pay in 4</strong>)
         expect(screen.getByText('How it works')).toBeInTheDocument();
         expect(screen.getByText('Select payment method at checkout')).toBeInTheDocument();
-        expect(screen.getByText('Choose Pay in 4')).toBeInTheDocument();
+        const dialog = screen.getByRole('dialog');
+        expect(within(dialog).getByText('Choose')).toBeInTheDocument();
+        expect(within(dialog).getAllByText('Pay in 4').length).toBeGreaterThanOrEqual(2); // title + step phrase
         expect(screen.getByText('Complete your purchase')).toBeInTheDocument();
         expect(screen.getByText('Pay over time, interest-free')).toBeInTheDocument();
 
         // Verify disclaimer
         expect(screen.getByText('Subject to credit approval. Terms apply.')).toBeInTheDocument();
-
-        // Verify links
-        expect(screen.getByText('Learn more')).toBeInTheDocument();
-        expect(screen.getByText('Terms and conditions')).toBeInTheDocument();
     });
 });

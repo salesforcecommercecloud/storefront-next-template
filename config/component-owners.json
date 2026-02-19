@@ -8,12 +8,9 @@
             "checkout/components/contact-info",
             "checkout/components/express-payments",
             "checkout/components/payment",
-            "checkout/components/paypal-button",
-            "checkout/components/paypal-sdk-button",
             "checkout/components/register-customer-selection",
             "checkout/components/shipping-address",
             "checkout/components/shipping-options",
-            "checkout/components/venmo-button",
             "checkout/utils/checkout-context",
             "order-skeleton/index",
             "order-summary/index"

@@ -24,7 +24,7 @@ import coverageConfigThresholds from './vitest.thresholds';
 import tailwindcss from '@tailwindcss/vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import devtoolsJson from 'vite-plugin-devtools-json';
-import storefrontNextPlugin from '@salesforce/storefront-next-dev';
+import storefrontNextTargets from '@salesforce/storefront-next-dev';
 import bundlesize from 'vite-plugin-bundlesize';
 import { visualizer } from 'rollup-plugin-visualizer';
 
@@ -88,7 +88,7 @@ export default defineConfig(({ mode }) => {
             tailwindcss(),
             tsconfigPaths(),
             devtoolsJson(),
-            storefrontNextPlugin({
+            storefrontNextTargets({
                 readableChunkNames: enableReadableChunkNames,
                 staticRegistry: {
                     componentPath: 'src/components',

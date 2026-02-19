@@ -40,7 +40,18 @@ const [originalI18nextMiddleware, getLocale, getInstance] = createI18nextMiddlew
         fallbackLanguage: 'en-US',
         supportedLanguages: ['it-IT', 'en-US'], // Your supported languages, the fallback should be LAST
     },
-    i18next: { resources }, // Translations from all of your locales
+    i18next: {
+        resources,
+        interpolation: {
+            escapeValue: false,
+            format: (value, format) => {
+                if (format === 'number' && typeof value === 'number') {
+                    return value.toLocaleString();
+                }
+                return value;
+            },
+        },
+    }, // Translations from all of your locales
     plugins: [initReactI18next], // Plugins you may need, like react-i18next
 });
 

@@ -424,6 +424,94 @@ describe('product-utils', () => {
             expect(result1).toEqual([]);
             expect(result2).toEqual([]);
         });
+
+        it('should use custom viewType when provided', () => {
+            const swatchImages: ShopperProducts.schemas['Image'][] = [
+                {
+                    link: 'https://example.com/swatch-red.jpg',
+                    disBaseLink: 'https://example.com/swatch-red.jpg',
+                    alt: 'Red Swatch',
+                },
+            ];
+
+            const productWithSwatchVariants: ShopperProducts.schemas['Product'] = {
+                id: 'test-product',
+                imageGroups: [
+                    {
+                        viewType: 'large',
+                        images: defaultLargeImages,
+                    },
+                    {
+                        viewType: 'swatch',
+                        images: [
+                            {
+                                link: 'https://example.com/default-swatch.jpg',
+                                disBaseLink: 'https://example.com/default-swatch.jpg',
+                                alt: 'Default Swatch',
+                            },
+                        ],
+                    },
+                    {
+                        viewType: 'swatch',
+                        variationAttributes: [
+                            {
+                                id: 'color',
+                                values: [{ value: 'red' }],
+                            },
+                        ],
+                        images: swatchImages,
+                    },
+                ],
+            };
+
+            // Should return swatch images for red color when viewType is 'swatch'
+            const result = getImagesForColor(productWithSwatchVariants, 'red', 'swatch');
+            expect(result).toEqual(swatchImages);
+        });
+
+        it('should return default images for custom viewType when no color is selected', () => {
+            const defaultSwatchImages: ShopperProducts.schemas['Image'][] = [
+                {
+                    link: 'https://example.com/default-swatch.jpg',
+                    disBaseLink: 'https://example.com/default-swatch.jpg',
+                    alt: 'Default Swatch',
+                },
+            ];
+
+            const productWithSwatches: ShopperProducts.schemas['Product'] = {
+                id: 'test-product',
+                imageGroups: [
+                    {
+                        viewType: 'large',
+                        images: defaultLargeImages,
+                    },
+                    {
+                        viewType: 'swatch',
+                        images: defaultSwatchImages,
+                    },
+                ],
+            };
+
+            // Should return default swatch images when no color is selected
+            const result = getImagesForColor(productWithSwatches, null, 'swatch');
+            expect(result).toEqual(defaultSwatchImages);
+        });
+
+        it('should return empty array when custom viewType has no matching images', () => {
+            const productWithOnlyLarge: ShopperProducts.schemas['Product'] = {
+                id: 'test-product',
+                imageGroups: [
+                    {
+                        viewType: 'large',
+                        images: defaultLargeImages,
+                    },
+                ],
+            };
+
+            // Should return empty array when 'swatch' viewType doesn't exist
+            const result = getImagesForColor(productWithOnlyLarge, null, 'swatch');
+            expect(result).toEqual([]);
+        });
     });
 
     describe('product type helpers', () => {

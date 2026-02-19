@@ -178,32 +178,32 @@ function mockContext(
 
 function getMockAuthData(): AuthData {
     return {
-        access_token: 'access_token',
-        access_token_expiry: Date.now() + 1_000,
-        refresh_token: 'refresh_token',
-        refresh_token_expiry: Date.now() + 10_000,
+        accessToken: 'access_token',
+        accessTokenExpiry: Date.now() + 1_000,
+        refreshToken: 'refresh_token',
+        refreshTokenExpiry: Date.now() + 10_000,
         userType: 'guest',
         usid: 'usid',
-        customer_id: 'customer_id',
+        customerId: 'customer_id',
         codeVerifier: 'codeVerifier',
         dwsid: 'dwsid',
-        idp_access_token: 'idp_access_token',
+        idpAccessToken: 'idp_access_token',
         trackingConsent: TrackingConsent.Declined,
     };
 }
 
 function getMockRegisteredAuthData(): AuthData {
     return {
-        access_token: 'access_token',
-        access_token_expiry: Date.now() + 1_000,
-        refresh_token: 'refresh_token',
-        refresh_token_expiry: Date.now() + 10_000,
+        accessToken: 'access_token',
+        accessTokenExpiry: Date.now() + 1_000,
+        refreshToken: 'refresh_token',
+        refreshTokenExpiry: Date.now() + 10_000,
         userType: 'registered',
         usid: 'usid',
-        customer_id: 'customer_id',
+        customerId: 'customer_id',
         codeVerifier: 'codeVerifier',
         dwsid: 'dwsid',
-        idp_access_token: 'idp_access_token',
+        idpAccessToken: 'idp_access_token',
         trackingConsent: TrackingConsent.Declined,
     };
 }
@@ -255,7 +255,7 @@ describe('auth middleware (server)', () => {
 
             updateAuth(provider, getMockTokenResponse());
 
-            expect(storage.get('access_token')).toBe('access-token-123');
+            expect(storage.get('accessToken')).toBe('access-token-123');
             expect(storage.get('isUpdated')).toBe(true);
         });
     });
@@ -1339,8 +1339,8 @@ describe('auth middleware (server)', () => {
 
             await authMiddleware({ request, context, params: {} }, next);
 
-            // Verify access_token_expiry was set from JWT
-            const expiry = storage.get('access_token_expiry');
+            // Verify accessTokenExpiry was set from JWT
+            const expiry = storage.get('accessTokenExpiry');
             expect(expiry).toBeDefined();
             expect(typeof expiry).toBe('number');
             expect(expiry).toBe(exp * 1000); // Should be in milliseconds
@@ -1431,7 +1431,7 @@ describe('auth middleware (server)', () => {
             await authMiddleware({ request, context, params: {} }, next);
 
             // Verify serialize was called multiple times
-            // Cookies: refresh_token, access_token, usid, customer_id, idp_access_token, dwsid,
+            // Cookies: refreshToken, accessToken, usid, customerId, idpAccessToken, dwsid,
             // delete other refresh token, delete code verifier
             expect(mockSerialize).toHaveBeenCalled();
             expect(mockSerialize.mock.calls.length).toBeGreaterThanOrEqual(6);
@@ -1459,10 +1459,10 @@ describe('auth middleware (server)', () => {
             const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
             storage.set('isUpdated', true);
             storage.set('userType', 'registered'); // Switching from guest to registered
-            storage.set('refresh_token', 'registered-refresh-token');
-            storage.set('refresh_token_expiry', now + 3600000);
-            storage.set('access_token', 'access-token');
-            storage.set('access_token_expiry', now + 1800000);
+            storage.set('refreshToken', 'registered-refresh-token');
+            storage.set('refreshTokenExpiry', now + 3600000);
+            storage.set('accessToken', 'access-token');
+            storage.set('accessTokenExpiry', now + 1800000);
 
             vi.spyOn(context, 'get').mockImplementation((key) => {
                 if (key === performanceTimerContext) return mockPerformanceTimer;
@@ -1637,7 +1637,7 @@ describe('auth middleware (server)', () => {
 
             // Should use registered type (cc-nx takes priority)
             expect(storage.get('userType')).toBe('registered');
-            expect(storage.get('refresh_token')).toBe('registered-refresh-token');
+            expect(storage.get('refreshToken')).toBe('registered-refresh-token');
         });
 
         it('should read and reconstruct IDP access token from cookies', async () => {
@@ -1683,7 +1683,7 @@ describe('auth middleware (server)', () => {
             await authMiddleware({ request, context, params: {} }, next);
 
             // Verify IDP access token was reconstructed from cookies
-            expect(storage.get('idp_access_token')).toBe('idp-access-token');
+            expect(storage.get('idpAccessToken')).toBe('idp-access-token');
         });
 
         it('should read and reconstruct code verifier from cookie', async () => {
@@ -1746,10 +1746,10 @@ describe('auth middleware (server)', () => {
             const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
             storage.set('isUpdated', true);
             storage.set('userType', 'guest');
-            storage.set('refresh_token', 'refresh-token');
-            storage.set('refresh_token_expiry', now + 3600000);
-            storage.set('access_token', 'access-token');
-            storage.set('access_token_expiry', now + 1800000);
+            storage.set('refreshToken', 'refresh-token');
+            storage.set('refreshTokenExpiry', now + 3600000);
+            storage.set('accessToken', 'access-token');
+            storage.set('accessTokenExpiry', now + 1800000);
             // Note: codeVerifier is NOT in storage (e.g., after successful social login)
 
             vi.spyOn(context, 'get').mockImplementation((key) => {

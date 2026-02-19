@@ -38,7 +38,7 @@ const createTestWrapper = (component: React.ReactElement, session?: SessionData)
 };
 
 const guestSession: SessionData = { userType: 'guest' };
-const registeredSession: SessionData = { userType: 'registered', customer_id: 'test-customer-1' };
+const registeredSession: SessionData = { userType: 'registered', customerId: 'test-customer-1' };
 
 describe('UserActions', () => {
     beforeEach(() => {

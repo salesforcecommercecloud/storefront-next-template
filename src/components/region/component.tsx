@@ -13,36 +13,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ReactElement, memo, Suspense } from 'react';
+import { type ReactElement, memo, Suspense, useEffect } from 'react';
 import { registry } from '@/lib/registry';
-import { Await } from 'react-router';
-import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
+import { Await, useAsyncError } from 'react-router';
 import type { ComponentDesignMetadata } from '@salesforce/storefront-next-runtime/design/react';
+import { useComponentDataById } from './component-data-context';
+import type { ComponentType } from './index';
 
 export interface ComponentProps {
-    page: ShopperExperience.schemas['Page'];
-    component: ShopperExperience.schemas['Component'];
+    component: ComponentType;
     className?: string;
-    componentData?: Record<string, Promise<unknown>>;
     regionId: string;
 }
 
-export const Component = memo(function Component({
-    component,
-    componentData,
-    className,
-    regionId,
-    page,
-}: ComponentProps): ReactElement {
+/**
+ * Error handler component that logs component data loading errors and renders nothing.
+ * Uses React Router's useAsyncError to access the error from the Await boundary.
+ *
+ * When a component's data fails to load (e.g., API error), we render nothing (null)
+ * instead of showing a misleading skeleton/fallback. The error is logged to the console
+ * for debugging purposes.
+ */
+function ComponentErrorFallback({ componentId, componentTypeId }: { componentId: string; componentTypeId: string }) {
+    const error = useAsyncError();
+
+    useEffect(() => {
+        // Log the error once when mounted
+        // eslint-disable-next-line no-console
+        console.error(
+            `[Page Designer] Failed to load data for component "${componentId}" (${componentTypeId}):`,
+            error
+        );
+    }, [componentId, componentTypeId, error]);
+
+    // Render nothing when data loading fails
+    return null;
+}
+
+export const Component = memo(function Component({ component, className, regionId }: ComponentProps): ReactElement {
+    // Get this component's data promise from context by its ID
+    const dataPromise = useComponentDataById(component.id);
     const FallbackComponent = registry.getFallback(component.typeId);
     const DynamicComponent = registry.getComponent(component.typeId);
     if (!DynamicComponent) {
         // eslint-disable-next-line @typescript-eslint/only-throw-error
         throw registry.preload(component.typeId);
     }
-
-    // Create a single promise that chains through both levels
-    const dataPromise = componentData?.[component.id];
 
     const designMetadata: ComponentDesignMetadata = {
         name: component.designMetadata?.name,
@@ -54,13 +70,14 @@ export const Component = memo(function Component({
 
     return (
         <Suspense fallback={FallbackComponent ? <FallbackComponent {...(component.data ?? {})} /> : <div />}>
-            <Await resolve={dataPromise}>
+            <Await
+                resolve={dataPromise}
+                errorElement={<ComponentErrorFallback componentId={component.id} componentTypeId={component.typeId} />}>
                 {(data) => (
                     <DynamicComponent
                         {...(component.data ?? {})}
                         designMetadata={designMetadata}
-                        page={page}
-                        componentData={componentData}
+                        component={component}
                         data={data}
                         className={className}
                         regionId={regionId}
