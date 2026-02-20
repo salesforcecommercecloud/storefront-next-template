@@ -43,6 +43,7 @@ describe('action.set-locale', () => {
             request: mockRequest,
             params: {},
             context: {} as any,
+            unstable_pattern: 'action/set-locale',
         };
 
         const result: any = await action(args);
@@ -67,6 +68,7 @@ describe('action.set-locale', () => {
                 request: mockRequest,
                 params: {},
                 context: {} as any,
+                unstable_pattern: 'action/set-locale',
             };
 
             const result: any = await action(args);
@@ -83,6 +85,7 @@ describe('action.set-locale', () => {
             request: mockRequest,
             params: {},
             context: {} as any,
+            unstable_pattern: 'action/set-locale',
         };
 
         try {
@@ -107,6 +110,7 @@ describe('action.set-locale', () => {
             request: mockRequest,
             params: {},
             context: {} as any,
+            unstable_pattern: 'action/set-locale',
         };
 
         try {

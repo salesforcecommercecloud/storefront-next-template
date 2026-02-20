@@ -29,7 +29,6 @@ import { currencyContext } from '@/lib/currency';
  * Fetches full product details for all items in the basket
  * Returns a mapping of productId to full product data
  */
-// eslint-disable-next-line custom/no-async-page-loader
 export async function loader({
     context,
 }: LoaderFunctionArgs): Promise<Record<string, ShopperProducts.schemas['Product']>> {

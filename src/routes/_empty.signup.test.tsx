@@ -89,6 +89,7 @@ describe('signup route', () => {
                 request: mockRequest,
                 params: {},
                 context: mockContext,
+                unstable_pattern: 'signup',
             };
 
             const result = loader(args);
@@ -111,6 +112,7 @@ describe('signup route', () => {
                 request: mockRequest,
                 params: {},
                 context: mockContext,
+                unstable_pattern: 'signup',
             };
 
             const result = loader(args);
@@ -148,6 +150,7 @@ describe('signup route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: 'signup',
                 };
 
                 const result = await action(args);
@@ -177,6 +180,7 @@ describe('signup route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: 'signup',
                 };
 
                 const result = await action(args);
@@ -206,6 +210,7 @@ describe('signup route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: 'signup',
                 };
 
                 const result = await action(args);
@@ -235,6 +240,7 @@ describe('signup route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: 'signup',
                 };
 
                 const result = await action(args);
@@ -264,6 +270,7 @@ describe('signup route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: 'signup',
                 };
 
                 const result = await action(args);
@@ -294,6 +301,7 @@ describe('signup route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: 'signup',
                 };
 
                 const result = await action(args);
@@ -326,6 +334,7 @@ describe('signup route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: 'signup',
                 };
 
                 const result = await action(args);
@@ -362,6 +371,7 @@ describe('signup route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: 'signup',
                 };
 
                 const result = await action(args);
@@ -406,6 +416,7 @@ describe('signup route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: 'signup',
                 };
 
                 const result = await action(args);
@@ -443,6 +454,7 @@ describe('signup route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: 'signup',
                 };
 
                 const result = await action(args);
@@ -476,6 +488,7 @@ describe('signup route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: 'signup',
                 };
 
                 const result = await action(args);
@@ -507,6 +520,7 @@ describe('signup route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: 'signup',
                 };
 
                 const result = await action(args);
@@ -539,6 +553,7 @@ describe('signup route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: 'signup',
                 };
 
                 await action(args);
@@ -577,6 +592,7 @@ describe('signup route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: 'signup',
                 };
 
                 await action(args);
@@ -613,6 +629,7 @@ describe('signup route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: 'signup',
                 };
 
                 const result = await action(args);

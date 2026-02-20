@@ -89,7 +89,6 @@ function getActionHandler(pathname: string, context: Readonly<RouterContextProvi
     return null;
 }
 
-// eslint-disable-next-line custom/no-async-page-loader
 export async function loader(args: LoaderFunctionArgs) {
     const url = new URL(args.request.url);
     const handler = getLoaderHandler(url.pathname, args.context);

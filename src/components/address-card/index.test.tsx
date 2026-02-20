@@ -243,13 +243,12 @@ describe('AddressCard', () => {
         });
 
         test('handles address with missing name fields', () => {
-            const addressWithNoName: ShopperCustomers.schemas['CustomerAddress'] = {
-                ...mockAddress,
-                firstName: undefined,
-                lastName: undefined,
-            };
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { firstName, lastName, ...addressWithNoName } = mockAddress;
 
-            const { container } = render(<AddressCard address={addressWithNoName} />);
+            const { container } = render(
+                <AddressCard address={addressWithNoName as ShopperCustomers.schemas['CustomerAddress']} />
+            );
 
             // Query for the card title element specifically
             const titleElement = container.querySelector('[data-slot="card-title"]');

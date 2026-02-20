@@ -25,7 +25,6 @@ import { getConfig } from '@/config';
  * Server loader to fetch product details for a slice of wishlist items
  * This is used by PaginatedProductCarousel to load more products on demand
  */
-// eslint-disable-next-line custom/no-async-page-loader
 export async function loader({ request, context }: LoaderFunctionArgs): Promise<{
     products: (ShopperSearch.schemas['ProductSearchHit'] | null)[];
     productsByProductId: Record<string, ShopperProducts.schemas['Product']>;
@@ -57,7 +56,7 @@ export async function loader({ request, context }: LoaderFunctionArgs): Promise<
     const { searchParams } = new URL(request.url);
     const config = getConfig(context);
     const defaultLimit = config.global.paginatedProductCarousel.defaultLimit;
-    const maxLimit = config.global.productListing.productsPerPage;
+    const maxLimit = config.search.products.hits.limit;
     const offset = parseInt(searchParams.get('offset') || '0', 10);
     const limit = parseInt(searchParams.get('limit') || String(defaultLimit), 10);
 

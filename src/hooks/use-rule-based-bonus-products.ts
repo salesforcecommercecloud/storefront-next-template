@@ -42,7 +42,7 @@ export function useRuleBasedBonusProducts(
     const parameters = useMemo(() => {
         // Build refine array with all promotion IDs and the bonus product type filter
         const refine = [
-            ...(appConfig.search?.products?.orderableOnly === true ? ['orderable_only=true'] : []),
+            ...(appConfig.search.products.refine?.orderableOnly === true ? ['orderable_only=true'] : []),
             ...(Array.isArray(promotionIds) && promotionIds.length
                 ? [...promotionIds.map((id) => `pmid=${id}`), 'pmpt=bonus']
                 : []),

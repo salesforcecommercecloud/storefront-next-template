@@ -254,10 +254,7 @@ let breakpointLabels = getBreakpointLabels(themeBreakpoints);
  * Helper to create very specific `media` attributes for responsive preload purposes.
  * @see {@link https://web.dev/articles/preload-responsive-images#picture}
  */
-const obtainImageLinkMedia = (
-    breakpointIndex: number,
-    inputWidthsLength: number
-): { min?: string; max?: string } | undefined => {
+const obtainImageLinkMedia = (breakpointIndex: number): { min?: string; max?: string } | undefined => {
     const toMediaValue = (bp: string, type: 'min' | 'max') => {
         const val = themeBreakpoints[bp as BreakpointKey];
         if (emValue.test(val)) {
@@ -274,12 +271,12 @@ const obtainImageLinkMedia = (
     const currentBp = breakpointLabels[breakpointIndex];
     if (breakpointIndex === 0) {
         // first
-        return nextBp ? toMediaValue(nextBp, 'max') : undefined;
-    } else if (breakpointIndex >= inputWidthsLength - 1) {
-        // last - use inputWidthsLength instead of breakpointLabels.length
-        return currentBp ? toMediaValue(currentBp, 'min') : undefined;
+        return toMediaValue(nextBp, 'max');
+    } else if (breakpointIndex === breakpointLabels.length - 1) {
+        // last
+        return toMediaValue(currentBp, 'min');
     }
-    return currentBp && nextBp ? { ...toMediaValue(currentBp, 'min'), ...toMediaValue(nextBp, 'max') } : undefined;
+    return { ...toMediaValue(currentBp, 'min'), ...toMediaValue(nextBp, 'max') };
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -501,12 +498,12 @@ const getResponsiveSourcesAndLinks = (
         return i === 0
             ? {
                   media: '',
-                  mediaLink: obtainImageLinkMedia(i, l),
+                  mediaLink: obtainImageLinkMedia(i),
                   sizes: sizesWidths[i],
               }
             : {
                   media: `(min-width: ${themeBreakpoints[bp as BreakpointKey]})`,
-                  mediaLink: obtainImageLinkMedia(i, l),
+                  mediaLink: obtainImageLinkMedia(i),
                   sizes: sizesWidths.at(i >= l ? l - 1 : i),
               };
     });
@@ -549,9 +546,7 @@ const getResponsiveSourcesAndLinks = (
                 }
             } else if (lastLink && mediaLink) {
                 // If we have already stored those values, update the `max` portion of the related `<link>` data
-                if (mediaLink.max) {
-                    lastLink.media.max = mediaLink.max;
-                }
+                lastLink.media.max = mediaLink.max;
             }
             return acc;
         },

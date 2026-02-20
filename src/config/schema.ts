@@ -144,10 +144,6 @@ export type Config = {
                 logoAlt: string;
             };
             productListing: {
-                productsPerPage: number;
-                enableInfiniteScroll: boolean;
-                sortOptions: Array<'relevance' | 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc' | 'newest'>;
-                enableQuickView: boolean;
                 defaultProductTileImgAspectRatio: number;
             };
             carousel: {
@@ -208,9 +204,15 @@ export type Config = {
             fallbackFormat?: 'avif' | 'gif' | 'jp2' | 'jpg' | 'jpeg' | 'jxr' | 'png' | 'webp';
             host?: string;
         };
-        search?: {
-            products?: {
-                orderableOnly?: boolean;
+        search: {
+            products: {
+                refine?: {
+                    orderableOnly?: boolean;
+                };
+                hits: {
+                    limit: number;
+                    critical?: number;
+                };
             };
         };
         performance: {

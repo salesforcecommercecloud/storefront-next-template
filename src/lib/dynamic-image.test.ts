@@ -277,13 +277,13 @@ describe('getResponsivePictureAttributes()', () => {
                     type: 'image/webp',
                 },
                 {
-                    media: '(min-width: 768px)',
+                    media: '(min-width: 768px) and (max-width: 1023px)',
                     sizes: '50vw',
                     srcSet: [512, 1024].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
                 {
-                    media: '(min-width: 1024px)',
+                    media: '(min-width: 1024px) and (max-width: 1279px)',
                     sizes: '50vw',
                     srcSet: [640, 1280].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',

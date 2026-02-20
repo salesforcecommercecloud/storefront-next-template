@@ -306,7 +306,7 @@ describe('generateCategorySchema', () => {
         expect(items[0].item.offers).toBeUndefined();
     });
 
-    it('should set availability to InStock when config.products.orderableOnly is true', () => {
+    it('should set availability to InStock when config.search.products.refine.orderableOnly is true', () => {
         const searchResultWithStock: ShopperSearch.schemas['ProductSearchResult'] = {
             hits: [
                 {
@@ -334,7 +334,7 @@ describe('generateCategorySchema', () => {
             defaultCurrency,
             config: createAppConfig({
                 ...mockBuildConfig,
-                ...({ app: { search: { products: { orderableOnly: true } } } } as Partial<Config>),
+                ...({ app: { search: { products: { refine: { orderableOnly: true } } } } } as Partial<Config>),
             }),
         });
 
@@ -342,7 +342,7 @@ describe('generateCategorySchema', () => {
         expect(items[0].item.offers?.availability).toBe('https://schema.org/InStock');
     });
 
-    it('should omit availability when config.products.orderableOnly is false', () => {
+    it('should omit availability when config.search.products.refine.orderableOnly is false', () => {
         const searchResultOutOfStock: ShopperSearch.schemas['ProductSearchResult'] = {
             hits: [
                 {
@@ -370,7 +370,7 @@ describe('generateCategorySchema', () => {
             defaultCurrency,
             config: createAppConfig({
                 ...mockBuildConfig,
-                ...({ app: { search: { products: { orderableOnly: false } } } } as Partial<Config>),
+                ...({ app: { search: { products: { refine: { orderableOnly: false } } } } } as Partial<Config>),
             }),
         });
 
@@ -378,7 +378,7 @@ describe('generateCategorySchema', () => {
         expect(items[0].item.offers?.availability).toBeUndefined();
     });
 
-    it('should set availability to OutOfStock when orderable is false, though config.products.orderableOnly is true', () => {
+    it('should set availability to OutOfStock when orderable is false, though config.search.products.refine.orderableOnly is true', () => {
         const searchResultWithoutOrderable: ShopperSearch.schemas['ProductSearchResult'] = {
             hits: [
                 {
@@ -407,7 +407,7 @@ describe('generateCategorySchema', () => {
             defaultCurrency,
             config: createAppConfig({
                 ...mockBuildConfig,
-                ...({ app: { search: { products: { orderableOnly: true } } } } as Partial<Config>),
+                ...({ app: { search: { products: { refine: { orderableOnly: true } } } } } as Partial<Config>),
             }),
         });
 
@@ -415,7 +415,7 @@ describe('generateCategorySchema', () => {
         expect(items[0].item.offers?.availability).toBe('https://schema.org/OutOfStock');
     });
 
-    it('should set availability to X when orderable is true, though config.products.orderableOnly is false', () => {
+    it('should set availability to X when orderable is true, though config.search.products.refine.orderableOnly is false', () => {
         const searchResultWithoutOrderable: ShopperSearch.schemas['ProductSearchResult'] = {
             hits: [
                 {
@@ -444,7 +444,7 @@ describe('generateCategorySchema', () => {
             defaultCurrency,
             config: createAppConfig({
                 ...mockBuildConfig,
-                ...({ app: { search: { products: { orderableOnly: false } } } } as Partial<Config>),
+                ...({ app: { search: { products: { refine: { orderableOnly: false } } } } } as Partial<Config>),
             }),
         });
 

@@ -14,43 +14,191 @@
  * limitations under the License.
  */
 import { render, screen } from '@testing-library/react';
-import { describe, test, expect } from 'vitest';
+import userEvent from '@testing-library/user-event';
+import { describe, test, expect, vi, beforeEach } from 'vitest';
+import { useLoaderData, useNavigation } from 'react-router';
+import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
 import PreferredStore from '.';
 
-describe('PreferredStore', () => {
-    const renderPreferredStore = () => {
-        return render(<PreferredStore />);
-    };
+// Mock react-router
+vi.mock('react-router', () => ({
+    useLoaderData: vi.fn(),
+    useNavigation: vi.fn(() => ({ state: 'idle' })),
+}));
 
-    describe('Section Content', () => {
+// @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
+// Mock ChangeStoreButton to avoid client component issues in tests
+vi.mock('./change-store-button', () => ({
+    default: ({ currentStoreId }: { currentStoreId?: string }) => (
+        <button data-testid="change-store-button" data-current-store-id={currentStoreId}>
+            Change store
+        </button>
+    ),
+}));
+
+// Mock StoreAddress extension component
+vi.mock('@/extensions/store-locator/components/store-locator/address', () => ({
+    default: ({ store }: { store: ShopperStores.schemas['Store'] }) => (
+        <span data-testid="store-address">
+            {store.address1}, {store.city}, {store.stateCode} {store.postalCode}
+        </span>
+    ),
+}));
+// @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
+
+// Mock useToast
+const mockAddToast = vi.fn();
+vi.mock('@/components/toast', () => ({
+    useToast: () => ({ addToast: mockAddToast }),
+}));
+
+const mockStore: ShopperStores.schemas['Store'] = {
+    id: 'store-001',
+    name: 'Downtown Store',
+    address1: '123 Main Street',
+    city: 'San Francisco',
+    stateCode: 'CA',
+    postalCode: '94105',
+    storeHours: '10:00 AM - 8:00 PM',
+};
+
+describe('PreferredStore', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    describe('With Store Selected', () => {
+        beforeEach(() => {
+            vi.mocked(useLoaderData).mockReturnValue({ preferredStore: mockStore, error: null });
+        });
+
         test('renders Preferred Store for Pickup heading', () => {
-            renderPreferredStore();
+            render(<PreferredStore />);
             expect(screen.getByText('Preferred Store for Pickup')).toBeInTheDocument();
         });
 
         test('renders preferred store description', () => {
-            renderPreferredStore();
+            render(<PreferredStore />);
             expect(screen.getByText('Select your preferred store for in-store pickup orders')).toBeInTheDocument();
         });
 
-        test('renders Change store button', () => {
-            renderPreferredStore();
-            expect(screen.getByRole('button', { name: 'Change store' })).toBeInTheDocument();
+        // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
+        test('renders Change store button with current store ID', () => {
+            render(<PreferredStore />);
+            const button = screen.getByTestId('change-store-button');
+            expect(button).toBeInTheDocument();
+            expect(button).toHaveAttribute('data-current-store-id', 'store-001');
+        });
+        // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
+
+        test('renders store name', () => {
+            render(<PreferredStore />);
+            expect(screen.getByText('Downtown Store')).toBeInTheDocument();
         });
 
-        test('renders default store name', () => {
-            renderPreferredStore();
-            expect(screen.getByText('Salesforce Foundations - San Francisco')).toBeInTheDocument();
+        // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
+        test('renders store address', () => {
+            render(<PreferredStore />);
+            expect(screen.getByText(/123 Main Street/)).toBeInTheDocument();
+        });
+        // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
+
+        test('renders collapsible Store Hours trigger when hours available', () => {
+            render(<PreferredStore />);
+            expect(screen.getByText('Store Hours')).toBeInTheDocument();
         });
 
-        test('renders default store address', () => {
-            renderPreferredStore();
-            expect(screen.getByText('415 Mission Street, San Francisco, CA 94105')).toBeInTheDocument();
+        test('hides store hours content by default', () => {
+            render(<PreferredStore />);
+            expect(screen.queryByText('10:00 AM - 8:00 PM')).not.toBeInTheDocument();
         });
 
-        test('renders default store hours', () => {
-            renderPreferredStore();
-            expect(screen.getByText('Open today: 10:00 AM - 8:00 PM')).toBeInTheDocument();
+        test('reveals store hours content when trigger is clicked', async () => {
+            const user = userEvent.setup();
+            render(<PreferredStore />);
+
+            await user.click(screen.getByText('Store Hours'));
+            expect(screen.getByText('10:00 AM - 8:00 PM')).toBeInTheDocument();
+        });
+
+        test('does not render store hours when not available', () => {
+            const storeWithoutHours = { ...mockStore, storeHours: undefined };
+            vi.mocked(useLoaderData).mockReturnValue({ preferredStore: storeWithoutHours, error: null });
+
+            render(<PreferredStore />);
+            expect(screen.queryByText('Store Hours')).not.toBeInTheDocument();
+        });
+    });
+
+    describe('Without Store Selected', () => {
+        beforeEach(() => {
+            vi.mocked(useLoaderData).mockReturnValue({ preferredStore: null, error: null });
+        });
+
+        test('renders empty state message', () => {
+            render(<PreferredStore />);
+            expect(
+                screen.getByText('No store selected. Use the store locator to choose your preferred store for pickup.')
+            ).toBeInTheDocument();
+        });
+
+        // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
+        test('renders Change store button without store ID', () => {
+            render(<PreferredStore />);
+            const button = screen.getByTestId('change-store-button');
+            expect(button).toBeInTheDocument();
+            expect(button).not.toHaveAttribute('data-current-store-id');
+        });
+        // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
+
+        test('does not render store details', () => {
+            render(<PreferredStore />);
+            expect(screen.queryByText('Downtown Store')).not.toBeInTheDocument();
+        });
+    });
+
+    describe('Error Handling', () => {
+        test('shows error toast when store fetch fails', () => {
+            vi.mocked(useLoaderData).mockReturnValue({
+                preferredStore: null,
+                error: 'Failed to load store details. Please try again later.',
+            });
+
+            render(<PreferredStore />);
+
+            expect(mockAddToast).toHaveBeenCalledWith('Failed to load store details. Please try again later.', 'error');
+        });
+
+        test('does not show toast when there is no error', () => {
+            vi.mocked(useLoaderData).mockReturnValue({ preferredStore: mockStore, error: null });
+
+            render(<PreferredStore />);
+
+            expect(mockAddToast).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('Loading State', () => {
+        test('shows skeleton while revalidating', () => {
+            vi.mocked(useLoaderData).mockReturnValue({ preferredStore: mockStore, error: null });
+            vi.mocked(useNavigation).mockReturnValue({ state: 'loading' } as ReturnType<typeof useNavigation>);
+
+            render(<PreferredStore />);
+
+            // Should show skeletons instead of actual content
+            expect(screen.queryByText('Downtown Store')).not.toBeInTheDocument();
+            expect(screen.getAllByTestId('skeleton')).toHaveLength(3);
+        });
+
+        test('shows content when not revalidating', () => {
+            vi.mocked(useLoaderData).mockReturnValue({ preferredStore: mockStore, error: null });
+            vi.mocked(useNavigation).mockReturnValue({ state: 'idle' } as ReturnType<typeof useNavigation>);
+
+            render(<PreferredStore />);
+
+            // Should show actual content
+            expect(screen.getByText('Downtown Store')).toBeInTheDocument();
+            expect(screen.queryByTestId('skeleton')).not.toBeInTheDocument();
         });
     });
 });

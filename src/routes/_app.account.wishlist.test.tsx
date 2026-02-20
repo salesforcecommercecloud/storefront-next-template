@@ -82,9 +82,11 @@ describe('fetchProductsForWishlist', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         mockGetConfig.mockReturnValue({
-            global: {
-                productListing: {
-                    productsPerPage: 24,
+            search: {
+                products: {
+                    hits: {
+                        limit: 24,
+                    },
                 },
             },
             commerce: {
@@ -98,7 +100,7 @@ describe('fetchProductsForWishlist', () => {
     });
 
     describe('batching logic', () => {
-        test('should make a single request when product IDs count is within productsPerPage limit', async () => {
+        test('should make a single request when product IDs count is within hits limit', async () => {
             const items: ShopperCustomers.schemas['CustomerProductListItem'][] = Array.from({ length: 24 }, (_, i) => ({
                 id: `item-${i}`,
                 productId: `product-${i}`,
@@ -134,7 +136,7 @@ describe('fetchProductsForWishlist', () => {
             expect(Object.keys(result)).toHaveLength(24);
         });
 
-        test('should batch requests when product IDs exceed productsPerPage limit', async () => {
+        test('should batch requests when product IDs exceed hits limit', async () => {
             const items: ShopperCustomers.schemas['CustomerProductListItem'][] = Array.from({ length: 50 }, (_, i) => ({
                 id: `item-${i}`,
                 productId: `product-${i}`,
@@ -572,10 +574,14 @@ describe('account.wishlist loaders', () => {
         });
         mockIsRegisteredCustomer.mockReturnValue(true);
         mockGetConfig.mockReturnValue({
-            global: {
-                productListing: {
-                    productsPerPage: 24,
+            search: {
+                products: {
+                    hits: {
+                        limit: 24,
+                    },
                 },
+            },
+            global: {
                 paginatedProductCarousel: {
                     defaultLimit: 8,
                 },

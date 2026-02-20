@@ -182,7 +182,8 @@ const defaultProducts: ShopperSearch.schemas['ProductSearchHit'][] = [
 
 export const DefaultGrid: Story = {
     args: {
-        products: defaultProducts,
+        critical: defaultProducts.slice(0, 1),
+        nonCritical: Promise.resolve(defaultProducts.slice(1)),
     },
     parameters: {
         docs: {
@@ -207,14 +208,43 @@ Standard grid with a variety of product hit types (standard, master, set).
     },
 };
 
-export const SingleProduct: Story = {
+export const SingleProductCritical: Story = {
     args: {
-        products: [cloneHit(mockStandardProductHit, { productId: 'STD-ONLY', productName: 'Standard Only' })],
+        critical: [cloneHit(mockStandardProductHit, { productId: 'STD-ONLY', productName: 'Standard Only' })],
     },
     parameters: {
         docs: {
             description: {
-                story: `Single product tile rendering.`,
+                story: `Single critical product tile rendering.`,
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const wishlistButtons = canvas.queryAllByRole('button', { name: /wishlist/i });
+        if (wishlistButtons.length > 0) {
+            const enabledButton = wishlistButtons.find((btn) => !btn.hasAttribute('disabled'));
+            if (enabledButton) {
+                await userEvent.click(enabledButton);
+            }
+        } else {
+            // If no wishlist buttons found, verify component still renders
+            void expect(canvasElement).toBeInTheDocument();
+        }
+    },
+};
+
+export const SingleProductNonCritical: Story = {
+    args: {
+        nonCritical: Promise.resolve([
+            cloneHit(mockStandardProductHit, { productId: 'STD-ONLY', productName: 'Standard Only' }),
+        ]),
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: `Single non-critical product tile rendering.`,
             },
         },
     },
@@ -236,7 +266,7 @@ export const SingleProduct: Story = {
 
 export const EmptyState: Story = {
     args: {
-        products: [],
+        critical: [],
     },
     parameters: {
         docs: {
@@ -262,7 +292,8 @@ const manyProducts: ShopperSearch.schemas['ProductSearchHit'][] = Array.from({ l
 
 export const ManyProducts: Story = {
     args: {
-        products: manyProducts,
+        critical: manyProducts.slice(0, 2),
+        nonCritical: Promise.resolve(manyProducts.slice(2)),
     },
     parameters: {
         docs: {
@@ -283,7 +314,8 @@ export const ManyProducts: Story = {
 
 export const MobileView: Story = {
     args: {
-        products: defaultProducts,
+        critical: defaultProducts.slice(0, 2),
+        nonCritical: Promise.resolve(defaultProducts.slice(2)),
     },
     parameters: {
         docs: {
@@ -310,7 +342,8 @@ export const MobileView: Story = {
 
 export const DesktopView: Story = {
     args: {
-        products: defaultProducts,
+        critical: defaultProducts.slice(0, 2),
+        nonCritical: Promise.resolve(defaultProducts.slice(2)),
     },
     parameters: {
         docs: {

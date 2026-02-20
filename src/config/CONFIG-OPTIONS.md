@@ -716,58 +716,6 @@ PUBLIC__app__global__branding__logoAlt="Acme Store Home"
 
 ---
 
-### global.productListing.productsPerPage
-
-Type: `number` | Default: `24`
-
-The number of products to display per page in product listing pages, such as search result and category pages. This option affects pagination and the initial API request size for product listings.
-
-Example:
-```bash
-PUBLIC__app__global__productListing__productsPerPage=36
-```
-
----
-
-### global.productListing.enableInfiniteScroll
-
-Type: `boolean` | Default: `false`
-
-When enabled, automatically loads more products as the user scrolls down instead of using pagination buttons.
-
-Example:
-```bash
-PUBLIC__app__global__productListing__enableInfiniteScroll=true
-```
-
----
-
-### global.productListing.sortOptions
-
-Type: `('relevance' | 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc' | 'newest')[]` | Default: `['relevance', 'price-asc', 'price-desc', 'name-asc']`
-
-Array of sort options available in product listing pages. The order determines the display order in the sort dropdown.
-
-Example:
-```bash
-PUBLIC__app__global__productListing__sortOptions='["relevance","price-asc","price-desc","newest"]'
-```
-
----
-
-### global.productListing.enableQuickView
-
-Type: `boolean` | Default: `true`
-
-When enabled, shows a quick view modal when users hover over or tap product tiles, allowing them to see product details without leaving the listing page.
-
-Example:
-```bash
-PUBLIC__app__global__productListing__enableQuickView=false
-```
-
----
-
 ### global.productListing.defaultProductTileImgAspectRatio
 
 Type: `number` | Default: `1`
@@ -1056,7 +1004,7 @@ PUBLIC__app__images__host='https://edge.dis.commercecloud.salesforce.com'
 
 Search-specific configuration options.
 
-### search.products.orderableOnly
+### search.products.refine.orderableOnly
 
 Type: `boolean` Optional | Default: `true`
 
@@ -1070,7 +1018,31 @@ Property to define whether to only return search results with products that are 
 
 Example:
 ```bash
-PUBLIC__app__search__orderableOnly=true
+PUBLIC__app__search__products__refine__orderableOnly=true
+```
+
+---
+
+### search.products.hits.limit
+
+Type: `number` | Default: `24`
+
+The number of products to display per page in product listing pages, such as search result and category pages. This option affects pagination and the initial API request size for product listings.
+
+Example:
+```bash
+PUBLIC__app__search__products__hits__limit=36
+```
+
+---
+
+### search.products.hits.critical
+
+Define the number of product search hits to load in a blocking manner, i.e., critical.
+
+Example:
+```bash
+PUBLIC__app__search__products__hits__critical=4
 ```
 
 ---
@@ -1514,10 +1486,7 @@ To customize how products appear in search and category pages, use these setting
 
 ```bash
 # Show more products per page
-PUBLIC__app__global__productListing__productsPerPage=36
-
-# Enable infinite scroll instead of pagination
-PUBLIC__app__global__productListing__enableInfiniteScroll=true
+PUBLIC__app__search__products__hits__limit=36
 
 # Customize sort options
 PUBLIC__app__global__productListing__sortOptions='["relevance","price-asc","price-desc","newest"]'

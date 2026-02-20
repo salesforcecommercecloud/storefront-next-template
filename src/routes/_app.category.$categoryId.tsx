@@ -13,19 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Fragment, Suspense, useEffect, useMemo, useRef, use } from 'react';
-import { Await, type LoaderFunctionArgs, useLocation } from 'react-router';
-import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import { Fragment, Suspense, use, useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
+import { type LoaderFunctionArgs, useLocation } from 'react-router';
+import { ApiError, type ShopperProducts, type ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchCategory } from '@/lib/api/categories';
 import { fetchSearchProducts } from '@/lib/api/search';
 import { getAllQueryParams, getQueryParam, PRODUCT_SEARCH_QUERY_PARAMS } from '@/lib/query-params';
 import { getConfig, useConfig } from '@/config';
 import { currencyContext } from '@/lib/currency';
-import CategorySkeleton, {
-    CategoryBreadcrumbsSkeleton,
-    CategoryHeaderSkeleton,
-    CategoryRefinementsSkeleton,
-} from '@/components/category-skeleton';
 import CategoryBreadcrumbs from '@/components/category-breadcrumbs';
 import CategoryPagination from '@/components/category-pagination';
 import CategoryRefinements from '@/components/category-refinements';
@@ -67,9 +62,9 @@ import { generateCategorySchema } from '@/utils/category-schema';
 export class ProductListingPageMetadata {}
 
 type CategoryPageData = {
-    category: Promise<ShopperProducts.schemas['Category']>;
-    refinements: Promise<ShopperSearch.schemas['ProductSearchResult']>;
-    searchResult: Promise<ShopperSearch.schemas['ProductSearchResult']>;
+    category: ShopperProducts.schemas['Category'];
+    searchResultCritical: ShopperSearch.schemas['ProductSearchResult'];
+    searchResultNonCritical: Promise<ShopperSearch.schemas['ProductSearchResult']>;
     page: Promise<PageWithComponentData>;
     categoryId: string;
     currency: string;
@@ -83,52 +78,79 @@ type CategoryPageData = {
  * @returns Object containing search results, category data, and page metadata
  */
 // eslint-disable-next-line react-refresh/only-export-components
-export function loader(args: LoaderFunctionArgs): CategoryPageData {
-    const { searchParams } = new URL(args.request.url);
-    const { categoryId = '' } = args.params;
-
-    // Ensure we have a valid category ID, fallback to 'root' if undefined or empty
-    const safeCategoryId = categoryId && categoryId !== 'undefined' ? categoryId : 'root';
-
+export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData> {
+    const {
+        context,
+        request,
+        params: { categoryId = '' },
+    } = args;
+    const { searchParams } = new URL(request.url);
     const offset = parseInt(getQueryParam(searchParams, PRODUCT_SEARCH_QUERY_PARAMS.OFFSET) || '0', 10);
     const sort = getQueryParam(searchParams, PRODUCT_SEARCH_QUERY_PARAMS.SORT);
     const refine = getAllQueryParams(searchParams, PRODUCT_SEARCH_QUERY_PARAMS.REFINE);
 
     // Get currency and locale for cache-busting the page key
-    const config = getConfig(args.context);
-    const currency = args.context.get(currencyContext) as string;
+    const config = getConfig(context);
+    const currency = context.get(currencyContext) as string;
     // TODO: replace this with locale detection when multi site implementation starts
     const currentSite = config.commerce.sites[0];
     const locale = currentSite.defaultLocale;
-    const limit = config.global.productListing.productsPerPage;
+    const limit = config.search.products.hits.limit;
 
-    const pagePromise = fetchPageWithComponentData(args, {
-        pageId: 'plp',
-        categoryId: safeCategoryId,
-    });
+    let categoryData: ShopperProducts.schemas['Category'] | undefined;
+    try {
+        categoryData = await fetchCategory(context, categoryId, 0);
+    } catch (e) {
+        // Category data is considered critical, i.e., if the related SCAPI request fails, out-of-the-box we either
+        // throw a `Response` with all the available information from the underlying `ApiError`, or we fall back to
+        // simply throwing a generic 500 error. If that out-of-the-box behavior needs to be tweaked, e.g., for more
+        // sophisticated SEO or error handling, this is the place to do it.
+        if (e instanceof ApiError) {
+            throw new Response(e.body.title || e.statusText, {
+                status: e.status,
+                statusText: e.body.detail || e.statusText,
+                headers: e.headers,
+            });
+        }
+        throw new Response('Internal Server Error', { status: 500 });
+    }
 
-    const categoryPromise = fetchCategory(args.context, safeCategoryId, 0);
-    const searchResultPromise = fetchSearchProducts(args.context, {
-        categoryId: safeCategoryId,
-        limit,
+    const criticalCount = config.search.products.hits.critical ?? 2;
+    const searchResultCritical = await fetchSearchProducts(context, {
+        categoryId,
+        limit: criticalCount,
         offset,
         sort,
-        // This is a known type limitation, the API intelligently serializes the refine parameter (array) automatically, but the OAS types refers to string.
-        refine: refine as unknown as string,
+        refine,
+        currency,
+    });
+
+    const searchResultNonCritical = fetchSearchProducts(context, {
+        categoryId,
+        limit: limit - criticalCount,
+        offset: offset + criticalCount,
+        sort,
+        refine,
         currency,
     });
 
     // Generate category schema in loader (server-side) for SEO
-    const categorySchemaPromise = Promise.all([categoryPromise, searchResultPromise])
-        .then(([category, searchResult]) => {
+    const categorySchemaPromise = searchResultNonCritical
+        .then((searchResult: ShopperSearch.schemas['ProductSearchResult']) => {
             try {
-                const url = new URL(args.request.url);
+                const url = new URL(request.url);
                 const pageUrl = `${url.origin}${url.pathname}${url.search}`;
                 // Validate inputs before generating schema
-                if (!category || !searchResult) {
+                if (!categoryData || !searchResult) {
                     return null;
                 }
-                return generateCategorySchema({ category, searchResult, config, pageUrl, defaultCurrency: currency });
+                return generateCategorySchema({
+                    category: categoryData,
+                    searchResult,
+                    config,
+                    pageUrl,
+                    defaultCurrency: currency,
+                });
             } catch (error) {
                 // eslint-disable-next-line no-console
                 console.error('Error generating category schema in loader:', error);
@@ -142,20 +164,14 @@ export function loader(args: LoaderFunctionArgs): CategoryPageData {
         });
 
     return {
-        refinements: fetchSearchProducts(args.context, {
-            categoryId: safeCategoryId,
-            limit: 1,
-            offset: 0,
-            sort,
-            // This is a known type limitation, the API intelligently serializes the refine parameter (array) automatically, but the OAS types refers to string.
-            refine: refine as unknown as string,
-            expand: ['none'],
-            currency,
+        category: categoryData,
+        searchResultCritical,
+        searchResultNonCritical,
+        page: fetchPageWithComponentData(args, {
+            pageId: 'plp',
+            categoryId,
         }),
-        searchResult: searchResultPromise,
-        category: categoryPromise,
-        page: pagePromise,
-        categoryId: safeCategoryId,
+        categoryId,
         currency,
         locale,
         categorySchema: categorySchemaPromise,
@@ -171,7 +187,7 @@ export function loader(args: LoaderFunctionArgs): CategoryPageData {
  * Component that renders JSON-LD schema when categorySchema promise resolves.
  * Must be inside Suspense boundary to ensure it streams correctly in SSR.
  */
-function CategoryJsonLdWrapper({
+function CategoryJsonLd({
     categorySchemaPromise,
 }: {
     categorySchemaPromise: Promise<ReturnType<typeof generateCategorySchema> | null>;
@@ -181,92 +197,100 @@ function CategoryJsonLdWrapper({
 }
 
 export default function CategoryPage({
-    loaderData: { category, refinements, searchResult, page, categoryId, locale, currency, categorySchema },
+    loaderData: {
+        category,
+        searchResultCritical,
+        searchResultNonCritical,
+        page,
+        categoryId,
+        locale,
+        currency,
+        categorySchema,
+    },
 }: {
     loaderData: CategoryPageData;
 }) {
-    // Memoize Promise.all to prevent creating new promises on every render
-    // This prevents infinite loop when basket updates trigger re-renders
-    const combinedPromise = useMemo(() => Promise.all([category, searchResult]), [category, searchResult]);
-
     const config = useConfig();
-    const limit = config.global.productListing.productsPerPage;
+    const limit = config.search.products.hits.limit;
+
+    // Determine the maximum number of skeletons to display in the product grid
+    // Out-of-the-box the idea is to not display more than 8 skeletons, i.e., two rows on a desktop device.
+    const criticalCount = searchResultCritical.hits?.length ?? 0;
+    const nonCriticalCount =
+        Math.min(8, limit, searchResultCritical.total - searchResultCritical.offset) - criticalCount;
 
     const analytics = useAnalytics();
     const lastTrackedDataRef = useRef<string | null>(null);
-
-    useEffect(() => {
-        // Create a unique key based on the promise references
-        const dataKey = `${String(category)}-${String(searchResult)}`;
-
-        // Only track if we haven't already tracked this specific data combination
-        if (dataKey !== lastTrackedDataRef.current) {
-            void Promise.all([Promise.resolve(category), searchResult])
-                .then(([categoryData, searchData]) => {
-                    if (analytics) {
-                        void analytics.trackViewCategory({
-                            category: categoryData,
-                            searchResults: searchData.hits ?? [],
-                            sort: searchData.selectedSortingOption || searchData.sortingOptions?.[0]?.label || '',
-                            refinements: searchData.selectedRefinements ?? {},
-                        });
-                    }
-                })
-                .catch(() => {
-                    // Silently handle promise rejection
-                });
-            lastTrackedDataRef.current = dataKey;
-        }
-    }, [analytics, category, searchResult]);
 
     // Force remount when currency/locale/search params change to update Suspense boundaries with
     // new data without manually refresh the page on new selected currency/locale/filters (incl. pagination, sort, refinements)
     const location = useLocation();
     const pageKey = `${categoryId}-${currency}-${locale}-${location.search}-${location.hash}`;
 
+    const nonCriticalPromise = useMemo(
+        () => searchResultNonCritical.then((r) => r.hits ?? []),
+        [searchResultNonCritical]
+    );
+
+    const [, startTransition] = useTransition();
+
+    useEffect(() => {
+        // Only track if we haven't already tracked this specific data combination
+        if (pageKey !== lastTrackedDataRef.current) {
+            lastTrackedDataRef.current = pageKey;
+
+            startTransition(() => {
+                void nonCriticalPromise
+                    .then((searchHitsData: ShopperSearch.schemas['ProductSearchHit'][]) => {
+                        if (analytics) {
+                            void analytics.trackViewCategory({
+                                category,
+                                searchResults: [...(searchResultCritical.hits ?? []), ...searchHitsData],
+                                sort:
+                                    searchResultCritical.selectedSortingOption ||
+                                    searchResultCritical.sortingOptions?.[0]?.label ||
+                                    '',
+                                refinements: searchResultCritical.selectedRefinements ?? {},
+                            });
+                        }
+                    })
+                    .catch(() => {
+                        // Silently handle promise rejection
+                    });
+            });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [analytics, category, pageKey, nonCriticalPromise]);
+
+    const handleProductClick = useCallback(
+        (product: ShopperSearch.schemas['ProductSearchHit']) => {
+            if (analytics) {
+                void analytics.trackClickProductInCategory({
+                    category,
+                    product,
+                });
+            }
+        },
+        [analytics, category]
+    );
+
     return (
         <Fragment key={pageKey}>
-            {/* Category JSON-LD Schema for SEO - separate Suspense to ensure it appears at the very top of body */}
-            <Suspense fallback={null}>
-                <CategoryJsonLdWrapper categorySchemaPromise={categorySchema} />
-            </Suspense>
             <div className="pb-16">
                 <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="mb-4">
-                        <Suspense fallback={<CategoryBreadcrumbsSkeleton />}>
-                            <Await resolve={category}>
-                                {(categoryData: ShopperProducts.schemas['Category']) => (
-                                    <CategoryBreadcrumbs category={categoryData} />
-                                )}
-                            </Await>
-                        </Suspense>
+                        <CategoryBreadcrumbs category={category} />
                     </div>
 
                     <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                        <Suspense fallback={<CategoryHeaderSkeleton />}>
-                            <h1 className="text-3xl font-bold text-foreground">
-                                <Await resolve={category}>
-                                    {(categoryData: ShopperProducts.schemas['Category']) => (
-                                        <>{categoryData?.name || categoryData.id}</>
-                                    )}
-                                </Await>{' '}
-                                <Await resolve={refinements}>
-                                    {(refinementsData: ShopperSearch.schemas['ProductSearchResult']) => (
-                                        <>({refinementsData.total})</>
-                                    )}
-                                </Await>
-                            </h1>
-                            <Await resolve={refinements}>
-                                {(refinementsData: ShopperSearch.schemas['ProductSearchResult']) => (
-                                    <div className="flex-shrink-0">
-                                        {refinementsData?.sortingOptions &&
-                                            refinementsData.sortingOptions.length > 0 && (
-                                                <CategorySorting result={refinementsData} />
-                                            )}
-                                    </div>
-                                )}
-                            </Await>
-                        </Suspense>
+                        <h1 className="text-3xl font-bold text-foreground">
+                            {category?.name || category.id} ({searchResultCritical.total})
+                        </h1>
+                        {searchResultCritical?.sortingOptions && searchResultCritical.sortingOptions.length > 0 && (
+                            <div className="flex-shrink-0">
+                                <CategorySorting result={searchResultCritical} />
+                            </div>
+                        )}
                     </div>
 
                     {/* plpTopFullWidth */}
@@ -276,55 +300,31 @@ export default function CategoryPage({
 
                     <div className="flex flex-col lg:flex-row gap-8">
                         <div className="hidden lg:block w-64 flex-shrink-0">
-                            <Suspense fallback={<CategoryRefinementsSkeleton />}>
-                                <Await resolve={refinements}>
-                                    {(refinementsData: ShopperSearch.schemas['ProductSearchResult']) => (
-                                        <CategoryRefinements result={refinementsData} />
-                                    )}
-                                </Await>
-                            </Suspense>
-                        </div>
-
-                        {/* plpTopContent */}
-                        <div className="mb-8">
-                            <Region page={page} regionId="plpTopContent" errorElement={<div />} />
+                            <CategoryRefinements result={searchResultCritical} />
                         </div>
 
                         <div className="flex-grow">
-                            <Suspense fallback={<CategorySkeleton />}>
-                                <Await resolve={combinedPromise}>
-                                    {([categoryData, searchResultData]: [
-                                        ShopperProducts.schemas['Category'],
-                                        ShopperSearch.schemas['ProductSearchResult'],
-                                    ]) => {
-                                        const handleProductClick = (
-                                            product: ShopperSearch.schemas['ProductSearchHit']
-                                        ) => {
-                                            if (analytics) {
-                                                void analytics.trackClickProductInCategory({
-                                                    category: categoryData,
-                                                    product,
-                                                });
-                                            }
-                                        };
+                            {/* plpTopContent */}
+                            <div className="mb-8">
+                                <Region page={page} regionId="plpTopContent" errorElement={<div />} />
+                            </div>
 
-                                        return (
-                                            <>
-                                                <ProductGrid
-                                                    products={searchResultData.hits ?? []}
-                                                    critical={4}
-                                                    handleProductClick={handleProductClick}
-                                                />
-                                                {searchResultData.total > 1 && (
-                                                    <div className="mt-10">
-                                                        <CategoryPagination limit={limit} result={searchResultData} />
-                                                    </div>
-                                                )}
-                                            </>
-                                        );
-                                    }}
-                                </Await>
-                            </Suspense>
+                            <ProductGrid
+                                critical={searchResultCritical.hits ?? []}
+                                nonCritical={nonCriticalPromise}
+                                nonCriticalCount={nonCriticalCount}
+                                handleProductClick={handleProductClick}
+                            />
+
+                            {searchResultCritical.total > 1 && (
+                                <div className="mt-10">
+                                    <CategoryPagination
+                                        limit={limit}
+                                        offset={searchResultCritical.offset}
+                                        total={searchResultCritical.total}
+                                    />
+                                </div>
+                            )}
 
                             {/* plpBottom */}
                             <div className="mt-8">
@@ -334,6 +334,10 @@ export default function CategoryPage({
                     </div>
                 </div>
             </div>
+            {/* Category JSON-LD Schema for SEO - separate Suspense to ensure it appears at the very top of body */}
+            <Suspense fallback={null}>
+                <CategoryJsonLd categorySchemaPromise={categorySchema} />
+            </Suspense>
         </Fragment>
     );
 }

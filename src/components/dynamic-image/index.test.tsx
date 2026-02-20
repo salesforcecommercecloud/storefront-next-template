@@ -28,9 +28,9 @@ let mockConfigImages = {
 };
 
 vi.mock('@/config', async (importOriginal) => {
-    const actual = await importOriginal();
+    const actual = await importOriginal<typeof import('@/config')>();
     return {
-        ...(actual as object),
+        ...actual,
         useConfig: () => ({
             ...mockConfig,
             images: mockConfigImages,
@@ -39,10 +39,19 @@ vi.mock('@/config', async (importOriginal) => {
 });
 
 vi.mock('@/lib/utils', async (importOriginal) => {
-    const actual = await importOriginal();
+    const actual = await importOriginal<typeof import('@/lib/utils')>();
     return {
-        ...(actual as object),
+        ...actual,
         isServer: vi.fn().mockReturnValue(false),
+    };
+});
+
+const preloadMock = vi.fn();
+vi.mock('react-dom', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('react-dom')>();
+    return {
+        ...actual,
+        preload: (...args: unknown[]) => preloadMock(...args),
     };
 });
 
@@ -55,6 +64,10 @@ describe('Dynamic Image Component', () => {
         mockConfigImages = {
             ...mockConfig.images,
         };
+    });
+
+    afterEach(() => {
+        preloadMock.mockClear();
     });
 
     test('renders an image with default props', () => {
@@ -418,19 +431,19 @@ describe('Dynamic Image Component', () => {
 
     describe('preload links', () => {
         describe('client-side', () => {
-            test('does not render preload links when priority is low (default)', () => {
+            test('does not call preload when priority is low (default)', () => {
                 render(<DynamicImage src={src} alt="Test image" widths={[200, 400]} />);
-                expect(document.querySelectorAll('link[rel="preload"]')).toHaveLength(0);
+                expect(preloadMock).not.toHaveBeenCalled();
             });
 
-            test('does not render preload links when priority is low (explicit)', () => {
+            test('does not call preload when priority is low (explicit)', () => {
                 render(<DynamicImage src={src} alt="Test image" widths={[200, 400]} priority="low" />);
-                expect(document.querySelectorAll('link[rel="preload"]')).toHaveLength(0);
+                expect(preloadMock).not.toHaveBeenCalled();
             });
 
-            test('does not render preload links (even though priority is high)', () => {
-                render(<DynamicImage src={src} alt="Test image" widths={[200]} priority="high" />);
-                expect(document.querySelectorAll('link[rel="preload"]')).toHaveLength(0);
+            test('does not call preload (even though priority is high)', () => {
+                render(<DynamicImage src={src} alt="Test image" widths={[200, 400]} priority="high" />);
+                expect(preloadMock).not.toHaveBeenCalled();
             });
         });
 
@@ -443,46 +456,45 @@ describe('Dynamic Image Component', () => {
                 (isServer as Mock).mockReturnValue(false);
             });
 
-            test('does not render preload links when priority is low (default)', () => {
+            test('does not call preload when priority is low (default)', () => {
                 render(<DynamicImage src={src} alt="Test image" widths={[200, 400]} />);
-                expect(document.querySelectorAll('link[rel="preload"]')).toHaveLength(0);
+                expect(preloadMock).not.toHaveBeenCalled();
             });
 
-            test('does not render preload links when priority is low (explicit)', () => {
+            test('does not call preload when priority is low (explicit)', () => {
                 render(<DynamicImage src={src} alt="Test image" widths={[200, 400]} priority="low" />);
-                expect(document.querySelectorAll('link[rel="preload"]')).toHaveLength(0);
+                expect(preloadMock).not.toHaveBeenCalled();
             });
 
-            test('renders preload links when priority is high', () => {
+            test('calls preload for each link when priority is high', () => {
                 render(<DynamicImage src={src} alt="Test image" widths={[200, 400]} priority="high" />);
-                const preloadLinks = document.querySelectorAll('link[rel="preload"]');
-                expect(preloadLinks).toHaveLength(2);
-                expect(preloadLinks.item(0)).toBeInstanceOf(HTMLLinkElement);
-                expect(preloadLinks.item(1)).toBeInstanceOf(HTMLLinkElement);
-                expect(
-                    Object.fromEntries(Array.from(preloadLinks.item(0).attributes, (attr) => [attr.name, attr.value]))
-                ).toEqual({
-                    as: 'image',
-                    fetchpriority: 'high',
-                    imagesizes: '200px',
-                    imagesrcset:
-                        'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw4cd0a798/images/large/PG.10216885.JJ169XX.PZ.webp?sw=200&q=70&sfrm=jpg 200w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw4cd0a798/images/large/PG.10216885.JJ169XX.PZ.webp?sw=400&q=70&sfrm=jpg 400w',
-                    media: '(max-width: 639px)',
-                    rel: 'preload',
-                    type: 'image/webp',
-                });
-                expect(
-                    Object.fromEntries(Array.from(preloadLinks.item(1).attributes, (attr) => [attr.name, attr.value]))
-                ).toEqual({
-                    as: 'image',
-                    fetchpriority: 'high',
-                    imagesizes: '400px',
-                    imagesrcset:
-                        'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw4cd0a798/images/large/PG.10216885.JJ169XX.PZ.webp?sw=400&q=70&sfrm=jpg 400w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw4cd0a798/images/large/PG.10216885.JJ169XX.PZ.webp?sw=800&q=70&sfrm=jpg 800w',
-                    media: '(min-width: 640px)',
-                    rel: 'preload',
-                    type: 'image/webp',
-                });
+                expect(preloadMock).toHaveBeenCalledTimes(2);
+                expect(preloadMock).toHaveBeenNthCalledWith(
+                    1,
+                    expect.any(String),
+                    expect.objectContaining({
+                        as: 'image',
+                        fetchPriority: 'high',
+                        imageSizes: '200px',
+                        imageSrcSet:
+                            'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw4cd0a798/images/large/PG.10216885.JJ169XX.PZ.webp?sw=200&q=70&sfrm=jpg 200w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw4cd0a798/images/large/PG.10216885.JJ169XX.PZ.webp?sw=400&q=70&sfrm=jpg 400w',
+                        media: '(max-width: 639px)',
+                        type: 'image/webp',
+                    })
+                );
+                expect(preloadMock).toHaveBeenNthCalledWith(
+                    2,
+                    expect.any(String),
+                    expect.objectContaining({
+                        as: 'image',
+                        fetchPriority: 'high',
+                        imageSizes: '400px',
+                        imageSrcSet:
+                            'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw4cd0a798/images/large/PG.10216885.JJ169XX.PZ.webp?sw=400&q=70&sfrm=jpg 400w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw4cd0a798/images/large/PG.10216885.JJ169XX.PZ.webp?sw=800&q=70&sfrm=jpg 800w',
+                        media: '(min-width: 640px)',
+                        type: 'image/webp',
+                    })
+                );
             });
         });
     });
@@ -545,7 +557,7 @@ describe('Dynamic Image Component', () => {
             expect(img).toHaveAttribute('loading', 'lazy');
         });
 
-        test('renders preload links on server when context.hasSource returns true', () => {
+        test('calls preload on server when context.hasSource returns true', () => {
             (isServer as Mock).mockReturnValue(true);
             const mockHasSource = vi.fn().mockReturnValue(true);
             (useDynamicImageContext as Mock).mockReturnValue({
@@ -555,12 +567,17 @@ describe('Dynamic Image Component', () => {
 
             render(<DynamicImage src={src} alt="Test image" widths={[200]} />);
 
-            const preloadLinks = document.querySelectorAll('link[rel="preload"]');
-            expect(preloadLinks).toHaveLength(1);
-            expect(preloadLinks.item(0)).toHaveAttribute('fetchpriority', 'high');
+            expect(preloadMock).toHaveBeenCalledTimes(1);
+            expect(preloadMock).toHaveBeenCalledWith(
+                expect.any(String),
+                expect.objectContaining({
+                    as: 'image',
+                    fetchPriority: 'high',
+                })
+            );
         });
 
-        test('does not render preload links on server when context.hasSource returns false', () => {
+        test('does not call preload on server when context.hasSource returns false', () => {
             (isServer as Mock).mockReturnValue(true);
             const mockHasSource = vi.fn().mockReturnValue(false);
             (useDynamicImageContext as Mock).mockReturnValue({
@@ -570,8 +587,7 @@ describe('Dynamic Image Component', () => {
 
             render(<DynamicImage src={src} alt="Test image" widths={[200]} />);
 
-            const preloadLinks = document.querySelectorAll('link[rel="preload"]');
-            expect(preloadLinks).toHaveLength(0);
+            expect(preloadMock).not.toHaveBeenCalled();
         });
     });
 });

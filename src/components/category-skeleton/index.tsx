@@ -15,114 +15,10 @@
  */
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
-
-export function CategoryBreadcrumbsSkeleton() {
-    return (
-        <nav aria-label="Breadcrumb" className="mb-6">
-            <div className="flex flex-wrap items-center text-sm">
-                <Skeleton className="h-5 w-20" />
-                <Skeleton className="h-3 mx-1 w-3" />
-                <Skeleton className="h-5 w-24" />
-            </div>
-        </nav>
-    );
-}
-
-export function CategoryHeaderSkeleton({ className }: { className?: string }) {
-    return (
-        <>
-            <Skeleton className={cn('h-9 w-64', className)} />
-            <div className="flex-shrink-0">
-                <div className="flex items-center space-x-2">
-                    <Skeleton className="h-5 w-12" />
-                    <Skeleton className="h-9 w-32" />
-                </div>
-            </div>
-        </>
-    );
-}
-
-export function CategoryRefinementsSkeleton() {
-    return (
-        <div className="space-y-4">
-            {/* Active filters */}
-            <div className="border rounded-md p-4">
-                <Skeleton className="h-4 w-24 mb-2" />
-                <div className="flex flex-wrap gap-2">
-                    <Skeleton className="h-6 w-16 rounded-full" />
-                    <Skeleton className="h-6 w-20 rounded-full" />
-                </div>
-            </div>
-
-            {/* Filter accordions */}
-            <div className="border rounded-md">
-                <div className="p-4 border-b">
-                    <Skeleton className="h-5 w-32" />
-                </div>
-                <div className="p-4 space-y-2">
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-3/4" />
-                    <Skeleton className="h-4 w-1/2" />
-                </div>
-            </div>
-
-            <div className="border rounded-md">
-                <div className="p-4 border-b">
-                    <Skeleton className="h-5 w-24" />
-                </div>
-                <div className="p-4 space-y-2">
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-5/6" />
-                    <Skeleton className="h-4 w-2/3" />
-                </div>
-            </div>
-        </div>
-    );
-}
-
-/**
- * CategorySkeleton component provides a loading state placeholder for category pages.
- *
- * This skeleton component mimics the layout of a category page including:
- * - Breadcrumb navigation
- * - Category header with title and sorting controls
- * - Sidebar with filter options and active filters
- * - Product grid with multiple product cards
- * - Pagination controls
- *
- * Used to improve perceived performance while category data is being fetched
- * from the commerce API, providing visual feedback to users during loading states.
- *
- * @returns {JSX.Element} A skeleton layout matching the category page structure
- */
-export default function CategorySkeleton() {
-    return (
-        <>
-            {/* Product grid skeleton */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-8">
-                {Array.from({ length: 12 }, (_, i) => i).map((index) => (
-                    <ProductTileSkeleton key={index} />
-                ))}
-            </div>
-
-            {/* Pagination skeleton */}
-            <div className="mt-10 flex justify-center">
-                <div className="flex items-center space-x-2">
-                    <Skeleton className="h-10 w-10" />
-                    <Skeleton className="h-10 w-10" />
-                    <Skeleton className="h-10 w-10" />
-                    <Skeleton className="h-10 w-10" />
-                    <Skeleton className="h-10 w-10" />
-                </div>
-            </div>
-        </>
-    );
-}
 
 export function ProductTileSwatchesSkeleton({ count = 2 }: { count?: number }) {
     return (
-        <div className="flex flex-wrap gap-2">
+        <div className="product-tile-swatches-skeleton flex flex-wrap gap-2">
             {Array.from({ length: count }, (_, i) => (
                 <Skeleton key={i} className="h-7 w-7 rounded-full" />
             ))}
@@ -132,7 +28,7 @@ export function ProductTileSwatchesSkeleton({ count = 2 }: { count?: number }) {
 
 export function ProductTileSkeleton() {
     return (
-        <Card className="border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0">
+        <Card className="product-tile-skeleton border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0">
             {/* Footer - "More Options" button */}
             <CardFooter className="px-6 pb-6 pt-6 flex-1 flex flex-col justify-end">
                 <Skeleton className="h-9 w-full rounded-md" />

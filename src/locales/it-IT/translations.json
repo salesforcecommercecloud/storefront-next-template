@@ -576,7 +576,10 @@
             "preferredStore": {
                 "heading": "Negozio preferito per il ritiro",
                 "description": "Seleziona il negozio preferito per gli ordini con ritiro in negozio",
-                "changeStore": "Cambia negozio"
+                "changeStore": "Cambia negozio",
+                "noStoreSelected": "Nessun negozio selezionato. Utilizza il localizzatore di negozi per scegliere il negozio preferito per il ritiro.",
+                "storeHoursTitle": "Orari del negozio",
+                "error": "Impossibile caricare i dettagli del negozio. Riprova più tardi."
             },
             "authorizedPickupPeople": {
                 "heading": "Persone autorizzate al ritiro",

@@ -14,11 +14,36 @@
  * limitations under the License.
  */
 import { render, screen } from '@testing-library/react';
-import { describe, test, expect } from 'vitest';
+import { describe, test, expect, vi } from 'vitest';
+import { useLoaderData } from 'react-router';
 import StorePreferences from '.';
+
+// Mock react-router
+vi.mock('react-router', () => ({
+    useLoaderData: vi.fn(),
+    useNavigation: vi.fn(() => ({ state: 'idle' })),
+}));
+
+// @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
+// Mock ChangeStoreButton to avoid client component issues in tests
+vi.mock('./preferred-store/change-store-button', () => ({
+    default: () => <button>Change store</button>,
+}));
+
+// Mock StoreAddress extension component
+vi.mock('@/extensions/store-locator/components/store-locator/address', () => ({
+    default: () => <span data-testid="store-address">Mock address</span>,
+}));
+// @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
+
+// Mock useToast
+vi.mock('@/components/toast', () => ({
+    useToast: () => ({ addToast: vi.fn() }),
+}));
 
 describe('StorePreferences', () => {
     const renderStorePreferences = () => {
+        vi.mocked(useLoaderData).mockReturnValue({ preferredStore: null, error: null });
         return render(<StorePreferences />);
     };
 
@@ -35,6 +60,7 @@ describe('StorePreferences', () => {
             ).toBeInTheDocument();
         });
 
+        // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
         test('renders Preferred Store for Pickup section heading', () => {
             renderStorePreferences();
             expect(screen.getByText('Preferred Store for Pickup')).toBeInTheDocument();
@@ -50,20 +76,13 @@ describe('StorePreferences', () => {
             expect(screen.getByRole('button', { name: 'Change store' })).toBeInTheDocument();
         });
 
-        test('renders default store name', () => {
+        test('renders empty state when no store selected', () => {
             renderStorePreferences();
-            expect(screen.getByText('Salesforce Foundations - San Francisco')).toBeInTheDocument();
+            expect(
+                screen.getByText('No store selected. Use the store locator to choose your preferred store for pickup.')
+            ).toBeInTheDocument();
         });
-
-        test('renders default store address', () => {
-            renderStorePreferences();
-            expect(screen.getByText('415 Mission Street, San Francisco, CA 94105')).toBeInTheDocument();
-        });
-
-        test('renders default store hours', () => {
-            renderStorePreferences();
-            expect(screen.getByText('Open today: 10:00 AM - 8:00 PM')).toBeInTheDocument();
-        });
+        // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
 
         test('renders Pickup Preferences section heading', () => {
             renderStorePreferences();

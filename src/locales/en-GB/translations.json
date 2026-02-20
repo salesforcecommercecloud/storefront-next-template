@@ -589,7 +589,10 @@
             "preferredStore": {
                 "heading": "Preferred Store for Pickup",
                 "description": "Select your preferred store for in-store pickup orders",
-                "changeStore": "Change store"
+                "changeStore": "Change store",
+                "noStoreSelected": "No store selected. Use the store locator to choose your preferred store for pickup.",
+                "storeHoursTitle": "Store Hours",
+                "error": "Failed to load store details. Please try again later."
             },
             "authorizedPickupPeople": {
                 "heading": "Authorized Pickup People",

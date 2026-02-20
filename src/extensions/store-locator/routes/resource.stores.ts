@@ -34,7 +34,7 @@ import { createApiClients } from '@/lib/api-clients';
  * // Address-based search (input mode)
  * GET /resource/stores?mode=input&countryCode=US&postalCode=94102&maxDistance=50&distanceUnit=mi
  */
-// eslint-disable-next-line custom/no-async-page-loader -- Resource route for store search API
+// Resource route for store search API
 export async function loader({ request, context }: LoaderFunctionArgs) {
     try {
         const url = new URL(request.url);
