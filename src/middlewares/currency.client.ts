@@ -48,7 +48,10 @@ export const currencyClientMiddleware: MiddlewareFunction<Record<string, DataStr
             const defaultLocaleConfig = currentSite.supportedLocales.find(
                 (loc) => loc.id === currentSite.defaultLocale
             );
-            currency = supportedLocale?.preferredCurrency ?? defaultLocaleConfig?.preferredCurrency ?? 'USD';
+            currency =
+                supportedLocale?.preferredCurrency ??
+                defaultLocaleConfig?.preferredCurrency ??
+                currentSite.defaultCurrency;
         }
 
         // Store in context (same as server middleware)

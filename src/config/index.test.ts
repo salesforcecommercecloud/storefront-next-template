@@ -61,8 +61,8 @@ describe('Configuration System', () => {
         });
 
         it('should have site configuration with defaults', () => {
-            expect(config.app.commerce.sites[0].defaultLocale).toBe('en-US');
-            expect(config.app.commerce.sites[0].defaultCurrency).toBe('USD');
+            expect(config.app.commerce.sites[0].defaultLocale).toBe('en-GB');
+            expect(config.app.commerce.sites[0].defaultCurrency).toBe('GBP');
             expect(config.app.commerce.api.proxy).toBe('/mobify/proxy/api');
         });
 
@@ -103,7 +103,7 @@ describe('Configuration System', () => {
             const appConfig = getConfig();
 
             expect(appConfig.commerce.api.clientId).toBe('test-client');
-            expect(appConfig.commerce.sites[0].defaultLocale).toBe('en-US');
+            expect(appConfig.commerce.sites[0].defaultLocale).toBe('en-GB');
             expect(appConfig.global.productListing.productsPerPage).toBe(24);
         });
 

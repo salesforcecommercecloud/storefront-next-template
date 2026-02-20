@@ -126,7 +126,7 @@ exports[`CartSummarySection stories snapshot > DesktopEmptyCart story renders an
                 Subtotal
               </span>
               <span>
-                $0.00
+                £0.00
               </span>
             </div>
             <div
@@ -152,7 +152,7 @@ exports[`CartSummarySection stories snapshot > DesktopEmptyCart story renders an
                 Tax
               </span>
               <span>
-                $0.00
+                £0.00
               </span>
             </div>
           </div>
@@ -170,7 +170,7 @@ exports[`CartSummarySection stories snapshot > DesktopEmptyCart story renders an
               <span
                 class="font-bold"
               >
-                $0.00
+                £0.00
               </span>
             </div>
           </div>
@@ -313,7 +313,7 @@ exports[`CartSummarySection stories snapshot > DesktopMultipleItems story render
                 Subtotal
               </span>
               <span>
-                $73.57
+                £73.57
               </span>
             </div>
             <div
@@ -359,7 +359,7 @@ exports[`CartSummarySection stories snapshot > DesktopMultipleItems story render
               <span
                 class="font-bold"
               >
-                $73.57
+                £73.57
               </span>
             </div>
           </div>
@@ -502,7 +502,7 @@ exports[`CartSummarySection stories snapshot > DesktopWithItems story renders an
                 Subtotal
               </span>
               <span>
-                $39.67
+                £39.67
               </span>
             </div>
             <div
@@ -548,7 +548,7 @@ exports[`CartSummarySection stories snapshot > DesktopWithItems story renders an
               <span
                 class="font-bold"
               >
-                $41.56
+                £41.56
               </span>
             </div>
           </div>
@@ -701,7 +701,7 @@ exports[`CartSummarySection stories snapshot > MobileEmptyCart story renders and
                   Subtotal
                 </span>
                 <span>
-                  $0.00
+                  £0.00
                 </span>
               </div>
               <div
@@ -727,7 +727,7 @@ exports[`CartSummarySection stories snapshot > MobileEmptyCart story renders and
                   Tax
                 </span>
                 <span>
-                  $0.00
+                  £0.00
                 </span>
               </div>
             </div>
@@ -745,7 +745,7 @@ exports[`CartSummarySection stories snapshot > MobileEmptyCart story renders and
                 <span
                   class="font-bold"
                 >
-                  $0.00
+                  £0.00
                 </span>
               </div>
             </div>
@@ -899,7 +899,7 @@ exports[`CartSummarySection stories snapshot > MobileMultipleItems story renders
                   Subtotal
                 </span>
                 <span>
-                  $73.57
+                  £73.57
                 </span>
               </div>
               <div
@@ -945,7 +945,7 @@ exports[`CartSummarySection stories snapshot > MobileMultipleItems story renders
                 <span
                   class="font-bold"
                 >
-                  $73.57
+                  £73.57
                 </span>
               </div>
             </div>
@@ -1099,7 +1099,7 @@ exports[`CartSummarySection stories snapshot > MobileWithItems story renders and
                   Subtotal
                 </span>
                 <span>
-                  $39.67
+                  £39.67
                 </span>
               </div>
               <div
@@ -1145,7 +1145,7 @@ exports[`CartSummarySection stories snapshot > MobileWithItems story renders and
                 <span
                   class="font-bold"
                 >
-                  $41.56
+                  £41.56
                 </span>
               </div>
             </div>
@@ -1289,7 +1289,7 @@ exports[`CartSummarySection stories snapshot > TabletView story renders and matc
                 Subtotal
               </span>
               <span>
-                $39.67
+                £39.67
               </span>
             </div>
             <div
@@ -1335,7 +1335,7 @@ exports[`CartSummarySection stories snapshot > TabletView story renders and matc
               <span
                 class="font-bold"
               >
-                $41.56
+                £41.56
               </span>
             </div>
           </div>
@@ -1478,7 +1478,7 @@ exports[`CartSummarySection stories snapshot > WithoutProductMap story renders a
                 Subtotal
               </span>
               <span>
-                $39.67
+                £39.67
               </span>
             </div>
             <div
@@ -1524,7 +1524,7 @@ exports[`CartSummarySection stories snapshot > WithoutProductMap story renders a
               <span
                 class="font-bold"
               >
-                $41.56
+                £41.56
               </span>
             </div>
           </div>

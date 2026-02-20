@@ -102,7 +102,7 @@ const mockConfig = {
         },
     },
     site: {
-        locale: 'en-US',
+        locale: 'en-GB',
         currency: 'USD',
         features: {
             passwordlessLogin: false,

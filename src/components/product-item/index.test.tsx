@@ -729,7 +729,7 @@ describe('ProductItem', () => {
 
             // Should show original price (39.99) with strikethrough, not total
             // Note: The component uses `price` directly, not `pricePerUnit * quantity`
-            const originalPriceElements = screen.getAllByText(formatCurrency(bonusProduct.price));
+            const originalPriceElements = screen.getAllByText(formatCurrency(bonusProduct.price, 'en-GB', 'USD'));
             expect(originalPriceElements.length).toBeGreaterThanOrEqual(1);
 
             // Check that at least one has line-through class
@@ -812,7 +812,9 @@ describe('ProductItem', () => {
 
             // Check for original price (49.99) with strikethrough
             // Note: Component uses `price` directly, not `pricePerUnit * quantity`
-            const originalPriceElements = screen.getAllByText(formatCurrency(completeBonusProduct.price));
+            const originalPriceElements = screen.getAllByText(
+                formatCurrency(completeBonusProduct.price, 'en-GB', 'USD')
+            );
             expect(originalPriceElements.length).toBeGreaterThanOrEqual(1);
         });
 

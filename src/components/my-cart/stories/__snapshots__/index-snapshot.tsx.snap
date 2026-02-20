@@ -248,11 +248,11 @@ exports[`MyCart stories snapshot > Expanded story renders and matches snapshot 1
                     class="items-center gap-2 text-sm"
                   >
                     <span
-                      aria-label="Current price: $39.67"
+                      aria-label="Current price: £39.67"
                       aria-live="polite"
                       class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                     >
-                      $39.67
+                      £39.67
                     </span>
                     <span
                       aria-atomic="true"
@@ -260,7 +260,7 @@ exports[`MyCart stories snapshot > Expanded story renders and matches snapshot 1
                       class="sr-only"
                     >
                       Button Front Jacket
-                      Current price: $39.67
+                      Current price: £39.67
                     </span>
                      
                   </div>
@@ -317,11 +317,11 @@ exports[`MyCart stories snapshot > Expanded story renders and matches snapshot 1
                     class="items-center gap-2 text-sm"
                   >
                     <span
-                      aria-label="Current price: $124.80"
+                      aria-label="Current price: £124.80"
                       aria-live="polite"
                       class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                     >
-                      $124.80
+                      £124.80
                     </span>
                     <span
                       aria-atomic="true"
@@ -329,7 +329,7 @@ exports[`MyCart stories snapshot > Expanded story renders and matches snapshot 1
                       class="sr-only"
                     >
                       Casual To Dressy Trousers
-                      Current price: $124.80
+                      Current price: £124.80
                     </span>
                      
                   </div>

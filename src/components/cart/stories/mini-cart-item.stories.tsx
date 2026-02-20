@@ -222,8 +222,8 @@ Product with sale pricing showing savings. Demonstrates:
             const priceContainer = canvasElement.querySelector('[data-testid="mini-cart-item"]');
             expect(priceContainer).toBeInTheDocument();
             const priceText = priceContainer?.textContent || '';
-            expect(priceText).toContain('$20.00'); // List price (strikethrough)
-            expect(priceText).toContain('$15.00'); // Current price
+            expect(priceText).toContain('£20.00'); // List price (strikethrough)
+            expect(priceText).toContain('£15.00'); // Current price
         });
 
         // Verify quantity selector
@@ -273,7 +273,7 @@ Product at regular price with no savings. Shows:
             const priceContainer = canvasElement.querySelector('[data-testid="mini-cart-item"]');
             expect(priceContainer).toBeInTheDocument();
             const priceText = priceContainer?.textContent || '';
-            expect(priceText).toContain('$15.00'); // Current price
+            expect(priceText).toContain('£15.00'); // Current price
         });
 
         // Verify no savings badge

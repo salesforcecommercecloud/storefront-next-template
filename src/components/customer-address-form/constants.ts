@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type translations from '@/locales/en-US/translations.json';
+import type translations from '@/locales/en-GB/translations.json';
 
 // Derive country codes from translations.json
 export type CountryCode = keyof typeof translations.countries;

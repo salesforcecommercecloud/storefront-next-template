@@ -29,7 +29,7 @@ exports[`OrderListItem stories snapshot > Cancelled story renders and matches sn
             <p
               class="text-sm font-medium leading-none text-left text-foreground"
             >
-              Sep 8, 2024
+              8 Sept 2024
             </p>
           </div>
           <div>
@@ -41,7 +41,7 @@ exports[`OrderListItem stories snapshot > Cancelled story renders and matches sn
             <p
               class="text-sm font-medium leading-none text-left text-foreground"
             >
-              $95.92
+              £95.92
             </p>
           </div>
           <div>
@@ -188,7 +188,7 @@ exports[`OrderListItem stories snapshot > Default story renders and matches snap
             <p
               class="text-sm font-medium leading-none text-left text-foreground"
             >
-              Sep 14, 2024
+              14 Sept 2024
             </p>
           </div>
           <div>
@@ -200,7 +200,7 @@ exports[`OrderListItem stories snapshot > Default story renders and matches snap
             <p
               class="text-sm font-medium leading-none text-left text-foreground"
             >
-              $48.38
+              £48.38
             </p>
           </div>
           <div>
@@ -321,7 +321,7 @@ exports[`OrderListItem stories snapshot > Delivered story renders and matches sn
             <p
               class="text-sm font-medium leading-none text-left text-foreground"
             >
-              Sep 1, 2024
+              1 Sept 2024
             </p>
           </div>
           <div>
@@ -333,7 +333,7 @@ exports[`OrderListItem stories snapshot > Delivered story renders and matches sn
             <p
               class="text-sm font-medium leading-none text-left text-foreground"
             >
-              $405.00
+              £405.00
             </p>
           </div>
           <div>
@@ -622,7 +622,7 @@ exports[`OrderListItem stories snapshot > InTransit story renders and matches sn
             <p
               class="text-sm font-medium leading-none text-left text-foreground"
             >
-              Sep 12, 2024
+              12 Sept 2024
             </p>
           </div>
           <div>
@@ -634,7 +634,7 @@ exports[`OrderListItem stories snapshot > InTransit story renders and matches sn
             <p
               class="text-sm font-medium leading-none text-left text-foreground"
             >
-              $43.00
+              £43.00
             </p>
           </div>
           <div>
@@ -744,7 +744,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
               <p
                 class="text-sm font-medium leading-none text-left text-foreground"
               >
-                Sep 14, 2024
+                14 Sept 2024
               </p>
             </div>
             <div>
@@ -756,7 +756,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
               <p
                 class="text-sm font-medium leading-none text-left text-foreground"
               >
-                $48.38
+                £48.38
               </p>
             </div>
             <div>
@@ -943,7 +943,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
               <p
                 class="text-sm font-medium leading-none text-left text-foreground"
               >
-                Sep 12, 2024
+                12 Sept 2024
               </p>
             </div>
             <div>
@@ -955,7 +955,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
               <p
                 class="text-sm font-medium leading-none text-left text-foreground"
               >
-                $43.00
+                £43.00
               </p>
             </div>
             <div>
@@ -1059,7 +1059,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
               <p
                 class="text-sm font-medium leading-none text-left text-foreground"
               >
-                Sep 1, 2024
+                1 Sept 2024
               </p>
             </div>
             <div>
@@ -1071,7 +1071,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
               <p
                 class="text-sm font-medium leading-none text-left text-foreground"
               >
-                $405.00
+                £405.00
               </p>
             </div>
             <div>
@@ -1361,7 +1361,7 @@ exports[`OrderListItem stories snapshot > PartiallyDelivered story renders and m
             <p
               class="text-sm font-medium leading-none text-left text-foreground"
             >
-              Sep 10, 2024
+              10 Sept 2024
             </p>
           </div>
           <div>
@@ -1373,7 +1373,7 @@ exports[`OrderListItem stories snapshot > PartiallyDelivered story renders and m
             <p
               class="text-sm font-medium leading-none text-left text-foreground"
             >
-              $54.00
+              £54.00
             </p>
           </div>
           <div>
@@ -1534,7 +1534,7 @@ exports[`OrderListItem stories snapshot > WithPickupLocation story renders and m
             <p
               class="text-sm font-medium leading-none text-left text-foreground"
             >
-              Sep 14, 2024
+              14 Sept 2024
             </p>
           </div>
           <div>
@@ -1546,7 +1546,7 @@ exports[`OrderListItem stories snapshot > WithPickupLocation story renders and m
             <p
               class="text-sm font-medium leading-none text-left text-foreground"
             >
-              $48.38
+              £48.38
             </p>
           </div>
           <div>
@@ -1736,7 +1736,7 @@ exports[`OrderListItem stories snapshot > WithoutImages story renders and matche
             <p
               class="text-sm font-medium leading-none text-left text-foreground"
             >
-              Sep 14, 2024
+              14 Sept 2024
             </p>
           </div>
           <div>
@@ -1748,7 +1748,7 @@ exports[`OrderListItem stories snapshot > WithoutImages story renders and matche
             <p
               class="text-sm font-medium leading-none text-left text-foreground"
             >
-              $48.38
+              £48.38
             </p>
           </div>
           <div>

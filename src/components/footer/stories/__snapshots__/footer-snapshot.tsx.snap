@@ -134,9 +134,9 @@ exports[`Footer stories snapshot > DarkBackground story renders and matches snap
                         Italian (Italy)
                       </option>
                       <option
-                        value="en-US"
+                        value="en-GB"
                       >
-                        English (US)
+                        English (UK)
                       </option>
                     </select>
                     <svg
@@ -186,9 +186,9 @@ exports[`Footer stories snapshot > DarkBackground story renders and matches snap
                         Euro (€)
                       </option>
                       <option
-                        value="USD"
+                        value="GBP"
                       >
-                        US Dollar ($)
+                        British Pound (£)
                       </option>
                     </select>
                     <svg
@@ -530,9 +530,9 @@ exports[`Footer stories snapshot > Default story renders and matches snapshot 1`
                       Italian (Italy)
                     </option>
                     <option
-                      value="en-US"
+                      value="en-GB"
                     >
-                      English (US)
+                      English (UK)
                     </option>
                   </select>
                   <svg
@@ -582,9 +582,9 @@ exports[`Footer stories snapshot > Default story renders and matches snapshot 1`
                       Euro (€)
                     </option>
                     <option
-                      value="USD"
+                      value="GBP"
                     >
-                      US Dollar ($)
+                      British Pound (£)
                     </option>
                   </select>
                   <svg
@@ -1012,9 +1012,9 @@ exports[`Footer stories snapshot > LongPage story renders and matches snapshot 1
                         Italian (Italy)
                       </option>
                       <option
-                        value="en-US"
+                        value="en-GB"
                       >
-                        English (US)
+                        English (UK)
                       </option>
                     </select>
                     <svg
@@ -1064,9 +1064,9 @@ exports[`Footer stories snapshot > LongPage story renders and matches snapshot 1
                         Euro (€)
                       </option>
                       <option
-                        value="USD"
+                        value="GBP"
                       >
-                        US Dollar ($)
+                        British Pound (£)
                       </option>
                     </select>
                     <svg
@@ -1408,9 +1408,9 @@ exports[`Footer stories snapshot > MobileView story renders and matches snapshot
                       Italian (Italy)
                     </option>
                     <option
-                      value="en-US"
+                      value="en-GB"
                     >
-                      English (US)
+                      English (UK)
                     </option>
                   </select>
                   <svg
@@ -1460,9 +1460,9 @@ exports[`Footer stories snapshot > MobileView story renders and matches snapshot
                       Euro (€)
                     </option>
                     <option
-                      value="USD"
+                      value="GBP"
                     >
-                      US Dollar ($)
+                      British Pound (£)
                     </option>
                   </select>
                   <svg

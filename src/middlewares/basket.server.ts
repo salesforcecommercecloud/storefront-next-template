@@ -92,7 +92,7 @@ const DEFAULT_BASKET_MIDDLEWARE_CONFIG: Required<
     cookieName: BASKET_COOKIE_NAME,
     cookieDurationRegistered: REGISTERED_BASKET_COOKIE_DURATION_MS,
     cookieDurationGuest: GUEST_BASKET_COOKIE_DURATION_MS,
-    currency: import.meta.env.PUBLIC__app__site__currency ?? 'USD',
+    currency: import.meta.env.PUBLIC__app__site__currency ?? 'GBP',
 };
 
 export const basketResourceContext = createContext<BasketResource | undefined>();

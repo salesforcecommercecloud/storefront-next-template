@@ -276,7 +276,7 @@ export const SingleOrder: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        await expect(canvas.getByText('$250.00')).toBeInTheDocument();
+        await expect(canvas.getByText('£250.00')).toBeInTheDocument();
         await expect(canvas.getByText('Completed')).toBeInTheDocument();
 
         const viewDetailsLinks = canvas.getAllByText('View Order Details');

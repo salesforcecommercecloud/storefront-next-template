@@ -90,7 +90,7 @@ All settings defined in `config.server.ts` can be overridden via environment var
 
 **Syntax:**
 ```bash
-PUBLIC__app__site__locale=en-US    # Maps to config.app.site.locale
+PUBLIC__app__site__locale=en-GB    # Maps to config.app.site.locale
 ```
 
 **Usage:**

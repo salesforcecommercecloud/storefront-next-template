@@ -71,7 +71,7 @@ interface ExpressPaymentsProps {
  * ## Files to Update When Removing This Component:
  *
  * ### 1. Translation Files (Remove the `expressPayments` objects):
- * - `src/locales/en-US/translations.json` (lines 281-284, 580-583)
+ * - `src/locales/en-GB/translations.json` (lines 281-284, 580-583)
  * - `src/locales/it-IT/translations.json` (lines 281-284, 580-583)
  * - Any additional locale files in `src/locales/`
  *
@@ -93,7 +93,7 @@ interface ExpressPaymentsProps {
  *
  * ## Example: Removing Translation Keys
  *
- * In `src/locales/en-US/translations.json`, remove these blocks:
+ * In `src/locales/en-GB/translations.json`, remove these blocks:
  *
  * ```json
  * // Remove from "product" namespace (lines ~281-284)

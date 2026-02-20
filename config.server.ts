@@ -131,13 +131,9 @@ export default defineConfig({
             sites: [
                 {
                     id: 'RefArchGlobal',
-                    defaultLocale: 'en-US',
-                    defaultCurrency: 'USD',
+                    defaultLocale: 'en-GB',
+                    defaultCurrency: 'GBP',
                     supportedLocales: [
-                        {
-                            id: 'en-US',
-                            preferredCurrency: 'USD',
-                        },
                         {
                             id: 'da-DK',
                             preferredCurrency: 'EUR',
@@ -204,7 +200,7 @@ export default defineConfig({
                             preferredCurrency: 'TWD',
                         },
                     ],
-                    supportedCurrencies: ['EUR', 'USD'],
+                    supportedCurrencies: ['EUR', 'GBP'],
                 },
             ],
         },
@@ -257,8 +253,8 @@ export default defineConfig({
         // Also, make sure the supportedLngs are always presented in site.supportedLocale to
         // make sure the app can fully be translated to another language
         i18n: {
-            fallbackLng: 'en-US',
-            supportedLngs: ['it-IT', 'en-US'], // Your supported languages, the fallback should be LAST
+            fallbackLng: 'en-GB',
+            supportedLngs: ['it-IT', 'en-GB'], // Your supported languages, the fallback should be LAST
         },
         // Global UI configuration and component settings
         // See CONFIG-OPTIONS.md#global for detailed documentation
@@ -410,7 +406,7 @@ export default defineConfig({
                     enabled: true,
                     host: 'https://zzrf-001.dx.commercecloud.salesforce.com',
                     siteId: 'RefArchGlobal',
-                    locale: 'en_US',
+                    locale: 'en_GB',
                     siteUUID: '8bb1ea1b04ac3454d36b83a888',
                     eventToggles: {
                         view_page: true,

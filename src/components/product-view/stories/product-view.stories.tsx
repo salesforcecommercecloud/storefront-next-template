@@ -128,7 +128,7 @@ export const Default: Story = {
         ).toBeInTheDocument();
 
         // Check Price
-        const prices = canvas.getAllByText(/\$99.99/);
+        const prices = canvas.getAllByText(/£99\.99/);
         await expect(prices.length).toBeGreaterThan(0);
 
         // Check Add to Cart

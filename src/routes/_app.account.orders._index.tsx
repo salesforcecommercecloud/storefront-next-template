@@ -28,7 +28,7 @@ const MOCK_ORDERS: Order[] = [
         status: 'created',
         statusLabel: 'Created',
         total: 48.38,
-        currency: 'USD',
+        currency: 'GBP',
         itemCount: 2,
         productItems: [
             { productId: '701643632930', productName: 'Classic White Shirt', quantity: 1, imageUrl: heroNewArrivals },
@@ -48,7 +48,7 @@ const MOCK_ORDERS: Order[] = [
         status: 'new',
         statusLabel: 'New',
         total: 43.0,
-        currency: 'USD',
+        currency: 'GBP',
         itemCount: 1,
         productItems: [
             { productId: '701643632932', productName: 'Summer Dress', quantity: 2, imageUrl: heroNewArrivals },
@@ -60,7 +60,7 @@ const MOCK_ORDERS: Order[] = [
         status: 'failed',
         statusLabel: 'Failed',
         total: 54.0,
-        currency: 'USD',
+        currency: 'GBP',
         itemCount: 4,
         productItems: [
             { productId: '701643632933', productName: 'Item 1', quantity: 3, imageUrl: heroNewArrivals },
@@ -75,7 +75,7 @@ const MOCK_ORDERS: Order[] = [
         status: 'failed_with_reopen',
         statusLabel: 'Failed With Reopen',
         total: 95.92,
-        currency: 'USD',
+        currency: 'GBP',
         itemCount: 2,
         productItems: [
             { productId: '701643632937', productName: 'Reopened Item 1', quantity: 2, imageUrl: heroNewArrivals },
@@ -88,7 +88,7 @@ const MOCK_ORDERS: Order[] = [
         status: 'completed',
         statusLabel: 'Completed',
         total: 95.92,
-        currency: 'USD',
+        currency: 'GBP',
         itemCount: 2,
         productItems: [
             { productId: '701643632939', productName: 'Completed Item 1', quantity: 2, imageUrl: heroNewArrivals },
@@ -101,7 +101,7 @@ const MOCK_ORDERS: Order[] = [
         status: 'cancelled',
         statusLabel: 'Cancelled',
         total: 405.0,
-        currency: 'USD',
+        currency: 'GBP',
         itemCount: 18,
         productItems: Array.from({ length: 18 }, (_, i) => ({
             productId: `7016436329${40 + i}`,

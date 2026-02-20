@@ -18,12 +18,12 @@
  * Formats a date string (YYYY-MM-DD) to the user's locale numeric format.
  *
  * @param dateString - The date string in ISO format (YYYY-MM-DD)
- * @param locale - The locale to use for formatting (e.g., 'en-US', 'it-IT')
- * @returns Formatted date string in the user's locale (e.g., 05/15/1990 for en-US), or undefined if invalid
+ * @param locale - The locale to use for formatting (e.g., 'en-GB', 'it-IT')
+ * @returns Formatted date string in the user's locale (e.g., 05/15/1990 for en-GB), or undefined if invalid
  *
  * @example
- * // Returns "05/15/1990" for en-US
- * formatDateForLocale('1990-05-15', 'en-US');
+ * // Returns "05/15/1990" for en-GB
+ * formatDateForLocale('1990-05-15', 'en-GB');
  *
  * @example
  * // Returns "15/05/1990" for it-IT
@@ -31,7 +31,7 @@
  *
  * @example
  * // Returns undefined for invalid date
- * formatDateForLocale('invalid-date', 'en-US');
+ * formatDateForLocale('invalid-date', 'en-GB');
  */
 export function formatDateForLocale(dateString: string | undefined, locale: string): string | undefined {
     if (!dateString) return undefined;

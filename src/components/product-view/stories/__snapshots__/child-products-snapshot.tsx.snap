@@ -27,11 +27,11 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
             class="items-center gap-2"
           >
             <span
-              aria-label="Current price: $38.00"
+              aria-label="Current price: £38.00"
               aria-live="polite"
               class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
             >
-              $38.00
+              £38.00
             </span>
             <span
               aria-atomic="true"
@@ -39,7 +39,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
               class="sr-only"
             >
               Turquoise and Gold Bracelet
-              Current price: $38.00
+              Current price: £38.00
             </span>
              
           </div>
@@ -159,11 +159,11 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
             class="items-center gap-2"
           >
             <span
-              aria-label="Current price: $45.00"
+              aria-label="Current price: £45.00"
               aria-live="polite"
               class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
             >
-              $45.00
+              £45.00
             </span>
             <span
               aria-atomic="true"
@@ -171,7 +171,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
               class="sr-only"
             >
               Turquoise and Gold Necklace
-              Current price: $45.00
+              Current price: £45.00
             </span>
              
           </div>
@@ -291,11 +291,11 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
             class="items-center gap-2"
           >
             <span
-              aria-label="Current price: $30.00"
+              aria-label="Current price: £30.00"
               aria-live="polite"
               class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
             >
-              $30.00
+              £30.00
             </span>
             <span
               aria-atomic="true"
@@ -303,7 +303,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
               class="sr-only"
             >
               Turquoise and Gold Hoop Earring
-              Current price: $30.00
+              Current price: £30.00
             </span>
              
           </div>
@@ -643,11 +643,11 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             class="items-center gap-2"
           >
             <span
-              aria-label="Current price from $110.99"
+              aria-label="Current price from £110.99"
               aria-live="polite"
               class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
             >
-              From $110.99
+              From £110.99
             </span>
             <span
               aria-atomic="true"
@@ -655,14 +655,14 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               class="sr-only"
             >
               Quilted Jacket
-              Current price from $110.99
+              Current price from £110.99
             </span>
              
             <span
-              aria-label="List price from $159.00"
+              aria-label="List price from £159.00"
               class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground line-through"
             >
-              $159.00
+              £159.00
             </span>
             <span
               aria-atomic="true"
@@ -670,7 +670,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               class="sr-only"
             >
               Quilted Jacket
-              List price: $159.00
+              List price: £159.00
             </span>
           </div>
           <div
@@ -1106,11 +1106,11 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             class="items-center gap-2"
           >
             <span
-              aria-label="Current price from $69.00"
+              aria-label="Current price from £69.00"
               aria-live="polite"
               class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
             >
-              From $69.00
+              From £69.00
             </span>
             <span
               aria-atomic="true"
@@ -1118,7 +1118,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               class="sr-only"
             >
               Pull On Pant
-              Current price from $69.00
+              Current price from £69.00
             </span>
              
           </div>
@@ -1574,11 +1574,11 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             class="items-center gap-2"
           >
             <span
-              aria-label="Current price from $99.00"
+              aria-label="Current price from £99.00"
               aria-live="polite"
               class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
             >
-              From $99.00
+              From £99.00
             </span>
             <span
               aria-atomic="true"
@@ -1586,7 +1586,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               class="sr-only"
             >
               Zerrick
-              Current price from $99.00
+              Current price from £99.00
             </span>
              
           </div>

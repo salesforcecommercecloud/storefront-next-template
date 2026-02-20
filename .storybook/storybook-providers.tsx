@@ -31,14 +31,14 @@ import resources from '../src/locales';
  * This ensures translations work properly in the Storybook UI
  */
 void i18next.use(initReactI18next).init({
-    lng: 'en-US',
-    fallbackLng: 'en-US',
+    lng: 'en-GB',
+    fallbackLng: 'en-GB',
     resources,
     interpolation: {
         escapeValue: false,
         format: (value, format) => {
             if (format === 'number' && typeof value === 'number') {
-                return value.toLocaleString('en-US');
+                return value.toLocaleString('en-GB');
             }
             return value;
         },

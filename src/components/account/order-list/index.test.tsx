@@ -104,9 +104,9 @@ describe('OrderList Component', () => {
 
         test('renders order totals correctly', () => {
             renderOrderList();
-            expect(screen.getByText('$150.00')).toBeInTheDocument();
-            expect(screen.getByText('$75.50')).toBeInTheDocument();
-            expect(screen.getByText('$200.00')).toBeInTheDocument();
+            expect(screen.getByText('£150.00')).toBeInTheDocument();
+            expect(screen.getByText('£75.50')).toBeInTheDocument();
+            expect(screen.getByText('£200.00')).toBeInTheDocument();
         });
 
         test('renders View Order Details link for each order', () => {

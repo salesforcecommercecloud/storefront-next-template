@@ -26,7 +26,7 @@ describe('Config Test Utils', () => {
 
             expect(result.current).toBeDefined();
             expect(result.current.commerce.api.clientId).toBe('test-client');
-            expect(result.current.commerce.sites[0].defaultLocale).toBe('en-US');
+            expect(result.current.commerce.sites[0].defaultLocale).toBe('en-GB');
         });
 
         it('should provide access to all config sections', () => {
@@ -47,7 +47,7 @@ describe('Config Test Utils', () => {
             const { result } = renderHook(() => useConfig(), { wrapper: CustomWrapper });
 
             expect(result.current.commerce.api.clientId).toBe('test-client');
-            expect(result.current.commerce.sites[0].defaultLocale).toBe('en-US');
+            expect(result.current.commerce.sites[0].defaultLocale).toBe('en-GB');
         });
 
         it('should merge overrides with base config', () => {
@@ -67,7 +67,7 @@ describe('Config Test Utils', () => {
             const { result } = renderHook(() => useConfig(), { wrapper: CustomWrapper });
 
             expect(result.current.commerce.api.clientId).toBe('custom-client');
-            expect(result.current.commerce.sites[0].defaultLocale).toBe('en-US'); // Original value preserved
+            expect(result.current.commerce.sites[0].defaultLocale).toBe('en-GB'); // Original value preserved
         });
 
         it('should allow overriding site configuration', () => {
@@ -125,8 +125,8 @@ describe('Config Test Utils', () => {
             expect(mockConfig.commerce.api.clientId).toBe('test-client');
             expect(mockConfig.commerce.api.organizationId).toBe('test-org');
             expect(mockConfig.commerce.api.siteId).toBe('test-site');
-            expect(mockConfig.commerce.sites[0].defaultLocale).toBe('en-US');
-            expect(mockConfig.commerce.sites[0].defaultCurrency).toBe('USD');
+            expect(mockConfig.commerce.sites[0].defaultLocale).toBe('en-GB');
+            expect(mockConfig.commerce.sites[0].defaultCurrency).toBe('GBP');
         });
     });
 

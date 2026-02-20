@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { Resource } from 'i18next';
-import enUS from './en-US';
+import enGB from './en-GB';
 import itIT from './it-IT';
 
-export default { 'en-US': enUS, 'it-IT': itIT } satisfies Resource;
+export default { 'en-GB': enGB, 'it-IT': itIT } satisfies Resource;

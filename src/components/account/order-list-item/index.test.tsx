@@ -72,8 +72,8 @@ describe('OrderListItem', () => {
         it('renders order date, total, and item count', () => {
             render(<OrderListItem order={mockOrder} />);
 
-            expect(screen.getByText('Sep 14, 2024')).toBeInTheDocument();
-            expect(screen.getByText('$48.38')).toBeInTheDocument();
+            expect(screen.getByText('14 Sept 2024')).toBeInTheDocument();
+            expect(screen.getByText('£48.38')).toBeInTheDocument();
             // Check for Items label and its value
             expect(screen.getByText('Items')).toBeInTheDocument();
             // The item count "2" appears twice - once in header and once as quantity badge

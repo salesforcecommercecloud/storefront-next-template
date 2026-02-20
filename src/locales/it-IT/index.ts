@@ -24,4 +24,4 @@ const allTranslations = {
     ...extensionTranslations,
 };
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-export default allTranslations satisfies ResourceLanguage satisfies typeof import('@/locales/en-US/').default;
+export default allTranslations satisfies ResourceLanguage satisfies typeof import('@/locales/en-GB/').default;

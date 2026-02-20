@@ -156,7 +156,7 @@ describe('resource.basket-products', () => {
                     ids: ['product-1', 'product-2'],
                     allImages: true,
                     perPricebook: true,
-                    currency: 'USD',
+                    currency: 'GBP',
                 },
             },
         });

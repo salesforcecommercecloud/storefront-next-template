@@ -29,8 +29,8 @@ const { t } = getTranslation();
 // Mock config with i18n settings
 const mockConfig = {
     i18n: {
-        fallbackLng: 'en-US',
-        supportedLngs: ['en-US', 'it-IT'],
+        fallbackLng: 'en-GB',
+        supportedLngs: ['en-GB', 'it-IT'],
     },
 } as any;
 
@@ -50,7 +50,7 @@ const mockFetcher = {
 };
 
 // Helper function to render component with router context
-const renderWithRouter = ({ initialLanguage = 'en-US' }: { initialLanguage?: string } = {}) => {
+const renderWithRouter = ({ initialLanguage = 'en-GB' }: { initialLanguage?: string } = {}) => {
     // Set the initial language in i18next
     void i18next.changeLanguage(initialLanguage);
 
@@ -75,7 +75,7 @@ describe('LocaleSwitcher', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         // Reset to English before each test
-        void i18next.changeLanguage('en-US');
+        void i18next.changeLanguage('en-GB');
         // Use vi.spyOn to mock useFetcher while keeping real router exports
         vi.spyOn(ReactRouter, 'useFetcher').mockReturnValue(mockFetcher as any);
     });
@@ -96,15 +96,15 @@ describe('LocaleSwitcher', () => {
     test('displays English and Italian language options', () => {
         renderWithRouter();
 
-        expect(screen.getByRole('option', { name: t('localeSwitcher:locales.en-US') })).toBeInTheDocument();
+        expect(screen.getByRole('option', { name: t('localeSwitcher:locales.en-GB') })).toBeInTheDocument();
         expect(screen.getByRole('option', { name: t('localeSwitcher:locales.it-IT') })).toBeInTheDocument();
     });
 
     test('shows current language as selected when initialized with English', () => {
-        renderWithRouter({ initialLanguage: 'en-US' });
+        renderWithRouter({ initialLanguage: 'en-GB' });
 
         const selector = screen.getByRole('combobox');
-        expect(selector).toHaveValue('en-US');
+        expect(selector).toHaveValue('en-GB');
     });
 
     test('shows current language as selected when initialized with Italian', () => {
@@ -116,10 +116,10 @@ describe('LocaleSwitcher', () => {
 
     test('changes displayed language when user selects a new language', async () => {
         const user = userEvent.setup();
-        renderWithRouter({ initialLanguage: 'en-US' });
+        renderWithRouter({ initialLanguage: 'en-GB' });
 
         const selector = screen.getByRole('combobox');
-        expect(selector).toHaveValue('en-US');
+        expect(selector).toHaveValue('en-GB');
 
         // Change to Italian
         await user.selectOptions(selector, 'it-IT');
@@ -141,14 +141,14 @@ describe('LocaleSwitcher', () => {
         expect(selector).toHaveValue('it-IT');
 
         // Change to English
-        await user.selectOptions(selector, 'en-US');
+        await user.selectOptions(selector, 'en-GB');
 
         // Verify the language changed in i18next
         await waitFor(() => {
-            expect(i18next.language).toBe('en-US');
+            expect(i18next.language).toBe('en-GB');
         });
 
-        expect(selector).toHaveValue('en-US');
+        expect(selector).toHaveValue('en-GB');
     });
 
     test('submits locale change to server action', async () => {
@@ -178,8 +178,8 @@ describe('LocaleSwitcher', () => {
     test('has correct English option value', () => {
         renderWithRouter();
 
-        const englishOption = screen.getByRole('option', { name: t('localeSwitcher:locales.en-US') });
-        expect(englishOption).toHaveValue('en-US');
+        const englishOption = screen.getByRole('option', { name: t('localeSwitcher:locales.en-GB') });
+        expect(englishOption).toHaveValue('en-GB');
     });
 
     test('has correct Italian option value', () => {
@@ -221,9 +221,9 @@ describe('LocaleSwitcher', () => {
         });
 
         // Change back to English
-        await user.selectOptions(selector, 'en-US');
+        await user.selectOptions(selector, 'en-GB');
         await waitFor(() => {
-            expect(selector).toHaveValue('en-US');
+            expect(selector).toHaveValue('en-GB');
         });
 
         // Change to Italian again
