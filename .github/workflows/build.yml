@@ -22,7 +22,7 @@ jobs:
       github.event.pull_request.head.repo.full_name == github.repository
       ) }}
     name: Run Build
-    runs-on: commerce-emu_Ubuntu
+    runs-on: ${{ vars.RUNNER_UBUNTU || 'ubuntu-latest' }}
     timeout-minutes: 15
 
     steps:

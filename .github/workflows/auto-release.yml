@@ -21,8 +21,8 @@ env:
 
 jobs:
   auto-release:
-    if: github.repository == 'SalesforceCommerceCloud/storefront-next-template'
-    runs-on: commerce-emu_Ubuntu
+    if: vars.IS_TEMPLATE_MIRROR_REPO == 'true'
+    runs-on: ${{ vars.RUNNER_UBUNTU || 'ubuntu-latest' }}
     timeout-minutes: 20
     permissions:
       contents: write
