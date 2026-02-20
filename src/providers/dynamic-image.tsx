@@ -38,8 +38,8 @@ const DynamicImageProvider = ({
 }: PropsWithChildren<{
     value: {
         sources?: Set<string>;
-        addSource: (src: string, sources: Set<string>) => boolean;
-        hasSource: (src: string, sources: Set<string>) => boolean;
+        addSource?: (src: string, sources: Set<string>) => boolean;
+        hasSource?: (src: string, sources: Set<string>) => boolean;
     };
 }>) => {
     // Translate the internal-only interface to the public interface

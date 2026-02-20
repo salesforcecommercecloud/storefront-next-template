@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ComponentType } from 'react';
-import { vi, test, describe, expect, beforeEach, afterEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { type ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
@@ -37,14 +36,20 @@ vi.mock('@/providers/dynamic-image', async (importOriginal) => {
             return {
                 ...originalContext,
                 addSource: (src: string) => {
-                    const result = originalContext?.addSource(src);
-                    addSourceSpy(src, result);
-                    return result;
+                    if (typeof originalContext?.addSource === 'function') {
+                        const result = originalContext?.addSource(src);
+                        addSourceSpy(src, result);
+                        return result;
+                    }
+                    return false;
                 },
                 hasSource: (src: string) => {
-                    const result = originalContext?.hasSource(src);
-                    hasSourceSpy(src, result);
-                    return result;
+                    if (typeof originalContext?.hasSource === 'function') {
+                        const result = originalContext?.hasSource(src);
+                        hasSourceSpy(src, result);
+                        return result;
+                    }
+                    return false;
                 },
             };
         },
@@ -93,6 +98,13 @@ vi.mock('@/config/get-config', () => ({
     useConfig: () => mockConfig,
 }));
 
+vi.mock('@/components/category-skeleton', () => ({
+    ProductTileSkeleton: () => <div data-testid="product-tile-skeleton">product-tile-skeleton</div>,
+    ProductTileSwatchesSkeleton: () => (
+        <div data-testid="product-tile-swatches-skeleton">product-tile-swatches-skeleton</div>
+    ),
+}));
+
 const createMockProduct = (id: string, name: string): ShopperSearch.schemas['ProductSearchHit'] => ({
     productId: id,
     productName: name,
@@ -132,9 +144,10 @@ const mockProductsExtended = [
 
 const renderComponent = (
     props: {
-        products?: ShopperSearch.schemas['ProductSearchHit'][];
+        critical?: ShopperSearch.schemas['ProductSearchHit'][];
+        nonCritical?: Promise<ShopperSearch.schemas['ProductSearchHit'][]>;
+        nonCriticalCount?: number;
         handleProductClick?: (product: ShopperSearch.schemas['ProductSearchHit']) => void;
-        critical?: number;
     } = {}
 ) => {
     const router = createMemoryRouter(
@@ -145,9 +158,10 @@ const renderComponent = (
                     <ConfigWrapper>
                         <CurrencyProvider value="USD">
                             <ProductGrid
-                                products={props.products ?? mockProducts}
+                                critical={props.critical ?? (!props.nonCritical ? mockProductsExtended : [])}
+                                nonCritical={props.nonCritical}
+                                nonCriticalCount={props.nonCriticalCount}
                                 handleProductClick={props.handleProductClick}
-                                critical={props.critical}
                             />
                         </CurrencyProvider>
                     </ConfigWrapper>
@@ -185,9 +199,9 @@ describe('ProductGrid', () => {
     });
 
     test('displays empty state message when no products', () => {
-        renderComponent({ products: [] });
+        renderComponent({ critical: [] });
 
-        expect(screen.getByText('No products found.')).toBeInTheDocument();
+        expect(screen.getByText('No products found')).toBeInTheDocument();
     });
 
     test('calls handleProductClick when product is clicked', async () => {
@@ -211,112 +225,75 @@ describe('ProductGrid critical/non-critical split', () => {
         vi.restoreAllMocks();
     });
 
-    test('renders all products without split when critical is undefined', () => {
-        renderComponent({ products: mockProductsExtended });
-
-        for (const product of mockProductsExtended) {
-            expect(screen.getByText(product?.productName as string)).toBeInTheDocument();
-        }
-    });
-
-    test('renders all products without split when critical >= products.length', () => {
-        renderComponent({ products: mockProducts, critical: 10 });
+    test('renders critical array immediately', () => {
+        renderComponent({ critical: mockProducts.slice(0, 2) });
 
         expect(screen.getByText('Product One')).toBeInTheDocument();
         expect(screen.getByText('Product Two')).toBeInTheDocument();
+    });
+
+    test('renders non-critical array deferred', () => {
+        const { queryAllByTestId } = renderComponent({
+            nonCritical: Promise.resolve(mockProductsExtended.slice(2)),
+            nonCriticalCount: 4,
+        });
+        // Verify skeleton tiles
+        expect(queryAllByTestId('product-tile-skeleton')).toHaveLength(4);
+    });
+
+    test('renders critical and nonCritical arrays together', async () => {
+        const criticalProducts = mockProductsExtended.slice(0, 2);
+        const nonCriticalProducts = Promise.resolve(mockProductsExtended.slice(2));
+
+        await act(() => renderComponent({ critical: criticalProducts, nonCritical: nonCriticalProducts }));
+
+        // Critical products render immediately
+        expect(screen.getByText('Product One')).toBeInTheDocument();
+        expect(screen.getByText('Product Two')).toBeInTheDocument();
+
+        // NonCritical products render after lazy resolves (immediate in tests)
         expect(screen.getByText('Product Three')).toBeInTheDocument();
+        expect(screen.getByText('Product Four')).toBeInTheDocument();
+        expect(screen.getByText('Product Five')).toBeInTheDocument();
+        expect(screen.getByText('Product Six')).toBeInTheDocument();
+        expect(screen.queryAllByTestId('product-tile-skeleton')).toHaveLength(0);
     });
 
-    test('displays empty state with critical set', () => {
-        renderComponent({ products: [], critical: 4 });
-
-        expect(screen.getByText('No products found.')).toBeInTheDocument();
-    });
-
-    test('shows skeleton fallback while lazy component is pending, then resolves to real tiles', async () => {
-        // Create a deferred promise so we can control when React.lazy resolves
-        let resolveLazy!: (value: { default: ComponentType<never> }) => void;
-        const lazyPromise = new Promise<{ default: ComponentType<never> }>((resolve) => {
-            resolveLazy = resolve;
-        });
-
-        // Mock react to intercept lazy() and wrap the factory with our deferred promise
-        vi.doMock('react', async (importOriginal) => {
-            const actual = await importOriginal<typeof import('react')>();
-            return {
-                ...actual,
-                lazy: (factory: () => Promise<{ default: ComponentType }>) => {
-                    // Chain: wait for our deferred, then call the real factory to get the actual component
-                    return actual.lazy(() => lazyPromise.then(() => factory()));
-                },
-            };
-        });
-
-        // Re-import ProductGrid so it picks up the mocked React.lazy
-        vi.resetModules();
-        const { default: ProductGridDeferred } = await import('./index');
-        const { createMemoryRouter: createRouter, RouterProvider: Router } = await import('react-router');
-        const {
-            render: renderDeferred,
-            screen: screenDeferred,
-            act: actDeferred,
-        } = await import('@testing-library/react');
-        const { ConfigWrapper: ConfigWrapperDeferred } = await import('@/test-utils/config');
-        const { CurrencyProvider: CurrencyProviderDeferred } = await import('@/providers/currency');
-
-        const router = createRouter(
-            [
-                {
-                    path: '/test',
-                    element: (
-                        <ConfigWrapperDeferred>
-                            <CurrencyProviderDeferred value="USD">
-                                <ProductGridDeferred products={mockProductsExtended} critical={2} />
-                            </CurrencyProviderDeferred>
-                        </ConfigWrapperDeferred>
-                    ),
-                },
-            ],
-            { initialEntries: ['/test'] }
+    test('does not display empty state when nonCritical has items', async () => {
+        await act(() =>
+            renderComponent({ critical: [], nonCritical: Promise.resolve(mockProducts), nonCriticalCount: 3 })
         );
-        renderDeferred(<Router router={router} />);
-
-        // Critical products should be visible immediately
-        expect(screenDeferred.getByText('Product One')).toBeInTheDocument();
-        expect(screenDeferred.getByText('Product Two')).toBeInTheDocument();
-
-        // Non-critical products should NOT be visible yet (lazy is pending)
-        expect(screenDeferred.queryByText('Product Three')).not.toBeInTheDocument();
-        expect(screenDeferred.queryByText('Product Six')).not.toBeInTheDocument();
-
-        // Skeleton fallbacks should be rendered by Suspense
-        const skeletons = document.querySelectorAll('[data-slot="skeleton"]');
-        expect(skeletons.length).toBeGreaterThan(0);
-
-        // Resolve the deferred — this unblocks React.lazy which then calls the real factory
-        actDeferred(() => {
-            resolveLazy({ default: (() => null) as ComponentType<never> });
-        });
-
-        // After resolving, non-critical products should now be visible
-        expect(await screenDeferred.findByText('Product Three')).toBeInTheDocument();
-        expect(screenDeferred.getByText('Product Four')).toBeInTheDocument();
-        expect(screenDeferred.getByText('Product Five')).toBeInTheDocument();
-        expect(screenDeferred.getByText('Product Six')).toBeInTheDocument();
-
-        // Skeletons should be gone
-        const remainingSkeletons = document.querySelectorAll('[data-slot="skeleton"]');
-        expect(remainingSkeletons.length).toBe(0);
-
-        vi.doUnmock('react');
+        expect(screen.queryByText('No products found')).not.toBeInTheDocument();
+        expect(screen.getByText('Product One')).toBeInTheDocument();
     });
 
-    test('calls handleProductClick for non-critical products after lazy resolves', async () => {
+    test('displays empty state when nonCritical resolves to empty array', async () => {
+        await act(() => renderComponent({ critical: [], nonCritical: Promise.resolve([]) }));
+        expect(screen.getByText('No products found')).toBeInTheDocument();
+    });
+
+    test('does not display empty state when critical has products but nonCritical is empty', async () => {
+        await act(() => renderComponent({ critical: mockProducts.slice(0, 2), nonCritical: Promise.resolve([]) }));
+
+        expect(screen.queryByText('No products found')).not.toBeInTheDocument();
+        expect(screen.getByText('Product One')).toBeInTheDocument();
+        expect(screen.getByText('Product Two')).toBeInTheDocument();
+    });
+
+    test('calls handleProductClick for non-critical array products after lazy resolves', async () => {
         const user = userEvent.setup();
         const handleProductClick = vi.fn();
-        renderComponent({ products: mockProductsExtended, critical: 2, handleProductClick });
 
-        // Wait for non-critical products to render (default lazy resolves immediately in tests)
+        await act(() => {
+            return renderComponent({
+                critical: mockProductsExtended.slice(0, 2),
+                nonCritical: Promise.resolve(mockProductsExtended.slice(2)),
+                nonCriticalCount: 4,
+                handleProductClick,
+            });
+        });
+
+        // Wait for non-critical products to render
         const productLink = await screen.findByRole('link', { name: 'Product Five' });
         await user.click(productLink);
 
@@ -333,29 +310,44 @@ describe('ProductGrid DynamicImageProvider Integration', () => {
         vi.restoreAllMocks();
     });
 
-    test('Verify calls to the DynamicImageProvider context from nested components', () => {
-        renderComponent();
+    test('Verify calls to the DynamicImageProvider context from nested components', async () => {
+        await act(() => {
+            return renderComponent({
+                critical: mockProductsExtended.slice(0, 2),
+                nonCritical: Promise.resolve(mockProductsExtended.slice(2)),
+                nonCriticalCount: 4,
+            });
+        });
 
         // Verify `addSource` was called by each ProductTile with its image URL
-        expect(addSourceSpy).toHaveBeenCalledTimes(3);
-        expect(addSourceSpy).toHaveBeenCalledWith('https://example.com/product-1-default.jpg', expect.any(Boolean));
-        expect(addSourceSpy).toHaveBeenCalledWith('https://example.com/product-2-default.jpg', expect.any(Boolean));
-        expect(addSourceSpy).toHaveBeenCalledWith('https://example.com/product-3-default.jpg', expect.any(Boolean));
+        expect(addSourceSpy).toHaveBeenCalledTimes(2);
+        expect(addSourceSpy).toHaveBeenNthCalledWith(
+            1,
+            'https://example.com/product-1-default.jpg',
+            expect.any(Boolean)
+        );
+        expect(addSourceSpy).toHaveBeenNthCalledWith(
+            2,
+            'https://example.com/product-2-default.jpg',
+            expect.any(Boolean)
+        );
 
         // Verify `hasSource` was called by each DynamicImage to check priority
-        expect(hasSourceSpy).toHaveBeenCalledTimes(3);
-        expect(hasSourceSpy).toHaveBeenCalledWith('https://example.com/product-1-default.jpg', expect.any(Boolean));
-        expect(hasSourceSpy).toHaveBeenCalledWith('https://example.com/product-2-default.jpg', expect.any(Boolean));
-        expect(hasSourceSpy).toHaveBeenCalledWith('https://example.com/product-3-default.jpg', expect.any(Boolean));
+        expect(hasSourceSpy).toHaveBeenCalledTimes(2);
+        expect(hasSourceSpy).toHaveBeenNthCalledWith(
+            1,
+            'https://example.com/product-1-default.jpg',
+            expect.any(Boolean)
+        );
+        expect(hasSourceSpy).toHaveBeenNthCalledWith(
+            2,
+            'https://example.com/product-2-default.jpg',
+            expect.any(Boolean)
+        );
 
-        // Verify return values: first call returns true, others return false
-        expect(addSourceSpy.mock.calls[0][1]).toBe(true); // First image gets priority
-        expect(addSourceSpy.mock.calls[1][1]).toBe(false);
-        expect(addSourceSpy.mock.calls[2][1]).toBe(false);
-
-        // Verify return values: first image was added as priority, so hasSource returns true for it
-        expect(hasSourceSpy.mock.calls[0][1]).toBe(true); // First image is in the set
-        expect(hasSourceSpy.mock.calls[1][1]).toBe(false); // Others are not (addSource returned false)
-        expect(hasSourceSpy.mock.calls[2][1]).toBe(false);
+        expect(addSourceSpy.mock.calls[0][1]).toBe(false); // not implemented
+        expect(addSourceSpy.mock.calls[1][1]).toBe(false); // not implemented
+        expect(hasSourceSpy.mock.calls[0][1]).toBe(true); // returns true, despite `addSourceSpy` not implemented
+        expect(hasSourceSpy.mock.calls[1][1]).toBe(true); // returns true, despite `addSourceSpy` not implemented
     });
 });

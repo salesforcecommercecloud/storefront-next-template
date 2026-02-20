@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Suspense, useEffect, useRef, useCallback } from 'react';
-import { Await, type LoaderFunctionArgs } from 'react-router';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
+import { type LoaderFunctionArgs, useLocation } from 'react-router';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchSearchProducts } from '@/lib/api/search';
 import { getConfig, useConfig } from '@/config';
 import { currencyContext } from '@/lib/currency';
-import CategorySkeleton, { CategoryHeaderSkeleton, CategoryRefinementsSkeleton } from '@/components/category-skeleton';
 import CategoryPagination from '@/components/category-pagination';
 import CategoryRefinements from '@/components/category-refinements';
 import CategorySorting from '@/components/category-sorting';
@@ -60,9 +59,11 @@ export class SearchPageMetadata {}
 
 export type SearchPageData = {
     searchTerm: string;
-    refinements: Promise<ShopperSearch.schemas['ProductSearchResult']>;
-    searchResult: Promise<ShopperSearch.schemas['ProductSearchResult']>;
+    searchResultCritical: ShopperSearch.schemas['ProductSearchResult'];
+    searchResultNonCritical: Promise<ShopperSearch.schemas['ProductSearchResult']>;
     page: Promise<PageWithComponentData>;
+    currency: string;
+    locale: string;
 };
 
 /**
@@ -71,51 +72,78 @@ export type SearchPageData = {
  * @returns Object containing search results, refinements, and page metadata
  */
 // eslint-disable-next-line react-refresh/only-export-components
-export function loader(args: LoaderFunctionArgs): SearchPageData {
-    const { searchParams } = new URL(args.request.url);
+export async function loader(args: LoaderFunctionArgs): Promise<SearchPageData> {
+    const { context, request } = args;
+    const { searchParams } = new URL(request.url);
     const offset = parseInt(searchParams.get('offset') || '0', 10);
     const q = searchParams.get('q') ?? '';
     const sort = searchParams.get('sort') ?? '';
     const refine = searchParams.getAll('refine');
-    const currency = args.context.get(currencyContext) as string;
-    const limit = getConfig(args.context).global.productListing.productsPerPage;
+    const currency = context.get(currencyContext) as string;
+
+    const config = getConfig(context);
+    // TODO: replace this with locale detection when multi site implementation starts
+    const currentSite = config.commerce.sites[0];
+    const locale = currentSite.defaultLocale;
+
+    const limit = config.search.products.hits.limit;
+    const criticalCount = config.search.products.hits.critical ?? 2;
+
+    const searchResultCritical = await fetchSearchProducts(context, {
+        q,
+        limit: criticalCount,
+        offset,
+        sort,
+        refine,
+        currency,
+    });
 
     return {
         searchTerm: q,
-        refinements: fetchSearchProducts(args.context, {
+        searchResultCritical,
+        searchResultNonCritical: fetchSearchProducts(context, {
             q,
-            limit: 1,
-            offset: 0,
+            limit: limit - criticalCount,
+            offset: offset + criticalCount,
             sort,
-            // This is a known type limitation, the API intelligently serializes the refine parameter (array) automatically, but the OAS types refers to string.
-            refine: refine as unknown as string,
-            expand: ['none'],
-            currency,
-        }),
-        searchResult: fetchSearchProducts(args.context, {
-            q,
-            limit,
-            offset,
-            sort,
-            // This is a known type limitation, the API intelligently serializes the refine parameter (array) automatically, but the OAS types refers to string.
-            refine: refine as unknown as string,
+            refine,
             currency,
         }),
         page: fetchPageWithComponentData(args, {
             pageId: 'search',
         }),
+        currency,
+        locale,
     };
 }
 
 export default function SearchPage({
-    loaderData: { searchTerm, refinements, searchResult, page },
+    loaderData: { searchTerm, searchResultCritical, searchResultNonCritical, page, currency, locale },
 }: {
     loaderData: SearchPageData;
 }) {
+    const { t } = useTranslation('search');
     const config = useConfig();
-    const limit = config.global.productListing.productsPerPage;
+    const limit = config.search.products.hits.limit;
+
+    // Determine the maximum number of skeletons to display in the product grid
+    // Out-of-the-box the idea is to not display more than 8 skeletons, i.e., two rows on a desktop device.
+    const criticalCount = searchResultCritical.hits?.length ?? 0;
+    const nonCriticalCount =
+        Math.min(8, limit, searchResultCritical.total - searchResultCritical.offset) - criticalCount;
+
     const analytics = useAnalytics();
     const lastTrackedSearchRef = useRef<string | null>(null);
+
+    const location = useLocation();
+    const pageKey = `${currency}-${locale}-${location.search}-${location.hash}`;
+
+    const nonCriticalPromise = useMemo(
+        () => searchResultNonCritical.then((r) => r.hits ?? []),
+        [searchResultNonCritical]
+    );
+
+    const [, startTransition] = useTransition();
 
     const handleProductClick = useCallback(
         (product: ShopperSearch.schemas['ProductSearchHit']) => {
@@ -130,97 +158,90 @@ export default function SearchPage({
     );
 
     useEffect(() => {
-        // Create a unique key for this search (term + result promise)
-        const searchKey = `${searchTerm}-${String(searchResult)}`;
-
         // Only track if we haven't already tracked this search
-        if (searchKey !== lastTrackedSearchRef.current) {
-            void searchResult
-                .then((data: ShopperSearch.schemas['ProductSearchResult']) => {
-                    void analytics.trackViewSearch({
-                        searchInputText: searchTerm,
-                        searchResults: data.hits ?? [],
-                        sort: data.selectedSortingOption || data.sortingOptions?.[0]?.label || '',
-                        refinements: data.selectedRefinements ?? {},
-                    });
-                })
-                .catch(() => {
-                    // Silently handle promise rejection
-                });
-            lastTrackedSearchRef.current = searchKey;
-        }
-    }, [analytics, searchTerm, searchResult]);
+        if (pageKey !== lastTrackedSearchRef.current) {
+            lastTrackedSearchRef.current = pageKey;
 
-    const { t } = useTranslation('search');
+            startTransition(() => {
+                void nonCriticalPromise
+                    .then((searchHitsData: ShopperSearch.schemas['ProductSearchHit'][]) => {
+                        void analytics.trackViewSearch({
+                            searchInputText: searchTerm,
+                            searchResults: [...(searchResultCritical.hits ?? []), ...searchHitsData],
+                            sort:
+                                searchResultCritical.selectedSortingOption ||
+                                searchResultCritical.sortingOptions?.[0]?.label ||
+                                '',
+                            refinements: searchResultCritical.selectedRefinements ?? {},
+                        });
+                    })
+                    .catch(() => {
+                        // Silently handle promise rejection
+                    });
+            });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [analytics, searchTerm, pageKey, nonCriticalPromise]);
 
     return (
-        <div className="pb-16">
-            <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <Suspense fallback={<CategoryHeaderSkeleton className="h-15" />}>
-                        <Await resolve={refinements}>
-                            {(refinementsData) => (
-                                <>
-                                    <div>
-                                        <p>{t('results')}</p>
-                                        <h1 className="text-3xl font-bold text-foreground">
-                                            {searchTerm} ({refinementsData.total})
-                                        </h1>
-                                    </div>
-
-                                    <div className="flex-shrink-0">
-                                        <CategorySorting result={refinementsData} />
-                                    </div>
-                                </>
-                            )}
-                        </Await>
-                    </Suspense>
-                </div>
-
-                {/* searchTopFullWidth */}
-                <div className="mb-8">
-                    <Region page={page} regionId="searchTopFullWidth" errorElement={<div />} />
-                </div>
-
-                <div className="flex flex-col lg:flex-row gap-8">
-                    <div className="hidden lg:block w-64 flex-shrink-0">
-                        <Suspense fallback={<CategoryRefinementsSkeleton />}>
-                            <Await resolve={refinements}>
-                                {(refinementsData) => <CategoryRefinements result={refinementsData} />}
-                            </Await>
-                        </Suspense>
+        <Fragment key={pageKey}>
+            <div className="pb-16">
+                <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div>
+                            <p>{t('results')}</p>
+                            <h1 className="text-3xl font-bold text-foreground">
+                                {searchTerm} ({searchResultCritical.total})
+                            </h1>
+                        </div>
+                        {searchResultCritical?.sortingOptions && searchResultCritical.sortingOptions.length > 0 && (
+                            <div className="flex-shrink-0">
+                                <CategorySorting result={searchResultCritical} />
+                            </div>
+                        )}
                     </div>
 
-                    <div className="flex-grow">
-                        {/* searchTopContent */}
-                        <div className="mb-8">
-                            <Region page={page} regionId="searchTopContent" errorElement={<div />} />
-                        </div>
-                        <Suspense fallback={<CategorySkeleton />}>
-                            <Await resolve={searchResult}>
-                                {(searchResultData) => (
-                                    <>
-                                        <ProductGrid
-                                            products={searchResultData.hits ?? []}
-                                            handleProductClick={handleProductClick}
-                                        />
-                                        {searchResultData.total > 1 && (
-                                            <div className="mt-10">
-                                                <CategoryPagination limit={limit} result={searchResultData} />
-                                            </div>
-                                        )}
-                                    </>
-                                )}
-                            </Await>
-                        </Suspense>
+                    {/* searchTopFullWidth */}
+                    <div className="mb-8">
+                        <Region page={page} regionId="searchTopFullWidth" errorElement={<div />} />
+                    </div>
 
-                        {/* searchBottom */}
-                        <div className="mt-8">
-                            <Region page={page} regionId="searchBottom" errorElement={<div />} />
+                    <div className="flex flex-col lg:flex-row gap-8">
+                        <div className="hidden lg:block w-64 flex-shrink-0">
+                            <CategoryRefinements result={searchResultCritical} />
+                        </div>
+
+                        <div className="flex-grow">
+                            {/* searchTopContent */}
+                            <div className="mb-8">
+                                <Region page={page} regionId="searchTopContent" errorElement={<div />} />
+                            </div>
+
+                            <ProductGrid
+                                critical={searchResultCritical.hits ?? []}
+                                nonCritical={nonCriticalPromise}
+                                nonCriticalCount={nonCriticalCount}
+                                handleProductClick={handleProductClick}
+                            />
+
+                            {searchResultCritical.total > 1 && (
+                                <div className="mt-10">
+                                    <CategoryPagination
+                                        limit={limit}
+                                        offset={searchResultCritical.offset}
+                                        total={searchResultCritical.total}
+                                    />
+                                </div>
+                            )}
+
+                            {/* searchBottom */}
+                            <div className="mt-8">
+                                <Region page={page} regionId="searchBottom" errorElement={<div />} />
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </Fragment>
     );
 }

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { type ElementType, type ImgHTMLAttributes, useMemo } from 'react';
+import { preload } from 'react-dom';
 import { useConfig } from '@/config';
 import { cn, isServer } from '@/lib/utils';
 import { defaultImageFormats, getResponsivePictureAttributes, replaceImageFormat } from '@/lib/dynamic-image';
@@ -111,31 +112,21 @@ const DynamicImage = ({
         src: replaceImageFormat(responsiveImageProps.src, defaultFallbackFormat),
     };
 
-    // Preload links rendered only on the server for SSR support.
-    // This avoids hydration mismatches and prevents useless preloads in pure CSR scenarios.
-    // React 19 automatically hoists <link> elements to <head>.
-    const preloadLinks =
-        effectivePriority === 'high' && isServer() ? (
-            <>
-                {responsiveImageProps.links.map(({ type, media, sizes, srcSet }, idx) => (
-                    <link
-                        // eslint-disable-next-line react/no-array-index-key
-                        key={`preload-${idx}`}
-                        rel="preload"
-                        as="image"
-                        fetchPriority="high"
-                        type={type}
-                        media={media}
-                        imageSizes={sizes}
-                        imageSrcSet={srcSet}
-                    />
-                ))}
-            </>
-        ) : null;
+    if (isServer() && effectivePriority === 'high') {
+        responsiveImageProps.links.forEach(({ type, media, sizes, srcSet }) => {
+            preload(srcSet, {
+                as: 'image',
+                fetchPriority: 'high',
+                imageSrcSet: srcSet,
+                imageSizes: sizes,
+                type,
+                media,
+            });
+        });
+    }
 
     return (
         <>
-            {preloadLinks}
             <div className={cn(className)} {...rest}>
                 {responsiveImageProps.sources.length > 0 ? (
                     <picture>

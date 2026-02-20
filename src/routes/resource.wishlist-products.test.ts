@@ -88,10 +88,14 @@ describe('resource.wishlist-products', () => {
             customerId: 'test-customer-id',
         });
         mockGetConfig.mockReturnValue({
-            global: {
-                productListing: {
-                    productsPerPage: 24,
+            search: {
+                products: {
+                    hits: {
+                        limit: 24,
+                    },
                 },
+            },
+            global: {
                 paginatedProductCarousel: {
                     defaultLimit: 8,
                 },

@@ -24,7 +24,6 @@ import type { ProductWithPromotions } from '@/hooks/use-basket-with-promotions';
  * Fetches product promotion data for all items in the basket
  * Returns a mapping of productId to product data with promotions
  */
-// eslint-disable-next-line custom/no-async-page-loader
 export async function loader({ context }: LoaderFunctionArgs): Promise<Record<string, ProductWithPromotions>> {
     const basket = (await getBasket(context)).current;
 

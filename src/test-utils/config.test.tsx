@@ -97,11 +97,14 @@ describe('Config Test Utils', () => {
             const CustomWrapper = createConfigWrapper({
                 app: {
                     ...mockBuildConfig.app,
-                    global: {
-                        ...mockBuildConfig.app.global,
-                        productListing: {
-                            ...mockBuildConfig.app.global.productListing,
-                            productsPerPage: 48,
+                    search: {
+                        ...mockBuildConfig.app.search,
+                        products: {
+                            ...mockBuildConfig.app.search.products,
+                            hits: {
+                                ...mockBuildConfig.app.search.products.hits,
+                                limit: 48,
+                            },
                         },
                     },
                 },
@@ -109,7 +112,7 @@ describe('Config Test Utils', () => {
 
             const { result } = renderHook(() => useConfig(), { wrapper: CustomWrapper });
 
-            expect(result.current.global.productListing.productsPerPage).toBe(48);
+            expect(result.current.search.products.hits.limit).toBe(48);
         });
     });
 
@@ -169,7 +172,7 @@ describe('Config Test Utils', () => {
 
         it('should have valid global configurations', () => {
             expect(mockBuildConfig.app.global.branding.name).toBe('Test Store');
-            expect(mockBuildConfig.app.global.productListing.productsPerPage).toBe(24);
+            expect(mockBuildConfig.app?.search.products.hits.limit).toBe(24);
             expect(mockBuildConfig.app.global.carousel.defaultItemCount).toBe(4);
             expect(mockBuildConfig.app.global.badges).toHaveLength(2);
         });

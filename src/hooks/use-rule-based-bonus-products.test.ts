@@ -38,7 +38,9 @@ vi.mock('@/config', () => ({
     useConfig: vi.fn(() => ({
         search: {
             products: {
-                orderableOnly: true,
+                refine: {
+                    orderableOnly: true,
+                },
             },
         },
     })),
@@ -129,7 +131,9 @@ describe('useRuleBasedBonusProducts', () => {
             vi.mocked(useConfig).mockReturnValueOnce({
                 search: {
                     products: {
-                        orderableOnly: false,
+                        refine: {
+                            orderableOnly: false,
+                        },
                     },
                 },
             } as any);

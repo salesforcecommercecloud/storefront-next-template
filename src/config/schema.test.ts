@@ -110,7 +110,7 @@ describe('Config Schema Helpers', () => {
             expect(config.metadata.projectName).toBe('Test Project');
             expect(config.app.commerce.api.clientId).toBe('test-client');
             expect(config.app.commerce.sites[0].defaultLocale).toBe('en-GB');
-            expect(config.app.global.productListing.productsPerPage).toBe(24);
+            expect(config.app.search.products.hits.limit).toBe(24);
 
             // Restore original env
             process.env = originalEnv;

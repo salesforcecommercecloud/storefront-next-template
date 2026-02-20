@@ -20,9 +20,6 @@ import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'r
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-// @ts-expect-error Mock data file is JavaScript
-import searchResults from '@/components/__mocks__/search-results';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 
 const PAGINATION_HARNESS_ATTR = 'data-pagination-harness';
 
@@ -107,7 +104,13 @@ The CategoryPagination component is used on:
 import CategoryPagination from '../category-pagination';
 
 function CategoryPage({ searchResult, limit }) {
-  return <CategoryPagination limit={limit} result={searchResult} />;
+  return (
+    <CategoryPagination
+      limit={limit}
+      offset={searchResult.offset}
+      total={searchResult.total}
+    />
+  );
 }
 \`\`\`
 
@@ -116,7 +119,8 @@ function CategoryPage({ searchResult, limit }) {
 | Prop | Type | Description |
 |------|------|-------------|
 | \`limit\` | \`number\` | Number of products per page |
-| \`result\` | \`ShopperSearch.schemas['ProductSearchResult']\` | Product search result containing total and offset |
+| \`offset\` | \`number\` | Current offset in the product list |
+| \`total\` | \`number\` | Total number of products |
 
 ## Behavior
 
@@ -163,31 +167,11 @@ function CategoryPage({ searchResult, limit }) {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// Use real mock data from @mocks directory
-const mockSearchResult = searchResults as ShopperSearch.schemas['ProductSearchResult'];
-
-const mockSearchResultPage1: ShopperSearch.schemas['ProductSearchResult'] = {
-    ...mockSearchResult,
-    offset: 0,
-    total: 100,
-};
-
-const mockSearchResultPage5: ShopperSearch.schemas['ProductSearchResult'] = {
-    ...mockSearchResult,
-    offset: 96, // Page 5 with limit 24
-    total: 100,
-};
-
-const mockSearchResultSinglePage: ShopperSearch.schemas['ProductSearchResult'] = {
-    ...mockSearchResult,
-    offset: 0,
-    total: 20, // Less than limit
-};
-
 export const Default: Story = {
     args: {
         limit: 24,
-        result: mockSearchResultPage1,
+        offset: 0,
+        total: 100,
     },
     parameters: {
         docs: {
@@ -231,7 +215,8 @@ The default CategoryPagination shows pagination controls:
 export const MiddlePage: Story = {
     args: {
         limit: 24,
-        result: mockSearchResultPage5,
+        offset: 96,
+        total: 100,
     },
     parameters: {
         docs: {
@@ -273,7 +258,8 @@ CategoryPagination when viewing a middle page:
 export const SinglePage: Story = {
     args: {
         limit: 24,
-        result: mockSearchResultSinglePage,
+        offset: 0,
+        total: 20,
     },
     parameters: {
         docs: {
@@ -306,11 +292,8 @@ CategoryPagination when there's only one page:
 export const FirstPage: Story = {
     args: {
         limit: 24,
-        result: {
-            ...mockSearchResult,
-            offset: 0,
-            total: 100,
-        },
+        offset: 0,
+        total: 100,
     },
     parameters: {
         docs: {

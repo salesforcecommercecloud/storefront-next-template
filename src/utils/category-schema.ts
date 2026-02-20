@@ -69,7 +69,7 @@ function determineAvailability(
     } else if (product?.orderable === false) {
         return 'https://schema.org/OutOfStock';
     }
-    return config?.search?.products?.orderableOnly === true ? 'https://schema.org/InStock' : undefined;
+    return config?.search.products.refine?.orderableOnly === true ? 'https://schema.org/InStock' : undefined;
 }
 
 /**

@@ -171,6 +171,7 @@ describe('action.wishlist-remove', () => {
                 request,
                 context: mockContext,
                 params: {},
+                unstable_pattern: 'action/wishlist-remove',
             };
 
             await expect(action(args)).rejects.toThrow();
@@ -182,6 +183,7 @@ describe('action.wishlist-remove', () => {
                 request,
                 context: mockContext,
                 params: {},
+                unstable_pattern: 'action/wishlist-remove',
             };
 
             // When both itemId and productId are missing, Error is thrown and caught
@@ -216,6 +218,7 @@ describe('action.wishlist-remove', () => {
                 request,
                 context: mockContext,
                 params: {},
+                unstable_pattern: 'action/wishlist-remove',
             };
 
             const response = await action(args);
@@ -273,6 +276,7 @@ describe('action.wishlist-remove', () => {
                 request,
                 context: mockContext,
                 params: {},
+                unstable_pattern: 'action/wishlist-remove',
             };
 
             const response = await action(args);
@@ -331,6 +335,7 @@ describe('action.wishlist-remove', () => {
                 request,
                 context: mockContext,
                 params: {},
+                unstable_pattern: 'action/wishlist-remove',
             };
 
             const response = await action(args);
@@ -394,6 +399,7 @@ describe('action.wishlist-remove', () => {
                 request,
                 context: mockContext,
                 params: {},
+                unstable_pattern: 'action/wishlist-remove',
             };
 
             const response = await action(args);
@@ -429,6 +435,7 @@ describe('action.wishlist-remove', () => {
                 request,
                 context: mockContext,
                 params: {},
+                unstable_pattern: 'action/wishlist-remove',
             };
 
             const response = await action(args);
@@ -459,6 +466,7 @@ describe('action.wishlist-remove', () => {
                 request,
                 context: mockContext,
                 params: {},
+                unstable_pattern: 'action/wishlist-remove',
             };
 
             const response = await action(args);
@@ -481,6 +489,7 @@ describe('action.wishlist-remove', () => {
                 request,
                 context: mockContext,
                 params: {},
+                unstable_pattern: 'action/wishlist-remove',
             };
 
             const response = await action(args);
@@ -511,6 +520,7 @@ describe('action.wishlist-remove', () => {
                 request,
                 context: mockContext,
                 params: {},
+                unstable_pattern: 'action/wishlist-remove',
             };
 
             const response = await action(args);
@@ -563,6 +573,7 @@ describe('action.wishlist-remove', () => {
                 request,
                 context: mockContext,
                 params: {},
+                unstable_pattern: 'action/wishlist-remove',
             };
 
             const response = await action(args);

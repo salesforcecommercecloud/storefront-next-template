@@ -13,40 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { type JSX, useCallback, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
-import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { getPaginationItems } from '@/lib/pagination-utils';
 
 export default function CategoryPagination({
     limit,
-    result,
+    offset,
+    total,
 }: {
     limit: number;
-    result: ShopperSearch.schemas['ProductSearchResult'];
+    offset: number;
+    total: number;
 }): JSX.Element | null {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const total = useMemo(() => {
-        return Math.ceil(result.total / limit);
-    }, [limit, result.total]);
-
-    const current = useMemo(() => {
-        return Math.floor(result.offset / limit) + 1;
-    }, [limit, result.offset]);
-
-    const pageNumbers = useMemo(() => getPaginationItems(total, current), [total, current]);
+    const totalPages = Math.ceil(total / limit);
+    const current = Math.floor(offset / limit) + 1;
+    const pageNumbers = useMemo(() => getPaginationItems(totalPages, current), [totalPages, current]);
 
     const navigatePage = useCallback(
         (page: number) => {
             const params = new URLSearchParams(location.search);
-            const offset = (page - 1) * limit;
-            params.set('offset', String(offset));
+            params.set('offset', String((page - 1) * limit));
             return navigate({
                 ...location,
                 search: `?${params.toString()}`,
@@ -55,7 +47,7 @@ export default function CategoryPagination({
         [location, navigate, limit]
     );
 
-    if (total <= 1) {
+    if (totalPages <= 1) {
         return null;
     }
 
@@ -97,7 +89,7 @@ export default function CategoryPagination({
                     variant="outline"
                     className="size-9 cursor-pointer"
                     onClick={() => void navigatePage(current + 1)}
-                    disabled={current === total}
+                    disabled={current === totalPages}
                     aria-label="Next page">
                     <ChevronRight />
                 </Button>

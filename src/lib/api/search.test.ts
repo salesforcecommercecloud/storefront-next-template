@@ -72,7 +72,7 @@ describe('', () => {
             expect(result).toBe(mockResult);
         });
 
-        it('should build refine from categoryId and filters (and not include duplicates)', async () => {
+        it('should build refine from categoryId (and not include duplicates)', async () => {
             const mockContext = createTestContext({
                 appConfig: {
                     commerce: {
@@ -89,10 +89,6 @@ describe('', () => {
 
             await fetchSearchProducts(mockContext, {
                 categoryId: 'mens',
-                filters: {
-                    color: ['blue', 'blue', 'red'],
-                    size: ['M'],
-                },
                 refine: ['cgid=mens', 'color=blue'],
                 currency: 'USD',
             });
@@ -100,7 +96,7 @@ describe('', () => {
             expect(mockProductSearch).toHaveBeenCalledWith({
                 params: {
                     query: expect.objectContaining({
-                        refine: expect.arrayContaining(['cgid=mens', 'color=blue', 'color=red', 'size=M']),
+                        refine: expect.arrayContaining(['cgid=mens', 'color=blue']),
                     }),
                 },
             });
@@ -109,14 +105,13 @@ describe('', () => {
             expect(new Set(refineArg).size).toBe(refineArg.length);
         });
 
-        it('should use default refine when no categoryId, filters, or refine provided', async () => {
+        it('should use default refine when no categoryId or refine provided', async () => {
             const mockContext = createTestContext();
             mockProductSearch.mockResolvedValue({ data: { hits: [] } });
 
             await fetchSearchProducts(mockContext, {
                 q: 'dress',
                 refine: [],
-                filters: undefined,
                 categoryId: undefined,
                 currency: 'USD',
             });
@@ -208,7 +203,9 @@ describe('', () => {
                 appConfig: {
                     search: {
                         products: {
-                            orderableOnly: false,
+                            refine: {
+                                orderableOnly: false,
+                            },
                         },
                     },
                 } as any,

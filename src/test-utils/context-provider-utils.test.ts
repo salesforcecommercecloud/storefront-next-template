@@ -65,7 +65,7 @@ describe('context-provider-utils', () => {
 
         it('has correct global configuration', () => {
             expect(mockBuildConfig.app.global.branding.name).toBe('Test Store');
-            expect(mockBuildConfig.app.global.productListing.productsPerPage).toBe(24);
+            expect(mockBuildConfig.app.search.products.hits.limit).toBe(24);
             expect(mockBuildConfig.app.global.badges).toHaveLength(2);
         });
 
@@ -187,10 +187,6 @@ describe('context-provider-utils', () => {
                             logoAlt: 'Custom Logo',
                         },
                         productListing: {
-                            productsPerPage: 24,
-                            enableInfiniteScroll: false,
-                            sortOptions: ['relevance'],
-                            enableQuickView: true,
                             defaultProductTileImgAspectRatio: 1,
                         },
                         carousel: {

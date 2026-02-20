@@ -123,10 +123,6 @@ export const mockBuildConfig: Config = {
         global: {
             branding: { name: 'Test Store', logoAlt: 'Home' },
             productListing: {
-                productsPerPage: 24,
-                enableInfiniteScroll: false,
-                sortOptions: ['relevance'],
-                enableQuickView: true,
                 defaultProductTileImgAspectRatio: 1,
             },
             carousel: { defaultItemCount: 4 },
@@ -183,7 +179,13 @@ export const mockBuildConfig: Config = {
         },
         search: {
             products: {
-                orderableOnly: true,
+                refine: {
+                    orderableOnly: true,
+                },
+                hits: {
+                    limit: 24,
+                    critical: 2,
+                },
             },
         },
         performance: {

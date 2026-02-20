@@ -113,10 +113,7 @@ const mockConfig = {
     global: {
         branding: { name: 'Test Store', logoAlt: 'Home' },
         productListing: {
-            productsPerPage: 24,
-            enableInfiniteScroll: false,
-            sortOptions: ['relevance'],
-            enableQuickView: true,
+            defaultProductTileImgAspectRatio: 1,
         },
         carousel: { defaultItemCount: 4 },
         badges: [
@@ -125,6 +122,17 @@ const mockConfig = {
         ],
     },
     images: { quality: 70, formats: ['webp'], fallbackFormat: 'jpg' },
+    search: {
+        products: {
+            refine: {
+                orderableOnly: true,
+            },
+            hits: {
+                limit: 24,
+                critical: 2,
+            },
+        },
+    },
     performance: {
         caching: { apiCacheTtl: 300, staticAssetCacheTtl: 31536000 },
     },
@@ -156,7 +164,10 @@ describe('ProductGrid stories snapshot', () => {
             const { container } = render(<Story />);
             // Wait for lazy-loaded swatches to resolve through <Suspense/>
             await waitFor(() => {
-                expect(container.querySelector('[data-slot="skeleton"]')).toBeNull();
+                expect(container.querySelector('.product-tile-skeleton')).toBeNull();
+            });
+            await waitFor(() => {
+                expect(container.querySelector('.product-tile-swatches-skeleton')).toBeNull();
             });
             expect(container.firstChild).toMatchSnapshot();
         });

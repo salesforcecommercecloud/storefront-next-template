@@ -263,10 +263,6 @@ export default defineConfig({
             //   config.pages.search.components?.productListing ?? config.global.productListing
             branding: { name: 'Performer', logoAlt: 'Home' },
             productListing: {
-                productsPerPage: 24,
-                enableInfiniteScroll: false,
-                sortOptions: ['relevance', 'price-asc', 'price-desc', 'name-asc'],
-                enableQuickView: true,
                 defaultProductTileImgAspectRatio: 1,
             },
             carousel: { defaultItemCount: 4 },
@@ -341,7 +337,13 @@ export default defineConfig({
         // See CONFIG-OPTIONS.md#search for detailed documentation
         search: {
             products: {
-                orderableOnly: true,
+                refine: {
+                    orderableOnly: true,
+                },
+                hits: {
+                    limit: 24,
+                    critical: 2,
+                },
             },
         },
         // Performance optimization settings

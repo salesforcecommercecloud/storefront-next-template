@@ -14,13 +14,13 @@ import { getConfig } from '@/config';
 // ✅ Server loader/action - pass context
 export function loader({ context }: LoaderFunctionArgs) {
   const config = getConfig(context);
-  return { limit: config.global.productListing.productsPerPage };
+  return { limit: config.search.products.hits.limit };
 }
 
 // ✅ Client loader - no context needed
 export function clientLoader() {
   const config = getConfig();
-  return { limit: config.global.productListing.productsPerPage };
+  return { limit: config.search.products.hits.limit };
 }
 ```
 
@@ -31,7 +31,7 @@ import { useConfig } from '@/config';
 
 export function MyComponent() {
   const config = useConfig();
-  return <div>Showing {config.global.productListing.productsPerPage} products</div>;
+  return <div>Showing {config.search.products.hits.limit} products</div>;
 }
 ```
 ## Environment Variables

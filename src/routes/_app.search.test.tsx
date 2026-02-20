@@ -17,10 +17,10 @@
 import 'reflect-metadata';
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
-import { vi, describe, test, expect, beforeEach } from 'vitest';
-import type { LoaderFunctionArgs } from 'react-router';
-import type { ShopperSearch, ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
-import SearchPage, { loader, SearchPageMetadata, type SearchPageData } from './_app.search';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { type LoaderFunctionArgs, MemoryRouter } from 'react-router';
+import type { ShopperExperience, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import SearchPage, { loader, type SearchPageData, SearchPageMetadata } from './_app.search';
 import { createTestContext } from '@/lib/test-utils';
 import { fetchSearchProducts } from '@/lib/api/search';
 import { fetchPageWithComponentData } from '@/lib/util/pageLoader';
@@ -108,7 +108,7 @@ vi.mock('@/components/region', async () => {
 vi.mock('@/components/product-grid', () => ({
     default: ({ products }: any) => (
         <div data-testid="product-grid">
-            {products.map((product: any) => (
+            {products?.map((product: any) => (
                 <div key={product.productId} data-testid="product-item">
                     {product.productName}
                 </div>
@@ -120,8 +120,6 @@ vi.mock('@/components/product-grid', () => ({
 // Mock other components
 vi.mock('@/components/category-skeleton', () => ({
     default: () => <div data-testid="category-skeleton" />,
-    CategoryHeaderSkeleton: () => <div data-testid="category-header-skeleton" />,
-    CategoryRefinementsSkeleton: () => <div data-testid="category-refinements-skeleton" />,
 }));
 
 vi.mock('@/components/category-pagination', () => ({
@@ -157,9 +155,20 @@ vi.mock('@/hooks/use-analytics', () => ({
 vi.mock('@/config', async (importOriginal) => {
     const actual = await importOriginal<object>();
     const mockConfigValue = {
-        global: {
-            productListing: {
-                productsPerPage: 10,
+        commerce: {
+            sites: [
+                {
+                    id: 'test-site',
+                    defaultLocale: 'en-US',
+                },
+            ],
+        },
+        search: {
+            products: {
+                hits: {
+                    limit: 10,
+                    critical: 2,
+                },
             },
         },
     } as AppConfig;
@@ -178,9 +187,20 @@ vi.mock('@salesforce/storefront-next-runtime/design/mode', () => ({
 describe('SearchPage', () => {
     const mockContext = createTestContext();
     const mockConfig: AppConfig = {
-        global: {
-            productListing: {
-                productsPerPage: 10,
+        commerce: {
+            sites: [
+                {
+                    id: 'test-site',
+                    defaultLocale: 'en-US',
+                },
+            ],
+        },
+        search: {
+            products: {
+                hits: {
+                    limit: 10,
+                    critical: 2,
+                },
             },
         },
     } as AppConfig;
@@ -223,7 +243,7 @@ describe('SearchPage', () => {
     });
 
     describe('loader', () => {
-        test('should fetch search data and page with correct parameters', () => {
+        test('should fetch search data and page with correct parameters', async () => {
             const args: LoaderFunctionArgs = {
                 request: new Request('https://example.com/search?q=shoes&offset=0'),
                 context: mockContext,
@@ -231,22 +251,21 @@ describe('SearchPage', () => {
                 unstable_pattern: '/search',
             };
 
-            const result = loader(args);
+            const result = await loader(args);
 
             expect(fetchSearchProducts).toHaveBeenCalledWith(mockContext, {
                 q: 'shoes',
-                limit: 1,
+                limit: 2,
                 offset: 0,
                 sort: '',
                 refine: [],
-                expand: ['none'],
                 currency: 'GBP',
             });
 
             expect(fetchSearchProducts).toHaveBeenCalledWith(mockContext, {
                 q: 'shoes',
-                limit: 10,
-                offset: 0,
+                limit: 8,
+                offset: 2,
                 sort: '',
                 refine: [],
                 currency: 'GBP',
@@ -256,7 +275,7 @@ describe('SearchPage', () => {
             expect(result.searchTerm).toBe('shoes');
         });
 
-        test('should handle query parameters correctly', () => {
+        test('should handle query parameters correctly', async () => {
             const args: LoaderFunctionArgs = {
                 request: new Request(
                     'https://example.com/search?q=boots&offset=20&sort=price-low-to-high&refine=color:red&refine=size:10'
@@ -266,7 +285,7 @@ describe('SearchPage', () => {
                 unstable_pattern: '/search',
             };
 
-            loader(args);
+            await loader(args);
 
             expect(fetchSearchProducts).toHaveBeenCalledWith(
                 mockContext,
@@ -284,15 +303,19 @@ describe('SearchPage', () => {
         test('should render search results', async () => {
             const loaderData: SearchPageData = {
                 searchTerm: 'shoes',
-                refinements: Promise.resolve(mockSearchResult),
-                searchResult: Promise.resolve(mockSearchResult),
+                searchResultCritical: mockSearchResult,
+                searchResultNonCritical: Promise.resolve(mockSearchResult),
                 page: Promise.resolve({ ...createMockPage(), componentData: {} }),
+                currency: 'USD',
+                locale: 'en-US',
             };
 
             render(
-                <ConfigWrapper>
-                    <SearchPage loaderData={loaderData} />
-                </ConfigWrapper>
+                <MemoryRouter>
+                    <ConfigWrapper>
+                        <SearchPage loaderData={loaderData} />
+                    </ConfigWrapper>
+                </MemoryRouter>
             );
 
             await waitFor(() => {
@@ -315,15 +338,19 @@ describe('SearchPage', () => {
 
             const loaderData: SearchPageData = {
                 searchTerm: 'shoes',
-                refinements: Promise.resolve(mockSearchResult),
-                searchResult: Promise.resolve(mockSearchResult),
+                searchResultCritical: mockSearchResult,
+                searchResultNonCritical: Promise.resolve(mockSearchResult),
                 page: Promise.resolve({ ...createMockPage([mockRegion]), componentData: {} }),
+                currency: 'USD',
+                locale: 'en-US',
             };
 
             render(
-                <ConfigWrapper>
-                    <SearchPage loaderData={loaderData} />
-                </ConfigWrapper>
+                <MemoryRouter>
+                    <ConfigWrapper>
+                        <SearchPage loaderData={loaderData} />
+                    </ConfigWrapper>
+                </MemoryRouter>
             );
 
             await waitFor(() => {
@@ -336,15 +363,19 @@ describe('SearchPage', () => {
         test('should not render regions when no components', async () => {
             const loaderData: SearchPageData = {
                 searchTerm: 'shoes',
-                refinements: Promise.resolve(mockSearchResult),
-                searchResult: Promise.resolve(mockSearchResult),
-                page: Promise.resolve(createMockPage([])),
+                searchResultCritical: mockSearchResult,
+                searchResultNonCritical: Promise.resolve(mockSearchResult),
+                page: Promise.resolve({ ...createMockPage([]), componentData: {} }),
+                currency: 'USD',
+                locale: 'en-US',
             };
 
             render(
-                <ConfigWrapper>
-                    <SearchPage loaderData={loaderData} />
-                </ConfigWrapper>
+                <MemoryRouter>
+                    <ConfigWrapper>
+                        <SearchPage loaderData={loaderData} />
+                    </ConfigWrapper>
+                </MemoryRouter>
             );
 
             await waitFor(() => {
@@ -355,15 +386,19 @@ describe('SearchPage', () => {
         test('should render pagination when results total is greater than 1', async () => {
             const loaderData: SearchPageData = {
                 searchTerm: 'shoes',
-                refinements: Promise.resolve(mockSearchResult),
-                searchResult: Promise.resolve({ ...mockSearchResult, total: 50 }),
+                searchResultCritical: { ...mockSearchResult, total: 50 },
+                searchResultNonCritical: Promise.resolve({ ...mockSearchResult, total: 50 }),
                 page: Promise.resolve({ ...createMockPage(), componentData: {} }),
+                currency: 'USD',
+                locale: 'en-US',
             };
 
             render(
-                <ConfigWrapper>
-                    <SearchPage loaderData={loaderData} />
-                </ConfigWrapper>
+                <MemoryRouter>
+                    <ConfigWrapper>
+                        <SearchPage loaderData={loaderData} />
+                    </ConfigWrapper>
+                </MemoryRouter>
             );
 
             await waitFor(() => {
@@ -374,15 +409,19 @@ describe('SearchPage', () => {
         test('should not render pagination when total is 1 or less', async () => {
             const loaderData: SearchPageData = {
                 searchTerm: 'shoes',
-                refinements: Promise.resolve(mockSearchResult),
-                searchResult: Promise.resolve({ ...mockSearchResult, total: 1 }),
+                searchResultCritical: { ...mockSearchResult, total: 1 },
+                searchResultNonCritical: Promise.resolve({ ...mockSearchResult, total: 1 }),
                 page: Promise.resolve({ ...createMockPage(), componentData: {} }),
+                currency: 'USD',
+                locale: 'en-US',
             };
 
             render(
-                <ConfigWrapper>
-                    <SearchPage loaderData={loaderData} />
-                </ConfigWrapper>
+                <MemoryRouter>
+                    <ConfigWrapper>
+                        <SearchPage loaderData={loaderData} />
+                    </ConfigWrapper>
+                </MemoryRouter>
             );
 
             await waitFor(() => {
@@ -391,17 +430,29 @@ describe('SearchPage', () => {
         });
 
         test('should render refinements and sorting', async () => {
+            const searchResultWithSorting = {
+                ...mockSearchResult,
+                sortingOptions: [
+                    { id: 'best-matches', label: 'Best Matches' },
+                    { id: 'price-low-to-high', label: 'Price: Low to High' },
+                ],
+            };
+
             const loaderData: SearchPageData = {
                 searchTerm: 'shoes',
-                refinements: Promise.resolve(mockSearchResult),
-                searchResult: Promise.resolve(mockSearchResult),
+                searchResultCritical: searchResultWithSorting,
+                searchResultNonCritical: Promise.resolve(searchResultWithSorting),
                 page: Promise.resolve({ ...createMockPage(), componentData: {} }),
+                currency: 'USD',
+                locale: 'en-US',
             };
 
             render(
-                <ConfigWrapper>
-                    <SearchPage loaderData={loaderData} />
-                </ConfigWrapper>
+                <MemoryRouter>
+                    <ConfigWrapper>
+                        <SearchPage loaderData={loaderData} />
+                    </ConfigWrapper>
+                </MemoryRouter>
             );
 
             await waitFor(() => {
@@ -421,15 +472,19 @@ describe('SearchPage', () => {
 
             const loaderData: SearchPageData = {
                 searchTerm: 'shoes',
-                refinements: Promise.resolve(mockSearchResult),
-                searchResult: Promise.resolve(mockSearchResult),
+                searchResultCritical: mockSearchResult,
+                searchResultNonCritical: Promise.resolve(mockSearchResult),
                 page: Promise.resolve({ ...createMockPage([mockRegion]), componentData: {} }),
+                currency: 'USD',
+                locale: 'en-US',
             };
 
             render(
-                <ConfigWrapper>
-                    <SearchPage loaderData={loaderData} />
-                </ConfigWrapper>
+                <MemoryRouter>
+                    <ConfigWrapper>
+                        <SearchPage loaderData={loaderData} />
+                    </ConfigWrapper>
+                </MemoryRouter>
             );
 
             await waitFor(() => {
@@ -453,15 +508,19 @@ describe('SearchPage', () => {
 
             const loaderData: SearchPageData = {
                 searchTerm: 'shoes',
-                refinements: Promise.resolve(mockSearchResult),
-                searchResult: Promise.resolve(mockSearchResult),
+                searchResultCritical: mockSearchResult,
+                searchResultNonCritical: Promise.resolve(mockSearchResult),
                 page: Promise.resolve({ ...createMockPage([mockRegion]), componentData: {} }),
+                currency: 'USD',
+                locale: 'en-US',
             };
 
             render(
-                <ConfigWrapper>
-                    <SearchPage loaderData={loaderData} />
-                </ConfigWrapper>
+                <MemoryRouter>
+                    <ConfigWrapper>
+                        <SearchPage loaderData={loaderData} />
+                    </ConfigWrapper>
+                </MemoryRouter>
             );
 
             await waitFor(() => {

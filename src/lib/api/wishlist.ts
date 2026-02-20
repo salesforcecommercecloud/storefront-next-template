@@ -26,7 +26,7 @@ type Product = ShopperProducts.schemas['Product'];
 // TODO: for later refactoring, there are similar product-fetch functions for Cart and Checkout.
 /**
  * Fetch product details for wishlist items
- * The API has a limit based on productsPerPage config, so we batch requests if needed
+ * The API has a limit based on search config, so we batch requests if needed
  */
 export async function fetchProductsForWishlist(
     context: LoaderFunctionArgs['context'],
@@ -43,7 +43,7 @@ export async function fetchProductsForWishlist(
 
     const clients = createApiClients(context);
     const config = getConfig(context);
-    const maxIdsPerRequest = config.global.productListing.productsPerPage;
+    const maxIdsPerRequest = config.search.products.hits.limit;
     const productsByProductId: Record<string, Product> = {};
 
     const currency = context.get(currencyContext) as string;
