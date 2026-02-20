@@ -49,9 +49,9 @@ const mockConfig: ActiveDataConfig = {
     enabled: true,
     siteId: 'test-site-id',
     host: 'https://analytics.example.com',
-    locale: 'en-US',
+    locale: 'en-GB',
     sourceCode: 'test-source',
-    siteCurrency: 'USD',
+    siteCurrency: 'GBP',
     eventToggles: {
         view_page: true,
         view_product: true,
@@ -288,14 +288,14 @@ describe('Active Data Adapter', () => {
 
             // Check base URL
             expect(url).toContain(
-                'https://analytics.example.com/on/demandware.store/Sites-test-site-id-Site/en-US/__Analytics-Start'
+                'https://analytics.example.com/on/demandware.store/Sites-test-site-id-Site/en-GB/__Analytics-Start'
             );
 
             // Check context params
             expect(url).toMatch(/[?&]dwac=/);
             expect(url).toMatch(/[?&]cmpn=test-source/);
             expect(url).toMatch(/[?&]tz=/);
-            expect(url).toMatch(/[?&]pcc=USD/);
+            expect(url).toMatch(/[?&]pcc=GBP/);
             expect(url).toMatch(/[?&]pct=__ANONYMOUS__/);
 
             // Check base params
@@ -512,8 +512,8 @@ describe('Active Data Adapter', () => {
             expect(mockSendBeacon).toHaveBeenCalled();
             const url = mockSendBeacon.mock.calls[0][0] as string;
 
-            // Should default to USD
-            expect(url).toMatch(/[?&]pcc=USD/);
+            // Should default to GBP
+            expect(url).toMatch(/[?&]pcc=GBP/);
         });
 
         it('should handle multiple products correctly', async () => {

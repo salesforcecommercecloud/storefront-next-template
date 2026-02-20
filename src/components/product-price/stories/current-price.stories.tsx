@@ -111,9 +111,9 @@ export const CustomElement: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
         // Check for formatted euro price (rough check as locale might vary)
-        // en-US locale for EUR typically puts symbol before or code
-        // formatCurrency uses 'en-US' hardcoded in component
-        // 1,234.56 or 1.234,56 depending on implementation, but formatCurrency uses en-US so it's €1,234.56
+        // en-GB locale for EUR typically puts symbol before or code
+        // formatCurrency uses 'en-GB' hardcoded in component
+        // 1,234.56 or 1.234,56 depending on implementation, but formatCurrency uses en-GB so it's €1,234.56
         const priceElement = canvas.getByRole('heading', { level: 3 });
         await expect(priceElement).toBeInTheDocument();
         await expect(priceElement).toHaveClass('text-2xl');

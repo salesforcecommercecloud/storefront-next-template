@@ -61,11 +61,11 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
                     class="items-center gap-2 text-sm mt-2"
                   >
                     <span
-                      aria-label="Current price: $63.99"
+                      aria-label="Current price: £63.99"
                       aria-live="polite"
                       class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                     >
-                      $63.99
+                      £63.99
                     </span>
                     <span
                       aria-atomic="true"
@@ -73,14 +73,14 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
                       class="sr-only"
                     >
                       Laptop Briefcase with wheels (37L) 1
-                      Current price: $63.99
+                      Current price: £63.99
                     </span>
                      
                     <span
-                      aria-label="List price: $67.99"
+                      aria-label="List price: £67.99"
                       class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                     >
-                      $67.99
+                      £67.99
                     </span>
                     <span
                       aria-atomic="true"
@@ -88,7 +88,7 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
                       class="sr-only"
                     >
                       Laptop Briefcase with wheels (37L) 1
-                      List price: $67.99
+                      List price: £67.99
                     </span>
                   </div>
                 </div>
@@ -234,11 +234,11 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
                     class="items-center gap-2 text-sm mt-2"
                   >
                     <span
-                      aria-label="Current price: $63.99"
+                      aria-label="Current price: £63.99"
                       aria-live="polite"
                       class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                     >
-                      $63.99
+                      £63.99
                     </span>
                     <span
                       aria-atomic="true"
@@ -246,14 +246,14 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
                       class="sr-only"
                     >
                       Laptop Briefcase with wheels (37L) 2
-                      Current price: $63.99
+                      Current price: £63.99
                     </span>
                      
                     <span
-                      aria-label="List price: $67.99"
+                      aria-label="List price: £67.99"
                       class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                     >
-                      $67.99
+                      £67.99
                     </span>
                     <span
                       aria-atomic="true"
@@ -261,7 +261,7 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
                       class="sr-only"
                     >
                       Laptop Briefcase with wheels (37L) 2
-                      List price: $67.99
+                      List price: £67.99
                     </span>
                   </div>
                 </div>
@@ -407,11 +407,11 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
                     class="items-center gap-2 text-sm mt-2"
                   >
                     <span
-                      aria-label="Current price: $63.99"
+                      aria-label="Current price: £63.99"
                       aria-live="polite"
                       class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                     >
-                      $63.99
+                      £63.99
                     </span>
                     <span
                       aria-atomic="true"
@@ -419,14 +419,14 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
                       class="sr-only"
                     >
                       Laptop Briefcase with wheels (37L) 3
-                      Current price: $63.99
+                      Current price: £63.99
                     </span>
                      
                     <span
-                      aria-label="List price: $67.99"
+                      aria-label="List price: £67.99"
                       class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                     >
-                      $67.99
+                      £67.99
                     </span>
                     <span
                       aria-atomic="true"
@@ -434,7 +434,7 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
                       class="sr-only"
                     >
                       Laptop Briefcase with wheels (37L) 3
-                      List price: $67.99
+                      List price: £67.99
                     </span>
                   </div>
                 </div>
@@ -580,11 +580,11 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
                     class="items-center gap-2 text-sm mt-2"
                   >
                     <span
-                      aria-label="Current price: $63.99"
+                      aria-label="Current price: £63.99"
                       aria-live="polite"
                       class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                     >
-                      $63.99
+                      £63.99
                     </span>
                     <span
                       aria-atomic="true"
@@ -592,14 +592,14 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
                       class="sr-only"
                     >
                       Laptop Briefcase with wheels (37L) 4
-                      Current price: $63.99
+                      Current price: £63.99
                     </span>
                      
                     <span
-                      aria-label="List price: $67.99"
+                      aria-label="List price: £67.99"
                       class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                     >
-                      $67.99
+                      £67.99
                     </span>
                     <span
                       aria-atomic="true"
@@ -607,7 +607,7 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
                       class="sr-only"
                     >
                       Laptop Briefcase with wheels (37L) 4
-                      List price: $67.99
+                      List price: £67.99
                     </span>
                   </div>
                 </div>
@@ -853,11 +853,11 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
                     class="items-center gap-2 text-sm mt-2"
                   >
                     <span
-                      aria-label="Current price: $63.99"
+                      aria-label="Current price: £63.99"
                       aria-live="polite"
                       class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                     >
-                      $63.99
+                      £63.99
                     </span>
                     <span
                       aria-atomic="true"
@@ -865,14 +865,14 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
                       class="sr-only"
                     >
                       Laptop Briefcase with wheels (37L) 1
-                      Current price: $63.99
+                      Current price: £63.99
                     </span>
                      
                     <span
-                      aria-label="List price: $67.99"
+                      aria-label="List price: £67.99"
                       class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                     >
-                      $67.99
+                      £67.99
                     </span>
                     <span
                       aria-atomic="true"
@@ -880,7 +880,7 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
                       class="sr-only"
                     >
                       Laptop Briefcase with wheels (37L) 1
-                      List price: $67.99
+                      List price: £67.99
                     </span>
                   </div>
                 </div>
@@ -1026,11 +1026,11 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
                     class="items-center gap-2 text-sm mt-2"
                   >
                     <span
-                      aria-label="Current price: $63.99"
+                      aria-label="Current price: £63.99"
                       aria-live="polite"
                       class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                     >
-                      $63.99
+                      £63.99
                     </span>
                     <span
                       aria-atomic="true"
@@ -1038,14 +1038,14 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
                       class="sr-only"
                     >
                       Laptop Briefcase with wheels (37L) 2
-                      Current price: $63.99
+                      Current price: £63.99
                     </span>
                      
                     <span
-                      aria-label="List price: $67.99"
+                      aria-label="List price: £67.99"
                       class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                     >
-                      $67.99
+                      £67.99
                     </span>
                     <span
                       aria-atomic="true"
@@ -1053,7 +1053,7 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
                       class="sr-only"
                     >
                       Laptop Briefcase with wheels (37L) 2
-                      List price: $67.99
+                      List price: £67.99
                     </span>
                   </div>
                 </div>
@@ -1199,11 +1199,11 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
                     class="items-center gap-2 text-sm mt-2"
                   >
                     <span
-                      aria-label="Current price: $63.99"
+                      aria-label="Current price: £63.99"
                       aria-live="polite"
                       class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                     >
-                      $63.99
+                      £63.99
                     </span>
                     <span
                       aria-atomic="true"
@@ -1211,14 +1211,14 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
                       class="sr-only"
                     >
                       Laptop Briefcase with wheels (37L) 3
-                      Current price: $63.99
+                      Current price: £63.99
                     </span>
                      
                     <span
-                      aria-label="List price: $67.99"
+                      aria-label="List price: £67.99"
                       class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                     >
-                      $67.99
+                      £67.99
                     </span>
                     <span
                       aria-atomic="true"
@@ -1226,7 +1226,7 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
                       class="sr-only"
                     >
                       Laptop Briefcase with wheels (37L) 3
-                      List price: $67.99
+                      List price: £67.99
                     </span>
                   </div>
                 </div>
@@ -1372,11 +1372,11 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
                     class="items-center gap-2 text-sm mt-2"
                   >
                     <span
-                      aria-label="Current price: $63.99"
+                      aria-label="Current price: £63.99"
                       aria-live="polite"
                       class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                     >
-                      $63.99
+                      £63.99
                     </span>
                     <span
                       aria-atomic="true"
@@ -1384,14 +1384,14 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
                       class="sr-only"
                     >
                       Laptop Briefcase with wheels (37L) 4
-                      Current price: $63.99
+                      Current price: £63.99
                     </span>
                      
                     <span
-                      aria-label="List price: $67.99"
+                      aria-label="List price: £67.99"
                       class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                     >
-                      $67.99
+                      £67.99
                     </span>
                     <span
                       aria-atomic="true"
@@ -1399,7 +1399,7 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
                       class="sr-only"
                     >
                       Laptop Briefcase with wheels (37L) 4
-                      List price: $67.99
+                      List price: £67.99
                     </span>
                   </div>
                 </div>
@@ -1659,11 +1659,11 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
                     class="items-center gap-2 text-sm mt-2"
                   >
                     <span
-                      aria-label="Current price: $63.99"
+                      aria-label="Current price: £63.99"
                       aria-live="polite"
                       class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                     >
-                      $63.99
+                      £63.99
                     </span>
                     <span
                       aria-atomic="true"
@@ -1671,14 +1671,14 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
                       class="sr-only"
                     >
                       Laptop Briefcase with wheels (37L) 1
-                      Current price: $63.99
+                      Current price: £63.99
                     </span>
                      
                     <span
-                      aria-label="List price: $67.99"
+                      aria-label="List price: £67.99"
                       class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                     >
-                      $67.99
+                      £67.99
                     </span>
                     <span
                       aria-atomic="true"
@@ -1686,7 +1686,7 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
                       class="sr-only"
                     >
                       Laptop Briefcase with wheels (37L) 1
-                      List price: $67.99
+                      List price: £67.99
                     </span>
                   </div>
                 </div>
@@ -1832,11 +1832,11 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
                     class="items-center gap-2 text-sm mt-2"
                   >
                     <span
-                      aria-label="Current price: $63.99"
+                      aria-label="Current price: £63.99"
                       aria-live="polite"
                       class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                     >
-                      $63.99
+                      £63.99
                     </span>
                     <span
                       aria-atomic="true"
@@ -1844,14 +1844,14 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
                       class="sr-only"
                     >
                       Laptop Briefcase with wheels (37L) 2
-                      Current price: $63.99
+                      Current price: £63.99
                     </span>
                      
                     <span
-                      aria-label="List price: $67.99"
+                      aria-label="List price: £67.99"
                       class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                     >
-                      $67.99
+                      £67.99
                     </span>
                     <span
                       aria-atomic="true"
@@ -1859,7 +1859,7 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
                       class="sr-only"
                     >
                       Laptop Briefcase with wheels (37L) 2
-                      List price: $67.99
+                      List price: £67.99
                     </span>
                   </div>
                 </div>
@@ -2005,11 +2005,11 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
                     class="items-center gap-2 text-sm mt-2"
                   >
                     <span
-                      aria-label="Current price: $63.99"
+                      aria-label="Current price: £63.99"
                       aria-live="polite"
                       class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                     >
-                      $63.99
+                      £63.99
                     </span>
                     <span
                       aria-atomic="true"
@@ -2017,14 +2017,14 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
                       class="sr-only"
                     >
                       Laptop Briefcase with wheels (37L) 3
-                      Current price: $63.99
+                      Current price: £63.99
                     </span>
                      
                     <span
-                      aria-label="List price: $67.99"
+                      aria-label="List price: £67.99"
                       class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                     >
-                      $67.99
+                      £67.99
                     </span>
                     <span
                       aria-atomic="true"
@@ -2032,7 +2032,7 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
                       class="sr-only"
                     >
                       Laptop Briefcase with wheels (37L) 3
-                      List price: $67.99
+                      List price: £67.99
                     </span>
                   </div>
                 </div>
@@ -2178,11 +2178,11 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
                     class="items-center gap-2 text-sm mt-2"
                   >
                     <span
-                      aria-label="Current price: $63.99"
+                      aria-label="Current price: £63.99"
                       aria-live="polite"
                       class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                     >
-                      $63.99
+                      £63.99
                     </span>
                     <span
                       aria-atomic="true"
@@ -2190,14 +2190,14 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
                       class="sr-only"
                     >
                       Laptop Briefcase with wheels (37L) 4
-                      Current price: $63.99
+                      Current price: £63.99
                     </span>
                      
                     <span
-                      aria-label="List price: $67.99"
+                      aria-label="List price: £67.99"
                       class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                     >
-                      $67.99
+                      £67.99
                     </span>
                     <span
                       aria-atomic="true"
@@ -2205,7 +2205,7 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
                       class="sr-only"
                     >
                       Laptop Briefcase with wheels (37L) 4
-                      List price: $67.99
+                      List price: £67.99
                     </span>
                   </div>
                 </div>

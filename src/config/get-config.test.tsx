@@ -49,7 +49,7 @@ describe('Config Access APIs', () => {
                 expect(config).toBeDefined();
                 expect(config.commerce.api.clientId).toBe('test-client');
                 // TODO: fix when multi site implementation starts
-                expect(config.commerce.sites[0].defaultLocale).toBe('en-US');
+                expect(config.commerce.sites[0].defaultLocale).toBe('en-GB');
             });
 
             it('should throw error if context provided but config not set', () => {
@@ -70,7 +70,7 @@ describe('Config Access APIs', () => {
                 expect(config).toBeDefined();
                 expect(config.commerce.api.clientId).toBe('test-client');
                 // TODO: fix when multi site implementation starts
-                expect(config.commerce.sites[0].defaultLocale).toBe('en-US');
+                expect(config.commerce.sites[0].defaultLocale).toBe('en-GB');
             });
 
             it('should throw error when window.__APP_CONFIG__ not available', () => {
@@ -110,7 +110,7 @@ describe('Config Access APIs', () => {
 
             expect(result.current).toBeDefined();
             expect(result.current.commerce.api.clientId).toBe('test-client');
-            expect(result.current.commerce.sites[0].defaultLocale).toBe('en-US');
+            expect(result.current.commerce.sites[0].defaultLocale).toBe('en-GB');
             expect(result.current).toEqual(mockConfig);
         });
 

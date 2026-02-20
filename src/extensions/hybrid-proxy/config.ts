@@ -73,7 +73,7 @@ export const HYBRID_PROXY_CONFIG = {
      * - String `'/path'` - proxies as-is (for static assets and already-prefixed paths)
      *
      * When needsPrefix is true, the path will be rewritten before proxying.
-     * Example: /cart → /s/RefArch/en-US/cart
+     * Example: /cart → /s/RefArch/en-GB/cart
      *
      * Note: Only proxy routes with matching URL structures between storefronts.
      * For routes with different URL patterns (e.g., product pages), use the

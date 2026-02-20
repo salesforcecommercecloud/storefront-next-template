@@ -135,7 +135,7 @@ export const Default: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
         await expect(canvas.getByText(mockProductItem.productName)).toBeInTheDocument();
-        const prices = canvas.getAllByText(/\$99.99/);
+        const prices = canvas.getAllByText(/£99\.99/);
         await expect(prices.length).toBeGreaterThan(0);
     },
 };
@@ -219,11 +219,11 @@ An auto bonus product that is automatically added to the cart as part of a promo
         await expect(canvas.getByText(mockBonusProductItem.productName)).toBeInTheDocument();
         // Verify bonus product badge is displayed
         await expect(canvas.getByText('Bonus Product')).toBeInTheDocument();
-        // Verify original price ($99) is shown (as strikethrough)
-        const originalPrices = canvas.getAllByText(/\$99/);
+        // Verify original price (£99) is shown (as strikethrough)
+        const originalPrices = canvas.getAllByText(/£99/);
         await expect(originalPrices.length).toBeGreaterThan(0);
-        // Verify discounted price ($0) is shown
-        const discountedPrices = canvas.getAllByText(/\$0/);
+        // Verify discounted price (£0) is shown
+        const discountedPrices = canvas.getAllByText(/£0/);
         await expect(discountedPrices.length).toBeGreaterThan(0);
 
         // Interaction tests for auto bonus product
@@ -341,10 +341,10 @@ A choice-based bonus product that allows users to select from multiple bonus opt
         // Verify bonus product badge is displayed
         await expect(canvas.getByText('Bonus Product')).toBeInTheDocument();
         // Verify original price is shown (as strikethrough)
-        const originalPrices = canvas.getAllByText(/\$49.99/);
+        const originalPrices = canvas.getAllByText(/£49\.99/);
         await expect(originalPrices.length).toBeGreaterThan(0);
-        // Verify discounted price ($0) is shown
-        const discountedPrices = canvas.getAllByText(/\$0/);
+        // Verify discounted price (£0) is shown
+        const discountedPrices = canvas.getAllByText(/£0/);
         await expect(discountedPrices.length).toBeGreaterThan(0);
 
         // Interaction tests for choice-based bonus product

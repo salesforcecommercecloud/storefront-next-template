@@ -619,7 +619,7 @@ describe('mergeEnvConfig - Conflict Detection', () => {
 
     it('should detect conflicts across multiple branches', () => {
         const env = {
-            PUBLIC__app__site: '{"locale":"en-US","currency":"USD"}',
+            PUBLIC__app__site: '{"locale":"en-GB","currency":"USD"}',
             PUBLIC__app__site__features: '{"guestCheckout":true}',
             PUBLIC__app__site__features__socialLogin__enabled: 'true',
         };

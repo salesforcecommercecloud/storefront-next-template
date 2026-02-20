@@ -461,7 +461,7 @@ Site configuration array. Each site can have its own locale, currency, cookies d
 
 **Example (single-line JSON):**
 ```bash
-PUBLIC__app__commerce__sites='[{"cookies":{"domain":null},"defaultSiteId":"RefArchGlobal","defaultLocale":"en-US","defaultCurrency":"USD","supportedLocales":[{"id":"en-US","preferredCurrency":"USD"},{"id":"de-DE","preferredCurrency":"EUR"}],"supportedCurrencies":["EUR","USD"]}]'
+PUBLIC__app__commerce__sites='[{"cookies":{"domain":null},"defaultSiteId":"RefArchGlobal","defaultLocale":"en-GB","defaultCurrency":"USD","supportedLocales":[{"id":"en-GB","preferredCurrency":"USD"},{"id":"de-DE","preferredCurrency":"EUR"}],"supportedCurrencies":["EUR","USD"]}]'
 ```
 
 **Example (multi-line JSON for readability):**
@@ -470,10 +470,10 @@ PUBLIC__app__commerce__sites='[
   {
     "cookies": {"domain": null},
     "id": "RefArchGlobal",
-    "defaultLocale": "en-US",
+    "defaultLocale": "en-GB",
     "defaultCurrency": "USD",
     "supportedLocales": [
-      {"id": "en-US", "preferredCurrency": "USD"},
+      {"id": "en-GB", "preferredCurrency": "USD"},
       {"id": "de-DE", "preferredCurrency": "EUR"},
       {"id": "fr-FR", "preferredCurrency": "EUR"}
     ],
@@ -679,7 +679,7 @@ Array of language codes that have translation files available. The fallback lang
 
 Example:
 ```bash
-PUBLIC__app__i18n__supportedLngs='["en-US","de-DE","fr-FR"]'
+PUBLIC__app__i18n__supportedLngs='["en-GB","de-DE","fr-FR"]'
 ```
 
 Each language in this array must have corresponding translation files in your project. Languages must also be included in your site's `supportedLocales` (configured in `commerce.sites`) for full support. The fallback language should be listed last. See `src/middlewares/i18next.ts` for middleware configuration.
@@ -1447,10 +1447,10 @@ PUBLIC__app__commerce__sites='[
   {
     "cookies": {"domain": null},
     "id": "RefArchGlobal",
-    "defaultLocale": "en-US",
+    "defaultLocale": "en-GB",
     "defaultCurrency": "USD",
     "supportedLocales": [
-      {"id": "en-US", "preferredCurrency": "USD"},
+      {"id": "en-GB", "preferredCurrency": "USD"},
       {"id": "de-DE", "preferredCurrency": "EUR"},
       {"id": "fr-FR", "preferredCurrency": "EUR"}
     ],
@@ -1459,7 +1459,7 @@ PUBLIC__app__commerce__sites='[
 ]'
 
 # Configure i18n with all supported languages
-PUBLIC__app__i18n__supportedLngs='["en-US", "de-DE", "fr-FR"]'
+PUBLIC__app__i18n__supportedLngs='["en-GB", "de-DE", "fr-FR"]'
 PUBLIC__app__i18n__fallbackLng="en-US"
 ```
 

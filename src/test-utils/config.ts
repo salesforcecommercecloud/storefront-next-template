@@ -80,13 +80,13 @@ export const mockBuildConfig: Config = {
             sites: [
                 {
                     id: 'RefArchGlobal',
-                    defaultLocale: 'en-US',
-                    defaultCurrency: 'USD',
+                    defaultLocale: 'en-GB',
+                    defaultCurrency: 'GBP',
                     supportedLocales: [
-                        { id: 'en-US', preferredCurrency: 'USD' },
+                        { id: 'en-GB', preferredCurrency: 'GBP' },
                         { id: 'it-IT', preferredCurrency: 'EUR' },
                     ],
-                    supportedCurrencies: ['EUR', 'USD'],
+                    supportedCurrencies: ['EUR', 'GBP'],
                 },
             ],
         },
@@ -117,8 +117,8 @@ export const mockBuildConfig: Config = {
             legacyRoutes: [],
         },
         i18n: {
-            fallbackLng: 'en-US',
-            supportedLngs: ['it-IT', 'en-US'], // Fallback language should be last
+            fallbackLng: 'en-GB',
+            supportedLngs: ['it-IT', 'en-GB'], // Fallback language should be last
         },
         global: {
             branding: { name: 'Test Store', logoAlt: 'Home' },

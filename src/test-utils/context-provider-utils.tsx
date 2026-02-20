@@ -71,13 +71,13 @@ export const mockBuildConfig: Config = {
             sites: [
                 {
                     id: 'RefArchGlobal',
-                    defaultLocale: 'en-US',
-                    defaultCurrency: 'USD',
+                    defaultLocale: 'en-GB',
+                    defaultCurrency: 'GBP',
                     supportedLocales: [
-                        { id: 'en-US', preferredCurrency: 'USD' },
+                        { id: 'en-GB', preferredCurrency: 'GBP' },
                         { id: 'it-IT', preferredCurrency: 'EUR' },
                     ],
-                    supportedCurrencies: ['USD', 'EUR'],
+                    supportedCurrencies: ['EUR', 'GBP'],
                 },
             ],
         },
@@ -105,8 +105,8 @@ export const mockBuildConfig: Config = {
             legacyRoutes: [],
         },
         i18n: {
-            fallbackLng: 'en-US',
-            supportedLngs: ['en-US'],
+            fallbackLng: 'en-GB',
+            supportedLngs: ['en-GB'],
         },
         global: {
             branding: { name: 'Test Store', logoAlt: 'Home' },
@@ -230,7 +230,7 @@ export const mockBuildConfig: Config = {
                     enabled: true,
                     host: 'https://zzrf-001.dx.commercecloud.salesforce.com',
                     siteId: 'RefArchGlobal',
-                    locale: 'en_US',
+                    locale: 'en_GB',
                     siteUUID: '8bb1ea1b04ac3454d36b83a888',
                     eventToggles: {
                         view_page: true,

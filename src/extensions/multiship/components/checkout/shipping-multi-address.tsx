@@ -182,7 +182,7 @@ export default function ShippingMultiAddress({
 }: ShippingMultiAddressProps) {
     const cart = useBasket();
     // Get currency from context (automatically derived from locale)
-    const currency = useCurrency() ?? 'USD';
+    const currency = useCurrency();
     const { t: tMultiship } = useTranslation('extMultiship');
     const customerProfile = useCustomerProfile();
     const { savedAddresses, setSavedAddresses, productItemAddresses, setProductItemAddresses } = useCheckoutContext();
@@ -443,7 +443,7 @@ export default function ShippingMultiAddress({
                                         <Typography variant="h3" className="font-bold text-lg">
                                             <CurrentPrice
                                                 price={currentPrice}
-                                                currency={currency}
+                                                currency={currency as string}
                                                 className="text-foreground text-lg font-bold"
                                             />
                                         </Typography>

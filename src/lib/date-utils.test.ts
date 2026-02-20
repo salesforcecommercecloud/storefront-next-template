@@ -18,7 +18,7 @@ import { formatDateForLocale } from './date-utils';
 
 describe('formatDateForLocale', () => {
     describe('valid dates', () => {
-        it('should format date for en-US locale (MM/DD/YYYY)', () => {
+        it('should format date for en-GB locale (MM/DD/YYYY)', () => {
             const result = formatDateForLocale('1990-05-15', 'en-US');
             expect(result).toBe('05/15/1990');
         });

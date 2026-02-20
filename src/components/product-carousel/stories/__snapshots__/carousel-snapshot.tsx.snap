@@ -68,11 +68,11 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         class="items-center gap-2 text-sm mt-2"
                       >
                         <span
-                          aria-label="Current price: $63.99"
+                          aria-label="Current price: £63.99"
                           aria-live="polite"
                           class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                         >
-                          $63.99
+                          £63.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -80,14 +80,14 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 1
-                          Current price: $63.99
+                          Current price: £63.99
                         </span>
                          
                         <span
-                          aria-label="List price: $67.99"
+                          aria-label="List price: £67.99"
                           class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                         >
-                          $67.99
+                          £67.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -95,7 +95,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 1
-                          List price: $67.99
+                          List price: £67.99
                         </span>
                       </div>
                     </div>
@@ -241,11 +241,11 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         class="items-center gap-2 text-sm mt-2"
                       >
                         <span
-                          aria-label="Current price: $63.99"
+                          aria-label="Current price: £63.99"
                           aria-live="polite"
                           class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                         >
-                          $63.99
+                          £63.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -253,14 +253,14 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 2
-                          Current price: $63.99
+                          Current price: £63.99
                         </span>
                          
                         <span
-                          aria-label="List price: $67.99"
+                          aria-label="List price: £67.99"
                           class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                         >
-                          $67.99
+                          £67.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -268,7 +268,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 2
-                          List price: $67.99
+                          List price: £67.99
                         </span>
                       </div>
                     </div>
@@ -414,11 +414,11 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         class="items-center gap-2 text-sm mt-2"
                       >
                         <span
-                          aria-label="Current price: $63.99"
+                          aria-label="Current price: £63.99"
                           aria-live="polite"
                           class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                         >
-                          $63.99
+                          £63.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -426,14 +426,14 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 3
-                          Current price: $63.99
+                          Current price: £63.99
                         </span>
                          
                         <span
-                          aria-label="List price: $67.99"
+                          aria-label="List price: £67.99"
                           class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                         >
-                          $67.99
+                          £67.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -441,7 +441,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 3
-                          List price: $67.99
+                          List price: £67.99
                         </span>
                       </div>
                     </div>
@@ -587,11 +587,11 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         class="items-center gap-2 text-sm mt-2"
                       >
                         <span
-                          aria-label="Current price: $63.99"
+                          aria-label="Current price: £63.99"
                           aria-live="polite"
                           class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                         >
-                          $63.99
+                          £63.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -599,14 +599,14 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 4
-                          Current price: $63.99
+                          Current price: £63.99
                         </span>
                          
                         <span
-                          aria-label="List price: $67.99"
+                          aria-label="List price: £67.99"
                           class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                         >
-                          $67.99
+                          £67.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -614,7 +614,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 4
-                          List price: $67.99
+                          List price: £67.99
                         </span>
                       </div>
                     </div>
@@ -760,11 +760,11 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         class="items-center gap-2 text-sm mt-2"
                       >
                         <span
-                          aria-label="Current price: $63.99"
+                          aria-label="Current price: £63.99"
                           aria-live="polite"
                           class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                         >
-                          $63.99
+                          £63.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -772,14 +772,14 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 5
-                          Current price: $63.99
+                          Current price: £63.99
                         </span>
                          
                         <span
-                          aria-label="List price: $67.99"
+                          aria-label="List price: £67.99"
                           class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                         >
-                          $67.99
+                          £67.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -787,7 +787,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 5
-                          List price: $67.99
+                          List price: £67.99
                         </span>
                       </div>
                     </div>
@@ -933,11 +933,11 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         class="items-center gap-2 text-sm mt-2"
                       >
                         <span
-                          aria-label="Current price: $63.99"
+                          aria-label="Current price: £63.99"
                           aria-live="polite"
                           class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                         >
-                          $63.99
+                          £63.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -945,14 +945,14 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 6
-                          Current price: $63.99
+                          Current price: £63.99
                         </span>
                          
                         <span
-                          aria-label="List price: $67.99"
+                          aria-label="List price: £67.99"
                           class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                         >
-                          $67.99
+                          £67.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -960,7 +960,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 6
-                          List price: $67.99
+                          List price: £67.99
                         </span>
                       </div>
                     </div>
@@ -1106,11 +1106,11 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         class="items-center gap-2 text-sm mt-2"
                       >
                         <span
-                          aria-label="Current price: $63.99"
+                          aria-label="Current price: £63.99"
                           aria-live="polite"
                           class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                         >
-                          $63.99
+                          £63.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -1118,14 +1118,14 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 7
-                          Current price: $63.99
+                          Current price: £63.99
                         </span>
                          
                         <span
-                          aria-label="List price: $67.99"
+                          aria-label="List price: £67.99"
                           class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                         >
-                          $67.99
+                          £67.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -1133,7 +1133,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 7
-                          List price: $67.99
+                          List price: £67.99
                         </span>
                       </div>
                     </div>
@@ -1279,11 +1279,11 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         class="items-center gap-2 text-sm mt-2"
                       >
                         <span
-                          aria-label="Current price: $63.99"
+                          aria-label="Current price: £63.99"
                           aria-live="polite"
                           class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                         >
-                          $63.99
+                          £63.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -1291,14 +1291,14 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 8
-                          Current price: $63.99
+                          Current price: £63.99
                         </span>
                          
                         <span
-                          aria-label="List price: $67.99"
+                          aria-label="List price: £67.99"
                           class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                         >
-                          $67.99
+                          £67.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -1306,7 +1306,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 8
-                          List price: $67.99
+                          List price: £67.99
                         </span>
                       </div>
                     </div>
@@ -1568,11 +1568,11 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         class="items-center gap-2 text-sm mt-2"
                       >
                         <span
-                          aria-label="Current price: $63.99"
+                          aria-label="Current price: £63.99"
                           aria-live="polite"
                           class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                         >
-                          $63.99
+                          £63.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -1580,14 +1580,14 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 1
-                          Current price: $63.99
+                          Current price: £63.99
                         </span>
                          
                         <span
-                          aria-label="List price: $67.99"
+                          aria-label="List price: £67.99"
                           class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                         >
-                          $67.99
+                          £67.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -1595,7 +1595,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 1
-                          List price: $67.99
+                          List price: £67.99
                         </span>
                       </div>
                     </div>
@@ -1741,11 +1741,11 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         class="items-center gap-2 text-sm mt-2"
                       >
                         <span
-                          aria-label="Current price: $63.99"
+                          aria-label="Current price: £63.99"
                           aria-live="polite"
                           class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                         >
-                          $63.99
+                          £63.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -1753,14 +1753,14 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 2
-                          Current price: $63.99
+                          Current price: £63.99
                         </span>
                          
                         <span
-                          aria-label="List price: $67.99"
+                          aria-label="List price: £67.99"
                           class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                         >
-                          $67.99
+                          £67.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -1768,7 +1768,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 2
-                          List price: $67.99
+                          List price: £67.99
                         </span>
                       </div>
                     </div>
@@ -1914,11 +1914,11 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         class="items-center gap-2 text-sm mt-2"
                       >
                         <span
-                          aria-label="Current price: $63.99"
+                          aria-label="Current price: £63.99"
                           aria-live="polite"
                           class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                         >
-                          $63.99
+                          £63.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -1926,14 +1926,14 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 3
-                          Current price: $63.99
+                          Current price: £63.99
                         </span>
                          
                         <span
-                          aria-label="List price: $67.99"
+                          aria-label="List price: £67.99"
                           class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                         >
-                          $67.99
+                          £67.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -1941,7 +1941,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 3
-                          List price: $67.99
+                          List price: £67.99
                         </span>
                       </div>
                     </div>
@@ -2087,11 +2087,11 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         class="items-center gap-2 text-sm mt-2"
                       >
                         <span
-                          aria-label="Current price: $63.99"
+                          aria-label="Current price: £63.99"
                           aria-live="polite"
                           class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                         >
-                          $63.99
+                          £63.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -2099,14 +2099,14 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 4
-                          Current price: $63.99
+                          Current price: £63.99
                         </span>
                          
                         <span
-                          aria-label="List price: $67.99"
+                          aria-label="List price: £67.99"
                           class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                         >
-                          $67.99
+                          £67.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -2114,7 +2114,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 4
-                          List price: $67.99
+                          List price: £67.99
                         </span>
                       </div>
                     </div>
@@ -2260,11 +2260,11 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         class="items-center gap-2 text-sm mt-2"
                       >
                         <span
-                          aria-label="Current price: $63.99"
+                          aria-label="Current price: £63.99"
                           aria-live="polite"
                           class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                         >
-                          $63.99
+                          £63.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -2272,14 +2272,14 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 5
-                          Current price: $63.99
+                          Current price: £63.99
                         </span>
                          
                         <span
-                          aria-label="List price: $67.99"
+                          aria-label="List price: £67.99"
                           class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                         >
-                          $67.99
+                          £67.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -2287,7 +2287,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 5
-                          List price: $67.99
+                          List price: £67.99
                         </span>
                       </div>
                     </div>
@@ -2433,11 +2433,11 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         class="items-center gap-2 text-sm mt-2"
                       >
                         <span
-                          aria-label="Current price: $63.99"
+                          aria-label="Current price: £63.99"
                           aria-live="polite"
                           class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                         >
-                          $63.99
+                          £63.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -2445,14 +2445,14 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 6
-                          Current price: $63.99
+                          Current price: £63.99
                         </span>
                          
                         <span
-                          aria-label="List price: $67.99"
+                          aria-label="List price: £67.99"
                           class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                         >
-                          $67.99
+                          £67.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -2460,7 +2460,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 6
-                          List price: $67.99
+                          List price: £67.99
                         </span>
                       </div>
                     </div>
@@ -2606,11 +2606,11 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         class="items-center gap-2 text-sm mt-2"
                       >
                         <span
-                          aria-label="Current price: $63.99"
+                          aria-label="Current price: £63.99"
                           aria-live="polite"
                           class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                         >
-                          $63.99
+                          £63.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -2618,14 +2618,14 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 7
-                          Current price: $63.99
+                          Current price: £63.99
                         </span>
                          
                         <span
-                          aria-label="List price: $67.99"
+                          aria-label="List price: £67.99"
                           class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                         >
-                          $67.99
+                          £67.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -2633,7 +2633,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 7
-                          List price: $67.99
+                          List price: £67.99
                         </span>
                       </div>
                     </div>
@@ -2779,11 +2779,11 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         class="items-center gap-2 text-sm mt-2"
                       >
                         <span
-                          aria-label="Current price: $63.99"
+                          aria-label="Current price: £63.99"
                           aria-live="polite"
                           class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                         >
-                          $63.99
+                          £63.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -2791,14 +2791,14 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 8
-                          Current price: $63.99
+                          Current price: £63.99
                         </span>
                          
                         <span
-                          aria-label="List price: $67.99"
+                          aria-label="List price: £67.99"
                           class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                         >
-                          $67.99
+                          £67.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -2806,7 +2806,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 8
-                          List price: $67.99
+                          List price: £67.99
                         </span>
                       </div>
                     </div>
@@ -3061,11 +3061,11 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         class="items-center gap-2 text-sm mt-2"
                       >
                         <span
-                          aria-label="Current price: $63.99"
+                          aria-label="Current price: £63.99"
                           aria-live="polite"
                           class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                         >
-                          $63.99
+                          £63.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -3073,14 +3073,14 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 1
-                          Current price: $63.99
+                          Current price: £63.99
                         </span>
                          
                         <span
-                          aria-label="List price: $67.99"
+                          aria-label="List price: £67.99"
                           class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                         >
-                          $67.99
+                          £67.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -3088,7 +3088,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 1
-                          List price: $67.99
+                          List price: £67.99
                         </span>
                       </div>
                     </div>
@@ -3234,11 +3234,11 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         class="items-center gap-2 text-sm mt-2"
                       >
                         <span
-                          aria-label="Current price: $63.99"
+                          aria-label="Current price: £63.99"
                           aria-live="polite"
                           class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                         >
-                          $63.99
+                          £63.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -3246,14 +3246,14 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 2
-                          Current price: $63.99
+                          Current price: £63.99
                         </span>
                          
                         <span
-                          aria-label="List price: $67.99"
+                          aria-label="List price: £67.99"
                           class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                         >
-                          $67.99
+                          £67.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -3261,7 +3261,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 2
-                          List price: $67.99
+                          List price: £67.99
                         </span>
                       </div>
                     </div>
@@ -3407,11 +3407,11 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         class="items-center gap-2 text-sm mt-2"
                       >
                         <span
-                          aria-label="Current price: $63.99"
+                          aria-label="Current price: £63.99"
                           aria-live="polite"
                           class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                         >
-                          $63.99
+                          £63.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -3419,14 +3419,14 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 3
-                          Current price: $63.99
+                          Current price: £63.99
                         </span>
                          
                         <span
-                          aria-label="List price: $67.99"
+                          aria-label="List price: £67.99"
                           class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                         >
-                          $67.99
+                          £67.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -3434,7 +3434,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 3
-                          List price: $67.99
+                          List price: £67.99
                         </span>
                       </div>
                     </div>
@@ -3580,11 +3580,11 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         class="items-center gap-2 text-sm mt-2"
                       >
                         <span
-                          aria-label="Current price: $63.99"
+                          aria-label="Current price: £63.99"
                           aria-live="polite"
                           class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                         >
-                          $63.99
+                          £63.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -3592,14 +3592,14 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 4
-                          Current price: $63.99
+                          Current price: £63.99
                         </span>
                          
                         <span
-                          aria-label="List price: $67.99"
+                          aria-label="List price: £67.99"
                           class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                         >
-                          $67.99
+                          £67.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -3607,7 +3607,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 4
-                          List price: $67.99
+                          List price: £67.99
                         </span>
                       </div>
                     </div>
@@ -3753,11 +3753,11 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         class="items-center gap-2 text-sm mt-2"
                       >
                         <span
-                          aria-label="Current price: $63.99"
+                          aria-label="Current price: £63.99"
                           aria-live="polite"
                           class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                         >
-                          $63.99
+                          £63.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -3765,14 +3765,14 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 5
-                          Current price: $63.99
+                          Current price: £63.99
                         </span>
                          
                         <span
-                          aria-label="List price: $67.99"
+                          aria-label="List price: £67.99"
                           class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                         >
-                          $67.99
+                          £67.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -3780,7 +3780,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 5
-                          List price: $67.99
+                          List price: £67.99
                         </span>
                       </div>
                     </div>
@@ -3926,11 +3926,11 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         class="items-center gap-2 text-sm mt-2"
                       >
                         <span
-                          aria-label="Current price: $63.99"
+                          aria-label="Current price: £63.99"
                           aria-live="polite"
                           class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                         >
-                          $63.99
+                          £63.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -3938,14 +3938,14 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 6
-                          Current price: $63.99
+                          Current price: £63.99
                         </span>
                          
                         <span
-                          aria-label="List price: $67.99"
+                          aria-label="List price: £67.99"
                           class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                         >
-                          $67.99
+                          £67.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -3953,7 +3953,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 6
-                          List price: $67.99
+                          List price: £67.99
                         </span>
                       </div>
                     </div>
@@ -4099,11 +4099,11 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         class="items-center gap-2 text-sm mt-2"
                       >
                         <span
-                          aria-label="Current price: $63.99"
+                          aria-label="Current price: £63.99"
                           aria-live="polite"
                           class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                         >
-                          $63.99
+                          £63.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -4111,14 +4111,14 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 7
-                          Current price: $63.99
+                          Current price: £63.99
                         </span>
                          
                         <span
-                          aria-label="List price: $67.99"
+                          aria-label="List price: £67.99"
                           class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                         >
-                          $67.99
+                          £67.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -4126,7 +4126,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 7
-                          List price: $67.99
+                          List price: £67.99
                         </span>
                       </div>
                     </div>
@@ -4272,11 +4272,11 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         class="items-center gap-2 text-sm mt-2"
                       >
                         <span
-                          aria-label="Current price: $63.99"
+                          aria-label="Current price: £63.99"
                           aria-live="polite"
                           class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                         >
-                          $63.99
+                          £63.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -4284,14 +4284,14 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 8
-                          Current price: $63.99
+                          Current price: £63.99
                         </span>
                          
                         <span
-                          aria-label="List price: $67.99"
+                          aria-label="List price: £67.99"
                           class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                         >
-                          $67.99
+                          £67.99
                         </span>
                         <span
                           aria-atomic="true"
@@ -4299,7 +4299,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           class="sr-only"
                         >
                           Laptop Briefcase with wheels (37L) 8
-                          List price: $67.99
+                          List price: £67.99
                         </span>
                       </div>
                     </div>

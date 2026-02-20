@@ -1002,7 +1002,7 @@
     "localeSwitcher": {
         "ariaLabel": "Selettore lingua",
         "locales": {
-            "en-US": "Inglese (Stati Uniti)",
+            "en-GB": "Inglese (Regno Unito)",
             "it-IT": "Italiano (Italia)"
         },
         "validation": {

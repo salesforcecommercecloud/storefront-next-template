@@ -17,35 +17,35 @@ import { describe, expect, it, vi } from 'vitest';
 import { formatCurrency } from './currency';
 
 describe('formatCurrency', () => {
-    describe('default parameters (en-US, USD)', () => {
+    describe('default parameters (en-GB, GBP)', () => {
         it('should format a whole number', () => {
             const result = formatCurrency(100);
-            expect(result).toBe('$100.00');
+            expect(result).toBe('£100.00');
         });
 
         it('should format a decimal number', () => {
             const result = formatCurrency(99.99);
-            expect(result).toBe('$99.99');
+            expect(result).toBe('£99.99');
         });
 
         it('should format zero', () => {
             const result = formatCurrency(0);
-            expect(result).toBe('$0.00');
+            expect(result).toBe('£0.00');
         });
 
         it('should format negative numbers', () => {
             const result = formatCurrency(-50);
-            expect(result).toBe('-$50.00');
+            expect(result).toBe('-£50.00');
         });
 
         it('should format large numbers with grouping', () => {
             const result = formatCurrency(1234567.89);
-            expect(result).toBe('$1,234,567.89');
+            expect(result).toBe('£1,234,567.89');
         });
 
         it('should round to two decimal places', () => {
             const result = formatCurrency(10.999);
-            expect(result).toBe('$11.00');
+            expect(result).toBe('£11.00');
         });
     });
 
@@ -98,27 +98,27 @@ describe('formatCurrency', () => {
     describe('edge cases', () => {
         it('should handle very small numbers', () => {
             const result = formatCurrency(0.01);
-            expect(result).toBe('$0.01');
+            expect(result).toBe('£0.01');
         });
 
         it('should handle very large numbers', () => {
             const result = formatCurrency(999999999.99);
-            expect(result).toBe('$999,999,999.99');
+            expect(result).toBe('£999,999,999.99');
         });
 
         it('should handle NaN', () => {
             const result = formatCurrency(NaN);
-            expect(result).toBe('$NaN');
+            expect(result).toBe('£NaN');
         });
 
         it('should handle Infinity', () => {
             const result = formatCurrency(Infinity);
-            expect(result).toBe('$∞');
+            expect(result).toBe('£∞');
         });
 
         it('should handle negative Infinity', () => {
             const result = formatCurrency(-Infinity);
-            expect(result).toBe('-$∞');
+            expect(result).toBe('-£∞');
         });
     });
 

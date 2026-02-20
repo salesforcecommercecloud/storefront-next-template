@@ -240,7 +240,7 @@ describe('SearchPage', () => {
                 sort: '',
                 refine: [],
                 expand: ['none'],
-                currency: 'USD',
+                currency: 'GBP',
             });
 
             expect(fetchSearchProducts).toHaveBeenCalledWith(mockContext, {
@@ -249,7 +249,7 @@ describe('SearchPage', () => {
                 offset: 0,
                 sort: '',
                 refine: [],
-                currency: 'USD',
+                currency: 'GBP',
             });
 
             expect(fetchPageWithComponentData).toHaveBeenCalledWith(args, { pageId: 'search' });

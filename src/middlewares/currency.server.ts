@@ -104,14 +104,14 @@ export const currencyMiddleware: MiddlewareFunction<Response> = async ({ request
                     const defaultLocaleConfig = currentSite.supportedLocales.find(
                         (loc) => loc.id === currentSite.defaultLocale
                     );
-                    context.set(currencyContext, defaultLocaleConfig?.preferredCurrency || 'USD');
+                    context.set(currencyContext, defaultLocaleConfig?.preferredCurrency || currentSite.defaultCurrency);
                 }
             } else {
                 // Final fallback: Use site default locale's preferred currency
                 const defaultLocaleConfig = currentSite.supportedLocales.find(
                     (loc) => loc.id === currentSite.defaultLocale
                 );
-                context.set(currencyContext, defaultLocaleConfig?.preferredCurrency || 'USD');
+                context.set(currencyContext, defaultLocaleConfig?.preferredCurrency || currentSite.defaultCurrency);
             }
         }
     } catch {

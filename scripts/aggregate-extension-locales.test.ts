@@ -73,20 +73,20 @@ describe('aggregate-extension-locales', () => {
         });
 
         it('generates file with single extension', () => {
-            const extensions = [{ name: 'bopis', path: '@/extensions/bopis/locales/en-US/translations.json' }];
+            const extensions = [{ name: 'bopis', path: '@/extensions/bopis/locales/en-GB/translations.json' }];
             const content = generateLocaleFile(extensions);
 
             expect(content).toContain('import bopisTranslations from');
-            expect(content).toContain("'@/extensions/bopis/locales/en-US/translations.json'");
+            expect(content).toContain("'@/extensions/bopis/locales/en-GB/translations.json'");
             expect(content).toContain('extBopis: bopisTranslations');
         });
 
         it('generates file with multiple extensions', () => {
             const extensions = [
-                { name: 'bopis', path: '@/extensions/bopis/locales/en-US/translations.json' },
+                { name: 'bopis', path: '@/extensions/bopis/locales/en-GB/translations.json' },
                 {
                     name: 'store-locator',
-                    path: '@/extensions/store-locator/locales/en-US/translations.json',
+                    path: '@/extensions/store-locator/locales/en-GB/translations.json',
                 },
             ];
             const content = generateLocaleFile(extensions);
@@ -217,7 +217,7 @@ describe('aggregate-extension-locales', () => {
 
                 const locales = await discoverLocales(dirs);
 
-                // Should only find en-US from bopis, not from the output directory
+                // Should only find en-GB from bopis, not from the output directory
                 expect(locales.size).toBe(1);
                 expect(locales.has('en-US')).toBe(true);
             });
@@ -285,22 +285,22 @@ describe('aggregate-extension-locales', () => {
 
             it('includes correct import paths', async () => {
                 // Setup
-                await mkdir(join(dirs.EXTENSIONS_DIR, 'my-ext', 'locales', 'en-US'), { recursive: true });
-                await writeFile(join(dirs.EXTENSIONS_DIR, 'my-ext', 'locales', 'en-US', 'translations.json'), '{}');
+                await mkdir(join(dirs.EXTENSIONS_DIR, 'my-ext', 'locales', 'en-GB'), { recursive: true });
+                await writeFile(join(dirs.EXTENSIONS_DIR, 'my-ext', 'locales', 'en-GB', 'translations.json'), '{}');
 
-                const extensions = await findExtensionsWithLocale('en-US', dirs.EXTENSIONS_DIR);
+                const extensions = await findExtensionsWithLocale('en-GB', dirs.EXTENSIONS_DIR);
 
-                expect(extensions[0].path).toBe('@/extensions/my-ext/locales/en-US/translations.json');
+                expect(extensions[0].path).toBe('@/extensions/my-ext/locales/en-GB/translations.json');
             });
         });
 
         describe('aggregateExtensionLocales', () => {
             it('generates aggregation files for all discovered locales', async () => {
-                // Setup: Main app has en-US and es-MX
+                // Setup: Main app has en-GB and es-MX
                 await mkdir(join(dirs.SRC_DIR, 'locales', 'en-US'), { recursive: true });
                 await mkdir(join(dirs.SRC_DIR, 'locales', 'es-MX'), { recursive: true });
 
-                // Setup: Extension has translations for en-US only
+                // Setup: Extension has translations for en-GB only
                 await mkdir(join(dirs.EXTENSIONS_DIR, 'bopis', 'locales', 'en-US'), { recursive: true });
                 await writeFile(
                     join(dirs.EXTENSIONS_DIR, 'bopis', 'locales', 'en-US', 'translations.json'),
@@ -312,7 +312,7 @@ describe('aggregate-extension-locales', () => {
                 expect(result.generated).toBe(2);
                 expect(result.locales).toHaveLength(2);
 
-                // Check en-US file has the extension
+                // Check en-GB file has the extension
                 const enUSContent = await readFile(join(dirs.OUTPUT_DIR, 'en-US', 'index.ts'), 'utf8');
                 expect(enUSContent).toContain('import bopisTranslations');
                 expect(enUSContent).toContain('extBopis: bopisTranslations');
@@ -329,13 +329,13 @@ describe('aggregate-extension-locales', () => {
                 await mkdir(join(dirs.SRC_DIR, 'locales', 'es-MX'), { recursive: true });
                 await mkdir(join(dirs.SRC_DIR, 'locales', 'fr-FR'), { recursive: true });
 
-                // Extension A: has en-US and es-MX
+                // Extension A: has en-GB and es-MX
                 await mkdir(join(dirs.EXTENSIONS_DIR, 'ext-a', 'locales', 'en-US'), { recursive: true });
                 await writeFile(join(dirs.EXTENSIONS_DIR, 'ext-a', 'locales', 'en-US', 'translations.json'), '{}');
                 await mkdir(join(dirs.EXTENSIONS_DIR, 'ext-a', 'locales', 'es-MX'), { recursive: true });
                 await writeFile(join(dirs.EXTENSIONS_DIR, 'ext-a', 'locales', 'es-MX', 'translations.json'), '{}');
 
-                // Extension B: has only en-US
+                // Extension B: has only en-GB
                 await mkdir(join(dirs.EXTENSIONS_DIR, 'ext-b', 'locales', 'en-US'), { recursive: true });
                 await writeFile(join(dirs.EXTENSIONS_DIR, 'ext-b', 'locales', 'en-US', 'translations.json'), '{}');
 
@@ -346,7 +346,7 @@ describe('aggregate-extension-locales', () => {
 
                 expect(result.generated).toBe(3);
 
-                // Check en-US has both extensions
+                // Check en-GB has both extensions
                 const enUSContent = await readFile(join(dirs.OUTPUT_DIR, 'en-US', 'index.ts'), 'utf8');
                 expect(enUSContent).toContain('extExtA');
                 expect(enUSContent).toContain('extExtB');

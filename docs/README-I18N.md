@@ -64,12 +64,12 @@ Languages and currencies are configured in multiple places that must be kept in 
 
 ```typescript
 site: {
-    locale: 'en-US',
-    currency: 'USD',
+    locale: 'en-GB',
+    currency: 'GBP',
     supportedLocales: [
         {
-            id: 'en-US',
-            preferredCurrency: 'USD',
+            id: 'en-GB',
+            preferredCurrency: 'GBP',
         },
         {
             id: 'es-MX',
@@ -78,11 +78,11 @@ site: {
         // Add more locales here...
     ],
     // Currencies that users can manually select
-    supportedCurrencies: ['MXN', 'USD'],
+    supportedCurrencies: ['MXN', 'GBP'],
 },
 i18n: {
-    fallbackLng: 'en-US',
-    supportedLngs: ['es-MX', 'en-US'], // Your supported languages
+    fallbackLng: 'en-GB',
+    supportedLngs: ['es-MX', 'en-GB'], // Your supported languages
 }
 ```
 
@@ -91,8 +91,8 @@ i18n: {
 ```typescript
 detection: {
     cookie: localeCookie,
-    fallbackLanguage: 'en-US',
-    supportedLanguages: ['es-MX', 'en-US'], // Must match config.server.ts
+    fallbackLanguage: 'en-GB',
+    supportedLanguages: ['es-MX', 'en-GB'], // Must match config.server.ts
 }
 ```
 
@@ -266,7 +266,7 @@ export const action: ActionFunction = async ({ request }) => {
 ```
 src/locales/
 ├── index.ts                # Exports all language resources
-├── en-US/
+├── en-GB/
 │   ├── index.ts            # Exports English translations
 │   └── translations.json   # All English translations (namespaced)
 └── es-MX/
@@ -409,7 +409,7 @@ export function loader(args: LoaderFunctionArgs) {
 
     // Get the current locale for formatting (if needed)
     const i18nextData = args.context.get(i18nextContext);
-    const locale = i18nextData?.getLocale() ?? 'en-US';
+    const locale = i18nextData?.getLocale() ?? 'en-GB';
     const date = new Date().toLocaleDateString(locale, {
         year: 'numeric',
         month: '2-digit',
@@ -564,14 +564,14 @@ The script merges locales from both sources and generates **extension-only** agg
 
 **Example scenario:**
 
-- Main app: `en-US`, `es-MX`, `fr-FR` translations
-- Extension A: `en-US`, `es-MX` translations
-- Extension B: `en-US` translations only
+- Main app: `en-GB`, `es-MX`, `fr-FR` translations
+- Extension A: `en-GB`, `es-MX` translations
+- Extension B: `en-GB` translations only
 - Extension C: No `locales` folder
 
-**Result:** Extension aggregation files generated in `/src/extensions/locales/` for `en-US`, `es-MX`, and `fr-FR`:
+**Result:** Extension aggregation files generated in `/src/extensions/locales/` for `en-GB`, `es-MX`, and `fr-FR`:
 
-- `en-US/index.ts`: Contains Extension A + Extension B translations only
+- `en-GB/index.ts`: Contains Extension A + Extension B translations only
 - `es-MX/index.ts`: Contains Extension A translations only
 - `fr-FR/index.ts`: Empty (no extensions have it)
 

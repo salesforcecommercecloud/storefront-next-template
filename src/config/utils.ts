@@ -70,8 +70,8 @@ export const deepMerge = <T extends Record<string, unknown>>(target: T, source: 
  *
  * @example
  * // With baseConfig normalization:
- * pathToObject('APP__SITE__LOCALE', 'en-US', { app: { site: { locale: 'en-US' } } })
- * // Returns: { app: { site: { locale: 'en-US' } } } (normalized to baseConfig casing)
+ * pathToObject('APP__SITE__LOCALE', 'en-GB', { app: { site: { locale: 'en-GB' } } })
+ * // Returns: { app: { site: { locale: 'en-GB' } } } (normalized to baseConfig casing)
  */
 export const pathToObject = (
     path: string,
@@ -140,9 +140,9 @@ export const pathToObject = (
  * @example
  * // Multi-line formatted JSON (whitespace normalized automatically)
  * parseEnvValue('[
- *   {"id": "en-US"},
+ *   {"id": "en-GB"},
  *   {"id": "fr-FR"}
- * ]') // → [{id: 'en-US'}, {id: 'fr-FR'}] (array)
+ * ]') // → [{id: 'en-GB'}, {id: 'fr-FR'}] (array)
  */
 const parseEnvValue = (varValue: string, varName?: string): unknown => {
     // Optimistic JSON parsing - try to parse as JSON, fall back to string
@@ -185,7 +185,7 @@ const parseEnvValue = (varValue: string, varName?: string): unknown => {
  * @returns Array of valid config paths
  *
  * @example
- * extractValidPaths({ app: { site: { locale: 'en-US' } } })
+ * extractValidPaths({ app: { site: { locale: 'en-GB' } } })
  * // Returns: ['app__site__locale']
  */
 const extractValidPaths = (obj: unknown, prefix = ''): string[] => {
@@ -224,7 +224,7 @@ const extractValidPaths = (obj: unknown, prefix = ''): string[] => {
  * @example
  * // Environment variables:
  * // PUBLIC__app__commerce__api__clientId=abc123
- * // PUBLIC__app__site__locale=en-US
+ * // PUBLIC__app__site__locale=en-GB
  * // PUBLIC__app__pages__cart__quantityUpdateDebounce=1000
  * // PUBLIC__app__site__features__socialLogin__providers=["Apple","Google"]
  *
@@ -233,7 +233,7 @@ const extractValidPaths = (obj: unknown, prefix = ''): string[] => {
  * // {
  * //   app: {
  * //     commerce: { api: { clientId: 'abc123' } },
- * //     site: { locale: 'en-US' },
+ * //     site: { locale: 'en-GB' },
  * //     pages: { cart: { quantityUpdateDebounce: 1000 } },
  * //     site: { features: { socialLogin: { providers: ['Apple', 'Google'] } } }
  * //   }

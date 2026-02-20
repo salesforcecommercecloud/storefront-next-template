@@ -73,7 +73,7 @@ function ActionLogger({ children }: { children: ReactNode }): ReactElement {
 // This avoids needing to mock react-router at the module level and allows state updates
 const mockFetcherSubmit = fn();
 
-function CurrencySwitcherMock({ initialCurrency = 'USD' }: { initialCurrency?: string }): ReactElement {
+function CurrencySwitcherMock({ initialCurrency = 'GBP' }: { initialCurrency?: string }): ReactElement {
     const id = useId();
     const { t } = useTranslation('currencySwitcher');
     const config = useConfig();
@@ -146,7 +146,7 @@ This component is typically used in the header or footer area to allow users to 
         (_Story: React.ComponentType, context) => {
             // Reset mock before each story
             mockFetcherSubmit.mockClear();
-            const initialCurrency = (context.args as { initialCurrency?: string }).initialCurrency ?? 'USD';
+            const initialCurrency = (context.args as { initialCurrency?: string }).initialCurrency ?? 'GBP';
 
             const RouterWrapper = (): ReactElement => {
                 const inRouter = useInRouterContext();
@@ -192,7 +192,7 @@ export const Default: Story = {
                 story: `
 Default currency switcher showing:
 - Native select dropdown with supported currencies
-- Current currency selected (USD)
+- Current currency selected (GBP)
 - Proper accessibility labels
 
 This is the standard currency switcher component.
@@ -209,7 +209,7 @@ This is the standard currency switcher component.
         const select = await canvas.findByRole('combobox', {}, { timeout: 5000 });
         await expect(select).toBeInTheDocument();
 
-        // Verify options are present (EUR and USD from mockConfig.commerce.sites[siteId].supportedCurrencies)
+        // Verify options are present (EUR and GBP from mockConfig.commerce.sites[siteId].supportedCurrencies)
         const options = canvas.getAllByRole('option');
         await expect(options.length).toBeGreaterThanOrEqual(2);
     },
@@ -245,11 +245,11 @@ This demonstrates the interactive behavior of the currency switcher.
         // Verify the value changed
         await expect(select).toHaveValue('EUR');
 
-        // Change currency back to USD
-        await userEvent.selectOptions(select, 'USD');
+        // Change currency back to GBP
+        await userEvent.selectOptions(select, 'GBP');
 
         // Verify the value changed back
-        await expect(select).toHaveValue('USD');
+        await expect(select).toHaveValue('GBP');
     },
 };
 

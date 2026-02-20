@@ -96,8 +96,8 @@ export const Default: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
         await expect(canvas.getByText(mockProductSearchItem.productName)).toBeInTheDocument();
-        // Check for price - master products show lowest variant price including promotions ($143.99)
-        const prices = canvas.getAllByText(/\$143\.99/);
+        // Check for price - master products show lowest variant price including promotions (£143.99)
+        const prices = canvas.getAllByText(/£143\.99/);
         await expect(prices.length).toBeGreaterThan(0);
         // Check for image
         const image = canvas.getByRole('img');

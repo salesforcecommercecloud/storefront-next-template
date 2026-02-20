@@ -81,7 +81,7 @@ Use the `PUBLIC__` prefix with double underscores (`__`) to set any config path:
 
 ```bash
 # Environment variable         →  Config path
-PUBLIC__app__site__locale=en-US   →  config.app.site.locale
+PUBLIC__app__site__locale=en-GB   →  config.app.site.locale
 PUBLIC__app__site__currency=EUR   →  config.app.site.currency
 ```
 

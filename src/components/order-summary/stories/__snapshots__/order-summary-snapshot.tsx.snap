@@ -126,7 +126,7 @@ exports[`OrderSummary stories snapshot > Default story renders and matches snaps
                 Subtotal
               </span>
               <span>
-                $73.57
+                £73.57
               </span>
             </div>
             <div
@@ -172,7 +172,7 @@ exports[`OrderSummary stories snapshot > Default story renders and matches snaps
               <span
                 class="font-bold"
               >
-                $73.57
+                £73.57
               </span>
             </div>
           </div>
@@ -315,7 +315,7 @@ exports[`OrderSummary stories snapshot > EmptyBasket story renders and matches s
                 Subtotal
               </span>
               <span>
-                $0.00
+                £0.00
               </span>
             </div>
             <div
@@ -341,7 +341,7 @@ exports[`OrderSummary stories snapshot > EmptyBasket story renders and matches s
                 Tax
               </span>
               <span>
-                $0.00
+                £0.00
               </span>
             </div>
           </div>
@@ -359,7 +359,7 @@ exports[`OrderSummary stories snapshot > EmptyBasket story renders and matches s
               <span
                 class="font-bold"
               >
-                $0.00
+                £0.00
               </span>
             </div>
           </div>
@@ -502,7 +502,7 @@ exports[`OrderSummary stories snapshot > EstimateMode story renders and matches 
                 Subtotal
               </span>
               <span>
-                $73.57
+                £73.57
               </span>
             </div>
             <div
@@ -548,7 +548,7 @@ exports[`OrderSummary stories snapshot > EstimateMode story renders and matches 
               <span
                 class="font-bold"
               >
-                $73.57
+                £73.57
               </span>
             </div>
           </div>
@@ -745,11 +745,11 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                               class="items-center gap-2 text-sm"
                             >
                               <span
-                                aria-label="Current price: $19.19"
+                                aria-label="Current price: £19.19"
                                 aria-live="polite"
                                 class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                               >
-                                $19.19
+                                £19.19
                               </span>
                               <span
                                 aria-atomic="true"
@@ -757,7 +757,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                                 class="sr-only"
                               >
                                 Solid Silk Tie
-                                Current price: $19.19
+                                Current price: £19.19
                               </span>
                                
                             </div>
@@ -827,11 +827,11 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                               class="items-center gap-2 text-sm"
                             >
                               <span
-                                aria-label="Current price: $35.19"
+                                aria-label="Current price: £35.19"
                                 aria-live="polite"
                                 class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                               >
-                                $35.19
+                                £35.19
                               </span>
                               <span
                                 aria-atomic="true"
@@ -839,7 +839,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                                 class="sr-only"
                               >
                                 Floral Ruffle Top
-                                Current price: $35.19
+                                Current price: £35.19
                               </span>
                                
                             </div>
@@ -877,7 +877,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                 Subtotal
               </span>
               <span>
-                $73.57
+                £73.57
               </span>
             </div>
             <div
@@ -923,7 +923,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
               <span
                 class="font-bold"
               >
-                $73.57
+                £73.57
               </span>
             </div>
           </div>
@@ -969,7 +969,7 @@ exports[`OrderSummary stories snapshot > Minimal story renders and matches snaps
                 Subtotal
               </span>
               <span>
-                $73.57
+                £73.57
               </span>
             </div>
             <div
@@ -1015,7 +1015,7 @@ exports[`OrderSummary stories snapshot > Minimal story renders and matches snaps
               <span
                 class="font-bold"
               >
-                $73.57
+                £73.57
               </span>
             </div>
           </div>
@@ -1158,7 +1158,7 @@ exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and
                 Subtotal
               </span>
               <span>
-                $73.57
+                £73.57
               </span>
             </div>
             <div
@@ -1170,7 +1170,7 @@ exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and
               <span
                 class="text-success text-sm font-semibold"
               >
-                -$59.99
+                -£59.99
               </span>
             </div>
             <div
@@ -1216,7 +1216,7 @@ exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and
               <span
                 class="font-bold"
               >
-                $73.57
+                £73.57
               </span>
             </div>
           </div>
@@ -1454,7 +1454,7 @@ exports[`OrderSummary stories snapshot > WithPromoCodeForm story renders and mat
                 Subtotal
               </span>
               <span>
-                $73.57
+                £73.57
               </span>
             </div>
             <div
@@ -1500,7 +1500,7 @@ exports[`OrderSummary stories snapshot > WithPromoCodeForm story renders and mat
               <span
                 class="font-bold"
               >
-                $73.57
+                £73.57
               </span>
             </div>
           </div>
@@ -1614,7 +1614,7 @@ exports[`OrderSummary stories snapshot > WithoutCartItems story renders and matc
                 Subtotal
               </span>
               <span>
-                $73.57
+                £73.57
               </span>
             </div>
             <div
@@ -1660,7 +1660,7 @@ exports[`OrderSummary stories snapshot > WithoutCartItems story renders and matc
               <span
                 class="font-bold"
               >
-                $73.57
+                £73.57
               </span>
             </div>
           </div>
@@ -1797,7 +1797,7 @@ exports[`OrderSummary stories snapshot > WithoutHeading story renders and matche
                 Subtotal
               </span>
               <span>
-                $73.57
+                £73.57
               </span>
             </div>
             <div
@@ -1843,7 +1843,7 @@ exports[`OrderSummary stories snapshot > WithoutHeading story renders and matche
               <span
                 class="font-bold"
               >
-                $73.57
+                £73.57
               </span>
             </div>
           </div>

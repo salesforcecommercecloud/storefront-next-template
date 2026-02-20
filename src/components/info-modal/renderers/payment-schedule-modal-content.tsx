@@ -20,6 +20,7 @@ import { formatCurrency } from '@/lib/currency';
 import { Typography } from '@/components/typography';
 import { cn } from '@/lib/utils';
 import type { PaymentSchedule, StepInfo } from '../types';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Renders payment schedule modal content (e.g., "Pay in 4").
@@ -36,6 +37,7 @@ export function PaymentScheduleModalContent({
     disclaimer?: string;
     currency: string;
 }): ReactElement {
+    const { i18n } = useTranslation();
     return (
         <>
             {paymentSchedule && paymentSchedule.payments.length > 0 && (
@@ -85,7 +87,7 @@ export function PaymentScheduleModalContent({
                                               key={`pay-${payment.amount}-${payment.dueDate}`}
                                               className="flex flex-1 flex-col items-center min-w-0 pt-1">
                                               <Typography variant="small" className="font-semibold text-foreground">
-                                                  {formatCurrency(payment.amount, 'en-US', currency)}
+                                                  {formatCurrency(payment.amount, i18n.language, currency)}
                                               </Typography>
                                               <Typography variant="muted" className="mt-1 text-xs">
                                                   {payment.dueDate}
@@ -102,7 +104,7 @@ export function PaymentScheduleModalContent({
                                               key={`pay-${payment.amount}-${payment.dueDate}`}
                                               className="flex flex-1 flex-col items-center min-w-0 pt-1">
                                               <Typography variant="small" className="font-semibold text-foreground">
-                                                  {formatCurrency(payment.amount, 'en-US', currency)}
+                                                  {formatCurrency(payment.amount, i18n.language, currency)}
                                               </Typography>
                                               <Typography variant="muted" className="mt-1 text-xs">
                                                   {payment.dueDate}

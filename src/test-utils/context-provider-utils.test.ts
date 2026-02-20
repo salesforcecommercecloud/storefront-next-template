@@ -58,8 +58,8 @@ describe('context-provider-utils', () => {
         it('has correct site configuration', () => {
             // config now allows multi site set up. Here we check the first site in the least
             // it is required to have at least on proper site config in the array
-            expect(mockBuildConfig.app.commerce.sites[0].defaultLocale).toBe('en-US');
-            expect(mockBuildConfig.app.commerce.sites[0].defaultCurrency).toBe('USD');
+            expect(mockBuildConfig.app.commerce.sites[0].defaultLocale).toBe('en-GB');
+            expect(mockBuildConfig.app.commerce.sites[0].defaultCurrency).toBe('GBP');
             expect(mockBuildConfig.app.features.guestCheckout).toBe(true);
         });
 
@@ -249,7 +249,7 @@ describe('context-provider-utils', () => {
 
             // Non-overridden values should remain
             expect(configData.metadata.projectName).toBe('Test Project');
-            expect(configData.app.commerce.sites[0].defaultLocale).toBe('en-US');
+            expect(configData.app.commerce.sites[0].defaultLocale).toBe('en-GB');
             expect(configData.app.commerce.api.clientId).toBe('test-client');
         });
 

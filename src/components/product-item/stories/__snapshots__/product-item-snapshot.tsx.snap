@@ -97,11 +97,11 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
                       class="items-center gap-2 text-card-foreground text-right font-semibold text-sm leading-none relative"
                     >
                       <span
-                        aria-label="Current price: $0.00"
+                        aria-label="Current price: £0.00"
                         aria-live="polite"
                         class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                       >
-                        $0.00
+                        £0.00
                       </span>
                       <span
                         aria-atomic="true"
@@ -109,14 +109,14 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
                         class="sr-only"
                       >
                         Men's Classic Deer Gloves
-                        Current price: $0.00
+                        Current price: £0.00
                       </span>
                        
                       <span
-                        aria-label="List price: $99.00"
+                        aria-label="List price: £99.00"
                         class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-xs leading-none relative"
                       >
-                        $99.00
+                        £99.00
                       </span>
                       <span
                         aria-atomic="true"
@@ -124,7 +124,7 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
                         class="sr-only"
                       >
                         Men's Classic Deer Gloves
-                        List price: $99.00
+                        List price: £99.00
                       </span>
                     </div>
                   </div>
@@ -199,11 +199,11 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
                           class="items-center gap-2"
                         >
                           <span
-                            aria-label="Current price: $0.00"
+                            aria-label="Current price: £0.00"
                             aria-live="polite"
                             class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
                           >
-                            $0.00
+                            £0.00
                           </span>
                           <span
                             aria-atomic="true"
@@ -211,14 +211,14 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
                             class="sr-only"
                           >
                             Men's Classic Deer Gloves
-                            Current price: $0.00
+                            Current price: £0.00
                           </span>
                            
                           <span
-                            aria-label="List price: $99.00"
+                            aria-label="List price: £99.00"
                             class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                           >
-                            $99.00
+                            £99.00
                           </span>
                           <span
                             aria-atomic="true"
@@ -226,7 +226,7 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
                             class="sr-only"
                           >
                             Men's Classic Deer Gloves
-                            List price: $99.00
+                            List price: £99.00
                           </span>
                         </div>
                       </div>
@@ -355,11 +355,11 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
                       class="items-center gap-2 text-card-foreground text-right font-semibold text-sm leading-none relative"
                     >
                       <span
-                        aria-label="Current price: $0.00"
+                        aria-label="Current price: £0.00"
                         aria-live="polite"
                         class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                       >
-                        $0.00
+                        £0.00
                       </span>
                       <span
                         aria-atomic="true"
@@ -367,14 +367,14 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
                         class="sr-only"
                       >
                         Choice Bonus Gift
-                        Current price: $0.00
+                        Current price: £0.00
                       </span>
                        
                       <span
-                        aria-label="List price: $49.99"
+                        aria-label="List price: £49.99"
                         class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-xs leading-none relative"
                       >
-                        $49.99
+                        £49.99
                       </span>
                       <span
                         aria-atomic="true"
@@ -382,7 +382,7 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
                         class="sr-only"
                       >
                         Choice Bonus Gift
-                        List price: $49.99
+                        List price: £49.99
                       </span>
                     </div>
                   </div>
@@ -456,11 +456,11 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
                           class="items-center gap-2"
                         >
                           <span
-                            aria-label="Current price: $0.00"
+                            aria-label="Current price: £0.00"
                             aria-live="polite"
                             class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
                           >
-                            $0.00
+                            £0.00
                           </span>
                           <span
                             aria-atomic="true"
@@ -468,14 +468,14 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
                             class="sr-only"
                           >
                             Choice Bonus Gift
-                            Current price: $0.00
+                            Current price: £0.00
                           </span>
                            
                           <span
-                            aria-label="List price: $49.99"
+                            aria-label="List price: £49.99"
                             class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
                           >
-                            $49.99
+                            £49.99
                           </span>
                           <span
                             aria-atomic="true"
@@ -483,7 +483,7 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
                             class="sr-only"
                           >
                             Choice Bonus Gift
-                            List price: $49.99
+                            List price: £49.99
                           </span>
                         </div>
                       </div>
@@ -589,11 +589,11 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                       class="items-center gap-2 text-card-foreground text-right font-semibold text-sm leading-none relative"
                     >
                       <span
-                        aria-label="Current price: $99.99"
+                        aria-label="Current price: £99.99"
                         aria-live="polite"
                         class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                       >
-                        $99.99
+                        £99.99
                       </span>
                       <span
                         aria-atomic="true"
@@ -601,7 +601,7 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                         class="sr-only"
                       >
                         Men's Classic Deer Gloves
-                        Current price: $99.99
+                        Current price: £99.99
                       </span>
                        
                     </div>
@@ -675,11 +675,11 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                           class="items-center gap-2"
                         >
                           <span
-                            aria-label="Current price: $99.99"
+                            aria-label="Current price: £99.99"
                             aria-live="polite"
                             class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
                           >
-                            $99.99
+                            £99.99
                           </span>
                           <span
                             aria-atomic="true"
@@ -687,7 +687,7 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                             class="sr-only"
                           >
                             Men's Classic Deer Gloves
-                            Current price: $99.99
+                            Current price: £99.99
                           </span>
                            
                         </div>
@@ -768,11 +768,11 @@ exports[`ProductItem stories snapshot > SummaryVariant story renders and matches
           class="items-center gap-2 text-sm"
         >
           <span
-            aria-label="Current price: $99.99"
+            aria-label="Current price: £99.99"
             aria-live="polite"
             class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
           >
-            $99.99
+            £99.99
           </span>
           <span
             aria-atomic="true"
@@ -780,7 +780,7 @@ exports[`ProductItem stories snapshot > SummaryVariant story renders and matches
             class="sr-only"
           >
             Men's Classic Deer Gloves
-            Current price: $99.99
+            Current price: £99.99
           </span>
            
         </div>
@@ -894,11 +894,11 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                       class="items-center gap-2 text-card-foreground text-right font-semibold text-sm leading-none relative"
                     >
                       <span
-                        aria-label="Current price: $99.99"
+                        aria-label="Current price: £99.99"
                         aria-live="polite"
                         class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
                       >
-                        $99.99
+                        £99.99
                       </span>
                       <span
                         aria-atomic="true"
@@ -906,7 +906,7 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                         class="sr-only"
                       >
                         Men's Classic Deer Gloves
-                        Current price: $99.99
+                        Current price: £99.99
                       </span>
                        
                     </div>
@@ -980,11 +980,11 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                           class="items-center gap-2"
                         >
                           <span
-                            aria-label="Current price: $99.99"
+                            aria-label="Current price: £99.99"
                             aria-live="polite"
                             class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
                           >
-                            $99.99
+                            £99.99
                           </span>
                           <span
                             aria-atomic="true"
@@ -992,7 +992,7 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                             class="sr-only"
                           >
                             Men's Classic Deer Gloves
-                            Current price: $99.99
+                            Current price: £99.99
                           </span>
                            
                         </div>

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import type { ResourceLanguage } from 'i18next';
-import translations from '@/locales/en-US/translations.json';
-import product from '@/locales/en-US/product.json';
-import extensionTranslations from '@/extensions/locales/en-US/';
+import translations from '@/locales/en-GB/translations.json';
+import product from '@/locales/en-GB/product.json';
+import extensionTranslations from '@/extensions/locales/en-GB/';
 
 const allTranslations = {
     ...translations,

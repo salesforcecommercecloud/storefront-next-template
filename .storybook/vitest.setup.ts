@@ -36,14 +36,14 @@ import resources from '../src/locales';
 beforeAll(() => {
     if (!i18next.isInitialized) {
         void i18next.use(initReactI18next).init({
-            lng: 'en-US',
-            fallbackLng: 'en-US',
+            lng: 'en-GB',
+            fallbackLng: 'en-GB',
             resources,
             interpolation: {
                 escapeValue: false,
                 format: (value, format) => {
                     if (format === 'number' && typeof value === 'number') {
-                        return value.toLocaleString('en-US');
+                        return value.toLocaleString('en-GB');
                     }
                     return value;
                 },
@@ -67,7 +67,7 @@ vi.mock('@/middlewares/i18next', () => {
                 // Navigate nested object using dot notation
                 const keys = keyPath.split('.');
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                let value: any = resources['en-US'][ns as keyof (typeof resources)['en-US']];
+                let value: any = resources['en-GB'][ns as keyof (typeof resources)['en-GB']];
                 for (const k of keys) {
                     if (value && typeof value === 'object') {
                         value = value[k];
@@ -83,7 +83,7 @@ vi.mock('@/middlewares/i18next', () => {
                         if (val === undefined) return `{{${prop}}}`;
                         // Format numbers with locale-specific thousands separators
                         if (typeof val === 'number') {
-                            return val.toLocaleString('en-US');
+                            return val.toLocaleString('en-GB');
                         }
                         return val;
                     });
@@ -92,12 +92,12 @@ vi.mock('@/middlewares/i18next', () => {
             }
             return key;
         },
-        language: 'en-US',
+        language: 'en-GB',
     };
 
     return {
         getInstance: () => mockI18next,
-        getLocale: () => 'en-US',
+        getLocale: () => 'en-GB',
         i18nextMiddleware: vi.fn(),
         localeCookie: { name: 'locale' },
     };

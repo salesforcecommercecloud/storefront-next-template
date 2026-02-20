@@ -41,11 +41,11 @@ export interface TestContextConfig {
     rejectAuth?: boolean;
     /** Error to reject auth promise with */
     authError?: Error;
-    /** Override the locale (defaults to 'en-US') */
+    /** Override the locale (defaults to 'en-GB') */
     locale?: string;
     /** Whether to skip setting up i18next context (for testing missing middleware scenarios) */
     skipI18next?: boolean;
-    /** Override the currency (defaults to 'USD') */
+    /** Override the currency (defaults to 'GBP') */
     currency?: string;
 }
 
@@ -109,9 +109,9 @@ export function createTestContext(testConfig: TestContextConfig = {}): Readonly<
         appConfig,
         rejectAuth = false,
         authError = new Error('Auth failed'),
-        locale = 'en-US',
+        locale = 'en-GB',
         skipI18next = false,
-        currency = 'USD',
+        currency = 'GBP',
     } = testConfig;
 
     const contextProvider = new RouterContextProvider();

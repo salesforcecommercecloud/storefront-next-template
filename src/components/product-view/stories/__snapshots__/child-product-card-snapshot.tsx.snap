@@ -24,11 +24,11 @@ exports[`ChildProductCard stories snapshot > Controlled story renders and matche
           class="items-center gap-2"
         >
           <span
-            aria-label="Current price: $38.00"
+            aria-label="Current price: £38.00"
             aria-live="polite"
             class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
           >
-            $38.00
+            £38.00
           </span>
           <span
             aria-atomic="true"
@@ -36,7 +36,7 @@ exports[`ChildProductCard stories snapshot > Controlled story renders and matche
             class="sr-only"
           >
             Turquoise and Gold Bracelet
-            Current price: $38.00
+            Current price: £38.00
           </span>
            
         </div>
@@ -165,11 +165,11 @@ exports[`ChildProductCard stories snapshot > Default story renders and matches s
           class="items-center gap-2"
         >
           <span
-            aria-label="Current price: $38.00"
+            aria-label="Current price: £38.00"
             aria-live="polite"
             class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
           >
-            $38.00
+            £38.00
           </span>
           <span
             aria-atomic="true"
@@ -177,7 +177,7 @@ exports[`ChildProductCard stories snapshot > Default story renders and matches s
             class="sr-only"
           >
             Turquoise and Gold Bracelet
-            Current price: $38.00
+            Current price: £38.00
           </span>
            
         </div>

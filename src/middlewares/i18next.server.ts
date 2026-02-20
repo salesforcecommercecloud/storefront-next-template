@@ -37,8 +37,8 @@ const [originalI18nextMiddleware, getLocale, getInstance] = createI18nextMiddlew
         cookie: localeCookie,
         // Make sure the following properties are in sync with config.server.ts file
         // TODO: is there a way to call getConfig here? I can't see a way to pass in the router context.
-        fallbackLanguage: 'en-US',
-        supportedLanguages: ['it-IT', 'en-US'], // Your supported languages, the fallback should be LAST
+        fallbackLanguage: 'en-GB',
+        supportedLanguages: ['it-IT', 'en-GB'], // Your supported languages, the fallback should be LAST
     },
     i18next: {
         resources,
@@ -71,6 +71,6 @@ export { i18nextMiddleware };
 // This adds type-safety to the `t` function throughout the application
 declare module 'i18next' {
     interface CustomTypeOptions {
-        resources: (typeof resources)['en-US']; // Use `en-US` as source of truth for the types
+        resources: (typeof resources)['en-GB']; // Use `en-GB` as source of truth for the types
     }
 }

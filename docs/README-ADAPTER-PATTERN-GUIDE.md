@@ -1896,7 +1896,7 @@ Configuration is driven by `appConfig` object, typically loaded from environment
                 enabled: false,
                 host: 'https://your-activedata-host.com',
                 siteId: 'your-site-id',
-                locale: 'en-US',
+                locale: 'en-GB',
                 siteUUID: 'your-site-uuid',
                 eventToggles: {
                     // ... event toggles
@@ -2900,7 +2900,7 @@ Configuration is driven by the `appConfig` object, which is typically loaded fro
                 enabled: false,
                 host: 'https://your-activedata-host.com',
                 siteId: 'your-site-id',
-                locale: 'en-US',
+                locale: 'en-GB',
                 siteUUID: 'your-site-uuid',
                 sourceCode: 'your-source-code',
                 siteCurrency: 'USD',
@@ -2928,7 +2928,7 @@ EINSTEIN_IS_PRODUCTION=true
 # Active Data Configuration (optional)
 ACTIVE_DATA_HOST=https://your-activedata-host.com
 ACTIVE_DATA_SITE_ID=your-site-id
-ACTIVE_DATA_LOCALE=en-US
+ACTIVE_DATA_LOCALE=en-GB
 ACTIVE_DATA_SITE_UUID=your-site-uuid
 ```
 

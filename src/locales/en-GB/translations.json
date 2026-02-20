@@ -1175,7 +1175,7 @@
     "localeSwitcher": {
         "ariaLabel": "Language selector",
         "locales": {
-            "en-US": "English (US)",
+            "en-GB": "English (UK)",
             "it-IT": "Italian (Italy)"
         },
         "validation": {
