@@ -85,14 +85,12 @@ describe('SearchSuggestionsPopup Component', () => {
     it('should render images when provided and fallback when missing', () => {
         const { container } = renderWithRouter(<SearchSuggestionsPopup suggestions={mockSuggestions} />);
 
-        // Images are decorative (aria-hidden), so use querySelector instead of getByRole
+        // Product suggestion images are informative and use suggestion name alt text.
         const images = container.querySelectorAll('img');
         expect(images).toHaveLength(3); // Only 3 products have images
 
         expect(images[0]).toHaveAttribute('src', 'https://example.com/iphone15.jpg[?sw={width}]');
-        // Decorative images have empty alt text to avoid redundant-alt a11y violation
-        expect(images[0]).toHaveAttribute('alt', '');
-        expect(images[0]).toHaveAttribute('aria-hidden', 'true');
+        expect(images[0]).toHaveAttribute('alt', 'iPhone 15 Pro');
         expect(images[0]).toHaveAttribute('loading', 'eager');
 
         // Check fallback for missing image

@@ -10,7 +10,14 @@
         "noImageAvailable": "No image available",
         "productGeneric": "Product",
         "noProductsFound": "No products found",
-        "productCarousel": "Product carousel"
+        "productCarousel": "Product carousel",
+        "productImageAlt": "Product Image",
+        "suggestionImageAlt": "Suggestion Image",
+        "hero": {
+            "defaultTitle": "Shop Now",
+            "defaultImageAlt": "Hero Image",
+            "defaultCtaText": "Shop Now"
+        }
     },
     "search": {
         "results": "Search Results for",
@@ -457,7 +464,12 @@
         },
         "expressPayments": {
             "separator": "Or",
-            "venmoUnavailable": "Venmo is not available on this device."
+            "venmoUnavailable": "Venmo is not available on this device.",
+            "applePayLabel": "Apple Pay",
+            "googlePayLabel": "Google Pay",
+            "amazonPayLabel": "Amazon Pay",
+            "payPalLabel": "PayPal",
+            "venmoLabel": "Venmo"
         },
         "common": {
             "edit": "Edit",
@@ -1190,6 +1202,7 @@
     },
     "miniCart": {
         "noImage": "No image",
+        "productAltFallback": "Product",
         "quantityLabel": "Quantity:",
         "quantityAriaLabel": "Quantity",
         "customQuantityAriaLabel": "Custom quantity",
@@ -1240,7 +1253,8 @@
     "addressSuggestionDropdown": {
         "suggested": "SUGGESTED",
         "closeSuggestions": "Close suggestions",
-        "loading": "Loading suggestions..."
+        "loading": "Loading suggestions...",
+        "googleMapsLogoAlt": "Google Maps"
     },
     "infoModal": {
         "paymentScheduleDescription": "Payment schedule details",

@@ -44,6 +44,7 @@ import { defineConfig } from 'eslint/config';
 import tseslint from 'typescript-eslint';
 import importPlugin from 'eslint-plugin-import';
 import react from 'eslint-plugin-react';
+import jsxA11y from 'eslint-plugin-jsx-a11y';
 import { includeIgnoreFile } from '@eslint/compat';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
@@ -122,6 +123,7 @@ const baseConfig = defineConfig([
         plugins: {
             'react-hooks': reactHooks,
             'react-refresh': reactRefresh,
+            'jsx-a11y': jsxA11y,
             custom: {
                 rules: {
                     'color-linter': colorLinterRule,
@@ -175,6 +177,14 @@ const baseConfig = defineConfig([
             'react/self-closing-comp': 'error',
             'react/style-prop-object': 'error',
             'react/void-dom-elements-no-children': 'error',
+            'jsx-a11y/alt-text': [
+                'error',
+                {
+                    elements: ['img', 'object', 'area', 'input[type="image"]'],
+                    img: ['DynamicImage', 'ProductImage'],
+                },
+            ],
+            'jsx-a11y/img-redundant-alt': 'warn',
 
             // React Hooks rules
             'react-hooks/rules-of-hooks': 'error',

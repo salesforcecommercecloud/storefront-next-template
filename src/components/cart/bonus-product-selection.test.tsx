@@ -931,7 +931,7 @@ describe('BonusProductSelection', () => {
             renderWithRouter(<BonusProductSelection {...props} />);
 
             await waitFor(() => {
-                const image = screen.getByRole('presentation');
+                const image = screen.getByRole('img', { name: 'Rule Product with disBaseLink' });
                 expect(image.src).toContain('disbased.jpg');
             });
         });
@@ -969,7 +969,7 @@ describe('BonusProductSelection', () => {
             renderWithRouter(<BonusProductSelection {...props} />);
 
             await waitFor(() => {
-                const image = screen.getByRole('presentation');
+                const image = screen.getByRole('img', { name: 'Rule Product with link only' });
                 expect(image.src).toContain('fallback.jpg');
             });
         });

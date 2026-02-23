@@ -15,6 +15,7 @@
  */
 
 import venmoLogo from '/images/venmo.svg';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Venmo Logo SVG Component
@@ -22,10 +23,11 @@ import venmoLogo from '/images/venmo.svg';
  * Uses local Venmo SVG file from public/images
  */
 export default function VenmoLogo({ className }: { className?: string }) {
+    const { t } = useTranslation('checkout');
     return (
         <img
             src={venmoLogo}
-            alt="Venmo"
+            alt={t('expressPayments.venmoLabel') || 'Venmo'}
             className={`${className || ''} h-3 w-auto`}
             style={{
                 objectFit: 'contain',

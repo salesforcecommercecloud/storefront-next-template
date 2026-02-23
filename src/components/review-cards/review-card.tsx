@@ -55,6 +55,7 @@ function formatReviewDateDisplay(dateStr: string | undefined): string {
 
 export function ReviewCard({ review, className }: ReviewCardProps): ReactElement {
     const { t } = useTranslation('product');
+    const reviewImageAltFallback = review.headline || t('reviewImageAlt') || 'Review Image';
     const initial = review.authorName.trim().charAt(0).toUpperCase() || '?';
     const dateDisplay = formatReviewDateDisplay(review.date);
     const dateLocation = [dateDisplay, review.location].filter(Boolean).join(' • ');
@@ -168,7 +169,7 @@ export function ReviewCard({ review, className }: ReviewCardProps): ReactElement
                         <div className="mt-3 flex flex-wrap gap-2">
                             {review.photos.map((photo, index) => {
                                 const photoSrc = REVIEW_CARD_IMAGES[photo.url] ?? photo.url;
-                                const alt = photo.alt ?? '';
+                                const imageAlt = photo.alt || reviewImageAltFallback;
                                 return (
                                     <button
                                         // Prefer photo.id when available from API to avoid remounts. Index fallback when same photo.url repeats (e.g. mock data).
@@ -176,12 +177,12 @@ export function ReviewCard({ review, className }: ReviewCardProps): ReactElement
                                         type="button"
                                         onClick={(e) => {
                                             lightboxTriggerRef.current = e.currentTarget;
-                                            setLightboxPhoto({ src: photoSrc, alt });
+                                            setLightboxPhoto({ src: photoSrc, alt: imageAlt });
                                         }}
                                         className="block size-20 shrink-0 overflow-hidden rounded-md border border-border bg-muted cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                                         <img
                                             src={photoSrc}
-                                            alt={alt}
+                                            alt={imageAlt}
                                             className="size-full object-cover"
                                             loading="lazy"
                                             onError={(e) => {

@@ -101,7 +101,7 @@ export interface HeroSlide {
     title: string;
     subtitle?: string;
     imageUrl: string;
-    imageAlt: string;
+    imageAlt?: string;
     ctaText?: string;
     ctaLink?: string;
 }
@@ -384,7 +384,7 @@ const HeroSlideContent = React.memo(
         <div className="relative w-full h-full overflow-hidden">
             <img
                 src={slide.imageUrl}
-                alt={slide.imageAlt}
+                alt={slide.imageAlt || slide.title || 'Hero Carousel'}
                 fetchPriority="high"
                 className="absolute inset-0 w-full h-full object-cover"
             />

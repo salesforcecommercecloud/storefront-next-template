@@ -21,6 +21,7 @@ import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
 import { RegionDefinition } from '@/lib/decorators';
 import { type Image } from '@/types';
 import heroImage from '/images/foundations/hero-carousel/hero-cube.webp';
+import { useTranslation } from 'react-i18next';
 
 /* v8 ignore start - do not test decorators in unit tests, decorator functionality is tested separately*/
 @Component('hero', {
@@ -57,11 +58,11 @@ export class HeroMetadata {
 /* v8 ignore stop */
 
 export default function Hero({
-    title = 'Shop Now',
+    title,
     subtitle,
     imageUrl = { url: heroImage },
-    imageAlt = 'Hero image',
-    ctaText = 'Shop Now',
+    imageAlt,
+    ctaText,
     ctaLink = '/category/root',
 }: {
     title?: string;
@@ -71,6 +72,12 @@ export default function Hero({
     ctaText?: string;
     ctaLink?: string;
 }): ReactElement {
+    const { t } = useTranslation('common');
+    const fallbackTitle = title || t('hero.defaultTitle') || 'Shop Now';
+    // The default cube image is a decorative placeholder; use empty alt so screen readers skip it.
+    const fallbackImageAlt = imageUrl.url === heroImage ? '' : t('hero.defaultImageAlt') || 'Hero Image';
+    const fallbackCtaText = ctaText || t('hero.defaultCtaText') || 'Shop Now';
+
     // Calculate focal point for object-position (defaults to center)
     const focalX = imageUrl.focal_point?.x ? `${imageUrl.focal_point.x}%` : '50%';
     const focalY = imageUrl.focal_point?.y ? `${imageUrl.focal_point.y}%` : '50%';
@@ -81,7 +88,7 @@ export default function Hero({
             {/* Background image with proper object-fit */}
             <img
                 src={imageUrl.url}
-                alt={imageAlt}
+                alt={imageAlt || fallbackImageAlt}
                 fetchPriority="high"
                 className="absolute inset-0 w-full h-full object-cover"
                 style={{ objectPosition }}
@@ -93,7 +100,7 @@ export default function Hero({
                     <div className="max-w-2xl mx-auto text-center" data-theme="foundations-light">
                         {/* Responsive heading */}
                         <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4 md:mb-6 leading-none tracking-tight">
-                            {title}
+                            {fallbackTitle}
                         </h1>
 
                         {/* Responsive subtitle */}
@@ -108,7 +115,7 @@ export default function Hero({
                             <Button
                                 asChild
                                 className="text-sm sm:text-base md:text-lg lg:text-xl p-3 sm:p-4 md:p-5 lg:p-6">
-                                <Link to={ctaLink}>{ctaText}</Link>
+                                <Link to={ctaLink}>{fallbackCtaText}</Link>
                             </Button>
                         </div>
                     </div>

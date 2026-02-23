@@ -195,7 +195,11 @@ export default function AddressSuggestionDropdown({
 
             {/* Google Attribution */}
             <CardFooter className="px-4 py-3">
-                <img src={googleMapsLogo} alt="Google Maps" className="w-[98px] h-[18px]" />
+                <img
+                    src={googleMapsLogo}
+                    alt={t('googleMapsLogoAlt', { defaultValue: 'Google Maps' })}
+                    className="w-[98px] h-[18px]"
+                />
             </CardFooter>
         </Card>
     );

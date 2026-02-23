@@ -186,7 +186,7 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
                               type="image/webp"
                             />
                             <img
-                              alt="Laptop Briefcase with wheels (37L) 1"
+                              alt="Laptop Briefcase with wheels (37L), , medium"
                               fetchpriority="auto"
                               loading="lazy"
                               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwcc8912f4/images/medium/P0048_001.jpg"
@@ -359,7 +359,7 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
                               type="image/webp"
                             />
                             <img
-                              alt="Laptop Briefcase with wheels (37L) 2"
+                              alt="Laptop Briefcase with wheels (37L), , medium"
                               fetchpriority="auto"
                               loading="lazy"
                               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwcc8912f4/images/medium/P0048_001.jpg"
@@ -532,7 +532,7 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
                               type="image/webp"
                             />
                             <img
-                              alt="Laptop Briefcase with wheels (37L) 3"
+                              alt="Laptop Briefcase with wheels (37L), , medium"
                               fetchpriority="auto"
                               loading="lazy"
                               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwcc8912f4/images/medium/P0048_001.jpg"
@@ -705,7 +705,7 @@ exports[`PaginatedProductCarousel stories snapshot > AllLoaded story renders and
                               type="image/webp"
                             />
                             <img
-                              alt="Laptop Briefcase with wheels (37L) 4"
+                              alt="Laptop Briefcase with wheels (37L), , medium"
                               fetchpriority="auto"
                               loading="lazy"
                               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwcc8912f4/images/medium/P0048_001.jpg"
@@ -978,7 +978,7 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
                               type="image/webp"
                             />
                             <img
-                              alt="Laptop Briefcase with wheels (37L) 1"
+                              alt="Laptop Briefcase with wheels (37L), , medium"
                               fetchpriority="auto"
                               loading="lazy"
                               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwcc8912f4/images/medium/P0048_001.jpg"
@@ -1151,7 +1151,7 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
                               type="image/webp"
                             />
                             <img
-                              alt="Laptop Briefcase with wheels (37L) 2"
+                              alt="Laptop Briefcase with wheels (37L), , medium"
                               fetchpriority="auto"
                               loading="lazy"
                               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwcc8912f4/images/medium/P0048_001.jpg"
@@ -1324,7 +1324,7 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
                               type="image/webp"
                             />
                             <img
-                              alt="Laptop Briefcase with wheels (37L) 3"
+                              alt="Laptop Briefcase with wheels (37L), , medium"
                               fetchpriority="auto"
                               loading="lazy"
                               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwcc8912f4/images/medium/P0048_001.jpg"
@@ -1497,7 +1497,7 @@ exports[`PaginatedProductCarousel stories snapshot > Default story renders and m
                               type="image/webp"
                             />
                             <img
-                              alt="Laptop Briefcase with wheels (37L) 4"
+                              alt="Laptop Briefcase with wheels (37L), , medium"
                               fetchpriority="auto"
                               loading="lazy"
                               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwcc8912f4/images/medium/P0048_001.jpg"
@@ -1784,7 +1784,7 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
                               type="image/webp"
                             />
                             <img
-                              alt="Laptop Briefcase with wheels (37L) 1"
+                              alt="Laptop Briefcase with wheels (37L), , medium"
                               fetchpriority="auto"
                               loading="lazy"
                               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwcc8912f4/images/medium/P0048_001.jpg"
@@ -1957,7 +1957,7 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
                               type="image/webp"
                             />
                             <img
-                              alt="Laptop Briefcase with wheels (37L) 2"
+                              alt="Laptop Briefcase with wheels (37L), , medium"
                               fetchpriority="auto"
                               loading="lazy"
                               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwcc8912f4/images/medium/P0048_001.jpg"
@@ -2130,7 +2130,7 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
                               type="image/webp"
                             />
                             <img
-                              alt="Laptop Briefcase with wheels (37L) 3"
+                              alt="Laptop Briefcase with wheels (37L), , medium"
                               fetchpriority="auto"
                               loading="lazy"
                               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwcc8912f4/images/medium/P0048_001.jpg"
@@ -2303,7 +2303,7 @@ exports[`PaginatedProductCarousel stories snapshot > LoadingState story renders 
                               type="image/webp"
                             />
                             <img
-                              alt="Laptop Briefcase with wheels (37L) 4"
+                              alt="Laptop Briefcase with wheels (37L), , medium"
                               fetchpriority="auto"
                               loading="lazy"
                               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwcc8912f4/images/medium/P0048_001.jpg"

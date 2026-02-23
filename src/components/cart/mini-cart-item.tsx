@@ -100,6 +100,7 @@ export default function MiniCartItem({ product, onRemove, bonusProductSlot }: Mi
     const { t: tActionCard } = useTranslation('actionCard');
     const { t: tRemoveItem } = useTranslation('removeItem');
     const currency = useCurrency();
+    const productAltFallback = tMiniCart('productAltFallback') || 'Product';
 
     const fetcher = useItemFetcher({
         itemId: product.itemId || '',
@@ -211,14 +212,14 @@ export default function MiniCartItem({ product, onRemove, bonusProductSlot }: Mi
                         <Link to={productUrl} className="block w-full h-full">
                             <img
                                 src={optimizedImageUrl}
-                                alt={image.alt || product?.productName || 'Product'}
+                                alt={image.alt || product?.productName || productAltFallback}
                                 className="w-full h-full object-cover rounded"
                             />
                         </Link>
                     ) : (
                         <img
                             src={optimizedImageUrl}
-                            alt={image.alt || product?.productName || 'Product'}
+                            alt={image.alt || product?.productName || productAltFallback}
                             className="w-full h-full object-cover rounded"
                         />
                     )
@@ -266,7 +267,7 @@ export default function MiniCartItem({ product, onRemove, bonusProductSlot }: Mi
                             currency={currency}
                             quantity={1}
                             type="unit"
-                            labelForA11y={product.productName}
+                            labelForA11y={product.productName || productAltFallback}
                             currentPriceProps={{
                                 className: 'text-base font-semibold text-foreground',
                             }}

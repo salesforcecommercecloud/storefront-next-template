@@ -21,6 +21,7 @@ import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { createProductUrl, getImagesForColor } from '@/lib/product-utils';
 import { useDynamicImageContext } from '@/providers/dynamic-image';
 import { ProductImage } from './product-image';
+import { useTranslation } from 'react-i18next';
 
 interface ProductImageContainerProps {
     product: ShopperSearch.schemas['ProductSearchHit'];
@@ -38,9 +39,11 @@ const ProductImageContainer = ({
     handleProductClick,
     imgAspectRatio = 1,
 }: ProductImageContainerProps) => {
+    const { t } = useTranslation('product');
     // Get the product image for the selected color variant
     const currentImage = getImagesForColor(product, selectedColorValue, 'medium').at(0) ?? product.image;
     const currentImageUrl = currentImage?.disBaseLink || currentImage?.link;
+    const imageAltFallback = product.productName || t('imageAlt') || 'Product Image';
 
     // Report the image URL to the dynamic image context, if available
     const imageContext = useDynamicImageContext();
@@ -95,10 +98,10 @@ const ProductImageContainer = ({
                 to={createProductUrl(product.productId, selectedColorValue)}
                 onClick={handleClick}
                 className="block w-full h-full flex-1"
-                aria-label={`View ${product.productName}`}>
+                aria-label={t('viewProductAriaLabel', { productName: imageAltFallback }) || imageAltFallback}>
                 <ProductImage
                     src={currentImageUrl || ''}
-                    alt={product.productName || 'Product'}
+                    alt={currentImage?.alt || imageAltFallback}
                     className="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
                     widths={responsiveWidths}
                 />

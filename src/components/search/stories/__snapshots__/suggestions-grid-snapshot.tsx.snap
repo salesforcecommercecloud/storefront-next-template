@@ -27,8 +27,7 @@ exports[`SuggestionsGrid stories snapshot > Default story renders and matches sn
                 class=""
               >
                 <img
-                  alt=""
-                  aria-hidden="true"
+                  alt="Running Shoes"
                   class="absolute inset-0 w-full h-full object-cover block"
                   fetchpriority="auto"
                   loading="eager"
@@ -68,8 +67,7 @@ exports[`SuggestionsGrid stories snapshot > Default story renders and matches sn
                 class=""
               >
                 <img
-                  alt=""
-                  aria-hidden="true"
+                  alt="Hiking Boots"
                   class="absolute inset-0 w-full h-full object-cover block"
                   fetchpriority="auto"
                   loading="eager"
@@ -109,8 +107,7 @@ exports[`SuggestionsGrid stories snapshot > Default story renders and matches sn
                 class=""
               >
                 <img
-                  alt=""
-                  aria-hidden="true"
+                  alt="Casual Sneakers"
                   class="absolute inset-0 w-full h-full object-cover block"
                   fetchpriority="auto"
                   loading="eager"
@@ -150,8 +147,7 @@ exports[`SuggestionsGrid stories snapshot > Default story renders and matches sn
                 class=""
               >
                 <img
-                  alt=""
-                  aria-hidden="true"
+                  alt="Dress Shoes"
                   class="absolute inset-0 w-full h-full object-cover block"
                   fetchpriority="auto"
                   loading="eager"
@@ -191,8 +187,7 @@ exports[`SuggestionsGrid stories snapshot > Default story renders and matches sn
                 class=""
               >
                 <img
-                  alt=""
-                  aria-hidden="true"
+                  alt="Sandals"
                   class="absolute inset-0 w-full h-full object-cover block"
                   fetchpriority="auto"
                   loading="eager"
@@ -248,8 +243,7 @@ exports[`SuggestionsGrid stories snapshot > SingleProduct story renders and matc
                 class=""
               >
                 <img
-                  alt=""
-                  aria-hidden="true"
+                  alt="Running Shoes"
                   class="absolute inset-0 w-full h-full object-cover block"
                   fetchpriority="auto"
                   loading="eager"
@@ -411,8 +405,7 @@ exports[`SuggestionsGrid stories snapshot > WithoutPrices story renders and matc
                 class=""
               >
                 <img
-                  alt=""
-                  aria-hidden="true"
+                  alt="Product Without Price"
                   class="absolute inset-0 w-full h-full object-cover block"
                   fetchpriority="auto"
                   loading="eager"

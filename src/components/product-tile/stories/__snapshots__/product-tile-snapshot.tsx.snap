@@ -197,7 +197,7 @@ exports[`ProductTile stories snapshot > CustomAction story renders and matches s
                     type="image/webp"
                   />
                   <img
-                    alt="Charcoal Single Pleat Wool Suit"
+                    alt="Charcoal Single Pleat Wool Suit, Charcoal, medium"
                     fetchpriority="auto"
                     loading="lazy"
                     src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.jpg"
@@ -413,7 +413,7 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
                     type="image/webp"
                   />
                   <img
-                    alt="Charcoal Single Pleat Wool Suit"
+                    alt="Charcoal Single Pleat Wool Suit, Charcoal, medium"
                     fetchpriority="auto"
                     loading="lazy"
                     src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.jpg"
@@ -629,7 +629,7 @@ exports[`ProductTile stories snapshot > MasterProductWithSwatches story renders 
                     type="image/webp"
                   />
                   <img
-                    alt="Long Sleeve Embellished Boat Neck Top"
+                    alt="Long Sleeve Embellished Boat Neck Top, Grey Heather, medium"
                     fetchpriority="auto"
                     loading="lazy"
                     src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwc9ce7da9/images/medium/PG.10217069.JJ908XX.PZ.jpg"
@@ -862,7 +862,7 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
                     type="image/webp"
                   />
                   <img
-                    alt="Charcoal Single Pleat Wool Suit"
+                    alt="Charcoal Single Pleat Wool Suit, Charcoal, medium"
                     fetchpriority="auto"
                     loading="lazy"
                     src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.jpg"

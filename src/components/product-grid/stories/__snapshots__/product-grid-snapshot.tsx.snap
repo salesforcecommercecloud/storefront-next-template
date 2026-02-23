@@ -156,7 +156,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
                       type="image/webp"
                     />
                     <img
-                      alt="Standard Product 1"
+                      alt="Laptop Briefcase with wheels (37L), , medium"
                       fetchpriority="high"
                       loading="eager"
                       src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwcc8912f4/images/medium/P0048_001.jpg"
@@ -329,7 +329,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
                       type="image/webp"
                     />
                     <img
-                      alt="Standard Product 1"
+                      alt="Laptop Briefcase with wheels (37L), , medium"
                       fetchpriority="high"
                       loading="eager"
                       src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwcc8912f4/images/medium/P0048_001.jpg"
@@ -506,7 +506,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
                       type="image/webp"
                     />
                     <img
-                      alt="Master Product 1"
+                      alt="Black Flat Front Wool Suit, , medium"
                       fetchpriority="high"
                       loading="eager"
                       src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5aa46219/images/medium/PG.52001DAN84Q.BLACKWL.PZ.jpg"
@@ -701,7 +701,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                       type="image/webp"
                     />
                     <img
-                      alt="Standard Product 1"
+                      alt="Laptop Briefcase with wheels (37L), , medium"
                       fetchpriority="high"
                       loading="eager"
                       src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwcc8912f4/images/medium/P0048_001.jpg"
@@ -861,7 +861,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                       type="image/webp"
                     />
                     <img
-                      alt="Standard Product 2"
+                      alt="Laptop Briefcase with wheels (37L), , medium"
                       fetchpriority="high"
                       loading="eager"
                       src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwcc8912f4/images/medium/P0048_001.jpg"
@@ -1034,7 +1034,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                       type="image/webp"
                     />
                     <img
-                      alt="Standard Product 1"
+                      alt="Laptop Briefcase with wheels (37L), , medium"
                       fetchpriority="high"
                       loading="eager"
                       src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwcc8912f4/images/medium/P0048_001.jpg"
@@ -1211,7 +1211,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                       type="image/webp"
                     />
                     <img
-                      alt="Master Product 1"
+                      alt="Black Flat Front Wool Suit, , medium"
                       fetchpriority="high"
                       loading="eager"
                       src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5aa46219/images/medium/PG.52001DAN84Q.BLACKWL.PZ.jpg"
@@ -1416,7 +1416,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                       type="image/webp"
                     />
                     <img
-                      alt="Master Multi 1"
+                      alt="Long Sleeve Embellished Boat Neck Top, Grey Heather, medium"
                       fetchpriority="auto"
                       loading="lazy"
                       src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwc9ce7da9/images/medium/PG.10217069.JJ908XX.PZ.jpg"
@@ -1621,7 +1621,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                       type="image/webp"
                     />
                     <img
-                      alt="Master Product 2"
+                      alt="Charcoal Single Pleat Wool Suit, Charcoal, medium"
                       fetchpriority="auto"
                       loading="lazy"
                       src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.jpg"
@@ -1749,7 +1749,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                       type="image/webp"
                     />
                     <img
-                      alt="Product Set 1"
+                      alt="Winter Look, , large"
                       fetchpriority="auto"
                       loading="lazy"
                       src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwe1c4cd52/images/large/PG.10205921.JJ5FUXX.PZ.jpg"
@@ -1909,7 +1909,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                       type="image/webp"
                     />
                     <img
-                      alt="Standard Product 2"
+                      alt="Laptop Briefcase with wheels (37L), , medium"
                       fetchpriority="auto"
                       loading="lazy"
                       src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwcc8912f4/images/medium/P0048_001.jpg"
@@ -2114,7 +2114,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                       type="image/webp"
                     />
                     <img
-                      alt="Master Multi 2"
+                      alt="Long Sleeve Embellished Boat Neck Top, Grey Heather, medium"
                       fetchpriority="auto"
                       loading="lazy"
                       src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwc9ce7da9/images/medium/PG.10217069.JJ908XX.PZ.jpg"
@@ -2319,7 +2319,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                       type="image/webp"
                     />
                     <img
-                      alt="Master Product 3"
+                      alt="Charcoal Single Pleat Wool Suit, Charcoal, medium"
                       fetchpriority="auto"
                       loading="lazy"
                       src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.jpg"
@@ -2492,7 +2492,7 @@ exports[`ProductGrid stories snapshot > SingleProductCritical story renders and 
                       type="image/webp"
                     />
                     <img
-                      alt="Standard Only"
+                      alt="Laptop Briefcase with wheels (37L), , medium"
                       fetchpriority="high"
                       loading="eager"
                       src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwcc8912f4/images/medium/P0048_001.jpg"

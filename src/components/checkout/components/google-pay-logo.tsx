@@ -15,6 +15,7 @@
  */
 
 import googlePayLogo from '/images/google-pay-logo.svg';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Google Pay Logo SVG Component
@@ -22,10 +23,11 @@ import googlePayLogo from '/images/google-pay-logo.svg';
  * Uses local Google Pay SVG file from public/images
  */
 export default function GooglePayLogo({ className }: { className?: string }) {
+    const { t } = useTranslation('checkout');
     return (
         <img
             src={googlePayLogo}
-            alt="Google Pay"
+            alt={t('expressPayments.googlePayLabel') || 'Google Pay'}
             className={`${className || ''} h-4 w-auto`}
             style={{ objectFit: 'contain' }}
         />

@@ -60,7 +60,7 @@ describe('Hero Component', () => {
                 expectedCta: 'Shop Now',
                 expectedLink: '/category/root',
                 expectedImageSrc: '/mock-hero-image.png',
-                expectedImageAlt: 'Hero image',
+                expectedImageAlt: '',
                 hasSubtitle: false,
             },
             {
@@ -106,7 +106,10 @@ describe('Hero Component', () => {
                 expect(link).toHaveAttribute('href', expectedLink);
 
                 // Test image
-                const image = screen.getByRole('img');
+                const image =
+                    expectedImageAlt === ''
+                        ? screen.getByRole('presentation')
+                        : screen.getByRole('img', { name: expectedImageAlt });
                 expect(image).toHaveAttribute('src', expectedImageSrc);
                 expect(image).toHaveAttribute('alt', expectedImageAlt);
                 expect(image).toHaveAttribute('fetchpriority', 'high');
@@ -162,7 +165,7 @@ describe('Hero Component', () => {
             renderHero();
 
             expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
-            expect(screen.getByRole('img')).toBeInTheDocument();
+            expect(screen.getByRole('presentation')).toBeInTheDocument();
             expect(screen.getByRole('link')).toBeInTheDocument();
         });
 

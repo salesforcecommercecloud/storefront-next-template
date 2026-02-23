@@ -180,6 +180,7 @@ export function CartItemEditModal({
                                 key={currentProduct.id}
                                 images={galleryImages}
                                 eager={!isProductASet && !isProductABundle}
+                                productName={currentProduct.name}
                             />
                         </div>
                         <div className="order-2">

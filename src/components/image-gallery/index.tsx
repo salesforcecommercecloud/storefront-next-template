@@ -29,9 +29,10 @@ export interface GalleryImage {
 interface ImageGalleryProps {
     images: GalleryImage[];
     eager?: boolean;
+    productName?: string;
 }
 
-export default function ImageGallery({ images, eager = false }: ImageGalleryProps): ReactElement {
+export default function ImageGallery({ images, eager = false, productName }: ImageGalleryProps): ReactElement {
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
     useEffect(() => {
@@ -45,7 +46,8 @@ export default function ImageGallery({ images, eager = false }: ImageGalleryProp
         });
     }, [images]);
 
-    const { t } = useTranslation('common');
+    const { t: tCommon } = useTranslation('common');
+    const { t: tProduct } = useTranslation('product');
 
     // The first image is the fallback image. It's needed for when `images` are just updated, and the `selectedImageIndex` goes out of bound and is soon to be reset.
     const selectedImage = images[selectedImageIndex] ?? images[0];
@@ -55,11 +57,13 @@ export default function ImageGallery({ images, eager = false }: ImageGalleryProp
             <div className="aspect-square bg-muted rounded-lg flex items-center justify-center">
                 <div className="text-center text-muted-foreground">
                     <div className="text-4xl mb-2">📷</div>
-                    <p>{t('noImageAvailable')}</p>
+                    <p>{tCommon('noImageAvailable')}</p>
                 </div>
             </div>
         );
     }
+
+    const imageAltFallback = productName || tProduct('imageAlt') || 'Product Image';
 
     return (
         <div className="space-y-4">
@@ -67,7 +71,7 @@ export default function ImageGallery({ images, eager = false }: ImageGalleryProp
             <div className="aspect-square overflow-hidden rounded-lg bg-muted">
                 <DynamicImage
                     src={`${selectedImage.src}[?sw={width}]`}
-                    alt={selectedImage.alt}
+                    alt={selectedImage.alt || imageAltFallback}
                     widths={['100vw', '680px']}
                     className="w-full h-full object-cover object-center [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
                     loading={eager ? 'eager' : 'lazy'}
@@ -93,7 +97,7 @@ export default function ImageGallery({ images, eager = false }: ImageGalleryProp
                             `}>
                             <img
                                 src={image.thumbSrc || image.src}
-                                alt={image.alt}
+                                alt={image.alt || imageAltFallback}
                                 className="w-full h-full object-cover object-center"
                                 loading="lazy"
                             />

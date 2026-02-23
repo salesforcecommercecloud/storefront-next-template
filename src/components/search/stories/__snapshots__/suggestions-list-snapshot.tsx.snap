@@ -22,8 +22,7 @@ exports[`SuggestionsList stories snapshot > Default story renders and matches sn
               class="w-full h-full"
             >
               <img
-                alt=""
-                aria-hidden="true"
+                alt="Footwear"
                 class="w-full h-full object-cover rounded-full"
                 fetchpriority="auto"
                 loading="eager"
@@ -55,8 +54,7 @@ exports[`SuggestionsList stories snapshot > Default story renders and matches sn
               class="w-full h-full"
             >
               <img
-                alt=""
-                aria-hidden="true"
+                alt="Clothing"
                 class="w-full h-full object-cover rounded-full"
                 fetchpriority="auto"
                 loading="eager"
@@ -124,8 +122,7 @@ exports[`SuggestionsList stories snapshot > SingleSuggestion story renders and m
               class="w-full h-full"
             >
               <img
-                alt=""
-                aria-hidden="true"
+                alt="Single Item"
                 class="w-full h-full object-cover rounded-full"
                 fetchpriority="auto"
                 loading="eager"
@@ -171,8 +168,7 @@ exports[`SuggestionsList stories snapshot > WithProducts story renders and match
               class="w-full h-full"
             >
               <img
-                alt=""
-                aria-hidden="true"
+                alt="Running Shoes"
                 class="w-full h-full object-cover rounded-full"
                 fetchpriority="auto"
                 loading="eager"
@@ -204,8 +200,7 @@ exports[`SuggestionsList stories snapshot > WithProducts story renders and match
               class="w-full h-full"
             >
               <img
-                alt=""
-                aria-hidden="true"
+                alt="Hiking Boots"
                 class="w-full h-full object-cover rounded-full"
                 fetchpriority="auto"
                 loading="eager"

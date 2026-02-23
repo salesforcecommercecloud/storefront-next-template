@@ -17,6 +17,7 @@
 
 import { Button } from '@/components/ui/button';
 import PayPalLogo from './paypal-logo';
+import { useTranslation } from 'react-i18next';
 
 interface StaticPayPalButtonProps {
     onClick: () => void;
@@ -29,13 +30,14 @@ interface StaticPayPalButtonProps {
  * Uses official PayPal gold color (#FFC439) and logo
  */
 export default function StaticPayPalButton({ onClick, disabled = false }: StaticPayPalButtonProps) {
+    const { t } = useTranslation('checkout');
     return (
         <Button
             onClick={onClick}
             disabled={disabled}
             className="w-full h-12 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 rounded-lg flex items-center justify-center transition-colors"
             size="lg"
-            aria-label="PayPal">
+            aria-label={t('expressPayments.payPalLabel') || 'PayPal'}>
             <PayPalLogo className="flex-shrink-0" />
         </Button>
     );

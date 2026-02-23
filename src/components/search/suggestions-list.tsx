@@ -21,6 +21,7 @@ import { DynamicImage } from '@/components/dynamic-image';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { toImageUrl } from '@/lib/dynamic-image';
 import { useConfig } from '@/config';
+import { useTranslation } from 'react-i18next';
 
 interface Suggestion {
     name: string;
@@ -40,6 +41,7 @@ interface SuggestionsProps {
 const Suggestions: React.FC<SuggestionsProps> = ({ suggestions, searchPhrase, closeAndNavigate, className }) => {
     const analytics = useAnalytics();
     const config = useConfig();
+    const { t } = useTranslation('common');
     if (!suggestions || suggestions.length === 0) {
         return null;
     }
@@ -67,11 +69,10 @@ const Suggestions: React.FC<SuggestionsProps> = ({ suggestions, searchPhrase, cl
                                 {suggestion.image ? (
                                     <DynamicImage
                                         src={`${toImageUrl({ src: suggestion.image, config })}[?sw={width}]`}
-                                        alt=""
+                                        alt={suggestion.name || t('suggestionImageAlt') || 'Suggestion Image'}
                                         className="w-full h-full"
                                         imageProps={{
                                             className: 'w-full h-full object-cover rounded-full',
-                                            'aria-hidden': true,
                                         }}
                                         loading="eager"
                                     />

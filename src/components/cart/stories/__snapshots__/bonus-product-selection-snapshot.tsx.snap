@@ -115,10 +115,9 @@ exports[`BonusProductSelection stories snapshot > CombinedProducts story renders
                             class="h-36 w-full relative"
                           >
                             <img
-                              alt=""
+                              alt="Product Image"
                               class="absolute inset-0 h-full w-full object-cover"
                               loading="lazy"
-                              role="presentation"
                               src="https://example.com/image.jpg"
                             />
                           </div>
@@ -177,10 +176,9 @@ exports[`BonusProductSelection stories snapshot > CombinedProducts story renders
                             class="h-36 w-full relative"
                           >
                             <img
-                              alt=""
+                              alt="Product Image"
                               class="absolute inset-0 h-full w-full object-cover"
                               loading="lazy"
-                              role="presentation"
                               src="https://example.com/image.jpg"
                             />
                           </div>
@@ -411,10 +409,9 @@ exports[`BonusProductSelection stories snapshot > Default story renders and matc
                             class="h-36 w-full relative"
                           >
                             <img
-                              alt=""
+                              alt="Product Image"
                               class="absolute inset-0 h-full w-full object-cover"
                               loading="lazy"
-                              role="presentation"
                               src="https://example.com/image.jpg"
                             />
                           </div>
@@ -473,10 +470,9 @@ exports[`BonusProductSelection stories snapshot > Default story renders and matc
                             class="h-36 w-full relative"
                           >
                             <img
-                              alt=""
+                              alt="Product Image"
                               class="absolute inset-0 h-full w-full object-cover"
                               loading="lazy"
-                              role="presentation"
                               src="https://example.com/image.jpg"
                             />
                           </div>
@@ -535,10 +531,9 @@ exports[`BonusProductSelection stories snapshot > Default story renders and matc
                             class="h-36 w-full relative"
                           >
                             <img
-                              alt=""
+                              alt="Product Image"
                               class="absolute inset-0 h-full w-full object-cover"
                               loading="lazy"
-                              role="presentation"
                               src="https://example.com/image.jpg"
                             />
                           </div>
@@ -769,10 +764,9 @@ exports[`BonusProductSelection stories snapshot > Desktop story renders and matc
                             class="h-36 w-full relative"
                           >
                             <img
-                              alt=""
+                              alt="Product Image"
                               class="absolute inset-0 h-full w-full object-cover"
                               loading="lazy"
-                              role="presentation"
                               src="https://example.com/image.jpg"
                             />
                           </div>
@@ -831,10 +825,9 @@ exports[`BonusProductSelection stories snapshot > Desktop story renders and matc
                             class="h-36 w-full relative"
                           >
                             <img
-                              alt=""
+                              alt="Product Image"
                               class="absolute inset-0 h-full w-full object-cover"
                               loading="lazy"
-                              role="presentation"
                               src="https://example.com/image.jpg"
                             />
                           </div>
@@ -893,10 +886,9 @@ exports[`BonusProductSelection stories snapshot > Desktop story renders and matc
                             class="h-36 w-full relative"
                           >
                             <img
-                              alt=""
+                              alt="Product Image"
                               class="absolute inset-0 h-full w-full object-cover"
                               loading="lazy"
-                              role="presentation"
                               src="https://example.com/image.jpg"
                             />
                           </div>
@@ -1127,10 +1119,9 @@ exports[`BonusProductSelection stories snapshot > Expanded story renders and mat
                             class="h-36 w-full relative"
                           >
                             <img
-                              alt=""
+                              alt="Product Image"
                               class="absolute inset-0 h-full w-full object-cover"
                               loading="lazy"
-                              role="presentation"
                               src="https://example.com/image.jpg"
                             />
                           </div>
@@ -1189,10 +1180,9 @@ exports[`BonusProductSelection stories snapshot > Expanded story renders and mat
                             class="h-36 w-full relative"
                           >
                             <img
-                              alt=""
+                              alt="Product Image"
                               class="absolute inset-0 h-full w-full object-cover"
                               loading="lazy"
-                              role="presentation"
                               src="https://example.com/image.jpg"
                             />
                           </div>
@@ -1251,10 +1241,9 @@ exports[`BonusProductSelection stories snapshot > Expanded story renders and mat
                             class="h-36 w-full relative"
                           >
                             <img
-                              alt=""
+                              alt="Product Image"
                               class="absolute inset-0 h-full w-full object-cover"
                               loading="lazy"
-                              role="presentation"
                               src="https://example.com/image.jpg"
                             />
                           </div>
@@ -1485,10 +1474,9 @@ exports[`BonusProductSelection stories snapshot > Mobile story renders and match
                             class="h-36 w-full relative"
                           >
                             <img
-                              alt=""
+                              alt="Product Image"
                               class="absolute inset-0 h-full w-full object-cover"
                               loading="lazy"
-                              role="presentation"
                               src="https://example.com/image.jpg"
                             />
                           </div>
@@ -1547,10 +1535,9 @@ exports[`BonusProductSelection stories snapshot > Mobile story renders and match
                             class="h-36 w-full relative"
                           >
                             <img
-                              alt=""
+                              alt="Product Image"
                               class="absolute inset-0 h-full w-full object-cover"
                               loading="lazy"
-                              role="presentation"
                               src="https://example.com/image.jpg"
                             />
                           </div>
@@ -1609,10 +1596,9 @@ exports[`BonusProductSelection stories snapshot > Mobile story renders and match
                             class="h-36 w-full relative"
                           >
                             <img
-                              alt=""
+                              alt="Product Image"
                               class="absolute inset-0 h-full w-full object-cover"
                               loading="lazy"
-                              role="presentation"
                               src="https://example.com/image.jpg"
                             />
                           </div>
@@ -1843,10 +1829,9 @@ exports[`BonusProductSelection stories snapshot > Tablet story renders and match
                             class="h-36 w-full relative"
                           >
                             <img
-                              alt=""
+                              alt="Product Image"
                               class="absolute inset-0 h-full w-full object-cover"
                               loading="lazy"
-                              role="presentation"
                               src="https://example.com/image.jpg"
                             />
                           </div>
@@ -1905,10 +1890,9 @@ exports[`BonusProductSelection stories snapshot > Tablet story renders and match
                             class="h-36 w-full relative"
                           >
                             <img
-                              alt=""
+                              alt="Product Image"
                               class="absolute inset-0 h-full w-full object-cover"
                               loading="lazy"
-                              role="presentation"
                               src="https://example.com/image.jpg"
                             />
                           </div>
@@ -1967,10 +1951,9 @@ exports[`BonusProductSelection stories snapshot > Tablet story renders and match
                             class="h-36 w-full relative"
                           >
                             <img
-                              alt=""
+                              alt="Product Image"
                               class="absolute inset-0 h-full w-full object-cover"
                               loading="lazy"
-                              role="presentation"
                               src="https://example.com/image.jpg"
                             />
                           </div>
@@ -2201,10 +2184,9 @@ exports[`BonusProductSelection stories snapshot > WithCarouselNavigation story r
                             class="h-36 w-full relative"
                           >
                             <img
-                              alt=""
+                              alt="Product Image"
                               class="absolute inset-0 h-full w-full object-cover"
                               loading="lazy"
-                              role="presentation"
                               src="https://example.com/image.jpg"
                             />
                           </div>
@@ -2263,10 +2245,9 @@ exports[`BonusProductSelection stories snapshot > WithCarouselNavigation story r
                             class="h-36 w-full relative"
                           >
                             <img
-                              alt=""
+                              alt="Product Image"
                               class="absolute inset-0 h-full w-full object-cover"
                               loading="lazy"
-                              role="presentation"
                               src="https://example.com/image.jpg"
                             />
                           </div>
@@ -2325,10 +2306,9 @@ exports[`BonusProductSelection stories snapshot > WithCarouselNavigation story r
                             class="h-36 w-full relative"
                           >
                             <img
-                              alt=""
+                              alt="Product Image"
                               class="absolute inset-0 h-full w-full object-cover"
                               loading="lazy"
-                              role="presentation"
                               src="https://example.com/image.jpg"
                             />
                           </div>
@@ -2387,10 +2367,9 @@ exports[`BonusProductSelection stories snapshot > WithCarouselNavigation story r
                             class="h-36 w-full relative"
                           >
                             <img
-                              alt=""
+                              alt="Product Image"
                               class="absolute inset-0 h-full w-full object-cover"
                               loading="lazy"
-                              role="presentation"
                               src="https://example.com/image.jpg"
                             />
                           </div>
@@ -2449,10 +2428,9 @@ exports[`BonusProductSelection stories snapshot > WithCarouselNavigation story r
                             class="h-36 w-full relative"
                           >
                             <img
-                              alt=""
+                              alt="Product Image"
                               class="absolute inset-0 h-full w-full object-cover"
                               loading="lazy"
-                              role="presentation"
                               src="https://example.com/image.jpg"
                             />
                           </div>
@@ -2511,10 +2489,9 @@ exports[`BonusProductSelection stories snapshot > WithCarouselNavigation story r
                             class="h-36 w-full relative"
                           >
                             <img
-                              alt=""
+                              alt="Product Image"
                               class="absolute inset-0 h-full w-full object-cover"
                               loading="lazy"
-                              role="presentation"
                               src="https://example.com/image.jpg"
                             />
                           </div>
@@ -2573,10 +2550,9 @@ exports[`BonusProductSelection stories snapshot > WithCarouselNavigation story r
                             class="h-36 w-full relative"
                           >
                             <img
-                              alt=""
+                              alt="Product Image"
                               class="absolute inset-0 h-full w-full object-cover"
                               loading="lazy"
-                              role="presentation"
                               src="https://example.com/image.jpg"
                             />
                           </div>
@@ -2635,10 +2611,9 @@ exports[`BonusProductSelection stories snapshot > WithCarouselNavigation story r
                             class="h-36 w-full relative"
                           >
                             <img
-                              alt=""
+                              alt="Product Image"
                               class="absolute inset-0 h-full w-full object-cover"
                               loading="lazy"
-                              role="presentation"
                               src="https://example.com/image.jpg"
                             />
                           </div>

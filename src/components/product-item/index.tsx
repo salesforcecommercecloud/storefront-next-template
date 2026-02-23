@@ -67,6 +67,7 @@ export function ProductItemVariantImage({
     width?: string;
 }): ReactElement {
     const config = useConfig();
+    const { t: tProduct } = useTranslation('product');
 
     if (!productItem) {
         return (
@@ -82,6 +83,7 @@ export function ProductItemVariantImage({
         selectedVariationAttributes: productItem?.variationValues,
     });
     const image = imageGroup?.images?.[0];
+    const imageAltFallback = productItem?.productName || productItem?.name || tProduct('imageAlt') || 'Product Image';
     const optimizedImageUrl = toImageUrl({ image, config }) || '';
 
     return (
@@ -93,7 +95,7 @@ export function ProductItemVariantImage({
             {image ? (
                 <img
                     src={optimizedImageUrl}
-                    alt={image.alt || productItem?.productName || productItem?.name || 'Product image'}
+                    alt={image?.alt || imageAltFallback}
                     className="h-full w-full object-contain"
                 />
             ) : (

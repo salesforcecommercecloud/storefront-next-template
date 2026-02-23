@@ -20,6 +20,7 @@ import StaticPayPalButton from './static-paypal-button';
 import StaticVenmoButton from './static-venmo-button';
 import ApplePayLogo from './apple-pay-logo';
 import GooglePayLogo from './google-pay-logo';
+import { useTranslation } from 'react-i18next';
 
 interface ExpressPaymentsProps {
     disabled?: boolean;
@@ -125,6 +126,10 @@ export default function ExpressPayments({
     separatorPosition = 'bottom',
     separatorText = 'Or',
 }: ExpressPaymentsProps) {
+    const { t } = useTranslation('checkout');
+    const applePayLabel = t('expressPayments.applePayLabel');
+    const googlePayLabel = t('expressPayments.googlePayLabel');
+    const amazonPayLabel = t('expressPayments.amazonPayLabel');
     const handleApplePayClick = () => {
         if (!disabled) {
             // eslint-disable-next-line no-alert
@@ -203,7 +208,7 @@ export default function ExpressPayments({
                     disabled={disabled}
                     className="w-full h-12 bg-foreground hover:bg-foreground/90 text-background border-0 rounded-lg flex items-center justify-center transition-colors"
                     size="lg"
-                    aria-label="Apple Pay">
+                    aria-label={applePayLabel}>
                     <ApplePayLogo className="flex-shrink-0" />
                 </Button>
 
@@ -213,7 +218,7 @@ export default function ExpressPayments({
                     disabled={disabled}
                     className="w-full h-12 bg-background hover:bg-muted text-foreground border-2 border-border hover:border-primary transition-colors rounded-lg flex items-center justify-center"
                     size="lg"
-                    aria-label="Google Pay">
+                    aria-label={googlePayLabel}>
                     <GooglePayLogo className="flex-shrink-0" />
                 </Button>
 
@@ -223,11 +228,11 @@ export default function ExpressPayments({
                     disabled={disabled}
                     className="w-full h-12 bg-[#FFD814] hover:bg-[#F7CA00] border-[#FFD814] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
                     size="lg"
-                    aria-label="Amazon Pay">
+                    aria-label={amazonPayLabel}>
                     {/* Amazon Pay Official Logo from https://m.media-amazon.com/images/G/01/AmazonPay/ux/squid_ink_pwa.svg */}
                     <img
                         src="https://m.media-amazon.com/images/G/01/AmazonPay/ux/squid_ink_pwa.svg"
-                        alt="Amazon Pay"
+                        alt={amazonPayLabel}
                         className="h-5 w-auto"
                         style={{ objectFit: 'contain' }}
                     />

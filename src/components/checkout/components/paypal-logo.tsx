@@ -15,6 +15,7 @@
  */
 
 import paypalLogo from '/images/paypal.svg';
+import { useTranslation } from 'react-i18next';
 
 /**
  * PayPal Logo SVG Component
@@ -22,10 +23,11 @@ import paypalLogo from '/images/paypal.svg';
  * Uses local PayPal SVG file from public/images
  */
 export default function PayPalLogo({ className }: { className?: string }) {
+    const { t } = useTranslation('checkout');
     return (
         <img
             src={paypalLogo}
-            alt="PayPal"
+            alt={t('expressPayments.payPalLabel') || 'PayPal'}
             className={`${className || ''} h-4 w-auto`}
             style={{ objectFit: 'contain' }}
         />

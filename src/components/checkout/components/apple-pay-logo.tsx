@@ -15,6 +15,7 @@
  */
 
 import applePayLogo from '/images/apple-pay-logo.svg';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Apple Pay Logo SVG Component
@@ -22,10 +23,11 @@ import applePayLogo from '/images/apple-pay-logo.svg';
  * Uses local Apple Pay SVG file from public/images
  */
 export default function ApplePayLogo({ className }: { className?: string }) {
+    const { t } = useTranslation('checkout');
     return (
         <img
             src={applePayLogo}
-            alt="Apple Pay"
+            alt={t('expressPayments.applePayLabel') || 'Apple Pay'}
             className={`${className || ''} h-4 w-auto`}
             style={{
                 objectFit: 'contain',

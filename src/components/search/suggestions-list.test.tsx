@@ -69,12 +69,10 @@ describe('Suggestions Component', () => {
 
         const { container } = render(<Suggestions suggestions={mixedSuggestions} />, { wrapper });
 
-        // Images are decorative (aria-hidden), so use querySelector instead of getByRole
+        // Product suggestion images are informative and use suggestion name alt text.
         const images = container.querySelectorAll('img');
         expect(images).toHaveLength(1);
-        // Decorative images have empty alt text to avoid redundant-alt a11y violation
-        expect(images[0]).toHaveAttribute('alt', '');
-        expect(images[0]).toHaveAttribute('aria-hidden', 'true');
+        expect(images[0]).toHaveAttribute('alt', 'Product with image');
     });
 
     it('should call closeAndNavigate when clicked, or handle gracefully if undefined', () => {

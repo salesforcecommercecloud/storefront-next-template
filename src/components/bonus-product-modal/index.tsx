@@ -322,7 +322,11 @@ export function BonusProductModal({
                         <div className="flex-1 overflow-y-auto min-h-0 lg:overflow-visible lg:flex-none">
                             <div className="lg:grid lg:grid-cols-2 lg:gap-8 lg:items-start">
                                 <div className="lg:order-1">
-                                    <ImageGallery images={galleryImages} eager={false} />
+                                    <ImageGallery
+                                        images={galleryImages}
+                                        eager={false}
+                                        productName={currentProduct.name}
+                                    />
                                 </div>
                                 <div className="lg:order-2">
                                     <div
