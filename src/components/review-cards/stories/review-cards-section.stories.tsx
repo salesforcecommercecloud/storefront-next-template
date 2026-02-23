@@ -71,8 +71,12 @@ ReviewCardsSection displays paginated customer reviews for a product.
 
 **Features:**
 - Fetches reviews from the product content adapter (getReviews)
+- **Filter** by star rating (1–5) and "With Photos"
+- **Search** by keyword (headline, body, author)
+- **Sort** by Most Recent, Highest Rated, Lowest Rated, Most Helpful
 - Pagination (5 per page) with previous/next and page numbers
 - Scrolls to top of section on page change
+- Write a Review button (opens modal via adapter getWriteReviewForm)
 - Must be used within PDP context (ProductProvider + ProductContentProvider)
                 `,
             },
@@ -93,5 +97,21 @@ export const Default: Story = {
         const page2 = await canvas.findByRole('button', { name: 'Page 2' }, { timeout: 3000 });
         await userEvent.click(page2);
         await expect(canvas.findByText(/Showing 6-7 of 7 reviews/)).resolves.toBeInTheDocument();
+    },
+};
+
+export const FilterAndSort: Story = {
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.findByText(/Showing 1-5 of 7 reviews/, {}, { timeout: 5000 })).resolves.toBeInTheDocument();
+        // Filter by 5 stars (mock returns 7 reviews, mix of ratings)
+        const fiveStarButton = await canvas.findByRole('button', { name: 'Filter by 5 stars' }, { timeout: 3000 });
+        await userEvent.click(fiveStarButton);
+        await expect(canvas.findByText(/Sort:/)).resolves.toBeInTheDocument();
+        // Change sort to Highest Rated
+        const sortSelect = canvas.getByRole('combobox', { name: 'Sort:' });
+        await userEvent.selectOptions(sortSelect, 'highest-rated');
+        await expect(sortSelect).toHaveValue('highest-rated');
     },
 };

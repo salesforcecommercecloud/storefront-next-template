@@ -113,4 +113,122 @@ describe('ReviewCardsSection', () => {
             expect(mockGetReviews).toHaveBeenCalledWith('product-123');
         });
     });
+
+    it('filters by star rating when a rating chip is clicked', async () => {
+        const fiveStar = { ...mockReview1, id: 'r1', rating: 5, authorName: 'Alice', headline: 'Five' };
+        const fourStar = { ...mockReview1, id: 'r2', rating: 4, authorName: 'Bob', headline: 'Four' };
+        mockGetReviews.mockResolvedValue({
+            reviews: [
+                fiveStar,
+                fourStar,
+                { ...mockReview1, id: 'r3', rating: 5, authorName: 'Carol', headline: 'Also five' },
+            ],
+        });
+        const user = userEvent.setup();
+        render(<ReviewCardsSection />);
+        await waitFor(() => {
+            expect(screen.getByText(/Showing 1-3 of 3 reviews/)).toBeInTheDocument();
+        });
+        await user.click(screen.getByRole('button', { name: 'Filter by 5 stars' }));
+        await waitFor(() => {
+            expect(screen.getByText(/Showing 1-2 of 2 reviews/)).toBeInTheDocument();
+        });
+        expect(screen.getByText('Alice')).toBeInTheDocument();
+        expect(screen.getByText('Carol')).toBeInTheDocument();
+        expect(screen.queryByText('Bob')).not.toBeInTheDocument();
+    });
+
+    it('filters by search keyword', async () => {
+        const reviews: ReviewItem[] = [
+            { ...mockReview1, id: 'r1', authorName: 'Alice', headline: 'Great product', body: 'Loved it.' },
+            { ...mockReview1, id: 'r2', authorName: 'Bob', headline: 'Okay', body: 'Not bad.' },
+        ];
+        mockGetReviews.mockResolvedValue({ reviews });
+        const user = userEvent.setup();
+        render(<ReviewCardsSection />);
+        await waitFor(() => {
+            expect(screen.getByText(/Showing 1-2 of 2 reviews/)).toBeInTheDocument();
+        });
+        await user.type(screen.getByPlaceholderText('Search reviews...'), 'Great');
+        await waitFor(
+            () => {
+                expect(screen.getByText(/Showing 1-1 of 1 reviews/)).toBeInTheDocument();
+            },
+            { timeout: 2000 }
+        );
+        expect(screen.getByText('Alice')).toBeInTheDocument();
+        expect(screen.queryByText('Bob')).not.toBeInTheDocument();
+    });
+
+    it('filters by with photos when photo chip is clicked', async () => {
+        const withPhotos1 = {
+            ...mockReview1,
+            id: 'r1',
+            authorName: 'Alice',
+            photos: [{ url: '/img1.svg', alt: 'Photo 1' }],
+        };
+        const withPhotos2 = {
+            ...mockReview1,
+            id: 'r2',
+            authorName: 'Bob',
+            photos: [{ url: '/img2.svg', alt: 'Photo 2' }],
+        };
+        const noPhotos = { ...mockReview1, id: 'r3', authorName: 'Carol', photos: undefined };
+        mockGetReviews.mockResolvedValue({ reviews: [withPhotos1, withPhotos2, noPhotos] });
+        const user = userEvent.setup();
+        render(<ReviewCardsSection />);
+        await waitFor(() => {
+            expect(screen.getByText(/Showing 1-3 of 3 reviews/)).toBeInTheDocument();
+        });
+        await user.click(screen.getByRole('button', { name: /With Photos \(2\)/ }));
+        await waitFor(() => {
+            expect(screen.getByText(/Showing 1-2 of 2 reviews/)).toBeInTheDocument();
+        });
+        expect(screen.getByText('Alice')).toBeInTheDocument();
+        expect(screen.getByText('Bob')).toBeInTheDocument();
+        expect(screen.queryByText('Carol')).not.toBeInTheDocument();
+    });
+
+    it('shows filter by, search input, and sort dropdown when reviews exist', async () => {
+        mockGetReviews.mockResolvedValue({ reviews: [mockReview1] });
+        render(<ReviewCardsSection />);
+        await waitFor(() => {
+            expect(screen.getByText('Filter by:')).toBeInTheDocument();
+        });
+        expect(screen.getByPlaceholderText('Search reviews...')).toBeInTheDocument();
+        const sortSelect = screen.getByRole('combobox', { name: 'Sort:' });
+        expect(sortSelect).toBeInTheDocument();
+        expect(sortSelect).toHaveValue('most-recent');
+    });
+
+    it('shows no reviews match filters when filters return zero results', async () => {
+        mockGetReviews.mockResolvedValue({ reviews: [mockReview1] });
+        const user = userEvent.setup();
+        render(<ReviewCardsSection />);
+        await waitFor(() => {
+            expect(screen.getByText(/Showing 1-1 of 1 reviews/)).toBeInTheDocument();
+        });
+        await user.click(screen.getByRole('button', { name: 'Filter by 4 stars' }));
+        await waitFor(
+            () => {
+                expect(screen.getByText('No reviews match your filters.')).toBeInTheDocument();
+            },
+            { timeout: 2000 }
+        );
+    });
+
+    it('sort dropdown has four options', async () => {
+        mockGetReviews.mockResolvedValue({ reviews: [mockReview1] });
+        render(<ReviewCardsSection />);
+        await waitFor(() => {
+            expect(screen.getByRole('combobox', { name: 'Sort:' })).toBeInTheDocument();
+        });
+        const options = screen.getAllByRole('option');
+        const labels = options.map((o) => o.textContent);
+        expect(labels).toContain('Most Recent');
+        expect(labels).toContain('Highest Rated');
+        expect(labels).toContain('Lowest Rated');
+        expect(labels).toContain('Most Helpful');
+        expect(options).toHaveLength(4);
+    });
 });

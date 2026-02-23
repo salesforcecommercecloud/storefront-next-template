@@ -43,10 +43,21 @@ export interface ReviewCardProps {
 /** Focusable selector for lightbox focus trap */
 const FOCUSABLE_SELECTOR = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
+/** Format ISO date (YYYY-MM-DD) for display; pass-through non-ISO strings. */
+function formatReviewDateDisplay(dateStr: string | undefined): string {
+    if (!dateStr?.trim()) return '';
+    const trimmed = dateStr.trim();
+    if (!/^\d{4}-\d{2}-\d{2}/.test(trimmed)) return trimmed;
+    const d = new Date(trimmed);
+    if (Number.isNaN(d.getTime())) return trimmed;
+    return new Intl.DateTimeFormat(undefined, { year: 'numeric', month: 'long', day: 'numeric' }).format(d);
+}
+
 export function ReviewCard({ review, className }: ReviewCardProps): ReactElement {
     const { t } = useTranslation('product');
     const initial = review.authorName.trim().charAt(0).toUpperCase() || '?';
-    const dateLocation = [review.date, review.location].filter(Boolean).join(' • ');
+    const dateDisplay = formatReviewDateDisplay(review.date);
+    const dateLocation = [dateDisplay, review.location].filter(Boolean).join(' • ');
     const isLongBody = review.body.length > BODY_TRUNCATE_LENGTH;
     const [expanded, setExpanded] = useState(false);
     const [lightboxPhoto, setLightboxPhoto] = useState<{ src: string; alt: string } | null>(null);
@@ -155,12 +166,13 @@ export function ReviewCard({ review, className }: ReviewCardProps): ReactElement
                     {/* Photos - click opens lightbox in same tab */}
                     {review.photos && review.photos.length > 0 && (
                         <div className="mt-3 flex flex-wrap gap-2">
-                            {review.photos.map((photo) => {
+                            {review.photos.map((photo, index) => {
                                 const photoSrc = REVIEW_CARD_IMAGES[photo.url] ?? photo.url;
                                 const alt = photo.alt ?? '';
                                 return (
                                     <button
-                                        key={`${review.id}-${photo.url}`}
+                                        // Prefer photo.id when available from API to avoid remounts. Index fallback when same photo.url repeats (e.g. mock data).
+                                        key={photo.id ?? `${review.id}-${photo.url}-${index}`}
                                         type="button"
                                         onClick={(e) => {
                                             lightboxTriggerRef.current = e.currentTarget;

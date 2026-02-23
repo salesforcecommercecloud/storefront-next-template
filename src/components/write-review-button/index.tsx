@@ -16,6 +16,7 @@
 'use client';
 
 import { type ReactElement, useState, useEffect, Suspense, lazy } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import type { InfoModalData, WriteReviewModalData } from '@/components/info-modal/types';
 import type { WriteReviewFormData } from '@/lib/adapters/product-content-data-types';
@@ -31,6 +32,7 @@ const InfoModal = lazy(() => import('@/components/info-modal'));
  * (ProductProvider + ProductContentProvider).
  */
 export default function WriteReviewButton(): ReactElement {
+    const { t } = useTranslation('product');
     const [open, setOpen] = useState(false);
     const [formConfig, setFormConfig] = useState<WriteReviewFormData | null>(null);
     const product = useProduct();
@@ -63,9 +65,11 @@ export default function WriteReviewButton(): ReactElement {
             <Button
                 type="button"
                 variant="default"
-                className="w-full rounded-lg bg-brand-primary text-primary-foreground hover:bg-brand-primary-hover focus-visible:ring-brand-primary/50 sm:w-auto"
+                size="lg"
+                className="w-full rounded-lg sm:w-auto"
                 onClick={() => setOpen(true)}
-                data-testid="write-review-button">
+                data-testid="write-review-button"
+                aria-label={formConfig?.title ?? t('writeReviewButton')}>
                 {formConfig?.title}
             </Button>
             {open && (

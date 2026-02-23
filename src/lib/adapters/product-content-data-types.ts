@@ -210,6 +210,8 @@ export interface TechSpecsData {
  * Photo associated with a customer review
  */
 export interface ReviewPhoto {
+    /** Stable id from API when available; use as list key to avoid remounts */
+    id?: string;
     /** URL or path to the image (e.g. /images/black-cube-photo.svg from public/images/) */
     url: string;
     /** Optional alt text for accessibility */
