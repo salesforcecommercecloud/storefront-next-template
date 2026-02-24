@@ -47,7 +47,6 @@ import authMiddlewareClient from '@/middlewares/auth.client';
 import { getPublicSessionData } from '@/middlewares/auth.utils';
 import createBasketMiddleware, { basketResourceContext, type BasketSnapshot } from '@/middlewares/basket.server';
 import shopperContextMiddlewareServer from '@/middlewares/shopper-context.server';
-import shopperContextMiddlewareClient from '@/middlewares/shopper-context.client';
 import legacyRoutesMiddlewareClient from '@/middlewares/legacy-routes.client';
 import {
     performanceMetricsMiddlewareClient,
@@ -136,7 +135,6 @@ export const clientMiddleware: MiddlewareFunction<Record<string, DataStrategyRes
     performanceMetricsMiddlewareClient as unknown as MiddlewareFunction<Record<string, DataStrategyResult>>,
     currencyClientMiddleware as unknown as MiddlewareFunction<Record<string, DataStrategyResult>>, // Read currency from cookie
     authMiddlewareClient as unknown as MiddlewareFunction<Record<string, DataStrategyResult>>,
-    shopperContextMiddlewareClient as unknown as MiddlewareFunction<Record<string, DataStrategyResult>>,
 ];
 
 // On the client side, initialize i18next.
