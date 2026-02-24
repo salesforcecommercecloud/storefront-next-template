@@ -216,11 +216,11 @@ function AccountDetailsContent({
                 {
                     email: userInfo.email,
                     password: formData.password,
+                    loginMode: 'password',
                 },
                 {
                     method: 'POST',
-                    action: '/resource/auth/login-registered',
-                    encType: 'application/json',
+                    action: '/login',
                 }
             );
         } else {

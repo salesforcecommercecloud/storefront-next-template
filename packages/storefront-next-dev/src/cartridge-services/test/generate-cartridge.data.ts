@@ -85,11 +85,6 @@ export const testRoutes = [
                 file: 'routes/action.promo-code-remove.tsx',
             },
             {
-                id: 'routes/resource.auth.$operation',
-                path: 'resource/auth/:operation',
-                file: 'routes/resource.auth.$operation.ts',
-            },
-            {
                 id: 'routes/resource.basket-products',
                 path: 'resource/basket-products',
                 file: 'routes/resource.basket-products.ts',

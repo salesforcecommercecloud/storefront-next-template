@@ -530,16 +530,10 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
     context.set(authStorageContext, authStorage);
     context.set(authCacheContext, authCache);
 
-    // Skip auth retrieval for resource auth routes as they handle their own auth operations
-    const url = new URL(request.url);
-    const isAuthResourceRoute = url.pathname.startsWith('/resource/auth/');
-
     // Before calling the handler: Verify existing Commerce API auth data or retrieve new information
-    if (!isAuthResourceRoute) {
-        await retrieveAuthStorageData(context, authStorage, authCache).catch(() => {
-            // Intentionally empty
-        });
-    }
+    await retrieveAuthStorageData(context, authStorage, authCache).catch(() => {
+        // Intentionally empty
+    });
 
     // Execute handler (loader/action/render)
     const response = await next();

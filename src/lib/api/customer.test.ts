@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { describe, test, expect, vi, beforeEach, afterAll } from 'vitest';
+import { describe, test, expect, vi, beforeEach } from 'vitest';
 import {
     lookupCustomerByEmail,
     isRegisteredCustomer,
@@ -24,11 +24,13 @@ import {
 } from './customer';
 import { getAuth } from '@/middlewares/auth.server';
 import { createApiClients } from '@/lib/api-clients';
+import { loginRegisteredUser } from '@/lib/api/auth/standard-login';
 import { getTranslation } from '@/lib/i18next';
 import { createTestContext } from '@/lib/test-utils';
 
 vi.mock('@/middlewares/auth.server');
 vi.mock('@/lib/api-clients');
+vi.mock('@/lib/api/auth/standard-login');
 
 const mockContext = createTestContext();
 const { t } = getTranslation();
@@ -500,46 +502,11 @@ describe('Customer API', () => {
     });
 
     describe('register guest user', () => {
-        const fetchSpy = vi.spyOn(globalThis, 'fetch');
-
-        afterAll(() => {
-            fetchSpy.mockRestore();
-        });
+        const mockLoginRegisteredUser = vi.mocked(loginRegisteredUser);
 
         beforeEach(() => {
             vi.clearAllMocks();
-            fetchSpy.mockImplementation((url, _options) => {
-                const urlString = url.toString();
-
-                if (urlString.includes('/resource/auth/login-registered')) {
-                    return Promise.resolve(
-                        new Response(
-                            JSON.stringify({
-                                success: true,
-                                data: {
-                                    accessToken: 'mock-access-token',
-                                    customerId: 'new-customer-123',
-                                    refreshToken: 'mock-refresh-token',
-                                    accessTokenExpiry: Date.now() + 3600000,
-                                    userType: 'registered' as const,
-                                },
-                            }),
-                            { status: 200, statusText: 'OK' }
-                        )
-                    );
-                }
-
-                // For any unmocked endpoints, return a descriptive error
-                return Promise.resolve(
-                    new Response(
-                        JSON.stringify({
-                            error: `Endpoint not mocked: ${urlString}`,
-                            availableEndpoints: ['/resource/auth/login-registered'],
-                        }),
-                        { status: 404, statusText: 'Not Found' }
-                    )
-                );
-            });
+            mockLoginRegisteredUser.mockResolvedValue({ success: true });
         });
 
         test('should validate email format', async () => {
@@ -574,6 +541,8 @@ describe('Customer API', () => {
                 userType: 'registered' as const,
             } as any);
 
+            mockLoginRegisteredUser.mockResolvedValue({ success: true });
+
             const result = await registerGuestUser(mockContext, 'test@example.com');
 
             expect(result.success).toBe(true);
@@ -593,6 +562,15 @@ describe('Customer API', () => {
                 }),
             });
 
+            // Verify loginRegisteredUser was called with correct args
+            expect(mockLoginRegisteredUser).toHaveBeenCalledWith(
+                mockContext,
+                expect.objectContaining({
+                    email: 'test@example.com',
+                    password: expect.any(String),
+                })
+            );
+
             expect(result.success).toBe(true);
             expect(result.autoLoggedIn).toBe(true);
         });
@@ -611,32 +589,7 @@ describe('Customer API', () => {
                 shopperCustomers: mockClient,
             } as any);
 
-            // Override fetch implementation for this specific test
-            fetchSpy.mockImplementation((url, _options) => {
-                const urlString = url.toString();
-
-                if (urlString.includes('/resource/auth/login-registered')) {
-                    return Promise.resolve(
-                        new Response(
-                            JSON.stringify({
-                                success: false,
-                                error: 'Login failed',
-                            }),
-                            { status: 401, statusText: 'Unauthorized' }
-                        )
-                    );
-                }
-
-                return Promise.resolve(
-                    new Response(
-                        JSON.stringify({
-                            error: `Endpoint not mocked: ${urlString}`,
-                            availableEndpoints: ['/resource/auth/login-registered'],
-                        }),
-                        { status: 404, statusText: 'Not Found' }
-                    )
-                );
-            });
+            mockLoginRegisteredUser.mockResolvedValue({ success: false, error: 'Login failed' });
 
             const result = await registerGuestUser(mockContext, 'test@example.com');
 

@@ -17,7 +17,8 @@ import type { ActionFunctionArgs } from 'react-router';
 import { type ShopperBasketsV2, type ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { customAlphabet, nanoid } from 'nanoid';
 import { createApiClients } from '@/lib/api-clients';
-import { getAuth, updateAuth, clearInvalidSessionAndRestoreGuest } from '@/middlewares/auth.server';
+import { getAuth, clearInvalidSessionAndRestoreGuest } from '@/middlewares/auth.server';
+import { loginRegisteredUser } from '@/lib/api/auth/standard-login';
 import { extractResponseError } from '@/lib/utils';
 import { getTranslation } from '@/lib/i18next';
 
@@ -346,28 +347,7 @@ async function loginCustomerAfterRegistration(
     success: boolean;
     error?: string;
 }> {
-    const loginResponse = await fetch('/resource/auth/login-registered', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            email,
-            password,
-        }),
-    });
-
-    const loginResult = await loginResponse.json();
-
-    if (loginResult.success) {
-        // Update session with user tokens and info returned by resource.auth
-        const tokenResponse = loginResult.data;
-        updateAuth(context, tokenResponse);
-        updateAuth(context, (session) => ({
-            ...session,
-            userType: 'registered',
-        }));
-    }
+    const loginResult = await loginRegisteredUser(context, { email, password });
     return loginResult;
 }
 

@@ -37,6 +37,7 @@ import { loginRegisteredUser } from '@/lib/api/auth/standard-login';
 import { authorizeIDP } from '@/lib/api/auth/social-login';
 
 type LoginActionResponse = {
+    success: boolean;
     error?: string;
     redirectUrl?: string;
     auth?: ReturnType<typeof getAuth>;
@@ -122,7 +123,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         if (loginMode === 'social') {
             // Social login flow
             if (!provider || !isSocialLoginEnabled) {
-                return { error: genericError };
+                return { success: false, error: genericError };
             }
             const socialCallback = config.features.socialLogin.callbackUri;
             const socialLoginRedirectURI = isAbsoluteURL(socialCallback)
@@ -137,14 +138,14 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             });
             if (result.success && result.redirectUrl) {
                 // Redirect to social login provider (auth happens in callback)
-                return { redirectUrl: result.redirectUrl };
+                return { success: true, redirectUrl: result.redirectUrl };
             }
             // Social login failed - redirect back with generic error
-            return { error: genericError };
+            return { success: false, error: genericError };
         } else if (loginMode === 'passwordless') {
             // Passwordless login flow
             if (!email) {
-                return { error: genericError };
+                return { success: false, error: genericError };
             }
 
             // Build redirectPath from returnUrl, action, and actionParams for passwordless flow
@@ -182,19 +183,19 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                 if (actionParams) {
                     params.set('actionParams', actionParams);
                 }
-                return { redirectUrl: `/login?${params.toString()}` };
+                return { success: true, redirectUrl: `/login?${params.toString()}` };
             } catch {
-                return { error: genericError };
+                return { success: false, error: genericError };
             }
         } else {
             // Standard password login flow (default case - handles 'password' mode or undefined/null)
             if (!email || !password) {
-                return { error: genericError };
+                return { success: false, error: genericError };
             }
             const result = await loginRegisteredUser(context, { email, password });
             if (!result.success) {
                 // Return generic error - don't expose specific login failure reasons
-                return { error: genericError };
+                return { success: false, error: genericError };
             }
 
             // Login successful - redirect to returnUrl if provided, otherwise home
@@ -224,16 +225,20 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                         returnUrlObj.searchParams.set('actionParams', actionParams);
                     }
                     // Return relative path with query params
-                    return { redirectUrl: returnUrlObj.pathname + returnUrlObj.search, auth: getAuth(context) };
+                    return {
+                        success: true,
+                        redirectUrl: returnUrlObj.pathname + returnUrlObj.search,
+                        auth: getAuth(context),
+                    };
                 }
-                return { redirectUrl: returnUrl, auth: getAuth(context) };
+                return { success: true, redirectUrl: returnUrl, auth: getAuth(context) };
             }
 
             // No returnUrl - redirect to home
-            return { redirectUrl: '/', auth: getAuth(context) };
+            return { success: true, redirectUrl: '/', auth: getAuth(context) };
         }
     } catch {
-        return { error: genericError };
+        return { success: false, error: genericError };
     }
 }
 

@@ -1271,30 +1271,6 @@ describe('auth middleware (server)', () => {
             expect(storage.get('userType')).toBe('registered');
         });
 
-        it('should skip auth retrieval for /resource/auth/ routes', async () => {
-            mockParseAllCookies.mockReturnValue({});
-
-            const request = new Request('https://example.com/resource/auth/login', {
-                method: 'POST',
-            });
-
-            const context = new RouterContextProvider();
-            vi.spyOn(context, 'get').mockImplementation((key) => {
-                if (key === performanceTimerContext) return mockPerformanceTimer;
-                if (key === appConfigContext) return mockConfig;
-                return new Map();
-            });
-
-            const mockResponse = new Response('OK');
-            const next = vi.fn().mockResolvedValue(mockResponse);
-
-            await authMiddleware({ request, context, params: {} }, next);
-
-            // Verify that guest login was NOT called (auth retrieval skipped)
-            expect(mockAuth.loginAsGuest).not.toHaveBeenCalled();
-            expect(next).toHaveBeenCalled();
-        });
-
         it('should extract access token expiry from JWT during middleware initialization', async () => {
             // Create JWT with specific expiry
             const now = Math.floor(Date.now() / 1000);
