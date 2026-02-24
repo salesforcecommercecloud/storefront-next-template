@@ -70,10 +70,19 @@ describe('CartContent', () => {
         'promo-1': { id: 'promo-1', name: 'Promotion 1' },
     };
 
+    const mockBonusProductsById: Record<
+        string,
+        import('@salesforce/storefront-next-runtime/scapi').ShopperProducts.schemas['Product']
+    > = {};
+
     test('renders empty cart for 0 product items', () => {
         // Test empty product items array
         const emptyBasket = { ...mockBasket, productItems: [] };
-        renderCartContent({ basket: emptyBasket, productsByItemId: mockProductMap });
+        renderCartContent({
+            basket: emptyBasket,
+            productsByItemId: mockProductMap,
+            bonusProductsById: mockBonusProductsById,
+        });
 
         expect(screen.getByTestId('sf-cart-empty')).toBeInTheDocument();
         expect(screen.getByText(t('cart:empty.title'))).toBeInTheDocument();
@@ -84,14 +93,23 @@ describe('CartContent', () => {
     });
 
     test('renders empty cart when basket is undefined', () => {
-        renderCartContent({ basket: undefined, productsByItemId: mockProductMap });
+        renderCartContent({
+            basket: undefined,
+            productsByItemId: mockProductMap,
+            bonusProductsById: mockBonusProductsById,
+        });
 
         expect(screen.getByTestId('sf-cart-empty')).toBeInTheDocument();
         expect(screen.getByText(t('cart:empty.title'))).toBeInTheDocument();
     });
 
     test('renders cart content with proper structure when basket has items', () => {
-        renderCartContent({ basket: mockBasket, productsByItemId: mockProductMap, promotions: mockPromotionMap });
+        renderCartContent({
+            basket: mockBasket,
+            productsByItemId: mockProductMap,
+            bonusProductsById: mockBonusProductsById,
+            promotions: mockPromotionMap,
+        });
 
         // Verify main container
         expect(screen.getByTestId('sf-cart-container')).toBeInTheDocument();
@@ -106,7 +124,11 @@ describe('CartContent', () => {
     });
 
     test('handles missing promotionMap prop gracefully', () => {
-        renderCartContent({ basket: mockBasket, productsByItemId: mockProductMap });
+        renderCartContent({
+            basket: mockBasket,
+            productsByItemId: mockProductMap,
+            bonusProductsById: mockBonusProductsById,
+        });
 
         // Verify that the cart container is still rendered even without promotionMap
         expect(screen.getByTestId('sf-cart-container')).toBeInTheDocument();
@@ -119,7 +141,11 @@ describe('CartContent', () => {
     test('handles basket with missing productItems (undefined) as empty state', () => {
         // productItems is omitted entirely
         const basketWithoutProductItems = { basketId: 'b-no-items' } as any;
-        renderCartContent({ basket: basketWithoutProductItems, productsByItemId: {} as any });
+        renderCartContent({
+            basket: basketWithoutProductItems,
+            productsByItemId: {} as any,
+            bonusProductsById: mockBonusProductsById,
+        });
 
         // Should render empty state
         expect(screen.getByTestId('sf-cart-empty')).toBeInTheDocument();
@@ -127,7 +153,11 @@ describe('CartContent', () => {
 
     describe('CartItemEditButton Integration', () => {
         test('renders edit buttons for each cart item', () => {
-            renderCartContent({ basket: mockBasket, productsByItemId: mockProductMap });
+            renderCartContent({
+                basket: mockBasket,
+                productsByItemId: mockProductMap,
+                bonusProductsById: mockBonusProductsById,
+            });
 
             // Verify edit buttons are rendered for each item (1 per item)
             expect(screen.getByTestId('edit-item-item-1')).toBeInTheDocument();
@@ -139,7 +169,11 @@ describe('CartContent', () => {
         });
 
         test('applies correct className to edit buttons', () => {
-            renderCartContent({ basket: mockBasket, productsByItemId: mockProductMap });
+            renderCartContent({
+                basket: mockBasket,
+                productsByItemId: mockProductMap,
+                bonusProductsById: mockBonusProductsById,
+            });
 
             const editButton1 = screen.getByTestId('edit-item-item-1');
             const editButton2 = screen.getByTestId('edit-item-item-2');
@@ -150,7 +184,11 @@ describe('CartContent', () => {
         });
 
         test('opens product modal when edit button is clicked', () => {
-            renderCartContent({ basket: mockBasket, productsByItemId: mockProductMap });
+            renderCartContent({
+                basket: mockBasket,
+                productsByItemId: mockProductMap,
+                bonusProductsById: mockBonusProductsById,
+            });
 
             // Initially, modal should not be visible
             expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
@@ -165,7 +203,11 @@ describe('CartContent', () => {
         });
 
         test('can close modal using close button', () => {
-            renderCartContent({ basket: mockBasket, productsByItemId: mockProductMap });
+            renderCartContent({
+                basket: mockBasket,
+                productsByItemId: mockProductMap,
+                bonusProductsById: mockBonusProductsById,
+            });
 
             // Open modal first
             const editButton = screen.getByTestId('edit-item-item-1');
@@ -191,7 +233,11 @@ describe('CartContent', () => {
                 ],
             };
 
-            renderCartContent({ basket: basketWithoutItemIds, productsByItemId: mockProductMap });
+            renderCartContent({
+                basket: basketWithoutItemIds,
+                productsByItemId: mockProductMap,
+                bonusProductsById: mockBonusProductsById,
+            });
 
             // Only the item with itemId should have an edit button (1 instance)
             expect(screen.queryByTestId('edit-item-item-1')).not.toBeInTheDocument();
@@ -205,7 +251,7 @@ describe('CartContent', () => {
                 basketId: 'b1',
                 productItems: [{ itemId: 'item-1', quantity: 1, productId: 'p1' }],
             };
-            return renderCartContent({ basket, productsByItemId });
+            return renderCartContent({ basket, productsByItemId, bonusProductsById: mockBonusProductsById });
         }
 
         const editBtn = () => screen.queryByTestId('edit-item-item-1');
@@ -222,7 +268,11 @@ describe('CartContent', () => {
 
         test('missing product details mapping shows CartItemEditButton', () => {
             const basket = { basketId: 'b1', productItems: [{ itemId: 'item-1', quantity: 1, productId: 'p1' }] };
-            renderCartContent({ basket, productsByItemId: {} as any });
+            renderCartContent({
+                basket,
+                productsByItemId: {} as any,
+                bonusProductsById: mockBonusProductsById,
+            });
             expect(editBtn()).toBeInTheDocument();
         });
 
@@ -296,6 +346,7 @@ describe('CartContent', () => {
             renderCartContent({
                 basket: basket as any,
                 productsByItemId: { 'item-1': { id: 'p1', variants: [{} as any] } } as any,
+                bonusProductsById: mockBonusProductsById,
             });
 
             // Edit button should be hidden for auto bonus products

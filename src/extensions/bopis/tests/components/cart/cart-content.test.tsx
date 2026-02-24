@@ -83,6 +83,11 @@ describe('CartContent', () => {
         'item-2': { id: 'product-2', name: 'Product 2', variants: [{} as any] },
     } as any;
 
+    const mockBonusProductsById: Record<
+        string,
+        import('@salesforce/storefront-next-runtime/scapi').ShopperProducts.schemas['Product']
+    > = {};
+
     describe('BOPIS (Buy Online Pickup In Store) functionality', () => {
         const mockStore: ShopperStores.schemas['Store'] = {
             id: 'store-1',
@@ -121,7 +126,11 @@ describe('CartContent', () => {
         test('renders delivery items when no pickup items exist', () => {
             vi.mocked(usePickup).mockReturnValue(null);
 
-            renderCartContent({ basket: mockBasket, productsByItemId: mockProductMap });
+            renderCartContent({
+                basket: mockBasket,
+                productsByItemId: mockProductMap,
+                bonusProductsById: mockBonusProductsById,
+            });
 
             // All items should be rendered as delivery items
             expect(screen.getByTestId('sf-product-item-product-1')).toBeInTheDocument();
@@ -151,7 +160,11 @@ describe('CartContent', () => {
                 ],
             };
 
-            renderCartContent({ basket: basketWithPickupShipment, productsByItemId: mockProductMap });
+            renderCartContent({
+                basket: basketWithPickupShipment,
+                productsByItemId: mockProductMap,
+                bonusProductsById: mockBonusProductsById,
+            });
 
             // Pickup store info should be rendered
             expect(screen.getByTestId('cart-pickup-card')).toBeInTheDocument();
@@ -191,7 +204,11 @@ describe('CartContent', () => {
                 'item-3': { id: 'product-3', name: 'Product 3', variants: [{} as any] },
             };
 
-            renderCartContent({ basket: basketWithThreeItems, productsByItemId: productMapWithThree });
+            renderCartContent({
+                basket: basketWithThreeItems,
+                productsByItemId: productMapWithThree,
+                bonusProductsById: mockBonusProductsById,
+            });
 
             // Pickup item (product-1) should be in pickup section
             expect(screen.getByTestId('cart-pickup-card')).toBeInTheDocument();
@@ -206,7 +223,11 @@ describe('CartContent', () => {
             const pickupContext = createPickupContext(['product-1', 'product-2'], undefined);
             vi.mocked(usePickup).mockReturnValue(pickupContext);
 
-            renderCartContent({ basket: mockBasket, productsByItemId: mockProductMap });
+            renderCartContent({
+                basket: mockBasket,
+                productsByItemId: mockProductMap,
+                bonusProductsById: mockBonusProductsById,
+            });
 
             // No pickup store info should be rendered (no store available)
             expect(screen.queryByTestId('cart-pickup-card')).not.toBeInTheDocument();
@@ -236,7 +257,11 @@ describe('CartContent', () => {
                 ],
             };
 
-            renderCartContent({ basket: basketWithMissingProductId, productsByItemId: mockProductMap });
+            renderCartContent({
+                basket: basketWithMissingProductId,
+                productsByItemId: mockProductMap,
+                bonusProductsById: mockBonusProductsById,
+            });
 
             // Pickup item should be rendered
             expect(screen.getByTestId('sf-product-item-product-1')).toBeInTheDocument();
@@ -254,7 +279,11 @@ describe('CartContent', () => {
             };
             vi.mocked(usePickup).mockReturnValue(pickupContext);
 
-            renderCartContent({ basket: mockBasket, productsByItemId: mockProductMap });
+            renderCartContent({
+                basket: mockBasket,
+                productsByItemId: mockProductMap,
+                bonusProductsById: mockBonusProductsById,
+            });
 
             // All items should be rendered as delivery items
             expect(screen.getByTestId('sf-product-item-product-1')).toBeInTheDocument();
@@ -266,7 +295,11 @@ describe('CartContent', () => {
 
     describe('Delivery actions integration', () => {
         test('renders delivery option dropdown for each cart item', () => {
-            renderCartContent({ basket: mockBasket, productsByItemId: mockProductMap });
+            renderCartContent({
+                basket: mockBasket,
+                productsByItemId: mockProductMap,
+                bonusProductsById: mockBonusProductsById,
+            });
 
             // Verify delivery option components are rendered for each item
             expect(screen.getByTestId('cart-delivery-option-item-1')).toBeInTheDocument();
@@ -286,7 +319,11 @@ describe('CartContent', () => {
                 ],
             };
 
-            renderCartContent({ basket: basketWithoutItemIds, productsByItemId: mockProductMap });
+            renderCartContent({
+                basket: basketWithoutItemIds,
+                productsByItemId: mockProductMap,
+                bonusProductsById: mockBonusProductsById,
+            });
 
             // Should render for both items (one uses productId as key)
             expect(screen.getByTestId('cart-delivery-option-product-1')).toBeInTheDocument();
@@ -294,7 +331,11 @@ describe('CartContent', () => {
         });
 
         test('delivery actions receives correct product data', () => {
-            renderCartContent({ basket: mockBasket, productsByItemId: mockProductMap });
+            renderCartContent({
+                basket: mockBasket,
+                productsByItemId: mockProductMap,
+                bonusProductsById: mockBonusProductsById,
+            });
 
             // Verify delivery option components are rendered with correct product IDs
             // The mock component displays "Delivery Option for {productId}", so we can verify
@@ -321,7 +362,11 @@ describe('CartContent', () => {
                 ],
             };
 
-            renderCartContent({ basket: basketWithPickupShipment, productsByItemId: mockProductMap });
+            renderCartContent({
+                basket: basketWithPickupShipment,
+                productsByItemId: mockProductMap,
+                bonusProductsById: mockBonusProductsById,
+            });
 
             // Both items should have delivery option dropdowns
             expect(screen.getByTestId('cart-delivery-option-item-1')).toBeInTheDocument();

@@ -29,7 +29,6 @@ import {
     type ShopperBasketsV2,
     type ShopperProducts,
     type ShopperPromotions,
-    // @sfdc-extension-line SFDC_EXT_BOPIS
     type ShopperStores,
 } from '@salesforce/storefront-next-runtime/scapi';
 
@@ -42,15 +41,16 @@ import { currencyContext } from '@/lib/currency';
 
 // Components
 import CartSkeleton from '@/components/cart/cart-skeleton';
+import CartContent from '@/components/cart/cart-content';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { getInventoryIdsFromPickupShipments } from '@/extensions/bopis/lib/basket-utils';
 import { fetchStoresForBasket } from '@/extensions/bopis/lib/api/stores';
-import CartContent from '@/components/cart/cart-content';
 import PickupProvider from '@/extensions/bopis/context/pickup-context';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
 /**
  * Data structure returned by cart loader functions.
+ * When BOPIS is stripped, storesByStoreId is always {} (no store data).
  */
 type CartPageData = {
     basketDataPromise: Promise<{
@@ -58,9 +58,7 @@ type CartPageData = {
         productsByItemId: Record<string, ShopperProducts.schemas['Product']>;
         bonusProductsById: Record<string, ShopperProducts.schemas['Product']>;
         promotions: Record<string, ShopperPromotions.schemas['Promotion']>;
-        // @sfdc-extension-block-start SFDC_EXT_BOPIS
-        storesByStoreId?: Map<string, ShopperStores.schemas['Store']>;
-        // @sfdc-extension-block-end SFDC_EXT_BOPIS
+        storesByStoreId: Record<string, ShopperStores.schemas['Store']>;
     }>;
     basketSnapshot: BasketSnapshot | null;
 };
@@ -286,7 +284,14 @@ export const loader: LoaderFunction = ({ context }: LoaderFunctionArgs): CartPag
     const promotionsPromise = basketPromise.then((basket) =>
         fetchPromotionsForBasket(context, basket?.productItems ?? [])
     );
-    const storesByStoreIdPromise = basketPromise.then((basket) => fetchStoresForBasket(context, basket));
+
+    // Default when BOPIS is stripped; reassigned inside BOPIS block when extension is present
+    let storesByStoreIdPromise: Promise<
+        Record<string, ShopperStores.schemas['Store']> | Map<string, ShopperStores.schemas['Store']>
+    > = Promise.resolve({});
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    storesByStoreIdPromise = basketPromise.then((basket) => fetchStoresForBasket(context, basket));
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     const basketDataPromise = Promise.all([
         basketPromise,
@@ -294,15 +299,17 @@ export const loader: LoaderFunction = ({ context }: LoaderFunctionArgs): CartPag
         bonusProductsByIdPromise,
         promotionsPromise,
         storesByStoreIdPromise,
-    ]).then(([basket, productsByItemId, bonusProductsById, promotions, storesByStoreId]) => ({
-        basket,
-        productsByItemId,
-        bonusProductsById,
-        promotions,
-        // @sfdc-extension-block-start SFDC_EXT_BOPIS
-        storesByStoreId,
-        // @sfdc-extension-block-end SFDC_EXT_BOPIS
-    }));
+    ]).then((results) => {
+        const [basket, productsByItemId, bonusProductsById, promotions, storesByStoreId] = results;
+        return {
+            basket,
+            productsByItemId,
+            bonusProductsById,
+            promotions,
+            storesByStoreId:
+                storesByStoreId instanceof Map ? Object.fromEntries(storesByStoreId) : (storesByStoreId ?? {}),
+        };
+    });
 
     return {
         basketDataPromise,
@@ -345,7 +352,13 @@ export default function Cart(): ReactElement {
     finalContent = (
         <Await resolve={pageData.basketDataPromise}>
             {({ basket, storesByStoreId }) => (
-                <PickupProvider basket={basket} initialPickupStores={storesByStoreId}>
+                <PickupProvider
+                    basket={basket}
+                    initialPickupStores={
+                        storesByStoreId != null && Object.keys(storesByStoreId).length > 0
+                            ? new Map(Object.entries(storesByStoreId))
+                            : undefined
+                    }>
                     {content}
                 </PickupProvider>
             )}
