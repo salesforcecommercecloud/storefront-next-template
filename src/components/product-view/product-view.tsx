@@ -24,6 +24,9 @@ import { useSelectedVariations } from '@/hooks/product/use-selected-variations';
 import CategoryBreadcrumbs from '../category-breadcrumbs';
 import EstimatedDelivery from '@/components/estimated-delivery';
 import { isProductSet, isProductBundle } from '@/lib/product-utils';
+import HtmlFragment from '@/components/html-fragment';
+import { ChevronDownIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface ProductViewProps {
     product: ShopperProducts.schemas['Product'];
@@ -64,10 +67,14 @@ export default function ProductView({ product, category }: ProductViewProps): Re
         selectedAttributes,
     });
 
+    const { t } = useTranslation('product');
+
+    const showDescription = product.longDescription && product.longDescription !== product.shortDescription;
+
     return (
         <ProductViewProvider product={product} mode="add">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 space-y-6">
-                {/* Left Column - Image Gallery */}
+                {/* Left Column - Image Gallery + Description */}
                 <div className="order-1">
                     <ImageGallery
                         key={product.id}
@@ -75,6 +82,15 @@ export default function ProductView({ product, category }: ProductViewProps): Re
                         eager={!isProductASet && !isProductABundle}
                         productName={product.name}
                     />
+                    {showDescription && (
+                        <details className="group mt-6" open>
+                            <summary className="flex items-center justify-between gap-4 py-3 text-sm font-semibold text-foreground cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-accent transition-colors rounded-md">
+                                {`${t('description')}:`}
+                                <ChevronDownIcon className="text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180" />
+                            </summary>
+                            <HtmlFragment content={product.longDescription} contentType="bulleted-list" />
+                        </details>
+                    )}
                 </div>
 
                 {/* Right Column - Product Info */}

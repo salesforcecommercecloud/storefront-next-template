@@ -112,13 +112,16 @@ describe('ProductContentMockAdapter', () => {
     });
 
     describe('getProductDescription', () => {
-        it('should return product description with intro and features', async () => {
+        it('should return product description with intro and typed features', async () => {
             const data = await adapter.getProductDescription?.();
             expect(data).toBeDefined();
             if (!data) return;
             expect(data.heading).toBe('Description');
             expect(data.intro).toContain('premium leather');
-            expect(data.features).toHaveLength(5);
+            expect(data.features).toHaveLength(2);
+            expect(data.features[0]).toHaveProperty('html');
+            expect(data.features[0]).toHaveProperty('contentType', 'bulleted-list');
+            expect(data.features[1]).toHaveProperty('contentType', 'table-2-column');
         });
     });
 

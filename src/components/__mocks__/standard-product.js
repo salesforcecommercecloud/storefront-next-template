@@ -64,7 +64,8 @@ export const mockStandardProductOrderable = {
             preorderable: false,
             stockLevel: 98,
         },
-        longDescription: 'Grain deerskin leather|Water resistant and durable|Outseam machine sewn',
+        longDescription:
+            '<ul><li>Grain deerskin leather</li><li>Water resistant and durable</li><li>Outseam machine sewn</li></ul>',
         master: {
             masterId: 'TG508M',
             orderable: true,

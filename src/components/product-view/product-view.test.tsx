@@ -392,6 +392,21 @@ describe('ProductView', () => {
         });
     });
 
+    describe('Description section', () => {
+        test('description summary has hover background style', () => {
+            const productWithDescription = {
+                ...mockProduct,
+                longDescription: 'A unique long description that differs from the short one.',
+                shortDescription: 'Short description.',
+            };
+            renderProductView({ product: productWithDescription });
+
+            const summary = screen.getByText(/Description:/i).closest('summary');
+            expect(summary).toBeInTheDocument();
+            expect(summary).toHaveClass('hover:bg-accent');
+        });
+    });
+
     describe('Share Button Integration', () => {
         test('renders share button in action buttons section', () => {
             renderProductView({ product: mockProduct });

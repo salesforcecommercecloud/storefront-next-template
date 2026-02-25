@@ -15,16 +15,17 @@
  */
 import { expect, test, describe, afterEach } from 'vitest';
 import { composeStories } from '@storybook/react-vite';
-import * as ProductFeaturesStories from './product-features.stories';
+// eslint-disable-next-line import/no-namespace
+import * as HtmlFragmentStories from './index.stories';
 import { render, cleanup } from '@testing-library/react';
 
-const composed = composeStories(ProductFeaturesStories);
+const composed = composeStories(HtmlFragmentStories);
 
 afterEach(() => {
     cleanup();
 });
 
-describe('ProductFeatures stories snapshot', () => {
+describe('HtmlFragment stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
         test(`${storyName} story renders and matches snapshot`, () => {
             const { container } = render(<Story />);

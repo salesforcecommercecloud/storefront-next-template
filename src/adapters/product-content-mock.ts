@@ -220,17 +220,20 @@ const MOCK_ESTIMATED_DELIVERY_DATA: EstimatedDeliveryData = {
 };
 
 /**
- * Mock product description (Description section: intro + bulleted features).
+ * Mock product description (Description section: intro + typed feature content).
  */
 const MOCK_PRODUCT_DESCRIPTION_DATA: ProductDescriptionData = {
     heading: 'Description',
     intro: 'Crafted from premium leather with a modern twist on the classic contrast boot silhouette. These ankle boots feature a sleek profile with functional lace-up closure and side zip for easy wear. Perfect for both casual and elevated looks.',
     features: [
-        'Premium full-grain leather upper',
-        'Cushioned leather insole',
-        'Durable rubber outsole',
-        'Lace-up front',
-        '1.5" heel height',
+        {
+            html: '<ul><li>Premium full-grain leather upper</li><li>Cushioned leather insole</li><li>Durable rubber outsole</li><li>Lace-up front</li><li>1.5" heel height</li></ul>',
+            contentType: 'bulleted-list',
+        },
+        {
+            html: '<table><tr><td>Material:</td><td>Full-grain leather</td></tr><tr><td>Sole:</td><td>Rubber</td></tr><tr><td>Heel height:</td><td>1.5"</td></tr><tr><td>Closure:</td><td>Lace-up + side zip</td></tr></table>',
+            contentType: 'table-2-column',
+        },
     ],
 };
 

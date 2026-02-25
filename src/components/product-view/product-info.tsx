@@ -25,8 +25,6 @@ import { toImageUrl } from '@/lib/dynamic-image';
 import { useConfig } from '@/config';
 import ProductPrice from '../product-price';
 import { isProductSet, isProductBundle } from '@/lib/product-utils';
-import ProductFeatures from './product-features';
-import { DEFAULT_PRODUCT_FEATURES_CONFIG } from '@/config/product-features';
 import InventoryMessage from '../inventory-message';
 import { useCurrentVariant } from '@/hooks/product/use-current-variant';
 import { useTranslation } from 'react-i18next';
@@ -241,15 +239,6 @@ export default function ProductInfo({
                     isOutOfStock={isOutOfStock}
                     productName={product.name}
                     maxQuantity={maxQuantity}
-                />
-            )}
-
-            {/* Product Features - Only shown if longDescription is different from shortDescription */}
-            {product.longDescription && product.longDescription !== product.shortDescription && (
-                <ProductFeatures
-                    product={product}
-                    delimiter={DEFAULT_PRODUCT_FEATURES_CONFIG.delimiter}
-                    htmlFragmentClassName={DEFAULT_PRODUCT_FEATURES_CONFIG.htmlFragmentClassName}
                 />
             )}
 

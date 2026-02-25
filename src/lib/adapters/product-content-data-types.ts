@@ -158,17 +158,28 @@ export interface EstimatedDeliveryData {
     };
 }
 
+// --- HTML Content Types ---
+
+/** Describes the expected HTML structure of a content fragment */
+export type HtmlContentType = 'plain-text' | 'bulleted-list' | 'table-2-column';
+
+/** A content fragment with its expected HTML structure */
+export interface HtmlContent {
+    html: string;
+    contentType: HtmlContentType;
+}
+
 // --- Product Description (collapsible PDP section) ---
 
 /**
- * Product description for PDP (intro paragraph + bulleted features)
+ * Product description for PDP (intro paragraph + typed feature content)
  */
 export interface ProductDescriptionData {
     heading: string;
     /** Main descriptive paragraph */
     intro: string;
-    /** Bulleted feature list */
-    features: string[];
+    /** Feature content blocks, each with its own HTML content type */
+    features: HtmlContent[];
 }
 
 // --- Collapsible PDP content (Ingredients, Usage, Care, Tech Specs) ---

@@ -66,7 +66,7 @@ export const standardProd: ShopperProducts.schemas['Product'] = {
         stockLevel: 0,
     },
     longDescription:
-        '1682 ballistic nylon and genuine leather inserts| Spacious main storage compartment for documents and binders|Removable, padded laptop sleeve with D-rings for carrying with shoulder strap|Change handle system and cantilever wheels|Zip pull in gunmetal with black rubber insert Leather “comfort” insert detailed handle|Internal storage pockets for CD-Rom and peripherals|Real leather inserts',
+        '<ul><li>1682 ballistic nylon and genuine leather inserts</li><li>Spacious main storage compartment for documents and binders</li><li>Removable, padded laptop sleeve with D-rings for carrying with shoulder strap</li><li>Change handle system and cantilever wheels</li><li>Zip pull in gunmetal with black rubber insert Leather “comfort” insert detailed handle</li><li>Internal storage pockets for CD-Rom and peripherals</li><li>Real leather inserts</li></ul>',
     minOrderQuantity: 1,
     name: 'Laptop Briefcase with wheels (37L)',
     pageDescription:
@@ -122,5 +122,5 @@ export const standardProd: ShopperProducts.schemas['Product'] = {
     c_tabDescription:
         'Perfect for business travel, this briefcase is ultra practical with plenty of space for your laptop and all its extras, as well as storage for documents, paperwork and all your essential items. The wheeled system allows you to travel comfortably with your work and when you reach your destination, you can remove the laptop compartment and carry over your shoulder to meetings. It’s the business.',
     c_tabDetails:
-        '1682 ballistic nylon and genuine leather inserts| Spacious main storage compartment for documents and binders|Removable, padded laptop sleeve with D-rings for carrying with shoulder strap|Change handle system and cantilever wheels|Zip pull in gunmetal with black rubber insert Leather “comfort” insert detailed handle|Internal storage pockets for CD-Rom and peripherals|Real leather inserts',
+        '<ul><li>1682 ballistic nylon and genuine leather inserts</li><li>Spacious main storage compartment for documents and binders</li><li>Removable, padded laptop sleeve with D-rings for carrying with shoulder strap</li><li>Change handle system and cantilever wheels</li><li>Zip pull in gunmetal with black rubber insert Leather “comfort” insert detailed handle</li><li>Internal storage pockets for CD-Rom and peripherals</li><li>Real leather inserts</li></ul>',
 };
