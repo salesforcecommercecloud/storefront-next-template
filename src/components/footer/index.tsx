@@ -26,8 +26,8 @@ export default function Footer(): ReactElement {
     const { t } = useTranslation('footer');
 
     return (
-        <footer className="bg-footer-bg py-12 mt-auto">
-            <div className="container mx-auto px-4 text-footer-fg text-xs">
+        <footer className="bg-footer-background py-12 mt-auto">
+            <div className="container mx-auto px-4 text-footer-foreground text-xs">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     {/* Customer Support */}
                     <div>

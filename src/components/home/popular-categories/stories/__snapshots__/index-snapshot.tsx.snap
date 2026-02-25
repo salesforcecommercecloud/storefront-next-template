@@ -292,22 +292,22 @@ exports[`PopularCategories stories snapshot > WithoutImages story renders and ma
           <div
             data-testid="content-card"
           >
-            {"title":"Category One","description":"Description for category one","imageUrl":"/images/foundations/hero-carousel/hero-cube.webp","imageAlt":"Category One","buttonText":"Shop Now","buttonLink":"/category/category-1","showBackground":true,"showBorder":true,"loading":"eager"}
+            {"title":"Category One","description":"Description for category one","imageUrl":"/images/hero-cube.webp","imageAlt":"Category One","buttonText":"Shop Now","buttonLink":"/category/category-1","showBackground":true,"showBorder":true,"loading":"eager"}
           </div>
           <div
             data-testid="content-card"
           >
-            {"title":"Category Two","description":"Description for category two","imageUrl":"/images/foundations/hero-carousel/hero-cube.webp","imageAlt":"Category Two","buttonText":"Shop Now","buttonLink":"/category/category-2","showBackground":true,"showBorder":true,"loading":"eager"}
+            {"title":"Category Two","description":"Description for category two","imageUrl":"/images/hero-cube.webp","imageAlt":"Category Two","buttonText":"Shop Now","buttonLink":"/category/category-2","showBackground":true,"showBorder":true,"loading":"eager"}
           </div>
           <div
             data-testid="content-card"
           >
-            {"title":"Category Three","description":"Description for category three","imageUrl":"/images/foundations/hero-carousel/hero-cube.webp","imageAlt":"Category Three","buttonText":"Shop Now","buttonLink":"/category/category-3","showBackground":true,"showBorder":true,"loading":"eager"}
+            {"title":"Category Three","description":"Description for category three","imageUrl":"/images/hero-cube.webp","imageAlt":"Category Three","buttonText":"Shop Now","buttonLink":"/category/category-3","showBackground":true,"showBorder":true,"loading":"eager"}
           </div>
           <div
             data-testid="content-card"
           >
-            {"title":"Category Four","description":"Description for category four","imageUrl":"/images/foundations/hero-carousel/hero-cube.webp","imageAlt":"Category Four","buttonText":"Shop Now","buttonLink":"/category/category-4","showBackground":true,"showBorder":true,"loading":"eager"}
+            {"title":"Category Four","description":"Description for category four","imageUrl":"/images/hero-cube.webp","imageAlt":"Category Four","buttonText":"Shop Now","buttonLink":"/category/category-4","showBackground":true,"showBorder":true,"loading":"eager"}
           </div>
         </div>
       </div>

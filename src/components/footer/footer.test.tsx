@@ -161,7 +161,7 @@ describe('Footer', () => {
 
         const footer = container.querySelector('footer');
         expect(footer).toBeInTheDocument();
-        expect(footer).toHaveClass('bg-footer-bg');
+        expect(footer).toHaveClass('bg-footer-background');
     });
 
     test('all navigation links have hover:underline class', () => {

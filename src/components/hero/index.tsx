@@ -20,7 +20,7 @@ import { Component } from '@/lib/decorators/component';
 import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
 import { RegionDefinition } from '@/lib/decorators';
 import { type Image } from '@/types';
-import heroImage from '/images/foundations/hero-carousel/hero-cube.webp';
+import heroImage from '/images/hero-cube.webp';
 import { useTranslation } from 'react-i18next';
 
 /* v8 ignore start - do not test decorators in unit tests, decorator functionality is tested separately*/

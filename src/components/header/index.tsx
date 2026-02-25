@@ -27,7 +27,7 @@ export default function Header({ children }: PropsWithChildren): ReactElement {
     const location = useLocation();
 
     return (
-        <header className="bg-header-bg text-header-fg shadow-md sticky top-0 z-50">
+        <header className="bg-header-background text-header-foreground shadow-md sticky top-0 z-50">
             <div className="container mx-auto px-4 py-4">
                 <div className="flex items-center justify-between">
                     {/* Logo */}

@@ -22,7 +22,7 @@ import { Component } from '@/lib/decorators/component';
 import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
 import { toImageUrl } from '@/lib/dynamic-image';
 import { useTranslation } from 'react-i18next';
-import heroImage from '/images/foundations/hero-carousel/hero-cube.webp';
+import heroImage from '/images/hero-cube.webp';
 import { loader as loaders } from './loaders';
 import { useConfig } from '@/config';
 

@@ -143,7 +143,7 @@ vi.mock('@/components/home/skeleton', () => ({
 
 // Mock images
 vi.mock('/images/hero-new-arrivals.webp', () => ({ default: '/mock-image.png' }));
-vi.mock('/images/foundations/hero-carousel/hero-cube.webp', () => ({ default: '/mock-hero-cube.webp' }));
+vi.mock('/images/hero-cube.webp', () => ({ default: '/mock-hero-cube.webp' }));
 
 // Mock react-i18next with partial mock to preserve other exports
 vi.mock('react-i18next', async () => {

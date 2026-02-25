@@ -15,10 +15,10 @@ exports[`Footer stories snapshot > DarkBackground story renders and matches snap
         class="flex-1 min-h-[20vh]"
       />
       <footer
-        class="bg-footer-bg py-12 mt-auto"
+        class="bg-footer-background py-12 mt-auto"
       >
         <div
-          class="container mx-auto px-4 text-footer-fg text-xs"
+          class="container mx-auto px-4 text-footer-foreground text-xs"
         >
           <div
             class="grid grid-cols-1 md:grid-cols-4 gap-8"
@@ -467,10 +467,10 @@ exports[`Footer stories snapshot > Default story renders and matches snapshot 1`
       class="flex-1"
     />
     <footer
-      class="bg-footer-bg py-12 mt-auto"
+      class="bg-footer-background py-12 mt-auto"
     >
       <div
-        class="container mx-auto px-4 text-footer-fg text-xs"
+        class="container mx-auto px-4 text-footer-foreground text-xs"
       >
         <div
           class="grid grid-cols-1 md:grid-cols-4 gap-8"
@@ -1005,10 +1005,10 @@ exports[`Footer stories snapshot > LongPage story renders and matches snapshot 1
         </p>
       </main>
       <footer
-        class="bg-footer-bg py-12 mt-auto"
+        class="bg-footer-background py-12 mt-auto"
       >
         <div
-          class="container mx-auto px-4 text-footer-fg text-xs"
+          class="container mx-auto px-4 text-footer-foreground text-xs"
         >
           <div
             class="grid grid-cols-1 md:grid-cols-4 gap-8"
@@ -1457,10 +1457,10 @@ exports[`Footer stories snapshot > MobileView story renders and matches snapshot
       class="flex-1"
     />
     <footer
-      class="bg-footer-bg py-12 mt-auto"
+      class="bg-footer-background py-12 mt-auto"
     >
       <div
-        class="container mx-auto px-4 text-footer-fg text-xs"
+        class="container mx-auto px-4 text-footer-foreground text-xs"
       >
         <div
           class="grid grid-cols-1 md:grid-cols-4 gap-8"

@@ -6,7 +6,7 @@ exports[`Header stories snapshot > Authenticated story renders and matches snaps
     class="min-h-screen bg-background"
   >
     <header
-      class="bg-header-bg text-header-fg shadow-md sticky top-0 z-50"
+      class="bg-header-background text-header-foreground shadow-md sticky top-0 z-50"
     >
       <div
         class="container mx-auto px-4 py-4"
@@ -195,7 +195,7 @@ exports[`Header stories snapshot > Guest story renders and matches snapshot 1`] 
     class="min-h-screen bg-background"
   >
     <header
-      class="bg-header-bg text-header-fg shadow-md sticky top-0 z-50"
+      class="bg-header-background text-header-foreground shadow-md sticky top-0 z-50"
     >
       <div
         class="container mx-auto px-4 py-4"
@@ -385,7 +385,7 @@ exports[`Header stories snapshot > MobileView story renders and matches snapshot
     class="min-h-screen bg-background"
   >
     <header
-      class="bg-header-bg text-header-fg shadow-md sticky top-0 z-50"
+      class="bg-header-background text-header-foreground shadow-md sticky top-0 z-50"
     >
       <div
         class="container mx-auto px-4 py-4"
@@ -578,7 +578,7 @@ exports[`Header stories snapshot > StickyWithContent story renders and matches s
       class="min-h-screen"
     >
       <header
-        class="bg-header-bg text-header-fg shadow-md sticky top-0 z-50"
+        class="bg-header-background text-header-foreground shadow-md sticky top-0 z-50"
       >
         <div
           class="container mx-auto px-4 py-4"
@@ -956,7 +956,7 @@ exports[`Header stories snapshot > WithNavigation story renders and matches snap
     class="min-h-screen bg-background"
   >
     <header
-      class="bg-header-bg text-header-fg shadow-md sticky top-0 z-50"
+      class="bg-header-background text-header-foreground shadow-md sticky top-0 z-50"
     >
       <div
         class="container mx-auto px-4 py-4"
@@ -1169,7 +1169,7 @@ exports[`Header stories snapshot > WithNavigationAuthenticated story renders and
     class="min-h-screen bg-background"
   >
     <header
-      class="bg-header-bg text-header-fg shadow-md sticky top-0 z-50"
+      class="bg-header-background text-header-foreground shadow-md sticky top-0 z-50"
     >
       <div
         class="container mx-auto px-4 py-4"

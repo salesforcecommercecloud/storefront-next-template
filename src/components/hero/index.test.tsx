@@ -18,7 +18,7 @@ import { vi, describe, test, expect, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router';
 
 // Mock the hero image import
-vi.mock('/images/foundations/hero-carousel/hero-cube.webp', () => ({
+vi.mock('/images/hero-cube.webp', () => ({
     default: '/mock-hero-image.png',
 }));
 

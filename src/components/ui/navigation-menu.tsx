@@ -59,7 +59,7 @@ function NavigationMenuItem({
 }
 
 const navigationMenuTriggerStyle = cva(
-  "group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium hover:bg-header-menu-hover-bg focus:bg-header-menu-hover-bg disabled:pointer-events-none disabled:opacity-50 data-[state=open]:hover:bg-header-menu-hover-bg data-[state=open]:focus:bg-header-menu-hover-bg data-[state=open]:bg-header-menu-active-bg focus-visible:ring-ring/50 outline-none transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1"
+  "group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium hover:bg-header-menu-hover-background focus:bg-header-menu-hover-background disabled:pointer-events-none disabled:opacity-50 data-[state=open]:hover:bg-header-menu-hover-background data-[state=open]:focus:bg-header-menu-hover-background data-[state=open]:bg-header-menu-active-background focus-visible:ring-ring/50 outline-none transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1"
 )
 
 function NavigationMenuTrigger({
@@ -112,7 +112,7 @@ function NavigationMenuViewport({
       <NavigationMenuPrimitive.Viewport
         data-slot="navigation-menu-viewport"
         className={cn(
-          "origin-top-center bg-header-menu-bg text-header-menu-fg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-90 relative mt-1.5 h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden rounded-md border border-header-menu-border shadow md:w-[var(--radix-navigation-menu-viewport-width)]",
+          "origin-top-center bg-header-menu-background text-header-menu-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-90 relative mt-1.5 h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden rounded-md border border-header-menu-border shadow md:w-[var(--radix-navigation-menu-viewport-width)]",
           className
         )}
         {...props}
@@ -129,7 +129,7 @@ function NavigationMenuLink({
     <NavigationMenuPrimitive.Link
       data-slot="navigation-menu-link"
       className={cn(
-        "data-[active=true]:focus:bg-header-menu-hover-bg data-[active=true]:hover:bg-header-menu-hover-bg data-[active=true]:bg-header-menu-active-bg hover:bg-header-menu-hover-bg focus:bg-header-menu-hover-bg focus-visible:ring-ring/50 [&_svg:not([class*='text-'])]:text-header-menu-icon flex flex-col gap-1 rounded-sm p-2 text-sm transition-all outline-none focus-visible:ring-[3px] focus-visible:outline-1 [&_svg:not([class*='size-'])]:size-4",
+        "data-[active=true]:focus:bg-header-menu-hover-background data-[active=true]:hover:bg-header-menu-hover-background data-[active=true]:bg-header-menu-active-background hover:bg-header-menu-hover-background focus:bg-header-menu-hover-background focus-visible:ring-ring/50 [&_svg:not([class*='text-'])]:text-header-menu-icon flex flex-col gap-1 rounded-sm p-2 text-sm transition-all outline-none focus-visible:ring-[3px] focus-visible:outline-1 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       {...props}

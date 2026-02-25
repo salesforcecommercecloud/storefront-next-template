@@ -57,19 +57,19 @@
     --color-paypal-gold: var(--paypal-gold);
     --color-venmo-blue: var(--venmo-blue);
     /* -- header & navigation -- */
-    --color-header-bg: var(--header-bg);
-    --color-header-fg: var(--header-fg);
+    --color-header-background: var(--header-background);
+    --color-header-foreground: var(--header-foreground);
     --color-header-border: var(--header-border);
     --color-header-divider: var(--header-divider);
-    --color-header-menu-bg: var(--header-menu-bg);
-    --color-header-menu-fg: var(--header-menu-fg);
+    --color-header-menu-background: var(--header-menu-background);
+    --color-header-menu-foreground: var(--header-menu-foreground);
     --color-header-menu-border: var(--header-menu-border);
-    --color-header-menu-hover-bg: var(--header-menu-hover-bg);
-    --color-header-menu-active-bg: var(--header-menu-active-bg);
+    --color-header-menu-hover-background: var(--header-menu-hover-background);
+    --color-header-menu-active-background: var(--header-menu-active-background);
     --color-header-menu-icon: var(--header-menu-icon);
     /* -- footer -- */
-    --color-footer-bg: var(--footer-bg);
-    --color-footer-fg: var(--footer-fg);
+    --color-footer-background: var(--footer-background);
+    --color-footer-foreground: var(--footer-foreground);
     /* -- market street brand colors -- */
     --color-brand-black: var(--brand-black);
     --color-brand-black-off: var(--brand-black-off);
@@ -191,6 +191,23 @@ html.dark [data-theme='inverse'] {
     --order-pickup: #eff6ff; /* -blue-50 */
     --order-pickup-border: #bfdbfe; /* -blue-200 */
 
+    /* header & navigation */
+    --header-background: var(--background);
+    --header-foreground: var(--foreground);
+    --header-border: var(--border);
+    --header-divider: var(--border);
+    /* header menu dropdowns */
+    --header-menu-background: var(--background);
+    --header-menu-foreground: var(--foreground);
+    --header-menu-border: var(--border);
+    --header-menu-hover-background: rgba(0, 0, 0, 0.05);
+    --header-menu-active-background: rgba(0, 0, 0, 0.02);
+    --header-menu-icon: rgba(0, 0, 0, 0.5);
+
+    /* footer */
+    --footer-background: var(--background);
+    --footer-foreground: var(--foreground);
+
     body {
         @apply bg-background text-foreground;
     }
@@ -206,8 +223,8 @@ html:not(.dark) [data-theme='inverse'] {
     --card: #262626;
     --card-foreground: #e5e5e5;
 
-    --popover: #262626;
-    --popover-foreground: #e5e5e5;
+    --popover: #000000;
+    --popover-foreground: #ffffff;
 
     --primary: #3b82f6;
     --primary-foreground: #ffffff;
@@ -291,126 +308,21 @@ html:not(.dark) [data-theme='inverse'] {
     --brand-primary-hover: #3367d6;
 
     /* header & navigation */
-    --header-bg: var(--background);
-    --header-fg: var(--foreground);
+    --header-background: var(--background);
+    --header-foreground: var(--foreground);
     --header-border: var(--border);
     --header-divider: var(--border);
     /* header menu dropdowns */
-    --header-menu-bg: var(--background);
-    --header-menu-fg: var(--foreground);
+    --header-menu-background: var(--background);
+    --header-menu-foreground: var(--foreground);
     --header-menu-border: var(--border);
-    --header-menu-hover-bg: rgba(0, 0, 0, 0.05);
-    --header-menu-active-bg: rgba(0, 0, 0, 0.02);
-    --header-menu-icon: rgba(0, 0, 0, 0.5);
-
-    /* footer - inverse colors for foundations */
-    --footer-bg: rgba(24, 24, 27, 0.9);
-    --footer-fg: #e5e5e5;
-
-    body {
-        @apply bg-background text-foreground;
-    }
-}
-/*---break---*/
-.dark,
-html:not(.dark) [data-theme='inverse'] {
-    /* core */
-    --background: #18181b;
-    --foreground: #e5e5e5;
-
-    --card: #18181b;
-    --card-foreground: #fafafa;
-
-    --popover: #27272a;
-    --popover-foreground: #fafafa;
-
-    --primary: #3b82f6;
-    --primary-foreground: #fafafa;
-
-    --secondary: #27272a;
-    --secondary-foreground: #fafafa;
-
-    --muted: #27272a;
-    --muted-foreground: #a1a1aa;
-
-    --accent: #27272a;
-    --accent-foreground: #fafafa;
-
-    --destructive: #dc2626;
-    --destructive-foreground: #fafafa;
-
-    --success: #16a34a;
-    --success-foreground: #18181b;
-
-    --border: #3f3f46;
-    --input: #3f3f46;
-    --ring: #3b82f6;
-
-    /* separator colors */
-    --separator: #525252;
-    --separator-foreground: #a3a3a3;
-
-    /* rating colors */
-    --rating: #facc15;
-    --rating-foreground: #18181b;
-
-    /* charts */
-    --chart-1: #60a5fa;
-    --chart-2: #a78bfa;
-    --chart-3: #f87171;
-    --chart-4: #fbbf24;
-    --chart-5: #34d399;
-
-    /* sidebar */
-    --sidebar: #18181b;
-    --sidebar-foreground: #fafafa;
-    --sidebar-primary: #3b82f6;
-    --sidebar-primary-foreground: #fafafa;
-    --sidebar-accent: #27272a;
-    --sidebar-accent-foreground: #fafafa;
-    --sidebar-border: #27272a;
-    --sidebar-ring: #3b82f6;
-
-    /* custom from your "custom" group */
-    --focus: rgba(212, 212, 216, 0.5);
-    --destructive-focus: rgba(127, 29, 29, 0.4);
-
-    /* input overlays */
-    --bg-input-30: rgba(255, 255, 255, 0.045);
-    --bg-input-50: rgba(255, 255, 255, 0.09);
-    --bg-input-80: rgba(255, 255, 255, 0.135);
-    --dark-input: rgba(255, 255, 255, 0.15);
-
-    /* generic opacity helpers */
-    --opacity-90: 10%;
-    --opacity-80: 20%;
-    --opacity-50: 50%;
-    --opacity-30: 70%;
-
-    /* payment provider colors */
-    --paypal-gold: #FFC439;
-    --venmo-blue: #3D95CE;
-
-    /* brand primary */
-    --brand-primary: #4285f4;
-    --brand-primary-hover: #3367d6;
-
-    /* header & navigation */
-    --header-bg: var(--background);
-    --header-fg: var(--foreground);
-    --header-border: var(--border);
-    --header-divider: var(--border);
-    /* header menu dropdowns */
-    --header-menu-bg: var(--background);
-    --header-menu-fg: var(--foreground);
-    --header-menu-border: var(--border);
-    --header-menu-hover-bg: rgba(255, 255, 255, 0.1);
-    --header-menu-active-bg: rgba(255, 255, 255, 0.05);
+    --header-menu-hover-background: rgba(255, 255, 255, 0.1);
+    --header-menu-active-background: rgba(255, 255, 255, 0.05);
     --header-menu-icon: rgba(255, 255, 255, 0.7);
 
-    /* footer - inverse colors for foundations */
-    --footer-bg: #ffffff;
-    --footer-fg: #3f3f46;
+    /* footer */
+    --footer-background: var(--background);
+    --footer-foreground: var(--foreground);
 
     body {
         @apply bg-background text-foreground;
@@ -501,21 +413,21 @@ html:not(.dark) [data-theme='inverse'] {
     --brand-primary-hover: #333333;
 
     /* header & navigation */
-    --header-bg: #000000;
-    --header-fg: #ffffff;
+    --header-background: #000000;
+    --header-foreground: #ffffff;
     --header-border: rgba(255, 255, 255, 0.1);
     --header-divider: rgba(255, 255, 255, 0.1);
     /* header menu dropdowns */
-    --header-menu-bg: #000000;
-    --header-menu-fg: #ffffff;
+    --header-menu-background: #000000;
+    --header-menu-foreground: #ffffff;
     --header-menu-border: rgba(255, 255, 255, 0.1);
-    --header-menu-hover-bg: rgba(255, 255, 255, 0.1);
-    --header-menu-active-bg: rgba(255, 255, 255, 0.05);
+    --header-menu-hover-background: rgba(255, 255, 255, 0.1);
+    --header-menu-active-background: rgba(255, 255, 255, 0.05);
     --header-menu-icon: rgba(255, 255, 255, 0.7);
 
     /* footer */
-    --footer-bg: #ffffff;
-    --footer-fg: #000000;
+    --footer-background: #ffffff;
+    --footer-foreground: #000000;
 
     /* Market Street Brand Colors */
     --brand-black: #000000;
@@ -549,8 +461,9 @@ html:not(.dark) [data-theme='inverse'] {
     --card: #242424;
     --card-foreground: #fafafa;
 
-    --popover: #242424;
-    --popover-foreground: #fafafa;
+    /* popover menus - white for market street dark */
+    --popover: #ffffff;
+    --popover-foreground: #000000;
 
     --primary: #fafafa;
     --primary-foreground: #000000;
@@ -624,21 +537,21 @@ html:not(.dark) [data-theme='inverse'] {
     --brand-primary-hover: #d9d9d9;
 
     /* header & navigation */
-    --header-bg: #ffffff;
-    --header-fg: #000000;
+    --header-background: #ffffff;
+    --header-foreground: #000000;
     --header-border: rgba(0, 0, 0, 0.08);
     --header-divider: rgba(0, 0, 0, 0.08);
     /* header menu dropdowns */
-    --header-menu-bg: #ffffff;
-    --header-menu-fg: #000000;
+    --header-menu-background: #ffffff;
+    --header-menu-foreground: #000000;
     --header-menu-border: rgba(0, 0, 0, 0.08);
-    --header-menu-hover-bg: rgba(0, 0, 0, 0.05);
-    --header-menu-active-bg: rgba(0, 0, 0, 0.02);
+    --header-menu-hover-background: rgba(0, 0, 0, 0.05);
+    --header-menu-active-background: rgba(0, 0, 0, 0.02);
     --header-menu-icon: rgba(0, 0, 0, 0.5);
 
     /* footer */
-    --footer-bg: #121212;
-    --footer-fg: #fafafa;
+    --footer-background: #121212;
+    --footer-foreground: #fafafa;
 
     /* Market Street Brand Colors */
     --brand-black: #000000;
@@ -739,16 +652,16 @@ html:not(.dark) [data-theme='inverse'] {
 
 /* Header navigation uses header-specific colors */
 header [data-slot="navigation-menu-trigger"] {
-    color: var(--header-fg);
+    color: var(--header-foreground);
 }
 
 header button:not([data-slot]),
 header a:not([data-slot]) {
-    color: var(--header-fg);
+    color: var(--header-foreground);
 }
 
 header svg {
-    color: var(--header-fg);
+    color: var(--header-foreground);
 }
 
 /* Remove gap between header and navigation dropdowns for seamless look */
