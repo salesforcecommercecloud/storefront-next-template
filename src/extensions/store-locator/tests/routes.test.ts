@@ -15,10 +15,21 @@
  */
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = join(__filename, '..', '..', '..', '..');
+
+vi.mock('../../../../config.server.ts', () => ({
+    default: {
+        app: {
+            url: {
+                prefix: '/',
+                excludeRoutes: ['/resource/**', '/action/**'],
+            },
+        },
+    },
+}));
 
 describe('Extension Routes', () => {
     let originalReactRouterAppDirectory: string;
@@ -36,7 +47,7 @@ describe('Extension Routes', () => {
         const { default: routes } = await import('@/routes');
         const resolvedRoutes = await routes;
 
-        // Find the `_app` layout route by file
+        // Find the _app layout at the top level (no prefix wrapper when prefix is '/')
         const defaultLayout = resolvedRoutes.find((r: any) => r.file === 'routes/_app.tsx');
         expect(defaultLayout).toBeDefined();
         expect(defaultLayout?.children).toBeDefined();
@@ -50,11 +61,11 @@ describe('Extension Routes', () => {
         expect(storeLocatorRoute?.file).toBe('extensions/store-locator/routes/_app.store-locator.tsx');
     });
 
-    it('should add extension resource routes as flat routes without layout prefix', async () => {
+    it('should add extension resource routes as excluded routes at root level', async () => {
         const { default: routes } = await import('@/routes');
         const resolvedRoutes = await routes;
 
-        // Resource routes should be added as flat routes (not nested under any layout)
+        // Resource routes should be excluded from the prefix wrapper and stay at root level
         const resourceRoute = resolvedRoutes.find(
             (r: any) => r.file === 'extensions/store-locator/routes/resource.stores.ts'
         );

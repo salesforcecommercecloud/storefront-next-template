@@ -49,6 +49,18 @@
         "types": "./dist/scapi.d.ts",
         "default": "./dist/scapi.js"
       }
+    },
+    "./routing": {
+      "import": {
+        "types": "./dist/routing.d.ts",
+        "default": "./dist/routing.js"
+      }
+    },
+    "./routing/app-wrapper": {
+      "import": {
+        "types": "./dist/routing-app-wrapper.d.ts",
+        "default": "./dist/routing-app-wrapper.js"
+      }
     }
   },
   "files": [
@@ -79,6 +91,8 @@
     "openapi-fetch": "0.15.0"
   },
   "devDependencies": {
+    "@react-router/dev": "7.12.0",
+    "@react-router/fs-routes": "7.12.0",
     "@testing-library/react": "^16.1.0",
     "@types/node": "^24.0.0",
     "@types/react": "^19.0.0",
@@ -90,14 +104,18 @@
     "openapi-typescript": "7.10.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-router": "7.12.0",
     "shx": "^0.4.0",
     "tsdown": "^0.15.4",
     "typescript": "^5.6.0",
     "vitest": "4.0.18"
   },
   "peerDependencies": {
+    "@react-router/fs-routes": ">=7.0.0",
+    "@react-router/dev": ">=7.0.0",
     "react": ">=19.0.0",
-    "react-dom": ">=19.0.0"
+    "react-dom": ">=19.0.0",
+    "react-router": ">=7.0.0"
   },
   "engines": {
     "node": ">=24.0.0"

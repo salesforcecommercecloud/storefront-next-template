@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { defineConfig } from '@/config/schema';
-import { TrackingConsent } from '@/types/tracking-consent';
+// Relative paths required here — this file is evaluated by vite-node during
+// react-router typegen (via routes.ts), before Vite aliases are resolved.
+import { defineConfig } from './src/config/schema';
+import { TrackingConsent } from './src/types/tracking-consent';
 
 /**
  * Application Configuration
@@ -457,5 +459,10 @@ export default defineConfig({
         // Development tools and features
         // See CONFIG-OPTIONS.md#development for detailed documentation
         development: { enableDevtools: true, hotReload: true, strictMode: true },
+        url: {
+            // Note: will change when multi-site implementation is integrated into the template
+            prefix: '/',
+            excludeRoutes: ['/resource/**', '/action/**'],
+        },
     },
 });

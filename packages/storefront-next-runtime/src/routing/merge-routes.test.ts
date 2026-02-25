@@ -15,7 +15,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import { type RouteConfigEntry } from '@react-router/dev/routes';
-import { mergeRoutes } from './routes-merge';
+import { mergeRoutes } from './merge-routes';
 
 describe('mergeRoutes', () => {
     const extensionIdPrefix = 'extensions/test-extension/';

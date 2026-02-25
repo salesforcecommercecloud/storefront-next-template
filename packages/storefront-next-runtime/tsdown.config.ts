@@ -17,6 +17,8 @@ export default defineConfig([
             'design-mode': 'src/design/modeDetection.ts',
             'design-react-core': 'src/design/react/core/index.ts',
             events: 'src/events/index.ts',
+            routing: 'src/routing/index.ts',
+            'routing-app-wrapper': 'src/routing/app-wrapper.tsx',
         },
         platform: 'neutral',
         target: 'node24',
@@ -24,6 +26,7 @@ export default defineConfig([
         dts: true,
         outDir: 'dist',
         clean: true,
+        external: ['node:fs', 'node:fs/promises', 'node:path', 'node:url'],
         alias: {
             '@/*': 'src/*',
         },

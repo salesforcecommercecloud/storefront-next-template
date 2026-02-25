@@ -13,7 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type RouteConfig } from '@react-router/dev/routes';
-import { flatRoutes } from '@salesforce/storefront-next-runtime/routing';
-
-export default flatRoutes() satisfies RouteConfig;
+// Note: DO NOT MOVE this file to anywhere but root. This file is used for multi-site feature
+export { default } from '@salesforce/storefront-next-runtime/routing/app-wrapper';

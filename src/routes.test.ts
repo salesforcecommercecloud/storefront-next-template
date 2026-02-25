@@ -15,10 +15,23 @@
  */
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = join(__filename, '..');
+
+// Mock config.server.ts so tests don't depend on real config data.
+// loadConfig() inside the runtime dynamically imports this file.
+vi.mock('../config.server.ts', () => ({
+    default: {
+        app: {
+            url: {
+                prefix: '/',
+                excludeRoutes: ['/resource/**', '/action/**'],
+            },
+        },
+    },
+}));
 
 describe('routes.ts', () => {
     let originalReactRouterAppDirectory: string;
@@ -36,7 +49,7 @@ describe('routes.ts', () => {
         const { default: routes } = await import('./routes');
         const resolvedRoutes = await routes;
 
-        // Find the `_app` layout route (pathless layout)
+        // Find the `_app` layout route (pathless layout) at the top level (no wrapper when prefix is '/')
         const defaultLayout = resolvedRoutes.find((r: any) => r.id === 'routes/_app');
         expect(defaultLayout).toBeDefined();
         expect(defaultLayout?.file).toBe('routes/_app.tsx');
@@ -69,7 +82,7 @@ describe('routes.ts', () => {
             ])
         );
 
-        // Find the _empty layout route (pathless layout without header/footer)
+        // Find the _empty layout route (pathless layout) at the top level
         const emptyLayout = resolvedRoutes.find((r: any) => r.id === 'routes/_empty');
         expect(emptyLayout).toBeDefined();
         expect(emptyLayout?.file).toBe('routes/_empty.tsx');

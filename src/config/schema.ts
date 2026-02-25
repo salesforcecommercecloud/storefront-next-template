@@ -16,6 +16,8 @@
 import { deepMerge, mergeEnvConfig } from './utils';
 import type { EngagementAdapterConfig } from '@/lib/adapters';
 import type { TrackingConsent } from '@/types/tracking-consent';
+//Note: this will change when we start moving base config for into runtime.
+import type { UrlConfig } from '@salesforce/storefront-next-runtime/routing';
 
 // Badge configuration
 export type BadgeDetail = {
@@ -243,10 +245,7 @@ export type Config = {
             hotReload: boolean;
             strictMode: boolean;
         };
-        url?: {
-            prefix: string;
-            search: string;
-        };
+        url?: UrlConfig;
     };
 };
 

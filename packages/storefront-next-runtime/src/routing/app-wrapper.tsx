@@ -13,7 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type RouteConfig } from '@react-router/dev/routes';
-import { flatRoutes } from '@salesforce/storefront-next-runtime/routing';
+import { Outlet } from 'react-router';
 
-export default flatRoutes() satisfies RouteConfig;
+/**
+ * A pass-through wrapper component that renders an `<Outlet />`.
+ *
+ * Used as the parent route component when URL configuration wraps routes under
+ * a prefix (e.g. `/:siteId/:localeId`). React Router requires a component for
+ * every route entry — this satisfies that requirement without adding any UI.
+ *
+ * Customers re-export this from their own `routes/app-wrapper.tsx` so the file
+ * lives inside `appDirectory` and React Router generates correct type references.
+ */
+export default function AppWrapper() {
+    return <Outlet />;
+}

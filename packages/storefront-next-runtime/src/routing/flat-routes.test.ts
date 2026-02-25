@@ -1,0 +1,172 @@
+/**
+ * Copyright 2026 Salesforce, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import { describe, expect, it, vi, beforeEach } from 'vitest';
+import type { RouteConfigEntry } from '@react-router/dev/routes';
+
+// Mock @react-router/fs-routes
+vi.mock('@react-router/fs-routes', () => ({
+    flatRoutes: vi.fn(),
+}));
+
+// Mock fs/promises
+vi.mock('node:fs/promises', () => ({
+    default: {
+        readdir: vi.fn(() => Promise.reject(new Error('ENOENT'))),
+        access: vi.fn(() => Promise.reject(new Error('ENOENT'))),
+    },
+}));
+
+// Mock loadConfig — returns empty config by default (no URL customisation)
+vi.mock('../config/load-config', () => ({
+    loadConfig: vi.fn().mockResolvedValue({}),
+}));
+
+import { flatRoutes } from './flat-routes';
+import { flatRoutes as _flatRoutes } from '@react-router/fs-routes';
+import { loadConfig } from '../config/load-config';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+
+const mockFlatRoutes = vi.mocked(_flatRoutes);
+const mockLoadConfig = vi.mocked(loadConfig);
+
+// Helpers to build test route entries
+function layoutRoute(id: string, file: string, children: RouteConfigEntry[]): RouteConfigEntry {
+    return { id, file, children } as RouteConfigEntry;
+}
+
+function indexRoute(id: string, file: string): RouteConfigEntry {
+    return { id, file, index: true } as RouteConfigEntry;
+}
+
+describe('flatRoutes', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+        // Default: no URL config
+        mockLoadConfig.mockResolvedValue({});
+    });
+
+    it('should return routes as-is when no options are provided', async () => {
+        const baseRoutes: RouteConfigEntry[] = [
+            layoutRoute('routes/_app', 'routes/_app.tsx', [indexRoute('routes/_app._index', 'routes/_app._index.tsx')]),
+        ];
+        mockFlatRoutes.mockResolvedValue(baseRoutes);
+
+        const result = await flatRoutes();
+
+        expect(result).toBe(baseRoutes);
+        expect(mockFlatRoutes).toHaveBeenCalledWith({
+            ignoredRouteFiles: ['**/*.test.{ts,tsx}'],
+            rootDirectory: undefined,
+        });
+    });
+
+    it('should pass rootDirectory to _flatRoutes', async () => {
+        const baseRoutes: RouteConfigEntry[] = [];
+        mockFlatRoutes.mockResolvedValue(baseRoutes);
+
+        await flatRoutes({ rootDirectory: 'custom/routes' });
+
+        expect(mockFlatRoutes).toHaveBeenCalledWith({
+            ignoredRouteFiles: ['**/*.test.{ts,tsx}'],
+            rootDirectory: 'custom/routes',
+        });
+    });
+
+    it('should merge extension routes when extensions directory exists', async () => {
+        const baseRoutes: RouteConfigEntry[] = [
+            layoutRoute('routes/_app', 'routes/_app.tsx', [indexRoute('routes/_app._index', 'routes/_app._index.tsx')]),
+        ];
+        const extensionRoutes: RouteConfigEntry[] = [layoutRoute('routes/_app', 'routes/_app.tsx', [])];
+
+        mockFlatRoutes.mockResolvedValueOnce(baseRoutes).mockResolvedValueOnce(extensionRoutes);
+
+        vi.mocked(fs.readdir).mockResolvedValue(['my-ext'] as any);
+        vi.mocked(fs.access).mockImplementation((p) => {
+            if (String(p) === path.join('.', 'src', 'extensions', 'my-ext', 'routes')) return Promise.resolve();
+            return Promise.reject(new Error('ENOENT'));
+        });
+
+        const result = await flatRoutes();
+
+        expect(mockFlatRoutes).toHaveBeenCalledTimes(2);
+        expect(mockFlatRoutes).toHaveBeenCalledWith({
+            ignoredRouteFiles: ['**/*.test.{ts,tsx}'],
+            rootDirectory: 'extensions/my-ext/routes',
+        });
+        expect(result).toBe(baseRoutes);
+    });
+
+    it('should apply URL config with default wrapperFile', async () => {
+        const baseRoutes: RouteConfigEntry[] = [
+            layoutRoute('routes/_app', 'routes/_app.tsx', [indexRoute('routes/_app._index', 'routes/_app._index.tsx')]),
+        ];
+        mockFlatRoutes.mockResolvedValue(baseRoutes);
+        mockLoadConfig.mockResolvedValue({
+            url: {
+                prefix: '/:siteId/:localeId',
+                excludeRoutes: [],
+            },
+        });
+
+        vi.mocked(fs.access).mockImplementation((p) => {
+            if (String(p) === path.join('.', 'src', 'app-wrapper.tsx')) return Promise.resolve();
+            return Promise.reject(new Error('ENOENT'));
+        });
+
+        const result = await flatRoutes();
+
+        const wrapper = result.find((r) => r.id === 'multi-site-wrapper');
+        expect(wrapper).toBeDefined();
+        expect(wrapper?.path).toBe(':siteId/:localeId');
+        expect(wrapper?.file).toBe('app-wrapper.tsx');
+    });
+
+    it('should throw if wrapper file does not exist', async () => {
+        mockFlatRoutes.mockResolvedValue([]);
+        mockLoadConfig.mockResolvedValue({
+            url: {
+                prefix: '/:siteId/:localeId',
+            },
+        });
+
+        vi.mocked(fs.access).mockRejectedValue(new Error('ENOENT'));
+
+        await expect(flatRoutes()).rejects.toThrow(/"src\/app-wrapper\.tsx" does not exist/);
+    });
+
+    it('should not apply URL config when loadConfig returns empty object', async () => {
+        const baseRoutes: RouteConfigEntry[] = [
+            layoutRoute('routes/_app', 'routes/_app.tsx', [indexRoute('routes/_app._index', 'routes/_app._index.tsx')]),
+        ];
+        mockFlatRoutes.mockResolvedValue(baseRoutes);
+        mockLoadConfig.mockResolvedValue({});
+
+        const result = await flatRoutes();
+
+        // applyUrlConfig returns routes unchanged when no prefix
+        expect(result).toBe(baseRoutes);
+    });
+
+    it('should call loadConfig to get URL configuration', async () => {
+        mockFlatRoutes.mockResolvedValue([]);
+        mockLoadConfig.mockResolvedValue({});
+
+        await flatRoutes();
+
+        expect(mockLoadConfig).toHaveBeenCalledOnce();
+    });
+});
