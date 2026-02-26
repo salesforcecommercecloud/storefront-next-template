@@ -207,8 +207,8 @@ Shows:
         const button = await canvas.findByRole('button', {}, { timeout: 5000 });
         await expect(button).toBeInTheDocument();
 
-        // Verify it shows "Pick Up in Store" when pickup is selected
-        await expect(canvas.getByText('Pick Up in Store')).toBeInTheDocument();
+        // Verify it shows "Pick Up" when pickup is selected
+        await expect(canvas.getByText('Pick Up')).toBeInTheDocument();
     },
 };
 

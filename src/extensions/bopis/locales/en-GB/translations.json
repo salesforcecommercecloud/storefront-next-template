@@ -8,6 +8,7 @@
             "inStockAtStore": "Now available for pickup today.",
             "outOfStockAtStore": "Try another store",
             "storePickup": "Pick Up in Store",
+            "storePickupLabel": "Pick Up",
             "delivery": "Delivery",
             "deliverTo": "Deliver to",
             "deliverToZip": "Deliver to {{zipCode}}",

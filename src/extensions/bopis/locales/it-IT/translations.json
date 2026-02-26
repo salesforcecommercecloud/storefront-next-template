@@ -8,6 +8,7 @@
             "inStockAtStore": "Ora disponibile per il ritiro oggi.",
             "outOfStockAtStore": "Prova un altro negozio",
             "storePickup": "Ritiro in negozio",
+            "storePickupLabel": "Ritiro",
             "delivery": "Consegna",
             "deliverTo": "Consegna a",
             "deliverToZip": "Consegna a {{zipCode}}",

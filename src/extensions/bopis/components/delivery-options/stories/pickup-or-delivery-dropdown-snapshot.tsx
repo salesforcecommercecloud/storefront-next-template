@@ -22,6 +22,7 @@ import { render, cleanup } from '@testing-library/react';
 const tMap: Record<string, string> = {
     'deliveryOptions.pickupOrDelivery.shipToAddress': 'Ship to Address',
     'deliveryOptions.pickupOrDelivery.storePickup': 'Pick Up in Store',
+    'deliveryOptions.pickupOrDelivery.storePickupLabel': 'Pick Up',
     'deliveryOptions.pickupOrDelivery.delivery': 'Delivery',
 };
 vi.mock('react-i18next', () => ({

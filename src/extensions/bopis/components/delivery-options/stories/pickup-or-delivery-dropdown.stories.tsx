@@ -113,11 +113,8 @@ export const PickupSelected: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        const trigger = await canvas.findByRole(
-            'button',
-            { name: /pick up in store|store pickup/i },
-            { timeout: 5000 }
-        );
+        // Trigger button shows short label "Pick Up"
+        const trigger = await canvas.findByRole('button', { name: /pick up/i }, { timeout: 5000 });
         await expect(trigger).toBeInTheDocument();
 
         await userEvent.click(trigger);

@@ -22,6 +22,7 @@ import { DELIVERY_OPTIONS } from '@/extensions/bopis/constants';
 const tMap: Record<string, string> = {
     'deliveryOptions.pickupOrDelivery.shipToAddress': 'Ship to Address',
     'deliveryOptions.pickupOrDelivery.storePickup': 'Pick Up in Store',
+    'deliveryOptions.pickupOrDelivery.storePickupLabel': 'Pick Up',
     'deliveryOptions.pickupOrDelivery.delivery': 'Delivery',
 };
 vi.mock('react-i18next', () => ({
@@ -38,9 +39,9 @@ describe('PickupOrDeliveryDropdown', () => {
         expect(document.querySelector('svg')).toBeInTheDocument();
     });
 
-    it('renders Pick Up in Store label and Store icon when value is PICKUP', () => {
+    it('renders Pick Up label and Store icon when value is PICKUP', () => {
         render(<PickupOrDeliveryDropdown value={DELIVERY_OPTIONS.PICKUP} onChange={() => {}} />);
-        expect(screen.getByText('Pick Up in Store')).toBeInTheDocument();
+        expect(screen.getByText('Pick Up')).toBeInTheDocument();
         // Icon SVG for Store
         expect(document.querySelector('svg')).toBeInTheDocument();
     });
