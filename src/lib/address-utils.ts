@@ -13,7 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+
+import type { ShopperBasketsV2, ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+
+/**
+ * Normalizes address field values for comparison
+ */
+const normalize = (value: string | undefined | null) => (!value ? '' : value);
+
+/**
+ * Converts an OrderAddress to a CustomerAddress format
+ * This is useful for creating guest addresses or converting between address types
+ *
+ * @param orderAddress - The order address to convert
+ * @param preferred - Whether this should be marked as a preferred address (defaults to false)
+ * @returns CustomerAddress with auto-generated addressId
+ */
+export function orderAddressToCustomerAddress(
+    orderAddress: ShopperBasketsV2.schemas['OrderAddress'],
+    preferred: boolean = false
+): ShopperCustomers.schemas['CustomerAddress'] {
+    return {
+        addressId: `shipping_${Date.now()}`, // Generate unique address ID
+        address1: orderAddress.address1 || '',
+        address2: orderAddress.address2,
+        city: orderAddress.city || '',
+        countryCode: orderAddress.countryCode || 'US',
+        firstName: orderAddress.firstName || '',
+        lastName: orderAddress.lastName || '',
+        phone: orderAddress.phone,
+        postalCode: orderAddress.postalCode || '',
+        stateCode: orderAddress.stateCode,
+        preferred,
+    };
+}
 
 /**
  * Checks if an address has no meaningful content (all fields are empty/falsy)
@@ -23,7 +56,6 @@ import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi
  */
 export function isAddressEmpty(address: ShopperBasketsV2.schemas['OrderAddress'] | undefined | null): boolean {
     if (!address) return true;
-    const normalize = (value: string | undefined | null) => (!value ? '' : value);
     return (
         normalize(address.address1) === '' &&
         normalize(address.city) === '' &&

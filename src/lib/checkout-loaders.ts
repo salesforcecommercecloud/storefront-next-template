@@ -44,7 +44,7 @@ import { setAddressAndMethodForPickup } from '@/extensions/bopis/lib/api/shipmen
 import { fetchStoresForBasket } from '@/extensions/bopis/lib/api/stores';
 import { isPickupAddressSet } from '@/extensions/bopis/lib/store-utils';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
-import { isAddressEmpty } from '@/components/checkout/utils/checkout-addresses';
+import { isAddressEmpty } from '@/lib/address-utils';
 
 /**
  * Checkout page data type

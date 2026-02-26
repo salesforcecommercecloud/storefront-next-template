@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 import type { ActionFunctionArgs } from 'react-router';
-import { ApiError, type ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import { ApiError, type ShopperBasketsV2, type ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { createApiClients } from '@/lib/api-clients';
 import { extractResponseError } from '@/lib/utils';
 import { updateShipmentAddress, createDeliveryShipment } from '@/extensions/multiship/lib/api/basket';
 import { updateBasketWithCustomerInfoFallback } from '@/extensions/multiship/lib/basket-utils';
-import { isRegisteredCustomer, getCurrentCustomer, saveShippingAddressToCustomer } from '@/lib/api/customer';
-import { getAddressKey, isAddressEqual } from '@/extensions/multiship/lib/address-utils';
+import { isRegisteredCustomer, getCurrentCustomer, saveCustomerAddress } from '@/lib/api/customer';
+import { getAddressKey, isAddressEqual, customerAddressToOrderAddress } from '@/extensions/multiship/lib/address-utils';
 import { getTranslation } from '@/lib/i18next';
 import { fetchShippingMethodsMapForBasket } from '@/lib/checkout-loaders';
 
@@ -45,8 +45,8 @@ export async function handleMultiShipShippingAddress(
     // Parse JSON addresses (format: addressKey -> { address, itemIds[] })
     const addressesJson = formData.get('addresses');
     const deliveryShipmentIdsJson = formData.get('deliveryShipmentIds');
-    type AddressToItems = Record<string, { address: ShopperBasketsV2.schemas['OrderAddress']; itemIds: string[] }>;
-    let addressToItemsMap: Map<string, { address: ShopperBasketsV2.schemas['OrderAddress']; itemIds: string[] }>;
+    type AddressToItems = Record<string, { address: ShopperCustomers.schemas['CustomerAddress']; itemIds: string[] }>;
+    let addressToItemsMap: Map<string, { address: ShopperCustomers.schemas['CustomerAddress']; itemIds: string[] }>;
     let deliveryShipmentIds: string[] = [];
     try {
         if (!addressesJson || !deliveryShipmentIdsJson) {
@@ -124,7 +124,11 @@ export async function handleMultiShipShippingAddress(
         for (const addressKey of sortedAddressKeys) {
             const addressEntry = addressToItemsMap.get(addressKey);
             if (!addressEntry) continue;
-            const { address, itemIds } = addressEntry;
+            const { address: customerAddress, itemIds } = addressEntry;
+
+            // Convert CustomerAddress to OrderAddress for shipment API
+            const orderAddress = customerAddressToOrderAddress(customerAddress);
+
             let targetShipmentId: string | null = null;
             let needsAddressUpdate = false;
 
@@ -134,7 +138,7 @@ export async function handleMultiShipShippingAddress(
                 const shipment = updatedBasket.shipments?.find((s) => s.shipmentId === shipmentId);
 
                 if (shipment && shipment.shipmentId) {
-                    if (isAddressEqual(shipment.shippingAddress, address)) {
+                    if (isAddressEqual(shipment.shippingAddress, orderAddress)) {
                         // Shipment already has this address - use it as-is
                         targetShipmentId = shipment.shipmentId;
                     } else {
@@ -147,14 +151,14 @@ export async function handleMultiShipShippingAddress(
 
             // If no shipment available, create a new one
             if (!targetShipmentId) {
-                const { basket: newBasket, shipmentId } = await createDeliveryShipment(context, basketId, address);
+                const { basket: newBasket, shipmentId } = await createDeliveryShipment(context, basketId, orderAddress);
                 targetShipmentId = shipmentId;
                 updatedBasket = newBasket;
             }
 
             // Update address if needed
             if (needsAddressUpdate && targetShipmentId) {
-                updatedBasket = await updateShipmentAddress(context, basketId, targetShipmentId, address);
+                updatedBasket = await updateShipmentAddress(context, basketId, targetShipmentId, orderAddress);
             }
 
             // Assign items to the shipment
@@ -184,18 +188,16 @@ export async function handleMultiShipShippingAddress(
                 const existingAddresses = customer.addresses || [];
 
                 // Create a Set of existing address keys for O(1) lookups
-                const existingAddressKeys = new Set(
-                    existingAddresses.map((addr) => getAddressKey(addr as ShopperBasketsV2.schemas['OrderAddress']))
-                );
+                const existingAddressKeys = new Set(existingAddresses.map((addr) => getAddressKey(addr)));
 
                 // For each unique address, check if it exists in customer profile and save if new
-                for (const { address } of addressToItemsMap.values()) {
-                    const addressKey = getAddressKey(address);
+                for (const { address: customerAddress } of addressToItemsMap.values()) {
+                    const addressKey = getAddressKey(customerAddress);
 
                     // Only save if address doesn't exist in profile
                     if (!existingAddressKeys.has(addressKey)) {
                         // Save address to customer profile
-                        const success = await saveShippingAddressToCustomer(context, customer.customerId, address);
+                        const success = await saveCustomerAddress(context, customer.customerId, customerAddress);
                         if (!success) {
                             profileUpdateError = true;
                         }

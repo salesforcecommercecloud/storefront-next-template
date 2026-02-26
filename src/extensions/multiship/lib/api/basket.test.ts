@@ -135,6 +135,38 @@ describe('findOrCreateDeliveryShipment', () => {
             expect(result.shipmentId).toBe(capturedShipmentId);
         });
 
+        it('creates delivery shipment with address when address is provided', async () => {
+            const address: ShopperBasketsV2.schemas['OrderAddress'] = {
+                firstName: 'John',
+                lastName: 'Doe',
+                address1: '123 Main St',
+                city: 'Springfield',
+                stateCode: 'IL',
+                postalCode: '62701',
+                countryCode: 'US',
+            };
+
+            let capturedBody: any;
+            mockShopperBasketsV2.createShipmentForBasket.mockImplementation(({ body }: any) => {
+                capturedBody = body;
+                const newShipment = { shipmentId: body.shipmentId };
+                return Promise.resolve({ data: { shipments: [newShipment] } });
+            });
+
+            const { createDeliveryShipment } = await import('./basket');
+            const result = await createDeliveryShipment(mockContext, 'basket-123', address);
+
+            expect(mockShopperBasketsV2.createShipmentForBasket).toHaveBeenCalledWith({
+                params: { path: { basketId: 'basket-123' } },
+                body: {
+                    shipmentId: expect.stringContaining('Shipment_'),
+                    shippingAddress: address,
+                },
+            });
+            expect(capturedBody.shippingAddress).toEqual(address);
+            expect(result.shipmentId).toBe(capturedBody.shipmentId);
+        });
+
         it('throws error when shipment not found after creation', async () => {
             const basket = {
                 basketId: 'basket-123',
@@ -1276,6 +1308,30 @@ describe('resolveEmptyShipments', () => {
 
             await resolveEmptyShipments(mockContext, basket);
 
+            expect(mockShopperBasketsV2.updateShippingMethodForShipment).not.toHaveBeenCalled();
+        });
+
+        it('returns early when updatedBasket has no basketId after removing empty shipments', async () => {
+            const basket = {
+                basketId: 'basket-123',
+                shipments: [{ shipmentId: 'empty-shipment-1' }],
+                productItems: [],
+            } as ShopperBasketsV2.schemas['Basket'];
+
+            // Mock removeEmptyShipments to return a basket without basketId
+            const basketWithoutId = {
+                shipments: [],
+                productItems: [],
+            } as ShopperBasketsV2.schemas['Basket'];
+
+            mockShopperBasketsV2.removeShipmentFromBasket.mockResolvedValue({
+                data: basketWithoutId,
+            });
+
+            await resolveEmptyShipments(mockContext, basket);
+
+            // Should return early, so no further API calls should be made
+            expect(mockShopperBasketsV2.updateShippingAddressForShipment).not.toHaveBeenCalled();
             expect(mockShopperBasketsV2.updateShippingMethodForShipment).not.toHaveBeenCalled();
         });
     });

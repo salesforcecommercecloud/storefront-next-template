@@ -13,6 +13,7 @@
             "selectStatePlaceholder": "Seleziona stato",
             "selectProvincePlaceholder": "Seleziona provincia",
             "addressFormValidationError": "Per favore, riempi tutti i campi",
+            "deliveryAddressFallback": "Indirizzo di consegna {{firstName}} {{lastName}}",
             "saveButton": "Salva",
             "cancelButton": "Annulla"
         },

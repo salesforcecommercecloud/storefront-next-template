@@ -21,6 +21,7 @@ import { getAuth, clearInvalidSessionAndRestoreGuest } from '@/middlewares/auth.
 import { loginRegisteredUser } from '@/lib/api/auth/standard-login';
 import { extractResponseError } from '@/lib/utils';
 import { getTranslation } from '@/lib/i18next';
+import { orderAddressToCustomerAddress } from '@/lib/address-utils';
 
 /**
  * Customer lookup result
@@ -38,7 +39,9 @@ export interface CustomerLookupResult {
  * @param address - The address to validate
  * @throws Error if any required field is missing
  */
-function validateAddress(address: ShopperBasketsV2.schemas['OrderAddress']): void {
+function validateAddress(
+    address: ShopperBasketsV2.schemas['OrderAddress'] | ShopperCustomers.schemas['CustomerAddress']
+): void {
     const { t } = getTranslation();
 
     if (!address.countryCode) {
@@ -449,6 +452,41 @@ export async function registerGuestUser(
 }
 
 /**
+ * Save a customer address to their profile
+ *
+ * @param context - React Router context
+ * @param customerId - The customer ID to save the address for
+ * @param address - The customer address to save
+ * @returns Promise<boolean> indicating success
+ */
+export async function saveCustomerAddress(
+    context: ActionFunctionArgs['context'],
+    customerId: string,
+    address: ShopperCustomers.schemas['CustomerAddress']
+): Promise<boolean> {
+    try {
+        const clients = createApiClients(context);
+
+        // Validate required address fields
+        validateAddress(address);
+
+        await clients.shopperCustomers.createCustomerAddress({
+            params: {
+                path: {
+                    customerId,
+                },
+            },
+            body: address,
+        });
+
+        return true;
+    } catch {
+        // Failed to save address
+        return false;
+    }
+}
+
+/**
  * Save customer's shipping address to their profile
  *
  * @param context - React Router context
@@ -461,41 +499,9 @@ export async function saveShippingAddressToCustomer(
     customerId: string,
     address: ShopperBasketsV2.schemas['OrderAddress']
 ): Promise<boolean> {
-    try {
-        const clients = createApiClients(context);
-
-        // Validate required address fields
-        validateAddress(address);
-
-        // Create the address for the customer with validated fields
-        const customerAddress = {
-            addressId: `shipping_${Date.now()}`, // Generate unique address ID
-            address1: address.address1 as string,
-            address2: address.address2,
-            city: address.city as string,
-            countryCode: address.countryCode as string,
-            firstName: address.firstName as string,
-            lastName: address.lastName as string,
-            phone: address.phone,
-            postalCode: address.postalCode as string,
-            stateCode: address.stateCode,
-            preferred: true, // Set as preferred shipping address
-        };
-
-        await clients.shopperCustomers.createCustomerAddress({
-            params: {
-                path: {
-                    customerId,
-                },
-            },
-            body: customerAddress,
-        });
-
-        return true;
-    } catch {
-        // Failed to save shipping address
-        return false;
-    }
+    // Convert OrderAddress to CustomerAddress and delegate to saveCustomerAddress
+    const customerAddress = orderAddressToCustomerAddress(address, true);
+    return saveCustomerAddress(context, customerId, customerAddress);
 }
 
 /**

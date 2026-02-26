@@ -15,7 +15,7 @@
  */
 
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
-import { isAddressEmpty } from './checkout-addresses';
+import { isAddressEmpty } from '@/lib/address-utils';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import {
     getPickupShipmentDistribution,

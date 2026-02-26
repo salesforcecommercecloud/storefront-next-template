@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { createContext } from 'react';
-import type { ShopperBasketsV2, ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import type { ShipmentDistribution } from './checkout-distribution';
 
 export const CHECKOUT_STEPS = {
@@ -57,13 +57,11 @@ export interface CheckoutContextValue {
     customerProfile?: CustomerProfile;
     shippingDefaultSet: Promise<undefined>;
     shipmentDistribution: ShipmentDistribution;
-    savedAddresses: ShopperBasketsV2.schemas['OrderAddress'][];
-    setSavedAddresses: (addresses: ShopperBasketsV2.schemas['OrderAddress'][]) => void;
+    savedAddresses: ShopperCustomers.schemas['CustomerAddress'][];
+    setSavedAddresses: (addresses: ShopperCustomers.schemas['CustomerAddress'][]) => void;
     // sfdc-extension-block-start SFDC_EXT_MULTISHIP
-    productItemAddresses?: Map<string, ShopperBasketsV2.schemas['OrderAddress'] & { id: string }>;
-    setProductItemAddresses?: (
-        productItemAddresses: Map<string, ShopperBasketsV2.schemas['OrderAddress'] & { id: string }>
-    ) => void;
+    productItemAddresses?: Map<string, ShopperCustomers.schemas['CustomerAddress']>;
+    setProductItemAddresses?: (productItemAddresses: Map<string, ShopperCustomers.schemas['CustomerAddress']>) => void;
     // sfdc-extension-block-end SFDC_EXT_MULTISHIP
     goToNextStep: () => void;
     goToStep: (step: CheckoutStep) => void;

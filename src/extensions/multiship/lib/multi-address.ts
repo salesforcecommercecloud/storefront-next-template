@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import type { CustomerProfile } from '@/components/checkout/utils/checkout-context-types';
-import { getAddressKey, customerAddressToOrderAddress } from './address-utils';
+import { getAddressKey } from './address-utils';
+import { orderAddressToCustomerAddress } from '@/lib/address-utils';
 
 /**
  * Consolidates addresses from basket shipments and customer profile into a single array.
- * Addresses from shipments come first (in shipment order), followed by customer addresses
- * not used in shipments.
- * Duplicates are removed based on isAddressEqual comparison.
- * All returned addresses include an 'id' field for identification.
+ * Customer addresses are added first (priority), followed by addresses from shipments
+ * not matching customer profile addresses.
+ * Duplicates are removed based on address key comparison.
+ * All returned addresses are CustomerAddress with addressId field.
  *
  * @param basket - The shopping basket with shipments
  * @param customerProfile - The customer profile with saved addresses
  * @param deliveryShipments - Optional array of delivery shipments to filter by
  * @param savedAddresses - Optional array of saved addresses to filter by from checkout context
- * @returns Array of order addresses with id field, ordered by priority (shipments, then customer)
+ * @returns Array of customer addresses, ordered by priority (customer addresses first, then shipments)
  */
 export function consolidateAddresses({
     basket,
@@ -40,80 +41,60 @@ export function consolidateAddresses({
     basket?: ShopperBasketsV2.schemas['Basket'];
     customerProfile?: CustomerProfile;
     deliveryShipments?: ShopperBasketsV2.schemas['Shipment'][];
-    savedAddresses?: ShopperBasketsV2.schemas['OrderAddress'][];
-}): (ShopperBasketsV2.schemas['OrderAddress'] & { id: string })[] {
-    const result: (ShopperBasketsV2.schemas['OrderAddress'] & { id: string })[] = [];
+    savedAddresses?: ShopperCustomers.schemas['CustomerAddress'][];
+}): ShopperCustomers.schemas['CustomerAddress'][] {
+    const result: ShopperCustomers.schemas['CustomerAddress'][] = [];
     const addedAddressKeys = new Set<string>();
 
     // Precompute Maps for O(1) lookups
-    const customerAddressMap = new Map<string, ShopperBasketsV2.schemas['OrderAddress'] & { id: string }>();
+    const customerAddressMap = new Map<string, ShopperCustomers.schemas['CustomerAddress']>();
     if (customerProfile?.addresses) {
         for (const customerAddr of customerProfile.addresses) {
-            const key = getAddressKey(customerAddr as ShopperBasketsV2.schemas['OrderAddress']);
-            const orderAddress = customerAddressToOrderAddress(customerAddr);
-            customerAddressMap.set(key, {
-                ...orderAddress,
-                id: customerAddr.addressId || `customer_${key}`,
-            });
+            const key = getAddressKey(customerAddr);
+            // Ensure addressId exists, use it as the identifier
+            if (!customerAddr.addressId) {
+                customerAddr.addressId = `customer_${Date.now()}`;
+            }
+            customerAddressMap.set(key, customerAddr);
         }
     }
 
-    const shipmentAddressMap = new Map<string, ShopperBasketsV2.schemas['OrderAddress'] & { id: string }>();
     const shipmentsToProcess = deliveryShipments ?? basket?.shipments;
 
-    if (shipmentsToProcess) {
-        for (const shipment of shipmentsToProcess) {
-            if (shipment.shippingAddress) {
-                const key = getAddressKey(shipment.shippingAddress);
-                // Only add if not already in map (preserves first occurrence for duplicates)
-                if (!shipmentAddressMap.has(key)) {
-                    shipmentAddressMap.set(key, {
-                        ...shipment.shippingAddress,
-                        id: `shipment_${shipment.shipmentId}`,
-                    });
-                }
+    // Step 1: Add customer addresses first (they have priority)
+    if (customerProfile?.addresses) {
+        for (const customerAddress of customerProfile.addresses) {
+            const addressKey = getAddressKey(customerAddress);
+
+            // Skip if we've already added this address
+            if (addedAddressKeys.has(addressKey)) continue;
+
+            // Ensure addressId exists
+            if (!customerAddress.addressId) {
+                customerAddress.addressId = `customer_${Date.now()}`;
             }
+
+            result.push(customerAddress);
+            addedAddressKeys.add(addressKey);
         }
     }
 
-    // Step 1: Add addresses from shipments (in shipment order)
+    // Step 2: Add addresses from shipments (in shipment order)
+    // Addresses that match customer profile are already in result from Step 1, so skip them
     if (shipmentsToProcess) {
         for (const shipment of shipmentsToProcess) {
             if (!shipment.shippingAddress) continue;
 
             const addressKey = getAddressKey(shipment.shippingAddress);
 
-            // Skip if we've already added this address
+            // Skip if we've already added this address (from customer profile in Step 1)
             if (addedAddressKeys.has(addressKey)) continue;
 
-            // Check if this address exists in customer profile (O(1) lookup)
-            const matchingCustomerAddress = customerAddressMap.get(addressKey);
+            // Convert OrderAddress to CustomerAddress, generate addressId
+            const customerAddr = orderAddressToCustomerAddress(shipment.shippingAddress);
+            customerAddr.addressId = `shipment_${shipment.shipmentId}`;
+            result.push(customerAddr);
 
-            if (matchingCustomerAddress) {
-                // Use the customer's saved address with id
-                result.push(matchingCustomerAddress);
-            } else {
-                // Use the shipment address with id
-                const shipmentAddress = shipmentAddressMap.get(addressKey);
-                if (shipmentAddress) {
-                    result.push(shipmentAddress);
-                }
-            }
-
-            addedAddressKeys.add(addressKey);
-        }
-    }
-
-    // Step 2: Add remaining customer addresses that weren't used in shipments
-    if (customerProfile?.addresses) {
-        for (const customerAddress of customerProfile.addresses) {
-            const addressKey = getAddressKey(customerAddress as ShopperBasketsV2.schemas['OrderAddress']);
-
-            // Skip if we've already added this address
-            if (addedAddressKeys.has(addressKey)) continue;
-
-            const orderAddress = customerAddressToOrderAddress(customerAddress);
-            result.push({ ...orderAddress, id: customerAddress.addressId || `customer_${addressKey}` });
             addedAddressKeys.add(addressKey);
         }
     }
@@ -122,10 +103,13 @@ export function consolidateAddresses({
     if (savedAddresses) {
         for (const address of savedAddresses) {
             const addressKey = getAddressKey(address);
-
-            // Skip if we've already added this address
             if (addedAddressKeys.has(addressKey)) continue;
-            result.push(address as ShopperBasketsV2.schemas['OrderAddress'] & { id: string });
+            // Ensure addressId exists
+            if (!address.addressId) {
+                address.addressId = `saved_${Date.now()}`;
+            }
+            result.push(address);
+            addedAddressKeys.add(addressKey);
         }
     }
 
@@ -140,15 +124,15 @@ export function consolidateAddresses({
  * @param productItems - Optional subset of product items to iterate over
  * @param shipments - Array of shipments to get shipping addresses from
  * @param productItemAddresses - Optional map of product item addresses to add to the map from checkout context
- * @returns Map of itemId to the item's shipment address with id
+ * @returns Map of itemId to the item's shipment address (CustomerAddress)
  */
 export function initializeItemAddresses(
-    consolidatedAddresses: (ShopperBasketsV2.schemas['OrderAddress'] & { id: string })[],
+    consolidatedAddresses: ShopperCustomers.schemas['CustomerAddress'][],
     productItems?: ShopperBasketsV2.schemas['ProductItem'][],
     shipments?: ShopperBasketsV2.schemas['Shipment'][],
-    productItemAddresses?: Map<string, ShopperBasketsV2.schemas['OrderAddress'] & { id: string }>
-): Map<string, ShopperBasketsV2.schemas['OrderAddress'] & { id: string }> {
-    const map = new Map<string, ShopperBasketsV2.schemas['OrderAddress'] & { id: string }>();
+    productItemAddresses?: Map<string, ShopperCustomers.schemas['CustomerAddress']>
+): Map<string, ShopperCustomers.schemas['CustomerAddress']> {
+    const map = new Map<string, ShopperCustomers.schemas['CustomerAddress']>();
 
     if (!productItems || !shipments) return map;
 
@@ -161,7 +145,7 @@ export function initializeItemAddresses(
     }
 
     // Build addressKey -> consolidated address Map for O(1) lookups
-    const addressLookup = new Map<string, ShopperBasketsV2.schemas['OrderAddress'] & { id: string }>();
+    const addressLookup = new Map<string, ShopperCustomers.schemas['CustomerAddress']>();
     for (const addr of consolidatedAddresses) {
         const key = getAddressKey(addr);
         addressLookup.set(key, addr);
@@ -179,7 +163,14 @@ export function initializeItemAddresses(
         const matchingAddress = addressLookup.get(addressKey);
 
         if (matchingAddress) {
+            // Use consolidated address (which may be from customer profile with preserved addressId)
             map.set(item.itemId, matchingAddress);
+        } else {
+            // Fallback: Convert shipment OrderAddress to CustomerAddress
+            // This should rarely happen since consolidateAddresses processes all shipments
+            const customerAddr = orderAddressToCustomerAddress(shipment.shippingAddress);
+            customerAddr.addressId = `shipment_${shipment.shipmentId}`;
+            map.set(item.itemId, customerAddr);
         }
     }
 
@@ -198,23 +189,23 @@ export function initializeItemAddresses(
  * Addresses from itemAddresses come first (prioritized, added as-is), followed by addresses
  * from consolidatedAddresses that aren't duplicates.
  * Duplicates are removed based on address key comparison.
- * All returned addresses include an 'id' field for identification.
+ * All returned addresses are CustomerAddress with addressId field.
  *
- * @param itemAddresses - Optional Map of item addresses to prioritize first (keys are ignored, values are added as-is, must have id)
+ * @param itemAddresses - Optional Map of item addresses to prioritize first (keys are ignored, values are added as-is, must have addressId)
  * @param consolidatedAddresses - Pre-consolidated addresses (typically output of consolidateAddresses)
- * @returns Array of order addresses with id field, ordered by priority (item addresses first, then initial consolidated addresses)
+ * @returns Array of customer addresses, ordered by priority (item addresses first, then initial consolidated addresses)
  */
 export function updateItemAddresses({
     itemAddresses,
     consolidatedAddresses,
 }: {
-    itemAddresses?: Map<string, ShopperBasketsV2.schemas['OrderAddress'] & { id: string }>;
-    consolidatedAddresses: (ShopperBasketsV2.schemas['OrderAddress'] & { id: string })[];
-}): (ShopperBasketsV2.schemas['OrderAddress'] & { id: string })[] {
-    const result: (ShopperBasketsV2.schemas['OrderAddress'] & { id: string })[] = [];
+    itemAddresses?: Map<string, ShopperCustomers.schemas['CustomerAddress']>;
+    consolidatedAddresses: ShopperCustomers.schemas['CustomerAddress'][];
+}): ShopperCustomers.schemas['CustomerAddress'][] {
+    const result: ShopperCustomers.schemas['CustomerAddress'][] = [];
     const addedAddressKeys = new Set<string>();
 
-    // Step 1: Add addresses from itemAddresses (prioritized first, added as-is with id)
+    // Step 1: Add addresses from itemAddresses (prioritized first, added as-is with addressId)
     if (itemAddresses) {
         for (const itemAddress of itemAddresses.values()) {
             const addressKey = getAddressKey(itemAddress);
@@ -222,7 +213,7 @@ export function updateItemAddresses({
             // Skip if we've already added this address
             if (addedAddressKeys.has(addressKey)) continue;
 
-            // Add item address as-is (assume it has id)
+            // Add item address as-is (assume it has addressId)
             result.push(itemAddress);
             addedAddressKeys.add(addressKey);
         }

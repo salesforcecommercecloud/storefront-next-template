@@ -15,7 +15,7 @@
  */
 import type { ReactElement } from 'react';
 import { Typography } from '@/components/typography';
-import { isAddressEmpty } from '../utils/checkout-addresses';
+import { isAddressEmpty } from '@/lib/address-utils';
 
 export type ShippingAddressDisplayProps = {
     /** Address to display (order/basket address shape). When null/undefined or empty, notProvidedText is shown. */

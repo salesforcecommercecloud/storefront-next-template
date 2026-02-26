@@ -24,7 +24,7 @@ import {
     type CustomerProfile,
 } from './checkout-context-types';
 import { useBasket } from '@/providers/basket';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { computeFinalStepForReturningCustomer, computeStepFromBasket } from './checkout-utils';
 import { getShipmentDistribution } from './checkout-distribution';
 
@@ -40,10 +40,10 @@ export default function CheckoutProvider({ children, customerProfile, shippingDe
     const [editingStep, setEditingStep] = useState<CheckoutStep | null>(null);
     const [currentStep, setCurrentStep] = useState<CheckoutStep>(CHECKOUT_STEPS.CONTACT_INFO);
     const [isActiveCheckoutFlow, setIsActiveCheckoutFlow] = useState(false);
-    const [savedAddresses, setSavedAddresses] = useState<ShopperBasketsV2.schemas['OrderAddress'][]>([]);
+    const [savedAddresses, setSavedAddresses] = useState<ShopperCustomers.schemas['CustomerAddress'][]>([]);
     // sfdc-extension-line SFDC_EXT_MULTISHIP
     const [productItemAddresses, setProductItemAddresses] = useState<
-        Map<string, ShopperBasketsV2.schemas['OrderAddress'] & { id: string }>
+        Map<string, ShopperCustomers.schemas['CustomerAddress']>
     >(new Map());
 
     // Get checkout step order based on whether address and options are needed

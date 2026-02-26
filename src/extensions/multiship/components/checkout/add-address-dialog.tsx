@@ -28,7 +28,6 @@ import { NativeSelect } from '@/components/ui/native-select';
 import { createCustomerAddressFormSchema, type CustomerAddressFormData } from '@/components/customer-address-form';
 import { COUNTRY_CODES } from '@/components/customer-address-form/constants';
 import { getStatesForCountry, getCountryName } from '@/components/customer-address-form/utils';
-import { getAddressKey } from '@/extensions/multiship/lib/address-utils';
 
 /**
  * Props for the AddAddressDialog component.
@@ -38,12 +37,14 @@ import { getAddressKey } from '@/extensions/multiship/lib/address-utils';
  * @property {(open: boolean) => void} onOpenChange - Callback function invoked when the dialog open state changes
  * @property {(address: ShopperCustomers.schemas['CustomerAddress']) => void} onSave - Callback function invoked when the address form is submitted with valid data
  * @property {Partial<ShopperCustomers.schemas['CustomerAddress']>} [defaultValues] - Optional default values to populate the form fields
+ * @property {boolean} [hideAddressId] - Whether to hide the addressId field (defaults to false). When true, addressId is still generated automatically using a fallback format.
  */
 interface AddAddressDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onSave: (address: ShopperCustomers.schemas['CustomerAddress']) => void;
     defaultValues?: Partial<ShopperCustomers.schemas['CustomerAddress']>;
+    hideAddressId?: boolean; // New prop to hide addressId field
 }
 
 /**
@@ -78,16 +79,33 @@ interface AddAddressDialogProps {
  * />
  * ```
  */
-export function AddAddressDialog({ open, onOpenChange, onSave, defaultValues }: AddAddressDialogProps) {
+export function AddAddressDialog({
+    open,
+    onOpenChange,
+    onSave,
+    defaultValues,
+    hideAddressId = false,
+}: AddAddressDialogProps) {
     const { t: tAccount } = useTranslation(['errors', 'account']);
     const { t: tAddressForm } = useTranslation(['extMultiship']);
     const schema = useMemo(() => createCustomerAddressFormSchema(tAccount), [tAccount]);
+
+    // Helper function to generate addressId fallback from firstName and lastName
+    const generateAddressIdFallback = (firstName?: string, lastName?: string): string => {
+        const firstNameTrimmed = firstName?.trim() || '';
+        const lastNameTrimmed = lastName?.trim() || '';
+        return tAddressForm('checkout.addressForm.deliveryAddressFallback', {
+            firstName: firstNameTrimmed,
+            lastName: lastNameTrimmed,
+        }).trim();
+    };
 
     const form = useForm<CustomerAddressFormData>({
         // @ts-expect-error - zodResolver type mismatch with zod version
         resolver: zodResolver(schema),
         defaultValues: {
-            addressId: defaultValues?.addressId || '',
+            // When hideAddressId is true we need a temporary addressId to pass form validation
+            addressId: hideAddressId && !defaultValues?.addressId ? 'new_address' : defaultValues?.addressId || '',
             firstName: defaultValues?.firstName || '',
             lastName: defaultValues?.lastName || '',
             phone: defaultValues?.phone || '',
@@ -136,8 +154,16 @@ export function AddAddressDialog({ open, onOpenChange, onSave, defaultValues }: 
     }, [countryCode, tAddressForm]);
 
     const handleSubmit = form.handleSubmit((data) => {
+        // For guest shoppers (hideAddressId=true), always generate fallback from firstName and lastName
+        // since the field is hidden and the default value is just a placeholder for validation
+        // For registered shoppers, preserve their custom label if entered
+        const addressId =
+            hideAddressId || !data.addressId?.trim()
+                ? generateAddressIdFallback(data.firstName, data.lastName)
+                : data.addressId.trim();
+
         const newAddress: ShopperCustomers.schemas['CustomerAddress'] = {
-            addressId: getAddressKey(data),
+            addressId,
             firstName: data.firstName,
             lastName: data.lastName,
             address1: data.address1,
@@ -165,25 +191,29 @@ export function AddAddressDialog({ open, onOpenChange, onSave, defaultValues }: 
                         }}
                         className="space-y-6">
                         <div className="space-y-4">
-                            {/* Address Title Field */}
-                            <FormField
-                                control={control}
-                                name="addressId"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormControl>
-                                            <Input
-                                                type="text"
-                                                maxLength={256}
-                                                placeholder={tAccount('account:addressForm.addressTitlePlaceholder')}
-                                                className="rounded-md"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                            {/* Address Title Field - Hidden for guest shoppers */}
+                            {!hideAddressId && (
+                                <FormField
+                                    control={control}
+                                    name="addressId"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormControl>
+                                                <Input
+                                                    type="text"
+                                                    maxLength={256}
+                                                    placeholder={tAccount(
+                                                        'account:addressForm.addressTitlePlaceholder'
+                                                    )}
+                                                    className="rounded-md"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            )}
 
                             {/* First Name and Last Name Row */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -52,7 +52,7 @@ export function isAddressEqual(
  * @returns Formatted address string
  */
 export function formatAddress(
-    address?: ShopperBasketsV2.schemas['OrderAddress'] | null,
+    address?: ShopperBasketsV2.schemas['OrderAddress'] | ShopperCustomers.schemas['CustomerAddress'] | null,
     fallbackText: string = ''
 ): string {
     if (!address) return fallbackText;
@@ -65,33 +65,6 @@ export function formatAddress(
     ].filter(Boolean);
 
     return parts.join(', ');
-}
-
-/**
- * Converts an OrderAddress to a CustomerAddress format
- * This is useful for creating guest addresses or converting between address types
- *
- * @param orderAddress - The order address to convert
- * @param preferred - Whether this should be marked as a preferred address (defaults to false)
- * @returns CustomerAddress with auto-generated addressId
- */
-export function orderAddressToCustomerAddress(
-    orderAddress: ShopperBasketsV2.schemas['OrderAddress'],
-    preferred: boolean = false
-): ShopperCustomers.schemas['CustomerAddress'] {
-    return {
-        addressId: `shipping_${Date.now()}`, // Generate unique address ID
-        address1: orderAddress.address1 || '',
-        address2: orderAddress.address2,
-        city: orderAddress.city || '',
-        countryCode: orderAddress.countryCode || 'US',
-        firstName: orderAddress.firstName || '',
-        lastName: orderAddress.lastName || '',
-        phone: orderAddress.phone,
-        postalCode: orderAddress.postalCode || '',
-        stateCode: orderAddress.stateCode,
-        preferred,
-    };
 }
 
 /**

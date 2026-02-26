@@ -57,7 +57,7 @@ import {
     updateItemAddresses,
     initializeItemAddresses,
 } from '@/extensions/multiship/lib/multi-address';
-import { formatAddress, customerAddressToOrderAddress, getAddressKey } from '@/extensions/multiship/lib/address-utils';
+import { formatAddress, getAddressKey } from '@/extensions/multiship/lib/address-utils';
 import { AddAddressDialog } from '@/extensions/multiship/components/checkout/add-address-dialog';
 import { useCheckoutContext } from '@/hooks/use-checkout';
 import type { CheckoutActionData } from '@/components/checkout/types';
@@ -213,7 +213,7 @@ export default function ShippingMultiAddress({
 
     // Track selected addresses for each item
     const [itemAddresses, setItemAddresses] =
-        useState<Map<string, ShopperBasketsV2.schemas['OrderAddress'] & { id: string }>>(initialItemAddresses);
+        useState<Map<string, ShopperCustomers.schemas['CustomerAddress']>>(initialItemAddresses);
 
     // Update item addresses when basket or customer profile changes
     useEffect(() => {
@@ -235,9 +235,7 @@ export default function ShippingMultiAddress({
     }, [isEditing, productMap, productItems]);
 
     // Remember all addresses that have ever been in itemAddresses
-    const rememberedAddresses = useRef<Map<string, ShopperBasketsV2.schemas['OrderAddress'] & { id: string }>>(
-        new Map()
-    );
+    const rememberedAddresses = useRef<Map<string, ShopperCustomers.schemas['CustomerAddress']>>(new Map());
 
     // Get consolidated addresses for selection
     const availableAddresses = useMemo(() => {
@@ -254,7 +252,7 @@ export default function ShippingMultiAddress({
     }, [isEditing, itemAddresses, consolidatedAddresses]);
 
     const handleAddressSelect = (itemId: string, addressId: string) => {
-        const selectedAddress = availableAddresses.find((addr) => addr.id === addressId);
+        const selectedAddress = availableAddresses.find((addr) => addr.addressId === addressId);
         if (selectedAddress) {
             setItemAddresses((prev) => {
                 const newMap = new Map(prev);
@@ -283,18 +281,18 @@ export default function ShippingMultiAddress({
         // Group items by address (address -> items map)
         const addressToItemsMap = new Map<
             string,
-            { address: ShopperBasketsV2.schemas['OrderAddress']; itemIds: string[] }
+            { address: ShopperCustomers.schemas['CustomerAddress']; itemIds: string[] }
         >();
 
-        itemAddresses.forEach((address, itemId) => {
+        itemAddresses.forEach((customerAddress, itemId) => {
             // Create address key for grouping by address
-            const addressKey = getAddressKey(address);
+            const addressKey = getAddressKey(customerAddress);
 
             // Get or create address group
             let addressGroup = addressToItemsMap.get(addressKey);
             if (!addressGroup) {
                 addressGroup = {
-                    address,
+                    address: customerAddress, // Keep as CustomerAddress
                     itemIds: [],
                 };
                 addressToItemsMap.set(addressKey, addressGroup);
@@ -303,8 +301,10 @@ export default function ShippingMultiAddress({
         });
 
         // Convert Map to object for JSON serialization
-        const addressToItems: Record<string, { address: ShopperBasketsV2.schemas['OrderAddress']; itemIds: string[] }> =
-            {};
+        const addressToItems: Record<
+            string,
+            { address: ShopperCustomers.schemas['CustomerAddress']; itemIds: string[] }
+        > = {};
         addressToItemsMap.forEach((value, addressKey) => {
             addressToItems[addressKey] = value;
         });
@@ -324,22 +324,15 @@ export default function ShippingMultiAddress({
 
     // Handle adding new address to each product item
     const handleAddAddress = (newAddress: ShopperCustomers.schemas['CustomerAddress']) => {
-        // Convert CustomerAddress to OrderAddress with id
-        const orderAddress = customerAddressToOrderAddress(newAddress);
-        const addressWithId: ShopperBasketsV2.schemas['OrderAddress'] & { id: string } = {
-            ...orderAddress,
-            id: newAddress.addressId || `new_${Date.now()}`,
-        };
-
         // Remember the new address
-        const addressKey = getAddressKey(addressWithId);
-        rememberedAddresses.current.set(addressKey, addressWithId);
+        const addressKey = getAddressKey(newAddress);
+        rememberedAddresses.current.set(addressKey, newAddress);
 
         // If currentItemId is set, assign the address to that item
         if (currentItemId) {
             setItemAddresses((prev) => {
                 const newMap = new Map(prev);
-                newMap.set(currentItemId, addressWithId);
+                newMap.set(currentItemId, newAddress);
                 return newMap;
             });
 
@@ -349,7 +342,7 @@ export default function ShippingMultiAddress({
                 if (itemId && !itemAddresses.has(itemId)) {
                     setItemAddresses((prev) => {
                         const newMap = new Map(prev);
-                        newMap.set(itemId, addressWithId);
+                        newMap.set(itemId, newAddress);
                         return newMap;
                     });
                 }
@@ -461,7 +454,7 @@ export default function ShippingMultiAddress({
                                             className="w-full h-9 text-sm"
                                             value={
                                                 productItem?.itemId
-                                                    ? itemAddresses.get(productItem.itemId)?.id || ''
+                                                    ? itemAddresses.get(productItem.itemId)?.addressId || ''
                                                     : ''
                                             }
                                             onChange={(e) => {
@@ -477,7 +470,7 @@ export default function ShippingMultiAddress({
                                                     : tMultiship('checkout.noAddressAvailable')}
                                             </option>
                                             {availableAddresses.map((address) => (
-                                                <option key={address.id} value={address.id}>
+                                                <option key={address.addressId} value={address.addressId}>
                                                     {formatAddress(address)}
                                                 </option>
                                             ))}
@@ -520,6 +513,7 @@ export default function ShippingMultiAddress({
                 open={addAddressDialogOpen}
                 onOpenChange={setAddAddressDialogOpen}
                 onSave={handleAddAddress}
+                hideAddressId={!customerProfile?.customer?.customerId}
             />
         </>
     );
