@@ -19,7 +19,7 @@ import {
     SLAS_AUTH_ENDPOINTS,
     type Middleware,
 } from '@salesforce/storefront-next-runtime/scapi';
-import { authContext } from '@/middlewares/auth.utils';
+import { AUTH_TOKEN_INVALID_ERROR, authContext, authStorageContext } from '@/middlewares/auth.utils';
 import { correlationContext } from '@/lib/correlation';
 import { maintenanceContext } from '@/lib/maintenance';
 import { getConfig } from '@/config';
@@ -83,7 +83,17 @@ export function createApiClients(context: RouterContextProvider | Readonly<Route
         clientId,
         clientSecret: getSlasClientSecret(),
         redirectUri,
-    });
+        onAuthTokenInvalid: () => {
+            try {
+                const authStorage = context.get(authStorageContext);
+                if (authStorage && !authStorage.has('error')) {
+                    authStorage.set('error', AUTH_TOKEN_INVALID_ERROR);
+                }
+            } catch {
+                // Intentionally ignore if auth storage is unavailable (client-side)
+            }
+        },
+    } as Parameters<typeof createCommerceApiClients>[0]);
 
     // Add authentication middleware - inject Bearer token from auth context
     const authMiddleware: Middleware = {

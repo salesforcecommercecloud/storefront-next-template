@@ -18,6 +18,7 @@ export type * from './types';
 export * from './createClients';
 export * from './createClient';
 export { ApiError, type ErrorDetail } from './ApiError';
+export { AuthTokenInvalidError } from './AuthTokenInvalidError';
 export { SLAS_AUTH_ENDPOINTS } from './constants';
 export { createBasketHelpers } from './basket';
 export type {

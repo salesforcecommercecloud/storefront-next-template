@@ -42,6 +42,8 @@ export const COOKIE_IDP_ACCESS_TOKEN = 'cc-idp-at'; // IDP access token (for soc
 export const COOKIE_CODE_VERIFIER = 'cc-cv'; // OAuth2 PKCE code verifier (server-only, short-lived)
 export const COOKIE_TRACKING_CONSENT = 'dw_dnt'; // Tracking consent preference (cookie value matches TrackingConsent enum)
 export const COOKIE_DWSID = 'dwsid'; // Hybrid storefront session ID (for session bridge)
+export const COOKIE_AUTH_RECOVERY_GUARD = 'cc-auth-recover'; // Auth recovery loop guard
+export const AUTH_TOKEN_INVALID_ERROR = 'AUTH_TOKEN_INVALID';
 
 /**
  * Check if tracking consent feature is enabled in the app configuration.
@@ -151,6 +153,7 @@ export const getRefreshTokenExpiry = (
 
 export type AuthStorageData = AuthData & StorageMetaData & StorageErrorData;
 export const authContext = createContext<{ ref: Promise<AuthData | undefined> }>();
+export const authStorageContext = createContext<Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>>();
 
 /**
  * Shared utility to write Commerce API auth information from a given token response into the given storage container.

@@ -657,9 +657,9 @@ describe('createCommerceApiClients', () => {
             it('should throw ApiError with correct error details', async () => {
                 // RFC 7807 error format
                 const errorData = {
-                    type: 'UnauthorizedException',
-                    title: 'Unauthorized',
-                    detail: 'Authentication credentials are missing or invalid',
+                    type: 'ForbiddenException',
+                    title: 'Forbidden',
+                    detail: 'Authenticated user does not have access to this resource',
                 };
                 const errorHeaders = new Headers({
                     'content-type': 'application/json',
@@ -667,8 +667,8 @@ describe('createCommerceApiClients', () => {
                 });
                 mockFetch.mockResolvedValue({
                     ok: false,
-                    status: 401,
-                    statusText: 'Unauthorized',
+                    status: 403,
+                    statusText: 'Forbidden',
                     headers: errorHeaders,
                     json: () => Promise.resolve(errorData),
                     text: () => Promise.resolve(JSON.stringify(errorData)),
@@ -695,8 +695,8 @@ describe('createCommerceApiClients', () => {
                 } catch (error) {
                     expect(error).toBeInstanceOf(ApiError);
                     const apiError = error as ApiError;
-                    expect(apiError.status).toBe(401);
-                    expect(apiError.statusText).toBe('Unauthorized');
+                    expect(apiError.status).toBe(403);
+                    expect(apiError.statusText).toBe('Forbidden');
                     expect(apiError.body).toEqual(errorData);
                     expect(apiError.rawBody).toBe(JSON.stringify(errorData));
                     expect(apiError.headers).toBe(errorHeaders);

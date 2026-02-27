@@ -29016,6 +29016,8 @@ interface CommerceApiClientConfig extends ClientOptions {
   clientSecret?: string;
   /** OAuth redirect URI - must be registered in SLAS configuration */
   redirectUri: string;
+  /** Optional callback when access token is invalidated */
+  onAuthTokenInvalid?: (response: Response) => void;
 }
 type Clients = {
   shopperBasketsV1: ProxyClient<Client<ShopperBasketsV1.endpoints>, typeof operations>;
@@ -29043,6 +29045,13 @@ type Clients = {
 declare function createCommerceApiClients(config: CommerceApiClientConfig): Clients;
 //#endregion
 //#region src/scapi-client/createClient.d.ts
+/**
+ * Optional hooks for client behavior.
+ */
+interface CreateClientOptions {
+  /** Callback invoked when an auth token is deemed invalid */
+  onAuthTokenInvalid?: (response: Response) => void;
+}
 /**
  * Global request parameters that are automatically merged into every API call.
  *
@@ -29109,7 +29118,7 @@ interface GlobalRequestParameters {
  * });
  * ```
  */
-declare function createClient<TClient extends Client<any, any>, TOperations extends OperationMap>(client: TClient, operations: TOperations, globalParams?: GlobalRequestParameters): ProxyClient<TClient, TOperations>;
+declare function createClient<TClient extends Client<any, any>, TOperations extends OperationMap>(client: TClient, operations: TOperations, globalParams?: GlobalRequestParameters, options?: CreateClientOptions): ProxyClient<TClient, TOperations>;
 //#endregion
 //#region src/scapi-client/ApiError.d.ts
 /**
@@ -29240,6 +29249,26 @@ declare class ApiError extends Error {
   };
 }
 //#endregion
+//#region src/scapi-client/AuthTokenInvalidError.d.ts
+/**
+ * Copyright 2026 Salesforce, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+declare class AuthTokenInvalidError extends Error {
+  constructor(message?: string);
+}
+//#endregion
 //#region src/scapi-client/constants.d.ts
 /**
  * Copyright 2026 Salesforce, Inc.
@@ -29274,5 +29303,5 @@ declare class ApiError extends Error {
  */
 declare const SLAS_AUTH_ENDPOINTS: readonly ["/oauth2/token", "/oauth2/authorize", "/oauth2/logout", "/oauth2/login", "/oauth2/passwordless", "/oauth2/password", "/oauth2/session-bridge", "/oauth2/trusted-agent", "/oauth2/trusted-system", "/oauth2/revoke", "/oauth2/introspect"];
 //#endregion
-export { ApiError, type AuthConfig, type AuthNamespace, type AuthResponse, type Basket, type BasketHelpersConfig, type BasketHelpersNamespace, Clients, CommerceApiClientConfig, type ErrorDetail, type GetOrCreateBasketOptions, GlobalRequestParameters, type LoginAsGuestOptions, type LoginWithCredentialsOptions, type LogoutOptions, type OperationMethodsOnly, type PasswordRequestResetOptions, type PasswordResetOptions, type PasswordlessAuthorizeOptions, type PasswordlessExchangeTokenOptions, type RefreshTokenOptions, SLAS_AUTH_ENDPOINTS, ShopperBasketsV1, ShopperBasketsV2, type ShopperBasketsV2Client, ShopperConfigurations, ShopperConsents, ShopperContext, ShopperCustomers, ShopperExperience, ShopperGiftCertificates, ShopperLogin, ShopperOrders, ShopperPayments, ShopperProducts, ShopperPromotions, ShopperSearch, ShopperSeo, ShopperStores, type SocialAuthorizationUrlResult, type SocialExchangeCodeOptions, type SocialGetAuthorizationUrlOptions, type TokenResponse, createBasketHelpers, createClient, createCommerceApiClients };
+export { ApiError, type AuthConfig, type AuthNamespace, type AuthResponse, AuthTokenInvalidError, type Basket, type BasketHelpersConfig, type BasketHelpersNamespace, Clients, CommerceApiClientConfig, CreateClientOptions, type ErrorDetail, type GetOrCreateBasketOptions, GlobalRequestParameters, type LoginAsGuestOptions, type LoginWithCredentialsOptions, type LogoutOptions, type OperationMethodsOnly, type PasswordRequestResetOptions, type PasswordResetOptions, type PasswordlessAuthorizeOptions, type PasswordlessExchangeTokenOptions, type RefreshTokenOptions, SLAS_AUTH_ENDPOINTS, ShopperBasketsV1, ShopperBasketsV2, type ShopperBasketsV2Client, ShopperConfigurations, ShopperConsents, ShopperContext, ShopperCustomers, ShopperExperience, ShopperGiftCertificates, ShopperLogin, ShopperOrders, ShopperPayments, ShopperProducts, ShopperPromotions, ShopperSearch, ShopperSeo, ShopperStores, type SocialAuthorizationUrlResult, type SocialExchangeCodeOptions, type SocialGetAuthorizationUrlOptions, type TokenResponse, createBasketHelpers, createClient, createCommerceApiClients };
 //# sourceMappingURL=scapi.d.ts.map

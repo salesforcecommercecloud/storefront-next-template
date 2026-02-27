@@ -16,6 +16,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createClient } from './createClient';
 import { ApiError } from './ApiError';
+import { AuthTokenInvalidError } from './AuthTokenInvalidError';
+import { SLAS_AUTH_ENDPOINTS } from './constants';
 import type { Client } from 'openapi-fetch';
 import type { OperationMap } from './proxy-types';
 
@@ -421,7 +423,7 @@ describe('createClient', () => {
             }
         });
 
-        it('should throw ApiError with url and method', async () => {
+        it('should throw AuthTokenInvalidError on 401 for non-SLAS endpoints', async () => {
             const errorBody = { message: 'Unauthorized' };
             const errorResponse = {
                 status: 401,
@@ -442,12 +444,68 @@ describe('createClient', () => {
 
             const proxyClient = createClient(mockClient, mockOperations) as any;
 
+            await expect(async () => {
+                await proxyClient.getTest({ params: { path: { id: '123' } } });
+            }).rejects.toThrow(AuthTokenInvalidError);
+        });
+
+        it('should invoke onAuthTokenInvalid before throwing', async () => {
+            const errorBody = { message: 'Unauthorized' };
+            const errorResponse = {
+                status: 401,
+                statusText: 'Unauthorized',
+                headers: new Headers(),
+                url: 'https://api.example.com/test/123',
+                ok: false,
+                clone: () => ({
+                    text: vi.fn().mockResolvedValue(JSON.stringify(errorBody)),
+                }),
+            };
+
+            mockClient.GET = vi.fn().mockResolvedValue({
+                data: undefined,
+                error: errorBody,
+                response: errorResponse,
+            });
+
+            const onAuthTokenInvalid = vi.fn();
+            const proxyClient = createClient(mockClient, mockOperations, undefined, { onAuthTokenInvalid }) as any;
+
+            await expect(async () => {
+                await proxyClient.getTest({ params: { path: { id: '123' } } });
+            }).rejects.toThrow(AuthTokenInvalidError);
+
+            expect(onAuthTokenInvalid).toHaveBeenCalledWith(errorResponse);
+        });
+
+        it('should throw ApiError on 401 for SLAS auth endpoints', async () => {
+            const errorBody = { message: 'Unauthorized' };
+            const slasPath = SLAS_AUTH_ENDPOINTS[0];
+            const errorResponse = {
+                status: 401,
+                statusText: 'Unauthorized',
+                headers: new Headers(),
+                url: `https://api.example.com${slasPath}`,
+                ok: false,
+                clone: () => ({
+                    text: vi.fn().mockResolvedValue(JSON.stringify(errorBody)),
+                }),
+            };
+
+            mockClient.GET = vi.fn().mockResolvedValue({
+                data: undefined,
+                error: errorBody,
+                response: errorResponse,
+            });
+
+            const proxyClient = createClient(mockClient, mockOperations) as any;
+
             try {
                 await proxyClient.getTest({ params: { path: { id: '123' } } });
                 expect.fail('Should have thrown ApiError');
             } catch (error) {
                 expect(error).toBeInstanceOf(ApiError);
-                expect((error as ApiError).url).toBe('https://api.example.com/test/123');
+                expect((error as ApiError).url).toBe(`https://api.example.com${slasPath}`);
                 expect((error as ApiError).method).toBe('GET');
             }
         });

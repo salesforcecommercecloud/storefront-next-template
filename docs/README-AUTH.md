@@ -35,6 +35,7 @@ Authentication data is stored in **separate cookies**, each with specific purpos
 | `customerId` | Customer ID                                                                                    | Registered only | Matches refresh token | No       |
 | `cc-idp-at`  | IDP access token (social login)                                                                | Both            | Matches access token  | No       |
 | `cc-cv`      | OAuth2 PKCE code verifier (Temporary cookie deleted after successful token call via PKCE flow) | Both            | 5 minutes             | **Yes**  |
+| `cc-auth-recover` | Auth recovery guard (prevents redirect loops after 401)                                    | Both            | 30 seconds            | No       |
 
 **Key Design Decisions:**
 
@@ -78,6 +79,20 @@ On user type transition (e.g., guest → registered), the old refresh token cook
 - Configurable via environment variables (with Commerce Cloud maximum limits enforced)
 - Guest tokens: 30 days maximum
 - Registered tokens: 90 days maximum
+
+### 401 Recovery Redirect (Server)
+
+If a SCAPI call returns **401** for non-SLAS endpoints, the SCAPI client throws an `AuthTokenInvalidError`. The server auth middleware catches this error, clears the in-memory access token, re-runs the refresh/guest flow, and issues a **307 redirect** back to the same URL to restart the request lifecycle with fresh tokens.
+
+To prevent infinite loops, the middleware sets a short-lived guard cookie:
+
+- `cc-auth-recover`: boolean guard set during recovery redirect
+- If another 401 occurs while this cookie is present, the error is allowed to surface and no additional redirect happens
+- The guard cookie is cleared on the subsequent request
+
+The recovery redirect response also includes `x-sfnext-auth-recovery: 1`. When the guard cookie is present on a follow-up request, responses include `x-sfnext-auth-recovery-guard: 1` for log visibility.
+
+Before running the recovery flow, any stale `error` state from earlier middleware auth attempts is cleared to avoid false negatives.
 
 ## Configuration
 

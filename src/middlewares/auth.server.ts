@@ -19,17 +19,19 @@ import {
     type RouterContextProvider,
     type ActionFunctionArgs,
 } from 'react-router';
-import type { AuthResponse } from '@salesforce/storefront-next-runtime/scapi';
+import { type AuthResponse, AuthTokenInvalidError } from '@salesforce/storefront-next-runtime/scapi';
 import type { SessionData as AuthData } from '@/lib/api/types';
 import { clearStorage, type StorageErrorData, unpackStorage } from '@/lib/middleware';
 import {
     authContext,
+    authStorageContext,
     type AuthStorageData,
     createAuthPromise,
     updateAuthStorageData,
     updateStorageAndCache,
     getSLASAccessTokenClaims,
     isTrackingConsentEnabled,
+    AUTH_TOKEN_INVALID_ERROR,
     COOKIE_REFRESH_TOKEN_GUEST,
     COOKIE_REFRESH_TOKEN_REGISTERED,
     COOKIE_ACCESS_TOKEN,
@@ -40,6 +42,7 @@ import {
     COOKIE_CODE_VERIFIER,
     COOKIE_TRACKING_CONSENT,
     COOKIE_DWSID,
+    COOKIE_AUTH_RECOVERY_GUARD,
 } from '@/middlewares/auth.utils';
 import { getAppOrigin, isAbsoluteURL } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients';
@@ -364,7 +367,75 @@ const retrieveAuthStorageData = async (
 // - cc-nx-g: Guest users (cookie name encodes user type)
 // - cc-nx: Registered users (cookie name encodes user type)
 
-const authStorageContext = createContext<Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>>();
+/**
+ * Type guard for auth-token invalidation errors thrown by the SCAPI client.
+ */
+const isAuthTokenInvalidError = (error: unknown): error is Error =>
+    error instanceof Error && error.name === 'AuthTokenInvalidError';
+
+/**
+ * Reset any stale error state and remove access-token related data to force recovery.
+ */
+const resetRecoveryStorageState = (authStorage: Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>) => {
+    authStorage.delete('error');
+    authStorage.delete('accessToken');
+    authStorage.delete('accessTokenExpiry');
+    authStorage.delete('idpAccessToken');
+    authStorage.delete('idpAccessTokenExpiry');
+};
+
+/**
+ * Recover from a 401 by forcing a refresh/guest login and redirecting the request.
+ * Returns the redirect response and a flag used to set the recovery guard cookie.
+ */
+const handleAuthTokenInvalidation = async ({
+    request,
+    context,
+    authStorage,
+    authCache,
+    hasAuthRecoveryGuard,
+    error,
+}: {
+    request: Request;
+    context: Readonly<RouterContextProvider>;
+    authStorage: Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>;
+    authCache: { ref: AuthData | undefined };
+    hasAuthRecoveryGuard: boolean;
+    error: unknown;
+}): Promise<{ response: Response; authRecoveryTriggered: boolean }> => {
+    // Guard against loops: if we already redirected once, surface the error.
+    if (hasAuthRecoveryGuard) {
+        throw error;
+    }
+
+    // Clear stale error/access-token state so refresh/guest flow can run cleanly.
+    resetRecoveryStorageState(authStorage);
+
+    // Refresh before redirect so the next request arrives with fresh cookies,
+    // and to fail fast if recovery is not possible (avoid a pointless redirect).
+    await retrieveAuthStorageData(context, authStorage, authCache).catch(() => {
+        // Intentionally empty
+    });
+
+    // If recovery failed, rethrow so ErrorBoundary can handle it.
+    if (authStorage.has('error')) {
+        throw error;
+    }
+
+    // Restart the request lifecycle with fresh auth cookies.
+    return {
+        authRecoveryTriggered: true,
+        response: new Response(null, {
+            status: 307,
+            headers: {
+                Location: request.url,
+                // Observability only: marks recovery redirect in logs/debugging.
+                'x-sfnext-auth-recovery': '1',
+            },
+        }),
+    };
+};
+
 const authCacheContext = createContext<{ ref: AuthData | undefined }>();
 
 /**
@@ -419,6 +490,8 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
     const idpAccessToken = getAuthCookie(COOKIE_IDP_ACCESS_TOKEN);
     const codeVerifier = getAuthCookie(COOKIE_CODE_VERIFIER);
     const dwsid = getAuthCookie(COOKIE_DWSID);
+    const authRecoveryGuard = getAuthCookie(COOKIE_AUTH_RECOVERY_GUARD);
+    const hasAuthRecoveryGuard = authRecoveryGuard === '1';
     // Read tracking consent cookie directly as TrackingConsent enum (values match)
     const trackingConsentCookieValue = getAuthCookie(COOKIE_TRACKING_CONSENT);
     let trackingConsent: TrackingConsent | undefined =
@@ -439,6 +512,7 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
     const encUserIdCookie = createCookie<string>(COOKIE_ENC_USER_ID, cookieConfig, context);
     const idpAccessTokenCookie = createCookie<string>(COOKIE_IDP_ACCESS_TOKEN, cookieConfig, context);
     const dwsidCookie = createCookie<string>(COOKIE_DWSID, cookieConfig, context);
+    const authRecoveryCookie = createCookie<string>(COOKIE_AUTH_RECOVERY_GUARD, cookieConfig, context);
     // Code verifier cookie is httpOnly for security (OAuth2 PKCE flow, server-only)
     const codeVerifierCookie = createCookie<string>(
         COOKIE_CODE_VERIFIER,
@@ -538,8 +612,47 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         // Intentionally empty
     });
 
+    let response: Response;
+    let authRecoveryTriggered = false;
+
     // Execute handler (loader/action/render)
-    const response = await next();
+    try {
+        response = await next();
+    } catch (error) {
+        // Only handle auth-token invalidation; everything else should bubble.
+        if (!isAuthTokenInvalidError(error)) {
+            throw error;
+        }
+
+        // Run the recovery flow and build the redirect response.
+        const recovery = await handleAuthTokenInvalidation({
+            request,
+            context,
+            authStorage,
+            authCache,
+            hasAuthRecoveryGuard,
+            error,
+        });
+
+        // Persist recovery state for response cookie handling below.
+        authRecoveryTriggered = recovery.authRecoveryTriggered;
+        response = recovery.response;
+    }
+
+    const storedAuthError = authStorage.get('error');
+    if (storedAuthError === AUTH_TOKEN_INVALID_ERROR) {
+        authStorage.delete('error');
+        const recovery = await handleAuthTokenInvalidation({
+            request,
+            context,
+            authStorage,
+            authCache,
+            hasAuthRecoveryGuard,
+            error: new AuthTokenInvalidError(),
+        });
+        authRecoveryTriggered = recovery.authRecoveryTriggered;
+        response = recovery.response;
+    }
 
     // After calling the handler: Write back storage data and cookies, if required
     if (authStorage.has('isDestroyed') || authStorage.has('error')) {
@@ -800,6 +913,38 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
                 }
             }
         }
+    }
+
+    if (authRecoveryTriggered) {
+        response.headers.append(
+            'Set-Cookie',
+            await authRecoveryCookie.serialize(
+                '1',
+                getCookieConfig(
+                    {
+                        maxAge: 30,
+                    },
+                    context
+                )
+            )
+        );
+    }
+
+    if (hasAuthRecoveryGuard) {
+        response.headers.append(
+            'Set-Cookie',
+            await authRecoveryCookie.serialize(
+                '',
+                getCookieConfig(
+                    {
+                        maxAge: undefined,
+                        expires: new Date(0),
+                    },
+                    context
+                )
+            )
+        );
+        response.headers.set('x-sfnext-auth-recovery-guard', '1');
     }
 
     return response;

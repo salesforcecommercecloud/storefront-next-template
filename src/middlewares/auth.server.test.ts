@@ -16,7 +16,7 @@
 import { describe, expect, test, vi, beforeEach, afterEach } from 'vitest';
 import { RouterContextProvider } from 'react-router';
 import type { SessionData as AuthData } from '@/lib/api/types';
-import type { AuthStorageData } from '@/middlewares/auth.utils';
+import { type AuthStorageData, AUTH_TOKEN_INVALID_ERROR, authStorageContext } from '@/middlewares/auth.utils';
 import { performanceTimerContext } from '@/middlewares/performance-metrics';
 import { appConfigContext, type AppConfig } from '@/config';
 import { mockConfig } from '@/test-utils/config';
@@ -127,6 +127,12 @@ function getMockAuthResponse(tokenResponse?: ShopperLogin.schemas['TokenResponse
         ...(tokenResponse ?? getMockTokenResponse()),
         dwsid,
     };
+}
+
+function createAuthTokenInvalidError() {
+    const error = new Error('Access token is invalid or revoked');
+    error.name = 'AuthTokenInvalidError';
+    return error;
 }
 
 function mockContext(
@@ -1752,6 +1758,204 @@ describe('auth middleware (server)', () => {
                 (call) => call[0] === '' && call[1]?.httpOnly === true && call[1]?.expires instanceof Date
             );
             expect(deleteCodeVerifierCalls.length).toBeGreaterThan(0);
+        });
+
+        it('should recover and redirect when AuthTokenInvalidError is thrown', async () => {
+            const mockTokenResponse = getMockTokenResponse();
+            mockAuth.refreshToken.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
+
+            // Create valid JWT with expiry
+            const now = Math.floor(Date.now() / 1000);
+            const exp = now + 1800;
+            const mockAccessToken = `header.${btoa(JSON.stringify({ exp }))}.signature`;
+
+            mockParseAllCookies.mockReturnValue({
+                'cc-nx-g': 'guest-refresh-token',
+                'cc-at': mockAccessToken,
+            });
+
+            const request = new Request('https://example.com/test', {
+                headers: {
+                    Cookie: `cc-nx-g=guest-refresh-token; cc-at=${mockAccessToken}`,
+                },
+            });
+
+            const context = new RouterContextProvider();
+            const appConfig = { ...mockConfig };
+            const originalGet = context.get.bind(context);
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return appConfig;
+                return originalGet(key);
+            });
+
+            const serializeCalls: Array<[string, unknown]> = [];
+            mockCreateCookie.mockImplementation(() => ({
+                serialize: vi.fn().mockImplementation((value, options) => {
+                    serializeCalls.push([value, options]);
+                    return Promise.resolve('Set-Cookie: mock=value');
+                }),
+            }));
+
+            const next = vi.fn().mockRejectedValue(createAuthTokenInvalidError());
+
+            const response = await authMiddleware({ request, context, params: {} }, next);
+
+            expect(response.status).toBe(307);
+            expect(response.headers.get('Location')).toBe('https://example.com/test');
+            expect(response.headers.get('x-sfnext-auth-recovery')).toBe('1');
+            expect(mockAuth.refreshToken).toHaveBeenCalled();
+            expect(serializeCalls.some(([value]) => value === '1')).toBe(true);
+        });
+
+        it('should clear stale error before recovery refresh', async () => {
+            const mockTokenResponse = getMockTokenResponse();
+            mockAuth.refreshToken.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
+
+            // Create valid JWT with expiry
+            const now = Math.floor(Date.now() / 1000);
+            const exp = now + 1800;
+            const mockAccessToken = `header.${btoa(JSON.stringify({ exp }))}.signature`;
+
+            mockParseAllCookies.mockReturnValue({
+                'cc-nx-g': 'guest-refresh-token',
+                'cc-at': mockAccessToken,
+            });
+
+            const request = new Request('https://example.com/test', {
+                headers: {
+                    Cookie: `cc-nx-g=guest-refresh-token; cc-at=${mockAccessToken}`,
+                },
+            });
+
+            const context = new RouterContextProvider();
+            const originalGet = context.get.bind(context);
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return originalGet(key);
+            });
+
+            let authStorageRef: Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]> | undefined;
+            const originalSet = context.set.bind(context);
+            vi.spyOn(context, 'set').mockImplementation((key, value) => {
+                if (key === authStorageContext && value instanceof Map) {
+                    authStorageRef = value;
+                }
+                return originalSet(key, value);
+            });
+
+            const next = vi.fn().mockImplementation(() => {
+                authStorageRef?.set('error', 'stale-error');
+                throw createAuthTokenInvalidError();
+            });
+
+            const response = await authMiddleware({ request, context, params: {} }, next);
+
+            expect(response.status).toBe(307);
+            expect(mockAuth.refreshToken).toHaveBeenCalledTimes(1);
+        });
+
+        it('should not redirect again when recovery guard is present', async () => {
+            mockParseAllCookies.mockReturnValue({
+                'cc-auth-recover': '1',
+            });
+
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(getMockTokenResponse()));
+
+            const request = new Request('https://example.com/test', {
+                headers: {
+                    Cookie: 'cc-auth-recover=1',
+                },
+            });
+
+            const context = new RouterContextProvider();
+            const originalGet = context.get.bind(context);
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return originalGet(key);
+            });
+
+            const next = vi.fn().mockRejectedValue(createAuthTokenInvalidError());
+
+            await expect(authMiddleware({ request, context, params: {} }, next)).rejects.toThrow(
+                'Access token is invalid or revoked'
+            );
+        });
+
+        it('should recover when authStorage error sentinel is set after next()', async () => {
+            const mockTokenResponse = getMockTokenResponse();
+            mockAuth.refreshToken.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
+
+            const request = new Request('https://example.com/test');
+            const context = new RouterContextProvider();
+            let authStorageRef: Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]> | undefined;
+
+            const originalGet = context.get.bind(context);
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return originalGet(key);
+            });
+
+            const originalSet = context.set.bind(context);
+            vi.spyOn(context, 'set').mockImplementation((key, value) => {
+                if (key === authStorageContext && value instanceof Map) {
+                    authStorageRef = value;
+                }
+                return originalSet(key, value);
+            });
+
+            const next = vi.fn().mockImplementation(() => {
+                authStorageRef?.set('error', AUTH_TOKEN_INVALID_ERROR);
+                return new Response('OK');
+            });
+
+            const response = await authMiddleware({ request, context, params: {} }, next);
+
+            expect(response.status).toBe(307);
+            expect(mockAuth.loginAsGuest).toHaveBeenCalled();
+        });
+
+        it('should clear the guard cookie and set recovery guard header after redirect', async () => {
+            const mockTokenResponse = getMockTokenResponse();
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
+            mockParseAllCookies.mockReturnValue({
+                'cc-auth-recover': '1',
+            });
+
+            const request = new Request('https://example.com/test', {
+                headers: {
+                    Cookie: 'cc-auth-recover=1',
+                },
+            });
+
+            const context = new RouterContextProvider();
+            const originalGet = context.get.bind(context);
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return originalGet(key);
+            });
+
+            const mockSerialize = vi.fn().mockResolvedValue('Set-Cookie: mock=value');
+            mockCreateCookie.mockReturnValue({
+                serialize: mockSerialize,
+            });
+
+            const next = vi.fn().mockResolvedValue(new Response('OK'));
+
+            const response = await authMiddleware({ request, context, params: {} }, next);
+
+            expect(response.headers.get('x-sfnext-auth-recovery-guard')).toBe('1');
+            const deleteCalls = mockSerialize.mock.calls.filter(
+                (call) => call[0] === '' && call[1]?.expires instanceof Date
+            );
+            expect(deleteCalls.length).toBeGreaterThan(0);
         });
     });
 });

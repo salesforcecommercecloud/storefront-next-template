@@ -29,6 +29,16 @@
 import type { Client } from 'openapi-fetch';
 import type { OperationMap, ProxyClient } from './proxy-types';
 import { ApiError, type ErrorDetail } from './ApiError';
+import { AuthTokenInvalidError } from './AuthTokenInvalidError';
+import { SLAS_AUTH_ENDPOINTS } from './constants';
+
+/**
+ * Optional hooks for client behavior.
+ */
+export interface CreateClientOptions {
+    /** Callback invoked when an auth token is deemed invalid */
+    onAuthTokenInvalid?: (response: Response) => void;
+}
 
 /**
  * Global request parameters that are automatically merged into every API call.
@@ -83,6 +93,15 @@ function buildRequestOptions(
         },
     };
 }
+
+const isSlasAuthResponse = (url: string): boolean => {
+    try {
+        const parsedUrl = new URL(url);
+        return SLAS_AUTH_ENDPOINTS.some((path) => parsedUrl.pathname.includes(path));
+    } catch {
+        return SLAS_AUTH_ENDPOINTS.some((path) => url.includes(path));
+    }
+};
 
 /**
  * Create a proxied client with operation methods
@@ -140,7 +159,8 @@ function buildRequestOptions(
 export function createClient<TClient extends Client<any, any>, TOperations extends OperationMap>(
     client: TClient,
     operations: TOperations,
-    globalParams?: GlobalRequestParameters
+    globalParams?: GlobalRequestParameters,
+    options?: CreateClientOptions
 ): ProxyClient<TClient, TOperations> {
     // Create and return the proxy
     return new Proxy(client, {
@@ -170,7 +190,7 @@ export function createClient<TClient extends Client<any, any>, TOperations exten
 
                 // Return an async function that calls the HTTP method and handles errors
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                return async function (this: any, options?: any) {
+                return async function (this: any, callOptions?: any) {
                     // Get the HTTP method function (GET, POST, etc.)
                     const httpMethod = method.toUpperCase();
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -183,7 +203,7 @@ export function createClient<TClient extends Client<any, any>, TOperations exten
                     }
 
                     // Build request options with global params (organizationId, siteId) applied as defaults
-                    const mergedOptions = buildRequestOptions(options, globalParams);
+                    const mergedOptions = buildRequestOptions(callOptions, globalParams);
 
                     // Call the HTTP method with the path and merged options
                     // The path is bound, options are passed from the operation call
@@ -197,6 +217,11 @@ export function createClient<TClient extends Client<any, any>, TOperations exten
                     // If there's an error, throw ApiError with the parsed error from openapi-fetch
                     if (result.error !== undefined) {
                         const response = result.response;
+
+                        if (response.status === 401 && !isSlasAuthResponse(response.url)) {
+                            options?.onAuthTokenInvalid?.(response);
+                            throw new AuthTokenInvalidError();
+                        }
 
                         // openapi-fetch has already parsed the response body into result.error
                         // Don't try to clone/read the response again as the body is already consumed

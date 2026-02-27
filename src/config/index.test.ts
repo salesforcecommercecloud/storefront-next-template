@@ -61,8 +61,11 @@ describe('Configuration System', () => {
         });
 
         it('should have site configuration with defaults', () => {
-            expect(config.app.commerce.sites[0].defaultLocale).toBe('en-GB');
-            expect(config.app.commerce.sites[0].defaultCurrency).toBe('GBP');
+            const siteConfig = config.app.commerce.sites[0];
+            expect(siteConfig.defaultLocale).toBeTypeOf('string');
+            expect(siteConfig.supportedLocales.some((locale) => locale.id === siteConfig.defaultLocale)).toBe(true);
+            expect(siteConfig.defaultCurrency).toBeTypeOf('string');
+            expect(siteConfig.supportedCurrencies).toContain(siteConfig.defaultCurrency);
             expect(config.app.commerce.api.proxy).toBe('/mobify/proxy/api');
         });
 

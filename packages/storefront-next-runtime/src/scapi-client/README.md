@@ -988,6 +988,8 @@ try {
 
 The SCAPI client throws typed `ApiError` exceptions for all non-2xx HTTP responses, aligning with standard Fetch API behavior.
 
+For non-SLAS endpoints, a **401** response is classified as an `AuthTokenInvalidError` to signal that the access token is invalid or revoked. SLAS auth endpoints continue to throw `ApiError` for 401s.
+
 #### ApiError Properties
 
 The `ApiError` class provides comprehensive error information:
