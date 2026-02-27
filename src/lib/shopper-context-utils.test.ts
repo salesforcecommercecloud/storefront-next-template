@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 import { describe, expect, test, vi, beforeEach, afterEach } from 'vitest';
+import { SHOPPER_CONTEXT_SEARCH_PARAMS } from '@/lib/shopper-context-constants';
 import {
-    getShopperContextCookieName,
-    getSourceCodeCookieName,
-    SHOPPER_CONTEXT_COOKIE_NAME_BASE,
-    SOURCE_CODE_COOKIE_NAME_BASE,
     isPageDesignerMode,
     extractQualifiersFromUrl,
     extractQualifiersFromInput,
@@ -27,7 +24,6 @@ import {
     buildShopperContextBody,
     updateShopperContext,
 } from './shopper-context-utils';
-import { SHOPPER_CONTEXT_SEARCH_PARAMS } from '@/lib/shopper-context-constants';
 import { getConfig } from '@/config';
 import type { RouterContextProvider } from 'react-router';
 
@@ -39,6 +35,10 @@ vi.mock('@/lib/api/shopper-context', () => ({
     createShopperContext: vi.fn(),
 }));
 
+const { mockSerialize, mockParse } = vi.hoisted(() => ({
+    mockSerialize: vi.fn(),
+    mockParse: vi.fn(),
+}));
 vi.mock('@/lib/cookie-utils', () => ({
     getCookieConfig: vi.fn((overrides = {}) => ({
         httpOnly: false,
@@ -47,21 +47,15 @@ vi.mock('@/lib/cookie-utils', () => ({
         path: '/',
         ...overrides,
     })),
+    createCookie: vi.fn(() => ({
+        serialize: mockSerialize,
+        parse: mockParse,
+    })),
 }));
 
-const { mockSerialize, mockParse } = vi.hoisted(() => ({
-    mockSerialize: vi.fn(),
-    mockParse: vi.fn(),
-}));
 vi.mock('react-router', async (importOriginal) => {
     const actual = await importOriginal<typeof import('react-router')>();
-    return {
-        ...actual,
-        createCookie: vi.fn(() => ({
-            serialize: mockSerialize,
-            parse: mockParse,
-        })),
-    };
+    return { ...actual };
 });
 
 vi.mock('@salesforce/storefront-next-runtime/design/mode', () => ({
@@ -70,49 +64,6 @@ vi.mock('@salesforce/storefront-next-runtime/design/mode', () => ({
 }));
 
 describe('shopper-context-utils', () => {
-    describe('getShopperContextCookieName', () => {
-        test('should return cookie name with USID suffix', () => {
-            const usid = 'test-usid-123';
-            const result = getShopperContextCookieName(usid);
-            expect(result).toBe(`${SHOPPER_CONTEXT_COOKIE_NAME_BASE}-${usid}`);
-        });
-    });
-
-    describe('getSourceCodeCookieName', () => {
-        test('should return cookie name with configurable suffix', () => {
-            vi.mocked(getConfig).mockReturnValue({
-                features: {
-                    shopperContext: {
-                        dwsourcecodeCookieSuffix: 'test-site',
-                    },
-                },
-            } as any);
-            const mockContext = {
-                get: vi.fn(),
-            } as any;
-            const result = getSourceCodeCookieName(mockContext);
-            // Should be dwsourcecode_{suffix} where suffix comes from config
-            expect(result).toBe(`${SOURCE_CODE_COOKIE_NAME_BASE}_test-site`);
-            expect(getConfig).toHaveBeenCalledWith(mockContext);
-        });
-
-        test('should return base cookie name when suffix is undefined', () => {
-            vi.mocked(getConfig).mockReturnValue({
-                features: {
-                    shopperContext: {
-                        dwsourcecodeCookieSuffix: undefined,
-                    },
-                },
-            } as any);
-            const mockContext = {
-                get: vi.fn(),
-            } as any;
-            const result = getSourceCodeCookieName(mockContext);
-            expect(result).toBe(SOURCE_CODE_COOKIE_NAME_BASE);
-            expect(getConfig).toHaveBeenCalledWith(mockContext);
-        });
-    });
-
     describe('isPageDesignerMode', () => {
         let isDesignModeActive: ReturnType<typeof vi.fn>;
         let isPreviewModeActive: ReturnType<typeof vi.fn>;
@@ -837,9 +788,10 @@ describe('shopper-context-utils', () => {
             vi.mocked(getConfig).mockReturnValue({
                 features: {
                     shopperContext: {
-                        dwsourcecodeCookieSuffix: 'test-site',
+                        enabled: true,
                     },
                 },
+                commerce: { api: { siteId: 'RefArch' } },
             } as any);
 
             consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -925,8 +877,8 @@ describe('shopper-context-utils', () => {
 
         test('should merge new context with existing cookie context', async () => {
             mockParse
-                .mockResolvedValueOnce({ existingKey: 'existing' }) // shopper context cookie
-                .mockResolvedValueOnce({ sourceCode: 'old-source' }); // source code cookie
+                .mockResolvedValueOnce(JSON.stringify({ existingKey: 'existing' })) // shopper context cookie
+                .mockResolvedValueOnce(JSON.stringify({ sourceCode: 'old-source' })); // source code cookie
 
             const newShopperContext = { deviceType: 'mobile' };
             const newSourceCodeContext = { sourceCode: 'new-source' };
@@ -939,14 +891,16 @@ describe('shopper-context-utils', () => {
                 cookieHeader: 'some-cookie-header',
             });
 
-            // Verify serialize was called with the merged context
-            expect(mockSerialize).toHaveBeenCalledWith({ sourceCode: 'new-source' }, expect.any(Object));
-
+            // Verify serialize was called with JSON-encoded merged context (cookie-utils stores strings)
             expect(mockSerialize).toHaveBeenCalledWith(
-                {
+                JSON.stringify({ sourceCode: 'new-source' }),
+                expect.any(Object)
+            );
+            expect(mockSerialize).toHaveBeenCalledWith(
+                JSON.stringify({
                     existingKey: 'existing',
                     deviceType: 'mobile',
-                },
+                }),
                 expect.any(Object)
             );
         });
@@ -1053,7 +1007,7 @@ describe('shopper-context-utils', () => {
         });
 
         test('should overwrite existing qualifiers with new values', async () => {
-            mockParse.mockResolvedValueOnce({ deviceType: 'old-device' }).mockResolvedValueOnce(null);
+            mockParse.mockResolvedValueOnce(JSON.stringify({ deviceType: 'old-device' })).mockResolvedValueOnce(null);
 
             const newShopperContext = { deviceType: 'new-device' };
             const newSourceCodeContext = {};
@@ -1066,7 +1020,10 @@ describe('shopper-context-utils', () => {
                 cookieHeader: 'some-header',
             });
 
-            expect(mockSerialize).toHaveBeenCalledWith({ deviceType: 'new-device' }, expect.any(Object));
+            expect(mockSerialize).toHaveBeenCalledWith(
+                JSON.stringify({ deviceType: 'new-device' }),
+                expect.any(Object)
+            );
         });
     });
 });

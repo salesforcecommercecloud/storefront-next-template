@@ -97,3 +97,24 @@ export const SHOPPER_CONTEXT_SEARCH_PARAMS: {
         [QUALIFIER_MAPPING_API_FIELD_NAME]: 'couponCodes',
     },
 };
+
+/**
+ * Base cookie names.
+ */
+export const SHOPPER_CONTEXT_COOKIE_NAME_BASE = 'storefront-next-context';
+export const SOURCE_CODE_COOKIE_NAME_BASE = 'dwsourcecode';
+
+/**
+ * Server action name for updating shopper context (route path segment).
+ */
+export const SHOPPER_CONTEXT_ACTION_NAME = 'update-shopper-context';
+
+/**
+ * Shopper context cookie expiry in seconds (6 hours).
+ */
+export const SHOPPER_CONTEXT_COOKIE_EXPIRY_SECONDS = 6 * 60 * 60;
+
+/**
+ * Source code cookie expiry in seconds (30 days).
+ */
+export const SOURCE_CODE_COOKIE_EXPIRY_SECONDS = 30 * 24 * 60 * 60;

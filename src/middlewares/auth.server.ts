@@ -48,6 +48,7 @@ import { getConfig } from '@/config';
 import { createCookie, getCookieConfig, getCookieNameWithSiteId, parseAllCookies } from '@/lib/cookie-utils';
 import { getTranslation } from '@/lib/i18next';
 import { TrackingConsent, trackingConsentToBoolean } from '@/types/tracking-consent';
+import { SHOPPER_CONTEXT_COOKIE_NAME_BASE, SOURCE_CODE_COOKIE_NAME_BASE } from '@/lib/shopper-context-constants';
 
 /**
  * Refresh access token using refresh token.
@@ -445,6 +446,8 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         context
     );
     const trackingConsentCookie = createCookie<string>(COOKIE_TRACKING_CONSENT, cookieConfig, context);
+    const shopperContextCookie = createCookie<string>(SHOPPER_CONTEXT_COOKIE_NAME_BASE, cookieConfig, context);
+    const sourceCodeCookie = createCookie<string>(SOURCE_CODE_COOKIE_NAME_BASE, cookieConfig, context);
 
     // Determine user type and refresh token from which cookie exists
     // Only one should exist at a time (guest and registered are mutually exclusive)
@@ -573,6 +576,8 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         response.headers.append('Set-Cookie', await dwsidCookie.serialize('', deleteCookieConfig));
         response.headers.append('Set-Cookie', await codeVerifierCookie.serialize('', deleteHttpOnlyCookieConfig));
         response.headers.append('Set-Cookie', await trackingConsentCookie.serialize('', deleteCookieConfig));
+        response.headers.append('Set-Cookie', await shopperContextCookie.serialize('', deleteHttpOnlyCookieConfig));
+        response.headers.append('Set-Cookie', await sourceCodeCookie.serialize('', deleteHttpOnlyCookieConfig));
     } else if (authStorage.has('isUpdated')) {
         // Clean up storage container metadata
         authStorage.delete('isUpdated');

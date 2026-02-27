@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 import { describe, expect, test, vi, beforeEach, afterEach } from 'vitest';
-import { createCookie, type RouterContextProvider } from 'react-router';
+import type { RouterContextProvider } from 'react-router';
 import shopperContextMiddleware from './shopper-context.server';
 import { createTestContext } from '@/lib/test-utils';
 import { createShopperContext } from '@/lib/api/shopper-context';
 import { getAuth } from './auth.server';
-import { getCookieConfig } from '@/lib/cookie-utils';
+import { createCookie, getCookieConfig } from '@/lib/cookie-utils';
 
 vi.mock('@/lib/api/shopper-context', () => ({
     createShopperContext: vi.fn(),
@@ -29,14 +29,18 @@ vi.mock('./auth.server', () => ({
     getAuth: vi.fn(),
 }));
 
-vi.mock('@/lib/cookie-utils', () => ({
-    getCookieConfig: vi.fn(() => ({
-        path: '/',
-        sameSite: 'lax',
-        secure: true,
-        httpOnly: false,
-    })),
-}));
+vi.mock('@/lib/cookie-utils', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/lib/cookie-utils')>();
+    return {
+        ...actual,
+        getCookieConfig: vi.fn(() => ({
+            path: '/',
+            sameSite: 'lax',
+            secure: true,
+            httpOnly: false,
+        })),
+    };
+});
 
 vi.mock('@/config', async (importOriginal) => {
     const actual = await importOriginal();
@@ -51,7 +55,6 @@ vi.mock('@/config', async (importOriginal) => {
             features: {
                 shopperContext: {
                     enabled: true,
-                    dwsourcecodeCookieSuffix: 'test-site',
                 },
             },
         }),
@@ -102,7 +105,6 @@ describe('shopper-context.server', () => {
                 features: {
                     shopperContext: {
                         enabled: false,
-                        dwsourcecodeCookieSuffix: 'test-site',
                     },
                 },
             } as any);
@@ -125,7 +127,6 @@ describe('shopper-context.server', () => {
                     features: {
                         shopperContext: {
                             enabled: true,
-                            dwsourcecodeCookieSuffix: 'test-site',
                         },
                     },
                 } as any);
@@ -194,9 +195,9 @@ describe('shopper-context.server', () => {
 
             // Verify sourceCode cookie was set with correct data
             const cookieConfig = getCookieConfig({ httpOnly: false });
-            const sourceCodeCookieHandler = createCookie('dwsourcecode_test-site', cookieConfig);
+            const sourceCodeCookieHandler = createCookie('dwsourcecode', cookieConfig, mockContext);
             const sourceCodeCookieValue = await sourceCodeCookieHandler.parse(setCookieHeaders[0]);
-            expect(sourceCodeCookieValue).toEqual({ sourceCode: 'email' });
+            expect(JSON.parse(sourceCodeCookieValue as string)).toEqual({ sourceCode: 'email' });
         });
     });
 
@@ -204,8 +205,9 @@ describe('shopper-context.server', () => {
         test('should read existing cookies from request', async () => {
             const cookieValue = { sourceCode: 'existing' };
             const cookieConfig = getCookieConfig({ httpOnly: false });
-            const cookieHandler = createCookie('storefront-next-context-test-usid', cookieConfig);
-            const serializedCookie = await cookieHandler.serialize(cookieValue);
+            const cookieHandler = createCookie('storefront-next-context', cookieConfig, mockContext);
+            // cookie-utils stores string values; shopper context uses JSON
+            const serializedCookie = await cookieHandler.serialize(JSON.stringify(cookieValue));
             const cookieNameValue = serializedCookie.split(';')[0];
 
             mockRequest = new Request('https://example.com/test', {
@@ -213,7 +215,7 @@ describe('shopper-context.server', () => {
             });
 
             const parsed = await cookieHandler.parse(cookieNameValue);
-            expect(parsed).toEqual(cookieValue);
+            expect(JSON.parse(parsed as string)).toEqual(cookieValue);
         });
 
         test('should handle cookie parsing returning null (fallback to empty object)', async () => {
@@ -234,9 +236,9 @@ describe('shopper-context.server', () => {
 
             // Verify sourceCode cookie was set with correct data
             const cookieConfig = getCookieConfig({ httpOnly: false });
-            const sourceCodeCookieHandler = createCookie('dwsourcecode_test-site', cookieConfig);
+            const sourceCodeCookieHandler = createCookie('dwsourcecode', cookieConfig, mockContext);
             const sourceCodeCookieValue = await sourceCodeCookieHandler.parse(setCookieHeaders[0]);
-            expect(sourceCodeCookieValue).toEqual({ sourceCode: 'email' });
+            expect(JSON.parse(sourceCodeCookieValue as string)).toEqual({ sourceCode: 'email' });
         });
 
         test('should set sourceCode cookie when hasNewSourceCodeContext is true', async () => {
@@ -254,9 +256,9 @@ describe('shopper-context.server', () => {
 
             // Verify sourceCode cookie was set with correct data
             const cookieConfig = getCookieConfig({ httpOnly: false });
-            const sourceCodeCookieHandler = createCookie('dwsourcecode_test-site', cookieConfig);
+            const sourceCodeCookieHandler = createCookie('dwsourcecode', cookieConfig, mockContext);
             const sourceCodeCookieValue = await sourceCodeCookieHandler.parse(setCookieHeaders[0]);
-            expect(sourceCodeCookieValue).toEqual({ sourceCode: 'email' });
+            expect(JSON.parse(sourceCodeCookieValue as string)).toEqual({ sourceCode: 'email' });
         });
 
         test('should set context cookie when hasNewContext is true', async () => {
@@ -287,9 +289,9 @@ describe('shopper-context.server', () => {
 
                 // Verify context cookie was set with correct data (not sourceCode cookie)
                 const cookieConfig = getCookieConfig({ httpOnly: false });
-                const contextCookieHandler = createCookie('storefront-next-context-test-usid', cookieConfig);
+                const contextCookieHandler = createCookie('storefront-next-context', cookieConfig, mockContext);
                 const contextCookieValue = await contextCookieHandler.parse(setCookieHeaders[0]);
-                expect(contextCookieValue).toEqual({ deviceType: 'mobile' });
+                expect(JSON.parse(contextCookieValue as string)).toEqual({ deviceType: 'mobile' });
             } finally {
                 extractQualifiersFromUrlSpy.mockRestore();
             }
@@ -324,8 +326,8 @@ describe('shopper-context.server', () => {
 
                 // Verify both cookies were set with correct data
                 const cookieConfig = getCookieConfig({ httpOnly: false });
-                const sourceCodeCookieHandler = createCookie('dwsourcecode_test-site', cookieConfig);
-                const contextCookieHandler = createCookie('storefront-next-context-test-usid', cookieConfig);
+                const sourceCodeCookieHandler = createCookie('dwsourcecode', cookieConfig, mockContext);
+                const contextCookieHandler = createCookie('storefront-next-context', cookieConfig, mockContext);
 
                 // Find which cookie is which by parsing both
                 let sourceCodeCookieValue: Record<string, string> | null = null;
@@ -334,12 +336,13 @@ describe('shopper-context.server', () => {
                 for (const cookieHeader of setCookieHeaders) {
                     const parsedSourceCode = await sourceCodeCookieHandler.parse(cookieHeader);
                     const parsedContext = await contextCookieHandler.parse(cookieHeader);
-
-                    if (parsedSourceCode && 'sourceCode' in parsedSourceCode) {
-                        sourceCodeCookieValue = parsedSourceCode;
+                    if (parsedSourceCode) {
+                        const obj = JSON.parse(parsedSourceCode as string) as Record<string, string>;
+                        if ('sourceCode' in obj) sourceCodeCookieValue = obj;
                     }
-                    if (parsedContext && 'deviceType' in parsedContext) {
-                        contextCookieValue = parsedContext;
+                    if (parsedContext) {
+                        const obj = JSON.parse(parsedContext as string) as Record<string, string>;
+                        if ('deviceType' in obj) contextCookieValue = obj;
                     }
                 }
 
@@ -352,11 +355,10 @@ describe('shopper-context.server', () => {
 
         test('should restore sourceCode from dwsourcecode cookie when storefront-next-context is empty/expired', async () => {
             // Scenario: context cookie is empty/expired, but sourceCode cookie has value
-            // This tests the restoration logic through the full middleware flow using actual implementation
             const sourceCodeValue = { sourceCode: 'persisted-source' };
             const cookieConfig = getCookieConfig({ httpOnly: false });
-            const sourceCodeCookieHandler = createCookie('dwsourcecode_test-site', cookieConfig);
-            const sourceCodeCookieSerialized = await sourceCodeCookieHandler.serialize(sourceCodeValue);
+            const sourceCodeCookieHandler = createCookie('dwsourcecode', cookieConfig, mockContext);
+            const sourceCodeCookieSerialized = await sourceCodeCookieHandler.serialize(JSON.stringify(sourceCodeValue));
             const sourceCodeCookieValue = sourceCodeCookieSerialized.split(';')[0];
 
             // Request has sourceCode cookie but no context cookie (expired/empty); no URL params
@@ -378,13 +380,14 @@ describe('shopper-context.server', () => {
         });
 
         test('should not update cookies when context has not changed', async () => {
-            // Set up existing cookies that match what would be the effective context
             const currentContext = { sourceCode: 'email' };
             const cookieConfig = getCookieConfig({ httpOnly: false });
-            const contextCookieHandler = createCookie('storefront-next-context-test-usid', cookieConfig);
-            const sourceCodeCookieHandler = createCookie('dwsourcecode_test-site', cookieConfig);
-            const contextCookieSerialized = await contextCookieHandler.serialize(currentContext);
-            const sourceCodeCookieSerialized = await sourceCodeCookieHandler.serialize({ sourceCode: 'email' });
+            const contextCookieHandler = createCookie('storefront-next-context', cookieConfig, mockContext);
+            const sourceCodeCookieHandler = createCookie('dwsourcecode', cookieConfig, mockContext);
+            const contextCookieSerialized = await contextCookieHandler.serialize(JSON.stringify(currentContext));
+            const sourceCodeCookieSerialized = await sourceCodeCookieHandler.serialize(
+                JSON.stringify({ sourceCode: 'email' })
+            );
             const contextCookieValue = contextCookieSerialized.split(';')[0];
             const sourceCodeCookieValue = sourceCodeCookieSerialized.split(';')[0];
 
@@ -515,9 +518,9 @@ describe('shopper-context.server', () => {
             const setCookieHeaders = (result as Response).headers.getSetCookie();
             expect(setCookieHeaders.length).toBe(1);
             const cookieConfig = getCookieConfig({ httpOnly: false });
-            const sourceCodeCookieHandler = createCookie('dwsourcecode_test-site', cookieConfig);
+            const sourceCodeCookieHandler = createCookie('dwsourcecode', cookieConfig, mockContext);
             const sourceCodeCookieValue = await sourceCodeCookieHandler.parse(setCookieHeaders[0]);
-            expect(sourceCodeCookieValue).toEqual({ sourceCode: 'email' });
+            expect(JSON.parse(sourceCodeCookieValue as string)).toEqual({ sourceCode: 'email' });
         });
 
         test('should process shopper context when request URL is an action URL (e.g. POST to action route)', async () => {
@@ -533,9 +536,9 @@ describe('shopper-context.server', () => {
             const setCookieHeaders = (result as Response).headers.getSetCookie();
             expect(setCookieHeaders.length).toBe(1);
             const cookieConfig = getCookieConfig({ httpOnly: false });
-            const sourceCodeCookieHandler = createCookie('dwsourcecode_test-site', cookieConfig);
+            const sourceCodeCookieHandler = createCookie('dwsourcecode', cookieConfig, mockContext);
             const sourceCodeCookieValue = await sourceCodeCookieHandler.parse(setCookieHeaders[0]);
-            expect(sourceCodeCookieValue).toEqual({ sourceCode: 'email' });
+            expect(JSON.parse(sourceCodeCookieValue as string)).toEqual({ sourceCode: 'email' });
         });
     });
 
@@ -554,9 +557,9 @@ describe('shopper-context.server', () => {
             const setCookieHeaders = (result as Response).headers.getSetCookie();
             expect(setCookieHeaders.length).toBe(1);
             const cookieConfig = getCookieConfig({ httpOnly: false });
-            const sourceCodeCookieHandler = createCookie('dwsourcecode_test-site', cookieConfig);
+            const sourceCodeCookieHandler = createCookie('dwsourcecode', cookieConfig, mockContext);
             const sourceCodeCookieValue = await sourceCodeCookieHandler.parse(setCookieHeaders[0]);
-            expect(sourceCodeCookieValue).toEqual({ sourceCode: 'email' });
+            expect(JSON.parse(sourceCodeCookieValue as string)).toEqual({ sourceCode: 'email' });
         });
 
         test('should process shopper context when request URL is an action URL (e.g. POST to action route)', async () => {
@@ -572,9 +575,9 @@ describe('shopper-context.server', () => {
             const setCookieHeaders = (result as Response).headers.getSetCookie();
             expect(setCookieHeaders.length).toBe(1);
             const cookieConfig = getCookieConfig({ httpOnly: false });
-            const sourceCodeCookieHandler = createCookie('dwsourcecode_test-site', cookieConfig);
+            const sourceCodeCookieHandler = createCookie('dwsourcecode', cookieConfig, mockContext);
             const sourceCodeCookieValue = await sourceCodeCookieHandler.parse(setCookieHeaders[0]);
-            expect(sourceCodeCookieValue).toEqual({ sourceCode: 'email' });
+            expect(JSON.parse(sourceCodeCookieValue as string)).toEqual({ sourceCode: 'email' });
         });
     });
 
@@ -592,16 +595,17 @@ describe('shopper-context.server', () => {
 
             // Verify sourceCode cookie was set with correct data
             const cookieConfig = getCookieConfig({ httpOnly: false });
-            const sourceCodeCookieHandler = createCookie('dwsourcecode_test-site', cookieConfig);
+            const sourceCodeCookieHandler = createCookie('dwsourcecode', cookieConfig, mockContext);
             const sourceCodeCookieValue = await sourceCodeCookieHandler.parse(setCookieHeaders[0]);
-            expect(sourceCodeCookieValue).toEqual({ sourceCode: 'email' });
+            expect(JSON.parse(sourceCodeCookieValue as string)).toEqual({ sourceCode: 'email' });
         });
 
         test('should restore sourceCode from persistent cookie when not in URL', async () => {
-            // Set up sourceCode cookie in request
             const testCookieConfig = getCookieConfig({ httpOnly: false });
-            const testSourceCodeCookieHandler = createCookie('dwsourcecode_test-site', testCookieConfig);
-            const sourceCodeCookieSerialized = await testSourceCodeCookieHandler.serialize({ sourceCode: 'persisted' });
+            const testSourceCodeCookieHandler = createCookie('dwsourcecode', testCookieConfig, mockContext);
+            const sourceCodeCookieSerialized = await testSourceCodeCookieHandler.serialize(
+                JSON.stringify({ sourceCode: 'persisted' })
+            );
             const sourceCodeCookieValue = sourceCodeCookieSerialized.split(';')[0];
 
             mockRequest = new Request('https://example.com', {

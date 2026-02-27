@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { resolveAssetUrl, isAbsoluteURL, getErrorMessage } from './utils';
+import { resolveAssetUrl, isAbsoluteURL, getErrorMessage, parseJsonToStringRecord } from './utils';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 
 describe('isAbsoluteURL', () => {
@@ -388,6 +388,62 @@ describe('getErrorMessage', () => {
         });
         it('should return default message for unknown error type', () => {
             expect(getErrorMessage(404)).toBe('An error occurred');
+        });
+    });
+});
+
+describe('parseJsonToStringRecord', () => {
+    it('should return {} for null or undefined', () => {
+        expect(parseJsonToStringRecord(null)).toEqual({});
+        expect(parseJsonToStringRecord(undefined)).toEqual({});
+    });
+
+    it('should return {} for empty string', () => {
+        expect(parseJsonToStringRecord('')).toEqual({});
+    });
+
+    it('should return {} for invalid JSON', () => {
+        expect(parseJsonToStringRecord('not json')).toEqual({});
+        expect(parseJsonToStringRecord('{')).toEqual({});
+        expect(parseJsonToStringRecord('}')).toEqual({});
+        expect(parseJsonToStringRecord('undefined')).toEqual({});
+    });
+
+    it('should return {} for non-object JSON (array, number, string, boolean)', () => {
+        expect(parseJsonToStringRecord('[]')).toEqual({});
+        expect(parseJsonToStringRecord('[1,2]')).toEqual({});
+        expect(parseJsonToStringRecord('123')).toEqual({});
+        expect(parseJsonToStringRecord('"hello"')).toEqual({});
+        expect(parseJsonToStringRecord('true')).toEqual({});
+    });
+
+    it('should return empty object for empty object JSON', () => {
+        expect(parseJsonToStringRecord('{}')).toEqual({});
+    });
+
+    it('should include entries with string values', () => {
+        expect(parseJsonToStringRecord('{"device":"mobile","src":"124"}')).toEqual({
+            device: 'mobile',
+            src: '124',
+        });
+        expect(parseJsonToStringRecord('{"src":"email"}')).toEqual({ src: 'email' });
+    });
+
+    it('should coerce null values to string "null"', () => {
+        expect(parseJsonToStringRecord('{"a":null}')).toEqual({ a: 'null' });
+        expect(parseJsonToStringRecord('{"x":null,"y":"ok"}')).toEqual({ x: 'null', y: 'ok' });
+    });
+
+    it('should omit number, boolean, object, and array values', () => {
+        expect(parseJsonToStringRecord('{"s":"ok","n":1}')).toEqual({ s: 'ok' });
+        expect(parseJsonToStringRecord('{"s":"ok","b":true}')).toEqual({ s: 'ok' });
+        expect(parseJsonToStringRecord('{"s":"ok","o":{}}')).toEqual({ s: 'ok' });
+        expect(parseJsonToStringRecord('{"s":"ok","a":[]}')).toEqual({ s: 'ok' });
+    });
+
+    it('should handle mixed valid and invalid value types', () => {
+        expect(parseJsonToStringRecord('{"device":"mobile","count":2,"active":true}')).toEqual({
+            device: 'mobile',
         });
     });
 });

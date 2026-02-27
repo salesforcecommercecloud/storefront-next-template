@@ -243,6 +243,34 @@ export const clearSessionJSONItem = (key: string): void => {
 };
 
 /**
+ * Parse a JSON string into a flat Record<string, string>.
+ * Only includes entries whose values are string or null (number, boolean, objects, arrays are omitted).
+ * Null is coerced to the string "null". Returns {} for invalid JSON or non-objects.
+ *
+ * For now used for strings can be extended to support other types in the future.
+ *
+ * @param value - JSON string, e.g. '{"device":"mobile","src":"124"}', '{"src":"email"}'
+ * @returns Record with string values only
+ */
+export function parseJsonToStringRecord(value: string | null | undefined): Record<string, string> {
+    if (value == null || value === '') return {};
+    try {
+        const parsed = JSON.parse(value);
+        if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return {};
+        const result: Record<string, string> = {};
+        for (const key of Object.keys(parsed)) {
+            const v = (parsed as Record<string, unknown>)[key];
+            if (typeof v === 'string' || v === null) {
+                result[key] = String(v);
+            }
+        }
+        return result;
+    } catch {
+        return {};
+    }
+}
+
+/**
  * Resolves a local asset URL to work correctly in both local and MRT (Managed Runtime) environments.
  *
  * When assets are imported directly (e.g., `import hero from '/images/hero.png'`), Vite handles

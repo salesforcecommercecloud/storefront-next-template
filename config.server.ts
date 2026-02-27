@@ -242,7 +242,6 @@ export default defineConfig({
             guestCheckout: true,
             shopperContext: {
                 enabled: false,
-                dwsourcecodeCookieSuffix: undefined,
             },
             googleCloudAPI: {
                 apiKey: '',

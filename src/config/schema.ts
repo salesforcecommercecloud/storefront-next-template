@@ -130,7 +130,6 @@ export type Config = {
             guestCheckout: boolean;
             shopperContext: {
                 enabled: boolean;
-                dwsourcecodeCookieSuffix?: string;
             };
             googleCloudAPI: {
                 apiKey: string;

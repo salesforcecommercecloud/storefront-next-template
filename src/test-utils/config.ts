@@ -109,7 +109,6 @@ export const mockBuildConfig: Config = {
             socialShare: { enabled: true, providers: ['Twitter', 'Facebook', 'LinkedIn', 'Email'] },
             shopperContext: {
                 enabled: false,
-                dwsourcecodeCookieSuffix: 'test-site',
             },
         },
         hybrid: {

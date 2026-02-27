@@ -1317,7 +1317,7 @@ describe('auth middleware (server)', () => {
             expect(expiry).toBe(exp * 1000); // Should be in milliseconds
         });
 
-        it('should destroy all 10 cookies when isDestroyed is set', async () => {
+        it('should destroy all 12 cookies when isDestroyed is set', async () => {
             mockParseAllCookies.mockReturnValue({
                 'cc-nx-g': 'guest-refresh-token',
             });
@@ -1354,9 +1354,10 @@ describe('auth middleware (server)', () => {
 
             await authMiddleware({ request, context, params: {} }, next);
 
-            // Verify all 10 cookies were deleted:
-            // cc-nx-g, cc-nx, cc-at, usid, customerId, encUserId, cc-idp-at, dwsid, cc-cv, tc
-            expect(mockSerialize).toHaveBeenCalledTimes(10);
+            // Verify all 12 cookies were deleted:
+            // cc-nx-g, cc-nx, cc-at, usid, customerId, encUserId, cc-idp-at, dwsid, cc-cv, tc,
+            // storefront-next-context_*, dwsourcecode_*
+            expect(mockSerialize).toHaveBeenCalledTimes(12);
             expect(mockSerialize).toHaveBeenCalledWith(
                 '',
                 expect.objectContaining({
@@ -1502,9 +1503,10 @@ describe('auth middleware (server)', () => {
 
             await authMiddleware({ request, context, params: {} }, next);
 
-            // Verify all 10 cookies were deleted due to error
-            // cc-nx-g, cc-nx, cc-at, usid, customerId, encUserId, cc-idp-at, dwsid, cc-cv, tc
-            expect(mockSerialize).toHaveBeenCalledTimes(10);
+            // Verify all 12 cookies were deleted due to error
+            // cc-nx-g, cc-nx, cc-at, usid, customerId, encUserId, cc-idp-at, dwsid, cc-cv, tc,
+            // storefront-next-context_*, dwsourcecode_*
+            expect(mockSerialize).toHaveBeenCalledTimes(12);
         });
 
         it('should use getCookieNameWithSiteId to get cookie names', async () => {

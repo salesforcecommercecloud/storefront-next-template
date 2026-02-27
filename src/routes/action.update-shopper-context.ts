@@ -15,28 +15,9 @@
  */
 import type { ActionFunctionArgs } from 'react-router';
 import { extractQualifiersFromInput, updateShopperContext } from '@/lib/shopper-context-utils';
+import { extractStatusCode, parseJsonToStringRecord } from '@/lib/utils';
 import { getAuth } from '@/middlewares/auth.server';
 import { getTranslation } from '@/lib/i18next';
-import { extractStatusCode } from '@/lib/utils';
-
-/**
- * Safely parse JSON from cookie/qualifiers value.
- * Returns empty object if parsing fails.
- */
-function safeParseCookie(cookieValue: string): Record<string, string> {
-    if (!cookieValue) {
-        return {};
-    }
-    try {
-        const parsed = JSON.parse(cookieValue);
-        if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) {
-            return parsed as Record<string, string>;
-        }
-        return {};
-    } catch {
-        return {};
-    }
-}
 
 type UpdateShopperContextResponse = {
     success: boolean;
@@ -72,7 +53,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
         // Parse new qualifiers
         const allNewQualifiers =
-            qualifiersJson && typeof qualifiersJson === 'string' ? safeParseCookie(qualifiersJson) : {};
+            qualifiersJson && typeof qualifiersJson === 'string' ? parseJsonToStringRecord(qualifiersJson) : {};
 
         const { qualifiers: newShopperContext, sourceCodeQualifiers: newSourceCodeContext } =
             extractQualifiersFromInput(allNewQualifiers);

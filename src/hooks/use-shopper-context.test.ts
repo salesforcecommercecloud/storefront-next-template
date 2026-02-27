@@ -17,7 +17,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useShopperContext } from './use-shopper-context';
-import { SHOPPER_CONTEXT_ACTION_NAME } from '@/lib/shopper-context-utils';
+import { SHOPPER_CONTEXT_ACTION_NAME } from '@/lib/shopper-context-constants';
 // eslint-disable-next-line import/no-namespace -- vi.spyOn requires namespace import
 import * as ReactRouter from 'react-router';
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createCookie, type RouterContextProvider } from 'react-router';
+import type { RouterContextProvider } from 'react-router';
 import { createShopperContext, type ShopperContext } from '@/lib/api/shopper-context';
 import {
     SHOPPER_CONTEXT_SEARCH_PARAMS,
@@ -21,51 +21,14 @@ import {
     type QualifierMapping,
     QUALIFIER_MAPPING_API_FIELD_NAME,
     SOURCE_CODE_API_FIELD_NAME,
+    SHOPPER_CONTEXT_COOKIE_NAME_BASE,
+    SOURCE_CODE_COOKIE_NAME_BASE,
+    SHOPPER_CONTEXT_COOKIE_EXPIRY_SECONDS,
+    SOURCE_CODE_COOKIE_EXPIRY_SECONDS,
 } from '@/lib/shopper-context-constants';
-import { getConfig } from '@/config';
-import { getCookieConfig } from '@/lib/cookie-utils';
+import { createCookie, getCookieConfig } from '@/lib/cookie-utils';
+import { parseJsonToStringRecord } from '@/lib/utils';
 import { isDesignModeActive, isPreviewModeActive } from '@salesforce/storefront-next-runtime/design/mode';
-
-/**
- * Base cookie names (without USID suffix)
- */
-export const SHOPPER_CONTEXT_COOKIE_NAME_BASE = 'storefront-next-context';
-export const SOURCE_CODE_COOKIE_NAME_BASE = 'dwsourcecode';
-
-/**
- * Get shopper context cookie name with USID suffix
- * In client or server shopper context middlewares, when usid is empty, the middleware will be skipped by next()
- * It's possible Shopper Context will be used in UI directly later
- */
-export function getShopperContextCookieName(usid: string): string {
-    return `${SHOPPER_CONTEXT_COOKIE_NAME_BASE}-${usid}`;
-}
-
-/**
- * Get source code cookie name with configurable suffix
- * Commerce Cloud pattern: dwsourcecode_{suffix}
- * Suffix comes from config, which defaults to siteId if not overridden
- * TODO : Hash of siteId
- */
-export function getSourceCodeCookieName(context: Readonly<RouterContextProvider>): string {
-    const config = getConfig(context);
-    const _suffix = config.features.shopperContext.dwsourcecodeCookieSuffix;
-    // In setNamespacedCookie, cookie name with siteId suffix is already added, so we don't need to add it here
-    const suffix = _suffix ? `_${_suffix}` : '';
-    return `${SOURCE_CODE_COOKIE_NAME_BASE}${suffix}`;
-}
-
-export const SHOPPER_CONTEXT_ACTION_NAME = 'update-shopper-context';
-
-/**
- * Shopper context cookie expiry in seconds (6 hours)
- */
-export const SHOPPER_CONTEXT_COOKIE_EXPIRY_SECONDS = 6 * 60 * 60;
-
-/**
- * Source code cookie expiry in seconds (30 days)
- */
-export const SOURCE_CODE_COOKIE_EXPIRY_SECONDS = 30 * 24 * 60 * 60;
 
 /**
  * Check if Page Designer edit or preview mode is active
@@ -278,17 +241,18 @@ export async function updateShopperContext({
 }): Promise<{ setCookieHeaders: string[] }> {
     const setCookieHeaders: string[] = [];
 
-    // Get current context from cookies using React Router's createCookie
-    const shopperContextCookieName = getShopperContextCookieName(usid);
-    const sourceCodeCookieName = getSourceCodeCookieName(context);
+    // Get current context from cookies using cookie-utils (same as other app cookies; adds siteId suffix)
+    // httpOnly: true (server-only); action reads from request Cookie header
+    const cookieConfig = getCookieConfig({ httpOnly: true }, context);
+    const shopperContextCookieHandler = createCookie<string>(SHOPPER_CONTEXT_COOKIE_NAME_BASE, cookieConfig, context);
+    const sourceCodeCookieHandler = createCookie<string>(SOURCE_CODE_COOKIE_NAME_BASE, cookieConfig, context);
 
-    const cookieConfig = getCookieConfig({ httpOnly: false }, context);
-
-    const shopperContextCookieHandler = createCookie(shopperContextCookieName, cookieConfig);
-    const sourceCodeCookieHandler = createCookie(sourceCodeCookieName, cookieConfig);
-
-    const currentShopperContext = cookieHeader ? (await shopperContextCookieHandler.parse(cookieHeader)) || {} : {};
-    const currentSourceCodeContext = cookieHeader ? (await sourceCodeCookieHandler.parse(cookieHeader)) || {} : {};
+    const currentShopperContext = cookieHeader
+        ? parseJsonToStringRecord(await shopperContextCookieHandler.parse(cookieHeader))
+        : {};
+    const currentSourceCodeContext = cookieHeader
+        ? parseJsonToStringRecord(await sourceCodeCookieHandler.parse(cookieHeader))
+        : {};
 
     // Compute effective context by merging new with current
     const effectiveShopperContext = computeEffectiveShopperContext(newShopperContext, currentShopperContext);
@@ -307,17 +271,17 @@ export async function updateShopperContext({
         await createShopperContext(context, usid, shopperContextBody);
     }
 
-    // Serialize updated cookies as Set-Cookie headers
+    // Serialize updated cookies as Set-Cookie headers (cookie-utils stores string values; we JSON-encode objects)
     try {
         if (hasNewSourceCodeContext) {
-            const header = await sourceCodeCookieHandler.serialize(effectiveSourceCodeContext, {
+            const header = await sourceCodeCookieHandler.serialize(JSON.stringify(effectiveSourceCodeContext), {
                 maxAge: SOURCE_CODE_COOKIE_EXPIRY_SECONDS,
             });
             setCookieHeaders.push(header);
         }
 
         if (hasNewContext) {
-            const header = await shopperContextCookieHandler.serialize(effectiveShopperContext, {
+            const header = await shopperContextCookieHandler.serialize(JSON.stringify(effectiveShopperContext), {
                 maxAge: SHOPPER_CONTEXT_COOKIE_EXPIRY_SECONDS,
             });
             setCookieHeaders.push(header);
