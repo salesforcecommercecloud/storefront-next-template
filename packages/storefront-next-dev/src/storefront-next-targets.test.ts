@@ -25,8 +25,9 @@ describe('storefrontNextTargets', () => {
         const targets = storefrontNextTargets();
         expect(Array.isArray(targets)).toBe(true);
         // Base targets: managedRuntimeBundle, fixReactRouterManifestUrls, patchReactRouter,
-        // transformTargetPlaceholder, watchConfigFiles, buildMiddlewareRegistry, eventInstrumentationValidator
-        expect(targets.length).toBe(7);
+        // platformEntry, transformTargetPlaceholder, watchConfigFiles, buildMiddlewareRegistry,
+        // eventInstrumentationValidator
+        expect(targets.length).toBe(8);
         targets.forEach((target) => {
             expect(target).toHaveProperty('name');
         });
@@ -35,19 +36,19 @@ describe('storefrontNextTargets', () => {
     it('should return an array of targets with empty config', () => {
         const targets = storefrontNextTargets({});
         expect(Array.isArray(targets)).toBe(true);
-        expect(targets.length).toBe(7);
+        expect(targets.length).toBe(8);
     });
 
     it('should not include readableChunkFileNames when readableChunkNames is false', () => {
         const targets = storefrontNextTargets({ readableChunkNames: false });
-        expect(targets.length).toBe(7);
+        expect(targets.length).toBe(8);
         const targetNames = targets.map((t) => t.name);
         expect(targetNames).not.toContain('odyssey:readable-chunk-file-names');
     });
 
     it('should include readableChunkFileNames when readableChunkNames is true', () => {
         const targets = storefrontNextTargets({ readableChunkNames: true });
-        expect(targets.length).toBe(8); // Should have 8 targets when readableChunkNames is enabled
+        expect(targets.length).toBe(9); // Should have 9 targets when readableChunkNames is enabled
         const targetNames = targets.map((t) => t.name);
         expect(targetNames).toContain('odyssey:readable-chunk-file-names');
     });
@@ -60,11 +61,12 @@ describe('storefrontNextTargets', () => {
         expect(targetNames[0]).toBe('odyssey:managed-runtime-bundle');
         expect(targetNames[1]).toBe('odyssey:fix-react-router-manifest-urls');
         expect(targetNames[2]).toBe('odyssey:patch-react-router');
-        expect(targetNames[3]).toBe('odyssey:transform-target-placeholder');
-        expect(targetNames[4]).toBe('odyssey:watch-config-files');
-        expect(targetNames[5]).toBe('odyssey:build-middleware-registry');
-        expect(targetNames[6]).toBe('storefrontnext:event-instrumentation-validator');
-        expect(targetNames[7]).toBe('odyssey:readable-chunk-file-names');
+        expect(targetNames[3]).toBe('odyssey:platform-entry');
+        expect(targetNames[4]).toBe('odyssey:transform-target-placeholder');
+        expect(targetNames[5]).toBe('odyssey:watch-config-files');
+        expect(targetNames[6]).toBe('odyssey:build-middleware-registry');
+        expect(targetNames[7]).toBe('storefrontnext:event-instrumentation-validator');
+        expect(targetNames[8]).toBe('odyssey:readable-chunk-file-names');
     });
 
     it('should accept StorefrontNextTargetsConfig type with readableChunkNames', () => {
@@ -72,12 +74,12 @@ describe('storefrontNextTargets', () => {
             readableChunkNames: true,
         };
         const targets = storefrontNextTargets(config);
-        expect(targets.length).toBe(8);
+        expect(targets.length).toBe(9);
     });
 
     it('should not include eventInstrumentationValidator when explicitly disabled', () => {
         const targets = storefrontNextTargets({ eventInstrumentationValidator: false });
-        expect(targets.length).toBe(6); // One less than default
+        expect(targets.length).toBe(7); // One less than default
         const targetNames = targets.map((t) => t.name);
         expect(targetNames).not.toContain('storefrontnext:event-instrumentation-validator');
     });
@@ -89,7 +91,7 @@ describe('storefrontNextTargets', () => {
                 registryPath: '/path/to/registry',
             },
         });
-        expect(targets.length).toBe(8); // 7 base + staticRegistry
+        expect(targets.length).toBe(9); // 8 base + staticRegistry
         const targetNames = targets.map((t) => t.name);
         expect(targetNames).toContain('storefrontnext:static-registry');
     });
@@ -100,7 +102,7 @@ describe('storefrontNextTargets', () => {
                 componentPath: '/path/to/components',
             } as any,
         });
-        expect(targets.length).toBe(7); // Only base targets
+        expect(targets.length).toBe(8); // Only base targets
         const targetNames = targets.map((t) => t.name);
         expect(targetNames).not.toContain('storefrontnext:static-registry');
     });
@@ -111,7 +113,7 @@ describe('storefrontNextTargets', () => {
                 registryPath: '/path/to/registry',
             } as any,
         });
-        expect(targets.length).toBe(7); // Only base targets
+        expect(targets.length).toBe(8); // Only base targets
         const targetNames = targets.map((t) => t.name);
         expect(targetNames).not.toContain('storefrontnext:static-registry');
     });

@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 /**
+ * Normalize a file path to use forward slashes.
+ * On Windows, Node APIs return backslash-separated paths, but ESM import
+ * specifiers and Vite module IDs require forward slashes.
+ */
+export function toPosixPath(filePath: string): string {
+    return filePath.replace(/\\/g, '/');
+}
+
+/**
  * Get the Commerce Cloud API URL from a short code
  */
 export function getCommerceCloudApiUrl(shortCode: string): string {

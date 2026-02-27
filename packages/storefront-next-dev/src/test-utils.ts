@@ -14,22 +14,16 @@
  * limitations under the License.
  */
 
-import path from 'path';
-
 /**
  * Converts a path to use POSIX separators (forward slashes) and removes
- * Windows drive letter prefix if present.
- * This uses path.normalize first to handle any mixed separators,
- * then converts to forward slashes for consistent comparison.
+ * Windows drive letter prefix if present. This is a test-only utility
+ * kept self-contained to avoid interference with vi.mock of production modules.
  *
  * @param p - The path to convert
  * @returns The path with forward slashes and no drive letter
  */
 export function toPosixPath(p: string): string {
-    // Convert to forward slashes
-    let result = p.split(path.sep).join('/');
-    // Also handle any remaining backslashes (in case of mixed separators)
-    result = result.replace(/\\/g, '/');
+    let result = p.replace(/\\/g, '/');
     // Remove Windows drive letter prefix (e.g., "C:" or "D:")
     if (/^[A-Za-z]:/.test(result)) {
         result = result.slice(2);

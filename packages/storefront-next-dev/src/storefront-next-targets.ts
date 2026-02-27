@@ -26,6 +26,7 @@ import {
     type EventInstrumentationValidatorConfig,
 } from './plugins/eventInstrumentationValidator';
 import { buildMiddlewareRegistryPlugin } from './plugins/buildMiddlewareRegistry';
+import { platformEntryPlugin } from './plugins/platformEntry';
 
 /**
  * Configuration options for the Storefront Next Vite plugin.
@@ -116,6 +117,7 @@ export function storefrontNextTargets(config: StorefrontNextTargetsConfig = {}):
         managedRuntimeBundlePlugin(),
         fixReactRouterManifestUrlsPlugin(),
         patchReactRouterPlugin(),
+        platformEntryPlugin(),
         transformTargetPlaceholderPlugin(),
         watchConfigFilesPlugin(),
         buildMiddlewareRegistryPlugin(),

@@ -9,9 +9,9 @@ import traverseModule from "@babel/traverse";
 import fs$1, { existsSync, readFileSync, writeFileSync } from "fs";
 import { glob } from "glob";
 import { Node, Project, ts } from "ts-morph";
+import fs$2, { existsSync as existsSync$1, readFileSync as readFileSync$1, unlinkSync } from "node:fs";
 import express from "express";
 import { createRequestHandler } from "@react-router/express";
-import { existsSync as existsSync$1, readFileSync as readFileSync$1, unlinkSync } from "node:fs";
 import { pathToFileURL as pathToFileURL$1 } from "node:url";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import chalk from "chalk";
@@ -59,6 +59,44 @@ function fixReactRouterManifestUrlsPlugin() {
 }
 
 //#endregion
+//#region src/utils/paths.ts
+/**
+* Copyright 2026 Salesforce, Inc.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/**
+* Normalize a file path to use forward slashes.
+* On Windows, Node APIs return backslash-separated paths, but ESM import
+* specifiers and Vite module IDs require forward slashes.
+*/
+function toPosixPath(filePath) {
+	return filePath.replace(/\\/g, "/");
+}
+/**
+* Get the Commerce Cloud API URL from a short code
+*/
+function getCommerceCloudApiUrl(shortCode) {
+	return `https://${shortCode}.api.commercecloud.salesforce.com`;
+}
+/**
+* Get the bundle path for static assets
+*/
+function getBundlePath(bundleId) {
+	return `/mobify/bundle/${bundleId}/client/`;
+}
+
+//#endregion
 //#region src/plugins/readableChunkFileNames.ts
 /**
 * Generates human-readable chunk file names for better debugging in production builds.
@@ -85,9 +123,6 @@ const readableChunkFileNames = (chunkInfo) => {
 	const defaultName = "assets/(chunk)-[name].[hash].js";
 	if (!moduleIds || moduleIds.length === 0) return defaultName;
 	const lastModuleId = moduleIds[moduleIds.length - 1];
-	const toPosixPath = (pathname) => {
-		return pathname.replace(/\\/g, "/");
-	};
 	const getFileName = (pathname) => {
 		const posixPath = toPosixPath(pathname);
 		return path$1.posix.parse(posixPath).base.split("?")[0].replace(/\.(tsx?|jsx?|mjs|js)$/, "");
@@ -1017,6 +1052,151 @@ const buildMiddlewareRegistryPlugin = () => {
 };
 
 //#endregion
+//#region src/plugins/platformEntry.ts
+/**
+* File extensions to search when detecting ejected entry files.
+* Matches React Router's `entryExts` in its findEntry function.
+*/
+const ENTRY_EXTENSIONS = [
+	".js",
+	".jsx",
+	".ts",
+	".tsx",
+	".mjs",
+	".mts"
+];
+/**
+* Query parameter appended to imports of ejected entry files within the
+* generated composition code. This creates a distinct module ID so Vite
+* treats it as a separate module from the one we intercept in `load`,
+* breaking what would otherwise be a circular import.
+*
+* Vite natively handles query parameters on file imports — it strips the
+* query for filesystem access but keeps it in the module ID for deduplication.
+*/
+const PASSTHROUGH_QUERY = "?platform-passthrough";
+/**
+* Finds a user-ejected entry file in the app directory.
+* Returns the absolute path if found, undefined otherwise.
+*/
+function findUserEntry(appDirectory, basename$1) {
+	for (const ext of ENTRY_EXTENSIONS) {
+		const filePath = path.resolve(appDirectory, basename$1 + ext);
+		if (fs$2.existsSync(filePath)) return filePath;
+	}
+}
+/**
+* Generates the virtual module code for the composed server entry.
+*
+* The generated module imports the app's entry (user-ejected or SDK default),
+* passes it through composeServerEntry(), and re-exports all ServerEntryModule
+* fields. This ensures platform features are always applied.
+*/
+function generateServerEntryCode(appEntryImportPath) {
+	const importPath = JSON.stringify(toPosixPath(appEntryImportPath));
+	return `
+import * as _app from ${importPath};
+import { composeServerEntry } from '@salesforce/storefront-next-dev/entry/server';
+
+const _composed = composeServerEntry(_app);
+
+// Forward all named exports from the app entry so that any future
+// React Router exports are passed through without requiring a plugin update.
+// Explicit exports below take precedence over star re-exports per ESM spec.
+export * from ${importPath};
+
+// Override with composed versions for exports the platform layer enhances.
+export default _composed.default;
+export const handleDataRequest = _composed.handleDataRequest;
+export const handleError = _composed.handleError;
+export const unstable_instrumentations = _composed.unstable_instrumentations;
+export const streamTimeout = _composed.streamTimeout;
+`.trim();
+}
+/**
+* Generates the virtual module code for the composed client entry.
+*
+* Imports the platform client setup as a side-effect (runs before the app entry),
+* then re-exports everything from the app's client entry.
+*/
+function generateClientEntryCode(appEntryImportPath) {
+	return `
+import '@salesforce/storefront-next-dev/entry/client';
+export * from ${JSON.stringify(toPosixPath(appEntryImportPath))};
+`.trim();
+}
+/**
+* Vite plugin that composes platform-level features into React Router entry files.
+*
+* This plugin uses the `load` hook to replace entry file contents with generated
+* composition code, while preserving the original file path as the module ID.
+* This is critical because React Router's post-build manifest lookup uses the
+* original entry file paths to find built chunks — changing the module ID (via
+* `resolveId`) would break that lookup.
+*
+* The plugin supports two modes:
+* - **Non-ejected:** No entry files in the app directory. The generated code
+*   imports SDK default entries from `@salesforce/storefront-next-dev/entry/defaults/`.
+* - **Ejected:** Customer has created their own entry file(s). The generated code
+*   imports the customer's file (with a `?platform-passthrough` query to avoid
+*   circular imports) and wraps it with the platform layer.
+*
+* In both cases, the platform composition layer is always present. New platform
+* features ship via `npm update` by modifying the composition functions, without
+* changes to the plugin or customer code.
+*/
+function platformEntryPlugin() {
+	let isTestMode = false;
+	let serverEntryFilePath;
+	let clientEntryFilePath;
+	let appDirectory;
+	let userServerEntryPath;
+	let userClientEntryPath;
+	return {
+		name: "odyssey:platform-entry",
+		enforce: "pre",
+		config(_config, { mode }) {
+			isTestMode = mode === "test";
+		},
+		configResolved(config) {
+			if (isTestMode) return;
+			const ctx = config.__reactRouterPluginContext;
+			if (!ctx) return;
+			appDirectory = ctx.reactRouterConfig.appDirectory;
+			serverEntryFilePath = ctx.entryServerFilePath;
+			clientEntryFilePath = ctx.entryClientFilePath;
+			userServerEntryPath = findUserEntry(appDirectory, "entry.server");
+			userClientEntryPath = findUserEntry(appDirectory, "entry.client");
+		},
+		load(id) {
+			if (isTestMode || !serverEntryFilePath || !clientEntryFilePath || !appDirectory) return null;
+			if (id.includes(PASSTHROUGH_QUERY)) return null;
+			const idWithoutQuery = id.split("?")[0];
+			if (path.normalize(idWithoutQuery) === path.normalize(serverEntryFilePath)) return generateServerEntryCode(userServerEntryPath ? userServerEntryPath + PASSTHROUGH_QUERY : serverEntryFilePath + PASSTHROUGH_QUERY);
+			if (path.normalize(idWithoutQuery) === path.normalize(clientEntryFilePath)) return generateClientEntryCode(userClientEntryPath ? userClientEntryPath + PASSTHROUGH_QUERY : clientEntryFilePath + PASSTHROUGH_QUERY);
+			return null;
+		},
+		configureServer(server) {
+			if (isTestMode || !appDirectory) return;
+			const appDir = appDirectory;
+			const watcher = server.watcher;
+			const checkEntryChange = (filePath) => {
+				const relative$1 = path.relative(appDir, filePath);
+				const basename$1 = path.basename(relative$1, path.extname(relative$1));
+				if (path.dirname(relative$1) !== "." || basename$1 !== "entry.server" && basename$1 !== "entry.client") return;
+				const ext = path.extname(relative$1);
+				if (!ENTRY_EXTENSIONS.includes(ext)) return;
+				const nowHasServer = findUserEntry(appDir, "entry.server") !== void 0;
+				const nowHasClient = findUserEntry(appDir, "entry.client") !== void 0;
+				if (nowHasServer !== (userServerEntryPath !== void 0) || nowHasClient !== (userClientEntryPath !== void 0)) server.restart();
+			};
+			watcher.on("add", checkEntryChange);
+			watcher.on("unlink", checkEntryChange);
+		}
+	};
+}
+
+//#endregion
 //#region src/storefront-next-targets.ts
 /**
 * Storefront Next Vite plugin that powers the React Router RSC app.
@@ -1052,6 +1232,7 @@ function storefrontNextTargets(config = {}) {
 		managedRuntimeBundlePlugin(),
 		fixReactRouterManifestUrlsPlugin(),
 		patchReactRouterPlugin(),
+		platformEntryPlugin(),
 		transformTargetPlaceholderPlugin(),
 		watchConfigFilesPlugin(),
 		buildMiddlewareRegistryPlugin()
@@ -1171,36 +1352,6 @@ async function loadProjectConfig(projectDirectory) {
 		siteId: api.siteId,
 		proxy: api.proxy || "/mobify/proxy/api"
 	} } };
-}
-
-//#endregion
-//#region src/utils/paths.ts
-/**
-* Copyright 2026 Salesforce, Inc.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
-/**
-* Get the Commerce Cloud API URL from a short code
-*/
-function getCommerceCloudApiUrl(shortCode) {
-	return `https://${shortCode}.api.commercecloud.salesforce.com`;
-}
-/**
-* Get the bundle path for static assets
-*/
-function getBundlePath(bundleId) {
-	return `/mobify/bundle/${bundleId}/client/`;
 }
 
 //#endregion

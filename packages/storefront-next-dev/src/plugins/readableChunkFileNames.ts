@@ -15,6 +15,7 @@
  */
 import type { Plugin, Rollup } from 'vite';
 import path from 'path';
+import { toPosixPath } from '../utils/paths';
 
 /**
  * Generates human-readable chunk file names for better debugging in production builds.
@@ -45,10 +46,6 @@ export const readableChunkFileNames = (chunkInfo: Rollup.PreRenderedChunk) => {
 
     // Rollup moduleIds are in reverse order, the last moduleId is the one that was first in the source code
     const lastModuleId = moduleIds[moduleIds.length - 1];
-
-    const toPosixPath = (pathname: string) => {
-        return pathname.replace(/\\/g, '/');
-    };
 
     const getFileName = (pathname: string) => {
         const posixPath = toPosixPath(pathname);

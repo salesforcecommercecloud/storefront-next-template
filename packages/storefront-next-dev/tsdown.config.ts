@@ -6,8 +6,10 @@ import { defineConfig } from 'tsdown';
  * 2. React Router Scripts - exported for use in react-router apps
  * 3. MRT SSR server - bundles express server and AWS lambda handler
  * 4. React Router preset config - exported for use in react-router.config.ts
- * 5. Push API - programmatic API for bundle deployment
+ * 5. Cartridge services API - programmatic API for cartridge management
  * 6. CLI - command-line tool for deployment and extension management
+ * 7a. Server entry composition - platform server entry wrapper (Node.js)
+ * 7b. Client entry composition - platform client entry wrapper (browser)
  */
 export default defineConfig([
     // 1. Main Vite plugin entry (default export)
@@ -156,6 +158,33 @@ export default defineConfig([
                 to: 'dist/extensibility/templates',
             },
         ],
+        clean: false,
+        external: [/node_modules/],
+        hash: false,
+    },
+    // 7a. Server entry composition (runs in Node.js)
+    {
+        entry: {
+            server: 'src/entry/server.ts',
+        },
+        platform: 'node',
+        target: 'node24',
+        format: ['esm'],
+        dts: true,
+        outDir: 'dist/entry',
+        clean: false,
+        external: [/node_modules/],
+        hash: false,
+    },
+    // 7b. Client entry composition (runs in the browser)
+    {
+        entry: {
+            client: 'src/entry/client.ts',
+        },
+        platform: 'browser',
+        format: ['esm'],
+        dts: true,
+        outDir: 'dist/entry',
         clean: false,
         external: [/node_modules/],
         hash: false,

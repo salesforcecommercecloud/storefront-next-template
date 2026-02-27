@@ -42,6 +42,18 @@
         "types": "./dist/cartridge-services/index.d.ts",
         "default": "./dist/cartridge-services/index.js"
       }
+    },
+    "./entry/server": {
+      "import": {
+        "types": "./dist/entry/server.d.ts",
+        "default": "./dist/entry/server.js"
+      }
+    },
+    "./entry/client": {
+      "import": {
+        "types": "./dist/entry/client.d.ts",
+        "default": "./dist/entry/client.js"
+      }
     }
   },
   "bin": {
