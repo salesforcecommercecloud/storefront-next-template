@@ -83,7 +83,8 @@ const MOCK_SIZE_GUIDE_DATA: SizeGuideData = {
  * Matches the UI: 30-day returns, 1-year warranty, exchanges, need help.
  */
 const MOCK_RETURNS_AND_WARRANTY_DATA: ReturnsAndWarrantyData = {
-    title: 'Returns & Warranty',
+    title: '30-Day Returns & 1 Year Warranty',
+    description: 'Returns accepted within 30 days. Full warranty coverage included.',
     returnsPolicy: {
         heading: '30-Day Returns Policy',
         intro: "We want you to love your purchase. If you're not completely satisfied, you can return most items within 30 days of delivery for a full refund or exchange.",

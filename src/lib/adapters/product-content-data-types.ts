@@ -57,6 +57,7 @@ export interface SizeGuideData {
  */
 export interface ReturnsAndWarrantyData {
     title: string;
+    description: string;
     returnsPolicy: {
         heading: string;
         intro: string;

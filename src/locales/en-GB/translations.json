@@ -1287,6 +1287,7 @@
         "writeReviewDescription": "Write a review form",
         "starRatingDistributionDescription": "Star rating distribution details",
         "estimatedDeliveryDescription": "Estimated delivery details",
+        "returnsAndWarrantyDescription": "Returns and warranty details",
         "close": "Close"
     },
     "estimatedDelivery": {
@@ -1296,6 +1297,19 @@
         "sectionHeading": "Estimated Delivery",
         "shippingOptionsHeading": "Shipping Options & Rates",
         "free": "Free"
+    },
+    "returnsAndWarranty": {
+        "learnMore": "View Policies",
+        "returnConditions": "Return Conditions:",
+        "howToReturn": "How to Return:",
+        "note": "Note:",
+        "whatsCovered": "What's Covered:",
+        "whatsNotCovered": "What's Not Covered:",
+        "warrantyClaims": "Warranty Claims:",
+        "exchangeProcess": "Exchange Process:",
+        "needHelp": "Need Help?",
+        "contactAt": "Contact us at",
+        "orCall": "or call"
     },
     "writeReview": {
         "validation": {

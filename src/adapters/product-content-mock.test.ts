@@ -61,7 +61,7 @@ describe('ProductContentMockAdapter', () => {
             const data = await adapter.getReturnsAndWarranty?.();
             expect(data).toBeDefined();
             if (!data) return;
-            expect(data.title).toBe('Returns & Warranty');
+            expect(data.title).toBe('30-Day Returns & 1 Year Warranty');
             expect(data.returnsPolicy.heading).toBe('30-Day Returns Policy');
             expect(data.returnsPolicy.conditions).toHaveLength(4);
             expect(data.warranty.heading).toBe('1-Year Warranty');

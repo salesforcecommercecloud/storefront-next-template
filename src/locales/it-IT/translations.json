@@ -1106,6 +1106,7 @@
         "writeReviewDescription": "Modulo per scrivere una recensione",
         "starRatingDistributionDescription": "Dettagli distribuzione valutazioni a stelle",
         "estimatedDeliveryDescription": "Dettagli consegna stimata",
+        "returnsAndWarrantyDescription": "Dettagli resi e garanzia",
         "close": "Chiudi"
     },
     "estimatedDelivery": {
@@ -1115,6 +1116,19 @@
         "sectionHeading": "Consegna Stimata",
         "shippingOptionsHeading": "Opzioni di Spedizione e Tariffe",
         "free": "Gratuito"
+    },
+    "returnsAndWarranty": {
+        "learnMore": "Visualizza le politiche",
+        "returnConditions": "Condizioni di reso:",
+        "howToReturn": "Come effettuare un reso:",
+        "note": "Nota:",
+        "whatsCovered": "Cosa è coperto:",
+        "whatsNotCovered": "Cosa non è coperto:",
+        "warrantyClaims": "Reclami in garanzia:",
+        "exchangeProcess": "Procedura di cambio:",
+        "needHelp": "Hai bisogno di aiuto?",
+        "contactAt": "Contattaci a",
+        "orCall": "o chiama"
     },
     "writeReview": {
         "validation": {

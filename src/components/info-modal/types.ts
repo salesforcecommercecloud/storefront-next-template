@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { WriteReviewFormData, EstimatedDeliveryData } from '@/lib/adapters/product-content-data-types';
+import type {
+    WriteReviewFormData,
+    EstimatedDeliveryData,
+    ReturnsAndWarrantyData,
+} from '@/lib/adapters/product-content-data-types';
 
 /**
  * Payment schedule data for installment payment modal
@@ -91,6 +95,12 @@ export interface EstimatedDeliveryModalData extends InfoModalDataBase {
     deliveryData: EstimatedDeliveryData;
 }
 
+/** Data for returns & warranty modal */
+export interface ReturnsAndWarrantyModalData extends InfoModalDataBase {
+    type: 'returns-and-warranty';
+    returnsAndWarrantyData: ReturnsAndWarrantyData;
+}
+
 /**
  * Structured data for the info modal. Add new modal types by defining a new variant
  * (e.g. SizeGuideModalData) and extending this union.
@@ -99,7 +109,8 @@ export type InfoModalData =
     | PaymentScheduleModalData
     | WriteReviewModalData
     | StarRatingDistributionModalData
-    | EstimatedDeliveryModalData;
+    | EstimatedDeliveryModalData
+    | ReturnsAndWarrantyModalData;
 
 export interface InfoModalProps {
     open: boolean;

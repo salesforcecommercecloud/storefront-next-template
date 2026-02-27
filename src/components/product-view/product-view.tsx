@@ -23,6 +23,7 @@ import { useProductImages } from '@/hooks/product/use-product-images';
 import { useSelectedVariations } from '@/hooks/product/use-selected-variations';
 import CategoryBreadcrumbs from '../category-breadcrumbs';
 import EstimatedDelivery from '@/components/estimated-delivery';
+import ReturnsAndWarranty from '@/components/returns-and-warranty';
 import { isProductSet, isProductBundle } from '@/lib/product-utils';
 import HtmlFragment from '@/components/html-fragment';
 import { ChevronDownIcon } from 'lucide-react';
@@ -103,6 +104,7 @@ export default function ProductView({ product, category }: ProductViewProps): Re
                     )}
                     <ProductInfo product={product} />
                     <ProductCartActions product={product} />
+                    <ReturnsAndWarranty productId={product.id} />
                     <EstimatedDelivery productId={product.id} />
                 </div>
             </div>

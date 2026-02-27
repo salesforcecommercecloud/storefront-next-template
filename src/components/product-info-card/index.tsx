@@ -74,7 +74,7 @@ export default function ProductInfoCard({
                     {title}
                 </Typography>
                 {description && (
-                    <Typography variant="muted" className="mt-0.5">
+                    <Typography variant="muted" className="mt-0.5 text-xs">
                         {description}
                     </Typography>
                 )}
@@ -83,7 +83,7 @@ export default function ProductInfoCard({
                         type="button"
                         onClick={action.onClick}
                         aria-label={`${action.label} - ${title}`}
-                        className="mt-1 cursor-pointer text-sm font-normal text-primary hover:underline">
+                        className="mt-1 cursor-pointer text-xs font-normal text-primary hover:underline">
                         {action.label}
                     </button>
                 )}

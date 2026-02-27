@@ -34,12 +34,14 @@ export type {
     RatingDistributionData,
     StarRatingDistributionModalData,
     EstimatedDeliveryModalData,
+    ReturnsAndWarrantyModalData,
 } from './types';
 
 import { PaymentScheduleModalContent } from './renderers/payment-schedule-modal-content';
 import { WriteReviewModalContent } from './renderers/write-review-modal-content';
 import { StarRatingDistributionModalContent } from './renderers/star-rating-distribution-modal-content';
 import { EstimatedDeliveryModalContent } from './renderers/estimated-delivery-modal-content';
+import { ReturnsAndWarrantyModalContent } from './renderers/returns-and-warranty-modal-content';
 
 /** Escapes a string for safe use inside a RegExp. */
 function escapeRegex(s: string): string {
@@ -58,6 +60,7 @@ const MODAL_WIDTH_CLASSES = {
     'star-rating-distribution': 'w-[304px] max-w-[304px] sm:w-[304px] sm:max-w-[304px]',
     'payment-schedule': 'max-w-2xl sm:max-w-2xl',
     'estimated-delivery': 'max-w-2xl sm:max-w-2xl',
+    'returns-and-warranty': 'max-w-2xl sm:max-w-2xl',
 } as const;
 
 /**
@@ -104,7 +107,9 @@ export default function InfoModal({ open, onOpenChange, data, className }: InfoM
                           ? t('writeReviewDescription')
                           : data.type === 'estimated-delivery'
                             ? t('estimatedDeliveryDescription')
-                            : t('starRatingDistributionDescription')}
+                            : data.type === 'returns-and-warranty'
+                              ? t('returnsAndWarrantyDescription')
+                              : t('starRatingDistributionDescription')}
                 </DialogDescription>
                 {data.type === 'payment-schedule' && (
                     <>
@@ -208,6 +213,26 @@ export default function InfoModal({ open, onOpenChange, data, className }: InfoM
                         <div className="overflow-y-auto max-h-[calc(90vh-180px)]">
                             <div className="p-6 space-y-6">
                                 <EstimatedDeliveryModalContent deliveryData={data.deliveryData} currency={currency} />
+                            </div>
+                        </div>
+                        <div className="p-6 pt-4 border-t border-border">
+                            <Button className="w-full" onClick={() => onOpenChange(false)}>
+                                {t('close')}
+                            </Button>
+                        </div>
+                    </>
+                )}
+                {data.type === 'returns-and-warranty' && (
+                    <>
+                        <DialogHeader className="p-6 pt-8 pb-0 pr-12 text-left">
+                            <DialogTitle className="text-[1.5rem] font-semibold text-foreground">
+                                {data.title}
+                            </DialogTitle>
+                        </DialogHeader>
+                        <div className="mt-4 border-b border-muted-foreground/25" aria-hidden />
+                        <div className="overflow-y-auto max-h-[calc(90vh-180px)]">
+                            <div className="p-6 space-y-6">
+                                <ReturnsAndWarrantyModalContent returnsAndWarrantyData={data.returnsAndWarrantyData} />
                             </div>
                         </div>
                         <div className="p-6 pt-4 border-t border-border">

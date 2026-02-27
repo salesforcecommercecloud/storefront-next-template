@@ -107,9 +107,9 @@ export function EstimatedDeliveryModalContent({
                     {internationalShipping.heading}
                 </Typography>
                 {internationalShipping.points.length > 0 && (
-                    <div className="space-y-2 text-sm text-muted-foreground">
+                    <div className="space-y-2 text-sm text-foreground">
                         {internationalShipping.points.map((point) => (
-                            <Typography key={point} as="p" variant="muted" className="text-sm leading-relaxed">
+                            <Typography key={point} as="p" className="text-sm leading-relaxed text-foreground">
                                 {point}
                             </Typography>
                         ))}
@@ -128,9 +128,9 @@ export function EstimatedDeliveryModalContent({
                     {orderTracking.heading}
                 </Typography>
                 {orderTracking.points.length > 0 && (
-                    <div className="space-y-2 text-sm text-muted-foreground">
+                    <div className="space-y-2 text-sm text-foreground">
                         {orderTracking.points.map((point) => (
-                            <Typography key={point} as="p" variant="muted" className="text-sm leading-relaxed">
+                            <Typography key={point} as="p" className="text-sm leading-relaxed text-foreground">
                                 {point}
                             </Typography>
                         ))}
