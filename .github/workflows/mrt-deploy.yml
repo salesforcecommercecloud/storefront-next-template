@@ -32,7 +32,7 @@ env:
   PNPM_VERSION: '10.28.0'
   CREDENTIALS_FILE_PATH: '~/.mobify'
   DEFAULT_MESSAGE: 'build ${{ github.run_id }} on ${{ github.ref }} - ${{ github.sha }}'
-  MRT_CLIENT_API_KEY: ${{ secrets.MRT_CLIENT_API_KEY == '' }}
+  MRT_CLIENT_API_KEY: ${{ secrets.MRT_CLIENT_API_KEY }}
 
 jobs:
   check-deploy:
