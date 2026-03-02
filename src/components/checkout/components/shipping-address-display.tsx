@@ -15,70 +15,59 @@
  */
 import type { ReactElement } from 'react';
 import { Typography } from '@/components/typography';
-import { isAddressEmpty } from '@/lib/address-utils';
+import { Badge } from '@/components/ui/badge';
+import { useTranslation } from 'react-i18next';
+import type { AddressBookItem } from '@/lib/customer-profile-utils';
+import { formatAddress, isAddressEmpty } from '@/lib/address-utils';
 
 export type ShippingAddressDisplayProps = {
-    /** Address to display (order/basket address shape). When null/undefined or empty, notProvidedText is shown. */
-    address:
-        | {
-              firstName?: string;
-              lastName?: string;
-              address1?: string;
-              address2?: string;
-              city?: string;
-              stateCode?: string;
-              postalCode?: string;
-              phone?: string;
-          }
-        | null
-        | undefined;
-    /** Optional phone to show instead of address.phone (e.g. prioritized contact phone in checkout) */
-    displayPhone?: string;
-    /** Shown when address is missing or empty (e.g. "Shipping address not provided yet") */
-    notProvidedText?: string;
+    /** Address to display (order/basket address shape). When null/undefined or empty, nothing is rendered. */
+    address?: Partial<AddressBookItem> | null;
+    /** When true, display address.phone at the end. Default false (phone not shown). */
+    displayPhone?: boolean;
+    /** Shipping Address display variant */
+    variant?: 'summary' | 'card';
 };
 
 /**
  * Shipping address display – same structure as checkout shipping-address summary.
- * When address is missing or empty, shows notProvidedText. Used in checkout and order details.
+ * When address is missing or empty, renders nothing. Used in checkout and order details.
  */
 export function ShippingAddressDisplay({
     address,
-    displayPhone,
-    notProvidedText,
+    displayPhone = false,
+    variant = 'summary',
 }: ShippingAddressDisplayProps): ReactElement {
+    const { t } = useTranslation('checkout');
+
     if (!address || isAddressEmpty(address)) {
-        return (
-            <div className="space-y-2">
-                <Typography variant="small" className="text-muted-foreground">
-                    {notProvidedText}
-                </Typography>
-            </div>
-        );
+        return <></>;
     }
 
-    const prioritizedPhoneNumber = displayPhone ?? address.phone;
+    const isCard = variant === 'card';
+    const { nameLine, streetLine, cityLine } = formatAddress(address);
 
     return (
         <div className="space-y-2">
-            <Typography variant="small" className="text-muted-foreground">
-                {address.firstName} {address.lastName}
-            </Typography>
-            <Typography variant="small" className="text-muted-foreground">
-                {address.address1}
-            </Typography>
-            {address.address2 && (
+            <div className={isCard ? 'flex flex-wrap items-center gap-2' : undefined}>
+                <Typography variant="small" className={isCard ? 'text-foreground' : 'text-muted-foreground'}>
+                    {nameLine}
+                </Typography>
+                {isCard && address.preferred && <Badge variant="default">{t('shippingAddress.defaultBadge')}</Badge>}
+            </div>
+            {streetLine && (
                 <Typography variant="small" className="text-muted-foreground">
-                    {address.address2}
+                    {streetLine}
                 </Typography>
             )}
-            <Typography variant="small" className="text-muted-foreground">
-                {address.city}
-                {address.stateCode && `, ${address.stateCode}`} {address.postalCode}
-            </Typography>
-            {prioritizedPhoneNumber && (
+            {cityLine && (
                 <Typography variant="small" className="text-muted-foreground">
-                    {prioritizedPhoneNumber}
+                    {cityLine}
+                </Typography>
+            )}
+            {displayPhone && address.phone && (
+                <Typography variant="small" className="text-muted-foreground">
+                    {address.phone}
                 </Typography>
             )}
         </div>

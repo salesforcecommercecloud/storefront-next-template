@@ -300,7 +300,7 @@ describe('OrderDetails', () => {
         expect(document.querySelector('[data-card="shipping-address"]')).toBeInTheDocument();
         expect(screen.getAllByText(/John Snow/).length).toBeGreaterThanOrEqual(1);
         expect(screen.getByText(/2030 Market street 8th st/)).toBeInTheDocument();
-        expect(screen.getByText(/Seattle,\s*WA\s*98121/)).toBeInTheDocument();
+        expect(screen.getByText(/98121,\s*Seattle,\s*WA/)).toBeInTheDocument();
         expect(screen.getByText('Ground')).toBeInTheDocument();
     });
 

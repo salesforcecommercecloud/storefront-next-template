@@ -22,7 +22,8 @@ import { createApiClients } from '@/lib/api-clients';
 import { updateShipmentAddress, createDeliveryShipment } from '@/extensions/multiship/lib/api/basket';
 import { updateBasketWithCustomerInfoFallback } from '@/extensions/multiship/lib/basket-utils';
 import { isRegisteredCustomer, getCurrentCustomer, saveCustomerAddress } from '@/lib/api/customer';
-import { getAddressKey, isAddressEqual, customerAddressToOrderAddress } from '@/extensions/multiship/lib/address-utils';
+import { getAddressKey, isAddressEqual } from '@/extensions/multiship/lib/address-utils';
+import { customerAddressToOrderAddress } from '@/lib/address-utils';
 import { fetchShippingMethodsMapForBasket } from '@/lib/checkout-loaders';
 import { extractResponseError } from '@/lib/utils';
 
@@ -49,16 +50,33 @@ vi.mock('@/lib/api/customer', () => ({
 vi.mock('@/extensions/multiship/lib/address-utils', () => ({
     getAddressKey: vi.fn((addr) => `${addr.firstName}-${addr.lastName}-${addr.address1}`),
     isAddressEqual: vi.fn(() => false),
-    customerAddressToOrderAddress: vi.fn((addr) => ({
-        firstName: addr.firstName,
-        lastName: addr.lastName,
-        address1: addr.address1,
-        city: addr.city,
-        stateCode: addr.stateCode,
-        postalCode: addr.postalCode,
-        countryCode: addr.countryCode,
-    })),
 }));
+
+vi.mock('@/lib/address-utils', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/lib/address-utils')>();
+    return {
+        ...actual,
+        customerAddressToOrderAddress: vi.fn(
+            (addr: {
+                firstName?: string;
+                lastName?: string;
+                address1?: string;
+                city?: string;
+                stateCode?: string;
+                postalCode?: string;
+                countryCode?: string;
+            }) => ({
+                firstName: addr.firstName,
+                lastName: addr.lastName,
+                address1: addr.address1,
+                city: addr.city,
+                stateCode: addr.stateCode,
+                postalCode: addr.postalCode,
+                countryCode: addr.countryCode,
+            })
+        ),
+    };
+});
 
 vi.mock('@/lib/i18next', () => ({
     getTranslation: vi.fn(() => ({

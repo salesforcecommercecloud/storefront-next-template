@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { CustomerProfile } from '@/components/checkout/utils/checkout-context-types';
+import { customerAddressToOrderAddress } from '@/lib/address-utils';
 
 /**
  * Prefill contact info form with customer data
@@ -192,10 +193,8 @@ export function getDefaultShippingMethod(
     return availableShippingMethods[0]?.id;
 }
 
-/**
- * Get customer's address book for selection
- */
-export function getAddressBookFromCustomer(customerProfile?: CustomerProfile): Array<{
+/** Address book item shape returned by getAddressBookFromCustomer (matches SCAPI address fields). */
+export type AddressBookItem = {
     id: string;
     firstName: string;
     lastName: string;
@@ -208,25 +207,25 @@ export function getAddressBookFromCustomer(customerProfile?: CustomerProfile): A
     phone?: string;
     preferred?: boolean;
     type?: 'shipping' | 'billing';
-}> {
+};
+
+/**
+ * Get customer's address book for selection
+ */
+export function getAddressBookFromCustomer(customerProfile?: CustomerProfile): AddressBookItem[] {
     if (!customerProfile?.addresses || customerProfile.addresses.length === 0) {
         return [];
     }
 
-    return customerProfile.addresses.map((address) => ({
-        id: address.addressId || '',
-        firstName: address.firstName || '',
-        lastName: address.lastName || '',
-        address1: address.address1 || '',
-        address2: address.address2 || '',
-        city: address.city || '',
-        stateCode: address.stateCode || '',
-        postalCode: address.postalCode || '',
-        countryCode: address.countryCode || 'US',
-        phone: address.phone || '',
-        preferred: address.preferred || false,
-        type: address.addressId?.includes('billing') ? 'billing' : 'shipping',
-    }));
+    return customerProfile.addresses.map((address): AddressBookItem => {
+        const orderAddress = customerAddressToOrderAddress(address);
+        return {
+            ...orderAddress,
+            id: address.addressId || '',
+            preferred: address.preferred || false,
+            type: address.addressId?.includes('billing') ? 'billing' : 'shipping',
+        } as AddressBookItem;
+    });
 }
 
 /**

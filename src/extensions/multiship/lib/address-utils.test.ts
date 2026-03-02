@@ -15,7 +15,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { isAddressEqual, formatAddress, customerAddressToOrderAddress } from './address-utils';
+import { isAddressEqual } from './address-utils';
+import { formatAddress, customerAddressToOrderAddress } from '@/lib/address-utils';
 import type { ShopperBasketsV2, ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 
 describe('address-utils', () => {
@@ -295,19 +296,19 @@ describe('address-utils', () => {
     describe('formatAddress', () => {
         describe('null/undefined handling', () => {
             it('returns empty string when address is null', () => {
-                expect(formatAddress(null)).toBe('');
+                expect(formatAddress(null).fullAddress).toBe('');
             });
 
             it('returns empty string when address is undefined', () => {
-                expect(formatAddress(undefined)).toBe('');
+                expect(formatAddress(undefined).fullAddress).toBe('');
             });
 
             it('returns custom fallback text when address is null', () => {
-                expect(formatAddress(null, 'No address')).toBe('No address');
+                expect(formatAddress(null, 'No address').fullAddress).toBe('No address');
             });
 
             it('returns custom fallback text when address is undefined', () => {
-                expect(formatAddress(undefined, 'No address provided')).toBe('No address provided');
+                expect(formatAddress(undefined, 'No address provided').fullAddress).toBe('No address provided');
             });
         });
 
@@ -321,7 +322,7 @@ describe('address-utils', () => {
                     stateCode: 'IL',
                     postalCode: '62701',
                 };
-                expect(formatAddress(address)).toBe('John Doe, 123 Main St, Springfield, IL, 62701');
+                expect(formatAddress(address).fullAddress).toBe('John Doe, 123 Main St, Springfield, IL, 62701');
             });
 
             it('formats address without name fields', () => {
@@ -331,7 +332,7 @@ describe('address-utils', () => {
                     stateCode: 'OR',
                     postalCode: '97201',
                 };
-                expect(formatAddress(address)).toBe('456 Oak Ave, Portland, OR, 97201');
+                expect(formatAddress(address).fullAddress).toBe('456 Oak Ave, Portland, OR, 97201');
             });
 
             it('formats address with only firstName', () => {
@@ -342,7 +343,7 @@ describe('address-utils', () => {
                     stateCode: 'WA',
                     postalCode: '98101',
                 };
-                expect(formatAddress(address)).toBe('789 Elm St, Seattle, WA, 98101');
+                expect(formatAddress(address).fullAddress).toBe('789 Elm St, Seattle, WA, 98101');
             });
 
             it('formats address with only lastName', () => {
@@ -353,7 +354,7 @@ describe('address-utils', () => {
                     stateCode: 'TX',
                     postalCode: '78701',
                 };
-                expect(formatAddress(address)).toBe('321 Pine Rd, Austin, TX, 78701');
+                expect(formatAddress(address).fullAddress).toBe('321 Pine Rd, Austin, TX, 78701');
             });
         });
 
@@ -364,7 +365,7 @@ describe('address-utils', () => {
                     city: 'Springfield',
                     postalCode: '62701',
                 };
-                expect(formatAddress(address)).toBe('123 Main St, Springfield, 62701');
+                expect(formatAddress(address).fullAddress).toBe('123 Main St, Springfield, 62701');
             });
 
             it('formats address with only stateCode (no city)', () => {
@@ -373,7 +374,7 @@ describe('address-utils', () => {
                     stateCode: 'OR',
                     postalCode: '97201',
                 };
-                expect(formatAddress(address)).toBe('456 Oak Ave, OR, 97201');
+                expect(formatAddress(address).fullAddress).toBe('456 Oak Ave, OR, 97201');
             });
 
             it('formats address without postalCode', () => {
@@ -382,14 +383,14 @@ describe('address-utils', () => {
                     city: 'Seattle',
                     stateCode: 'WA',
                 };
-                expect(formatAddress(address)).toBe('789 Elm St, Seattle, WA');
+                expect(formatAddress(address).fullAddress).toBe('789 Elm St, Seattle, WA');
             });
 
             it('formats address with only address1', () => {
                 const address: ShopperBasketsV2.schemas['OrderAddress'] = {
                     address1: '123 Main St',
                 };
-                expect(formatAddress(address)).toBe('123 Main St');
+                expect(formatAddress(address).fullAddress).toBe('123 Main St');
             });
 
             it('formats address with city and stateCode', () => {
@@ -398,7 +399,7 @@ describe('address-utils', () => {
                     city: 'Denver',
                     stateCode: 'CO',
                 };
-                expect(formatAddress(address)).toBe('999 Test Ln, Denver, CO');
+                expect(formatAddress(address).fullAddress).toBe('999 Test Ln, Denver, CO');
             });
         });
 
@@ -412,7 +413,7 @@ describe('address-utils', () => {
                     stateCode: 'IL',
                     postalCode: '',
                 };
-                expect(formatAddress(address)).toBe('123 Main St, Springfield, IL');
+                expect(formatAddress(address).fullAddress).toBe('123 Main St, Springfield, IL');
             });
 
             it('handles address with all empty fields', () => {
@@ -424,7 +425,7 @@ describe('address-utils', () => {
                     stateCode: '',
                     postalCode: '',
                 };
-                expect(formatAddress(address)).toBe('');
+                expect(formatAddress(address).fullAddress).toBe('');
             });
         });
     });
@@ -480,7 +481,7 @@ describe('address-utils', () => {
             expect(result.postalCode).toBe('97201');
             expect(result.countryCode).toBe('US');
             expect(result.address2).toBeUndefined();
-            expect(result.stateCode).toBeUndefined();
+            expect(result.stateCode).toBe(''); // normalized to empty string when missing
             expect(result.phone).toBeUndefined();
         });
 

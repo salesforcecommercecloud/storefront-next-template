@@ -44,17 +44,7 @@ exports[`ShippingAddress stories snapshot > CompletedState story renders and mat
     >
       <div
         class="space-y-2"
-      >
-        <div
-          class="space-y-2"
-        >
-          <p
-            class="text-sm font-medium leading-none text-left text-muted-foreground"
-          >
-            Shipping address not provided yet
-          </p>
-        </div>
-      </div>
+      />
     </div>
   </div>
 </div>
@@ -369,17 +359,7 @@ exports[`ShippingAddress stories snapshot > DesktopView story renders and matche
     >
       <div
         class="space-y-2"
-      >
-        <div
-          class="space-y-2"
-        >
-          <p
-            class="text-sm font-medium leading-none text-left text-muted-foreground"
-          >
-            Shipping address not provided yet
-          </p>
-        </div>
-      </div>
+      />
     </div>
   </div>
 </div>
@@ -429,17 +409,7 @@ exports[`ShippingAddress stories snapshot > DisabledState story renders and matc
     >
       <div
         class="space-y-2"
-      >
-        <div
-          class="space-y-2"
-        >
-          <p
-            class="text-sm font-medium leading-none text-left text-muted-foreground"
-          >
-            Shipping address not provided yet
-          </p>
-        </div>
-      </div>
+      />
     </div>
   </div>
 </div>

@@ -57,7 +57,8 @@ import {
     updateItemAddresses,
     initializeItemAddresses,
 } from '@/extensions/multiship/lib/multi-address';
-import { formatAddress, getAddressKey } from '@/extensions/multiship/lib/address-utils';
+import { getAddressKey } from '@/extensions/multiship/lib/address-utils';
+import { formatAddress } from '@/lib/address-utils';
 import { AddAddressDialog } from '@/extensions/multiship/components/checkout/add-address-dialog';
 import { useCheckoutContext } from '@/hooks/use-checkout';
 import type { CheckoutActionData } from '@/components/checkout/types';
@@ -471,7 +472,7 @@ export default function ShippingMultiAddress({
                                             </option>
                                             {availableAddresses.map((address) => (
                                                 <option key={address.addressId} value={address.addressId}>
-                                                    {formatAddress(address)}
+                                                    {formatAddress(address).fullAddress}
                                                 </option>
                                             ))}
                                         </NativeSelect>

@@ -220,13 +220,13 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                           <div
                             class="space-y-2"
                           >
-                            <p
-                              class="text-sm font-medium leading-none text-left text-muted-foreground"
-                            >
-                              John
-                               
-                              Snow
-                            </p>
+                            <div>
+                              <p
+                                class="text-sm font-medium leading-none text-left text-muted-foreground"
+                              >
+                                John Snow
+                              </p>
+                            </div>
                             <p
                               class="text-sm font-medium leading-none text-left text-muted-foreground"
                             >
@@ -235,10 +235,7 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                             <p
                               class="text-sm font-medium leading-none text-left text-muted-foreground"
                             >
-                              Seattle
-                              , WA
-                               
-                              98121
+                              98121, Seattle, WA, US
                             </p>
                           </div>
                         </div>
@@ -613,21 +610,13 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                           <div
                             class="space-y-2"
                           >
-                            <p
-                              class="text-sm font-medium leading-none text-left text-muted-foreground"
-                            >
-                              Alice
-                               
-                              Smith
-                            </p>
-                            <p
-                              class="text-sm font-medium leading-none text-left text-muted-foreground"
-                            />
-                            <p
-                              class="text-sm font-medium leading-none text-left text-muted-foreground"
-                            >
-                               
-                            </p>
+                            <div>
+                              <p
+                                class="text-sm font-medium leading-none text-left text-muted-foreground"
+                              >
+                                Alice Smith
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -823,21 +812,13 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                           <div
                             class="space-y-2"
                           >
-                            <p
-                              class="text-sm font-medium leading-none text-left text-muted-foreground"
-                            >
-                              Bob
-                               
-                              Jones
-                            </p>
-                            <p
-                              class="text-sm font-medium leading-none text-left text-muted-foreground"
-                            />
-                            <p
-                              class="text-sm font-medium leading-none text-left text-muted-foreground"
-                            >
-                               
-                            </p>
+                            <div>
+                              <p
+                                class="text-sm font-medium leading-none text-left text-muted-foreground"
+                              >
+                                Bob Jones
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -1170,13 +1151,13 @@ exports[`OrderDetails stories snapshot > ShippedStatus story renders and matches
                           <div
                             class="space-y-2"
                           >
-                            <p
-                              class="text-sm font-medium leading-none text-left text-muted-foreground"
-                            >
-                              John
-                               
-                              Snow
-                            </p>
+                            <div>
+                              <p
+                                class="text-sm font-medium leading-none text-left text-muted-foreground"
+                              >
+                                John Snow
+                              </p>
+                            </div>
                             <p
                               class="text-sm font-medium leading-none text-left text-muted-foreground"
                             >
@@ -1185,10 +1166,7 @@ exports[`OrderDetails stories snapshot > ShippedStatus story renders and matches
                             <p
                               class="text-sm font-medium leading-none text-left text-muted-foreground"
                             >
-                              Seattle
-                              , WA
-                               
-                              98121
+                              98121, Seattle, WA, US
                             </p>
                           </div>
                         </div>

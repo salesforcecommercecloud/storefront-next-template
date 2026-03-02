@@ -362,6 +362,11 @@
         },
         "shippingAddress": {
             "title": "Indirizzo di spedizione",
+            "selectSavedAddress": "Seleziona un indirizzo salvato",
+            "viewAllLink": "Visualizza tutto",
+            "viewAllMore": "({{count}} altri)",
+            "viewLessAddresses": "Mostra meno",
+            "defaultBadge": "Predefinito",
             "firstNameRequired": "Il nome è obbligatorio",
             "lastNameRequired": "Il cognome è obbligatorio",
             "addressRequired": "L'indirizzo è obbligatorio",

@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import type { ShopperBasketsV2, ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { AddressBookItem } from '@/lib/customer-profile-utils';
 
 /**
  * Normalizes address field values for comparison
@@ -66,4 +66,86 @@ export function isAddressEmpty(address: ShopperBasketsV2.schemas['OrderAddress']
         normalize(address.postalCode) === '' &&
         normalize(address.stateCode) === ''
     );
+}
+
+type FormattedAddress = {
+    /** Full name line (firstName + lastName). */
+    nameLine: string;
+    /** Street line (address1 + address2). */
+    streetLine: string;
+    /** City line (postalCode, city, stateCode, countryCode). */
+    cityLine: string;
+    /** Single-line format for dropdowns: name, address1, city, stateCode, postalCode. */
+    fullAddress: string;
+};
+
+/**
+ * Formats an address for display. Returns structured lines and a single-line string.
+ * @param address - The address to format
+ * @param fallbackText - Used for fullAddress when address is null/undefined (defaults to empty string)
+ * @returns Object with nameLine, streetLine, cityLine, and fullAddress (single-line for dropdowns)
+ */
+export function formatAddress(
+    address?: ShopperBasketsV2.schemas['OrderAddress'] | ShopperCustomers.schemas['CustomerAddress'] | null,
+    fallbackText: string = ''
+): FormattedAddress {
+    if (!address) {
+        return { nameLine: '', streetLine: '', cityLine: '', fullAddress: fallbackText };
+    }
+    const nameLine =
+        address.firstName && address.lastName
+            ? `${address.firstName} ${address.lastName}`
+            : [address.firstName, address.lastName].filter(Boolean).join(' ') || '';
+    const streetLine = [address.address1, address.address2].filter(Boolean).join(' ');
+    const cityLine = [address.postalCode, address.city, address.stateCode, address.countryCode]
+        .filter(Boolean)
+        .join(', ');
+    const fullAddressParts = [
+        address.firstName && address.lastName ? `${address.firstName} ${address.lastName}` : null,
+        address.address1,
+        address.city && address.stateCode ? `${address.city}, ${address.stateCode}` : address.city || address.stateCode,
+        address.postalCode,
+    ].filter(Boolean);
+    const fullAddress = fullAddressParts.join(', ');
+    return { nameLine, streetLine, cityLine, fullAddress };
+}
+
+/**
+ * Converts a CustomerAddress to an OrderAddress format.
+ * Uses the same structure as the shipping address submission body.
+ * Applies default empty strings and 'US' for countryCode so the result is safe to spread into AddressBookItem.
+ *
+ * @param customerAddress - The customer address to convert
+ * @returns OrderAddress without id (id should be added separately from addressId); all string fields normalized
+ */
+export function customerAddressToOrderAddress(
+    customerAddress: ShopperCustomers.schemas['CustomerAddress']
+): ShopperBasketsV2.schemas['OrderAddress'] {
+    return {
+        address1: customerAddress.address1 ?? '',
+        address2: customerAddress.address2,
+        city: customerAddress.city ?? '',
+        countryCode: customerAddress.countryCode ?? 'US',
+        firstName: customerAddress.firstName ?? '',
+        lastName: customerAddress.lastName ?? '',
+        phone: customerAddress.phone,
+        postalCode: customerAddress.postalCode ?? '',
+        stateCode: customerAddress.stateCode ?? '',
+    };
+}
+
+/**
+ * Converts an address book item to FormData for shipping address form submission.
+ */
+export function addressToFormData(address: AddressBookItem): FormData {
+    const formData = new FormData();
+    if (address.firstName) formData.append('firstName', address.firstName);
+    if (address.lastName) formData.append('lastName', address.lastName);
+    if (address.address1) formData.append('address1', address.address1);
+    if (address.address2) formData.append('address2', address.address2);
+    if (address.city) formData.append('city', address.city);
+    if (address.stateCode) formData.append('stateCode', address.stateCode);
+    if (address.postalCode) formData.append('postalCode', address.postalCode);
+    if (address.phone) formData.append('phone', address.phone);
+    return formData;
 }

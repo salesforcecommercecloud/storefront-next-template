@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useMemo, type ReactNode } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ToggleCard, ToggleCardEdit, ToggleCardSummary } from '@/components/toggle-card';
@@ -22,13 +22,16 @@ import { Form } from '@/components/ui/form';
 import { useBasket } from '@/providers/basket';
 import { createShippingAddressSchema, type ShippingAddressData } from '@/lib/checkout-schemas';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
-import { getShippingAddressFromCustomer } from '@/lib/customer-profile-utils';
+import { getShippingAddressFromCustomer, getAddressBookFromCustomer } from '@/lib/customer-profile-utils';
 import { AddressFormFields } from '@/components/address-form-fields';
+import SavedAddressesList from './saved-addresses-list';
 import type { CheckoutActionData } from '../types';
+import { addressToFormData } from '@/lib/address-utils';
 import CheckoutErrorBanner from './checkout-error-banner';
 import { getCheckoutDisplayError } from './checkout-display-error';
 import ShippingAddressDisplay from './shipping-address-display';
 import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 
 interface ShippingAddressProps {
     onSubmit: (formData: FormData) => void;
@@ -75,7 +78,7 @@ export default function ShippingAddress({
         contactInfoPhone ||
         customerShippingAddress.phone ||
         '') as string;
-    const schema = useMemo(() => createShippingAddressSchema(t), [t]);
+    const schema = useMemo(() => createShippingAddressSchema(t as unknown as TFunction), [t]);
     const shippingFormError = getCheckoutDisplayError(actionData, 'shippingAddress');
 
     const form = useForm<ShippingAddressData>({
@@ -92,8 +95,13 @@ export default function ShippingAddress({
         },
     });
 
+    const savedAddresses = getAddressBookFromCustomer(customerProfile);
+    const hasSavedAddresses = savedAddresses.length > 0;
+    const defaultSelectedId = savedAddresses.find((a) => a.preferred)?.id ?? savedAddresses[0]?.id ?? '';
+    const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+    const effectiveSelectedId = selectedAddressId ?? defaultSelectedId;
+
     const handleFormSubmit = (data: ShippingAddressData) => {
-        // Convert typed data to FormData for the action route
         const formData = new FormData();
         Object.entries(data).forEach(([key, value]) => {
             if (value) {
@@ -103,16 +111,22 @@ export default function ShippingAddress({
         onSubmit(formData);
     };
 
+    const handleSavedAddressSubmit = () => {
+        const address = savedAddresses.find((a) => a.id === effectiveSelectedId);
+        if (!address) return;
+        const formData = addressToFormData(address);
+        onSubmit(formData);
+    };
+
     // For single page layout, always show the component but in collapsed state when not editing
     // The ToggleCard will handle the collapsed/expanded state based on editing prop
 
-    const stepTitle: ReactNode = (
-        <span className="text-lg font-semibold text-foreground">{t('shippingAddress.title')}</span>
-    );
+    const stepTitle = <span className="text-lg font-semibold text-foreground">{t('shippingAddress.title')}</span>;
 
     return (
         <ToggleCard
             id="shipping-address"
+            // @ts-expect-error CardTitle accepts ReactNode; strict downstream type excludes null
             title={stepTitle as React.ReactNode}
             editing={isEditing}
             onEdit={onEdit}
@@ -123,8 +137,8 @@ export default function ShippingAddress({
             // @sfdc-extension-block-end SFDC_EXT_MULTISHIP
             isLoading={isLoading}>
             <ToggleCardEdit>
-                <Form {...form}>
-                    <form onSubmit={(e) => void form.handleSubmit(handleFormSubmit)(e)} className="space-y-6">
+                {hasSavedAddresses ? (
+                    <div className="space-y-6">
                         {shippingFormError && <CheckoutErrorBanner message={shippingFormError} />}
                         {actionData?.fieldErrors && (
                             <div className="space-y-2">
@@ -133,29 +147,51 @@ export default function ShippingAddress({
                                 ))}
                             </div>
                         )}
-
-                        <AddressFormFields form={form} showPhone={true} autoFocus={isEditing} countryCode="US" />
-
+                        <SavedAddressesList
+                            addresses={savedAddresses}
+                            value={effectiveSelectedId}
+                            onValueChange={setSelectedAddressId}
+                        />
                         <div className="flex justify-end pt-4">
                             <Button
-                                type="submit"
+                                type="button"
                                 disabled={isLoading}
                                 size="lg"
-                                className="min-w-56 h-12 text-base font-semibold">
+                                className="min-w-56 h-12 text-base font-semibold"
+                                onClick={handleSavedAddressSubmit}>
                                 {isLoading ? t('common.submitting') : t('shippingAddress.continue')}
                             </Button>
                         </div>
-                    </form>
-                </Form>
+                    </div>
+                ) : (
+                    <Form {...form}>
+                        <form onSubmit={(e) => void form.handleSubmit(handleFormSubmit)(e)} className="space-y-6">
+                            {shippingFormError && <CheckoutErrorBanner message={shippingFormError} />}
+                            {actionData?.fieldErrors && (
+                                <div className="space-y-2">
+                                    {Object.entries(actionData.fieldErrors).map(([field, error]) => (
+                                        <CheckoutErrorBanner key={field} message={error} />
+                                    ))}
+                                </div>
+                            )}
+                            <AddressFormFields form={form} showPhone={true} autoFocus={isEditing} countryCode="US" />
+                            <div className="flex justify-end pt-4">
+                                <Button
+                                    type="submit"
+                                    disabled={isLoading}
+                                    size="lg"
+                                    className="min-w-56 h-12 text-base font-semibold">
+                                    {isLoading ? t('common.submitting') : t('shippingAddress.continue')}
+                                </Button>
+                            </div>
+                        </form>
+                    </Form>
+                )}
             </ToggleCardEdit>
 
             <ToggleCardSummary>
                 <div className="space-y-2">
-                    <ShippingAddressDisplay
-                        address={shippingAddress}
-                        displayPhone={prioritizedPhoneNumber || undefined}
-                        notProvidedText={t('shippingAddress.notProvided')}
-                    />
+                    <ShippingAddressDisplay address={shippingAddress} />
                 </div>
             </ToggleCardSummary>
         </ToggleCard>

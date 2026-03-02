@@ -15,7 +15,7 @@
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import ShippingAddressDisplay from '../shipping-address-display';
-import { expect } from 'storybook/test';
+import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 
 const meta: Meta<typeof ShippingAddressDisplay> = {
@@ -26,22 +26,23 @@ const meta: Meta<typeof ShippingAddressDisplay> = {
         docs: {
             description: {
                 component:
-                    'Displays a shipping address (name, lines, city/state/postal, phone). When address is missing or empty, shows notProvidedText. Used in checkout and order details.',
+                    'Displays a shipping address in standard format: Name, Address1 Address2, ZipCode, City, StateCode, Country. When address is missing or empty, renders nothing. Used in checkout and order details.',
             },
         },
     },
     tags: ['autodocs', 'interaction'],
     argTypes: {
         address: {
-            description: 'Address to display; when null or empty, notProvidedText is shown',
+            description: 'Address to display; when null or empty, nothing is rendered',
         },
         displayPhone: {
-            description: 'Optional phone to show instead of address.phone',
-            control: 'text',
+            description: 'When true, show phone number',
+            control: 'boolean',
         },
-        notProvidedText: {
-            description: 'Shown when address is missing or empty',
-            control: 'text',
+        variant: {
+            description: 'Display variant: summary or card (card shows default badge when preferred)',
+            control: 'select',
+            options: ['summary', 'card'],
         },
     },
 };
@@ -57,13 +58,12 @@ const fullAddress = {
     city: 'San Francisco',
     stateCode: 'CA',
     postalCode: '94102',
-    phone: '(555) 123-4567',
+    countryCode: 'US',
 };
 
 export const Default: Story = {
     args: {
         address: fullAddress,
-        notProvidedText: 'Shipping address not provided yet',
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
@@ -72,14 +72,40 @@ export const Default: Story = {
     },
 };
 
-export const NotProvided: Story = {
+export const WithPhone: Story = {
     args: {
-        address: null,
-        notProvidedText: 'Shipping address not provided yet',
+        address: { ...fullAddress, phone: '555-123-4567' },
+        displayPhone: true,
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const container = canvasElement.firstChild;
         await expect(container).toBeInTheDocument();
+    },
+};
+
+export const CardVariantWithDefault: Story = {
+    args: {
+        address: { ...fullAddress, preferred: true },
+        variant: 'card',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const container = canvasElement.firstChild;
+        await expect(container).toBeInTheDocument();
+    },
+};
+
+export const EmptyAddress: Story = {
+    args: {
+        address: null,
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        // Component renders nothing (empty fragment) when address is null; Storybook layout may add a wrapper.
+        // Assert that no address content is present rather than firstChild, which can be a layout wrapper div.
+        await expect(canvas.queryByText(/Jane|Doe|123 Main/i)).toBeNull();
+        await expect(canvasElement).toBeInTheDocument();
     },
 };

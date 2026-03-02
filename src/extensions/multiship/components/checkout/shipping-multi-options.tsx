@@ -43,7 +43,7 @@ import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi
 import CheckoutErrorBanner from '@/components/checkout/components/checkout-error-banner';
 import { getCheckoutDisplayError } from '@/components/checkout/components/checkout-display-error';
 import { useTranslation } from 'react-i18next';
-import { formatAddress } from '@/extensions/multiship/lib/address-utils';
+import { formatAddress } from '@/lib/address-utils';
 
 /**
  * Represents a shipping method option available for selection.
@@ -280,10 +280,12 @@ export default function ShippingMultiOptions({
                                                 {tMultiship('checkout.shipmentNumber', { number: shipmentNumber })}
                                             </Typography>
                                             <Typography variant="small" className="text-muted-foreground">
-                                                {formatAddress(
-                                                    data.shipment.shippingAddress,
-                                                    tMultiship('checkout.noAddress')
-                                                )}
+                                                {
+                                                    formatAddress(
+                                                        data.shipment.shippingAddress,
+                                                        tMultiship('checkout.noAddress')
+                                                    ).fullAddress
+                                                }
                                             </Typography>
                                         </div>
                                     )}
@@ -391,10 +393,12 @@ export default function ShippingMultiOptions({
                                                 {tMultiship('checkout.shipmentNumber', { number: shipmentNumber })}
                                             </Typography>
                                             <Typography variant="small" className="text-muted-foreground text-xs">
-                                                {formatAddress(
-                                                    data.shipment.shippingAddress,
-                                                    tMultiship('checkout.noAddress')
-                                                )}
+                                                {
+                                                    formatAddress(
+                                                        data.shipment.shippingAddress,
+                                                        tMultiship('checkout.noAddress')
+                                                    ).fullAddress
+                                                }
                                             </Typography>
                                         </>
                                     )}
