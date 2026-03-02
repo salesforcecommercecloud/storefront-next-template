@@ -48,13 +48,14 @@ const meta: Meta<typeof MarketingConsent> = {
     component: MarketingConsent,
     args: {
         subscriptions: defaultSubscriptions,
+        contactPointValueByChannel: { email: 'user@example.com' },
     },
     parameters: {
         layout: 'padded',
         docs: {
             description: {
                 component:
-                    'Marketing & Communication Preferences section displayed on the Account Details page. Data is loaded from the consent API (getSubscriptions). Subscription opt-in/opt-out is derived from consentStatus (per channel). Switches are read-only until the update API is integrated.',
+                    'Marketing & Communication Preferences section on the Account Details page. Subscriptions come from getSubscriptions (loader); opt-in/opt-out status from API consentStatus. contactPointValueByChannel (e.g. user email/phone) is sent with updates; switches are disabled when no contact point for that channel. Switches are controlled and reflect server data after revalidation; on update failure they revert to the previous state and an error toast is shown.',
             },
         },
     },
@@ -75,7 +76,7 @@ export const Default: Story = {
         await expect(editButton).toHaveAttribute('type', 'button');
         await expect(canvas.getByRole('heading', { level: 2, name: 'Email' })).toBeInTheDocument();
         const lists = canvas.getAllByRole('list');
-        await expect(lists.length).toBeGreaterThanOrEqual(1);
+        await expect(lists.length).toBe(1);
         const switches = canvas.getAllByRole('switch');
         await expect(switches.length).toBe(2);
         await expect(canvas.getByText('Sale')).toBeInTheDocument();
@@ -104,8 +105,26 @@ export const Empty: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        await expect(canvas.getByText('Marketing & Communication Preferences')).toBeInTheDocument();
-        await expect(canvas.getByRole('button', { name: /edit/i })).toBeInTheDocument();
-        await expect(canvas.queryByRole('heading', { level: 2 })).not.toBeInTheDocument();
+        // Component does not render when there is no subscription data
+        await expect(canvas.queryByText('Marketing & Communication Preferences')).not.toBeInTheDocument();
+        await expect(canvas.queryByRole('button', { name: /edit/i })).not.toBeInTheDocument();
+    },
+};
+
+export const SwitchesDisabledNoContactPoint: Story = {
+    args: {
+        subscriptions: defaultSubscriptions,
+        contactPointValueByChannel: undefined,
+    },
+    parameters: { snapshot: false },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const switches = canvas.getAllByRole('switch');
+        await expect(switches.length).toBe(2);
+        for (const sw of switches) {
+            await expect(sw).toBeDisabled();
+        }
     },
 };

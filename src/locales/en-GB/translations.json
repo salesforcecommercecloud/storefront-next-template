@@ -981,7 +981,8 @@
             "optedOut": "Not opted in",
             "channelEmail": "Email",
             "channelSms": "SMS / Text Messages",
-            "disclaimer": "By enabling these communication preferences, you agree to receive marketing communications from us, including exclusive offers, latest product information, and news about upcoming collections. See our Terms & Conditions and Privacy Policy for more details."
+            "disclaimer": "By enabling these communication preferences, you agree to receive marketing communications from us, including exclusive offers, latest product information, and news about upcoming collections. See our Terms & Conditions and Privacy Policy for more details.",
+            "updateError": "Failed to update marketing preference. Try again."
         }
     },
     "home": {

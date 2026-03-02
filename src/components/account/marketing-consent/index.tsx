@@ -13,22 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useMemo, useEffect, type ReactElement } from 'react';
+/**
+ * Marketing consent (subscriptions) – loader and action wiring
+ *
+ * - GET (subscriptions): loader in routes/_app.account.tsx calls getSubscriptions(context) and passes
+ *   subscriptions via Outlet context. Component receives them as a prop; it does not fetch.
+ * - POST (update subscription): routes/action.update-marketing-consent.ts; hook use-update-marketing-consent
+ *   submits to /action/update-marketing-consent; on success parent revalidates to refresh subscriptions.
+ */
+import { useCallback, useEffect, useMemo, useState, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ShopperConsents } from '@salesforce/storefront-next-runtime/scapi';
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { useConfig } from '@/config';
-import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
+import { useToast } from '@/components/toast';
+import { useUpdateMarketingConsent } from '@/hooks/use-update-marketing-consent';
 
 type ConsentSubscription = ShopperConsents.schemas['ConsentSubscription'];
 
+/** Channel type from Shopper Consents API. */
+type ConsentChannel = 'email' | 'sms' | 'whatsapp';
+
 export type MarketingConsentSubscriptions = ShopperConsents.schemas['ConsentSubscriptionResponse'] | null;
 
+export type ContactPointValueByChannel = Partial<Record<ConsentChannel, string>>;
+
 export interface MarketingConsentProps {
-    /** Optional override: subscription preferences from getSubscriptions (default: fetched by component). */
     subscriptions?: MarketingConsentSubscriptions | null;
+    contactPointValueByChannel?: ContactPointValueByChannel | null;
+    onConsentUpdated?: () => void;
 }
 
 function channelLabel(channelId: string): string {
@@ -41,9 +55,24 @@ function getStatusForChannel(sub: ConsentSubscription, channelId: string): 'opt_
     return entry?.status ?? sub.defaultStatus ?? 'opt_out';
 }
 
+/** User's contact point for a channel (from account). Sent as contactPointValue in the update POST. */
+function getContactPointForChannel(
+    channelId: ConsentChannel,
+    contactPointValueByChannel?: ContactPointValueByChannel | null
+): string | undefined {
+    return contactPointValueByChannel?.[channelId];
+}
+
+/** Section grouping subscriptions by channel (channelId is from API sub.channels). */
+type ChannelSection = {
+    channelId: ConsentChannel;
+    channelLabel: string;
+    items: ConsentSubscription[];
+};
+
 /** Group subscriptions by channel; each subscription appears under every channel in its channels array. Order follows API (first-seen channel order). */
-function groupByChannel(subscriptions: ConsentSubscription[]) {
-    const byChannel = new Map<string, ConsentSubscription[]>();
+function groupByChannel(subscriptions: ConsentSubscription[]): ChannelSection[] {
+    const byChannel = new Map<ConsentChannel, ConsentSubscription[]>();
     for (const sub of subscriptions) {
         for (const channelId of sub.channels ?? []) {
             const list = byChannel.get(channelId) ?? [];
@@ -58,30 +87,63 @@ function groupByChannel(subscriptions: ConsentSubscription[]) {
     }));
 }
 
-export function MarketingConsent({ subscriptions: subscriptionsProp }: MarketingConsentProps): ReactElement {
+export function MarketingConsent({
+    subscriptions: subscriptionsProp,
+    contactPointValueByChannel,
+    onConsentUpdated,
+}: MarketingConsentProps): ReactElement | null {
     const { t } = useTranslation('account');
-    const config = useConfig();
-    const fetcher = useScapiFetcher('shopperConsents', 'getSubscriptions', {
-        params: {
-            path: { organizationId: config.commerce.api.organizationId },
-            query: { siteId: config.commerce.api.siteId },
-        },
-    });
+    const { addToast } = useToast();
+
+    const onUpdateSuccess = useCallback(() => {
+        onConsentUpdated?.();
+    }, [onConsentUpdated]);
+
+    const subscriptions = subscriptionsProp ?? null;
+
+    /** Optimistic checked state per subscription+channel. Cleared when subscriptions update (revalidation) or on error. */
+    const [optimisticOverrides, setOptimisticOverrides] = useState<Record<string, boolean>>({});
 
     useEffect(() => {
-        if (subscriptionsProp === undefined) {
-            void fetcher.load();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps -- load once on mount when not controlled by prop
+        setOptimisticOverrides({});
+    }, [subscriptions]);
+
+    const clearOptimisticOverrides = useCallback(() => {
+        setOptimisticOverrides({});
     }, []);
 
-    const isControlled = subscriptionsProp !== undefined;
-    const subscriptions = isControlled ? subscriptionsProp : (fetcher.data ?? null);
+    const onUpdateError = useCallback(() => {
+        addToast(t('marketingConsent.updateError'), 'error');
+        clearOptimisticOverrides();
+    }, [addToast, clearOptimisticOverrides, t]);
+
+    const { updateSubscription, isUpdating } = useUpdateMarketingConsent(onUpdateSuccess, onUpdateError);
 
     const channelSections = useMemo(() => groupByChannel(subscriptions?.data ?? []), [subscriptions]);
 
     const statusToLabel = (status: 'opt_in' | 'opt_out'): string =>
         status === 'opt_in' ? t('marketingConsent.optedIn') : t('marketingConsent.optedOut');
+
+    const handleSwitchChange = useCallback(
+        (sub: ConsentSubscription, channelId: ConsentChannel, newChecked: boolean) => {
+            const contactPointValue = getContactPointForChannel(channelId, contactPointValueByChannel);
+            if (!contactPointValue) return;
+            const key = `${sub.subscriptionId}-${channelId}`;
+            setOptimisticOverrides((prev) => ({ ...prev, [key]: newChecked }));
+            updateSubscription({
+                subscriptionId: sub.subscriptionId,
+                channel: channelId,
+                contactPointValue,
+                status: newChecked ? 'opt_in' : 'opt_out',
+            });
+        },
+        [contactPointValueByChannel, updateSubscription]
+    );
+
+    const hasSubscriptionData = Array.isArray(subscriptions?.data) && (subscriptions?.data?.length ?? 0) > 0;
+    if (!hasSubscriptionData) {
+        return null;
+    }
 
     const renderContent = (): ReactElement => {
         return (
@@ -99,8 +161,18 @@ export function MarketingConsent({ subscriptions: subscriptionsProp }: Marketing
                         <ul className="space-y-2 pl-4" role="list">
                             {section.items.map((sub) => {
                                 const status = getStatusForChannel(sub, section.channelId);
-                                const checked = status === 'opt_in';
+                                const serverChecked = status === 'opt_in';
+                                const overrideKey = `${sub.subscriptionId}-${section.channelId}`;
+                                const checked =
+                                    optimisticOverrides[overrideKey] !== undefined
+                                        ? optimisticOverrides[overrideKey]
+                                        : serverChecked;
                                 const title = sub.title ?? sub.subscriptionId;
+                                const contactPointValue = getContactPointForChannel(
+                                    section.channelId,
+                                    contactPointValueByChannel
+                                );
+                                const canUpdate = Boolean(contactPointValue);
                                 return (
                                     <li
                                         key={`${section.channelId}-${sub.subscriptionId}`}
@@ -115,9 +187,13 @@ export function MarketingConsent({ subscriptions: subscriptionsProp }: Marketing
                                         </div>
                                         <Switch
                                             checked={checked}
+                                            disabled={!canUpdate || isUpdating}
                                             aria-label={`${title}: ${
                                                 checked ? statusToLabel('opt_in') : statusToLabel('opt_out')
                                             }`}
+                                            onCheckedChange={(value) =>
+                                                handleSwitchChange(sub, section.channelId, value === true)
+                                            }
                                             className="shrink-0 sm:ml-4"
                                         />
                                     </li>

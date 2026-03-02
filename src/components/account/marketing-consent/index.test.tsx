@@ -15,6 +15,7 @@
  */
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { act } from 'react';
 import { describe, expect, test, vi, beforeEach } from 'vitest';
 import type { ShopperConsents } from '@salesforce/storefront-next-runtime/scapi';
 import { MarketingConsent } from './index';
@@ -23,9 +24,20 @@ import { ConfigWrapper } from '@/test-utils/config';
 
 const { t } = getTranslation();
 
-const mockLoad = vi.fn();
-vi.mock('@/hooks/use-scapi-fetcher', () => ({
-    useScapiFetcher: vi.fn(() => ({ data: null, load: mockLoad })),
+const mockUpdateSubscription = vi.fn();
+const mockAddToast = vi.fn();
+let capturedOnError: ((message: string) => void) | undefined;
+vi.mock('@/hooks/use-update-marketing-consent', () => ({
+    useUpdateMarketingConsent: vi.fn((onSuccess: () => void, onError?: (message: string) => void) => {
+        capturedOnError = onError;
+        return {
+            updateSubscription: mockUpdateSubscription,
+            isUpdating: false,
+        };
+    }),
+}));
+vi.mock('@/components/toast', () => ({
+    useToast: () => ({ addToast: mockAddToast }),
 }));
 
 function renderWithProviders(ui: React.ReactElement) {
@@ -109,44 +121,34 @@ const noTitleFixture: ShopperConsents.schemas['ConsentSubscriptionResponse'] = {
 
 describe('MarketingConsent', () => {
     beforeEach(() => {
-        mockLoad.mockClear();
+        mockUpdateSubscription.mockClear();
+        mockAddToast.mockClear();
+        capturedOnError = undefined;
     });
 
     test('renders card with title and Edit button', () => {
-        renderWithProviders(<MarketingConsent />);
+        renderWithProviders(<MarketingConsent subscriptions={subscriptionsFixture} />);
 
         expect(screen.getByText(t('account:marketingConsent.title'))).toBeInTheDocument();
         expect(screen.getByRole('button', { name: t('account:marketingConsent.editA11y') })).toBeInTheDocument();
     });
 
     test('renders Edit button with correct type and aria-label', () => {
-        renderWithProviders(<MarketingConsent />);
+        renderWithProviders(<MarketingConsent subscriptions={subscriptionsFixture} />);
 
         const editButton = screen.getByRole('button', { name: t('account:marketingConsent.editA11y') });
         expect(editButton).toHaveAttribute('type', 'button');
         expect(editButton).toHaveAttribute('aria-label', t('account:marketingConsent.editA11y'));
     });
 
-    test('calls fetcher.load when subscriptions prop is undefined', () => {
-        renderWithProviders(<MarketingConsent />);
-
-        expect(mockLoad).toHaveBeenCalledTimes(1);
-    });
-
-    test('does not call fetcher.load when subscriptions prop is provided', () => {
-        renderWithProviders(<MarketingConsent subscriptions={subscriptionsFixture} />);
-
-        expect(mockLoad).not.toHaveBeenCalled();
-    });
-
     test('renders disclaimer', () => {
-        renderWithProviders(<MarketingConsent />);
+        renderWithProviders(<MarketingConsent subscriptions={subscriptionsFixture} />);
 
         expect(screen.getByText(t('account:marketingConsent.disclaimer'))).toBeInTheDocument();
     });
 
     test('renders card with data-section attribute for marketing consent', () => {
-        const { container } = renderWithProviders(<MarketingConsent />);
+        const { container } = renderWithProviders(<MarketingConsent subscriptions={subscriptionsFixture} />);
 
         const card = container.querySelector('[data-section="marketing-consent"]');
         expect(card).toBeInTheDocument();
@@ -175,32 +177,51 @@ describe('MarketingConsent', () => {
         expect(newsletterSwitch).toHaveAttribute('aria-checked', 'true');
     });
 
-    test('switch state is read-only until PUT API (click does not change state)', async () => {
+    test('clicking switch calls updateSubscription with correct payload when contactPointValueByChannel provided', async () => {
         const user = userEvent.setup();
-        renderWithProviders(<MarketingConsent subscriptions={subscriptionsFixture} />);
+        renderWithProviders(
+            <MarketingConsent
+                subscriptions={subscriptionsFixture}
+                contactPointValueByChannel={{ email: 'user@example.com' }}
+            />
+        );
 
         const saleSwitch = screen.getByRole('switch', {
             name: new RegExp(`Sale.*${t('account:marketingConsent.optedOut')}`),
         });
         expect(saleSwitch).toHaveAttribute('aria-checked', 'false');
+        expect(saleSwitch).not.toBeDisabled();
 
         await user.click(saleSwitch);
 
-        expect(saleSwitch).toHaveAttribute('aria-checked', 'false');
+        expect(mockUpdateSubscription).toHaveBeenCalledTimes(1);
+        expect(mockUpdateSubscription).toHaveBeenCalledWith({
+            subscriptionId: 'Sale',
+            channel: 'email',
+            contactPointValue: 'user@example.com',
+            status: 'opt_in',
+        });
     });
 
-    test('with subscriptions null renders card and disclaimer only', () => {
+    test('switch is disabled when contactPointValueByChannel has no value for channel', () => {
+        renderWithProviders(<MarketingConsent subscriptions={subscriptionsFixture} />);
+
+        const switches = screen.getAllByRole('switch');
+        expect(switches).toHaveLength(2);
+        switches.forEach((sw) => expect(sw).toBeDisabled());
+    });
+
+    test('with subscriptions null does not render the card', () => {
         renderWithProviders(<MarketingConsent subscriptions={null} />);
 
-        expect(screen.getByText(t('account:marketingConsent.title'))).toBeInTheDocument();
-        expect(screen.getByText(t('account:marketingConsent.disclaimer'))).toBeInTheDocument();
+        expect(screen.queryByText(t('account:marketingConsent.title'))).not.toBeInTheDocument();
         expect(screen.queryByRole('heading', { level: 2 })).not.toBeInTheDocument();
     });
 
-    test('with empty data array renders disclaimer and no channel sections', () => {
+    test('with empty data array does not render the card', () => {
         renderWithProviders(<MarketingConsent subscriptions={{ data: [] }} />);
 
-        expect(screen.getByText(t('account:marketingConsent.disclaimer'))).toBeInTheDocument();
+        expect(screen.queryByText(t('account:marketingConsent.title'))).not.toBeInTheDocument();
         expect(screen.queryByRole('heading', { level: 2 })).not.toBeInTheDocument();
     });
 
@@ -249,5 +270,59 @@ describe('MarketingConsent', () => {
             name: new RegExp(`no-title-id.*${t('account:marketingConsent.optedOut')}`),
         });
         expect(sw).toHaveAttribute('aria-checked', 'false');
+    });
+
+    test('when opt-in fails, switch reverts back to opt-out', async () => {
+        const user = userEvent.setup();
+        renderWithProviders(
+            <MarketingConsent
+                subscriptions={subscriptionsFixture}
+                contactPointValueByChannel={{ email: 'user@example.com' }}
+            />
+        );
+
+        const saleSwitch = screen.getByRole('switch', {
+            name: new RegExp(`Sale.*${t('account:marketingConsent.optedOut')}`),
+        });
+        expect(saleSwitch).toHaveAttribute('aria-checked', 'false');
+
+        await user.click(saleSwitch);
+        expect(saleSwitch).toHaveAttribute('aria-checked', 'true');
+
+        act(() => {
+            capturedOnError?.('API error');
+        });
+        expect(mockAddToast).toHaveBeenCalledWith(t('account:marketingConsent.updateError'), 'error');
+        const saleSwitchAfterRevert = screen.getByRole('switch', {
+            name: new RegExp(`Sale.*${t('account:marketingConsent.optedOut')}`),
+        });
+        expect(saleSwitchAfterRevert).toHaveAttribute('aria-checked', 'false');
+    });
+
+    test('when opt-out fails, switch reverts back to opt-in', async () => {
+        const user = userEvent.setup();
+        renderWithProviders(
+            <MarketingConsent
+                subscriptions={subscriptionsFixture}
+                contactPointValueByChannel={{ email: 'user@example.com' }}
+            />
+        );
+
+        const newsletterSwitch = screen.getByRole('switch', {
+            name: new RegExp(`Newsletter.*${t('account:marketingConsent.optedIn')}`),
+        });
+        expect(newsletterSwitch).toHaveAttribute('aria-checked', 'true');
+
+        await user.click(newsletterSwitch);
+        expect(newsletterSwitch).toHaveAttribute('aria-checked', 'false');
+
+        act(() => {
+            capturedOnError?.('API error');
+        });
+        expect(mockAddToast).toHaveBeenCalledWith(t('account:marketingConsent.updateError'), 'error');
+        const newsletterSwitchAfterRevert = screen.getByRole('switch', {
+            name: new RegExp(`Newsletter.*${t('account:marketingConsent.optedIn')}`),
+        });
+        expect(newsletterSwitchAfterRevert).toHaveAttribute('aria-checked', 'true');
     });
 });

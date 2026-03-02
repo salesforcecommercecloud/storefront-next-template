@@ -18,6 +18,7 @@ import { composeStories } from '@storybook/react-vite';
 // eslint-disable-next-line import/no-namespace
 import * as MarketingConsentStories from './index.stories';
 import { render, cleanup } from '@testing-library/react';
+import { createMemoryRouter, RouterProvider } from 'react-router';
 import { ConfigWrapper } from '@/test-utils/config';
 
 vi.mock('@/hooks/use-scapi-fetcher', () => ({
@@ -34,11 +35,20 @@ describe('MarketingConsent stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
         if (Story?.parameters?.snapshot === false || /interactiontests?/i.test(storyName)) continue;
         test(`${storyName} story renders and matches snapshot`, () => {
-            const { container } = render(
-                <ConfigWrapper>
-                    <Story />
-                </ConfigWrapper>
+            const router = createMemoryRouter(
+                [
+                    {
+                        path: '/',
+                        element: (
+                            <ConfigWrapper>
+                                <Story />
+                            </ConfigWrapper>
+                        ),
+                    },
+                ],
+                { initialEntries: ['/'] }
             );
+            const { container } = render(<RouterProvider router={router} />);
             expect(container.firstChild).toMatchSnapshot();
         });
     }

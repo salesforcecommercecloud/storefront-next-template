@@ -393,7 +393,14 @@ function AccountDetailsContent({
             </ToggleCard>
 
             {/* Email Preferences – MarketingConsent (part of My Account) */}
-            <MarketingConsent subscriptions={subscriptions} />
+            <MarketingConsent
+                subscriptions={subscriptions}
+                contactPointValueByChannel={{
+                    email: userInfo.email,
+                    sms: userInfo.phoneNumber || undefined,
+                }}
+                onConsentUpdated={() => void revalidator.revalidate()}
+            />
         </div>
     );
 }

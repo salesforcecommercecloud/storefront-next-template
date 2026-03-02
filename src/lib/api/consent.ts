@@ -21,6 +21,8 @@ import { createApiClients } from '@/lib/api-clients';
 /** Expand param for getSubscriptions: include consentStatus so responses have per-channel opt-in/opt-out. */
 const GET_SUBSCRIPTIONS_EXPAND = ['consentStatus'] as const;
 
+export type UpdateSubscriptionBody = ShopperConsents.schemas['ConsentSubscriptionRequest'];
+
 /**
  * Get shopper consent subscription preferences (server-side).
  *
@@ -47,4 +49,32 @@ export async function getSubscriptions(
     } catch {
         return null;
     }
+}
+
+/**
+ * Update a single marketing consent subscription (opt-in/opt-out) (server-side).
+ *
+ * Use in route actions that handle the HTTP request; parse FormData/body then call this.
+ * Throws ApiError on SCAPI failure so the action can map to status/error response.
+ *
+ * @param context - React Router context from loader/action
+ * @param body - subscriptionId, channel, contactPointValue, status
+ * @returns Update response from SCAPI
+ * @throws ApiError when the API returns an error
+ * @see https://developer.salesforce.com/docs/commerce/commerce-api/references/consents?meta=updateSubscription
+ */
+export async function updateSubscription(
+    context: LoaderFunctionArgs['context'],
+    body: UpdateSubscriptionBody
+): Promise<ShopperConsents.schemas['ConsentSubscriptionUpdateResponse']> {
+    const config = getConfig(context);
+    const clients = createApiClients(context);
+    const { data } = await clients.shopperConsents.updateSubscription({
+        params: {
+            path: { organizationId: config.commerce.api.organizationId },
+            query: { siteId: config.commerce.api.siteId },
+        },
+        body,
+    });
+    return data;
 }
