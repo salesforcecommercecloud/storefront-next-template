@@ -24,13 +24,14 @@ import { registry } from '@/lib/registry';
  * 
  * DO NOT EDIT THIS FUNCTION MANUALLY - it will be overwritten on next build.
  * 
- * Components registered: odyssey_base.contentCard, odyssey_base.grid, odyssey_base.hero, odyssey_base.heroCarousel, odyssey_base.popularCategories, odyssey_base.popularCategory, odyssey_base.productCarousel, odyssey_base.productRecommendations
+ * Components registered: odyssey_base.contentCard, odyssey_base.grid, odyssey_base.hero, odyssey_base.heroCarousel, odyssey_base.pdButton, odyssey_base.popularCategories, odyssey_base.popularCategory, odyssey_base.productCarousel, odyssey_base.productRecommendations
  */
 export function initializeRegistry(targetRegistry = registry): void {
     targetRegistry.registerImporter('odyssey_base.contentCard', () => import('../components/content-card/index'));
     targetRegistry.registerImporter('odyssey_base.grid', () => import('../components/grid/index'));
     targetRegistry.registerImporter('odyssey_base.hero', () => import('../components/hero/index'));
     targetRegistry.registerImporter('odyssey_base.heroCarousel', () => import('../components/hero-carousel/index'), { fallback: 'fallback' });
+    targetRegistry.registerImporter('odyssey_base.pdButton', () => import('../components/pd-button/index'));
     targetRegistry.registerImporter('odyssey_base.popularCategories', () => import('../components/home/popular-categories/index'), { loader: 'loader' });
     targetRegistry.registerImporter('odyssey_base.popularCategory', () => import('../components/home/popular-category/index'), { loader: 'loader' });
     targetRegistry.registerImporter('odyssey_base.productCarousel', () => import('../components/product-carousel/index'), { loader: 'loader', fallback: 'fallback' });

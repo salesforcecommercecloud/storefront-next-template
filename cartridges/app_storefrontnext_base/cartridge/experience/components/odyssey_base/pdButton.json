@@ -1,0 +1,102 @@
+{
+    "name": "Button",
+    "description": "Configurable button with customizable styling and hover effects",
+    "group": "odyssey_base",
+    "arch_type": "headless",
+    "region_definitions": [],
+    "attribute_definition_groups": [
+        {
+            "id": "pdButton",
+            "name": "Button",
+            "description": "Configurable button with customizable styling and hover effects",
+            "attribute_definitions": [
+                {
+                    "id": "text",
+                    "name": "Button Text",
+                    "type": "string",
+                    "required": true,
+                    "description": "The text displayed on the button"
+                },
+                {
+                    "id": "link",
+                    "name": "Link URL",
+                    "type": "url",
+                    "required": false,
+                    "description": "The URL to navigate to when the button is clicked"
+                },
+                {
+                    "id": "borderRadius",
+                    "name": "Border Radius",
+                    "type": "enum",
+                    "required": false,
+                    "description": "Corner roundness of the button",
+                    "values": ["none", "sm", "md", "lg", "xl", "2xl", "full"],
+                    "default_value": "md"
+                },
+                {
+                    "id": "boxShadow",
+                    "name": "Box Shadow",
+                    "type": "enum",
+                    "required": false,
+                    "description": "Shadow effect for the button",
+                    "values": ["none", "sm", "md", "lg", "xl", "2xl"],
+                    "default_value": "none"
+                },
+                {
+                    "id": "paddingX",
+                    "name": "Horizontal Padding",
+                    "type": "enum",
+                    "required": false,
+                    "description": "Left and right padding in Tailwind spacing units",
+                    "values": ["0", "1", "2", "3", "4", "6", "8"],
+                    "default_value": "4"
+                },
+                {
+                    "id": "paddingY",
+                    "name": "Vertical Padding",
+                    "type": "enum",
+                    "required": false,
+                    "description": "Top and bottom padding in Tailwind spacing units",
+                    "values": ["0", "1", "2", "3", "4", "6", "8"],
+                    "default_value": "2"
+                },
+                {
+                    "id": "margin",
+                    "name": "Margin",
+                    "type": "enum",
+                    "required": false,
+                    "description": "Margin around the button in Tailwind spacing units",
+                    "values": ["0", "1", "2", "3", "4", "6", "8"],
+                    "default_value": "0"
+                },
+                {
+                    "id": "fontWeight",
+                    "name": "Font Weight",
+                    "type": "enum",
+                    "required": false,
+                    "description": "The weight (boldness) of the button text",
+                    "values": ["normal", "medium", "semibold", "bold"],
+                    "default_value": "medium"
+                },
+                {
+                    "id": "letterSpacing",
+                    "name": "Letter Spacing",
+                    "type": "enum",
+                    "required": false,
+                    "description": "Spacing between letters in the button text",
+                    "values": ["tighter", "tight", "normal", "wide", "wider"],
+                    "default_value": "normal"
+                },
+                {
+                    "id": "hoverEffect",
+                    "name": "Hover Effect",
+                    "type": "enum",
+                    "required": false,
+                    "description": "Interactive hover effect for the button",
+                    "values": ["default", "scale", "opacity", "shadow"],
+                    "default_value": "default"
+                }
+            ]
+        }
+    ]
+}
