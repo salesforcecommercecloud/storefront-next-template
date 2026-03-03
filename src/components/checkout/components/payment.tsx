@@ -36,6 +36,7 @@ import CheckoutErrorBanner from './checkout-error-banner';
 import { getCheckoutDisplayError } from './checkout-display-error';
 import { useTranslation } from 'react-i18next';
 import { UITarget } from '@/targets/ui-target';
+import CreditCardOptionIcon from '@/components/icons/credit-card-option-icon';
 
 interface PaymentProps {
     onSubmit: (data: PaymentData) => void;
@@ -151,6 +152,7 @@ export default function Payment({
                 billingStateCode: '',
                 billingPostalCode: '',
                 billingPhone: '',
+                billingCountryCode: 'US',
             }),
             // @sfdc-extension-block-end SFDC_EXT_BOPIS
         };
@@ -242,10 +244,6 @@ export default function Payment({
                         <div className="space-y-4">
                             <UITarget targetId="checkout.payment.paymentMethods.before" />
                             <UITarget targetId="checkout.payment.paymentMethods">
-                                <Typography variant="h4" as="h3">
-                                    {t('confirmation.fields.paymentMethod')}
-                                </Typography>
-
                                 {/* Saved Payment Methods */}
                                 {savedPaymentMethods.length > 0 && (
                                     <div className="space-y-4">
@@ -307,17 +305,11 @@ export default function Payment({
                                             })}
                                             <div className="flex items-center space-x-3 p-3 border rounded-md hover:bg-accent">
                                                 <RadioGroupItem value="new" id="new-payment" />
-                                                <Label htmlFor="new-payment" className="cursor-pointer">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-8 h-5 bg-muted rounded border-2 border-dashed border-muted-foreground/30 flex items-center justify-center">
-                                                            <span className="text-xs font-bold text-muted-foreground">
-                                                                +
-                                                            </span>
-                                                        </div>
-                                                        <span className="font-medium">
-                                                            {t('payment.addNewPaymentMethod')}
-                                                        </span>
-                                                    </div>
+                                                <Label
+                                                    htmlFor="new-payment"
+                                                    className="flex-1 cursor-pointer flex items-center gap-3">
+                                                    <span className="font-medium">{t('payment.creditCardOption')}</span>
+                                                    <CreditCardOptionIcon className="w-5 h-5 flex-shrink-0 ml-auto" />
                                                 </Label>
                                             </div>
                                         </RadioGroup>
@@ -325,13 +317,26 @@ export default function Payment({
                                     </div>
                                 )}
 
-                                {/* New Payment Method Form - Show when no saved methods or "new" is selected */}
+                                {/* Credit Card option (when no saved methods) or form when "new" selected */}
                                 {(savedPaymentMethods.length === 0 || selectedPaymentMethod === 'new') && (
-                                    <div className="space-y-4">
-                                        {savedPaymentMethods.length > 0 && (
-                                            <Typography variant="h5" as="h4">
-                                                {t('payment.newPaymentMethodTitle')}
-                                            </Typography>
+                                    <div className="rounded-lg border border-border bg-card p-4 space-y-4">
+                                        {savedPaymentMethods.length === 0 && (
+                                            <div className="flex items-center space-x-3">
+                                                <RadioGroup
+                                                    value="new"
+                                                    className="flex items-center gap-3 flex-1"
+                                                    onValueChange={() => setSelectedPaymentMethod('new')}>
+                                                    <RadioGroupItem value="new" id="credit-card-option" checked />
+                                                    <Label
+                                                        htmlFor="credit-card-option"
+                                                        className="flex items-center gap-3 cursor-pointer flex-1">
+                                                        <span className="font-medium">
+                                                            {t('payment.creditCardOption')}
+                                                        </span>
+                                                        <CreditCardOptionIcon className="w-5 h-5 flex-shrink-0 ml-auto" />
+                                                    </Label>
+                                                </RadioGroup>
+                                            </div>
                                         )}
 
                                         <CreditCardInputFields
@@ -344,61 +349,50 @@ export default function Payment({
                             <UITarget targetId="checkout.payment.paymentMethods.after" />
                         </div>
 
-                        <Separator />
-
                         {/* Billing Address Section */}
                         <div className="space-y-4">
                             <UITarget targetId="checkout.payment.billingAddress.before" />
                             <UITarget targetId="checkout.payment.billingAddress">
-                                {showBillingSameAsShipping && (
-                                    <FormField
-                                        control={form.control}
-                                        name="billingSameAsShipping"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <div className="rounded-lg border border-border bg-card p-4 transition-colors hover:bg-accent/50">
-                                                    <div className="flex items-start space-x-3">
-                                                        <FormControl>
-                                                            <Checkbox
-                                                                checked={field.value}
-                                                                onCheckedChange={(checked) => {
-                                                                    field.onChange(checked === true);
-                                                                }}
-                                                                className="mt-0.5"
-                                                                aria-label={t('payment.billingSameAsShipping')}
-                                                            />
-                                                        </FormControl>
-                                                        <div className="space-y-1 leading-none">
-                                                            <FormLabel className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 data-[error=true]:text-xl data-[error=true]:font-bold">
-                                                                {t('payment.billingSameAsShipping')}
-                                                            </FormLabel>
-                                                            <Typography
-                                                                variant="small"
-                                                                className="text-muted-foreground">
-                                                                {t('payment.billingSameAsShippingDescription')}
-                                                            </Typography>
-                                                        </div>
+                                <div className="rounded-lg border border-border bg-card p-4 space-y-4">
+                                    {showBillingSameAsShipping && (
+                                        <FormField
+                                            control={form.control}
+                                            name="billingSameAsShipping"
+                                            render={({ field }) => (
+                                                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                                    <FormControl>
+                                                        <Checkbox
+                                                            checked={field.value}
+                                                            onCheckedChange={(checked) => {
+                                                                field.onChange(checked === true);
+                                                            }}
+                                                            className="mt-0.5"
+                                                            aria-label={t('payment.billingSameAsShipping')}
+                                                        />
+                                                    </FormControl>
+                                                    <div className="space-y-0.5 leading-none">
+                                                        <FormLabel className="text-sm font-medium cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                                            {t('payment.billingSameAsShipping')}
+                                                        </FormLabel>
                                                     </div>
-                                                </div>
-                                            </FormItem>
-                                        )}
-                                    />
-                                )}
+                                                </FormItem>
+                                            )}
+                                        />
+                                    )}
 
-                                {!billingSameAsShipping && (
-                                    <div className="space-y-4">
-                                        <Typography variant="h4" as="h3">
-                                            {t('confirmation.fields.billingAddress')}
-                                        </Typography>
-
+                                    {!billingSameAsShipping && (
                                         <AddressFormFields
                                             form={form}
                                             fieldPrefix="billing"
                                             showPhone={false}
+                                            showCountry
                                             countryCode="US"
+                                            labelsAsPlaceholders
+                                            autoFocus
+                                            autoFocusField="firstName"
                                         />
-                                    </div>
-                                )}
+                                    )}
+                                </div>
                             </UITarget>
                             <UITarget targetId="checkout.payment.billingAddress.after" />
                         </div>

@@ -21,6 +21,8 @@ import { type UseFormReturn, type FieldValues, type Path } from 'react-hook-form
 import { useTranslation } from 'react-i18next';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select';
+import { COUNTRY_CODES } from '@/components/customer-address-form/constants';
 import AddressSuggestionDropdown, { type AddressSuggestion } from '@/components/address-suggestion-dropdown';
 import { MIN_INPUT_LENGTH, useAutocompleteSuggestions } from '@/hooks/use-autocomplete-suggestions';
 import { processAddressSuggestion } from '@/lib/address-suggestions';
@@ -54,12 +56,18 @@ export interface AddressFormFieldsProps<TFormValues extends FieldValues> {
     fieldPrefix?: string;
     /** Whether to show the phone field (default: true) */
     showPhone?: boolean;
-    /** Whether the address1 field should have autoFocus (default: false) */
+    /** Whether to auto-focus a field when the form is shown (default: false) */
     autoFocus?: boolean;
+    /** Which field to focus when autoFocus is true: 'firstName' or 'address1' (default: 'address1') */
+    autoFocusField?: 'firstName' | 'address1';
     /** Country code for address autocomplete (default: 'US') */
     countryCode?: string;
     /** Custom class name for the container */
     className?: string;
+    /** When true, hide labels and use placeholders only (e.g. for billing address UX) */
+    labelsAsPlaceholders?: boolean;
+    /** When true, show Country dropdown (e.g. for billing address) */
+    showCountry?: boolean;
 }
 
 /**
@@ -83,10 +91,14 @@ export function AddressFormFields<TFormValues extends FieldValues>({
     fieldPrefix = '',
     showPhone = true,
     autoFocus = false,
+    autoFocusField = 'address1',
     countryCode = 'US',
     className,
+    labelsAsPlaceholders = false,
+    showCountry = false,
 }: AddressFormFieldsProps<TFormValues>) {
     const { t } = useTranslation('checkout');
+    const { t: tCountries } = useTranslation('countries');
 
     // Address autocomplete state
     const [addressInput, setAddressInput] = useState('');
@@ -209,13 +221,19 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                     name={getFieldName('firstName')}
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="text-base font-medium text-foreground">
+                            <FormLabel
+                                className={labelsAsPlaceholders ? 'sr-only' : 'text-base font-medium text-foreground'}>
                                 {t('addressForm.firstNameLabel')}
                             </FormLabel>
                             <FormControl>
                                 <Input
-                                    placeholder={t('addressForm.firstNamePlaceholder')}
+                                    placeholder={
+                                        labelsAsPlaceholders
+                                            ? `${t('addressForm.firstNameLabel')}*`
+                                            : t('addressForm.firstNamePlaceholder')
+                                    }
                                     autoComplete={getAutoComplete('given-name')}
+                                    autoFocus={autoFocus && autoFocusField === 'firstName'}
                                     className="h-12 text-base border-2 focus:border-primary transition-colors"
                                     {...field}
                                 />
@@ -230,12 +248,17 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                     name={getFieldName('lastName')}
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="text-base font-medium text-foreground">
+                            <FormLabel
+                                className={labelsAsPlaceholders ? 'sr-only' : 'text-base font-medium text-foreground'}>
                                 {t('addressForm.lastNameLabel')}
                             </FormLabel>
                             <FormControl>
                                 <Input
-                                    placeholder={t('addressForm.lastNamePlaceholder')}
+                                    placeholder={
+                                        labelsAsPlaceholders
+                                            ? `${t('addressForm.lastNameLabel')}*`
+                                            : t('addressForm.lastNamePlaceholder')
+                                    }
                                     autoComplete={getAutoComplete('family-name')}
                                     className="h-12 text-base border-2 focus:border-primary transition-colors"
                                     {...field}
@@ -247,6 +270,43 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                 />
             </div>
 
+            {/* Country (when showCountry, e.g. billing) */}
+            {showCountry && (
+                <div className="mb-4">
+                    <FormField
+                        control={form.control}
+                        name={getFieldName('countryCode')}
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel
+                                    className={
+                                        labelsAsPlaceholders ? 'sr-only' : 'text-base font-medium text-foreground'
+                                    }>
+                                    {t('addressForm.countryLabel')}
+                                </FormLabel>
+                                <FormControl>
+                                    <div className="w-full [&_[data-slot=native-select-wrapper]]:w-full">
+                                        <NativeSelect
+                                            className="h-12 text-sm text-foreground font-normal py-1 leading-normal border-2 focus:border-primary transition-colors w-full [font-family:inherit]"
+                                            autoComplete={getAutoComplete('country')}
+                                            {...field}
+                                            value={field.value || ''}
+                                            onChange={(e) => field.onChange(e.target.value || 'US')}>
+                                            {COUNTRY_CODES.map((code) => (
+                                                <NativeSelectOption key={code} value={code}>
+                                                    {tCountries(`${code}.name`)}
+                                                </NativeSelectOption>
+                                            ))}
+                                        </NativeSelect>
+                                    </div>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+            )}
+
             {/* Address Line 1 with Autocomplete */}
             <div className="mb-4">
                 <FormField
@@ -254,14 +314,19 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                     name={getFieldName('address1')}
                     render={({ field }) => (
                         <FormItem className="relative">
-                            <FormLabel className="text-base font-medium text-foreground">
+                            <FormLabel
+                                className={labelsAsPlaceholders ? 'sr-only' : 'text-base font-medium text-foreground'}>
                                 {t('addressForm.addressLabel')}
                             </FormLabel>
                             <FormControl>
                                 <Input
-                                    placeholder={t('addressForm.addressPlaceholder')}
+                                    placeholder={
+                                        labelsAsPlaceholders
+                                            ? `${t('addressForm.addressLabel')}*`
+                                            : t('addressForm.addressPlaceholder')
+                                    }
                                     autoComplete="off"
-                                    autoFocus={autoFocus}
+                                    autoFocus={autoFocus && autoFocusField === 'address1'}
                                     className="h-12 text-base border-2 focus:border-primary transition-colors"
                                     {...field}
                                     onChange={(e) => handleAddressInputChange(e, field.onChange)}
@@ -281,7 +346,8 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                     name={getFieldName('address2')}
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="text-base font-medium text-foreground">
+                            <FormLabel
+                                className={labelsAsPlaceholders ? 'sr-only' : 'text-base font-medium text-foreground'}>
                                 {t('addressForm.address2Label')}
                             </FormLabel>
                             <FormControl>
@@ -298,19 +364,50 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                 />
             </div>
 
-            {/* City, State, and Postal Code Row */}
+            {/* Zip Code, City, and State Row (order matches billing UX) */}
             <div className="grid grid-cols-3 gap-4 mb-4">
+                <FormField
+                    control={form.control}
+                    name={getFieldName('postalCode')}
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel
+                                className={labelsAsPlaceholders ? 'sr-only' : 'text-base font-medium text-foreground'}>
+                                {t('addressForm.zipLabel')}
+                            </FormLabel>
+                            <FormControl>
+                                <Input
+                                    placeholder={
+                                        labelsAsPlaceholders
+                                            ? `${t('addressForm.zipLabel')}*`
+                                            : t('addressForm.zipPlaceholder')
+                                    }
+                                    autoComplete={getAutoComplete('postal-code')}
+                                    className="h-12 text-base border-2 focus:border-primary transition-colors"
+                                    {...field}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
                 <FormField
                     control={form.control}
                     name={getFieldName('city')}
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="text-base font-medium text-foreground">
+                            <FormLabel
+                                className={labelsAsPlaceholders ? 'sr-only' : 'text-base font-medium text-foreground'}>
                                 {t('addressForm.cityLabel')}
                             </FormLabel>
                             <FormControl>
                                 <Input
-                                    placeholder={t('addressForm.cityPlaceholder')}
+                                    placeholder={
+                                        labelsAsPlaceholders
+                                            ? `${t('addressForm.cityLabel')}*`
+                                            : t('addressForm.cityPlaceholder')
+                                    }
                                     autoComplete={getAutoComplete('address-level2')}
                                     className="h-12 text-base border-2 focus:border-primary transition-colors"
                                     {...field}
@@ -324,43 +421,62 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                 <FormField
                     control={form.control}
                     name={getFieldName('stateCode')}
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="text-base font-medium text-foreground">
-                                {t('addressForm.stateLabel')}
-                            </FormLabel>
-                            <FormControl>
-                                <Input
-                                    placeholder={t('addressForm.statePlaceholder')}
-                                    autoComplete={getAutoComplete('address-level1')}
-                                    className="h-12 text-base border-2 focus:border-primary transition-colors"
-                                    {...field}
-                                />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                    render={({ field }) => {
+                        const selectedCountry =
+                            (showCountry ? form.watch(getFieldName('countryCode')) : null) || countryCode;
+                        const statesObj =
+                            selectedCountry && (selectedCountry === 'US' || selectedCountry === 'CA')
+                                ? (tCountries(`${selectedCountry}.states`, { returnObjects: true }) as Record<
+                                      string,
+                                      string
+                                  >)
+                                : null;
+                        const stateOptions = statesObj ? Object.entries(statesObj) : [];
 
-                <FormField
-                    control={form.control}
-                    name={getFieldName('postalCode')}
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="text-base font-medium text-foreground">
-                                {t('addressForm.zipLabel')}
-                            </FormLabel>
-                            <FormControl>
-                                <Input
-                                    placeholder={t('addressForm.zipPlaceholder')}
-                                    autoComplete={getAutoComplete('postal-code')}
-                                    className="h-12 text-base border-2 focus:border-primary transition-colors"
-                                    {...field}
-                                />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
+                        return (
+                            <FormItem className="[&_[data-slot=native-select-wrapper]]:w-full">
+                                <FormLabel
+                                    className={
+                                        labelsAsPlaceholders ? 'sr-only' : 'text-base font-medium text-foreground'
+                                    }>
+                                    {t('addressForm.stateLabel')}
+                                </FormLabel>
+                                <FormControl>
+                                    {stateOptions.length > 0 ? (
+                                        <NativeSelect
+                                            className="h-12 text-sm text-foreground font-normal py-1 leading-normal border-2 focus:border-primary transition-colors w-full [font-family:inherit]"
+                                            autoComplete={getAutoComplete('address-level1')}
+                                            {...field}
+                                            value={field.value || ''}
+                                            onChange={(e) => field.onChange(e.target.value)}>
+                                            <NativeSelectOption value="">
+                                                {labelsAsPlaceholders
+                                                    ? `${t('addressForm.stateLabel')}*`
+                                                    : t('addressForm.statePlaceholder')}
+                                            </NativeSelectOption>
+                                            {stateOptions.map(([code, name]) => (
+                                                <NativeSelectOption key={code} value={code}>
+                                                    {name}
+                                                </NativeSelectOption>
+                                            ))}
+                                        </NativeSelect>
+                                    ) : (
+                                        <Input
+                                            placeholder={
+                                                labelsAsPlaceholders
+                                                    ? `${t('addressForm.stateLabel')}*`
+                                                    : t('addressForm.statePlaceholder')
+                                            }
+                                            autoComplete={getAutoComplete('address-level1')}
+                                            className="h-12 text-base border-2 focus:border-primary transition-colors"
+                                            {...field}
+                                        />
+                                    )}
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        );
+                    }}
                 />
             </div>
 

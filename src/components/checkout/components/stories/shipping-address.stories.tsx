@@ -483,8 +483,8 @@ export const Default: Story = {
         const inputs = canvas.queryAllByRole('textbox');
         const buttons = canvas.queryAllByRole('button');
 
-        // Should have 8 input fields (firstName, lastName, address1, address2, city, stateCode, postalCode, phone)
-        void expect(inputs.length).toBe(8);
+        // 7 textboxes (firstName, lastName, address1, address2, city, postalCode, phone); stateCode is a combobox
+        void expect(inputs.length).toBe(7);
         void expect(buttons.length).toBeGreaterThan(0);
 
         // Verify form labels are present
@@ -528,8 +528,8 @@ export const WithExistingAddress: Story = {
         const inputs = canvas.queryAllByRole('textbox');
         const buttons = canvas.queryAllByRole('button');
 
-        // Should have the same 8 input fields as Default story
-        void expect(inputs.length).toBe(8);
+        // Same 7 textboxes as Default (stateCode is a combobox)
+        void expect(inputs.length).toBe(7);
         void expect(buttons.length).toBeGreaterThan(0);
 
         // Verify this story has the same form structure as Default
@@ -575,8 +575,8 @@ export const LoadingState: Story = {
         const inputs = canvas.queryAllByRole('textbox');
         const buttons = canvas.queryAllByRole('button');
 
-        // In loading state, inputs should be present but form interaction limited
-        void expect(inputs.length).toBe(8);
+        // In loading state, 7 textboxes (stateCode is combobox)
+        void expect(inputs.length).toBe(7);
         void expect(buttons.length).toBeGreaterThan(0);
 
         // Test that loading state shows appropriate UI
@@ -660,8 +660,8 @@ export const WithFormError: Story = {
         const inputs = canvas.queryAllByRole('textbox');
         const buttons = canvas.queryAllByRole('button');
 
-        // Should have standard 8 input fields even with error
-        void expect(inputs.length).toBe(8);
+        // Standard 7 textboxes even with error (stateCode is combobox)
+        void expect(inputs.length).toBe(7);
         void expect(buttons.length).toBeGreaterThan(0);
 
         // Test that form labels are still present
@@ -713,8 +713,8 @@ export const WithValidationErrors: Story = {
         const inputs = canvas.queryAllByRole('textbox');
         const buttons = canvas.queryAllByRole('button');
 
-        // Should have all 8 input fields even with validation errors
-        void expect(inputs.length).toBe(8);
+        // All 7 textbox fields even with validation errors (stateCode is combobox)
+        void expect(inputs.length).toBe(7);
         void expect(buttons.length).toBeGreaterThan(0);
 
         // Test that required form labels are present
@@ -760,8 +760,8 @@ export const InternationalAddress: Story = {
         const inputs = canvas.queryAllByRole('textbox');
         const buttons = canvas.queryAllByRole('button');
 
-        // Should have standard international address fields
-        void expect(inputs.length).toBe(8);
+        // Standard 7 textboxes (stateCode may be combobox or textbox depending on country)
+        void expect(inputs.length).toBe(7);
         void expect(buttons.length).toBeGreaterThan(0);
 
         // Test international-specific field handling
@@ -842,8 +842,8 @@ export const MobileView: Story = {
         const inputs = canvas.queryAllByRole('textbox');
         const buttons = canvas.queryAllByRole('button');
 
-        // Should have standard 8 input fields in mobile layout
-        void expect(inputs.length).toBe(8);
+        // Standard 7 textboxes in mobile layout (stateCode is combobox)
+        void expect(inputs.length).toBe(7);
         void expect(buttons.length).toBeGreaterThan(0);
 
         // Test mobile-specific responsive behavior
@@ -885,8 +885,8 @@ export const TabletView: Story = {
         const inputs = canvas.queryAllByRole('textbox');
         const buttons = canvas.queryAllByRole('button');
 
-        // Should have standard 8 input fields in tablet layout
-        void expect(inputs.length).toBe(8);
+        // Standard 7 textboxes in tablet layout (stateCode is combobox)
+        void expect(inputs.length).toBe(7);
         void expect(buttons.length).toBeGreaterThan(0);
 
         // Test tablet-specific responsive behavior

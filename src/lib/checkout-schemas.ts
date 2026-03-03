@@ -90,6 +90,7 @@ export const createPaymentSchema = (t: TFunction) => {
             billingStateCode: z.string().optional(),
             billingPostalCode: z.string().optional(),
             billingPhone: z.string().optional(),
+            billingCountryCode: z.string().optional(),
         })
         .superRefine((data, ctx) => {
             // If using saved payment method, skip all card validations
@@ -233,7 +234,8 @@ export const createPaymentSchema = (t: TFunction) => {
                         data.billingFirstName?.trim() &&
                         data.billingLastName?.trim() &&
                         data.billingAddress1?.trim() &&
-                        data.billingCity?.trim()
+                        data.billingCity?.trim() &&
+                        data.billingCountryCode?.trim()
                     );
                 }
                 return true;
@@ -256,6 +258,7 @@ export const getPaymentDefaultValues = (params: {
         stateCode?: string;
         postalCode?: string;
         phone?: string;
+        countryCode?: string;
     };
     paymentMethod?: {
         holder?: string;
@@ -281,6 +284,7 @@ export const getPaymentDefaultValues = (params: {
         billingStateCode: shippingAddress?.stateCode || '',
         billingPostalCode: shippingAddress?.postalCode || '',
         billingPhone: shippingAddress?.phone || '',
+        billingCountryCode: shippingAddress?.countryCode || 'US',
     };
 };
 
@@ -329,6 +333,7 @@ export const parsePaymentFromFormData = (formData: FormData): PaymentData => {
         billingStateCode: formData.get('billingStateCode')?.toString() || '',
         billingPostalCode: formData.get('billingPostalCode')?.toString() || '',
         billingPhone: formData.get('billingPhone')?.toString() || '',
+        billingCountryCode: formData.get('billingCountryCode')?.toString() || 'US',
         // Saved payment method fields
         useSavedPaymentMethod: formData.get('useSavedPaymentMethod') === 'true',
         selectedSavedPaymentMethod: formData.get('selectedSavedPaymentMethod')?.toString() || undefined,

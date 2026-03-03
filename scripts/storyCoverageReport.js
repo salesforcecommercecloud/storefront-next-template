@@ -86,6 +86,7 @@ function getComponentOwnership(componentName) {
 const EXCLUDED_COMPONENTS = new Set([
     // Simple icon components
     'icons/amex-icon',
+    'icons/credit-card-option-icon',
     'icons/discover-icon',
     'icons/generic-card-icon',
     'icons/heart-icon',

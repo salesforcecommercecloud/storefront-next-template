@@ -69,17 +69,18 @@ describe('Payment Component - BOPIS/Store Pickup Scenarios', () => {
         render(<Payment {...createDefaultProps({ showBillingSameAsShipping: false })} />);
 
         // Check that billing address fields are NOT pre-filled with store address
+        // Billing uses placeholders: "First Name*", "Address*", etc.
         const firstNameInput = screen.getByRole('textbox', { name: /first name/i });
         const lastNameInput = screen.getByRole('textbox', { name: /last name/i });
-        const addressInput = screen.getByPlaceholderText(/street address/i);
+        const addressInput = screen.getByPlaceholderText(/address/i);
 
         // These should be empty, not filled with "Store", "Location", "456 Store Avenue"
         expect(firstNameInput).toHaveValue('');
         expect(lastNameInput).toHaveValue('');
         expect(addressInput).toHaveValue('');
 
-        // Also check cardholder name is not pre-filled
-        const cardholderInput = screen.getByRole('textbox', { name: /cardholder name/i });
+        // Also check cardholder name is not pre-filled (placeholder: "Name on Card*")
+        const cardholderInput = screen.getByPlaceholderText(/name on card/i);
         expect(cardholderInput).toHaveValue('');
     });
 
@@ -113,20 +114,21 @@ describe('Payment Component - BOPIS/Store Pickup Scenarios', () => {
         render(<Payment {...createDefaultProps({ onSubmit: onSubmitMock, showBillingSameAsShipping: false })} />);
 
         // Verify billing address fields are visible (not hidden by "same as shipping" checkbox)
+        // Billing uses placeholders-only UX: "First Name*", "Address*", etc. State is a dropdown (combobox).
         expect(screen.getByRole('textbox', { name: /first name/i })).toBeInTheDocument();
         expect(screen.getByRole('textbox', { name: /last name/i })).toBeInTheDocument();
-        expect(screen.getByPlaceholderText(/street address/i)).toBeInTheDocument();
+        expect(screen.getByPlaceholderText(/address/i)).toBeInTheDocument();
         expect(screen.getByRole('textbox', { name: /city/i })).toBeInTheDocument();
-        expect(screen.getByRole('textbox', { name: /state/i })).toBeInTheDocument();
+        expect(screen.getByRole('combobox', { name: /state/i })).toBeInTheDocument();
         expect(screen.getByRole('textbox', { name: /postal code/i })).toBeInTheDocument();
 
         const user = userEvent.setup();
 
-        // Fill in payment info but NOT billing address
-        await user.type(screen.getByPlaceholderText('1234 5678 9012 3456'), '4111111111111111');
-        await user.type(screen.getByRole('textbox', { name: /cardholder name/i }), 'Jane Doe');
-        await user.type(screen.getByPlaceholderText('MM/YY'), '12/25');
-        await user.type(screen.getByPlaceholderText('123'), '123');
+        // Fill in payment info but NOT billing address (placeholders: "Card Number*", "Name on Card*", "mm/yy*", "CVV*")
+        await user.type(screen.getByPlaceholderText(/card number/i), '4111111111111111');
+        await user.type(screen.getByPlaceholderText(/name on card/i), 'Jane Doe');
+        await user.type(screen.getByPlaceholderText(/mm\/yy/i), '12/25');
+        await user.type(screen.getByPlaceholderText(/cvv/i), '123');
 
         // Payment has no submit button; submit form programmatically to trigger validation
         const form = document.querySelector('form');

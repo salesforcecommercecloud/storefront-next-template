@@ -44,6 +44,8 @@ const createDefaultProps = (overrides = {}) => ({
     isCompleted: false,
     isEditing: true,
     onEdit: vi.fn(),
+    enableMultiAddress: false,
+    handleToggleShippingAddressMode: vi.fn(),
     ...overrides,
 });
 
@@ -111,7 +113,8 @@ describe('ShippingAddress Integration Tests', () => {
             expect(screen.getByPlaceholderText(/last name/i)).toBeInTheDocument();
             expect(screen.getByPlaceholderText(/street address/i)).toBeInTheDocument();
             expect(screen.getByPlaceholderText(/city/i)).toBeInTheDocument();
-            expect(screen.getByPlaceholderText(/state or province/i)).toBeInTheDocument();
+            // State is a dropdown (combobox) when country is US
+            expect(screen.getByRole('combobox', { name: /state/i })).toBeInTheDocument();
             expect(screen.getByPlaceholderText(/postal code/i)).toBeInTheDocument();
         });
 

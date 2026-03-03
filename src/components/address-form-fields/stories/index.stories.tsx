@@ -316,15 +316,15 @@ export const PrefilledShippingAddress: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Verify form fields are populated with initial data
-        await expect(canvas.getByDisplayValue('John')).toBeInTheDocument();
-        await expect(canvas.getByDisplayValue('Doe')).toBeInTheDocument();
-        await expect(canvas.getByDisplayValue('123 Main Street')).toBeInTheDocument();
-        await expect(canvas.getByDisplayValue('Apt 4B')).toBeInTheDocument();
-        await expect(canvas.getByDisplayValue('New York')).toBeInTheDocument();
-        await expect(canvas.getByDisplayValue('NY')).toBeInTheDocument();
-        await expect(canvas.getByDisplayValue('10001')).toBeInTheDocument();
-        await expect(canvas.getByDisplayValue('5551234567')).toBeInTheDocument();
+        // Verify form fields are populated with initial data (use role+name to avoid multiple matches)
+        await expect(canvas.getByRole('textbox', { name: /first name/i })).toHaveValue('John');
+        await expect(canvas.getByRole('textbox', { name: /last name/i })).toHaveValue('Doe');
+        await expect(canvas.getByRole('textbox', { name: /^address$/i })).toHaveValue('123 Main Street');
+        await expect(canvas.getByRole('textbox', { name: /address line 2/i })).toHaveValue('Apt 4B');
+        await expect(canvas.getByRole('textbox', { name: /^city$/i })).toHaveValue('New York');
+        await expect(canvas.getByRole('combobox', { name: /state/i })).toHaveValue('NY');
+        await expect(canvas.getByRole('textbox', { name: /postal code/i })).toHaveValue('10001');
+        await expect(canvas.getByRole('textbox', { name: /phone/i })).toHaveValue('5551234567');
     },
 };
 
@@ -390,14 +390,14 @@ export const PrefilledBillingAddress: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Verify form fields are populated with billing address data
-        await expect(canvas.getByDisplayValue('Jane')).toBeInTheDocument();
-        await expect(canvas.getByDisplayValue('Smith')).toBeInTheDocument();
-        await expect(canvas.getByDisplayValue('456 Oak Avenue')).toBeInTheDocument();
-        await expect(canvas.getByDisplayValue('Suite 200')).toBeInTheDocument();
-        await expect(canvas.getByDisplayValue('Los Angeles')).toBeInTheDocument();
-        await expect(canvas.getByDisplayValue('CA')).toBeInTheDocument();
-        await expect(canvas.getByDisplayValue('90001')).toBeInTheDocument();
+        // Verify form fields are populated with billing address data (use role+name to avoid display-value ambiguity)
+        await expect(canvas.getByRole('textbox', { name: /first name/i })).toHaveValue('Jane');
+        await expect(canvas.getByRole('textbox', { name: /last name/i })).toHaveValue('Smith');
+        await expect(canvas.getByRole('textbox', { name: /^address$/i })).toHaveValue('456 Oak Avenue');
+        await expect(canvas.getByRole('textbox', { name: /address line 2/i })).toHaveValue('Suite 200');
+        await expect(canvas.getByRole('textbox', { name: /^city$/i })).toHaveValue('Los Angeles');
+        await expect(canvas.getByRole('combobox', { name: /state/i })).toHaveValue('CA');
+        await expect(canvas.getByRole('textbox', { name: /postal code/i })).toHaveValue('90001');
     },
 };
 
@@ -431,9 +431,9 @@ export const Interactive: Story = {
         await userEvent.type(cityInput, 'Chicago');
         await expect(cityInput).toHaveValue('Chicago');
 
-        const stateInput = canvas.getByPlaceholderText(/state or province/i);
-        await userEvent.type(stateInput, 'IL');
-        await expect(stateInput).toHaveValue('IL');
+        const stateSelect = canvas.getByRole('combobox', { name: /state/i });
+        await userEvent.selectOptions(stateSelect, 'IL');
+        await expect(stateSelect).toHaveValue('IL');
 
         const postalCodeInput = canvas.getByPlaceholderText(/postal code/i);
         await userEvent.type(postalCodeInput, '60601');

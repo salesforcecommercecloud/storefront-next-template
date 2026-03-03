@@ -192,7 +192,8 @@
             },
             {
                 "name": "assets/\\(routes\\)-_app.*.js",
-                "limit": "58 kB"
+                "limit": "59 kB",
+                "comment": "App layout route chunk; at 58 kB after dependency updates"
             },
             {
                 "name": "assets/\\(package\\)-\\(@radix-ui-react-visually-hidden\\)-\\(dist\\)-index.*.js",

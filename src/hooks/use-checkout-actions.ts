@@ -260,6 +260,7 @@ export function useCheckoutActions() {
             formData.append('billingStateCode', data.billingStateCode || '');
             formData.append('billingPostalCode', data.billingPostalCode || '');
             formData.append('billingPhone', data.billingPhone || '');
+            formData.append('billingCountryCode', data.billingCountryCode || 'US');
         }
 
         // Submit payment form data

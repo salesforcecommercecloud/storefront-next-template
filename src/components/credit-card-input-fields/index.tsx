@@ -17,28 +17,30 @@
 'use client';
 
 import { useState } from 'react';
-import { type UseFormReturn, type FieldValues } from 'react-hook-form';
+import { type UseFormReturn, type FieldValues, type Path } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { formatCardNumber, formatExpiryDate } from '@/lib/form-utils';
 import { detectCardType } from '@/lib/payment-utils';
 import { getCardIcon } from '@/lib/card-icon-utils';
+import { Info, Eye, EyeOff } from 'lucide-react';
 
-// Define the required field structure for credit card forms
-interface CreditCardFormFields {
-    cardNumber: string;
-    cardholderName: string;
-    expiryDate: string;
-    cvv: string;
+// Define the field structure for credit card forms (optional to support forms where card fields are conditionally required, e.g. payment step)
+export interface CreditCardFormFields {
+    cardNumber?: string;
+    cardholderName?: string;
+    expiryDate?: string;
+    cvv?: string;
     saveAsDefault?: boolean;
 }
 
-export interface CreditCardInputFieldsProps<TFormValues extends FieldValues & CreditCardFormFields> {
+export interface CreditCardInputFieldsProps<TFormValues extends FieldValues & Partial<CreditCardFormFields>> {
     /** React Hook Form instance */
     form: UseFormReturn<TFormValues>;
-    /** Whether to auto-focus card number field (default: false) */
+    /** Whether to auto-focus the cardholder name field when the form is shown (default: false) */
     autoFocus?: boolean;
     /** Whether to show the "save as default" checkbox (default: false) */
     showIsDefaultOption?: boolean;
@@ -51,7 +53,7 @@ export interface CreditCardInputFieldsProps<TFormValues extends FieldValues & Cr
  * Renders card number, cardholder name, expiry date, and CVV fields with validation and formatting.
  * Used in both checkout and account payment methods flows.
  */
-export function CreditCardInputFields<TFormValues extends FieldValues & CreditCardFormFields>({
+export function CreditCardInputFields<TFormValues extends FieldValues & Partial<CreditCardFormFields>>({
     form,
     autoFocus = false,
     showIsDefaultOption = false,
@@ -59,38 +61,58 @@ export function CreditCardInputFields<TFormValues extends FieldValues & CreditCa
 }: CreditCardInputFieldsProps<TFormValues>) {
     const { t } = useTranslation('checkout');
     const [detectedCardType, setDetectedCardType] = useState<string>('');
+    const [cvvVisible, setCvvVisible] = useState(false);
 
     return (
         <>
             <FormField
                 control={form.control}
-                name="cardNumber"
+                name={'cardholderName' as Path<TFormValues>}
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel className="sr-only">{t('payment.nameOnCardLabel')}</FormLabel>
+                        <FormControl>
+                            <Input
+                                placeholder={t('payment.cardholderPlaceholder')}
+                                autoComplete="cc-name"
+                                autoFocus={autoFocus}
+                                {...field}
+                            />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+
+            <FormField
+                control={form.control}
+                name={'cardNumber' as Path<TFormValues>}
                 render={({ field }) => {
                     const CardIcon = getCardIcon(detectedCardType || t('payment.unknownCardType'));
+                    const showCardIcon = detectedCardType && detectedCardType !== t('payment.unknownCardType');
                     return (
                         <FormItem>
-                            <FormLabel>{t('payment.cardNumberLabel')}</FormLabel>
+                            <FormLabel className="sr-only">{t('payment.cardNumberLabel')}</FormLabel>
                             <FormControl>
-                                <div className="flex items-center gap-3">
-                                    <div className="flex-1">
-                                        <Input
-                                            placeholder={t('payment.cardNumberPlaceholder')}
-                                            autoComplete="cc-number"
-                                            maxLength={23}
-                                            autoFocus={autoFocus}
-                                            {...field}
-                                            onChange={(e) => {
-                                                const formatted = formatCardNumber(e.target.value);
-                                                field.onChange(formatted);
-                                                const cardType = detectCardType(e.target.value);
-                                                setDetectedCardType(cardType);
-                                            }}
-                                        />
-                                    </div>
-                                    {detectedCardType && detectedCardType !== t('payment.unknownCardType') && (
-                                        <div className="flex items-center gap-2 text-sm text-muted-foreground min-w-0">
-                                            <CardIcon className="w-8 h-5 flex-shrink-0" />
-                                            <span className="font-medium">{detectedCardType}</span>
+                                <div className="relative flex items-center">
+                                    <Input
+                                        placeholder={t('payment.cardNumberPlaceholder')}
+                                        autoComplete="cc-number"
+                                        maxLength={23}
+                                        className={showCardIcon ? 'pr-12' : ''}
+                                        {...field}
+                                        onChange={(e) => {
+                                            const formatted = formatCardNumber(e.target.value);
+                                            field.onChange(formatted);
+                                            const cardType = detectCardType(e.target.value);
+                                            setDetectedCardType(cardType);
+                                        }}
+                                    />
+                                    {showCardIcon && (
+                                        <div
+                                            className="absolute left-auto right-3 top-1/2 -translate-y-1/2 z-10 flex items-center pointer-events-none"
+                                            aria-hidden>
+                                            <CardIcon className="w-8 h-5 flex-shrink-0 text-muted-foreground" />
                                         </div>
                                     )}
                                 </div>
@@ -101,27 +123,13 @@ export function CreditCardInputFields<TFormValues extends FieldValues & CreditCa
                 }}
             />
 
-            <FormField
-                control={form.control}
-                name="cardholderName"
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>{t('payment.cardholderLabel')}</FormLabel>
-                        <FormControl>
-                            <Input placeholder={t('payment.cardholderPlaceholder')} autoComplete="cc-name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}
-            />
-
             <div className="grid grid-cols-2 gap-4">
                 <FormField
                     control={form.control}
-                    name="expiryDate"
+                    name={'expiryDate' as Path<TFormValues>}
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>{t('payment.expiryLabel')}</FormLabel>
+                            <FormLabel className="sr-only">{t('payment.expiryLabel')}</FormLabel>
                             <FormControl>
                                 <Input
                                     placeholder={t('payment.expiryPlaceholder')}
@@ -141,21 +149,50 @@ export function CreditCardInputFields<TFormValues extends FieldValues & CreditCa
 
                 <FormField
                     control={form.control}
-                    name="cvv"
+                    name={'cvv' as Path<TFormValues>}
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>{t('payment.cvvLabel')}</FormLabel>
+                            <FormLabel className="sr-only">{t('payment.cvvLabel')}</FormLabel>
                             <FormControl>
-                                <Input
-                                    placeholder={t('payment.cvvPlaceholder')}
-                                    autoComplete="cc-csc"
-                                    maxLength={4}
-                                    {...field}
-                                    onChange={(e) => {
-                                        const digits = e.target.value.replace(/\D/g, '');
-                                        field.onChange(digits);
-                                    }}
-                                />
+                                <div className="relative flex items-center">
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <button
+                                                type="button"
+                                                className="absolute left-3 top-1/2 -translate-y-1/2 z-10 inline-flex items-center justify-center size-5 rounded text-muted-foreground hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                                aria-label={t('payment.cvvHelp')}>
+                                                <Info className="size-4 shrink-0" strokeWidth={2.25} />
+                                            </button>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="top" sideOffset={4} className="px-4 py-2">
+                                            {t('payment.cvvHelp')}
+                                        </TooltipContent>
+                                    </Tooltip>
+                                    <Input
+                                        type={cvvVisible ? 'text' : 'password'}
+                                        inputMode="numeric"
+                                        placeholder={t('payment.cvvPlaceholder')}
+                                        autoComplete="cc-csc"
+                                        maxLength={4}
+                                        className="pl-10 pr-10"
+                                        {...field}
+                                        onChange={(e) => {
+                                            const digits = e.target.value.replace(/\D/g, '');
+                                            field.onChange(digits);
+                                        }}
+                                    />
+                                    <button
+                                        type="button"
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 z-10 inline-flex items-center justify-center size-5 rounded text-muted-foreground hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                        onClick={() => setCvvVisible((v) => !v)}
+                                        aria-label={cvvVisible ? t('payment.cvvHide') : t('payment.cvvShow')}>
+                                        {cvvVisible ? (
+                                            <EyeOff className="size-4 shrink-0" strokeWidth={2.25} />
+                                        ) : (
+                                            <Eye className="size-4 shrink-0" strokeWidth={2.25} />
+                                        )}
+                                    </button>
+                                </div>
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -166,14 +203,14 @@ export function CreditCardInputFields<TFormValues extends FieldValues & CreditCa
             {showIsDefaultOption && (
                 <FormField
                     control={form.control}
-                    name="saveAsDefault"
+                    name={'saveAsDefault' as Path<TFormValues>}
                     render={({ field }) => (
                         <FormItem className="flex items-center gap-2 pt-1 space-y-0">
                             <FormControl>
                                 <Checkbox id="save-default" checked={field.value} onCheckedChange={field.onChange} />
                             </FormControl>
                             <FormLabel htmlFor="save-default" className="text-sm cursor-pointer">
-                                {defaultOptionLabel ?? t('payment.saveAsDefault')}
+                                {defaultOptionLabel ?? (t as (key: string) => string)('payment.saveAsDefault')}
                             </FormLabel>
                         </FormItem>
                     )}

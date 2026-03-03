@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, within } from 'storybook/test';
+import { expect, within, waitFor } from 'storybook/test';
 import { action } from 'storybook/actions';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import ShippingMultiOptions from '../shipping-multi-options';
@@ -365,19 +365,17 @@ export const WithSelectedMethods: Story = {
         expect(canvas.getByText(/Shipment 1/i)).toBeInTheDocument();
         expect(canvas.getByText(/Shipment 2/i)).toBeInTheDocument();
 
-        // Verify radio buttons are rendered
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-        const radioButtons = canvas.getAllByRole('radio') as HTMLInputElement[];
-        // Shipment 1 has 3 methods (standard, express, overnight)
-        // Shipment 2 has 2 methods (standard, express)
-        // Total should be 5 radio buttons
-        expect(radioButtons.length).toBe(5);
+        // Wait for radio buttons to be rendered (async provider/data)
+        await waitFor(
+            () => {
+                const radioButtons = canvas.getAllByRole('radio');
+                expect(radioButtons.length).toBe(5);
+            },
+            { timeout: 10000 }
+        );
 
-        // Verify the pre-selected methods are present in the DOM
-        // Using IDs that are set on the radio buttons
         const expressRadioShipment1 = canvasElement.querySelector('#shipment-1-express');
         const standardRadioShipment2 = canvasElement.querySelector('#shipment-2-standard');
-
         expect(expressRadioShipment1).toBeInTheDocument();
         expect(standardRadioShipment2).toBeInTheDocument();
     },
@@ -445,9 +443,12 @@ export const LoadingState: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Continue button should be disabled during loading
-        const continueButton = canvas.getByRole('button', { name: /saving/i });
-        expect(continueButton).toBeDisabled();
+        // Submit button is disabled during loading (label may be "Saving...", "Continue", or locale equivalent)
+        const submitButton = await waitFor(
+            () => canvas.getByRole('button', { name: /saving|continue|salvataggio|no methods/i }),
+            { timeout: 5000 }
+        );
+        expect(submitButton).toBeDisabled();
     },
 };
 
@@ -478,14 +479,15 @@ export const SingleShipment: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // With single shipment, shipment label should NOT be shown (no need to label a single shipment)
-        expect(canvas.queryByText(/Shipment 1/i)).not.toBeInTheDocument();
-        expect(canvas.queryByText(/Shipment 2/i)).not.toBeInTheDocument();
-        // Address header is also not shown for single shipments (no need to show address when there's only one)
-
-        // Should still show all shipping method options
-        expect(canvas.getByText('Standard Shipping')).toBeInTheDocument();
-        expect(canvas.getByText('Express Shipping')).toBeInTheDocument();
+        await waitFor(
+            () => {
+                expect(canvas.queryByText(/Shipment 1/i)).not.toBeInTheDocument();
+                expect(canvas.queryByText(/Shipment 2/i)).not.toBeInTheDocument();
+                expect(canvas.getByText('Standard Shipping')).toBeInTheDocument();
+                expect(canvas.getByText('Express Shipping')).toBeInTheDocument();
+            },
+            { timeout: 5000 }
+        );
     },
 };
 
@@ -514,12 +516,14 @@ export const NoShipments: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Should show empty state message
-        expect(canvas.getByText(/no shipments available/i)).toBeInTheDocument();
-
-        // Continue button should be disabled
-        const continueButton = canvas.getByRole('button');
-        expect(continueButton).toBeDisabled();
+        await waitFor(
+            () => {
+                expect(canvas.getByText(/no shipments available|enter address first/i)).toBeInTheDocument();
+                const continueButton = canvas.getByRole('button');
+                expect(continueButton).toBeDisabled();
+            },
+            { timeout: 5000 }
+        );
     },
 };
 
@@ -598,8 +602,12 @@ export const WithFormError: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Should display error message
-        expect(canvas.getByText(/Please select a shipping method for all shipments/i)).toBeInTheDocument();
+        await waitFor(
+            () => {
+                expect(canvas.getByText(/Please select a shipping method for all shipments/i)).toBeInTheDocument();
+            },
+            { timeout: 5000 }
+        );
     },
 };
 

@@ -104,35 +104,37 @@ export async function action(formData: FormData, context: RouterContextProvider)
         };
     }
 
-    // Prepare billing address
-    const billingAddress = billingSameAsShipping
-        ? basket.shipments?.[0]?.shippingAddress
-        : {
-              firstName: result.data.billingFirstName || '',
-              lastName: result.data.billingLastName || '',
-              address1: result.data.billingAddress1 || '',
-              address2: result.data.billingAddress2 || '',
-              city: result.data.billingCity || '',
-              stateCode: result.data.billingStateCode || '',
-              postalCode: result.data.billingPostalCode || '',
-              phone: result.data.billingPhone || '',
-              countryCode: 'US', // Default to US, in real app this would be from form
-          };
+    if (!basketId || !basket) {
+        return Response.json(
+            {
+                success: false,
+                error: t('errors:api.basketNotFound'),
+                step: 'payment',
+            },
+            { status: 400 }
+        );
+    }
+
+    // Prepare billing address (basket is non-null)
+    const shippingAddress = basket.shipments?.[0]?.shippingAddress;
+    const billingAddress =
+        billingSameAsShipping && shippingAddress
+            ? shippingAddress
+            : {
+                  firstName: result.data.billingFirstName || '',
+                  lastName: result.data.billingLastName || '',
+                  address1: result.data.billingAddress1 || '',
+                  address2: result.data.billingAddress2 || '',
+                  city: result.data.billingCity || '',
+                  stateCode: result.data.billingStateCode || '',
+                  postalCode: result.data.billingPostalCode || '',
+                  phone: result.data.billingPhone || '',
+                  countryCode: result.data.billingCountryCode || 'US',
+              };
 
     // Add payment instrument to basket via Commerce API
     let finalUpdatedBasket;
     try {
-        if (!basketId || !basket) {
-            return Response.json(
-                {
-                    success: false,
-                    error: t('errors:api.basketNotFound'),
-                    step: 'payment',
-                },
-                { status: 400 }
-            );
-        }
-
         // First add the payment instrument
         const updatedBasket = await addPaymentInstrumentToBasket(context, basketId, paymentInfo);
 
