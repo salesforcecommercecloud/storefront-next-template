@@ -67,6 +67,18 @@ export function resolvePrefix(prefix: string, params: Record<string, string>): s
 }
 
 /**
+ * Sanitize a resolved prefix from a pathname if present.
+ * sanitizePrefix('/global/en-GB/product/123', '/global/en-GB') → '/product/123'
+ * sanitizePrefix('/product/123', '/global/en-GB') → '/product/123'   (no-op)
+ */
+export function sanitizePrefix(pathname: string, pathPrefix: string): string {
+    if (!pathPrefix) return pathname;
+    if (pathname === pathPrefix) return '';
+    if (pathname.startsWith(`${pathPrefix}/`)) return pathname.slice(pathPrefix.length);
+    return pathname;
+}
+
+/**
  * Builds a fully-qualified URL with multi-site prefix and search params.
  *
  * Only keys defined in urlConfig.search are set by multi-site. Any other query params
@@ -92,10 +104,9 @@ export function buildUrl({
 
     const { pathname, search: existingSearch, hash } = decomposeUrl(to);
 
-    const prefixed =
-        urlConfig.prefix && urlConfig.prefix !== '/'
-            ? `${resolvePrefix(urlConfig.prefix, params)}${pathname}`
-            : pathname;
+    const pathPrefix = urlConfig.prefix && urlConfig.prefix !== '/' ? resolvePrefix(urlConfig.prefix, params) : '';
+    // sanitize prefix to make sure there is no prefix duplication at any case
+    const path = pathPrefix ? `${pathPrefix}${sanitizePrefix(pathname, pathPrefix)}` : pathname;
 
     const searchParams = new URLSearchParams(existingSearch);
     if (urlConfig.search) {
@@ -113,5 +124,5 @@ export function buildUrl({
     }
 
     const search = searchParams.toString();
-    return `${prefixed}${search ? `?${search}` : ''}${hash}`;
+    return `${path}${search ? `?${search}` : ''}${hash}`;
 }

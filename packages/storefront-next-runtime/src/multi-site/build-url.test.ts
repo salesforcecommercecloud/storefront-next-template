@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 import { describe, expect, it } from 'vitest';
-import { buildUrl, parseSearchConfig, extractPrefixParams, decomposeUrl, resolvePrefix } from './build-url';
+import {
+    buildUrl,
+    parseSearchConfig,
+    extractPrefixParams,
+    decomposeUrl,
+    resolvePrefix,
+    sanitizePrefix,
+} from './build-url';
 
 describe('parseSearchConfig', () => {
     it('preserves :param placeholders for a single param with leading ?', () => {
@@ -116,6 +123,28 @@ describe('resolvePrefix', () => {
 
     it('returns prefix unchanged when no params match', () => {
         expect(resolvePrefix('/:siteId', {})).toBe('/:siteId');
+    });
+});
+
+describe('sanitizePrefix', () => {
+    it('strips a matching prefix', () => {
+        expect(sanitizePrefix('/global/en-GB/product/123', '/global/en-GB')).toBe('/product/123');
+    });
+
+    it('returns empty string when pathname equals prefix exactly', () => {
+        expect(sanitizePrefix('/global/en-GB', '/global/en-GB')).toBe('');
+    });
+
+    it('returns pathname unchanged when prefix does not match', () => {
+        expect(sanitizePrefix('/product/123', '/global/en-GB')).toBe('/product/123');
+    });
+
+    it('does not strip a partial segment match', () => {
+        expect(sanitizePrefix('/global/en-GB-extra/page', '/global/en-GB')).toBe('/global/en-GB-extra/page');
+    });
+
+    it('returns pathname unchanged when resolvedPrefix is empty', () => {
+        expect(sanitizePrefix('/product/123', '')).toBe('/product/123');
     });
 });
 
@@ -285,6 +314,38 @@ describe('buildUrl', () => {
                     params: { siteId: 'global', localeId: 'en-GB' },
                 })
             ).toBe('/global/product/123?color=red&lng=en-GB#details');
+        });
+    });
+
+    describe('idempotency', () => {
+        it('does not double-prefix an already-prefixed path', () => {
+            expect(
+                buildUrl({
+                    to: '/global/en-GB/product/123',
+                    urlConfig: { prefix: '/:siteId/:localeId' },
+                    params: { siteId: 'global', localeId: 'en-GB' },
+                })
+            ).toBe('/global/en-GB/product/123');
+        });
+
+        it('does not double-prefix when path equals the resolved prefix', () => {
+            expect(
+                buildUrl({
+                    to: '/global/en-GB',
+                    urlConfig: { prefix: '/:siteId/:localeId' },
+                    params: { siteId: 'global', localeId: 'en-GB' },
+                })
+            ).toBe('/global/en-GB');
+        });
+
+        it('still prefixes a path that only partially matches', () => {
+            expect(
+                buildUrl({
+                    to: '/global/en-GBextra/product/123',
+                    urlConfig: { prefix: '/:siteId/:localeId' },
+                    params: { siteId: 'global', localeId: 'en-GB' },
+                })
+            ).toBe('/global/en-GB/global/en-GBextra/product/123');
         });
     });
 });
