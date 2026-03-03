@@ -154,7 +154,9 @@ export const CustomerProfileForm = ({
 
         customerUpdateData.phoneHome = data.phone ?? '';
         customerUpdateData.gender = data.gender ?? '';
-        customerUpdateData.birthday = data.birthday ?? '';
+        // Bugfix: Birthday is supposed to be optional field, but submitting the form with empty birthday resulted in an error.
+        // Now we no longer pass in an empty string, but skipping it instead.
+        if (data.birthday) customerUpdateData.birthday = data.birthday;
 
         // Submit the update request - response will be handled by parent component's fetcher effect
         void updateFetcher.submit(customerUpdateData);

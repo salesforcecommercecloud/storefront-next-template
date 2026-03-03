@@ -184,7 +184,7 @@ function OrderStatusBadge({ status, label }: { status: string; label?: string })
     const displayLabel = label ?? t(config.labelKey as StatusLabelKey);
 
     return (
-        <Badge className={cn('gap-1 font-semibold', config.className)}>
+        <Badge data-testid="order-status-badge" className={cn('gap-1 font-semibold', config.className)}>
             {Icon && <Icon className="size-3" />}
             {displayLabel}
         </Badge>

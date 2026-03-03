@@ -41,6 +41,7 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
         </div>
         <span
           class="inline-flex w-fit items-center bg-primary/10 px-3 py-1 text-sm font-medium text-primary shrink-0"
+          data-testid="order-status-badge"
         >
           New
         </span>
@@ -97,7 +98,9 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                   <ul
                     class="space-y-4"
                   >
-                    <li>
+                    <li
+                      data-testid="order-item"
+                    >
                       <div
                         class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 sm:flex-row sm:items-center"
                       >
@@ -395,6 +398,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
         </div>
         <span
           class="inline-flex w-fit items-center bg-primary/10 px-3 py-1 text-sm font-medium text-primary shrink-0"
+          data-testid="order-status-badge"
         >
           New
         </span>
@@ -451,7 +455,9 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                   <ul
                     class="space-y-4"
                   >
-                    <li>
+                    <li
+                      data-testid="order-item"
+                    >
                       <div
                         class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 sm:flex-row sm:items-center"
                       >
@@ -653,7 +659,9 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                   <ul
                     class="space-y-4"
                   >
-                    <li>
+                    <li
+                      data-testid="order-item"
+                    >
                       <div
                         class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 sm:flex-row sm:items-center"
                       >
@@ -972,6 +980,7 @@ exports[`OrderDetails stories snapshot > ShippedStatus story renders and matches
         </div>
         <span
           class="inline-flex w-fit items-center bg-primary/10 px-3 py-1 text-sm font-medium text-primary shrink-0"
+          data-testid="order-status-badge"
         >
           orders.status.inTransit
         </span>
@@ -1028,7 +1037,9 @@ exports[`OrderDetails stories snapshot > ShippedStatus story renders and matches
                   <ul
                     class="space-y-4"
                   >
-                    <li>
+                    <li
+                      data-testid="order-item"
+                    >
                       <div
                         class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 sm:flex-row sm:items-center"
                       >

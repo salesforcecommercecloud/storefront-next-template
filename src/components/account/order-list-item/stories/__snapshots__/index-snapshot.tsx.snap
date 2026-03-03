@@ -60,6 +60,7 @@ exports[`OrderListItem stories snapshot > Cancelled story renders and matches sn
         <span
           class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-cancelled text-order-status-cancelled-foreground"
           data-slot="badge"
+          data-testid="order-status-badge"
         >
           <svg
             aria-hidden="true"
@@ -219,6 +220,7 @@ exports[`OrderListItem stories snapshot > Default story renders and matches snap
         <span
           class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
           data-slot="badge"
+          data-testid="order-status-badge"
         >
           Ready for Pickup
         </span>
@@ -352,6 +354,7 @@ exports[`OrderListItem stories snapshot > Delivered story renders and matches sn
         <span
           class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
           data-slot="badge"
+          data-testid="order-status-badge"
         >
           Delivered
         </span>
@@ -653,6 +656,7 @@ exports[`OrderListItem stories snapshot > InTransit story renders and matches sn
         <span
           class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
           data-slot="badge"
+          data-testid="order-status-badge"
         >
           In Transit
         </span>
@@ -772,6 +776,7 @@ exports[`OrderListItem stories snapshot > MixedImages story renders and matches 
         <span
           class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
           data-slot="badge"
+          data-testid="order-status-badge"
         >
           Ready for Pickup
         </span>
@@ -936,6 +941,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
           <span
             class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
             data-slot="badge"
+            data-testid="order-status-badge"
           >
             Ready for Pickup
           </span>
@@ -1135,6 +1141,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
           <span
             class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
             data-slot="badge"
+            data-testid="order-status-badge"
           >
             In Transit
           </span>
@@ -1251,6 +1258,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
           <span
             class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
             data-slot="badge"
+            data-testid="order-status-badge"
           >
             Delivered
           </span>
@@ -1553,6 +1561,7 @@ exports[`OrderListItem stories snapshot > PartiallyDelivered story renders and m
         <span
           class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
           data-slot="badge"
+          data-testid="order-status-badge"
         >
           Partially Delivered
         </span>
@@ -1726,6 +1735,7 @@ exports[`OrderListItem stories snapshot > WithImageAlt story renders and matches
         <span
           class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
           data-slot="badge"
+          data-testid="order-status-badge"
         >
           Ready for Pickup
         </span>
@@ -1859,6 +1869,7 @@ exports[`OrderListItem stories snapshot > WithPickupLocation story renders and m
         <span
           class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
           data-slot="badge"
+          data-testid="order-status-badge"
         >
           Ready for Pickup
         </span>
@@ -2061,6 +2072,7 @@ exports[`OrderListItem stories snapshot > WithoutImages story renders and matche
         <span
           class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
           data-slot="badge"
+          data-testid="order-status-badge"
         >
           Ready for Pickup
         </span>

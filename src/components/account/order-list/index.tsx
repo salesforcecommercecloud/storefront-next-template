@@ -158,7 +158,7 @@ export function OrderListBody({
                 </div>
             )}
             <div className="p-6 m-0 border-b border-x border-order-border rounded-b-xl">
-                <Typography variant="small" as="p" className="text-muted-foreground">
+                <Typography variant="small" as="p" className="text-muted-foreground" data-testid="total-orders-text">
                     {t('orders.totalOrders', { count: orders.length })}
                 </Typography>
             </div>

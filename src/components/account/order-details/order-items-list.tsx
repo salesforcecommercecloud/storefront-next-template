@@ -61,7 +61,7 @@ export function OrderItemsList({ items, productsById }: OrderItemsListProps): Re
                 const productName = item.productName;
                 const enrichedItem: EnrichedProductItem = { ...productData, ...item } as EnrichedProductItem;
                 return (
-                    <li key={productKey}>
+                    <li key={productKey} data-testid="order-item">
                         <div className="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 sm:flex-row sm:items-center">
                             <ProductItemVariantImage productItem={enrichedItem} className="h-24 w-24 rounded-none" />
                             <div className="min-w-0 flex-1 space-y-1">

@@ -97,7 +97,9 @@ export function OrderDetails({ order, productsById }: OrderDetailsProps): ReactE
                                 <span> #{order.orderNo}</span>
                             </p>
                         </div>
-                        <span className="inline-flex w-fit items-center bg-primary/10 px-3 py-1 text-sm font-medium text-primary shrink-0">
+                        <span
+                            data-testid="order-status-badge"
+                            className="inline-flex w-fit items-center bg-primary/10 px-3 py-1 text-sm font-medium text-primary shrink-0">
                             {orderStatusLabel}
                         </span>
                     </div>

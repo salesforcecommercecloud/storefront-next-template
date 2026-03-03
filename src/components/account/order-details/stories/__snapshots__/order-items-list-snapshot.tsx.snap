@@ -4,7 +4,9 @@ exports[`OrderItemsList stories snapshot > Default story renders and matches sna
 <ul
   class="space-y-4"
 >
-  <li>
+  <li
+    data-testid="order-item"
+  >
     <div
       class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 sm:flex-row sm:items-center"
     >
@@ -123,7 +125,9 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
 <ul
   class="space-y-4"
 >
-  <li>
+  <li
+    data-testid="order-item"
+  >
     <div
       class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 sm:flex-row sm:items-center"
     >
@@ -196,7 +200,9 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
       </div>
     </div>
   </li>
-  <li>
+  <li
+    data-testid="order-item"
+  >
     <div
       class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 sm:flex-row sm:items-center"
     >

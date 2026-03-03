@@ -36,6 +36,7 @@ exports[`OrderList stories snapshot > BodyEmpty story renders and matches snapsh
   >
     <p
       class="text-sm font-medium leading-none text-left text-muted-foreground"
+      data-testid="total-orders-text"
     >
       Viewing 0 orders
     </p>
@@ -79,6 +80,7 @@ exports[`OrderList stories snapshot > BodyWithCustomEmptyMessage story renders a
   >
     <p
       class="text-sm font-medium leading-none text-left text-muted-foreground"
+      data-testid="total-orders-text"
     >
       Viewing 0 orders
     </p>
@@ -151,6 +153,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
               <span
                 class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
                 data-slot="badge"
+                data-testid="order-status-badge"
               >
                 Created
               </span>
@@ -350,6 +353,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
               <span
                 class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
                 data-slot="badge"
+                data-testid="order-status-badge"
               >
                 New
               </span>
@@ -466,6 +470,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
               <span
                 class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-warning text-order-status-warning-foreground"
                 data-slot="badge"
+                data-testid="order-status-badge"
               >
                 Failed With Reopen
               </span>
@@ -636,6 +641,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
               <span
                 class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-cancelled text-order-status-cancelled-foreground"
                 data-slot="badge"
+                data-testid="order-status-badge"
               >
                 <svg
                   aria-hidden="true"
@@ -792,6 +798,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
               <span
                 class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-completed text-order-status-completed-foreground"
                 data-slot="badge"
+                data-testid="order-status-badge"
               >
                 <svg
                   aria-hidden="true"
@@ -1054,6 +1061,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
     >
       <p
         class="text-sm font-medium leading-none text-left text-muted-foreground"
+        data-testid="total-orders-text"
       >
         Viewing 5 orders
       </p>
@@ -1139,6 +1147,7 @@ exports[`OrderList stories snapshot > ClickViewDetails story renders and matches
               <span
                 class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-completed text-order-status-completed-foreground"
                 data-slot="badge"
+                data-testid="order-status-badge"
               >
                 <svg
                   aria-hidden="true"
@@ -1241,6 +1250,7 @@ exports[`OrderList stories snapshot > ClickViewDetails story renders and matches
     >
       <p
         class="text-sm font-medium leading-none text-left text-muted-foreground"
+        data-testid="total-orders-text"
       >
         Viewing 1 order
       </p>
@@ -1298,6 +1308,7 @@ exports[`OrderList stories snapshot > CustomEmptyMessage story renders and match
     >
       <p
         class="text-sm font-medium leading-none text-left text-muted-foreground"
+        data-testid="total-orders-text"
       >
         Viewing 0 orders
       </p>
@@ -1388,6 +1399,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
               <span
                 class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
                 data-slot="badge"
+                data-testid="order-status-badge"
               >
                 Created
               </span>
@@ -1587,6 +1599,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
               <span
                 class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
                 data-slot="badge"
+                data-testid="order-status-badge"
               >
                 New
               </span>
@@ -1703,6 +1716,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
               <span
                 class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-warning text-order-status-warning-foreground"
                 data-slot="badge"
+                data-testid="order-status-badge"
               >
                 Failed With Reopen
               </span>
@@ -1873,6 +1887,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
               <span
                 class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-cancelled text-order-status-cancelled-foreground"
                 data-slot="badge"
+                data-testid="order-status-badge"
               >
                 <svg
                   aria-hidden="true"
@@ -2029,6 +2044,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
               <span
                 class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-completed text-order-status-completed-foreground"
                 data-slot="badge"
+                data-testid="order-status-badge"
               >
                 <svg
                   aria-hidden="true"
@@ -2291,6 +2307,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
     >
       <p
         class="text-sm font-medium leading-none text-left text-muted-foreground"
+        data-testid="total-orders-text"
       >
         Viewing 5 orders
       </p>
@@ -2353,6 +2370,7 @@ exports[`OrderList stories snapshot > EmptyState story renders and matches snaps
     >
       <p
         class="text-sm font-medium leading-none text-left text-muted-foreground"
+        data-testid="total-orders-text"
       >
         Viewing 0 orders
       </p>
@@ -2478,6 +2496,7 @@ exports[`OrderList stories snapshot > MixedStatuses story renders and matches sn
               <span
                 class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
                 data-slot="badge"
+                data-testid="order-status-badge"
               >
                 New
               </span>
@@ -2588,6 +2607,7 @@ exports[`OrderList stories snapshot > MixedStatuses story renders and matches sn
               <span
                 class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-completed text-order-status-completed-foreground"
                 data-slot="badge"
+                data-testid="order-status-badge"
               >
                 <svg
                   aria-hidden="true"
@@ -2729,6 +2749,7 @@ exports[`OrderList stories snapshot > MixedStatuses story renders and matches sn
               <span
                 class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-cancelled text-order-status-cancelled-foreground"
                 data-slot="badge"
+                data-testid="order-status-badge"
               >
                 <svg
                   aria-hidden="true"
@@ -2806,6 +2827,7 @@ exports[`OrderList stories snapshot > MixedStatuses story renders and matches sn
     >
       <p
         class="text-sm font-medium leading-none text-left text-muted-foreground"
+        data-testid="total-orders-text"
       >
         Viewing 3 orders
       </p>
@@ -2896,6 +2918,7 @@ exports[`OrderList stories snapshot > SingleOrder story renders and matches snap
               <span
                 class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-completed text-order-status-completed-foreground"
                 data-slot="badge"
+                data-testid="order-status-badge"
               >
                 <svg
                   aria-hidden="true"
@@ -2998,6 +3021,7 @@ exports[`OrderList stories snapshot > SingleOrder story renders and matches snap
     >
       <p
         class="text-sm font-medium leading-none text-left text-muted-foreground"
+        data-testid="total-orders-text"
       >
         Viewing 1 order
       </p>
@@ -3083,6 +3107,7 @@ exports[`OrderList stories snapshot > WithDeliveredStatus story renders and matc
               <span
                 class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-completed text-order-status-completed-foreground"
                 data-slot="badge"
+                data-testid="order-status-badge"
               >
                 <svg
                   aria-hidden="true"
@@ -3224,6 +3249,7 @@ exports[`OrderList stories snapshot > WithDeliveredStatus story renders and matc
               <span
                 class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-completed text-order-status-completed-foreground"
                 data-slot="badge"
+                data-testid="order-status-badge"
               >
                 <svg
                   aria-hidden="true"
@@ -3298,6 +3324,7 @@ exports[`OrderList stories snapshot > WithDeliveredStatus story renders and matc
     >
       <p
         class="text-sm font-medium leading-none text-left text-muted-foreground"
+        data-testid="total-orders-text"
       >
         Viewing 2 orders
       </p>
@@ -3388,6 +3415,7 @@ exports[`OrderList stories snapshot > WithManyProducts story renders and matches
               <span
                 class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-completed text-order-status-completed-foreground"
                 data-slot="badge"
+                data-testid="order-status-badge"
               >
                 <svg
                   aria-hidden="true"
@@ -3650,6 +3678,7 @@ exports[`OrderList stories snapshot > WithManyProducts story renders and matches
     >
       <p
         class="text-sm font-medium leading-none text-left text-muted-foreground"
+        data-testid="total-orders-text"
       >
         Viewing 1 order
       </p>
@@ -3740,6 +3769,7 @@ exports[`OrderList stories snapshot > WithPickupLocation story renders and match
               <span
                 class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
                 data-slot="badge"
+                data-testid="order-status-badge"
               >
                 Created
               </span>
@@ -3886,6 +3916,7 @@ exports[`OrderList stories snapshot > WithPickupLocation story renders and match
     >
       <p
         class="text-sm font-medium leading-none text-left text-muted-foreground"
+        data-testid="total-orders-text"
       >
         Viewing 1 order
       </p>
@@ -3976,6 +4007,7 @@ exports[`OrderList stories snapshot > WithProductImages story renders and matche
               <span
                 class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-completed text-order-status-completed-foreground"
                 data-slot="badge"
+                data-testid="order-status-badge"
               >
                 <svg
                   aria-hidden="true"
@@ -4064,6 +4096,7 @@ exports[`OrderList stories snapshot > WithProductImages story renders and matche
     >
       <p
         class="text-sm font-medium leading-none text-left text-muted-foreground"
+        data-testid="total-orders-text"
       >
         Viewing 1 order
       </p>
@@ -4154,6 +4187,7 @@ exports[`OrderList stories snapshot > WithoutProductImages story renders and mat
               <span
                 class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
                 data-slot="badge"
+                data-testid="order-status-badge"
               >
                 New
               </span>
@@ -4225,6 +4259,7 @@ exports[`OrderList stories snapshot > WithoutProductImages story renders and mat
     >
       <p
         class="text-sm font-medium leading-none text-left text-muted-foreground"
+        data-testid="total-orders-text"
       >
         Viewing 1 order
       </p>
@@ -4310,6 +4345,7 @@ exports[`OrderList stories snapshot > WithoutSubtitle story renders and matches 
               <span
                 class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
                 data-slot="badge"
+                data-testid="order-status-badge"
               >
                 Created
               </span>
@@ -4509,6 +4545,7 @@ exports[`OrderList stories snapshot > WithoutSubtitle story renders and matches 
               <span
                 class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
                 data-slot="badge"
+                data-testid="order-status-badge"
               >
                 New
               </span>
@@ -4625,6 +4662,7 @@ exports[`OrderList stories snapshot > WithoutSubtitle story renders and matches 
               <span
                 class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-warning text-order-status-warning-foreground"
                 data-slot="badge"
+                data-testid="order-status-badge"
               >
                 Failed With Reopen
               </span>
@@ -4795,6 +4833,7 @@ exports[`OrderList stories snapshot > WithoutSubtitle story renders and matches 
               <span
                 class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-cancelled text-order-status-cancelled-foreground"
                 data-slot="badge"
+                data-testid="order-status-badge"
               >
                 <svg
                   aria-hidden="true"
@@ -4951,6 +4990,7 @@ exports[`OrderList stories snapshot > WithoutSubtitle story renders and matches 
               <span
                 class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-completed text-order-status-completed-foreground"
                 data-slot="badge"
+                data-testid="order-status-badge"
               >
                 <svg
                   aria-hidden="true"
@@ -5213,6 +5253,7 @@ exports[`OrderList stories snapshot > WithoutSubtitle story renders and matches 
     >
       <p
         class="text-sm font-medium leading-none text-left text-muted-foreground"
+        data-testid="total-orders-text"
       >
         Viewing 5 orders
       </p>

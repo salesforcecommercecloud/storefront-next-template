@@ -259,7 +259,7 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
 
     return (
         <>
-            <Card>
+            <Card data-testid="interests-preferences-section">
                 <CardHeader className="flex flex-row items-start justify-between border-b border-muted-foreground/20 pb-4">
                     <div className="space-y-1">
                         <CardTitle className="text-lg font-semibold">{t('interestsPreferences.title')}</CardTitle>
@@ -267,15 +267,28 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
                     </div>
                     {isEditing ? (
                         <div className="flex gap-2">
-                            <Button size="sm" onClick={() => void handleSave()} disabled={isSaving}>
+                            <Button
+                                data-testid="interests-preferences-save-button"
+                                size="sm"
+                                onClick={() => void handleSave()}
+                                disabled={isSaving}>
                                 {isSaving ? t('common.saving') : t('common.save')}
                             </Button>
-                            <Button variant="outline" size="sm" onClick={handleCancel} disabled={isSaving}>
+                            <Button
+                                data-testid="interests-preferences-cancel-button"
+                                variant="outline"
+                                size="sm"
+                                onClick={handleCancel}
+                                disabled={isSaving}>
                                 {t('common.cancel')}
                             </Button>
                         </div>
                     ) : (
-                        <Button variant="outline" size="sm" onClick={handleEdit}>
+                        <Button
+                            data-testid="interests-preferences-edit-button"
+                            variant="outline"
+                            size="sm"
+                            onClick={handleEdit}>
                             {t('common.edit')}
                         </Button>
                     )}
@@ -316,6 +329,7 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
                                         selectedInterestsWithNames.map((interest) => (
                                             <span
                                                 key={interest.id}
+                                                data-testid={`interest-badge-${interest.id}`}
                                                 className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium ${
                                                     isEditing
                                                         ? 'bg-primary text-primary-foreground'
@@ -343,6 +357,7 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
                                 {isEditing && (
                                     <button
                                         type="button"
+                                        data-testid="interests-add-more-button"
                                         onClick={handleOpenInterestsDialog}
                                         className="text-sm font-medium text-primary hover:underline">
                                         + {t('interests.addMore')}
@@ -371,6 +386,7 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
                                                             return (
                                                                 <span
                                                                     key={val}
+                                                                    data-testid={`pref-badge-${pref.id}-${val}`}
                                                                     className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium ${
                                                                         isEditing
                                                                             ? 'bg-primary text-primary-foreground'
@@ -403,6 +419,7 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
                                                 {isEditing && (
                                                     <button
                                                         type="button"
+                                                        data-testid={`pref-${pref.id}-add-more-button`}
                                                         onClick={() => setActiveMultiSelectId(pref.id)}
                                                         className="text-sm font-medium text-primary hover:underline">
                                                         + {t('preferences.addMore')}
@@ -586,7 +603,10 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
 
             {/* Tabbed Interest Selection Dialog */}
             <Dialog open={isInterestsDialogOpen} onOpenChange={(open) => !open && handleCloseInterestsDialog()}>
-                <DialogContent className="sm:max-w-xl max-h-[80vh] flex flex-col" showCloseButton={true}>
+                <DialogContent
+                    data-testid="interests-dialog"
+                    className="sm:max-w-xl max-h-[80vh] flex flex-col"
+                    showCloseButton={true}>
                     <DialogHeader className="pb-0">
                         <DialogTitle>{t('interests.addInterestsTitle')}</DialogTitle>
                     </DialogHeader>
@@ -598,6 +618,7 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
                                 <button
                                     key={category.id}
                                     type="button"
+                                    data-testid={`interests-tab-${category.id}`}
                                     onClick={() => setActiveTabId(category.id)}
                                     className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors ${
                                         activeTabId === category.id
@@ -641,7 +662,10 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
                         <Button type="button" variant="outline" onClick={handleCloseInterestsDialog}>
                             {t('common.cancel')}
                         </Button>
-                        <Button type="button" onClick={handleCloseInterestsDialog}>
+                        <Button
+                            type="button"
+                            data-testid="interests-dialog-save-button"
+                            onClick={handleCloseInterestsDialog}>
                             {t('common.save')}
                         </Button>
                     </DialogFooter>
@@ -650,7 +674,7 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
 
             {/* Multi-select Preference Dialog */}
             <Dialog open={activeMultiSelectId !== null} onOpenChange={(open) => !open && setActiveMultiSelectId(null)}>
-                <DialogContent className="sm:max-w-xl" showCloseButton={true}>
+                <DialogContent data-testid="product-categories-dialog" className="sm:max-w-xl" showCloseButton={true}>
                     <DialogHeader>
                         <DialogTitle>
                             {activeMultiSelect?.name
@@ -695,7 +719,10 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
                         <Button type="button" variant="outline" onClick={() => setActiveMultiSelectId(null)}>
                             {t('common.cancel')}
                         </Button>
-                        <Button type="button" onClick={() => setActiveMultiSelectId(null)}>
+                        <Button
+                            type="button"
+                            data-testid="product-categories-dialog-save-button"
+                            onClick={() => setActiveMultiSelectId(null)}>
                             {t('common.save')}
                         </Button>
                     </DialogFooter>
