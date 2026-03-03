@@ -102,10 +102,9 @@ Default cart badge icon with zero items.
         const cartIcon = await canvas.findByTestId('shopping-cart-icon', {}, { timeout: 5000 });
         await expect(cartIcon).toBeInTheDocument();
 
-        // Check for badge
-        const badge = await canvas.findByTestId('shopping-cart-badge', {}, { timeout: 5000 });
-        await expect(badge).toBeInTheDocument();
-        await expect(badge).toHaveTextContent('0');
+        // Badge should not be present when count is 0
+        const badge = canvas.queryByTestId('shopping-cart-badge');
+        await expect(badge).not.toBeInTheDocument();
     },
 };
 

@@ -60,7 +60,7 @@ describe('CartBadge', () => {
         render(<CartBadge />);
 
         expect(screen.getByRole('button', { name: 'Cart (0)' })).toBeInTheDocument();
-        expect(screen.getByTestId('shopping-cart-badge')).toHaveTextContent('0');
+        expect(screen.queryByTestId('shopping-cart-badge')).not.toBeInTheDocument();
     });
 
     it('shows the cart sheet after the first click', async () => {

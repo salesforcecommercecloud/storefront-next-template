@@ -119,72 +119,26 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
             <Card
                 ref={ref}
                 className={cn(
-                    'group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md',
+                    'group rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col h-full gap-0 py-0 transition-all duration-200',
                     className
                 )}
                 {...props}>
-                <CardFooter className="px-6 pb-6 pt-6 flex-1 flex flex-col justify-end">
-                    {footerAction !== undefined ? (
-                        footerAction
-                    ) : (
-                        <Button className="w-full text-sm font-normal" size="default" onClick={handleMoreOptions}>
-                            {t('moreOptions')}
-                        </Button>
-                    )}
-                </CardFooter>
+                {/* Image area with overlaid badges */}
+                <CardHeader className="p-0 relative">
+                    <div className="relative overflow-hidden">
+                        <ProductImageContainer
+                            product={product}
+                            selectedColorValue={
+                                PRODUCT_TILE_SELECTABLE_ATTRIBUTE_ID === 'color' ? selectedAttributeValue : null
+                            }
+                            imgAspectRatio={effectiveImgAspectRatio}
+                            className="w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+                            handleProductClick={handleProductClick}
+                        />
 
-                <CardContent>
-                    <ProductPrice
-                        type="unit"
-                        product={product}
-                        currency={currency}
-                        labelForA11y={product?.productName}
-                        currentPriceProps={{
-                            className: 'text-card-foreground text-right font-semibold text-sm leading-none relative',
-                        }}
-                        listPriceProps={{
-                            className: 'text-muted-foreground text-right text-sm leading-none relative',
-                        }}
-                        className="text-sm mt-2"
-                    />
-                </CardContent>
-
-                <CardContent className="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16">
-                    <div className="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full">
-                        <div className="h-10 flex items-start">
-                            <Link
-                                to={createProductUrl(product.productId)}
-                                className="text-card-foreground text-left font-semibold text-sm leading-[1.25] relative hover:underline line-clamp-2 overflow-hidden block"
-                                style={{ display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2 }}
-                                onClick={() => {
-                                    handleProductClick?.(product);
-                                }}>
-                                {product.productName}
-                            </Link>
-                        </div>
-
-                        {/* Fixed height for variant selector area */}
-                        <div className="h-8 flex items-end">
-                            {/* Attribute Swatch Group - Lazy loaded to reduce hydration cost */}
-                            {swatchesVariationAttributes.length > 0 && (
-                                <Suspense fallback={<ProductTileSwatchesSkeleton count={maxSwatches} />}>
-                                    <LazySwatches
-                                        variationAttributes={swatchesVariationAttributes}
-                                        maxSwatches={maxSwatches}
-                                        selectedAttributeValue={selectedAttributeValue}
-                                        handleAttributeChange={handleAttributeChange}
-                                        disableSwatchInteraction={disableSwatchInteraction}
-                                        selectedVariantColorValue={selectedVariantColorValue}
-                                        swatchMode={swatchMode}
-                                    />
-                                </Suspense>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max">
+                        {/* Badges overlaid top-left */}
                         {hasBadges && (
-                            <div className="flex flex-row gap-1.5 items-start justify-start shrink-0 relative">
+                            <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
                                 {badges.map((badge) => (
                                     <Badge
                                         key={badge.label}
@@ -196,21 +150,67 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                             </div>
                         )}
                     </div>
+                </CardHeader>
+
+                {/* Swatches */}
+                <CardContent className="px-4 pt-3 pb-0">
+                    {swatchesVariationAttributes.length > 0 && (
+                        <Suspense fallback={<ProductTileSwatchesSkeleton count={maxSwatches} />}>
+                            <LazySwatches
+                                variationAttributes={swatchesVariationAttributes}
+                                maxSwatches={maxSwatches}
+                                selectedAttributeValue={selectedAttributeValue}
+                                handleAttributeChange={handleAttributeChange}
+                                disableSwatchInteraction={disableSwatchInteraction}
+                                selectedVariantColorValue={selectedVariantColorValue}
+                                swatchMode={swatchMode}
+                            />
+                        </Suspense>
+                    )}
                 </CardContent>
 
-                <CardHeader className="py-8 px-6 flex flex-col gap-4 items-center justify-center">
-                    <div className="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full">
-                        <ProductImageContainer
-                            product={product}
-                            selectedColorValue={
-                                PRODUCT_TILE_SELECTABLE_ATTRIBUTE_ID === 'color' ? selectedAttributeValue : null
-                            }
-                            imgAspectRatio={effectiveImgAspectRatio}
-                            className="w-full aspect-square [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
-                            handleProductClick={handleProductClick}
-                        />
-                    </div>
-                </CardHeader>
+                {/* Product name */}
+                <CardContent className="px-4 pt-2 pb-0">
+                    <Link
+                        to={createProductUrl(product.productId)}
+                        className="text-card-foreground font-semibold text-sm leading-snug hover:underline line-clamp-2 block"
+                        onClick={() => {
+                            handleProductClick?.(product);
+                        }}>
+                        {product.productName}
+                    </Link>
+                </CardContent>
+
+                {/* Price + promo callout */}
+                <CardContent className="px-4 pt-2 pb-0">
+                    <ProductPrice
+                        type="unit"
+                        product={product}
+                        currency={currency}
+                        labelForA11y={product?.productName}
+                        currentPriceProps={{
+                            className: 'text-card-foreground font-semibold text-sm leading-none',
+                        }}
+                        listPriceProps={{
+                            className: 'text-muted-foreground text-sm leading-none line-through',
+                        }}
+                        promoCalloutProps={{
+                            className: 'text-xs text-green-600 mt-1',
+                        }}
+                        className="text-sm"
+                    />
+                </CardContent>
+
+                {/* Action button */}
+                <CardFooter className="px-4 pt-3 pb-4 mt-auto">
+                    {footerAction !== undefined ? (
+                        footerAction
+                    ) : (
+                        <Button className="w-full text-sm font-normal" size="default" onClick={handleMoreOptions}>
+                            {t('moreOptions')}
+                        </Button>
+                    )}
+                </CardFooter>
             </Card>
         );
     }

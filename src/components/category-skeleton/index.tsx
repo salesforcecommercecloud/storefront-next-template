@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Skeleton } from '@/components/ui/skeleton';
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
 export function ProductTileSwatchesSkeleton({ count = 2 }: { count?: number }) {
     return (
@@ -28,46 +28,27 @@ export function ProductTileSwatchesSkeleton({ count = 2 }: { count?: number }) {
 
 export function ProductTileSkeleton() {
     return (
-        <Card className="product-tile-skeleton border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0">
-            {/* Footer - "More Options" button */}
-            <CardFooter className="px-6 pb-6 pt-6 flex-1 flex flex-col justify-end">
-                <Skeleton className="h-9 w-full rounded-md" />
-            </CardFooter>
+        <Card className="product-tile-skeleton rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col h-full gap-0 py-0">
+            {/* Product image */}
+            <CardHeader className="p-0">
+                <Skeleton className="aspect-square w-full" />
+            </CardHeader>
+
+            {/* Swatches */}
+            <CardContent className="px-4 pt-3 pb-0">
+                <ProductTileSwatchesSkeleton count={2} />
+            </CardContent>
+
+            {/* Product name */}
+            <CardContent className="px-4 pt-2 pb-0">
+                <Skeleton className="h-4 w-full mb-1" />
+                <Skeleton className="h-4 w-3/4" />
+            </CardContent>
 
             {/* Price */}
-            <CardContent>
-                <div className="mt-2">
-                    <Skeleton className="h-5 w-16" />
-                </div>
+            <CardContent className="px-4 pt-2 pb-4">
+                <Skeleton className="h-5 w-16" />
             </CardContent>
-
-            {/* Product name + swatches + badges */}
-            <CardContent className="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16">
-                <div className="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full">
-                    {/* Product name (2 lines) */}
-                    <div className="h-10 flex flex-col gap-1 items-start justify-start w-full">
-                        <Skeleton className="h-4 w-full" />
-                        <Skeleton className="h-4 w-3/4" />
-                    </div>
-
-                    {/* Swatches */}
-                    <div className="h-8 flex items-end">
-                        <ProductTileSwatchesSkeleton count={2} />
-                    </div>
-                </div>
-
-                {/* Badge placeholder */}
-                <div className="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max">
-                    <Skeleton className="h-5 w-12 rounded-full" />
-                </div>
-            </CardContent>
-
-            {/* Product image */}
-            <CardHeader className="py-8 px-6 flex flex-col gap-4 items-center justify-center">
-                <div className="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full">
-                    <Skeleton className="aspect-square w-full" />
-                </div>
-            </CardHeader>
         </Card>
     );
 }

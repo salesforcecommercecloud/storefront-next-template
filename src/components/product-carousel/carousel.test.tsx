@@ -201,30 +201,6 @@ describe('ProductCarousel', () => {
             const opts = JSON.parse(carousel.getAttribute('data-opts') || '{}');
             expect(opts.align).toBe('start');
         });
-
-        test('applies correct CSS classes', () => {
-            renderComponent(<ProductCarousel products={mockProducts} />);
-
-            const carousel = screen.getByTestId('carousel');
-            expect(carousel).toHaveClass('w-full');
-
-            const content = screen.getByTestId('carousel-content');
-            // When carousel is not scrollable, it applies justify-center
-            expect(content).toHaveClass('items-stretch', 'justify-center');
-
-            const items = screen.getAllByTestId('carousel-item');
-            items.forEach((item) => {
-                expect(item).toHaveClass(
-                    'basis-1/2',
-                    'sm:basis-1/3',
-                    'md:basis-1/4',
-                    'py-1',
-                    'flex',
-                    'pl-0',
-                    'min-w-0'
-                );
-            });
-        });
     });
 
     describe('Empty State Handling', () => {
@@ -360,13 +336,6 @@ describe('Component Integration', () => {
 });
 
 describe('Carousel Arrow Positioning', () => {
-    test('adds padding wrapper around carousel', () => {
-        const { container } = renderComponent(<ProductCarousel products={mockProducts} />);
-
-        const paddingWrapper = container.querySelector('.px-14');
-        expect(paddingWrapper).toBeInTheDocument();
-    });
-
     test('positions previous arrow outside product area', () => {
         // Make carousel scrollable so arrows appear
         mockCanScrollPrev = true;

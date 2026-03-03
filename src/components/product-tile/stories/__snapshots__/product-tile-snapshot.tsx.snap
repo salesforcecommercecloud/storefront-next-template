@@ -6,156 +6,18 @@ exports[`ProductTile stories snapshot > CustomAction story renders and matches s
     class="w-64"
   >
     <div
-      class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md"
+      class="bg-card text-card-foreground border shadow-sm group rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col h-full gap-0 py-0 transition-all duration-200"
       data-slot="card"
     >
       <div
-        class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
-        data-slot="card-footer"
-      >
-        <button
-          class="w-full bg-primary text-primary-foreground p-2 rounded"
-        >
-          Custom Action
-        </button>
-      </div>
-      <div
-        class="px-6"
-        data-slot="card-content"
-      >
-        <div
-          class="items-center gap-2 text-sm mt-2"
-        >
-          <span
-            aria-label="Current price from £143.99"
-            aria-live="polite"
-            class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
-          >
-            From £143.99
-          </span>
-          <span
-            aria-atomic="true"
-            aria-live="polite"
-            class="sr-only"
-          >
-            Charcoal Single Pleat Wool Suit
-            Current price from £143.99
-          </span>
-           
-          <span
-            aria-label="List price from £320.00"
-            class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
-          >
-            £320.00
-          </span>
-          <span
-            aria-atomic="true"
-            aria-live="polite"
-            class="sr-only"
-          >
-            Charcoal Single Pleat Wool Suit
-            List price: £320.00
-          </span>
-        </div>
-        <div
-          class="items-center gap-2 text-sm mt-2"
-        >
-          <span
-            class="line-clamp-2"
-          >
-            25% off.
-          </span>
-        </div>
-      </div>
-      <div
-        class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
-        data-slot="card-content"
-      >
-        <div
-          class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
-        >
-          <div
-            class="h-10 flex items-start"
-          >
-            <a
-              class="text-card-foreground text-left font-semibold text-sm leading-[1.25] relative hover:underline line-clamp-2 overflow-hidden block"
-              href="/product/25686571M"
-              style="display: -webkit-box; -webkit-line-clamp: 2;"
-              to="/product/25686571M"
-            >
-              Charcoal Single Pleat Wool Suit
-            </a>
-          </div>
-          <div
-            class="h-8 flex items-end"
-          >
-            <div
-              class="space-y-3"
-            >
-              <div
-                aria-label="Colour"
-                class="flex flex-col gap-3"
-                role="radiogroup"
-              >
-                <div
-                  class="flex flex-wrap gap-2 focus:outline-none"
-                >
-                  <button
-                    aria-checked="false"
-                    aria-label="Navy"
-                    class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
-                    position="relative"
-                    role="radio"
-                    tabindex="-1"
-                    type="button"
-                  >
-                    <div
-                      class="flex items-center justify-center w-full h-full text-sm font-medium"
-                    >
-                      <div
-                        aria-label="Navy"
-                        class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
-                        style="background-color: navy; background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70");"
-                      />
-                    </div>
-                  </button>
-                  <button
-                    aria-checked="true"
-                    aria-label="Charcoal"
-                    class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-black"
-                    position="relative"
-                    role="radio"
-                    tabindex="0"
-                    type="button"
-                  >
-                    <div
-                      class="flex items-center justify-center w-full h-full text-sm font-medium"
-                    >
-                      <div
-                        aria-label="Charcoal"
-                        class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
-                        style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70");"
-                      />
-                    </div>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
-        />
-      </div>
-      <div
-        class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+        class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 p-0 relative"
         data-slot="card-header"
       >
         <div
-          class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+          class="relative overflow-hidden"
         >
           <div
-            class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+            class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
           >
             <a
               aria-label="View Charcoal Single Pleat Wool Suit"
@@ -207,6 +69,133 @@ exports[`ProductTile stories snapshot > CustomAction story renders and matches s
             </a>
           </div>
         </div>
+      </div>
+      <div
+        class="px-4 pt-3 pb-0"
+        data-slot="card-content"
+      >
+        <div
+          class="space-y-3"
+        >
+          <div
+            aria-label="Colour"
+            class="flex flex-col gap-3"
+            role="radiogroup"
+          >
+            <div
+              class="flex flex-wrap gap-2 focus:outline-none"
+            >
+              <button
+                aria-checked="false"
+                aria-label="Navy"
+                class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+                position="relative"
+                role="radio"
+                tabindex="-1"
+                type="button"
+              >
+                <div
+                  class="flex items-center justify-center w-full h-full text-sm font-medium"
+                >
+                  <div
+                    aria-label="Navy"
+                    class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+                    style="background-color: navy; background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70");"
+                  />
+                </div>
+              </button>
+              <button
+                aria-checked="true"
+                aria-label="Charcoal"
+                class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-black"
+                position="relative"
+                role="radio"
+                tabindex="0"
+                type="button"
+              >
+                <div
+                  class="flex items-center justify-center w-full h-full text-sm font-medium"
+                >
+                  <div
+                    aria-label="Charcoal"
+                    class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+                    style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70");"
+                  />
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="px-4 pt-2 pb-0"
+        data-slot="card-content"
+      >
+        <a
+          class="text-card-foreground font-semibold text-sm leading-snug hover:underline line-clamp-2 block"
+          href="/product/25686571M"
+          to="/product/25686571M"
+        >
+          Charcoal Single Pleat Wool Suit
+        </a>
+      </div>
+      <div
+        class="px-4 pt-2 pb-0"
+        data-slot="card-content"
+      >
+        <div
+          class="items-center gap-2 text-sm"
+        >
+          <span
+            aria-label="Current price from £143.99"
+            aria-live="polite"
+            class="[&:not(:first-child)]:mt-6 text-left text-card-foreground font-semibold text-sm leading-none"
+          >
+            From £143.99
+          </span>
+          <span
+            aria-atomic="true"
+            aria-live="polite"
+            class="sr-only"
+          >
+            Charcoal Single Pleat Wool Suit
+            Current price from £143.99
+          </span>
+           
+          <span
+            aria-label="List price from £320.00"
+            class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+          >
+            £320.00
+          </span>
+          <span
+            aria-atomic="true"
+            aria-live="polite"
+            class="sr-only"
+          >
+            Charcoal Single Pleat Wool Suit
+            List price: £320.00
+          </span>
+        </div>
+        <div
+          class="items-center gap-2 text-xs text-green-600 mt-1"
+        >
+          <span
+            class="line-clamp-2"
+          >
+            25% off.
+          </span>
+        </div>
+      </div>
+      <div
+        class="flex items-center [.border-t]:pt-6 px-4 pt-3 pb-4 mt-auto"
+        data-slot="card-footer"
+      >
+        <button
+          class="w-full bg-primary text-primary-foreground p-2 rounded"
+        >
+          Custom Action
+        </button>
       </div>
     </div>
   </div>
@@ -219,159 +208,18 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
     class="w-64"
   >
     <div
-      class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md"
+      class="bg-card text-card-foreground border shadow-sm group rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col h-full gap-0 py-0 transition-all duration-200"
       data-slot="card"
     >
       <div
-        class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
-        data-slot="card-footer"
-      >
-        <button
-          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full text-sm font-normal"
-          data-size="default"
-          data-slot="button"
-          data-variant="default"
-        >
-          More Options
-        </button>
-      </div>
-      <div
-        class="px-6"
-        data-slot="card-content"
-      >
-        <div
-          class="items-center gap-2 text-sm mt-2"
-        >
-          <span
-            aria-label="Current price from £143.99"
-            aria-live="polite"
-            class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
-          >
-            From £143.99
-          </span>
-          <span
-            aria-atomic="true"
-            aria-live="polite"
-            class="sr-only"
-          >
-            Charcoal Single Pleat Wool Suit
-            Current price from £143.99
-          </span>
-           
-          <span
-            aria-label="List price from £320.00"
-            class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
-          >
-            £320.00
-          </span>
-          <span
-            aria-atomic="true"
-            aria-live="polite"
-            class="sr-only"
-          >
-            Charcoal Single Pleat Wool Suit
-            List price: £320.00
-          </span>
-        </div>
-        <div
-          class="items-center gap-2 text-sm mt-2"
-        >
-          <span
-            class="line-clamp-2"
-          >
-            25% off.
-          </span>
-        </div>
-      </div>
-      <div
-        class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
-        data-slot="card-content"
-      >
-        <div
-          class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
-        >
-          <div
-            class="h-10 flex items-start"
-          >
-            <a
-              class="text-card-foreground text-left font-semibold text-sm leading-[1.25] relative hover:underline line-clamp-2 overflow-hidden block"
-              href="/product/25686571M"
-              style="display: -webkit-box; -webkit-line-clamp: 2;"
-              to="/product/25686571M"
-            >
-              Charcoal Single Pleat Wool Suit
-            </a>
-          </div>
-          <div
-            class="h-8 flex items-end"
-          >
-            <div
-              class="space-y-3"
-            >
-              <div
-                aria-label="Colour"
-                class="flex flex-col gap-3"
-                role="radiogroup"
-              >
-                <div
-                  class="flex flex-wrap gap-2 focus:outline-none"
-                >
-                  <button
-                    aria-checked="false"
-                    aria-label="Navy"
-                    class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
-                    position="relative"
-                    role="radio"
-                    tabindex="-1"
-                    type="button"
-                  >
-                    <div
-                      class="flex items-center justify-center w-full h-full text-sm font-medium"
-                    >
-                      <div
-                        aria-label="Navy"
-                        class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
-                        style="background-color: navy; background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70");"
-                      />
-                    </div>
-                  </button>
-                  <button
-                    aria-checked="true"
-                    aria-label="Charcoal"
-                    class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-black"
-                    position="relative"
-                    role="radio"
-                    tabindex="0"
-                    type="button"
-                  >
-                    <div
-                      class="flex items-center justify-center w-full h-full text-sm font-medium"
-                    >
-                      <div
-                        aria-label="Charcoal"
-                        class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
-                        style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70");"
-                      />
-                    </div>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
-        />
-      </div>
-      <div
-        class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+        class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 p-0 relative"
         data-slot="card-header"
       >
         <div
-          class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+          class="relative overflow-hidden"
         >
           <div
-            class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+            class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
           >
             <a
               aria-label="View Charcoal Single Pleat Wool Suit"
@@ -424,22 +272,125 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
           </div>
         </div>
       </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`ProductTile stories snapshot > MasterProductWithSwatches story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="w-64"
-  >
-    <div
-      class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md"
-      data-slot="card"
-    >
       <div
-        class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
+        class="px-4 pt-3 pb-0"
+        data-slot="card-content"
+      >
+        <div
+          class="space-y-3"
+        >
+          <div
+            aria-label="Colour"
+            class="flex flex-col gap-3"
+            role="radiogroup"
+          >
+            <div
+              class="flex flex-wrap gap-2 focus:outline-none"
+            >
+              <button
+                aria-checked="false"
+                aria-label="Navy"
+                class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+                position="relative"
+                role="radio"
+                tabindex="-1"
+                type="button"
+              >
+                <div
+                  class="flex items-center justify-center w-full h-full text-sm font-medium"
+                >
+                  <div
+                    aria-label="Navy"
+                    class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+                    style="background-color: navy; background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70");"
+                  />
+                </div>
+              </button>
+              <button
+                aria-checked="true"
+                aria-label="Charcoal"
+                class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-black"
+                position="relative"
+                role="radio"
+                tabindex="0"
+                type="button"
+              >
+                <div
+                  class="flex items-center justify-center w-full h-full text-sm font-medium"
+                >
+                  <div
+                    aria-label="Charcoal"
+                    class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+                    style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70");"
+                  />
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="px-4 pt-2 pb-0"
+        data-slot="card-content"
+      >
+        <a
+          class="text-card-foreground font-semibold text-sm leading-snug hover:underline line-clamp-2 block"
+          href="/product/25686571M"
+          to="/product/25686571M"
+        >
+          Charcoal Single Pleat Wool Suit
+        </a>
+      </div>
+      <div
+        class="px-4 pt-2 pb-0"
+        data-slot="card-content"
+      >
+        <div
+          class="items-center gap-2 text-sm"
+        >
+          <span
+            aria-label="Current price from £143.99"
+            aria-live="polite"
+            class="[&:not(:first-child)]:mt-6 text-left text-card-foreground font-semibold text-sm leading-none"
+          >
+            From £143.99
+          </span>
+          <span
+            aria-atomic="true"
+            aria-live="polite"
+            class="sr-only"
+          >
+            Charcoal Single Pleat Wool Suit
+            Current price from £143.99
+          </span>
+           
+          <span
+            aria-label="List price from £320.00"
+            class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+          >
+            £320.00
+          </span>
+          <span
+            aria-atomic="true"
+            aria-live="polite"
+            class="sr-only"
+          >
+            Charcoal Single Pleat Wool Suit
+            List price: £320.00
+          </span>
+        </div>
+        <div
+          class="items-center gap-2 text-xs text-green-600 mt-1"
+        >
+          <span
+            class="line-clamp-2"
+          >
+            25% off.
+          </span>
+        </div>
+      </div>
+      <div
+        class="flex items-center [.border-t]:pt-6 px-4 pt-3 pb-4 mt-auto"
         data-slot="card-footer"
       >
         <button
@@ -451,143 +402,29 @@ exports[`ProductTile stories snapshot > MasterProductWithSwatches story renders 
           More Options
         </button>
       </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ProductTile stories snapshot > MasterProductWithSwatches story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="w-64"
+  >
+    <div
+      class="bg-card text-card-foreground border shadow-sm group rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col h-full gap-0 py-0 transition-all duration-200"
+      data-slot="card"
+    >
       <div
-        class="px-6"
-        data-slot="card-content"
-      >
-        <div
-          class="items-center gap-2 text-sm mt-2"
-        >
-          <span
-            aria-label="Current price from £18.55"
-            aria-live="polite"
-            class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
-          >
-            From £18.55
-          </span>
-          <span
-            aria-atomic="true"
-            aria-live="polite"
-            class="sr-only"
-          >
-            Long Sleeve Embellished Boat Neck Top
-            Current price from £18.55
-          </span>
-           
-          <span
-            aria-label="List price from £31.36"
-            class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
-          >
-            £31.36
-          </span>
-          <span
-            aria-atomic="true"
-            aria-live="polite"
-            class="sr-only"
-          >
-            Long Sleeve Embellished Boat Neck Top
-            List price: £31.36
-          </span>
-        </div>
-        <div
-          class="items-center gap-2 text-sm mt-2"
-        >
-          <span
-            class="line-clamp-2"
-          >
-            Buy one Long Center Seam Skirt and get 2 tops
-          </span>
-        </div>
-      </div>
-      <div
-        class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
-        data-slot="card-content"
-      >
-        <div
-          class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
-        >
-          <div
-            class="h-10 flex items-start"
-          >
-            <a
-              class="text-card-foreground text-left font-semibold text-sm leading-[1.25] relative hover:underline line-clamp-2 overflow-hidden block"
-              href="/product/25518101M"
-              style="display: -webkit-box; -webkit-line-clamp: 2;"
-              to="/product/25518101M"
-            >
-              Long Sleeve Embellished Boat Neck Top
-            </a>
-          </div>
-          <div
-            class="h-8 flex items-end"
-          >
-            <div
-              class="space-y-3"
-            >
-              <div
-                aria-label="Colour"
-                class="flex flex-col gap-3"
-                role="radiogroup"
-              >
-                <div
-                  class="flex flex-wrap gap-2 focus:outline-none"
-                >
-                  <button
-                    aria-checked="false"
-                    aria-label="Begonia Pink"
-                    class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
-                    position="relative"
-                    role="radio"
-                    tabindex="-1"
-                    type="button"
-                  >
-                    <div
-                      class="flex items-center justify-center w-full h-full text-sm font-medium"
-                    >
-                      <div
-                        aria-label="Begonia Pink"
-                        class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
-                        style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw2b23d065/images/swatch/PG.10217069.JJ5QZXX.CP.webp?sfrm=jpg&q=70");"
-                      />
-                    </div>
-                  </button>
-                  <button
-                    aria-checked="true"
-                    aria-label="Grey Heather"
-                    class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-black"
-                    position="relative"
-                    role="radio"
-                    tabindex="0"
-                    type="button"
-                  >
-                    <div
-                      class="flex items-center justify-center w-full h-full text-sm font-medium"
-                    >
-                      <div
-                        aria-label="Grey Heather"
-                        class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
-                        style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw747c5f3e/images/swatch/PG.10217069.JJ908XX.CP.webp?sfrm=jpg&q=70");"
-                      />
-                    </div>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
-        />
-      </div>
-      <div
-        class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+        class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 p-0 relative"
         data-slot="card-header"
       >
         <div
-          class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+          class="relative overflow-hidden"
         >
           <div
-            class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+            class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
           >
             <a
               aria-label="View Long Sleeve Embellished Boat Neck Top"
@@ -640,22 +477,125 @@ exports[`ProductTile stories snapshot > MasterProductWithSwatches story renders 
           </div>
         </div>
       </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`ProductTile stories snapshot > WithBadges story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="w-64"
-  >
-    <div
-      class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md"
-      data-slot="card"
-    >
       <div
-        class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
+        class="px-4 pt-3 pb-0"
+        data-slot="card-content"
+      >
+        <div
+          class="space-y-3"
+        >
+          <div
+            aria-label="Colour"
+            class="flex flex-col gap-3"
+            role="radiogroup"
+          >
+            <div
+              class="flex flex-wrap gap-2 focus:outline-none"
+            >
+              <button
+                aria-checked="false"
+                aria-label="Begonia Pink"
+                class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+                position="relative"
+                role="radio"
+                tabindex="-1"
+                type="button"
+              >
+                <div
+                  class="flex items-center justify-center w-full h-full text-sm font-medium"
+                >
+                  <div
+                    aria-label="Begonia Pink"
+                    class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+                    style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw2b23d065/images/swatch/PG.10217069.JJ5QZXX.CP.webp?sfrm=jpg&q=70");"
+                  />
+                </div>
+              </button>
+              <button
+                aria-checked="true"
+                aria-label="Grey Heather"
+                class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-black"
+                position="relative"
+                role="radio"
+                tabindex="0"
+                type="button"
+              >
+                <div
+                  class="flex items-center justify-center w-full h-full text-sm font-medium"
+                >
+                  <div
+                    aria-label="Grey Heather"
+                    class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+                    style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw747c5f3e/images/swatch/PG.10217069.JJ908XX.CP.webp?sfrm=jpg&q=70");"
+                  />
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="px-4 pt-2 pb-0"
+        data-slot="card-content"
+      >
+        <a
+          class="text-card-foreground font-semibold text-sm leading-snug hover:underline line-clamp-2 block"
+          href="/product/25518101M"
+          to="/product/25518101M"
+        >
+          Long Sleeve Embellished Boat Neck Top
+        </a>
+      </div>
+      <div
+        class="px-4 pt-2 pb-0"
+        data-slot="card-content"
+      >
+        <div
+          class="items-center gap-2 text-sm"
+        >
+          <span
+            aria-label="Current price from £18.55"
+            aria-live="polite"
+            class="[&:not(:first-child)]:mt-6 text-left text-card-foreground font-semibold text-sm leading-none"
+          >
+            From £18.55
+          </span>
+          <span
+            aria-atomic="true"
+            aria-live="polite"
+            class="sr-only"
+          >
+            Long Sleeve Embellished Boat Neck Top
+            Current price from £18.55
+          </span>
+           
+          <span
+            aria-label="List price from £31.36"
+            class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+          >
+            £31.36
+          </span>
+          <span
+            aria-atomic="true"
+            aria-live="polite"
+            class="sr-only"
+          >
+            Long Sleeve Embellished Boat Neck Top
+            List price: £31.36
+          </span>
+        </div>
+        <div
+          class="items-center gap-2 text-xs text-green-600 mt-1"
+        >
+          <span
+            class="line-clamp-2"
+          >
+            Buy one Long Center Seam Skirt and get 2 tops
+          </span>
+        </div>
+      </div>
+      <div
+        class="flex items-center [.border-t]:pt-6 px-4 pt-3 pb-4 mt-auto"
         data-slot="card-footer"
       >
         <button
@@ -667,160 +607,29 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
           More Options
         </button>
       </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ProductTile stories snapshot > WithBadges story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="w-64"
+  >
+    <div
+      class="bg-card text-card-foreground border shadow-sm group rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col h-full gap-0 py-0 transition-all duration-200"
+      data-slot="card"
+    >
       <div
-        class="px-6"
-        data-slot="card-content"
-      >
-        <div
-          class="items-center gap-2 text-sm mt-2"
-        >
-          <span
-            aria-label="Current price from £143.99"
-            aria-live="polite"
-            class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
-          >
-            From £143.99
-          </span>
-          <span
-            aria-atomic="true"
-            aria-live="polite"
-            class="sr-only"
-          >
-            Charcoal Single Pleat Wool Suit
-            Current price from £143.99
-          </span>
-           
-          <span
-            aria-label="List price from £320.00"
-            class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
-          >
-            £320.00
-          </span>
-          <span
-            aria-atomic="true"
-            aria-live="polite"
-            class="sr-only"
-          >
-            Charcoal Single Pleat Wool Suit
-            List price: £320.00
-          </span>
-        </div>
-        <div
-          class="items-center gap-2 text-sm mt-2"
-        >
-          <span
-            class="line-clamp-2"
-          >
-            25% off.
-          </span>
-        </div>
-      </div>
-      <div
-        class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
-        data-slot="card-content"
-      >
-        <div
-          class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
-        >
-          <div
-            class="h-10 flex items-start"
-          >
-            <a
-              class="text-card-foreground text-left font-semibold text-sm leading-[1.25] relative hover:underline line-clamp-2 overflow-hidden block"
-              href="/product/25686571M"
-              style="display: -webkit-box; -webkit-line-clamp: 2;"
-              to="/product/25686571M"
-            >
-              Charcoal Single Pleat Wool Suit
-            </a>
-          </div>
-          <div
-            class="h-8 flex items-end"
-          >
-            <div
-              class="space-y-3"
-            >
-              <div
-                aria-label="Colour"
-                class="flex flex-col gap-3"
-                role="radiogroup"
-              >
-                <div
-                  class="flex flex-wrap gap-2 focus:outline-none"
-                >
-                  <button
-                    aria-checked="false"
-                    aria-label="Navy"
-                    class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
-                    position="relative"
-                    role="radio"
-                    tabindex="-1"
-                    type="button"
-                  >
-                    <div
-                      class="flex items-center justify-center w-full h-full text-sm font-medium"
-                    >
-                      <div
-                        aria-label="Navy"
-                        class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
-                        style="background-color: navy; background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70");"
-                      />
-                    </div>
-                  </button>
-                  <button
-                    aria-checked="true"
-                    aria-label="Charcoal"
-                    class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-black"
-                    position="relative"
-                    role="radio"
-                    tabindex="0"
-                    type="button"
-                  >
-                    <div
-                      class="flex items-center justify-center w-full h-full text-sm font-medium"
-                    >
-                      <div
-                        aria-label="Charcoal"
-                        class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
-                        style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70");"
-                      />
-                    </div>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
-        >
-          <div
-            class="flex flex-row gap-1.5 items-start justify-start shrink-0 relative"
-          >
-            <span
-              class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 text-xs leading-3 font-medium"
-              data-slot="badge"
-            >
-              New
-            </span>
-            <span
-              class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 text-xs leading-3 font-medium"
-              data-slot="badge"
-            >
-              Sale
-            </span>
-          </div>
-        </div>
-      </div>
-      <div
-        class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+        class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 p-0 relative"
         data-slot="card-header"
       >
         <div
-          class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+          class="relative overflow-hidden"
         >
           <div
-            class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+            class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
           >
             <a
               aria-label="View Charcoal Single Pleat Wool Suit"
@@ -871,7 +680,153 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
               </div>
             </a>
           </div>
+          <div
+            class="absolute top-2 left-2 z-10 flex flex-col gap-1"
+          >
+            <span
+              class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 text-xs leading-3 font-medium"
+              data-slot="badge"
+            >
+              New
+            </span>
+            <span
+              class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 text-xs leading-3 font-medium"
+              data-slot="badge"
+            >
+              Sale
+            </span>
+          </div>
         </div>
+      </div>
+      <div
+        class="px-4 pt-3 pb-0"
+        data-slot="card-content"
+      >
+        <div
+          class="space-y-3"
+        >
+          <div
+            aria-label="Colour"
+            class="flex flex-col gap-3"
+            role="radiogroup"
+          >
+            <div
+              class="flex flex-wrap gap-2 focus:outline-none"
+            >
+              <button
+                aria-checked="false"
+                aria-label="Navy"
+                class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+                position="relative"
+                role="radio"
+                tabindex="-1"
+                type="button"
+              >
+                <div
+                  class="flex items-center justify-center w-full h-full text-sm font-medium"
+                >
+                  <div
+                    aria-label="Navy"
+                    class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+                    style="background-color: navy; background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70");"
+                  />
+                </div>
+              </button>
+              <button
+                aria-checked="true"
+                aria-label="Charcoal"
+                class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-black"
+                position="relative"
+                role="radio"
+                tabindex="0"
+                type="button"
+              >
+                <div
+                  class="flex items-center justify-center w-full h-full text-sm font-medium"
+                >
+                  <div
+                    aria-label="Charcoal"
+                    class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+                    style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70");"
+                  />
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="px-4 pt-2 pb-0"
+        data-slot="card-content"
+      >
+        <a
+          class="text-card-foreground font-semibold text-sm leading-snug hover:underline line-clamp-2 block"
+          href="/product/25686571M"
+          to="/product/25686571M"
+        >
+          Charcoal Single Pleat Wool Suit
+        </a>
+      </div>
+      <div
+        class="px-4 pt-2 pb-0"
+        data-slot="card-content"
+      >
+        <div
+          class="items-center gap-2 text-sm"
+        >
+          <span
+            aria-label="Current price from £143.99"
+            aria-live="polite"
+            class="[&:not(:first-child)]:mt-6 text-left text-card-foreground font-semibold text-sm leading-none"
+          >
+            From £143.99
+          </span>
+          <span
+            aria-atomic="true"
+            aria-live="polite"
+            class="sr-only"
+          >
+            Charcoal Single Pleat Wool Suit
+            Current price from £143.99
+          </span>
+           
+          <span
+            aria-label="List price from £320.00"
+            class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+          >
+            £320.00
+          </span>
+          <span
+            aria-atomic="true"
+            aria-live="polite"
+            class="sr-only"
+          >
+            Charcoal Single Pleat Wool Suit
+            List price: £320.00
+          </span>
+        </div>
+        <div
+          class="items-center gap-2 text-xs text-green-600 mt-1"
+        >
+          <span
+            class="line-clamp-2"
+          >
+            25% off.
+          </span>
+        </div>
+      </div>
+      <div
+        class="flex items-center [.border-t]:pt-6 px-4 pt-3 pb-4 mt-auto"
+        data-slot="card-footer"
+      >
+        <button
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full text-sm font-normal"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          More Options
+        </button>
       </div>
     </div>
   </div>

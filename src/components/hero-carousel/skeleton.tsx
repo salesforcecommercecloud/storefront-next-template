@@ -59,7 +59,7 @@ export default function HeroCarouselSkeleton({
     showNavigation?: boolean;
 }) {
     return (
-        <div className="relative w-full h-[100vh] md:h-[85vh] overflow-hidden animate-pulse">
+        <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden animate-pulse">
             {/* Hero image skeleton */}
             <div className="relative w-full h-full overflow-hidden">
                 <Skeleton className="absolute inset-0 w-full h-full" />
@@ -68,9 +68,9 @@ export default function HeroCarouselSkeleton({
                 <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent z-[5]" />
 
                 {/* Content overlay skeleton */}
-                <div className="absolute inset-0 z-10 flex items-center justify-center">
-                    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="max-w-2xl mx-auto flex flex-col items-center">
+                <div className="absolute inset-0 z-10 flex items-center">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+                        <div className="max-w-xl flex flex-col">
                             {/* Title skeleton - matches h1 with mb-3 sm:mb-4 md:mb-6 */}
                             <Skeleton className="h-6 sm:h-8 md:h-9 lg:h-10 w-3/4 bg-white/20 mb-3 sm:mb-4 md:mb-6" />
 

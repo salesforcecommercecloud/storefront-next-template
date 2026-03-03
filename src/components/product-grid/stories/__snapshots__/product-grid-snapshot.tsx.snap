@@ -9,113 +9,18 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
       class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-8"
     >
       <div
-        class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md"
+        class="bg-card text-card-foreground border shadow-sm group rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col h-full gap-0 py-0 transition-all duration-200"
         data-slot="card"
       >
         <div
-          class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
-          data-slot="card-footer"
-        >
-          <button
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full text-sm font-normal"
-            data-size="default"
-            data-slot="button"
-            data-variant="default"
-          >
-            More Options
-          </button>
-        </div>
-        <div
-          class="px-6"
-          data-slot="card-content"
-        >
-          <div
-            class="items-center gap-2 text-sm mt-2"
-          >
-            <span
-              aria-label="Current price: £63.99"
-              aria-live="polite"
-              class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
-            >
-              £63.99
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Standard Product 1
-              Current price: £63.99
-            </span>
-             
-            <span
-              aria-label="List price: £67.99"
-              class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
-            >
-              £67.99
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Standard Product 1
-              List price: £67.99
-            </span>
-          </div>
-        </div>
-        <div
-          class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
-          data-slot="card-content"
-        >
-          <div
-            class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
-          >
-            <div
-              class="h-10 flex items-start"
-            >
-              <a
-                class="text-card-foreground text-left font-semibold text-sm leading-[1.25] relative hover:underline line-clamp-2 overflow-hidden block"
-                href="/product/STD-1"
-                style="display: -webkit-box; -webkit-line-clamp: 2;"
-              >
-                Standard Product 1
-              </a>
-            </div>
-            <div
-              class="h-8 flex items-end"
-            />
-          </div>
-          <div
-            class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
-          >
-            <div
-              class="flex flex-row gap-1.5 items-start justify-start shrink-0 relative"
-            >
-              <span
-                class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 text-xs leading-3 font-medium"
-                data-slot="badge"
-              >
-                New
-              </span>
-              <span
-                class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 text-xs leading-3 font-medium"
-                data-slot="badge"
-              >
-                Sale
-              </span>
-            </div>
-          </div>
-        </div>
-        <div
-          class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+          class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 p-0 relative"
           data-slot="card-header"
         >
           <div
-            class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+            class="relative overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 1"
@@ -165,7 +70,90 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
                 </div>
               </a>
             </div>
+            <div
+              class="absolute top-2 left-2 z-10 flex flex-col gap-1"
+            >
+              <span
+                class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 text-xs leading-3 font-medium"
+                data-slot="badge"
+              >
+                New
+              </span>
+              <span
+                class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 text-xs leading-3 font-medium"
+                data-slot="badge"
+              >
+                Sale
+              </span>
+            </div>
           </div>
+        </div>
+        <div
+          class="px-4 pt-3 pb-0"
+          data-slot="card-content"
+        />
+        <div
+          class="px-4 pt-2 pb-0"
+          data-slot="card-content"
+        >
+          <a
+            class="text-card-foreground font-semibold text-sm leading-snug hover:underline line-clamp-2 block"
+            href="/product/STD-1"
+          >
+            Standard Product 1
+          </a>
+        </div>
+        <div
+          class="px-4 pt-2 pb-0"
+          data-slot="card-content"
+        >
+          <div
+            class="items-center gap-2 text-sm"
+          >
+            <span
+              aria-label="Current price: £63.99"
+              aria-live="polite"
+              class="[&:not(:first-child)]:mt-6 text-left text-card-foreground font-semibold text-sm leading-none"
+            >
+              £63.99
+            </span>
+            <span
+              aria-atomic="true"
+              aria-live="polite"
+              class="sr-only"
+            >
+              Standard Product 1
+              Current price: £63.99
+            </span>
+             
+            <span
+              aria-label="List price: £67.99"
+              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+            >
+              £67.99
+            </span>
+            <span
+              aria-atomic="true"
+              aria-live="polite"
+              class="sr-only"
+            >
+              Standard Product 1
+              List price: £67.99
+            </span>
+          </div>
+        </div>
+        <div
+          class="flex items-center [.border-t]:pt-6 px-4 pt-3 pb-4 mt-auto"
+          data-slot="card-footer"
+        >
+          <button
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full text-sm font-normal"
+            data-size="default"
+            data-slot="button"
+            data-variant="default"
+          >
+            More Options
+          </button>
         </div>
       </div>
     </div>
@@ -182,113 +170,18 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
       class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-8"
     >
       <div
-        class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md"
+        class="bg-card text-card-foreground border shadow-sm group rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col h-full gap-0 py-0 transition-all duration-200"
         data-slot="card"
       >
         <div
-          class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
-          data-slot="card-footer"
-        >
-          <button
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full text-sm font-normal"
-            data-size="default"
-            data-slot="button"
-            data-variant="default"
-          >
-            More Options
-          </button>
-        </div>
-        <div
-          class="px-6"
-          data-slot="card-content"
-        >
-          <div
-            class="items-center gap-2 text-sm mt-2"
-          >
-            <span
-              aria-label="Current price: £63.99"
-              aria-live="polite"
-              class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
-            >
-              £63.99
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Standard Product 1
-              Current price: £63.99
-            </span>
-             
-            <span
-              aria-label="List price: £67.99"
-              class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
-            >
-              £67.99
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Standard Product 1
-              List price: £67.99
-            </span>
-          </div>
-        </div>
-        <div
-          class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
-          data-slot="card-content"
-        >
-          <div
-            class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
-          >
-            <div
-              class="h-10 flex items-start"
-            >
-              <a
-                class="text-card-foreground text-left font-semibold text-sm leading-[1.25] relative hover:underline line-clamp-2 overflow-hidden block"
-                href="/product/STD-1"
-                style="display: -webkit-box; -webkit-line-clamp: 2;"
-              >
-                Standard Product 1
-              </a>
-            </div>
-            <div
-              class="h-8 flex items-end"
-            />
-          </div>
-          <div
-            class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
-          >
-            <div
-              class="flex flex-row gap-1.5 items-start justify-start shrink-0 relative"
-            >
-              <span
-                class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 text-xs leading-3 font-medium"
-                data-slot="badge"
-              >
-                New
-              </span>
-              <span
-                class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 text-xs leading-3 font-medium"
-                data-slot="badge"
-              >
-                Sale
-              </span>
-            </div>
-          </div>
-        </div>
-        <div
-          class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+          class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 p-0 relative"
           data-slot="card-header"
         >
           <div
-            class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+            class="relative overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 1"
@@ -338,15 +231,80 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
                 </div>
               </a>
             </div>
+            <div
+              class="absolute top-2 left-2 z-10 flex flex-col gap-1"
+            >
+              <span
+                class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 text-xs leading-3 font-medium"
+                data-slot="badge"
+              >
+                New
+              </span>
+              <span
+                class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 text-xs leading-3 font-medium"
+                data-slot="badge"
+              >
+                Sale
+              </span>
+            </div>
           </div>
         </div>
-      </div>
-      <div
-        class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md"
-        data-slot="card"
-      >
         <div
-          class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
+          class="px-4 pt-3 pb-0"
+          data-slot="card-content"
+        />
+        <div
+          class="px-4 pt-2 pb-0"
+          data-slot="card-content"
+        >
+          <a
+            class="text-card-foreground font-semibold text-sm leading-snug hover:underline line-clamp-2 block"
+            href="/product/STD-1"
+          >
+            Standard Product 1
+          </a>
+        </div>
+        <div
+          class="px-4 pt-2 pb-0"
+          data-slot="card-content"
+        >
+          <div
+            class="items-center gap-2 text-sm"
+          >
+            <span
+              aria-label="Current price: £63.99"
+              aria-live="polite"
+              class="[&:not(:first-child)]:mt-6 text-left text-card-foreground font-semibold text-sm leading-none"
+            >
+              £63.99
+            </span>
+            <span
+              aria-atomic="true"
+              aria-live="polite"
+              class="sr-only"
+            >
+              Standard Product 1
+              Current price: £63.99
+            </span>
+             
+            <span
+              aria-label="List price: £67.99"
+              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+            >
+              £67.99
+            </span>
+            <span
+              aria-atomic="true"
+              aria-live="polite"
+              class="sr-only"
+            >
+              Standard Product 1
+              List price: £67.99
+            </span>
+          </div>
+        </div>
+        <div
+          class="flex items-center [.border-t]:pt-6 px-4 pt-3 pb-4 mt-auto"
           data-slot="card-footer"
         >
           <button
@@ -358,114 +316,20 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
             More Options
           </button>
         </div>
+      </div>
+      <div
+        class="bg-card text-card-foreground border shadow-sm group rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col h-full gap-0 py-0 transition-all duration-200"
+        data-slot="card"
+      >
         <div
-          class="px-6"
-          data-slot="card-content"
-        >
-          <div
-            class="items-center gap-2 text-sm mt-2"
-          >
-            <span
-              aria-label="Current price: £191.99"
-              aria-live="polite"
-              class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
-            >
-              £191.99
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Master Product 1
-              Current price: £191.99
-            </span>
-             
-            <span
-              aria-label="List price: £320.00"
-              class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
-            >
-              £320.00
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Master Product 1
-              List price: £320.00
-            </span>
-          </div>
-        </div>
-        <div
-          class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
-          data-slot="card-content"
-        >
-          <div
-            class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
-          >
-            <div
-              class="h-10 flex items-start"
-            >
-              <a
-                class="text-card-foreground text-left font-semibold text-sm leading-[1.25] relative hover:underline line-clamp-2 overflow-hidden block"
-                href="/product/MASTER-1"
-                style="display: -webkit-box; -webkit-line-clamp: 2;"
-              >
-                Master Product 1
-              </a>
-            </div>
-            <div
-              class="h-8 flex items-end"
-            >
-              <div
-                class="space-y-3"
-              >
-                <div
-                  aria-label="Colour"
-                  class="flex flex-col gap-3"
-                  role="radiogroup"
-                >
-                  <div
-                    class="flex flex-wrap gap-2 focus:outline-none"
-                  >
-                    <button
-                      aria-checked="true"
-                      aria-label="Black"
-                      class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-black"
-                      position="relative"
-                      role="radio"
-                      tabindex="0"
-                      type="button"
-                    >
-                      <div
-                        class="flex items-center justify-center w-full h-full text-sm font-medium"
-                      >
-                        <span
-                          class="text-xs font-medium truncate"
-                        >
-                          Black
-                        </span>
-                      </div>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
-          />
-        </div>
-        <div
-          class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+          class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 p-0 relative"
           data-slot="card-header"
         >
           <div
-            class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+            class="relative overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Master Product 1"
@@ -517,6 +381,107 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
             </div>
           </div>
         </div>
+        <div
+          class="px-4 pt-3 pb-0"
+          data-slot="card-content"
+        >
+          <div
+            class="space-y-3"
+          >
+            <div
+              aria-label="Colour"
+              class="flex flex-col gap-3"
+              role="radiogroup"
+            >
+              <div
+                class="flex flex-wrap gap-2 focus:outline-none"
+              >
+                <button
+                  aria-checked="true"
+                  aria-label="Black"
+                  class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-black"
+                  position="relative"
+                  role="radio"
+                  tabindex="0"
+                  type="button"
+                >
+                  <div
+                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                  >
+                    <span
+                      class="text-xs font-medium truncate"
+                    >
+                      Black
+                    </span>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="px-4 pt-2 pb-0"
+          data-slot="card-content"
+        >
+          <a
+            class="text-card-foreground font-semibold text-sm leading-snug hover:underline line-clamp-2 block"
+            href="/product/MASTER-1"
+          >
+            Master Product 1
+          </a>
+        </div>
+        <div
+          class="px-4 pt-2 pb-0"
+          data-slot="card-content"
+        >
+          <div
+            class="items-center gap-2 text-sm"
+          >
+            <span
+              aria-label="Current price: £191.99"
+              aria-live="polite"
+              class="[&:not(:first-child)]:mt-6 text-left text-card-foreground font-semibold text-sm leading-none"
+            >
+              £191.99
+            </span>
+            <span
+              aria-atomic="true"
+              aria-live="polite"
+              class="sr-only"
+            >
+              Master Product 1
+              Current price: £191.99
+            </span>
+             
+            <span
+              aria-label="List price: £320.00"
+              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+            >
+              £320.00
+            </span>
+            <span
+              aria-atomic="true"
+              aria-live="polite"
+              class="sr-only"
+            >
+              Master Product 1
+              List price: £320.00
+            </span>
+          </div>
+        </div>
+        <div
+          class="flex items-center [.border-t]:pt-6 px-4 pt-3 pb-4 mt-auto"
+          data-slot="card-footer"
+        >
+          <button
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full text-sm font-normal"
+            data-size="default"
+            data-slot="button"
+            data-variant="default"
+          >
+            More Options
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -554,113 +519,18 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
       class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-8"
     >
       <div
-        class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md"
+        class="bg-card text-card-foreground border shadow-sm group rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col h-full gap-0 py-0 transition-all duration-200"
         data-slot="card"
       >
         <div
-          class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
-          data-slot="card-footer"
-        >
-          <button
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full text-sm font-normal"
-            data-size="default"
-            data-slot="button"
-            data-variant="default"
-          >
-            More Options
-          </button>
-        </div>
-        <div
-          class="px-6"
-          data-slot="card-content"
-        >
-          <div
-            class="items-center gap-2 text-sm mt-2"
-          >
-            <span
-              aria-label="Current price: £63.99"
-              aria-live="polite"
-              class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
-            >
-              £63.99
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Standard Product 1
-              Current price: £63.99
-            </span>
-             
-            <span
-              aria-label="List price: £67.99"
-              class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
-            >
-              £67.99
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Standard Product 1
-              List price: £67.99
-            </span>
-          </div>
-        </div>
-        <div
-          class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
-          data-slot="card-content"
-        >
-          <div
-            class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
-          >
-            <div
-              class="h-10 flex items-start"
-            >
-              <a
-                class="text-card-foreground text-left font-semibold text-sm leading-[1.25] relative hover:underline line-clamp-2 overflow-hidden block"
-                href="/product/STD-MANY-1"
-                style="display: -webkit-box; -webkit-line-clamp: 2;"
-              >
-                Standard Product 1
-              </a>
-            </div>
-            <div
-              class="h-8 flex items-end"
-            />
-          </div>
-          <div
-            class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
-          >
-            <div
-              class="flex flex-row gap-1.5 items-start justify-start shrink-0 relative"
-            >
-              <span
-                class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 text-xs leading-3 font-medium"
-                data-slot="badge"
-              >
-                New
-              </span>
-              <span
-                class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 text-xs leading-3 font-medium"
-                data-slot="badge"
-              >
-                Sale
-              </span>
-            </div>
-          </div>
-        </div>
-        <div
-          class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+          class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 p-0 relative"
           data-slot="card-header"
         >
           <div
-            class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+            class="relative overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 1"
@@ -710,92 +580,8 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 </div>
               </a>
             </div>
-          </div>
-        </div>
-      </div>
-      <div
-        class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md"
-        data-slot="card"
-      >
-        <div
-          class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
-          data-slot="card-footer"
-        >
-          <button
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full text-sm font-normal"
-            data-size="default"
-            data-slot="button"
-            data-variant="default"
-          >
-            More Options
-          </button>
-        </div>
-        <div
-          class="px-6"
-          data-slot="card-content"
-        >
-          <div
-            class="items-center gap-2 text-sm mt-2"
-          >
-            <span
-              aria-label="Current price: £66.99"
-              aria-live="polite"
-              class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
-            >
-              £66.99
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Standard Product 2
-              Current price: £66.99
-            </span>
-             
-            <span
-              aria-label="List price: £67.99"
-              class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
-            >
-              £67.99
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Standard Product 2
-              List price: £67.99
-            </span>
-          </div>
-        </div>
-        <div
-          class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
-          data-slot="card-content"
-        >
-          <div
-            class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
-          >
             <div
-              class="h-10 flex items-start"
-            >
-              <a
-                class="text-card-foreground text-left font-semibold text-sm leading-[1.25] relative hover:underline line-clamp-2 overflow-hidden block"
-                href="/product/STD-MANY-2"
-                style="display: -webkit-box; -webkit-line-clamp: 2;"
-              >
-                Standard Product 2
-              </a>
-            </div>
-            <div
-              class="h-8 flex items-end"
-            />
-          </div>
-          <div
-            class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
-          >
-            <div
-              class="flex flex-row gap-1.5 items-start justify-start shrink-0 relative"
+              class="absolute top-2 left-2 z-10 flex flex-col gap-1"
             >
               <span
                 class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 text-xs leading-3 font-medium"
@@ -813,14 +599,86 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
           </div>
         </div>
         <div
-          class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+          class="px-4 pt-3 pb-0"
+          data-slot="card-content"
+        />
+        <div
+          class="px-4 pt-2 pb-0"
+          data-slot="card-content"
+        >
+          <a
+            class="text-card-foreground font-semibold text-sm leading-snug hover:underline line-clamp-2 block"
+            href="/product/STD-MANY-1"
+          >
+            Standard Product 1
+          </a>
+        </div>
+        <div
+          class="px-4 pt-2 pb-0"
+          data-slot="card-content"
+        >
+          <div
+            class="items-center gap-2 text-sm"
+          >
+            <span
+              aria-label="Current price: £63.99"
+              aria-live="polite"
+              class="[&:not(:first-child)]:mt-6 text-left text-card-foreground font-semibold text-sm leading-none"
+            >
+              £63.99
+            </span>
+            <span
+              aria-atomic="true"
+              aria-live="polite"
+              class="sr-only"
+            >
+              Standard Product 1
+              Current price: £63.99
+            </span>
+             
+            <span
+              aria-label="List price: £67.99"
+              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+            >
+              £67.99
+            </span>
+            <span
+              aria-atomic="true"
+              aria-live="polite"
+              class="sr-only"
+            >
+              Standard Product 1
+              List price: £67.99
+            </span>
+          </div>
+        </div>
+        <div
+          class="flex items-center [.border-t]:pt-6 px-4 pt-3 pb-4 mt-auto"
+          data-slot="card-footer"
+        >
+          <button
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full text-sm font-normal"
+            data-size="default"
+            data-slot="button"
+            data-variant="default"
+          >
+            More Options
+          </button>
+        </div>
+      </div>
+      <div
+        class="bg-card text-card-foreground border shadow-sm group rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col h-full gap-0 py-0 transition-all duration-200"
+        data-slot="card"
+      >
+        <div
+          class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 p-0 relative"
           data-slot="card-header"
         >
           <div
-            class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+            class="relative overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 2"
@@ -870,105 +728,8 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 </div>
               </a>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`ProductGrid stories snapshot > MobileView story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-background"
-  >
-    <div
-      class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-8"
-    >
-      <div
-        class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md"
-        data-slot="card"
-      >
-        <div
-          class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
-          data-slot="card-footer"
-        >
-          <button
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full text-sm font-normal"
-            data-size="default"
-            data-slot="button"
-            data-variant="default"
-          >
-            More Options
-          </button>
-        </div>
-        <div
-          class="px-6"
-          data-slot="card-content"
-        >
-          <div
-            class="items-center gap-2 text-sm mt-2"
-          >
-            <span
-              aria-label="Current price: £63.99"
-              aria-live="polite"
-              class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
-            >
-              £63.99
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Standard Product 1
-              Current price: £63.99
-            </span>
-             
-            <span
-              aria-label="List price: £67.99"
-              class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
-            >
-              £67.99
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Standard Product 1
-              List price: £67.99
-            </span>
-          </div>
-        </div>
-        <div
-          class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
-          data-slot="card-content"
-        >
-          <div
-            class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
-          >
             <div
-              class="h-10 flex items-start"
-            >
-              <a
-                class="text-card-foreground text-left font-semibold text-sm leading-[1.25] relative hover:underline line-clamp-2 overflow-hidden block"
-                href="/product/STD-1"
-                style="display: -webkit-box; -webkit-line-clamp: 2;"
-              >
-                Standard Product 1
-              </a>
-            </div>
-            <div
-              class="h-8 flex items-end"
-            />
-          </div>
-          <div
-            class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
-          >
-            <div
-              class="flex flex-row gap-1.5 items-start justify-start shrink-0 relative"
+              class="absolute top-2 left-2 z-10 flex flex-col gap-1"
             >
               <span
                 class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 text-xs leading-3 font-medium"
@@ -986,14 +747,99 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
           </div>
         </div>
         <div
-          class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+          class="px-4 pt-3 pb-0"
+          data-slot="card-content"
+        />
+        <div
+          class="px-4 pt-2 pb-0"
+          data-slot="card-content"
+        >
+          <a
+            class="text-card-foreground font-semibold text-sm leading-snug hover:underline line-clamp-2 block"
+            href="/product/STD-MANY-2"
+          >
+            Standard Product 2
+          </a>
+        </div>
+        <div
+          class="px-4 pt-2 pb-0"
+          data-slot="card-content"
+        >
+          <div
+            class="items-center gap-2 text-sm"
+          >
+            <span
+              aria-label="Current price: £66.99"
+              aria-live="polite"
+              class="[&:not(:first-child)]:mt-6 text-left text-card-foreground font-semibold text-sm leading-none"
+            >
+              £66.99
+            </span>
+            <span
+              aria-atomic="true"
+              aria-live="polite"
+              class="sr-only"
+            >
+              Standard Product 2
+              Current price: £66.99
+            </span>
+             
+            <span
+              aria-label="List price: £67.99"
+              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+            >
+              £67.99
+            </span>
+            <span
+              aria-atomic="true"
+              aria-live="polite"
+              class="sr-only"
+            >
+              Standard Product 2
+              List price: £67.99
+            </span>
+          </div>
+        </div>
+        <div
+          class="flex items-center [.border-t]:pt-6 px-4 pt-3 pb-4 mt-auto"
+          data-slot="card-footer"
+        >
+          <button
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full text-sm font-normal"
+            data-size="default"
+            data-slot="button"
+            data-variant="default"
+          >
+            More Options
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ProductGrid stories snapshot > MobileView story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-background"
+  >
+    <div
+      class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-8"
+    >
+      <div
+        class="bg-card text-card-foreground border shadow-sm group rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col h-full gap-0 py-0 transition-all duration-200"
+        data-slot="card"
+      >
+        <div
+          class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 p-0 relative"
           data-slot="card-header"
         >
           <div
-            class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+            class="relative overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 1"
@@ -1043,15 +889,80 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                 </div>
               </a>
             </div>
+            <div
+              class="absolute top-2 left-2 z-10 flex flex-col gap-1"
+            >
+              <span
+                class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 text-xs leading-3 font-medium"
+                data-slot="badge"
+              >
+                New
+              </span>
+              <span
+                class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 text-xs leading-3 font-medium"
+                data-slot="badge"
+              >
+                Sale
+              </span>
+            </div>
           </div>
         </div>
-      </div>
-      <div
-        class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md"
-        data-slot="card"
-      >
         <div
-          class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
+          class="px-4 pt-3 pb-0"
+          data-slot="card-content"
+        />
+        <div
+          class="px-4 pt-2 pb-0"
+          data-slot="card-content"
+        >
+          <a
+            class="text-card-foreground font-semibold text-sm leading-snug hover:underline line-clamp-2 block"
+            href="/product/STD-1"
+          >
+            Standard Product 1
+          </a>
+        </div>
+        <div
+          class="px-4 pt-2 pb-0"
+          data-slot="card-content"
+        >
+          <div
+            class="items-center gap-2 text-sm"
+          >
+            <span
+              aria-label="Current price: £63.99"
+              aria-live="polite"
+              class="[&:not(:first-child)]:mt-6 text-left text-card-foreground font-semibold text-sm leading-none"
+            >
+              £63.99
+            </span>
+            <span
+              aria-atomic="true"
+              aria-live="polite"
+              class="sr-only"
+            >
+              Standard Product 1
+              Current price: £63.99
+            </span>
+             
+            <span
+              aria-label="List price: £67.99"
+              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+            >
+              £67.99
+            </span>
+            <span
+              aria-atomic="true"
+              aria-live="polite"
+              class="sr-only"
+            >
+              Standard Product 1
+              List price: £67.99
+            </span>
+          </div>
+        </div>
+        <div
+          class="flex items-center [.border-t]:pt-6 px-4 pt-3 pb-4 mt-auto"
           data-slot="card-footer"
         >
           <button
@@ -1063,114 +974,20 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             More Options
           </button>
         </div>
+      </div>
+      <div
+        class="bg-card text-card-foreground border shadow-sm group rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col h-full gap-0 py-0 transition-all duration-200"
+        data-slot="card"
+      >
         <div
-          class="px-6"
-          data-slot="card-content"
-        >
-          <div
-            class="items-center gap-2 text-sm mt-2"
-          >
-            <span
-              aria-label="Current price: £191.99"
-              aria-live="polite"
-              class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
-            >
-              £191.99
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Master Product 1
-              Current price: £191.99
-            </span>
-             
-            <span
-              aria-label="List price: £320.00"
-              class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
-            >
-              £320.00
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Master Product 1
-              List price: £320.00
-            </span>
-          </div>
-        </div>
-        <div
-          class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
-          data-slot="card-content"
-        >
-          <div
-            class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
-          >
-            <div
-              class="h-10 flex items-start"
-            >
-              <a
-                class="text-card-foreground text-left font-semibold text-sm leading-[1.25] relative hover:underline line-clamp-2 overflow-hidden block"
-                href="/product/MASTER-1"
-                style="display: -webkit-box; -webkit-line-clamp: 2;"
-              >
-                Master Product 1
-              </a>
-            </div>
-            <div
-              class="h-8 flex items-end"
-            >
-              <div
-                class="space-y-3"
-              >
-                <div
-                  aria-label="Colour"
-                  class="flex flex-col gap-3"
-                  role="radiogroup"
-                >
-                  <div
-                    class="flex flex-wrap gap-2 focus:outline-none"
-                  >
-                    <button
-                      aria-checked="true"
-                      aria-label="Black"
-                      class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-black"
-                      position="relative"
-                      role="radio"
-                      tabindex="0"
-                      type="button"
-                    >
-                      <div
-                        class="flex items-center justify-center w-full h-full text-sm font-medium"
-                      >
-                        <span
-                          class="text-xs font-medium truncate"
-                        >
-                          Black
-                        </span>
-                      </div>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
-          />
-        </div>
-        <div
-          class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+          class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 p-0 relative"
           data-slot="card-header"
         >
           <div
-            class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+            class="relative overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Master Product 1"
@@ -1222,13 +1039,96 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             </div>
           </div>
         </div>
-      </div>
-      <div
-        class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md"
-        data-slot="card"
-      >
         <div
-          class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
+          class="px-4 pt-3 pb-0"
+          data-slot="card-content"
+        >
+          <div
+            class="space-y-3"
+          >
+            <div
+              aria-label="Colour"
+              class="flex flex-col gap-3"
+              role="radiogroup"
+            >
+              <div
+                class="flex flex-wrap gap-2 focus:outline-none"
+              >
+                <button
+                  aria-checked="true"
+                  aria-label="Black"
+                  class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-black"
+                  position="relative"
+                  role="radio"
+                  tabindex="0"
+                  type="button"
+                >
+                  <div
+                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                  >
+                    <span
+                      class="text-xs font-medium truncate"
+                    >
+                      Black
+                    </span>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="px-4 pt-2 pb-0"
+          data-slot="card-content"
+        >
+          <a
+            class="text-card-foreground font-semibold text-sm leading-snug hover:underline line-clamp-2 block"
+            href="/product/MASTER-1"
+          >
+            Master Product 1
+          </a>
+        </div>
+        <div
+          class="px-4 pt-2 pb-0"
+          data-slot="card-content"
+        >
+          <div
+            class="items-center gap-2 text-sm"
+          >
+            <span
+              aria-label="Current price: £191.99"
+              aria-live="polite"
+              class="[&:not(:first-child)]:mt-6 text-left text-card-foreground font-semibold text-sm leading-none"
+            >
+              £191.99
+            </span>
+            <span
+              aria-atomic="true"
+              aria-live="polite"
+              class="sr-only"
+            >
+              Master Product 1
+              Current price: £191.99
+            </span>
+             
+            <span
+              aria-label="List price: £320.00"
+              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+            >
+              £320.00
+            </span>
+            <span
+              aria-atomic="true"
+              aria-live="polite"
+              class="sr-only"
+            >
+              Master Product 1
+              List price: £320.00
+            </span>
+          </div>
+        </div>
+        <div
+          class="flex items-center [.border-t]:pt-6 px-4 pt-3 pb-4 mt-auto"
           data-slot="card-footer"
         >
           <button
@@ -1240,142 +1140,20 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             More Options
           </button>
         </div>
+      </div>
+      <div
+        class="bg-card text-card-foreground border shadow-sm group rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col h-full gap-0 py-0 transition-all duration-200"
+        data-slot="card"
+      >
         <div
-          class="px-6"
-          data-slot="card-content"
-        >
-          <div
-            class="items-center gap-2 text-sm mt-2"
-          >
-            <span
-              aria-label="Current price from £18.55"
-              aria-live="polite"
-              class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
-            >
-              From £18.55
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Master Multi 1
-              Current price from £18.55
-            </span>
-             
-            <span
-              aria-label="List price from £31.36"
-              class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
-            >
-              £31.36
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Master Multi 1
-              List price: £31.36
-            </span>
-          </div>
-          <div
-            class="items-center gap-2 text-sm mt-2"
-          >
-            <span
-              class="line-clamp-2"
-            >
-              Buy one Long Center Seam Skirt and get 2 tops
-            </span>
-          </div>
-        </div>
-        <div
-          class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
-          data-slot="card-content"
-        >
-          <div
-            class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
-          >
-            <div
-              class="h-10 flex items-start"
-            >
-              <a
-                class="text-card-foreground text-left font-semibold text-sm leading-[1.25] relative hover:underline line-clamp-2 overflow-hidden block"
-                href="/product/MASTER-MULTI-1"
-                style="display: -webkit-box; -webkit-line-clamp: 2;"
-              >
-                Master Multi 1
-              </a>
-            </div>
-            <div
-              class="h-8 flex items-end"
-            >
-              <div
-                class="space-y-3"
-              >
-                <div
-                  aria-label="Colour"
-                  class="flex flex-col gap-3"
-                  role="radiogroup"
-                >
-                  <div
-                    class="flex flex-wrap gap-2 focus:outline-none"
-                  >
-                    <button
-                      aria-checked="false"
-                      aria-label="Begonia Pink"
-                      class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
-                      position="relative"
-                      role="radio"
-                      tabindex="-1"
-                      type="button"
-                    >
-                      <div
-                        class="flex items-center justify-center w-full h-full text-sm font-medium"
-                      >
-                        <div
-                          aria-label="Begonia Pink"
-                          class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
-                          style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw2b23d065/images/swatch/PG.10217069.JJ5QZXX.CP.webp?sfrm=jpg&q=70");"
-                        />
-                      </div>
-                    </button>
-                    <button
-                      aria-checked="true"
-                      aria-label="Grey Heather"
-                      class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-black"
-                      position="relative"
-                      role="radio"
-                      tabindex="0"
-                      type="button"
-                    >
-                      <div
-                        class="flex items-center justify-center w-full h-full text-sm font-medium"
-                      >
-                        <div
-                          aria-label="Grey Heather"
-                          class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
-                          style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw747c5f3e/images/swatch/PG.10217069.JJ908XX.CP.webp?sfrm=jpg&q=70");"
-                        />
-                      </div>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
-          />
-        </div>
-        <div
-          class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+          class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 p-0 relative"
           data-slot="card-header"
         >
           <div
-            class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+            class="relative overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Master Multi 1"
@@ -1427,13 +1205,124 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             </div>
           </div>
         </div>
-      </div>
-      <div
-        class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md"
-        data-slot="card"
-      >
         <div
-          class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
+          class="px-4 pt-3 pb-0"
+          data-slot="card-content"
+        >
+          <div
+            class="space-y-3"
+          >
+            <div
+              aria-label="Colour"
+              class="flex flex-col gap-3"
+              role="radiogroup"
+            >
+              <div
+                class="flex flex-wrap gap-2 focus:outline-none"
+              >
+                <button
+                  aria-checked="false"
+                  aria-label="Begonia Pink"
+                  class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+                  position="relative"
+                  role="radio"
+                  tabindex="-1"
+                  type="button"
+                >
+                  <div
+                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                  >
+                    <div
+                      aria-label="Begonia Pink"
+                      class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+                      style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw2b23d065/images/swatch/PG.10217069.JJ5QZXX.CP.webp?sfrm=jpg&q=70");"
+                    />
+                  </div>
+                </button>
+                <button
+                  aria-checked="true"
+                  aria-label="Grey Heather"
+                  class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-black"
+                  position="relative"
+                  role="radio"
+                  tabindex="0"
+                  type="button"
+                >
+                  <div
+                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                  >
+                    <div
+                      aria-label="Grey Heather"
+                      class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+                      style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw747c5f3e/images/swatch/PG.10217069.JJ908XX.CP.webp?sfrm=jpg&q=70");"
+                    />
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="px-4 pt-2 pb-0"
+          data-slot="card-content"
+        >
+          <a
+            class="text-card-foreground font-semibold text-sm leading-snug hover:underline line-clamp-2 block"
+            href="/product/MASTER-MULTI-1"
+          >
+            Master Multi 1
+          </a>
+        </div>
+        <div
+          class="px-4 pt-2 pb-0"
+          data-slot="card-content"
+        >
+          <div
+            class="items-center gap-2 text-sm"
+          >
+            <span
+              aria-label="Current price from £18.55"
+              aria-live="polite"
+              class="[&:not(:first-child)]:mt-6 text-left text-card-foreground font-semibold text-sm leading-none"
+            >
+              From £18.55
+            </span>
+            <span
+              aria-atomic="true"
+              aria-live="polite"
+              class="sr-only"
+            >
+              Master Multi 1
+              Current price from £18.55
+            </span>
+             
+            <span
+              aria-label="List price from £31.36"
+              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+            >
+              £31.36
+            </span>
+            <span
+              aria-atomic="true"
+              aria-live="polite"
+              class="sr-only"
+            >
+              Master Multi 1
+              List price: £31.36
+            </span>
+          </div>
+          <div
+            class="items-center gap-2 text-xs text-green-600 mt-1"
+          >
+            <span
+              class="line-clamp-2"
+            >
+              Buy one Long Center Seam Skirt and get 2 tops
+            </span>
+          </div>
+        </div>
+        <div
+          class="flex items-center [.border-t]:pt-6 px-4 pt-3 pb-4 mt-auto"
           data-slot="card-footer"
         >
           <button
@@ -1445,142 +1334,20 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             More Options
           </button>
         </div>
+      </div>
+      <div
+        class="bg-card text-card-foreground border shadow-sm group rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col h-full gap-0 py-0 transition-all duration-200"
+        data-slot="card"
+      >
         <div
-          class="px-6"
-          data-slot="card-content"
-        >
-          <div
-            class="items-center gap-2 text-sm mt-2"
-          >
-            <span
-              aria-label="Current price from £143.99"
-              aria-live="polite"
-              class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
-            >
-              From £143.99
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Master Product 2
-              Current price from £143.99
-            </span>
-             
-            <span
-              aria-label="List price from £320.00"
-              class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
-            >
-              £320.00
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Master Product 2
-              List price: £320.00
-            </span>
-          </div>
-          <div
-            class="items-center gap-2 text-sm mt-2"
-          >
-            <span
-              class="line-clamp-2"
-            >
-              25% off.
-            </span>
-          </div>
-        </div>
-        <div
-          class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
-          data-slot="card-content"
-        >
-          <div
-            class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
-          >
-            <div
-              class="h-10 flex items-start"
-            >
-              <a
-                class="text-card-foreground text-left font-semibold text-sm leading-[1.25] relative hover:underline line-clamp-2 overflow-hidden block"
-                href="/product/MASTER-2"
-                style="display: -webkit-box; -webkit-line-clamp: 2;"
-              >
-                Master Product 2
-              </a>
-            </div>
-            <div
-              class="h-8 flex items-end"
-            >
-              <div
-                class="space-y-3"
-              >
-                <div
-                  aria-label="Colour"
-                  class="flex flex-col gap-3"
-                  role="radiogroup"
-                >
-                  <div
-                    class="flex flex-wrap gap-2 focus:outline-none"
-                  >
-                    <button
-                      aria-checked="false"
-                      aria-label="Navy"
-                      class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
-                      position="relative"
-                      role="radio"
-                      tabindex="-1"
-                      type="button"
-                    >
-                      <div
-                        class="flex items-center justify-center w-full h-full text-sm font-medium"
-                      >
-                        <div
-                          aria-label="Navy"
-                          class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
-                          style="background-color: navy; background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70");"
-                        />
-                      </div>
-                    </button>
-                    <button
-                      aria-checked="true"
-                      aria-label="Charcoal"
-                      class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-black"
-                      position="relative"
-                      role="radio"
-                      tabindex="0"
-                      type="button"
-                    >
-                      <div
-                        class="flex items-center justify-center w-full h-full text-sm font-medium"
-                      >
-                        <div
-                          aria-label="Charcoal"
-                          class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
-                          style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70");"
-                        />
-                      </div>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
-          />
-        </div>
-        <div
-          class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+          class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 p-0 relative"
           data-slot="card-header"
         >
           <div
-            class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+            class="relative overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Master Product 2"
@@ -1632,13 +1399,124 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             </div>
           </div>
         </div>
-      </div>
-      <div
-        class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md"
-        data-slot="card"
-      >
         <div
-          class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
+          class="px-4 pt-3 pb-0"
+          data-slot="card-content"
+        >
+          <div
+            class="space-y-3"
+          >
+            <div
+              aria-label="Colour"
+              class="flex flex-col gap-3"
+              role="radiogroup"
+            >
+              <div
+                class="flex flex-wrap gap-2 focus:outline-none"
+              >
+                <button
+                  aria-checked="false"
+                  aria-label="Navy"
+                  class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+                  position="relative"
+                  role="radio"
+                  tabindex="-1"
+                  type="button"
+                >
+                  <div
+                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                  >
+                    <div
+                      aria-label="Navy"
+                      class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+                      style="background-color: navy; background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70");"
+                    />
+                  </div>
+                </button>
+                <button
+                  aria-checked="true"
+                  aria-label="Charcoal"
+                  class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-black"
+                  position="relative"
+                  role="radio"
+                  tabindex="0"
+                  type="button"
+                >
+                  <div
+                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                  >
+                    <div
+                      aria-label="Charcoal"
+                      class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+                      style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70");"
+                    />
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="px-4 pt-2 pb-0"
+          data-slot="card-content"
+        >
+          <a
+            class="text-card-foreground font-semibold text-sm leading-snug hover:underline line-clamp-2 block"
+            href="/product/MASTER-2"
+          >
+            Master Product 2
+          </a>
+        </div>
+        <div
+          class="px-4 pt-2 pb-0"
+          data-slot="card-content"
+        >
+          <div
+            class="items-center gap-2 text-sm"
+          >
+            <span
+              aria-label="Current price from £143.99"
+              aria-live="polite"
+              class="[&:not(:first-child)]:mt-6 text-left text-card-foreground font-semibold text-sm leading-none"
+            >
+              From £143.99
+            </span>
+            <span
+              aria-atomic="true"
+              aria-live="polite"
+              class="sr-only"
+            >
+              Master Product 2
+              Current price from £143.99
+            </span>
+             
+            <span
+              aria-label="List price from £320.00"
+              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+            >
+              £320.00
+            </span>
+            <span
+              aria-atomic="true"
+              aria-live="polite"
+              class="sr-only"
+            >
+              Master Product 2
+              List price: £320.00
+            </span>
+          </div>
+          <div
+            class="items-center gap-2 text-xs text-green-600 mt-1"
+          >
+            <span
+              class="line-clamp-2"
+            >
+              25% off.
+            </span>
+          </div>
+        </div>
+        <div
+          class="flex items-center [.border-t]:pt-6 px-4 pt-3 pb-4 mt-auto"
           data-slot="card-footer"
         >
           <button
@@ -1650,65 +1528,20 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             More Options
           </button>
         </div>
+      </div>
+      <div
+        class="bg-card text-card-foreground border shadow-sm group rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col h-full gap-0 py-0 transition-all duration-200"
+        data-slot="card"
+      >
         <div
-          class="px-6"
-          data-slot="card-content"
-        >
-          <div
-            class="items-center gap-2 text-sm mt-2"
-          >
-            <span
-              aria-label="Current price from £40.16"
-              aria-live="polite"
-              class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
-            >
-              From £40.16
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Product Set 1
-              Current price from £40.16
-            </span>
-          </div>
-        </div>
-        <div
-          class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
-          data-slot="card-content"
-        >
-          <div
-            class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
-          >
-            <div
-              class="h-10 flex items-start"
-            >
-              <a
-                class="text-card-foreground text-left font-semibold text-sm leading-[1.25] relative hover:underline line-clamp-2 overflow-hidden block"
-                href="/product/SET-1"
-                style="display: -webkit-box; -webkit-line-clamp: 2;"
-              >
-                Product Set 1
-              </a>
-            </div>
-            <div
-              class="h-8 flex items-end"
-            />
-          </div>
-          <div
-            class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
-          />
-        </div>
-        <div
-          class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+          class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 p-0 relative"
           data-slot="card-header"
         >
           <div
-            class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+            class="relative overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Product Set 1"
@@ -1760,13 +1593,47 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             </div>
           </div>
         </div>
-      </div>
-      <div
-        class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md"
-        data-slot="card"
-      >
         <div
-          class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
+          class="px-4 pt-3 pb-0"
+          data-slot="card-content"
+        />
+        <div
+          class="px-4 pt-2 pb-0"
+          data-slot="card-content"
+        >
+          <a
+            class="text-card-foreground font-semibold text-sm leading-snug hover:underline line-clamp-2 block"
+            href="/product/SET-1"
+          >
+            Product Set 1
+          </a>
+        </div>
+        <div
+          class="px-4 pt-2 pb-0"
+          data-slot="card-content"
+        >
+          <div
+            class="items-center gap-2 text-sm"
+          >
+            <span
+              aria-label="Current price from £40.16"
+              aria-live="polite"
+              class="[&:not(:first-child)]:mt-6 text-left text-card-foreground font-semibold text-sm leading-none"
+            >
+              From £40.16
+            </span>
+            <span
+              aria-atomic="true"
+              aria-live="polite"
+              class="sr-only"
+            >
+              Product Set 1
+              Current price from £40.16
+            </span>
+          </div>
+        </div>
+        <div
+          class="flex items-center [.border-t]:pt-6 px-4 pt-3 pb-4 mt-auto"
           data-slot="card-footer"
         >
           <button
@@ -1778,97 +1645,20 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             More Options
           </button>
         </div>
+      </div>
+      <div
+        class="bg-card text-card-foreground border shadow-sm group rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col h-full gap-0 py-0 transition-all duration-200"
+        data-slot="card"
+      >
         <div
-          class="px-6"
-          data-slot="card-content"
-        >
-          <div
-            class="items-center gap-2 text-sm mt-2"
-          >
-            <span
-              aria-label="Current price: £63.99"
-              aria-live="polite"
-              class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
-            >
-              £63.99
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Standard Product 2
-              Current price: £63.99
-            </span>
-             
-            <span
-              aria-label="List price: £67.99"
-              class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
-            >
-              £67.99
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Standard Product 2
-              List price: £67.99
-            </span>
-          </div>
-        </div>
-        <div
-          class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
-          data-slot="card-content"
-        >
-          <div
-            class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
-          >
-            <div
-              class="h-10 flex items-start"
-            >
-              <a
-                class="text-card-foreground text-left font-semibold text-sm leading-[1.25] relative hover:underline line-clamp-2 overflow-hidden block"
-                href="/product/STD-2"
-                style="display: -webkit-box; -webkit-line-clamp: 2;"
-              >
-                Standard Product 2
-              </a>
-            </div>
-            <div
-              class="h-8 flex items-end"
-            />
-          </div>
-          <div
-            class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
-          >
-            <div
-              class="flex flex-row gap-1.5 items-start justify-start shrink-0 relative"
-            >
-              <span
-                class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 text-xs leading-3 font-medium"
-                data-slot="badge"
-              >
-                New
-              </span>
-              <span
-                class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 text-xs leading-3 font-medium"
-                data-slot="badge"
-              >
-                Sale
-              </span>
-            </div>
-          </div>
-        </div>
-        <div
-          class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+          class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 p-0 relative"
           data-slot="card-header"
         >
           <div
-            class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+            class="relative overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 2"
@@ -1918,15 +1708,80 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                 </div>
               </a>
             </div>
+            <div
+              class="absolute top-2 left-2 z-10 flex flex-col gap-1"
+            >
+              <span
+                class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 text-xs leading-3 font-medium"
+                data-slot="badge"
+              >
+                New
+              </span>
+              <span
+                class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 text-xs leading-3 font-medium"
+                data-slot="badge"
+              >
+                Sale
+              </span>
+            </div>
           </div>
         </div>
-      </div>
-      <div
-        class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md"
-        data-slot="card"
-      >
         <div
-          class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
+          class="px-4 pt-3 pb-0"
+          data-slot="card-content"
+        />
+        <div
+          class="px-4 pt-2 pb-0"
+          data-slot="card-content"
+        >
+          <a
+            class="text-card-foreground font-semibold text-sm leading-snug hover:underline line-clamp-2 block"
+            href="/product/STD-2"
+          >
+            Standard Product 2
+          </a>
+        </div>
+        <div
+          class="px-4 pt-2 pb-0"
+          data-slot="card-content"
+        >
+          <div
+            class="items-center gap-2 text-sm"
+          >
+            <span
+              aria-label="Current price: £63.99"
+              aria-live="polite"
+              class="[&:not(:first-child)]:mt-6 text-left text-card-foreground font-semibold text-sm leading-none"
+            >
+              £63.99
+            </span>
+            <span
+              aria-atomic="true"
+              aria-live="polite"
+              class="sr-only"
+            >
+              Standard Product 2
+              Current price: £63.99
+            </span>
+             
+            <span
+              aria-label="List price: £67.99"
+              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+            >
+              £67.99
+            </span>
+            <span
+              aria-atomic="true"
+              aria-live="polite"
+              class="sr-only"
+            >
+              Standard Product 2
+              List price: £67.99
+            </span>
+          </div>
+        </div>
+        <div
+          class="flex items-center [.border-t]:pt-6 px-4 pt-3 pb-4 mt-auto"
           data-slot="card-footer"
         >
           <button
@@ -1938,142 +1793,20 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             More Options
           </button>
         </div>
+      </div>
+      <div
+        class="bg-card text-card-foreground border shadow-sm group rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col h-full gap-0 py-0 transition-all duration-200"
+        data-slot="card"
+      >
         <div
-          class="px-6"
-          data-slot="card-content"
-        >
-          <div
-            class="items-center gap-2 text-sm mt-2"
-          >
-            <span
-              aria-label="Current price from £18.55"
-              aria-live="polite"
-              class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
-            >
-              From £18.55
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Master Multi 2
-              Current price from £18.55
-            </span>
-             
-            <span
-              aria-label="List price from £31.36"
-              class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
-            >
-              £31.36
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Master Multi 2
-              List price: £31.36
-            </span>
-          </div>
-          <div
-            class="items-center gap-2 text-sm mt-2"
-          >
-            <span
-              class="line-clamp-2"
-            >
-              Buy one Long Center Seam Skirt and get 2 tops
-            </span>
-          </div>
-        </div>
-        <div
-          class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
-          data-slot="card-content"
-        >
-          <div
-            class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
-          >
-            <div
-              class="h-10 flex items-start"
-            >
-              <a
-                class="text-card-foreground text-left font-semibold text-sm leading-[1.25] relative hover:underline line-clamp-2 overflow-hidden block"
-                href="/product/MASTER-MULTI-2"
-                style="display: -webkit-box; -webkit-line-clamp: 2;"
-              >
-                Master Multi 2
-              </a>
-            </div>
-            <div
-              class="h-8 flex items-end"
-            >
-              <div
-                class="space-y-3"
-              >
-                <div
-                  aria-label="Colour"
-                  class="flex flex-col gap-3"
-                  role="radiogroup"
-                >
-                  <div
-                    class="flex flex-wrap gap-2 focus:outline-none"
-                  >
-                    <button
-                      aria-checked="false"
-                      aria-label="Begonia Pink"
-                      class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
-                      position="relative"
-                      role="radio"
-                      tabindex="-1"
-                      type="button"
-                    >
-                      <div
-                        class="flex items-center justify-center w-full h-full text-sm font-medium"
-                      >
-                        <div
-                          aria-label="Begonia Pink"
-                          class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
-                          style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw2b23d065/images/swatch/PG.10217069.JJ5QZXX.CP.webp?sfrm=jpg&q=70");"
-                        />
-                      </div>
-                    </button>
-                    <button
-                      aria-checked="true"
-                      aria-label="Grey Heather"
-                      class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-black"
-                      position="relative"
-                      role="radio"
-                      tabindex="0"
-                      type="button"
-                    >
-                      <div
-                        class="flex items-center justify-center w-full h-full text-sm font-medium"
-                      >
-                        <div
-                          aria-label="Grey Heather"
-                          class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
-                          style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw747c5f3e/images/swatch/PG.10217069.JJ908XX.CP.webp?sfrm=jpg&q=70");"
-                        />
-                      </div>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
-          />
-        </div>
-        <div
-          class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+          class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 p-0 relative"
           data-slot="card-header"
         >
           <div
-            class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+            class="relative overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Master Multi 2"
@@ -2125,13 +1858,124 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             </div>
           </div>
         </div>
-      </div>
-      <div
-        class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md"
-        data-slot="card"
-      >
         <div
-          class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
+          class="px-4 pt-3 pb-0"
+          data-slot="card-content"
+        >
+          <div
+            class="space-y-3"
+          >
+            <div
+              aria-label="Colour"
+              class="flex flex-col gap-3"
+              role="radiogroup"
+            >
+              <div
+                class="flex flex-wrap gap-2 focus:outline-none"
+              >
+                <button
+                  aria-checked="false"
+                  aria-label="Begonia Pink"
+                  class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+                  position="relative"
+                  role="radio"
+                  tabindex="-1"
+                  type="button"
+                >
+                  <div
+                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                  >
+                    <div
+                      aria-label="Begonia Pink"
+                      class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+                      style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw2b23d065/images/swatch/PG.10217069.JJ5QZXX.CP.webp?sfrm=jpg&q=70");"
+                    />
+                  </div>
+                </button>
+                <button
+                  aria-checked="true"
+                  aria-label="Grey Heather"
+                  class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-black"
+                  position="relative"
+                  role="radio"
+                  tabindex="0"
+                  type="button"
+                >
+                  <div
+                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                  >
+                    <div
+                      aria-label="Grey Heather"
+                      class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+                      style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw747c5f3e/images/swatch/PG.10217069.JJ908XX.CP.webp?sfrm=jpg&q=70");"
+                    />
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="px-4 pt-2 pb-0"
+          data-slot="card-content"
+        >
+          <a
+            class="text-card-foreground font-semibold text-sm leading-snug hover:underline line-clamp-2 block"
+            href="/product/MASTER-MULTI-2"
+          >
+            Master Multi 2
+          </a>
+        </div>
+        <div
+          class="px-4 pt-2 pb-0"
+          data-slot="card-content"
+        >
+          <div
+            class="items-center gap-2 text-sm"
+          >
+            <span
+              aria-label="Current price from £18.55"
+              aria-live="polite"
+              class="[&:not(:first-child)]:mt-6 text-left text-card-foreground font-semibold text-sm leading-none"
+            >
+              From £18.55
+            </span>
+            <span
+              aria-atomic="true"
+              aria-live="polite"
+              class="sr-only"
+            >
+              Master Multi 2
+              Current price from £18.55
+            </span>
+             
+            <span
+              aria-label="List price from £31.36"
+              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+            >
+              £31.36
+            </span>
+            <span
+              aria-atomic="true"
+              aria-live="polite"
+              class="sr-only"
+            >
+              Master Multi 2
+              List price: £31.36
+            </span>
+          </div>
+          <div
+            class="items-center gap-2 text-xs text-green-600 mt-1"
+          >
+            <span
+              class="line-clamp-2"
+            >
+              Buy one Long Center Seam Skirt and get 2 tops
+            </span>
+          </div>
+        </div>
+        <div
+          class="flex items-center [.border-t]:pt-6 px-4 pt-3 pb-4 mt-auto"
           data-slot="card-footer"
         >
           <button
@@ -2143,142 +1987,20 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             More Options
           </button>
         </div>
+      </div>
+      <div
+        class="bg-card text-card-foreground border shadow-sm group rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col h-full gap-0 py-0 transition-all duration-200"
+        data-slot="card"
+      >
         <div
-          class="px-6"
-          data-slot="card-content"
-        >
-          <div
-            class="items-center gap-2 text-sm mt-2"
-          >
-            <span
-              aria-label="Current price from £143.99"
-              aria-live="polite"
-              class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
-            >
-              From £143.99
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Master Product 3
-              Current price from £143.99
-            </span>
-             
-            <span
-              aria-label="List price from £320.00"
-              class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
-            >
-              £320.00
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Master Product 3
-              List price: £320.00
-            </span>
-          </div>
-          <div
-            class="items-center gap-2 text-sm mt-2"
-          >
-            <span
-              class="line-clamp-2"
-            >
-              25% off.
-            </span>
-          </div>
-        </div>
-        <div
-          class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
-          data-slot="card-content"
-        >
-          <div
-            class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
-          >
-            <div
-              class="h-10 flex items-start"
-            >
-              <a
-                class="text-card-foreground text-left font-semibold text-sm leading-[1.25] relative hover:underline line-clamp-2 overflow-hidden block"
-                href="/product/MASTER-3"
-                style="display: -webkit-box; -webkit-line-clamp: 2;"
-              >
-                Master Product 3
-              </a>
-            </div>
-            <div
-              class="h-8 flex items-end"
-            >
-              <div
-                class="space-y-3"
-              >
-                <div
-                  aria-label="Colour"
-                  class="flex flex-col gap-3"
-                  role="radiogroup"
-                >
-                  <div
-                    class="flex flex-wrap gap-2 focus:outline-none"
-                  >
-                    <button
-                      aria-checked="false"
-                      aria-label="Navy"
-                      class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
-                      position="relative"
-                      role="radio"
-                      tabindex="-1"
-                      type="button"
-                    >
-                      <div
-                        class="flex items-center justify-center w-full h-full text-sm font-medium"
-                      >
-                        <div
-                          aria-label="Navy"
-                          class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
-                          style="background-color: navy; background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70");"
-                        />
-                      </div>
-                    </button>
-                    <button
-                      aria-checked="true"
-                      aria-label="Charcoal"
-                      class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-black"
-                      position="relative"
-                      role="radio"
-                      tabindex="0"
-                      type="button"
-                    >
-                      <div
-                        class="flex items-center justify-center w-full h-full text-sm font-medium"
-                      >
-                        <div
-                          aria-label="Charcoal"
-                          class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
-                          style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70");"
-                        />
-                      </div>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
-          />
-        </div>
-        <div
-          class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+          class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 p-0 relative"
           data-slot="card-header"
         >
           <div
-            class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+            class="relative overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Master Product 3"
@@ -2330,6 +2052,135 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             </div>
           </div>
         </div>
+        <div
+          class="px-4 pt-3 pb-0"
+          data-slot="card-content"
+        >
+          <div
+            class="space-y-3"
+          >
+            <div
+              aria-label="Colour"
+              class="flex flex-col gap-3"
+              role="radiogroup"
+            >
+              <div
+                class="flex flex-wrap gap-2 focus:outline-none"
+              >
+                <button
+                  aria-checked="false"
+                  aria-label="Navy"
+                  class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+                  position="relative"
+                  role="radio"
+                  tabindex="-1"
+                  type="button"
+                >
+                  <div
+                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                  >
+                    <div
+                      aria-label="Navy"
+                      class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+                      style="background-color: navy; background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70");"
+                    />
+                  </div>
+                </button>
+                <button
+                  aria-checked="true"
+                  aria-label="Charcoal"
+                  class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-6 min-h-6 rounded-full w-7 h-7 p-1 cursor-pointer border-black"
+                  position="relative"
+                  role="radio"
+                  tabindex="0"
+                  type="button"
+                >
+                  <div
+                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                  >
+                    <div
+                      aria-label="Charcoal"
+                      class="bg-no-repeat bg-cover bg-center rounded-full w-full h-full"
+                      style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70");"
+                    />
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="px-4 pt-2 pb-0"
+          data-slot="card-content"
+        >
+          <a
+            class="text-card-foreground font-semibold text-sm leading-snug hover:underline line-clamp-2 block"
+            href="/product/MASTER-3"
+          >
+            Master Product 3
+          </a>
+        </div>
+        <div
+          class="px-4 pt-2 pb-0"
+          data-slot="card-content"
+        >
+          <div
+            class="items-center gap-2 text-sm"
+          >
+            <span
+              aria-label="Current price from £143.99"
+              aria-live="polite"
+              class="[&:not(:first-child)]:mt-6 text-left text-card-foreground font-semibold text-sm leading-none"
+            >
+              From £143.99
+            </span>
+            <span
+              aria-atomic="true"
+              aria-live="polite"
+              class="sr-only"
+            >
+              Master Product 3
+              Current price from £143.99
+            </span>
+             
+            <span
+              aria-label="List price from £320.00"
+              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+            >
+              £320.00
+            </span>
+            <span
+              aria-atomic="true"
+              aria-live="polite"
+              class="sr-only"
+            >
+              Master Product 3
+              List price: £320.00
+            </span>
+          </div>
+          <div
+            class="items-center gap-2 text-xs text-green-600 mt-1"
+          >
+            <span
+              class="line-clamp-2"
+            >
+              25% off.
+            </span>
+          </div>
+        </div>
+        <div
+          class="flex items-center [.border-t]:pt-6 px-4 pt-3 pb-4 mt-auto"
+          data-slot="card-footer"
+        >
+          <button
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full text-sm font-normal"
+            data-size="default"
+            data-slot="button"
+            data-variant="default"
+          >
+            More Options
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -2345,113 +2196,18 @@ exports[`ProductGrid stories snapshot > SingleProductCritical story renders and 
       class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-8"
     >
       <div
-        class="bg-card text-card-foreground group border rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col-reverse justify-end h-full shadow-sm gap-0 py-0 transition-all duration-200 hover:shadow-md"
+        class="bg-card text-card-foreground border shadow-sm group rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col h-full gap-0 py-0 transition-all duration-200"
         data-slot="card"
       >
         <div
-          class="items-center [.border-t]:pt-6 px-6 pb-6 pt-6 flex-1 flex flex-col justify-end"
-          data-slot="card-footer"
-        >
-          <button
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full text-sm font-normal"
-            data-size="default"
-            data-slot="button"
-            data-variant="default"
-          >
-            More Options
-          </button>
-        </div>
-        <div
-          class="px-6"
-          data-slot="card-content"
-        >
-          <div
-            class="items-center gap-2 text-sm mt-2"
-          >
-            <span
-              aria-label="Current price: £63.99"
-              aria-live="polite"
-              class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
-            >
-              £63.99
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Standard Only
-              Current price: £63.99
-            </span>
-             
-            <span
-              aria-label="List price: £67.99"
-              class="[&:not(:first-child)]:mt-6 line-through text-muted-foreground text-right text-sm leading-none relative"
-            >
-              £67.99
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Standard Only
-              List price: £67.99
-            </span>
-          </div>
-        </div>
-        <div
-          class="px-6 pb-0 pt-0 flex flex-row gap-1.5 items-start justify-start self-stretch relative h-16"
-          data-slot="card-content"
-        >
-          <div
-            class="flex flex-col gap-1 items-start justify-start relative flex-1 min-w-0 h-full"
-          >
-            <div
-              class="h-10 flex items-start"
-            >
-              <a
-                class="text-card-foreground text-left font-semibold text-sm leading-[1.25] relative hover:underline line-clamp-2 overflow-hidden block"
-                href="/product/STD-ONLY"
-                style="display: -webkit-box; -webkit-line-clamp: 2;"
-              >
-                Standard Only
-              </a>
-            </div>
-            <div
-              class="h-8 flex items-end"
-            />
-          </div>
-          <div
-            class="flex flex-col gap-2.5 items-end justify-start shrink-0 relative w-max"
-          >
-            <div
-              class="flex flex-row gap-1.5 items-start justify-start shrink-0 relative"
-            >
-              <span
-                class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 text-xs leading-3 font-medium"
-                data-slot="badge"
-              >
-                New
-              </span>
-              <span
-                class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 text-xs leading-3 font-medium"
-                data-slot="badge"
-              >
-                Sale
-              </span>
-            </div>
-          </div>
-        </div>
-        <div
-          class="@container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 py-8 px-6 flex flex-col gap-4 items-center justify-center"
+          class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 p-0 relative"
           data-slot="card-header"
         >
           <div
-            class="bg-background rounded-xl overflow-hidden flex items-center justify-center w-full"
+            class="relative overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Only"
@@ -2501,7 +2257,90 @@ exports[`ProductGrid stories snapshot > SingleProductCritical story renders and 
                 </div>
               </a>
             </div>
+            <div
+              class="absolute top-2 left-2 z-10 flex flex-col gap-1"
+            >
+              <span
+                class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 text-xs leading-3 font-medium"
+                data-slot="badge"
+              >
+                New
+              </span>
+              <span
+                class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 text-xs leading-3 font-medium"
+                data-slot="badge"
+              >
+                Sale
+              </span>
+            </div>
           </div>
+        </div>
+        <div
+          class="px-4 pt-3 pb-0"
+          data-slot="card-content"
+        />
+        <div
+          class="px-4 pt-2 pb-0"
+          data-slot="card-content"
+        >
+          <a
+            class="text-card-foreground font-semibold text-sm leading-snug hover:underline line-clamp-2 block"
+            href="/product/STD-ONLY"
+          >
+            Standard Only
+          </a>
+        </div>
+        <div
+          class="px-4 pt-2 pb-0"
+          data-slot="card-content"
+        >
+          <div
+            class="items-center gap-2 text-sm"
+          >
+            <span
+              aria-label="Current price: £63.99"
+              aria-live="polite"
+              class="[&:not(:first-child)]:mt-6 text-left text-card-foreground font-semibold text-sm leading-none"
+            >
+              £63.99
+            </span>
+            <span
+              aria-atomic="true"
+              aria-live="polite"
+              class="sr-only"
+            >
+              Standard Only
+              Current price: £63.99
+            </span>
+             
+            <span
+              aria-label="List price: £67.99"
+              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+            >
+              £67.99
+            </span>
+            <span
+              aria-atomic="true"
+              aria-live="polite"
+              class="sr-only"
+            >
+              Standard Only
+              List price: £67.99
+            </span>
+          </div>
+        </div>
+        <div
+          class="flex items-center [.border-t]:pt-6 px-4 pt-3 pb-4 mt-auto"
+          data-slot="card-footer"
+        >
+          <button
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full text-sm font-normal"
+            data-size="default"
+            data-slot="button"
+            data-variant="default"
+          >
+            More Options
+          </button>
         </div>
       </div>
     </div>

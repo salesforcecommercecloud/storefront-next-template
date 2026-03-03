@@ -25,7 +25,7 @@ describe('CartBadgeIcon', () => {
             // ShoppingCart icon from lucide-react should be present
             const icon = container.querySelector('svg');
             expect(icon).toBeInTheDocument();
-            expect(icon).toHaveClass('size-6');
+            expect(icon).toHaveClass('size-5');
         });
 
         test('renders badge with number of items', () => {
@@ -50,11 +50,10 @@ describe('CartBadgeIcon', () => {
             expect(badge).toHaveTextContent('42');
         });
 
-        test('displays zero items', () => {
+        test('hides badge when zero items', () => {
             render(<CartBadgeIcon numberOfItems={0} />);
 
-            const badge = screen.getByTestId('shopping-cart-badge');
-            expect(badge).toHaveTextContent('0');
+            expect(screen.queryByTestId('shopping-cart-badge')).not.toBeInTheDocument();
         });
     });
 

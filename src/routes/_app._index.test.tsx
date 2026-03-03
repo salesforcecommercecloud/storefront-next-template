@@ -415,9 +415,9 @@ describe('HomePage', () => {
                 description: 'applies correct spacing between sections',
                 assertion: () => {
                     const newArrivalsTitle = screen.getByText(t('home:newArrivals.title'));
-                    const sectionWithPadding = newArrivalsTitle.closest('[class*="pt-16"]');
+                    const sectionWithPadding = newArrivalsTitle.closest('[class*="py-16"]');
                     expect(sectionWithPadding).toBeInTheDocument();
-                    expect(sectionWithPadding).toHaveClass('pt-16');
+                    expect(sectionWithPadding).toHaveClass('py-16');
                 },
             },
             {

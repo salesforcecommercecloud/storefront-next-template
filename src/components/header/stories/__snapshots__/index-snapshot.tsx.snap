@@ -6,25 +6,26 @@ exports[`Header stories snapshot > Authenticated story renders and matches snaps
     class="min-h-screen bg-background"
   >
     <header
-      class="bg-header-background text-header-foreground shadow-md sticky top-0 z-50"
+      class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50"
     >
       <div
-        class="container mx-auto px-4 py-4"
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
       >
         <div
-          class="flex items-center justify-between"
+          class="flex items-center justify-between h-16"
         >
           <a
-            class="flex items-center space-x-4"
+            class="flex-shrink-0 flex items-center gap-2"
             href="/"
           >
             <img
               alt="Home"
+              class="h-10 w-auto"
               src="/images/foundations/foundations-logo.svg"
             />
           </a>
           <div
-            class="flex items-center space-x-4"
+            class="flex items-center space-x-2"
           >
             <form
               class="relative z-10"
@@ -140,14 +141,14 @@ exports[`Header stories snapshot > Authenticated story renders and matches snaps
             </a>
             <button
               aria-label="My cart, number of items: 0"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 cursor-pointer"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 relative cursor-pointer"
               data-size="default"
               data-slot="button"
               data-variant="ghost"
             >
               <svg
                 aria-hidden="true"
-                class="lucide lucide-shopping-cart size-6"
+                class="lucide lucide-shopping-cart size-5"
                 data-testid="shopping-cart-icon"
                 fill="none"
                 height="24"
@@ -173,13 +174,6 @@ exports[`Header stories snapshot > Authenticated story renders and matches snaps
                   d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"
                 />
               </svg>
-              <span
-                class="inline-flex items-center justify-center border py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 h-4 min-w-4 rounded-full px-1 font-mono tabular-num"
-                data-slot="badge"
-                data-testid="shopping-cart-badge"
-              >
-                0
-              </span>
             </button>
           </div>
         </div>
@@ -195,25 +189,26 @@ exports[`Header stories snapshot > Guest story renders and matches snapshot 1`] 
     class="min-h-screen bg-background"
   >
     <header
-      class="bg-header-background text-header-foreground shadow-md sticky top-0 z-50"
+      class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50"
     >
       <div
-        class="container mx-auto px-4 py-4"
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
       >
         <div
-          class="flex items-center justify-between"
+          class="flex items-center justify-between h-16"
         >
           <a
-            class="flex items-center space-x-4"
+            class="flex-shrink-0 flex items-center gap-2"
             href="/"
           >
             <img
               alt="Home"
+              class="h-10 w-auto"
               src="/images/foundations/foundations-logo.svg"
             />
           </a>
           <div
-            class="flex items-center space-x-4"
+            class="flex items-center space-x-2"
           >
             <form
               class="relative z-10"
@@ -330,14 +325,14 @@ exports[`Header stories snapshot > Guest story renders and matches snapshot 1`] 
             </a>
             <button
               aria-label="My cart, number of items: 0"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 cursor-pointer"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 relative cursor-pointer"
               data-size="default"
               data-slot="button"
               data-variant="ghost"
             >
               <svg
                 aria-hidden="true"
-                class="lucide lucide-shopping-cart size-6"
+                class="lucide lucide-shopping-cart size-5"
                 data-testid="shopping-cart-icon"
                 fill="none"
                 height="24"
@@ -363,13 +358,6 @@ exports[`Header stories snapshot > Guest story renders and matches snapshot 1`] 
                   d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"
                 />
               </svg>
-              <span
-                class="inline-flex items-center justify-center border py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 h-4 min-w-4 rounded-full px-1 font-mono tabular-num"
-                data-slot="badge"
-                data-testid="shopping-cart-badge"
-              >
-                0
-              </span>
             </button>
           </div>
         </div>
@@ -385,25 +373,26 @@ exports[`Header stories snapshot > MobileView story renders and matches snapshot
     class="min-h-screen bg-background"
   >
     <header
-      class="bg-header-background text-header-foreground shadow-md sticky top-0 z-50"
+      class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50"
     >
       <div
-        class="container mx-auto px-4 py-4"
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
       >
         <div
-          class="flex items-center justify-between"
+          class="flex items-center justify-between h-16"
         >
           <a
-            class="flex items-center space-x-4"
+            class="flex-shrink-0 flex items-center gap-2"
             href="/"
           >
             <img
               alt="Home"
+              class="h-10 w-auto"
               src="/images/foundations/foundations-logo.svg"
             />
           </a>
           <div
-            class="flex items-center space-x-4"
+            class="flex items-center space-x-2"
           >
             <form
               class="relative z-10"
@@ -520,14 +509,14 @@ exports[`Header stories snapshot > MobileView story renders and matches snapshot
             </a>
             <button
               aria-label="My cart, number of items: 0"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 cursor-pointer"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 relative cursor-pointer"
               data-size="default"
               data-slot="button"
               data-variant="ghost"
             >
               <svg
                 aria-hidden="true"
-                class="lucide lucide-shopping-cart size-6"
+                class="lucide lucide-shopping-cart size-5"
                 data-testid="shopping-cart-icon"
                 fill="none"
                 height="24"
@@ -553,13 +542,6 @@ exports[`Header stories snapshot > MobileView story renders and matches snapshot
                   d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"
                 />
               </svg>
-              <span
-                class="inline-flex items-center justify-center border py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 h-4 min-w-4 rounded-full px-1 font-mono tabular-num"
-                data-slot="badge"
-                data-testid="shopping-cart-badge"
-              >
-                0
-              </span>
             </button>
           </div>
         </div>
@@ -578,20 +560,21 @@ exports[`Header stories snapshot > StickyWithContent story renders and matches s
       class="min-h-screen"
     >
       <header
-        class="bg-header-background text-header-foreground shadow-md sticky top-0 z-50"
+        class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50"
       >
         <div
-          class="container mx-auto px-4 py-4"
+          class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
         >
           <div
-            class="flex items-center justify-between"
+            class="flex items-center justify-between h-16"
           >
             <a
-              class="flex items-center space-x-4"
+              class="flex-shrink-0 flex items-center gap-2"
               href="/"
             >
               <img
                 alt="Home"
+                class="h-10 w-auto"
                 src="/images/foundations/foundations-logo.svg"
               />
             </a>
@@ -619,7 +602,7 @@ exports[`Header stories snapshot > StickyWithContent story renders and matches s
               </ul>
             </nav>
             <div
-              class="flex items-center space-x-4"
+              class="flex items-center space-x-2"
             >
               <form
                 class="relative z-10"
@@ -736,14 +719,14 @@ exports[`Header stories snapshot > StickyWithContent story renders and matches s
               </a>
               <button
                 aria-label="My cart, number of items: 0"
-                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 cursor-pointer"
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 relative cursor-pointer"
                 data-size="default"
                 data-slot="button"
                 data-variant="ghost"
               >
                 <svg
                   aria-hidden="true"
-                  class="lucide lucide-shopping-cart size-6"
+                  class="lucide lucide-shopping-cart size-5"
                   data-testid="shopping-cart-icon"
                   fill="none"
                   height="24"
@@ -769,13 +752,6 @@ exports[`Header stories snapshot > StickyWithContent story renders and matches s
                     d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"
                   />
                 </svg>
-                <span
-                  class="inline-flex items-center justify-center border py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 h-4 min-w-4 rounded-full px-1 font-mono tabular-num"
-                  data-slot="badge"
-                  data-testid="shopping-cart-badge"
-                >
-                  0
-                </span>
               </button>
             </div>
           </div>
@@ -956,20 +932,21 @@ exports[`Header stories snapshot > WithNavigation story renders and matches snap
     class="min-h-screen bg-background"
   >
     <header
-      class="bg-header-background text-header-foreground shadow-md sticky top-0 z-50"
+      class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50"
     >
       <div
-        class="container mx-auto px-4 py-4"
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
       >
         <div
-          class="flex items-center justify-between"
+          class="flex items-center justify-between h-16"
         >
           <a
-            class="flex items-center space-x-4"
+            class="flex-shrink-0 flex items-center gap-2"
             href="/"
           >
             <img
               alt="Home"
+              class="h-10 w-auto"
               src="/images/foundations/foundations-logo.svg"
             />
           </a>
@@ -997,7 +974,7 @@ exports[`Header stories snapshot > WithNavigation story renders and matches snap
             </ul>
           </nav>
           <div
-            class="flex items-center space-x-4"
+            class="flex items-center space-x-2"
           >
             <form
               class="relative z-10"
@@ -1114,14 +1091,14 @@ exports[`Header stories snapshot > WithNavigation story renders and matches snap
             </a>
             <button
               aria-label="My cart, number of items: 0"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 cursor-pointer"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 relative cursor-pointer"
               data-size="default"
               data-slot="button"
               data-variant="ghost"
             >
               <svg
                 aria-hidden="true"
-                class="lucide lucide-shopping-cart size-6"
+                class="lucide lucide-shopping-cart size-5"
                 data-testid="shopping-cart-icon"
                 fill="none"
                 height="24"
@@ -1147,13 +1124,6 @@ exports[`Header stories snapshot > WithNavigation story renders and matches snap
                   d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"
                 />
               </svg>
-              <span
-                class="inline-flex items-center justify-center border py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 h-4 min-w-4 rounded-full px-1 font-mono tabular-num"
-                data-slot="badge"
-                data-testid="shopping-cart-badge"
-              >
-                0
-              </span>
             </button>
           </div>
         </div>
@@ -1169,20 +1139,21 @@ exports[`Header stories snapshot > WithNavigationAuthenticated story renders and
     class="min-h-screen bg-background"
   >
     <header
-      class="bg-header-background text-header-foreground shadow-md sticky top-0 z-50"
+      class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50"
     >
       <div
-        class="container mx-auto px-4 py-4"
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
       >
         <div
-          class="flex items-center justify-between"
+          class="flex items-center justify-between h-16"
         >
           <a
-            class="flex items-center space-x-4"
+            class="flex-shrink-0 flex items-center gap-2"
             href="/"
           >
             <img
               alt="Home"
+              class="h-10 w-auto"
               src="/images/foundations/foundations-logo.svg"
             />
           </a>
@@ -1210,7 +1181,7 @@ exports[`Header stories snapshot > WithNavigationAuthenticated story renders and
             </ul>
           </nav>
           <div
-            class="flex items-center space-x-4"
+            class="flex items-center space-x-2"
           >
             <form
               class="relative z-10"
@@ -1326,14 +1297,14 @@ exports[`Header stories snapshot > WithNavigationAuthenticated story renders and
             </a>
             <button
               aria-label="My cart, number of items: 0"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 cursor-pointer"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 relative cursor-pointer"
               data-size="default"
               data-slot="button"
               data-variant="ghost"
             >
               <svg
                 aria-hidden="true"
-                class="lucide lucide-shopping-cart size-6"
+                class="lucide lucide-shopping-cart size-5"
                 data-testid="shopping-cart-icon"
                 fill="none"
                 height="24"
@@ -1359,13 +1330,6 @@ exports[`Header stories snapshot > WithNavigationAuthenticated story renders and
                   d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"
                 />
               </svg>
-              <span
-                class="inline-flex items-center justify-center border py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 h-4 min-w-4 rounded-full px-1 font-mono tabular-num"
-                data-slot="badge"
-                data-testid="shopping-cart-badge"
-              >
-                0
-              </span>
             </button>
           </div>
         </div>

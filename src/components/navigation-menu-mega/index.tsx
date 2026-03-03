@@ -81,7 +81,7 @@ export default function CategoryNavigationMenuMega({
     };
 
     return (
-        <div className="hidden lg:block h-10">
+        <div className="hidden lg:flex items-center h-full">
             <WithCategoryNavigationMenu resolve={resolve} defer={defer}>
                 {({ categories }) => (
                     <CategoryNavigationMenu
@@ -92,6 +92,7 @@ export default function CategoryNavigationMenuMega({
                         // uncustomizable wrapper around Radix's underlying viewport component, so we need to use
                         // element-level styles to gain higher specificity.
                         propsViewport={() => ({
+                            className: 'mt-0 rounded-none border-0 border-b border-border shadow-lg',
                             style: {
                                 position: 'fixed',
                                 left: 0,
@@ -109,8 +110,8 @@ export default function CategoryNavigationMenuMega({
                         propsContent={({ category }) => ({
                             className: hasBanner(category)
                                 ? isVertical(category)
-                                    ? 'grid md:grid-cols-[1fr_.3fr] items-start divide-x divide-header-divider'
-                                    : 'grid md:grid-cols-[1fr_.6fr] items-start divide-x divide-header-divider'
+                                    ? 'grid md:grid-cols-[1fr_.3fr] items-start'
+                                    : 'grid md:grid-cols-[1fr_.6fr] items-start'
                                 : undefined,
                         })}
                         propsList={({ parent, categories: subCategories, level }) => {
@@ -127,9 +128,16 @@ export default function CategoryNavigationMenuMega({
                             }
                         }}
                         // Showcase styling the "top-seller" category with primary color
-                        propsElement={({ category, level }) => ({
-                            className: `${level === 0 && category.id === 'top-seller' ? 'text-primary' : ''} text-base ${level <= 1 ? 'font-bold' : 'font-medium'}`,
-                        })}
+                        propsElement={({ category, level }) => {
+                            const colorClass = level === 0 && category.id === 'top-seller' ? 'text-primary' : '';
+                            const sizeClass =
+                                level === 0
+                                    ? 'text-sm font-medium'
+                                    : level === 1
+                                      ? 'text-base font-bold'
+                                      : 'text-base font-medium';
+                            return { className: `${colorClass} ${sizeClass}` };
+                        }}
                         renderSlotListAfter={({ level, parent }) => {
                             if (level === 1 && hasBanner(parent)) {
                                 return (

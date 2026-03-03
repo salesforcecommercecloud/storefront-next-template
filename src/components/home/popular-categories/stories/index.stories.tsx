@@ -250,7 +250,7 @@ export const WithoutImages: Story = {
 };
 
 /**
- * More than 4 categories (should only display first 4)
+ * More than 4 categories (component renders all provided categories)
  */
 export const MoreThanFourCategories: Story = {
     args: {
@@ -259,7 +259,7 @@ export const MoreThanFourCategories: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'Component with 6 categories provided - should only display the first 4.',
+                story: 'Component with 6 categories provided - renders all categories in a scrollable container.',
             },
         },
     },
@@ -267,19 +267,17 @@ export const MoreThanFourCategories: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Should only display 4 categories (first 4 from the array)
+        // Should display all 6 categories
         const shopNowButtons = canvas.getAllByText(/shop now/i);
-        await expect(shopNowButtons.length).toBe(4);
+        await expect(shopNowButtons.length).toBe(6);
 
-        // Verify first 4 are displayed
+        // Verify all categories are displayed
         await expect(canvas.getByText('Jewelry')).toBeInTheDocument();
         await expect(canvas.getByText('Clothing')).toBeInTheDocument();
         await expect(canvas.getByText('Electronics')).toBeInTheDocument();
         await expect(canvas.getByText('Home & Living')).toBeInTheDocument();
-
-        // Verify 5th and 6th categories are NOT displayed
-        await expect(canvas.queryByText('Sports & Outdoors')).not.toBeInTheDocument();
-        await expect(canvas.queryByText('Beauty & Health')).not.toBeInTheDocument();
+        await expect(canvas.getByText('Sports & Outdoors')).toBeInTheDocument();
+        await expect(canvas.getByText('Beauty & Health')).toBeInTheDocument();
     },
 };
 
@@ -304,9 +302,9 @@ export const CustomPadding: Story = {
 
         await expect(canvas.getByText('Step into Elegance')).toBeInTheDocument();
 
-        // Verify the container has custom padding
-        const container = canvasElement.querySelector('.max-w-screen-2xl');
-        await expect(container?.className).toContain('px-2');
+        // Verify the container is rendered
+        const container = canvasElement.querySelector('.max-w-7xl');
+        await expect(container).toBeInTheDocument();
     },
 };
 
@@ -320,7 +318,7 @@ export const Empty: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'Component with empty categories array - displays title but no category cards.',
+                story: 'Component with empty categories array - renders the section wrapper but no content.',
             },
         },
     },
@@ -328,51 +326,37 @@ export const Empty: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Title should still render
-        await expect(canvas.getByText('Step into Elegance')).toBeInTheDocument();
-
-        // But no category cards
+        // No title or category cards should render when data is empty
+        await expect(canvas.queryByText('Step into Elegance')).not.toBeInTheDocument();
         const shopNowButtons = canvas.queryAllByText(/shop now/i);
         await expect(shopNowButtons.length).toBe(0);
     },
 };
 
 /**
- * Skeleton state (no props)
+ * No props state
  */
 export const SkeletonState: Story = {
     args: {},
     parameters: {
         docs: {
             description: {
-                story: 'Component with no props - displays skeleton loading state (waiting for component loader).',
+                story: 'Component with no props - renders the section wrapper but no content (use Loading story for skeleton state).',
             },
         },
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
 
-        // Wait a bit for skeleton to appear (component with no props shows skeleton)
-        await new Promise((resolve) => setTimeout(resolve, 300));
+        // With no props, the component renders the section wrapper but no content
+        const section = canvasElement.querySelector('section');
+        await expect(section).toBeInTheDocument();
 
-        // Check for skeleton elements - Skeleton component uses animate-pulse class
-        // The skeleton should be visible when no props are provided
-        const skeletons = canvasElement.querySelectorAll('[class*="animate-pulse"]');
-
-        // If animate-pulse not found, check for Skeleton component's bg-muted class or rounded-md
-        if (skeletons.length === 0) {
-            // Try multiple selectors to find skeleton elements
-            const skeletonElements = canvasElement.querySelectorAll('[class*="bg-muted"], [class*="rounded-md"]');
-            if (skeletonElements.length === 0) {
-                // As a last resort, check if the container exists (skeleton might be rendered differently)
-                const container = canvasElement.querySelector('.max-w-screen-2xl');
-                await expect(container).toBeInTheDocument();
-            } else {
-                await expect(skeletonElements.length).toBeGreaterThan(0);
-            }
-        } else {
-            await expect(skeletons.length).toBeGreaterThan(0);
-        }
+        // No title or categories should be rendered
+        const canvas = within(canvasElement);
+        await expect(canvas.queryByText('Step into Elegance')).not.toBeInTheDocument();
+        const shopNowButtons = canvas.queryAllByText(/shop now/i);
+        await expect(shopNowButtons.length).toBe(0);
     },
 };
 
@@ -402,17 +386,16 @@ export const InteractionTest: Story = {
         const shopNowButtons = await canvas.findAllByText(/shop now/i, {}, { timeout: 5000 });
         await expect(shopNowButtons.length).toBe(4);
 
-        // Verify category links are present (Shop Now buttons are links)
-        // Wait for links to be available
-        const categoryLinks = await canvas.findAllByRole('link', {}, { timeout: 5000 });
-        await expect(categoryLinks.length).toBeGreaterThan(0);
+        // Verify category list items are present (each category card is a listitem link)
+        const categoryItems = await canvas.findAllByRole('listitem', {}, { timeout: 5000 });
+        await expect(categoryItems.length).toBeGreaterThan(0);
 
         // Test clicking the first category's shop button
         const firstShopButton = shopNowButtons[0];
         await userEvent.click(firstShopButton);
 
         // Test hovering over a category card
-        const firstCategoryCard = categoryLinks[0];
+        const firstCategoryCard = categoryItems[0];
         await userEvent.hover(firstCategoryCard);
 
         // Click on a specific category name

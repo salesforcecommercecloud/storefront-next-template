@@ -5,48 +5,419 @@ exports[`PopularCategories stories snapshot > CustomPadding story renders and ma
   <div
     class="bg-background min-h-screen"
   >
-    <div
-      class="pb-16"
+    <section
+      class="py-12 md:py-16 lg:py-24 bg-muted/50"
     >
       <div
-        class="max-w-screen-2xl mx-auto px-2"
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
       >
         <div
-          class="text-center mb-8"
+          class="text-center mb-10 md:mb-12"
         >
           <h2
-            class="tracking-tight text-center text-3xl font-extrabold text-foreground sm:text-4xl"
+            class="text-2xl md:text-3xl lg:text-4xl font-light text-foreground mb-4 tracking-tight"
           >
             Step into Elegance
           </h2>
+          <p
+            class="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto"
+          >
+            At Salesforce Foundations, we believe design should be accessible, innovative, and timeless. Our collections are crafted for the modern individual who values quality, form, and lasting beauty.
+          </p>
         </div>
         <div
-          class="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-[var(--grid-cols)]"
-          style="--grid-cols: repeat(4, minmax(0, 1fr));"
+          class="relative"
         >
-          <div
-            data-testid="content-card"
+          <button
+            aria-label="Scroll Step into Elegance left"
+            class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 hidden md:flex absolute z-10 rounded-lg shadow-md transition-all duration-300 left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 opacity-0 pointer-events-none"
+            data-size="icon"
+            data-slot="button"
+            data-variant="outline"
           >
-            {"title":"Jewelry","description":"Elegant jewelry pieces to complement any outfit","imageUrl":"https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70","imageAlt":"Jewelry","buttonText":"Shop Now","buttonLink":"/category/womens-jewelry","showBackground":true,"showBorder":true,"loading":"eager"}
-          </div>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-left w-5 h-5"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m15 18-6-6 6-6"
+              />
+            </svg>
+          </button>
           <div
-            data-testid="content-card"
+            class="flex gap-4 md:gap-6 overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            role="list"
           >
-            {"title":"Clothing","description":"Stylish and comfortable men's clothing for every occasion","imageUrl":"https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70","imageAlt":"Clothing","buttonText":"Shop Now","buttonLink":"/category/mens-clothing","showBackground":true,"showBorder":true,"loading":"eager"}
+            <a
+              class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
+              href="/category/womens-jewelry"
+              role="listitem"
+            >
+              <div
+                class="group relative overflow-hidden rounded-xl bg-muted h-full"
+              >
+                <div
+                  class="aspect-square overflow-hidden"
+                >
+                  <div
+                    class="relative w-full h-full transition-transform duration-500 group-hover:scale-105"
+                  >
+                    <div
+                      class="w-full h-full"
+                    >
+                      <picture>
+                        <source
+                          media="(min-width: 1024px)"
+                          sizes="300px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70&sw=300 300w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70&sw=600 600w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 768px)"
+                          sizes="280px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70&sw=280 280w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70&sw=560 560w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 640px)"
+                          sizes="260px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70&sw=260 260w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70&sw=520 520w"
+                          type="image/webp"
+                        />
+                        <source
+                          sizes="240px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70&sw=240 240w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70&sw=480 480w"
+                          type="image/webp"
+                        />
+                        <img
+                          alt="Jewelry"
+                          class="w-full h-full object-cover"
+                          fetchpriority="auto"
+                          loading="eager"
+                          src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70"
+                        />
+                      </picture>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"
+                >
+                  <div
+                    class="absolute bottom-0 left-0 right-0 px-6 pb-6 pt-12 flex flex-col justify-end"
+                  >
+                    <div>
+                      <h3
+                        class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                      >
+                        Jewelry
+                      </h3>
+                      <p
+                        class="text-sm text-white/90"
+                      >
+                        Elegant jewelry pieces to complement any outfit
+                      </p>
+                    </div>
+                    <div
+                      class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
+                    >
+                      <span
+                        class="inline-block text-sm font-medium text-primary-foreground"
+                      >
+                        Shop Now
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+            <a
+              class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
+              href="/category/mens-clothing"
+              role="listitem"
+            >
+              <div
+                class="group relative overflow-hidden rounded-xl bg-muted h-full"
+              >
+                <div
+                  class="aspect-square overflow-hidden"
+                >
+                  <div
+                    class="relative w-full h-full transition-transform duration-500 group-hover:scale-105"
+                  >
+                    <div
+                      class="w-full h-full"
+                    >
+                      <picture>
+                        <source
+                          media="(min-width: 1024px)"
+                          sizes="300px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70&sw=300 300w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70&sw=600 600w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 768px)"
+                          sizes="280px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70&sw=280 280w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70&sw=560 560w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 640px)"
+                          sizes="260px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70&sw=260 260w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70&sw=520 520w"
+                          type="image/webp"
+                        />
+                        <source
+                          sizes="240px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70&sw=240 240w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70&sw=480 480w"
+                          type="image/webp"
+                        />
+                        <img
+                          alt="Clothing"
+                          class="w-full h-full object-cover"
+                          fetchpriority="auto"
+                          loading="eager"
+                          src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70"
+                        />
+                      </picture>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"
+                >
+                  <div
+                    class="absolute bottom-0 left-0 right-0 px-6 pb-6 pt-12 flex flex-col justify-end"
+                  >
+                    <div>
+                      <h3
+                        class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                      >
+                        Clothing
+                      </h3>
+                      <p
+                        class="text-sm text-white/90"
+                      >
+                        Stylish and comfortable men's clothing for every occasion
+                      </p>
+                    </div>
+                    <div
+                      class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
+                    >
+                      <span
+                        class="inline-block text-sm font-medium text-primary-foreground"
+                      >
+                        Shop Now
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+            <a
+              class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
+              href="/category/electronics"
+              role="listitem"
+            >
+              <div
+                class="group relative overflow-hidden rounded-xl bg-muted h-full"
+              >
+                <div
+                  class="aspect-square overflow-hidden"
+                >
+                  <div
+                    class="relative w-full h-full transition-transform duration-500 group-hover:scale-105"
+                  >
+                    <div
+                      class="w-full h-full"
+                    >
+                      <picture>
+                        <source
+                          media="(min-width: 1024px)"
+                          sizes="300px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70&sw=300 300w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70&sw=600 600w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 768px)"
+                          sizes="280px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70&sw=280 280w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70&sw=560 560w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 640px)"
+                          sizes="260px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70&sw=260 260w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70&sw=520 520w"
+                          type="image/webp"
+                        />
+                        <source
+                          sizes="240px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70&sw=240 240w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70&sw=480 480w"
+                          type="image/webp"
+                        />
+                        <img
+                          alt="Electronics"
+                          class="w-full h-full object-cover"
+                          fetchpriority="auto"
+                          loading="eager"
+                          src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70"
+                        />
+                      </picture>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"
+                >
+                  <div
+                    class="absolute bottom-0 left-0 right-0 px-6 pb-6 pt-12 flex flex-col justify-end"
+                  >
+                    <div>
+                      <h3
+                        class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                      >
+                        Electronics
+                      </h3>
+                      <p
+                        class="text-sm text-white/90"
+                      >
+                        Latest electronics and tech gadgets
+                      </p>
+                    </div>
+                    <div
+                      class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
+                    >
+                      <span
+                        class="inline-block text-sm font-medium text-primary-foreground"
+                      >
+                        Shop Now
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+            <a
+              class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
+              href="/category/home-living"
+              role="listitem"
+            >
+              <div
+                class="group relative overflow-hidden rounded-xl bg-muted h-full"
+              >
+                <div
+                  class="aspect-square overflow-hidden"
+                >
+                  <div
+                    class="relative w-full h-full transition-transform duration-500 group-hover:scale-105"
+                  >
+                    <div
+                      class="w-full h-full"
+                    >
+                      <picture>
+                        <source
+                          media="(min-width: 1024px)"
+                          sizes="300px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70&sw=300 300w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70&sw=600 600w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 768px)"
+                          sizes="280px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70&sw=280 280w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70&sw=560 560w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 640px)"
+                          sizes="260px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70&sw=260 260w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70&sw=520 520w"
+                          type="image/webp"
+                        />
+                        <source
+                          sizes="240px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70&sw=240 240w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70&sw=480 480w"
+                          type="image/webp"
+                        />
+                        <img
+                          alt="Home & Living"
+                          class="w-full h-full object-cover"
+                          fetchpriority="auto"
+                          loading="eager"
+                          src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70"
+                        />
+                      </picture>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"
+                >
+                  <div
+                    class="absolute bottom-0 left-0 right-0 px-6 pb-6 pt-12 flex flex-col justify-end"
+                  >
+                    <div>
+                      <h3
+                        class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                      >
+                        Home & Living
+                      </h3>
+                      <p
+                        class="text-sm text-white/90"
+                      >
+                        Transform your space with our home and living collection
+                      </p>
+                    </div>
+                    <div
+                      class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
+                    >
+                      <span
+                        class="inline-block text-sm font-medium text-primary-foreground"
+                      >
+                        Shop Now
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
           </div>
-          <div
-            data-testid="content-card"
+          <button
+            aria-label="Scroll Step into Elegance right"
+            class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 hidden md:flex absolute z-10 rounded-lg shadow-md transition-all duration-300 right-0 top-1/2 -translate-y-1/2 translate-x-1/2 opacity-0 pointer-events-none"
+            data-size="icon"
+            data-slot="button"
+            data-variant="outline"
           >
-            {"title":"Electronics","description":"Latest electronics and tech gadgets","imageUrl":"https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70","imageAlt":"Electronics","buttonText":"Shop Now","buttonLink":"/category/electronics","showBackground":true,"showBorder":true,"loading":"eager"}
-          </div>
-          <div
-            data-testid="content-card"
-          >
-            {"title":"Home & Living","description":"Transform your space with our home and living collection","imageUrl":"https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70","imageAlt":"Home & Living","buttonText":"Shop Now","buttonLink":"/category/home-living","showBackground":true,"showBorder":true,"loading":"eager"}
-          </div>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-right w-5 h-5"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m9 18 6-6-6-6"
+              />
+            </svg>
+          </button>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </div>
 `;
@@ -56,27 +427,86 @@ exports[`PopularCategories stories snapshot > Default story renders and matches 
   <div
     class="bg-background min-h-screen"
   >
-    <div
-      class="pb-16"
+    <section
+      class="py-12 md:py-16 lg:py-24 bg-muted/50"
     >
       <div
-        class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8"
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
       >
         <div
-          class="text-center mb-8"
+          class="text-center mb-10 md:mb-12"
         >
           <h2
-            class="tracking-tight text-center text-3xl font-extrabold text-foreground sm:text-4xl"
+            class="text-2xl md:text-3xl lg:text-4xl font-light text-foreground mb-4 tracking-tight"
           >
             Step into Elegance
           </h2>
+          <p
+            class="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto"
+          >
+            At Salesforce Foundations, we believe design should be accessible, innovative, and timeless. Our collections are crafted for the modern individual who values quality, form, and lasting beauty.
+          </p>
         </div>
         <div
-          class="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-[var(--grid-cols)]"
-          style="--grid-cols: repeat(4, minmax(0, 1fr));"
-        />
+          class="relative"
+        >
+          <button
+            aria-label="Scroll Step into Elegance left"
+            class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 hidden md:flex absolute z-10 rounded-lg shadow-md transition-all duration-300 left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 opacity-0 pointer-events-none"
+            data-size="icon"
+            data-slot="button"
+            data-variant="outline"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-left w-5 h-5"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m15 18-6-6 6-6"
+              />
+            </svg>
+          </button>
+          <div
+            class="flex gap-4 md:gap-6 overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            role="list"
+          />
+          <button
+            aria-label="Scroll Step into Elegance right"
+            class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 hidden md:flex absolute z-10 rounded-lg shadow-md transition-all duration-300 right-0 top-1/2 -translate-y-1/2 translate-x-1/2 opacity-0 pointer-events-none"
+            data-size="icon"
+            data-slot="button"
+            data-variant="outline"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-right w-5 h-5"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m9 18 6-6-6-6"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
-    </div>
+    </section>
   </div>
 </div>
 `;
@@ -86,23 +516,13 @@ exports[`PopularCategories stories snapshot > Empty story renders and matches sn
   <div
     class="bg-background min-h-screen"
   >
-    <div
-      class="pb-16"
+    <section
+      class="py-12 md:py-16 lg:py-24 bg-muted/50"
     >
       <div
-        class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8"
-      >
-        <div
-          class="text-center mb-8"
-        >
-          <h2
-            class="tracking-tight text-center text-3xl font-extrabold text-foreground sm:text-4xl"
-          >
-            Step into Elegance
-          </h2>
-        </div>
-      </div>
-    </div>
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+      />
+    </section>
   </div>
 </div>
 `;
@@ -112,27 +532,86 @@ exports[`PopularCategories stories snapshot > Loading story renders and matches 
   <div
     class="bg-background min-h-screen"
   >
-    <div
-      class="pb-16"
+    <section
+      class="py-12 md:py-16 lg:py-24 bg-muted/50"
     >
       <div
-        class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8"
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
       >
         <div
-          class="text-center mb-8"
+          class="text-center mb-10 md:mb-12"
         >
           <h2
-            class="tracking-tight text-center text-3xl font-extrabold text-foreground sm:text-4xl"
+            class="text-2xl md:text-3xl lg:text-4xl font-light text-foreground mb-4 tracking-tight"
           >
             Step into Elegance
           </h2>
+          <p
+            class="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto"
+          >
+            At Salesforce Foundations, we believe design should be accessible, innovative, and timeless. Our collections are crafted for the modern individual who values quality, form, and lasting beauty.
+          </p>
         </div>
         <div
-          class="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-[var(--grid-cols)]"
-          style="--grid-cols: repeat(4, minmax(0, 1fr));"
-        />
+          class="relative"
+        >
+          <button
+            aria-label="Scroll Step into Elegance left"
+            class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 hidden md:flex absolute z-10 rounded-lg shadow-md transition-all duration-300 left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 opacity-0 pointer-events-none"
+            data-size="icon"
+            data-slot="button"
+            data-variant="outline"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-left w-5 h-5"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m15 18-6-6 6-6"
+              />
+            </svg>
+          </button>
+          <div
+            class="flex gap-4 md:gap-6 overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            role="list"
+          />
+          <button
+            aria-label="Scroll Step into Elegance right"
+            class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 hidden md:flex absolute z-10 rounded-lg shadow-md transition-all duration-300 right-0 top-1/2 -translate-y-1/2 translate-x-1/2 opacity-0 pointer-events-none"
+            data-size="icon"
+            data-slot="button"
+            data-variant="outline"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-right w-5 h-5"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m9 18 6-6-6-6"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
-    </div>
+    </section>
   </div>
 </div>
 `;
@@ -142,48 +621,585 @@ exports[`PopularCategories stories snapshot > MoreThanFourCategories story rende
   <div
     class="bg-background min-h-screen"
   >
-    <div
-      class="pb-16"
+    <section
+      class="py-12 md:py-16 lg:py-24 bg-muted/50"
     >
       <div
-        class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8"
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
       >
         <div
-          class="text-center mb-8"
+          class="text-center mb-10 md:mb-12"
         >
           <h2
-            class="tracking-tight text-center text-3xl font-extrabold text-foreground sm:text-4xl"
+            class="text-2xl md:text-3xl lg:text-4xl font-light text-foreground mb-4 tracking-tight"
           >
             Step into Elegance
           </h2>
+          <p
+            class="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto"
+          >
+            At Salesforce Foundations, we believe design should be accessible, innovative, and timeless. Our collections are crafted for the modern individual who values quality, form, and lasting beauty.
+          </p>
         </div>
         <div
-          class="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-[var(--grid-cols)]"
-          style="--grid-cols: repeat(4, minmax(0, 1fr));"
+          class="relative"
         >
-          <div
-            data-testid="content-card"
+          <button
+            aria-label="Scroll Step into Elegance left"
+            class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 hidden md:flex absolute z-10 rounded-lg shadow-md transition-all duration-300 left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 opacity-0 pointer-events-none"
+            data-size="icon"
+            data-slot="button"
+            data-variant="outline"
           >
-            {"title":"Jewelry","description":"Elegant jewelry pieces to complement any outfit","imageUrl":"https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70","imageAlt":"Jewelry","buttonText":"Shop Now","buttonLink":"/category/womens-jewelry","showBackground":true,"showBorder":true,"loading":"eager"}
-          </div>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-left w-5 h-5"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m15 18-6-6 6-6"
+              />
+            </svg>
+          </button>
           <div
-            data-testid="content-card"
+            class="flex gap-4 md:gap-6 overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            role="list"
           >
-            {"title":"Clothing","description":"Stylish and comfortable men's clothing for every occasion","imageUrl":"https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70","imageAlt":"Clothing","buttonText":"Shop Now","buttonLink":"/category/mens-clothing","showBackground":true,"showBorder":true,"loading":"eager"}
+            <a
+              class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
+              href="/category/womens-jewelry"
+              role="listitem"
+            >
+              <div
+                class="group relative overflow-hidden rounded-xl bg-muted h-full"
+              >
+                <div
+                  class="aspect-square overflow-hidden"
+                >
+                  <div
+                    class="relative w-full h-full transition-transform duration-500 group-hover:scale-105"
+                  >
+                    <div
+                      class="w-full h-full"
+                    >
+                      <picture>
+                        <source
+                          media="(min-width: 1024px)"
+                          sizes="300px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70&sw=300 300w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70&sw=600 600w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 768px)"
+                          sizes="280px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70&sw=280 280w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70&sw=560 560w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 640px)"
+                          sizes="260px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70&sw=260 260w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70&sw=520 520w"
+                          type="image/webp"
+                        />
+                        <source
+                          sizes="240px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70&sw=240 240w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70&sw=480 480w"
+                          type="image/webp"
+                        />
+                        <img
+                          alt="Jewelry"
+                          class="w-full h-full object-cover"
+                          fetchpriority="auto"
+                          loading="eager"
+                          src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70"
+                        />
+                      </picture>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"
+                >
+                  <div
+                    class="absolute bottom-0 left-0 right-0 px-6 pb-6 pt-12 flex flex-col justify-end"
+                  >
+                    <div>
+                      <h3
+                        class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                      >
+                        Jewelry
+                      </h3>
+                      <p
+                        class="text-sm text-white/90"
+                      >
+                        Elegant jewelry pieces to complement any outfit
+                      </p>
+                    </div>
+                    <div
+                      class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
+                    >
+                      <span
+                        class="inline-block text-sm font-medium text-primary-foreground"
+                      >
+                        Shop Now
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+            <a
+              class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
+              href="/category/mens-clothing"
+              role="listitem"
+            >
+              <div
+                class="group relative overflow-hidden rounded-xl bg-muted h-full"
+              >
+                <div
+                  class="aspect-square overflow-hidden"
+                >
+                  <div
+                    class="relative w-full h-full transition-transform duration-500 group-hover:scale-105"
+                  >
+                    <div
+                      class="w-full h-full"
+                    >
+                      <picture>
+                        <source
+                          media="(min-width: 1024px)"
+                          sizes="300px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70&sw=300 300w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70&sw=600 600w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 768px)"
+                          sizes="280px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70&sw=280 280w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70&sw=560 560w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 640px)"
+                          sizes="260px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70&sw=260 260w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70&sw=520 520w"
+                          type="image/webp"
+                        />
+                        <source
+                          sizes="240px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70&sw=240 240w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70&sw=480 480w"
+                          type="image/webp"
+                        />
+                        <img
+                          alt="Clothing"
+                          class="w-full h-full object-cover"
+                          fetchpriority="auto"
+                          loading="eager"
+                          src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70"
+                        />
+                      </picture>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"
+                >
+                  <div
+                    class="absolute bottom-0 left-0 right-0 px-6 pb-6 pt-12 flex flex-col justify-end"
+                  >
+                    <div>
+                      <h3
+                        class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                      >
+                        Clothing
+                      </h3>
+                      <p
+                        class="text-sm text-white/90"
+                      >
+                        Stylish and comfortable men's clothing for every occasion
+                      </p>
+                    </div>
+                    <div
+                      class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
+                    >
+                      <span
+                        class="inline-block text-sm font-medium text-primary-foreground"
+                      >
+                        Shop Now
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+            <a
+              class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
+              href="/category/electronics"
+              role="listitem"
+            >
+              <div
+                class="group relative overflow-hidden rounded-xl bg-muted h-full"
+              >
+                <div
+                  class="aspect-square overflow-hidden"
+                >
+                  <div
+                    class="relative w-full h-full transition-transform duration-500 group-hover:scale-105"
+                  >
+                    <div
+                      class="w-full h-full"
+                    >
+                      <picture>
+                        <source
+                          media="(min-width: 1024px)"
+                          sizes="300px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70&sw=300 300w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70&sw=600 600w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 768px)"
+                          sizes="280px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70&sw=280 280w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70&sw=560 560w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 640px)"
+                          sizes="260px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70&sw=260 260w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70&sw=520 520w"
+                          type="image/webp"
+                        />
+                        <source
+                          sizes="240px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70&sw=240 240w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70&sw=480 480w"
+                          type="image/webp"
+                        />
+                        <img
+                          alt="Electronics"
+                          class="w-full h-full object-cover"
+                          fetchpriority="auto"
+                          loading="eager"
+                          src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70"
+                        />
+                      </picture>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"
+                >
+                  <div
+                    class="absolute bottom-0 left-0 right-0 px-6 pb-6 pt-12 flex flex-col justify-end"
+                  >
+                    <div>
+                      <h3
+                        class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                      >
+                        Electronics
+                      </h3>
+                      <p
+                        class="text-sm text-white/90"
+                      >
+                        Latest electronics and tech gadgets
+                      </p>
+                    </div>
+                    <div
+                      class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
+                    >
+                      <span
+                        class="inline-block text-sm font-medium text-primary-foreground"
+                      >
+                        Shop Now
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+            <a
+              class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
+              href="/category/home-living"
+              role="listitem"
+            >
+              <div
+                class="group relative overflow-hidden rounded-xl bg-muted h-full"
+              >
+                <div
+                  class="aspect-square overflow-hidden"
+                >
+                  <div
+                    class="relative w-full h-full transition-transform duration-500 group-hover:scale-105"
+                  >
+                    <div
+                      class="w-full h-full"
+                    >
+                      <picture>
+                        <source
+                          media="(min-width: 1024px)"
+                          sizes="300px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70&sw=300 300w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70&sw=600 600w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 768px)"
+                          sizes="280px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70&sw=280 280w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70&sw=560 560w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 640px)"
+                          sizes="260px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70&sw=260 260w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70&sw=520 520w"
+                          type="image/webp"
+                        />
+                        <source
+                          sizes="240px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70&sw=240 240w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70&sw=480 480w"
+                          type="image/webp"
+                        />
+                        <img
+                          alt="Home & Living"
+                          class="w-full h-full object-cover"
+                          fetchpriority="auto"
+                          loading="eager"
+                          src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70"
+                        />
+                      </picture>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"
+                >
+                  <div
+                    class="absolute bottom-0 left-0 right-0 px-6 pb-6 pt-12 flex flex-col justify-end"
+                  >
+                    <div>
+                      <h3
+                        class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                      >
+                        Home & Living
+                      </h3>
+                      <p
+                        class="text-sm text-white/90"
+                      >
+                        Transform your space with our home and living collection
+                      </p>
+                    </div>
+                    <div
+                      class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
+                    >
+                      <span
+                        class="inline-block text-sm font-medium text-primary-foreground"
+                      >
+                        Shop Now
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+            <a
+              class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
+              href="/category/sports-outdoors"
+              role="listitem"
+            >
+              <div
+                class="group relative overflow-hidden rounded-xl bg-muted h-full"
+              >
+                <div
+                  class="aspect-square overflow-hidden"
+                >
+                  <div
+                    class="relative w-full h-full transition-transform duration-500 group-hover:scale-105"
+                  >
+                    <div
+                      class="w-full h-full"
+                    >
+                      <picture>
+                        <source
+                          media="(min-width: 1024px)"
+                          sizes="300px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw99887766/images/slot/sub_banners/cat-banner-sports.webp?sfrm=jpg&q=70&sw=300 300w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw99887766/images/slot/sub_banners/cat-banner-sports.webp?sfrm=jpg&q=70&sw=600 600w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 768px)"
+                          sizes="280px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw99887766/images/slot/sub_banners/cat-banner-sports.webp?sfrm=jpg&q=70&sw=280 280w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw99887766/images/slot/sub_banners/cat-banner-sports.webp?sfrm=jpg&q=70&sw=560 560w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 640px)"
+                          sizes="260px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw99887766/images/slot/sub_banners/cat-banner-sports.webp?sfrm=jpg&q=70&sw=260 260w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw99887766/images/slot/sub_banners/cat-banner-sports.webp?sfrm=jpg&q=70&sw=520 520w"
+                          type="image/webp"
+                        />
+                        <source
+                          sizes="240px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw99887766/images/slot/sub_banners/cat-banner-sports.webp?sfrm=jpg&q=70&sw=240 240w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw99887766/images/slot/sub_banners/cat-banner-sports.webp?sfrm=jpg&q=70&sw=480 480w"
+                          type="image/webp"
+                        />
+                        <img
+                          alt="Sports & Outdoors"
+                          class="w-full h-full object-cover"
+                          fetchpriority="auto"
+                          loading="eager"
+                          src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw99887766/images/slot/sub_banners/cat-banner-sports.webp?sfrm=jpg&q=70"
+                        />
+                      </picture>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"
+                >
+                  <div
+                    class="absolute bottom-0 left-0 right-0 px-6 pb-6 pt-12 flex flex-col justify-end"
+                  >
+                    <div>
+                      <h3
+                        class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                      >
+                        Sports & Outdoors
+                      </h3>
+                      <p
+                        class="text-sm text-white/90"
+                      >
+                        Gear up for your next adventure
+                      </p>
+                    </div>
+                    <div
+                      class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
+                    >
+                      <span
+                        class="inline-block text-sm font-medium text-primary-foreground"
+                      >
+                        Shop Now
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+            <a
+              class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
+              href="/category/beauty-health"
+              role="listitem"
+            >
+              <div
+                class="group relative overflow-hidden rounded-xl bg-muted h-full"
+              >
+                <div
+                  class="aspect-square overflow-hidden"
+                >
+                  <div
+                    class="relative w-full h-full transition-transform duration-500 group-hover:scale-105"
+                  >
+                    <div
+                      class="w-full h-full"
+                    >
+                      <picture>
+                        <source
+                          media="(min-width: 1024px)"
+                          sizes="300px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw66554433/images/slot/sub_banners/cat-banner-beauty.webp?sfrm=jpg&q=70&sw=300 300w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw66554433/images/slot/sub_banners/cat-banner-beauty.webp?sfrm=jpg&q=70&sw=600 600w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 768px)"
+                          sizes="280px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw66554433/images/slot/sub_banners/cat-banner-beauty.webp?sfrm=jpg&q=70&sw=280 280w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw66554433/images/slot/sub_banners/cat-banner-beauty.webp?sfrm=jpg&q=70&sw=560 560w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 640px)"
+                          sizes="260px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw66554433/images/slot/sub_banners/cat-banner-beauty.webp?sfrm=jpg&q=70&sw=260 260w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw66554433/images/slot/sub_banners/cat-banner-beauty.webp?sfrm=jpg&q=70&sw=520 520w"
+                          type="image/webp"
+                        />
+                        <source
+                          sizes="240px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw66554433/images/slot/sub_banners/cat-banner-beauty.webp?sfrm=jpg&q=70&sw=240 240w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw66554433/images/slot/sub_banners/cat-banner-beauty.webp?sfrm=jpg&q=70&sw=480 480w"
+                          type="image/webp"
+                        />
+                        <img
+                          alt="Beauty & Health"
+                          class="w-full h-full object-cover"
+                          fetchpriority="auto"
+                          loading="eager"
+                          src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw66554433/images/slot/sub_banners/cat-banner-beauty.webp?sfrm=jpg&q=70"
+                        />
+                      </picture>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"
+                >
+                  <div
+                    class="absolute bottom-0 left-0 right-0 px-6 pb-6 pt-12 flex flex-col justify-end"
+                  >
+                    <div>
+                      <h3
+                        class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                      >
+                        Beauty & Health
+                      </h3>
+                      <p
+                        class="text-sm text-white/90"
+                      >
+                        Beauty and wellness products
+                      </p>
+                    </div>
+                    <div
+                      class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
+                    >
+                      <span
+                        class="inline-block text-sm font-medium text-primary-foreground"
+                      >
+                        Shop Now
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
           </div>
-          <div
-            data-testid="content-card"
+          <button
+            aria-label="Scroll Step into Elegance right"
+            class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 hidden md:flex absolute z-10 rounded-lg shadow-md transition-all duration-300 right-0 top-1/2 -translate-y-1/2 translate-x-1/2 opacity-0 pointer-events-none"
+            data-size="icon"
+            data-slot="button"
+            data-variant="outline"
           >
-            {"title":"Electronics","description":"Latest electronics and tech gadgets","imageUrl":"https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70","imageAlt":"Electronics","buttonText":"Shop Now","buttonLink":"/category/electronics","showBackground":true,"showBorder":true,"loading":"eager"}
-          </div>
-          <div
-            data-testid="content-card"
-          >
-            {"title":"Home & Living","description":"Transform your space with our home and living collection","imageUrl":"https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70","imageAlt":"Home & Living","buttonText":"Shop Now","buttonLink":"/category/home-living","showBackground":true,"showBorder":true,"loading":"eager"}
-          </div>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-right w-5 h-5"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m9 18 6-6-6-6"
+              />
+            </svg>
+          </button>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </div>
 `;
@@ -193,23 +1209,13 @@ exports[`PopularCategories stories snapshot > SkeletonState story renders and ma
   <div
     class="bg-background min-h-screen"
   >
-    <div
-      class="pb-16"
+    <section
+      class="py-12 md:py-16 lg:py-24 bg-muted/50"
     >
       <div
-        class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8"
-      >
-        <div
-          class="text-center mb-8"
-        >
-          <h2
-            class="tracking-tight text-center text-3xl font-extrabold text-foreground sm:text-4xl"
-          >
-            Step into Elegance
-          </h2>
-        </div>
-      </div>
-    </div>
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+      />
+    </section>
   </div>
 </div>
 `;
@@ -219,48 +1225,419 @@ exports[`PopularCategories stories snapshot > WithDirectData story renders and m
   <div
     class="bg-background min-h-screen"
   >
-    <div
-      class="pb-16"
+    <section
+      class="py-12 md:py-16 lg:py-24 bg-muted/50"
     >
       <div
-        class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8"
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
       >
         <div
-          class="text-center mb-8"
+          class="text-center mb-10 md:mb-12"
         >
           <h2
-            class="tracking-tight text-center text-3xl font-extrabold text-foreground sm:text-4xl"
+            class="text-2xl md:text-3xl lg:text-4xl font-light text-foreground mb-4 tracking-tight"
           >
             Step into Elegance
           </h2>
+          <p
+            class="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto"
+          >
+            At Salesforce Foundations, we believe design should be accessible, innovative, and timeless. Our collections are crafted for the modern individual who values quality, form, and lasting beauty.
+          </p>
         </div>
         <div
-          class="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-[var(--grid-cols)]"
-          style="--grid-cols: repeat(4, minmax(0, 1fr));"
+          class="relative"
         >
-          <div
-            data-testid="content-card"
+          <button
+            aria-label="Scroll Step into Elegance left"
+            class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 hidden md:flex absolute z-10 rounded-lg shadow-md transition-all duration-300 left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 opacity-0 pointer-events-none"
+            data-size="icon"
+            data-slot="button"
+            data-variant="outline"
           >
-            {"title":"Jewelry","description":"Elegant jewelry pieces to complement any outfit","imageUrl":"https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70","imageAlt":"Jewelry","buttonText":"Shop Now","buttonLink":"/category/womens-jewelry","showBackground":true,"showBorder":true,"loading":"eager"}
-          </div>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-left w-5 h-5"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m15 18-6-6 6-6"
+              />
+            </svg>
+          </button>
           <div
-            data-testid="content-card"
+            class="flex gap-4 md:gap-6 overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            role="list"
           >
-            {"title":"Clothing","description":"Stylish and comfortable men's clothing for every occasion","imageUrl":"https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70","imageAlt":"Clothing","buttonText":"Shop Now","buttonLink":"/category/mens-clothing","showBackground":true,"showBorder":true,"loading":"eager"}
+            <a
+              class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
+              href="/category/womens-jewelry"
+              role="listitem"
+            >
+              <div
+                class="group relative overflow-hidden rounded-xl bg-muted h-full"
+              >
+                <div
+                  class="aspect-square overflow-hidden"
+                >
+                  <div
+                    class="relative w-full h-full transition-transform duration-500 group-hover:scale-105"
+                  >
+                    <div
+                      class="w-full h-full"
+                    >
+                      <picture>
+                        <source
+                          media="(min-width: 1024px)"
+                          sizes="300px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70&sw=300 300w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70&sw=600 600w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 768px)"
+                          sizes="280px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70&sw=280 280w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70&sw=560 560w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 640px)"
+                          sizes="260px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70&sw=260 260w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70&sw=520 520w"
+                          type="image/webp"
+                        />
+                        <source
+                          sizes="240px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70&sw=240 240w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70&sw=480 480w"
+                          type="image/webp"
+                        />
+                        <img
+                          alt="Jewelry"
+                          class="w-full h-full object-cover"
+                          fetchpriority="auto"
+                          loading="eager"
+                          src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw14ce9267/images/slot/sub_banners/cat-banner-womens-jewelry.webp?sfrm=jpg&q=70"
+                        />
+                      </picture>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"
+                >
+                  <div
+                    class="absolute bottom-0 left-0 right-0 px-6 pb-6 pt-12 flex flex-col justify-end"
+                  >
+                    <div>
+                      <h3
+                        class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                      >
+                        Jewelry
+                      </h3>
+                      <p
+                        class="text-sm text-white/90"
+                      >
+                        Elegant jewelry pieces to complement any outfit
+                      </p>
+                    </div>
+                    <div
+                      class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
+                    >
+                      <span
+                        class="inline-block text-sm font-medium text-primary-foreground"
+                      >
+                        Shop Now
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+            <a
+              class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
+              href="/category/mens-clothing"
+              role="listitem"
+            >
+              <div
+                class="group relative overflow-hidden rounded-xl bg-muted h-full"
+              >
+                <div
+                  class="aspect-square overflow-hidden"
+                >
+                  <div
+                    class="relative w-full h-full transition-transform duration-500 group-hover:scale-105"
+                  >
+                    <div
+                      class="w-full h-full"
+                    >
+                      <picture>
+                        <source
+                          media="(min-width: 1024px)"
+                          sizes="300px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70&sw=300 300w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70&sw=600 600w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 768px)"
+                          sizes="280px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70&sw=280 280w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70&sw=560 560w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 640px)"
+                          sizes="260px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70&sw=260 260w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70&sw=520 520w"
+                          type="image/webp"
+                        />
+                        <source
+                          sizes="240px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70&sw=240 240w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70&sw=480 480w"
+                          type="image/webp"
+                        />
+                        <img
+                          alt="Clothing"
+                          class="w-full h-full object-cover"
+                          fetchpriority="auto"
+                          loading="eager"
+                          src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw56b28e03/images/slot/sub_banners/cat-banner-mens-clothing.webp?sfrm=jpg&q=70"
+                        />
+                      </picture>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"
+                >
+                  <div
+                    class="absolute bottom-0 left-0 right-0 px-6 pb-6 pt-12 flex flex-col justify-end"
+                  >
+                    <div>
+                      <h3
+                        class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                      >
+                        Clothing
+                      </h3>
+                      <p
+                        class="text-sm text-white/90"
+                      >
+                        Stylish and comfortable men's clothing for every occasion
+                      </p>
+                    </div>
+                    <div
+                      class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
+                    >
+                      <span
+                        class="inline-block text-sm font-medium text-primary-foreground"
+                      >
+                        Shop Now
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+            <a
+              class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
+              href="/category/electronics"
+              role="listitem"
+            >
+              <div
+                class="group relative overflow-hidden rounded-xl bg-muted h-full"
+              >
+                <div
+                  class="aspect-square overflow-hidden"
+                >
+                  <div
+                    class="relative w-full h-full transition-transform duration-500 group-hover:scale-105"
+                  >
+                    <div
+                      class="w-full h-full"
+                    >
+                      <picture>
+                        <source
+                          media="(min-width: 1024px)"
+                          sizes="300px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70&sw=300 300w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70&sw=600 600w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 768px)"
+                          sizes="280px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70&sw=280 280w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70&sw=560 560w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 640px)"
+                          sizes="260px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70&sw=260 260w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70&sw=520 520w"
+                          type="image/webp"
+                        />
+                        <source
+                          sizes="240px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70&sw=240 240w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70&sw=480 480w"
+                          type="image/webp"
+                        />
+                        <img
+                          alt="Electronics"
+                          class="w-full h-full object-cover"
+                          fetchpriority="auto"
+                          loading="eager"
+                          src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70"
+                        />
+                      </picture>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"
+                >
+                  <div
+                    class="absolute bottom-0 left-0 right-0 px-6 pb-6 pt-12 flex flex-col justify-end"
+                  >
+                    <div>
+                      <h3
+                        class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                      >
+                        Electronics
+                      </h3>
+                      <p
+                        class="text-sm text-white/90"
+                      >
+                        Latest electronics and tech gadgets
+                      </p>
+                    </div>
+                    <div
+                      class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
+                    >
+                      <span
+                        class="inline-block text-sm font-medium text-primary-foreground"
+                      >
+                        Shop Now
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+            <a
+              class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
+              href="/category/home-living"
+              role="listitem"
+            >
+              <div
+                class="group relative overflow-hidden rounded-xl bg-muted h-full"
+              >
+                <div
+                  class="aspect-square overflow-hidden"
+                >
+                  <div
+                    class="relative w-full h-full transition-transform duration-500 group-hover:scale-105"
+                  >
+                    <div
+                      class="w-full h-full"
+                    >
+                      <picture>
+                        <source
+                          media="(min-width: 1024px)"
+                          sizes="300px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70&sw=300 300w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70&sw=600 600w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 768px)"
+                          sizes="280px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70&sw=280 280w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70&sw=560 560w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 640px)"
+                          sizes="260px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70&sw=260 260w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70&sw=520 520w"
+                          type="image/webp"
+                        />
+                        <source
+                          sizes="240px"
+                          srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70&sw=240 240w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70&sw=480 480w"
+                          type="image/webp"
+                        />
+                        <img
+                          alt="Home & Living"
+                          class="w-full h-full object-cover"
+                          fetchpriority="auto"
+                          loading="eager"
+                          src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70"
+                        />
+                      </picture>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"
+                >
+                  <div
+                    class="absolute bottom-0 left-0 right-0 px-6 pb-6 pt-12 flex flex-col justify-end"
+                  >
+                    <div>
+                      <h3
+                        class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                      >
+                        Home & Living
+                      </h3>
+                      <p
+                        class="text-sm text-white/90"
+                      >
+                        Transform your space with our home and living collection
+                      </p>
+                    </div>
+                    <div
+                      class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
+                    >
+                      <span
+                        class="inline-block text-sm font-medium text-primary-foreground"
+                      >
+                        Shop Now
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
           </div>
-          <div
-            data-testid="content-card"
+          <button
+            aria-label="Scroll Step into Elegance right"
+            class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 hidden md:flex absolute z-10 rounded-lg shadow-md transition-all duration-300 right-0 top-1/2 -translate-y-1/2 translate-x-1/2 opacity-0 pointer-events-none"
+            data-size="icon"
+            data-slot="button"
+            data-variant="outline"
           >
-            {"title":"Electronics","description":"Latest electronics and tech gadgets","imageUrl":"https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw98765432/images/slot/sub_banners/cat-banner-electronics.webp?sfrm=jpg&q=70","imageAlt":"Electronics","buttonText":"Shop Now","buttonLink":"/category/electronics","showBackground":true,"showBorder":true,"loading":"eager"}
-          </div>
-          <div
-            data-testid="content-card"
-          >
-            {"title":"Home & Living","description":"Transform your space with our home and living collection","imageUrl":"https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dw11223344/images/slot/sub_banners/cat-banner-home-living.webp?sfrm=jpg&q=70","imageAlt":"Home & Living","buttonText":"Shop Now","buttonLink":"/category/home-living","showBackground":true,"showBorder":true,"loading":"eager"}
-          </div>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-right w-5 h-5"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m9 18 6-6-6-6"
+              />
+            </svg>
+          </button>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </div>
 `;
@@ -270,48 +1647,419 @@ exports[`PopularCategories stories snapshot > WithoutImages story renders and ma
   <div
     class="bg-background min-h-screen"
   >
-    <div
-      class="pb-16"
+    <section
+      class="py-12 md:py-16 lg:py-24 bg-muted/50"
     >
       <div
-        class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8"
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
       >
         <div
-          class="text-center mb-8"
+          class="text-center mb-10 md:mb-12"
         >
           <h2
-            class="tracking-tight text-center text-3xl font-extrabold text-foreground sm:text-4xl"
+            class="text-2xl md:text-3xl lg:text-4xl font-light text-foreground mb-4 tracking-tight"
           >
             Step into Elegance
           </h2>
+          <p
+            class="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto"
+          >
+            At Salesforce Foundations, we believe design should be accessible, innovative, and timeless. Our collections are crafted for the modern individual who values quality, form, and lasting beauty.
+          </p>
         </div>
         <div
-          class="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-[var(--grid-cols)]"
-          style="--grid-cols: repeat(4, minmax(0, 1fr));"
+          class="relative"
         >
-          <div
-            data-testid="content-card"
+          <button
+            aria-label="Scroll Step into Elegance left"
+            class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 hidden md:flex absolute z-10 rounded-lg shadow-md transition-all duration-300 left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 opacity-0 pointer-events-none"
+            data-size="icon"
+            data-slot="button"
+            data-variant="outline"
           >
-            {"title":"Category One","description":"Description for category one","imageUrl":"/images/hero-cube.webp","imageAlt":"Category One","buttonText":"Shop Now","buttonLink":"/category/category-1","showBackground":true,"showBorder":true,"loading":"eager"}
-          </div>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-left w-5 h-5"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m15 18-6-6 6-6"
+              />
+            </svg>
+          </button>
           <div
-            data-testid="content-card"
+            class="flex gap-4 md:gap-6 overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            role="list"
           >
-            {"title":"Category Two","description":"Description for category two","imageUrl":"/images/hero-cube.webp","imageAlt":"Category Two","buttonText":"Shop Now","buttonLink":"/category/category-2","showBackground":true,"showBorder":true,"loading":"eager"}
+            <a
+              class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
+              href="/category/category-1"
+              role="listitem"
+            >
+              <div
+                class="group relative overflow-hidden rounded-xl bg-muted h-full"
+              >
+                <div
+                  class="aspect-square overflow-hidden"
+                >
+                  <div
+                    class="relative w-full h-full transition-transform duration-500 group-hover:scale-105"
+                  >
+                    <div
+                      class="w-full h-full"
+                    >
+                      <picture>
+                        <source
+                          media="(min-width: 1024px)"
+                          sizes="300px"
+                          srcset="/images/hero-cube.webp?sw=300&q=70 300w, /images/hero-cube.webp?sw=600&q=70 600w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 768px)"
+                          sizes="280px"
+                          srcset="/images/hero-cube.webp?sw=280&q=70 280w, /images/hero-cube.webp?sw=560&q=70 560w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 640px)"
+                          sizes="260px"
+                          srcset="/images/hero-cube.webp?sw=260&q=70 260w, /images/hero-cube.webp?sw=520&q=70 520w"
+                          type="image/webp"
+                        />
+                        <source
+                          sizes="240px"
+                          srcset="/images/hero-cube.webp?sw=240&q=70 240w, /images/hero-cube.webp?sw=480&q=70 480w"
+                          type="image/webp"
+                        />
+                        <img
+                          alt="Category One"
+                          class="w-full h-full object-cover"
+                          fetchpriority="auto"
+                          loading="eager"
+                          src="/images/hero-cube.jpg?sfrm=webp"
+                        />
+                      </picture>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"
+                >
+                  <div
+                    class="absolute bottom-0 left-0 right-0 px-6 pb-6 pt-12 flex flex-col justify-end"
+                  >
+                    <div>
+                      <h3
+                        class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                      >
+                        Category One
+                      </h3>
+                      <p
+                        class="text-sm text-white/90"
+                      >
+                        Description for category one
+                      </p>
+                    </div>
+                    <div
+                      class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
+                    >
+                      <span
+                        class="inline-block text-sm font-medium text-primary-foreground"
+                      >
+                        Shop Now
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+            <a
+              class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
+              href="/category/category-2"
+              role="listitem"
+            >
+              <div
+                class="group relative overflow-hidden rounded-xl bg-muted h-full"
+              >
+                <div
+                  class="aspect-square overflow-hidden"
+                >
+                  <div
+                    class="relative w-full h-full transition-transform duration-500 group-hover:scale-105"
+                  >
+                    <div
+                      class="w-full h-full"
+                    >
+                      <picture>
+                        <source
+                          media="(min-width: 1024px)"
+                          sizes="300px"
+                          srcset="/images/hero-cube.webp?sw=300&q=70 300w, /images/hero-cube.webp?sw=600&q=70 600w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 768px)"
+                          sizes="280px"
+                          srcset="/images/hero-cube.webp?sw=280&q=70 280w, /images/hero-cube.webp?sw=560&q=70 560w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 640px)"
+                          sizes="260px"
+                          srcset="/images/hero-cube.webp?sw=260&q=70 260w, /images/hero-cube.webp?sw=520&q=70 520w"
+                          type="image/webp"
+                        />
+                        <source
+                          sizes="240px"
+                          srcset="/images/hero-cube.webp?sw=240&q=70 240w, /images/hero-cube.webp?sw=480&q=70 480w"
+                          type="image/webp"
+                        />
+                        <img
+                          alt="Category Two"
+                          class="w-full h-full object-cover"
+                          fetchpriority="auto"
+                          loading="eager"
+                          src="/images/hero-cube.jpg?sfrm=webp"
+                        />
+                      </picture>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"
+                >
+                  <div
+                    class="absolute bottom-0 left-0 right-0 px-6 pb-6 pt-12 flex flex-col justify-end"
+                  >
+                    <div>
+                      <h3
+                        class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                      >
+                        Category Two
+                      </h3>
+                      <p
+                        class="text-sm text-white/90"
+                      >
+                        Description for category two
+                      </p>
+                    </div>
+                    <div
+                      class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
+                    >
+                      <span
+                        class="inline-block text-sm font-medium text-primary-foreground"
+                      >
+                        Shop Now
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+            <a
+              class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
+              href="/category/category-3"
+              role="listitem"
+            >
+              <div
+                class="group relative overflow-hidden rounded-xl bg-muted h-full"
+              >
+                <div
+                  class="aspect-square overflow-hidden"
+                >
+                  <div
+                    class="relative w-full h-full transition-transform duration-500 group-hover:scale-105"
+                  >
+                    <div
+                      class="w-full h-full"
+                    >
+                      <picture>
+                        <source
+                          media="(min-width: 1024px)"
+                          sizes="300px"
+                          srcset="/images/hero-cube.webp?sw=300&q=70 300w, /images/hero-cube.webp?sw=600&q=70 600w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 768px)"
+                          sizes="280px"
+                          srcset="/images/hero-cube.webp?sw=280&q=70 280w, /images/hero-cube.webp?sw=560&q=70 560w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 640px)"
+                          sizes="260px"
+                          srcset="/images/hero-cube.webp?sw=260&q=70 260w, /images/hero-cube.webp?sw=520&q=70 520w"
+                          type="image/webp"
+                        />
+                        <source
+                          sizes="240px"
+                          srcset="/images/hero-cube.webp?sw=240&q=70 240w, /images/hero-cube.webp?sw=480&q=70 480w"
+                          type="image/webp"
+                        />
+                        <img
+                          alt="Category Three"
+                          class="w-full h-full object-cover"
+                          fetchpriority="auto"
+                          loading="eager"
+                          src="/images/hero-cube.jpg?sfrm=webp"
+                        />
+                      </picture>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"
+                >
+                  <div
+                    class="absolute bottom-0 left-0 right-0 px-6 pb-6 pt-12 flex flex-col justify-end"
+                  >
+                    <div>
+                      <h3
+                        class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                      >
+                        Category Three
+                      </h3>
+                      <p
+                        class="text-sm text-white/90"
+                      >
+                        Description for category three
+                      </p>
+                    </div>
+                    <div
+                      class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
+                    >
+                      <span
+                        class="inline-block text-sm font-medium text-primary-foreground"
+                      >
+                        Shop Now
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+            <a
+              class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
+              href="/category/category-4"
+              role="listitem"
+            >
+              <div
+                class="group relative overflow-hidden rounded-xl bg-muted h-full"
+              >
+                <div
+                  class="aspect-square overflow-hidden"
+                >
+                  <div
+                    class="relative w-full h-full transition-transform duration-500 group-hover:scale-105"
+                  >
+                    <div
+                      class="w-full h-full"
+                    >
+                      <picture>
+                        <source
+                          media="(min-width: 1024px)"
+                          sizes="300px"
+                          srcset="/images/hero-cube.webp?sw=300&q=70 300w, /images/hero-cube.webp?sw=600&q=70 600w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 768px)"
+                          sizes="280px"
+                          srcset="/images/hero-cube.webp?sw=280&q=70 280w, /images/hero-cube.webp?sw=560&q=70 560w"
+                          type="image/webp"
+                        />
+                        <source
+                          media="(min-width: 640px)"
+                          sizes="260px"
+                          srcset="/images/hero-cube.webp?sw=260&q=70 260w, /images/hero-cube.webp?sw=520&q=70 520w"
+                          type="image/webp"
+                        />
+                        <source
+                          sizes="240px"
+                          srcset="/images/hero-cube.webp?sw=240&q=70 240w, /images/hero-cube.webp?sw=480&q=70 480w"
+                          type="image/webp"
+                        />
+                        <img
+                          alt="Category Four"
+                          class="w-full h-full object-cover"
+                          fetchpriority="auto"
+                          loading="eager"
+                          src="/images/hero-cube.jpg?sfrm=webp"
+                        />
+                      </picture>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"
+                >
+                  <div
+                    class="absolute bottom-0 left-0 right-0 px-6 pb-6 pt-12 flex flex-col justify-end"
+                  >
+                    <div>
+                      <h3
+                        class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                      >
+                        Category Four
+                      </h3>
+                      <p
+                        class="text-sm text-white/90"
+                      >
+                        Description for category four
+                      </p>
+                    </div>
+                    <div
+                      class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
+                    >
+                      <span
+                        class="inline-block text-sm font-medium text-primary-foreground"
+                      >
+                        Shop Now
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
           </div>
-          <div
-            data-testid="content-card"
+          <button
+            aria-label="Scroll Step into Elegance right"
+            class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 hidden md:flex absolute z-10 rounded-lg shadow-md transition-all duration-300 right-0 top-1/2 -translate-y-1/2 translate-x-1/2 opacity-0 pointer-events-none"
+            data-size="icon"
+            data-slot="button"
+            data-variant="outline"
           >
-            {"title":"Category Three","description":"Description for category three","imageUrl":"/images/hero-cube.webp","imageAlt":"Category Three","buttonText":"Shop Now","buttonLink":"/category/category-3","showBackground":true,"showBorder":true,"loading":"eager"}
-          </div>
-          <div
-            data-testid="content-card"
-          >
-            {"title":"Category Four","description":"Description for category four","imageUrl":"/images/hero-cube.webp","imageAlt":"Category Four","buttonText":"Shop Now","buttonLink":"/category/category-4","showBackground":true,"showBorder":true,"loading":"eager"}
-          </div>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-right w-5 h-5"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m9 18 6-6-6-6"
+              />
+            </svg>
+          </button>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </div>
 `;

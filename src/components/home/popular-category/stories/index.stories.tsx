@@ -165,7 +165,7 @@ export const Default: Story = {
         await expect(shopNowButton).toBeInTheDocument();
 
         // Verify category link
-        const link = canvas.getByRole('link');
+        const link = canvas.getByRole('listitem');
         await expect(link).toHaveAttribute('href', '/category/mens');
     },
 };
@@ -190,7 +190,7 @@ export const WithCategoryProp: Story = {
 
         await expect(canvas.getByText('Ties')).toBeInTheDocument();
         await expect(canvas.getByText(/shop mens's ties/i)).toBeInTheDocument();
-        await expect(canvas.getByRole('link')).toHaveAttribute('href', '/category/mens-accessories-ties');
+        await expect(canvas.getByRole('listitem')).toHaveAttribute('href', '/category/mens-accessories-ties');
     },
 };
 
@@ -227,7 +227,7 @@ export const Fallback: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'Category card in fallback state when no data is provided.',
+                story: 'Category card in fallback state when no data is provided — renders nothing.',
             },
         },
     },
@@ -235,10 +235,8 @@ export const Fallback: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Should still show shop now button
-        await expect(canvas.getByText(/shop now/i)).toBeInTheDocument();
-        // Link should point to root
-        await expect(canvas.getByRole('link')).toHaveAttribute('href', '/category/root');
+        // Component returns null when no data is provided
+        await expect(canvas.queryByRole('listitem')).not.toBeInTheDocument();
     },
 };
 
@@ -265,16 +263,16 @@ export const InteractionTest: Story = {
         await expect(title).toBeInTheDocument();
 
         // Find the shop now button/link
-        const shopNowLink = await canvas.findByRole('link', { name: /shop now/i }, { timeout: 3000 });
-        await expect(shopNowLink).toBeInTheDocument();
+        const card = canvas.getByRole('listitem');
+        await expect(card).toBeInTheDocument();
 
-        // Test clicking the shop now button
-        await userEvent.click(shopNowLink);
+        // Test clicking the category card
+        await userEvent.click(card);
 
         // Test hovering over the card
-        const card = canvas.getByText('Mens').closest('div');
-        if (card) {
-            await userEvent.hover(card);
+        const cardElement = canvas.getByText('Mens').closest('div');
+        if (cardElement) {
+            await userEvent.hover(cardElement);
         }
 
         // Verify all elements are present

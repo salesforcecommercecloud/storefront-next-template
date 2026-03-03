@@ -27,19 +27,19 @@ export default function Header({ children }: PropsWithChildren): ReactElement {
     const location = useLocation();
 
     return (
-        <header className="bg-header-background text-header-foreground shadow-md sticky top-0 z-50">
-            <div className="container mx-auto px-4 py-4">
-                <div className="flex items-center justify-between">
+        <header className="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex items-center justify-between h-16">
                     {/* Logo */}
-                    <Link to="/" className="flex items-center space-x-4">
-                        <img src={logo} alt={t('logoAlt')} />
+                    <Link to="/" className="flex-shrink-0 flex items-center gap-2">
+                        <img src={logo} alt={t('logoAlt')} className="h-10 w-auto" />
                     </Link>
 
                     {/* Mega Menu */}
                     {children}
 
                     {/* Search, Account Icon, Cart */}
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-2">
                         <Search key={`${location.pathname}${location.search}`} />
                         <UITarget targetId="header.before.cart" />
                         <UserActions />

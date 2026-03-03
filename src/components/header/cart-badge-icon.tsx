@@ -22,13 +22,15 @@ import { Badge } from '@/components/ui/badge';
 export default function CartBadgeIcon({ numberOfItems }: { numberOfItems: number }): ReactElement {
     return (
         <>
-            <ShoppingCart className="size-6" data-testid="shopping-cart-icon" />
-            <Badge
-                variant="default"
-                className="h-4 min-w-4 rounded-full px-1 font-mono tabular-num"
-                data-testid="shopping-cart-badge">
-                {numberOfItems}
-            </Badge>
+            <ShoppingCart className="size-5" data-testid="shopping-cart-icon" />
+            {numberOfItems > 0 && (
+                <Badge
+                    variant="default"
+                    className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full px-1 text-xs font-medium flex items-center justify-center"
+                    data-testid="shopping-cart-badge">
+                    {numberOfItems}
+                </Badge>
+            )}
         </>
     );
 }

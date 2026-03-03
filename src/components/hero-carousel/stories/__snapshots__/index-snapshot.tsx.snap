@@ -4,7 +4,7 @@ exports[`HeroCarousel stories snapshot > Default story renders and matches snaps
 <div>
   <div
     aria-label="Hero carousel with 3 slides"
-    class="relative w-full h-[100vh] md:h-[85vh] overflow-hidden"
+    class="relative w-full h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden"
     role="region"
     tabindex="0"
   >
@@ -38,30 +38,31 @@ exports[`HeroCarousel stories snapshot > Default story renders and matches snaps
                 src="https://via.placeholder.com/1920x1080?text=Slide+1"
               />
               <div
-                class="absolute inset-0 z-10 flex items-center justify-center"
+                class="absolute inset-0"
+                style="background: linear-gradient(to top, color-mix(in oklch, var(--brand-black) 30%, transparent) 0%, transparent 100%), linear-gradient(to right, color-mix(in oklch, var(--brand-black) 60%, transparent) 0%, color-mix(in oklch, var(--brand-black) 30%, transparent) 50%, transparent 100%);"
+              />
+              <div
+                class="relative h-full flex items-center z-20 overflow-hidden"
               >
                 <div
-                  class="container mx-auto px-4 sm:px-6 lg:px-8"
+                  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
                 >
                   <div
-                    class="max-w-2xl mx-auto text-center"
-                    data-theme="foundations-light"
+                    class="max-w-xl"
                   >
                     <h1
-                      class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4 md:mb-6 leading-none tracking-tight"
+                      class="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4 tracking-tight"
                     >
                       Welcome to Our Store
                     </h1>
                     <p
-                      class="text-sm sm:text-base md:text-lg lg:text-xl font-normal text-muted-foreground mb-4 sm:mb-6 md:mb-8 leading-none tracking-wide"
+                      class="text-base md:text-lg text-white/90 mb-8 font-normal"
                     >
                       Discover amazing products
                     </p>
-                    <div
-                      class="flex justify-center"
-                    >
+                    <div>
                       <a
-                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 has-[>svg]:px-3 text-sm sm:text-base md:text-lg lg:text-xl p-3 sm:p-4 md:p-5 lg:p-6"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-base"
                         data-size="default"
                         data-slot="button"
                         data-variant="default"
@@ -91,30 +92,31 @@ exports[`HeroCarousel stories snapshot > Default story renders and matches snaps
                 src="https://via.placeholder.com/1920x1080?text=Slide+2"
               />
               <div
-                class="absolute inset-0 z-10 flex items-center justify-center"
+                class="absolute inset-0"
+                style="background: linear-gradient(to top, color-mix(in oklch, var(--brand-black) 30%, transparent) 0%, transparent 100%), linear-gradient(to right, color-mix(in oklch, var(--brand-black) 60%, transparent) 0%, color-mix(in oklch, var(--brand-black) 30%, transparent) 50%, transparent 100%);"
+              />
+              <div
+                class="relative h-full flex items-center z-20 overflow-hidden"
               >
                 <div
-                  class="container mx-auto px-4 sm:px-6 lg:px-8"
+                  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
                 >
                   <div
-                    class="max-w-2xl mx-auto text-center"
-                    data-theme="foundations-light"
+                    class="max-w-xl"
                   >
                     <h1
-                      class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4 md:mb-6 leading-none tracking-tight"
+                      class="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4 tracking-tight"
                     >
                       New Collection
                     </h1>
                     <p
-                      class="text-sm sm:text-base md:text-lg lg:text-xl font-normal text-muted-foreground mb-4 sm:mb-6 md:mb-8 leading-none tracking-wide"
+                      class="text-base md:text-lg text-white/90 mb-8 font-normal"
                     >
                       Latest fashion trends
                     </p>
-                    <div
-                      class="flex justify-center"
-                    >
+                    <div>
                       <a
-                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 has-[>svg]:px-3 text-sm sm:text-base md:text-lg lg:text-xl p-3 sm:p-4 md:p-5 lg:p-6"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-base"
                         data-size="default"
                         data-slot="button"
                         data-variant="default"
@@ -144,30 +146,31 @@ exports[`HeroCarousel stories snapshot > Default story renders and matches snaps
                 src="https://via.placeholder.com/1920x1080?text=Slide+3"
               />
               <div
-                class="absolute inset-0 z-10 flex items-center justify-center"
+                class="absolute inset-0"
+                style="background: linear-gradient(to top, color-mix(in oklch, var(--brand-black) 30%, transparent) 0%, transparent 100%), linear-gradient(to right, color-mix(in oklch, var(--brand-black) 60%, transparent) 0%, color-mix(in oklch, var(--brand-black) 30%, transparent) 50%, transparent 100%);"
+              />
+              <div
+                class="relative h-full flex items-center z-20 overflow-hidden"
               >
                 <div
-                  class="container mx-auto px-4 sm:px-6 lg:px-8"
+                  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
                 >
                   <div
-                    class="max-w-2xl mx-auto text-center"
-                    data-theme="foundations-light"
+                    class="max-w-xl"
                   >
                     <h1
-                      class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4 md:mb-6 leading-none tracking-tight"
+                      class="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4 tracking-tight"
                     >
                       Special Offers
                     </h1>
                     <p
-                      class="text-sm sm:text-base md:text-lg lg:text-xl font-normal text-muted-foreground mb-4 sm:mb-6 md:mb-8 leading-none tracking-wide"
+                      class="text-base md:text-lg text-white/90 mb-8 font-normal"
                     >
                       Limited time deals
                     </p>
-                    <div
-                      class="flex justify-center"
-                    >
+                    <div>
                       <a
-                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 has-[>svg]:px-3 text-sm sm:text-base md:text-lg lg:text-xl p-3 sm:p-4 md:p-5 lg:p-6"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-base"
                         data-size="default"
                         data-slot="button"
                         data-variant="default"
@@ -186,27 +189,27 @@ exports[`HeroCarousel stories snapshot > Default story renders and matches snaps
     </div>
     <div
       aria-label="Slide navigation"
-      class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex space-x-2"
+      class="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-2"
       role="tablist"
     >
       <button
         aria-label="Go to slide 1 of 3"
         aria-selected="true"
-        class="transition-all duration-300 w-8 h-2 bg-foreground"
+        class="transition-all duration-300 rounded-full focus:outline-none focus:ring-2 focus:ring-white/50 w-8 h-2 bg-white"
         role="tab"
         tabindex="0"
       />
       <button
         aria-label="Go to slide 2 of 3"
         aria-selected="false"
-        class="transition-all duration-300 w-2 h-2 bg-foreground/50 hover:bg-foreground/75"
+        class="transition-all duration-300 rounded-full focus:outline-none focus:ring-2 focus:ring-white/50 w-2 h-2 bg-white/50 hover:bg-white/75"
         role="tab"
         tabindex="-1"
       />
       <button
         aria-label="Go to slide 3 of 3"
         aria-selected="false"
-        class="transition-all duration-300 w-2 h-2 bg-foreground/50 hover:bg-foreground/75"
+        class="transition-all duration-300 rounded-full focus:outline-none focus:ring-2 focus:ring-white/50 w-2 h-2 bg-white/50 hover:bg-white/75"
         role="tab"
         tabindex="-1"
       />
@@ -216,11 +219,11 @@ exports[`HeroCarousel stories snapshot > Default story renders and matches snaps
     >
       <button
         aria-label="Previous slide (1 of 3)"
-        class="p-3 bg-foreground/10 hover:bg-foreground/20 backdrop-blur-sm transition-all focus:outline-none focus:ring-2 focus:ring-foreground/50 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
       >
         <svg
           aria-hidden="true"
-          class="lucide lucide-chevron-left w-6 h-6 text-foreground"
+          class="lucide lucide-chevron-left w-6 h-6 text-primary-foreground"
           fill="none"
           height="24"
           stroke="currentColor"
@@ -238,11 +241,11 @@ exports[`HeroCarousel stories snapshot > Default story renders and matches snaps
       </button>
       <button
         aria-label="Next slide (1 of 3)"
-        class="p-3 bg-foreground/10 hover:bg-foreground/20 backdrop-blur-sm transition-all focus:outline-none focus:ring-2 focus:ring-foreground/50 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
       >
         <svg
           aria-hidden="true"
-          class="lucide lucide-chevron-right w-6 h-6 text-foreground"
+          class="lucide lucide-chevron-right w-6 h-6 text-primary-foreground"
           fill="none"
           height="24"
           stroke="currentColor"
@@ -279,7 +282,7 @@ exports[`HeroCarousel stories snapshot > WithoutAutoPlay story renders and match
 <div>
   <div
     aria-label="Hero carousel with 3 slides"
-    class="relative w-full h-[100vh] md:h-[85vh] overflow-hidden"
+    class="relative w-full h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden"
     role="region"
     tabindex="0"
   >
@@ -313,30 +316,31 @@ exports[`HeroCarousel stories snapshot > WithoutAutoPlay story renders and match
                 src="https://via.placeholder.com/1920x1080?text=Slide+1"
               />
               <div
-                class="absolute inset-0 z-10 flex items-center justify-center"
+                class="absolute inset-0"
+                style="background: linear-gradient(to top, color-mix(in oklch, var(--brand-black) 30%, transparent) 0%, transparent 100%), linear-gradient(to right, color-mix(in oklch, var(--brand-black) 60%, transparent) 0%, color-mix(in oklch, var(--brand-black) 30%, transparent) 50%, transparent 100%);"
+              />
+              <div
+                class="relative h-full flex items-center z-20 overflow-hidden"
               >
                 <div
-                  class="container mx-auto px-4 sm:px-6 lg:px-8"
+                  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
                 >
                   <div
-                    class="max-w-2xl mx-auto text-center"
-                    data-theme="foundations-light"
+                    class="max-w-xl"
                   >
                     <h1
-                      class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4 md:mb-6 leading-none tracking-tight"
+                      class="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4 tracking-tight"
                     >
                       Welcome to Our Store
                     </h1>
                     <p
-                      class="text-sm sm:text-base md:text-lg lg:text-xl font-normal text-muted-foreground mb-4 sm:mb-6 md:mb-8 leading-none tracking-wide"
+                      class="text-base md:text-lg text-white/90 mb-8 font-normal"
                     >
                       Discover amazing products
                     </p>
-                    <div
-                      class="flex justify-center"
-                    >
+                    <div>
                       <a
-                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 has-[>svg]:px-3 text-sm sm:text-base md:text-lg lg:text-xl p-3 sm:p-4 md:p-5 lg:p-6"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-base"
                         data-size="default"
                         data-slot="button"
                         data-variant="default"
@@ -366,30 +370,31 @@ exports[`HeroCarousel stories snapshot > WithoutAutoPlay story renders and match
                 src="https://via.placeholder.com/1920x1080?text=Slide+2"
               />
               <div
-                class="absolute inset-0 z-10 flex items-center justify-center"
+                class="absolute inset-0"
+                style="background: linear-gradient(to top, color-mix(in oklch, var(--brand-black) 30%, transparent) 0%, transparent 100%), linear-gradient(to right, color-mix(in oklch, var(--brand-black) 60%, transparent) 0%, color-mix(in oklch, var(--brand-black) 30%, transparent) 50%, transparent 100%);"
+              />
+              <div
+                class="relative h-full flex items-center z-20 overflow-hidden"
               >
                 <div
-                  class="container mx-auto px-4 sm:px-6 lg:px-8"
+                  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
                 >
                   <div
-                    class="max-w-2xl mx-auto text-center"
-                    data-theme="foundations-light"
+                    class="max-w-xl"
                   >
                     <h1
-                      class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4 md:mb-6 leading-none tracking-tight"
+                      class="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4 tracking-tight"
                     >
                       New Collection
                     </h1>
                     <p
-                      class="text-sm sm:text-base md:text-lg lg:text-xl font-normal text-muted-foreground mb-4 sm:mb-6 md:mb-8 leading-none tracking-wide"
+                      class="text-base md:text-lg text-white/90 mb-8 font-normal"
                     >
                       Latest fashion trends
                     </p>
-                    <div
-                      class="flex justify-center"
-                    >
+                    <div>
                       <a
-                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 has-[>svg]:px-3 text-sm sm:text-base md:text-lg lg:text-xl p-3 sm:p-4 md:p-5 lg:p-6"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-base"
                         data-size="default"
                         data-slot="button"
                         data-variant="default"
@@ -419,30 +424,31 @@ exports[`HeroCarousel stories snapshot > WithoutAutoPlay story renders and match
                 src="https://via.placeholder.com/1920x1080?text=Slide+3"
               />
               <div
-                class="absolute inset-0 z-10 flex items-center justify-center"
+                class="absolute inset-0"
+                style="background: linear-gradient(to top, color-mix(in oklch, var(--brand-black) 30%, transparent) 0%, transparent 100%), linear-gradient(to right, color-mix(in oklch, var(--brand-black) 60%, transparent) 0%, color-mix(in oklch, var(--brand-black) 30%, transparent) 50%, transparent 100%);"
+              />
+              <div
+                class="relative h-full flex items-center z-20 overflow-hidden"
               >
                 <div
-                  class="container mx-auto px-4 sm:px-6 lg:px-8"
+                  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
                 >
                   <div
-                    class="max-w-2xl mx-auto text-center"
-                    data-theme="foundations-light"
+                    class="max-w-xl"
                   >
                     <h1
-                      class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4 md:mb-6 leading-none tracking-tight"
+                      class="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4 tracking-tight"
                     >
                       Special Offers
                     </h1>
                     <p
-                      class="text-sm sm:text-base md:text-lg lg:text-xl font-normal text-muted-foreground mb-4 sm:mb-6 md:mb-8 leading-none tracking-wide"
+                      class="text-base md:text-lg text-white/90 mb-8 font-normal"
                     >
                       Limited time deals
                     </p>
-                    <div
-                      class="flex justify-center"
-                    >
+                    <div>
                       <a
-                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 has-[>svg]:px-3 text-sm sm:text-base md:text-lg lg:text-xl p-3 sm:p-4 md:p-5 lg:p-6"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-base"
                         data-size="default"
                         data-slot="button"
                         data-variant="default"
@@ -461,27 +467,27 @@ exports[`HeroCarousel stories snapshot > WithoutAutoPlay story renders and match
     </div>
     <div
       aria-label="Slide navigation"
-      class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex space-x-2"
+      class="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-2"
       role="tablist"
     >
       <button
         aria-label="Go to slide 1 of 3"
         aria-selected="true"
-        class="transition-all duration-300 w-8 h-2 bg-foreground"
+        class="transition-all duration-300 rounded-full focus:outline-none focus:ring-2 focus:ring-white/50 w-8 h-2 bg-white"
         role="tab"
         tabindex="0"
       />
       <button
         aria-label="Go to slide 2 of 3"
         aria-selected="false"
-        class="transition-all duration-300 w-2 h-2 bg-foreground/50 hover:bg-foreground/75"
+        class="transition-all duration-300 rounded-full focus:outline-none focus:ring-2 focus:ring-white/50 w-2 h-2 bg-white/50 hover:bg-white/75"
         role="tab"
         tabindex="-1"
       />
       <button
         aria-label="Go to slide 3 of 3"
         aria-selected="false"
-        class="transition-all duration-300 w-2 h-2 bg-foreground/50 hover:bg-foreground/75"
+        class="transition-all duration-300 rounded-full focus:outline-none focus:ring-2 focus:ring-white/50 w-2 h-2 bg-white/50 hover:bg-white/75"
         role="tab"
         tabindex="-1"
       />
@@ -491,11 +497,11 @@ exports[`HeroCarousel stories snapshot > WithoutAutoPlay story renders and match
     >
       <button
         aria-label="Previous slide (1 of 3)"
-        class="p-3 bg-foreground/10 hover:bg-foreground/20 backdrop-blur-sm transition-all focus:outline-none focus:ring-2 focus:ring-foreground/50 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
       >
         <svg
           aria-hidden="true"
-          class="lucide lucide-chevron-left w-6 h-6 text-foreground"
+          class="lucide lucide-chevron-left w-6 h-6 text-primary-foreground"
           fill="none"
           height="24"
           stroke="currentColor"
@@ -513,11 +519,11 @@ exports[`HeroCarousel stories snapshot > WithoutAutoPlay story renders and match
       </button>
       <button
         aria-label="Next slide (1 of 3)"
-        class="p-3 bg-foreground/10 hover:bg-foreground/20 backdrop-blur-sm transition-all focus:outline-none focus:ring-2 focus:ring-foreground/50 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
       >
         <svg
           aria-hidden="true"
-          class="lucide lucide-chevron-right w-6 h-6 text-foreground"
+          class="lucide lucide-chevron-right w-6 h-6 text-primary-foreground"
           fill="none"
           height="24"
           stroke="currentColor"
@@ -554,7 +560,7 @@ exports[`HeroCarousel stories snapshot > WithoutDots story renders and matches s
 <div>
   <div
     aria-label="Hero carousel with 3 slides"
-    class="relative w-full h-[100vh] md:h-[85vh] overflow-hidden"
+    class="relative w-full h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden"
     role="region"
     tabindex="0"
   >
@@ -588,30 +594,31 @@ exports[`HeroCarousel stories snapshot > WithoutDots story renders and matches s
                 src="https://via.placeholder.com/1920x1080?text=Slide+1"
               />
               <div
-                class="absolute inset-0 z-10 flex items-center justify-center"
+                class="absolute inset-0"
+                style="background: linear-gradient(to top, color-mix(in oklch, var(--brand-black) 30%, transparent) 0%, transparent 100%), linear-gradient(to right, color-mix(in oklch, var(--brand-black) 60%, transparent) 0%, color-mix(in oklch, var(--brand-black) 30%, transparent) 50%, transparent 100%);"
+              />
+              <div
+                class="relative h-full flex items-center z-20 overflow-hidden"
               >
                 <div
-                  class="container mx-auto px-4 sm:px-6 lg:px-8"
+                  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
                 >
                   <div
-                    class="max-w-2xl mx-auto text-center"
-                    data-theme="foundations-light"
+                    class="max-w-xl"
                   >
                     <h1
-                      class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4 md:mb-6 leading-none tracking-tight"
+                      class="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4 tracking-tight"
                     >
                       Welcome to Our Store
                     </h1>
                     <p
-                      class="text-sm sm:text-base md:text-lg lg:text-xl font-normal text-muted-foreground mb-4 sm:mb-6 md:mb-8 leading-none tracking-wide"
+                      class="text-base md:text-lg text-white/90 mb-8 font-normal"
                     >
                       Discover amazing products
                     </p>
-                    <div
-                      class="flex justify-center"
-                    >
+                    <div>
                       <a
-                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 has-[>svg]:px-3 text-sm sm:text-base md:text-lg lg:text-xl p-3 sm:p-4 md:p-5 lg:p-6"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-base"
                         data-size="default"
                         data-slot="button"
                         data-variant="default"
@@ -641,30 +648,31 @@ exports[`HeroCarousel stories snapshot > WithoutDots story renders and matches s
                 src="https://via.placeholder.com/1920x1080?text=Slide+2"
               />
               <div
-                class="absolute inset-0 z-10 flex items-center justify-center"
+                class="absolute inset-0"
+                style="background: linear-gradient(to top, color-mix(in oklch, var(--brand-black) 30%, transparent) 0%, transparent 100%), linear-gradient(to right, color-mix(in oklch, var(--brand-black) 60%, transparent) 0%, color-mix(in oklch, var(--brand-black) 30%, transparent) 50%, transparent 100%);"
+              />
+              <div
+                class="relative h-full flex items-center z-20 overflow-hidden"
               >
                 <div
-                  class="container mx-auto px-4 sm:px-6 lg:px-8"
+                  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
                 >
                   <div
-                    class="max-w-2xl mx-auto text-center"
-                    data-theme="foundations-light"
+                    class="max-w-xl"
                   >
                     <h1
-                      class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4 md:mb-6 leading-none tracking-tight"
+                      class="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4 tracking-tight"
                     >
                       New Collection
                     </h1>
                     <p
-                      class="text-sm sm:text-base md:text-lg lg:text-xl font-normal text-muted-foreground mb-4 sm:mb-6 md:mb-8 leading-none tracking-wide"
+                      class="text-base md:text-lg text-white/90 mb-8 font-normal"
                     >
                       Latest fashion trends
                     </p>
-                    <div
-                      class="flex justify-center"
-                    >
+                    <div>
                       <a
-                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 has-[>svg]:px-3 text-sm sm:text-base md:text-lg lg:text-xl p-3 sm:p-4 md:p-5 lg:p-6"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-base"
                         data-size="default"
                         data-slot="button"
                         data-variant="default"
@@ -694,30 +702,31 @@ exports[`HeroCarousel stories snapshot > WithoutDots story renders and matches s
                 src="https://via.placeholder.com/1920x1080?text=Slide+3"
               />
               <div
-                class="absolute inset-0 z-10 flex items-center justify-center"
+                class="absolute inset-0"
+                style="background: linear-gradient(to top, color-mix(in oklch, var(--brand-black) 30%, transparent) 0%, transparent 100%), linear-gradient(to right, color-mix(in oklch, var(--brand-black) 60%, transparent) 0%, color-mix(in oklch, var(--brand-black) 30%, transparent) 50%, transparent 100%);"
+              />
+              <div
+                class="relative h-full flex items-center z-20 overflow-hidden"
               >
                 <div
-                  class="container mx-auto px-4 sm:px-6 lg:px-8"
+                  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
                 >
                   <div
-                    class="max-w-2xl mx-auto text-center"
-                    data-theme="foundations-light"
+                    class="max-w-xl"
                   >
                     <h1
-                      class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4 md:mb-6 leading-none tracking-tight"
+                      class="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4 tracking-tight"
                     >
                       Special Offers
                     </h1>
                     <p
-                      class="text-sm sm:text-base md:text-lg lg:text-xl font-normal text-muted-foreground mb-4 sm:mb-6 md:mb-8 leading-none tracking-wide"
+                      class="text-base md:text-lg text-white/90 mb-8 font-normal"
                     >
                       Limited time deals
                     </p>
-                    <div
-                      class="flex justify-center"
-                    >
+                    <div>
                       <a
-                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 has-[>svg]:px-3 text-sm sm:text-base md:text-lg lg:text-xl p-3 sm:p-4 md:p-5 lg:p-6"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-base"
                         data-size="default"
                         data-slot="button"
                         data-variant="default"
@@ -739,11 +748,11 @@ exports[`HeroCarousel stories snapshot > WithoutDots story renders and matches s
     >
       <button
         aria-label="Previous slide (1 of 3)"
-        class="p-3 bg-foreground/10 hover:bg-foreground/20 backdrop-blur-sm transition-all focus:outline-none focus:ring-2 focus:ring-foreground/50 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
       >
         <svg
           aria-hidden="true"
-          class="lucide lucide-chevron-left w-6 h-6 text-foreground"
+          class="lucide lucide-chevron-left w-6 h-6 text-primary-foreground"
           fill="none"
           height="24"
           stroke="currentColor"
@@ -761,11 +770,11 @@ exports[`HeroCarousel stories snapshot > WithoutDots story renders and matches s
       </button>
       <button
         aria-label="Next slide (1 of 3)"
-        class="p-3 bg-foreground/10 hover:bg-foreground/20 backdrop-blur-sm transition-all focus:outline-none focus:ring-2 focus:ring-foreground/50 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
       >
         <svg
           aria-hidden="true"
-          class="lucide lucide-chevron-right w-6 h-6 text-foreground"
+          class="lucide lucide-chevron-right w-6 h-6 text-primary-foreground"
           fill="none"
           height="24"
           stroke="currentColor"
@@ -802,7 +811,7 @@ exports[`HeroCarousel stories snapshot > WithoutNavigation story renders and mat
 <div>
   <div
     aria-label="Hero carousel with 3 slides"
-    class="relative w-full h-[100vh] md:h-[85vh] overflow-hidden"
+    class="relative w-full h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden"
     role="region"
     tabindex="0"
   >
@@ -836,30 +845,31 @@ exports[`HeroCarousel stories snapshot > WithoutNavigation story renders and mat
                 src="https://via.placeholder.com/1920x1080?text=Slide+1"
               />
               <div
-                class="absolute inset-0 z-10 flex items-center justify-center"
+                class="absolute inset-0"
+                style="background: linear-gradient(to top, color-mix(in oklch, var(--brand-black) 30%, transparent) 0%, transparent 100%), linear-gradient(to right, color-mix(in oklch, var(--brand-black) 60%, transparent) 0%, color-mix(in oklch, var(--brand-black) 30%, transparent) 50%, transparent 100%);"
+              />
+              <div
+                class="relative h-full flex items-center z-20 overflow-hidden"
               >
                 <div
-                  class="container mx-auto px-4 sm:px-6 lg:px-8"
+                  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
                 >
                   <div
-                    class="max-w-2xl mx-auto text-center"
-                    data-theme="foundations-light"
+                    class="max-w-xl"
                   >
                     <h1
-                      class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4 md:mb-6 leading-none tracking-tight"
+                      class="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4 tracking-tight"
                     >
                       Welcome to Our Store
                     </h1>
                     <p
-                      class="text-sm sm:text-base md:text-lg lg:text-xl font-normal text-muted-foreground mb-4 sm:mb-6 md:mb-8 leading-none tracking-wide"
+                      class="text-base md:text-lg text-white/90 mb-8 font-normal"
                     >
                       Discover amazing products
                     </p>
-                    <div
-                      class="flex justify-center"
-                    >
+                    <div>
                       <a
-                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 has-[>svg]:px-3 text-sm sm:text-base md:text-lg lg:text-xl p-3 sm:p-4 md:p-5 lg:p-6"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-base"
                         data-size="default"
                         data-slot="button"
                         data-variant="default"
@@ -889,30 +899,31 @@ exports[`HeroCarousel stories snapshot > WithoutNavigation story renders and mat
                 src="https://via.placeholder.com/1920x1080?text=Slide+2"
               />
               <div
-                class="absolute inset-0 z-10 flex items-center justify-center"
+                class="absolute inset-0"
+                style="background: linear-gradient(to top, color-mix(in oklch, var(--brand-black) 30%, transparent) 0%, transparent 100%), linear-gradient(to right, color-mix(in oklch, var(--brand-black) 60%, transparent) 0%, color-mix(in oklch, var(--brand-black) 30%, transparent) 50%, transparent 100%);"
+              />
+              <div
+                class="relative h-full flex items-center z-20 overflow-hidden"
               >
                 <div
-                  class="container mx-auto px-4 sm:px-6 lg:px-8"
+                  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
                 >
                   <div
-                    class="max-w-2xl mx-auto text-center"
-                    data-theme="foundations-light"
+                    class="max-w-xl"
                   >
                     <h1
-                      class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4 md:mb-6 leading-none tracking-tight"
+                      class="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4 tracking-tight"
                     >
                       New Collection
                     </h1>
                     <p
-                      class="text-sm sm:text-base md:text-lg lg:text-xl font-normal text-muted-foreground mb-4 sm:mb-6 md:mb-8 leading-none tracking-wide"
+                      class="text-base md:text-lg text-white/90 mb-8 font-normal"
                     >
                       Latest fashion trends
                     </p>
-                    <div
-                      class="flex justify-center"
-                    >
+                    <div>
                       <a
-                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 has-[>svg]:px-3 text-sm sm:text-base md:text-lg lg:text-xl p-3 sm:p-4 md:p-5 lg:p-6"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-base"
                         data-size="default"
                         data-slot="button"
                         data-variant="default"
@@ -942,30 +953,31 @@ exports[`HeroCarousel stories snapshot > WithoutNavigation story renders and mat
                 src="https://via.placeholder.com/1920x1080?text=Slide+3"
               />
               <div
-                class="absolute inset-0 z-10 flex items-center justify-center"
+                class="absolute inset-0"
+                style="background: linear-gradient(to top, color-mix(in oklch, var(--brand-black) 30%, transparent) 0%, transparent 100%), linear-gradient(to right, color-mix(in oklch, var(--brand-black) 60%, transparent) 0%, color-mix(in oklch, var(--brand-black) 30%, transparent) 50%, transparent 100%);"
+              />
+              <div
+                class="relative h-full flex items-center z-20 overflow-hidden"
               >
                 <div
-                  class="container mx-auto px-4 sm:px-6 lg:px-8"
+                  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
                 >
                   <div
-                    class="max-w-2xl mx-auto text-center"
-                    data-theme="foundations-light"
+                    class="max-w-xl"
                   >
                     <h1
-                      class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4 md:mb-6 leading-none tracking-tight"
+                      class="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4 tracking-tight"
                     >
                       Special Offers
                     </h1>
                     <p
-                      class="text-sm sm:text-base md:text-lg lg:text-xl font-normal text-muted-foreground mb-4 sm:mb-6 md:mb-8 leading-none tracking-wide"
+                      class="text-base md:text-lg text-white/90 mb-8 font-normal"
                     >
                       Limited time deals
                     </p>
-                    <div
-                      class="flex justify-center"
-                    >
+                    <div>
                       <a
-                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 has-[>svg]:px-3 text-sm sm:text-base md:text-lg lg:text-xl p-3 sm:p-4 md:p-5 lg:p-6"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-base"
                         data-size="default"
                         data-slot="button"
                         data-variant="default"
@@ -984,27 +996,27 @@ exports[`HeroCarousel stories snapshot > WithoutNavigation story renders and mat
     </div>
     <div
       aria-label="Slide navigation"
-      class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex space-x-2"
+      class="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-2"
       role="tablist"
     >
       <button
         aria-label="Go to slide 1 of 3"
         aria-selected="true"
-        class="transition-all duration-300 w-8 h-2 bg-foreground"
+        class="transition-all duration-300 rounded-full focus:outline-none focus:ring-2 focus:ring-white/50 w-8 h-2 bg-white"
         role="tab"
         tabindex="0"
       />
       <button
         aria-label="Go to slide 2 of 3"
         aria-selected="false"
-        class="transition-all duration-300 w-2 h-2 bg-foreground/50 hover:bg-foreground/75"
+        class="transition-all duration-300 rounded-full focus:outline-none focus:ring-2 focus:ring-white/50 w-2 h-2 bg-white/50 hover:bg-white/75"
         role="tab"
         tabindex="-1"
       />
       <button
         aria-label="Go to slide 3 of 3"
         aria-selected="false"
-        class="transition-all duration-300 w-2 h-2 bg-foreground/50 hover:bg-foreground/75"
+        class="transition-all duration-300 rounded-full focus:outline-none focus:ring-2 focus:ring-white/50 w-2 h-2 bg-white/50 hover:bg-white/75"
         role="tab"
         tabindex="-1"
       />

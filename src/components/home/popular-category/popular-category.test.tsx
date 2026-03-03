@@ -15,11 +15,11 @@
  */
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { createMemoryRouter, RouterProvider } from 'react-router';
 import PopularCategory from './index';
 import { ConfigProvider } from '@/config/context';
 import { mockConfig } from '@/test-utils/config';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
-import type { ReactNode } from 'react';
 
 // Mock decorators (minimal mocking to avoid testing them)
 vi.mock('@/lib/decorators/component', async (importOriginal) => {
@@ -35,29 +35,6 @@ vi.mock('@/lib/decorators/attribute-definition', () => ({
     AttributeDefinition: () => () => {},
 }));
 
-// Mock the ContentCard component to avoid Link issues
-vi.mock('@/components/content-card', () => ({
-    default: ({
-        title,
-        description,
-        imageUrl,
-        imageAlt,
-        buttonText,
-        buttonLink,
-        showBackground,
-        showBorder,
-        loading,
-    }: any) => (
-        <div data-testid="content-card">
-            <h3>{title}</h3>
-            <p>{description}</p>
-            {imageUrl && <img src={imageUrl} alt={imageAlt} loading={loading} />}
-            {buttonText && buttonLink && <a href={buttonLink}>{buttonText}</a>}
-            <div data-show-background={showBackground} data-show-border={showBorder} />
-        </div>
-    ),
-}));
-
 // Mock i18n
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
@@ -70,10 +47,6 @@ vi.mock('react-i18next', () => ({
     }),
 }));
 
-const wrapper = ({ children }: { children: ReactNode }) => (
-    <ConfigProvider config={mockConfig}>{children}</ConfigProvider>
-);
-
 const mockCategory: ShopperProducts.schemas['Category'] = {
     id: 'newarrivals',
     name: 'New Arrivals',
@@ -83,7 +56,16 @@ const mockCategory: ShopperProducts.schemas['Category'] = {
 };
 
 const renderComponent = (component: React.ReactElement) => {
-    return render(component, { wrapper });
+    const router = createMemoryRouter(
+        [
+            {
+                path: '/',
+                element: <ConfigProvider config={mockConfig}>{component}</ConfigProvider>,
+            },
+        ],
+        { initialEntries: ['/'] }
+    );
+    return render(<RouterProvider router={router} />);
 };
 
 describe('PopularCategory', () => {
@@ -97,7 +79,7 @@ describe('PopularCategory', () => {
         expect(screen.getByText('New Arrivals')).toBeInTheDocument();
         expect(screen.getByText('Shop all new arrivals including women and mens clothing')).toBeInTheDocument();
         expect(screen.getByText('Shop Now')).toBeInTheDocument();
-        expect(screen.getByRole('link')).toHaveAttribute('href', '/category/newarrivals');
+        expect(screen.getByRole('listitem')).toHaveAttribute('href', '/category/newarrivals');
     });
 
     test('renders category with category prop (programmatic use)', () => {
@@ -118,19 +100,17 @@ describe('PopularCategory', () => {
     });
 
     test('ignores string category prop (from Page Designer)', () => {
-        renderComponent(<PopularCategory category={'newarrivals' as any} />);
+        const { container } = renderComponent(<PopularCategory category={'newarrivals' as any} />);
 
-        // Should show fallback since string category is ignored
-        const contentCard = screen.getByTestId('content-card');
-        expect(contentCard).toBeInTheDocument();
+        // Component returns null when category is a string (not an object)
+        expect(container.firstChild).toBeNull();
     });
 
-    test('renders fallback when no data provided', () => {
-        renderComponent(<PopularCategory />);
+    test('renders nothing when no data provided', () => {
+        const { container } = renderComponent(<PopularCategory />);
 
-        const contentCard = screen.getByTestId('content-card');
-        expect(contentCard).toBeInTheDocument();
-        expect(screen.getByText('Shop Now')).toBeInTheDocument();
+        // Component returns null when no category data is available
+        expect(container.firstChild).toBeNull();
     });
 
     test('uses pageDescription over description', () => {
@@ -187,7 +167,7 @@ describe('PopularCategory', () => {
     test('generates correct category link', () => {
         renderComponent(<PopularCategory data={mockCategory} />);
 
-        const link = screen.getByRole('link');
+        const link = screen.getByRole('listitem');
         expect(link).toHaveAttribute('href', '/category/newarrivals');
     });
 
@@ -199,7 +179,7 @@ describe('PopularCategory', () => {
 
         renderComponent(<PopularCategory data={categoryWithEmptyId} />);
 
-        const link = screen.getByRole('link');
+        const link = screen.getByRole('listitem');
         expect(link).toHaveAttribute('href', '/category/');
     });
 
@@ -233,18 +213,16 @@ describe('PopularCategory', () => {
     });
 
     test('handles null category prop', () => {
-        renderComponent(<PopularCategory category={null as any} />);
+        const { container } = renderComponent(<PopularCategory category={null as any} />);
 
-        // Should show fallback
-        const contentCard = screen.getByTestId('content-card');
-        expect(contentCard).toBeInTheDocument();
+        // Component returns null when category is null
+        expect(container.firstChild).toBeNull();
     });
 
     test('handles category prop with null value in type check', () => {
-        renderComponent(<PopularCategory category={null as any} data={undefined} />);
+        const { container } = renderComponent(<PopularCategory category={null as any} data={undefined} />);
 
-        // Should show fallback since null is not an object
-        const contentCard = screen.getByTestId('content-card');
-        expect(contentCard).toBeInTheDocument();
+        // Component returns null since null is not an object
+        expect(container.firstChild).toBeNull();
     });
 });

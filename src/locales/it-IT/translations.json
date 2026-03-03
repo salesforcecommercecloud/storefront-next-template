@@ -916,7 +916,8 @@
             }
         },
         "featuredProducts": {
-            "title": "Prodotti in evidenza"
+            "title": "Prodotti in evidenza",
+            "shopAll": "Acquista tutto"
         },
         "newArrivals": {
             "title": "Nuovi arrivi",
@@ -925,6 +926,7 @@
         },
         "categoryGrid": {
             "title": "Entri nell'eleganza",
+            "description": "In Salesforce Foundations, crediamo che il design debba essere accessibile, innovativo e senza tempo. Le nostre collezioni sono create per l'individuo moderno che apprezza la qualit\u00e0, la forma e la bellezza duratura.",
             "shopNowButton": "Acquista ora"
         },
         "featuredContent": {

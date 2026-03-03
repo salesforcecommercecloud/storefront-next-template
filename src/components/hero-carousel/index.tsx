@@ -238,7 +238,7 @@ export function HeroCarouselPlain({
 
     const emptyState = useMemo(
         () => (
-            <div className="relative w-full h-[100vh] md:h-[85vh] flex items-center justify-center bg-muted">
+            <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] flex items-center justify-center bg-muted">
                 <p className="text-muted-foreground text-lg">No slides available</p>
             </div>
         ),
@@ -251,7 +251,7 @@ export function HeroCarouselPlain({
 
     return (
         <div
-            className="relative w-full h-[100vh] md:h-[85vh] overflow-hidden"
+            className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden"
             role="region"
             aria-label={`Hero carousel with ${slides.length} slides`}
             onFocus={handleFocus}
@@ -280,7 +280,7 @@ export function HeroCarouselPlain({
 
             {showDots && slides.length > 1 && (
                 <div
-                    className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex space-x-2"
+                    className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-2"
                     role="tablist"
                     aria-label="Slide navigation">
                     {slides.map((slide, index) => (
@@ -335,8 +335,8 @@ const DotButton = React.memo(
     }): ReactElement => (
         <button
             onClick={() => onClick(index)}
-            className={`transition-all duration-300 ${
-                isActive ? 'w-8 h-2 bg-foreground' : 'w-2 h-2 bg-foreground/50 hover:bg-foreground/75'
+            className={`transition-all duration-300 rounded-full focus:outline-none focus:ring-2 focus:ring-white/50 ${
+                isActive ? 'w-8 h-2 bg-white' : 'w-2 h-2 bg-white/50 hover:bg-white/75'
             }`}
             role="tab"
             aria-selected={isActive}
@@ -369,9 +369,9 @@ const NavigationButton = React.memo(
             <button
                 onClick={onClick}
                 disabled={disabled}
-                className="p-3 bg-foreground/10 hover:bg-foreground/20 backdrop-blur-sm transition-all focus:outline-none focus:ring-2 focus:ring-foreground/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
                 aria-label={`${label} slide (${currentSlide} of ${totalSlides})`}>
-                <Icon className="w-6 h-6 text-foreground" strokeWidth={2} />
+                <Icon className="w-6 h-6 text-primary-foreground" strokeWidth={2} />
             </button>
         );
     }
@@ -388,24 +388,27 @@ const HeroSlideContent = React.memo(
                 fetchPriority="high"
                 className="absolute inset-0 w-full h-full object-cover"
             />
+            <div
+                className="absolute inset-0"
+                style={{
+                    background:
+                        'linear-gradient(to top, color-mix(in oklch, var(--brand-black) 30%, transparent) 0%, transparent 100%), linear-gradient(to right, color-mix(in oklch, var(--brand-black) 60%, transparent) 0%, color-mix(in oklch, var(--brand-black) 30%, transparent) 50%, transparent 100%)',
+                }}
+            />
 
-            <div className="absolute inset-0 z-10 flex items-center justify-center">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="max-w-2xl mx-auto text-center" data-theme="foundations-light">
-                        <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4 md:mb-6 leading-none tracking-tight">
+            <div className="relative h-full flex items-center z-20 overflow-hidden">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+                    <div className="max-w-xl">
+                        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4 tracking-tight">
                             {slide.title}
                         </h1>
 
                         {slide.subtitle && (
-                            <p className="text-sm sm:text-base md:text-lg lg:text-xl font-normal text-muted-foreground mb-4 sm:mb-6 md:mb-8 leading-none tracking-wide">
-                                {slide.subtitle}
-                            </p>
+                            <p className="text-base md:text-lg text-white/90 mb-8 font-normal">{slide.subtitle}</p>
                         )}
 
-                        <div className="flex justify-center">
-                            <Button
-                                asChild
-                                className="text-sm sm:text-base md:text-lg lg:text-xl p-3 sm:p-4 md:p-5 lg:p-6">
+                        <div>
+                            <Button asChild className="h-auto px-8 py-4 text-base">
                                 <Link to={slide.ctaLink || '#'}>{slide.ctaText || 'Learn More'}</Link>
                             </Button>
                         </div>

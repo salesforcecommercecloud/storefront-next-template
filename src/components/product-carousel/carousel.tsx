@@ -17,6 +17,7 @@
 
 import { type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { ProductTile, ProductTileProvider } from '@/components/product-tile';
@@ -29,6 +30,10 @@ export interface ProductCarouselProps {
     products: ShopperSearch.schemas['ProductSearchHit'][];
     /** Optional title to display above the carousel */
     title?: string;
+    /** Optional "Shop all" link URL displayed next to the title */
+    shopAllUrl?: string;
+    /** Optional label for the "Shop all" link. Defaults to "Shop all" */
+    shopAllText?: string;
     /** Optional className to apply to the carousel wrapper */
     className?: string;
 }
@@ -64,7 +69,13 @@ export interface ProductCarouselProps {
  *
  * @since 1.0.0
  */
-export default function ProductCarousel({ products, title, className }: ProductCarouselProps): ReactNode {
+export default function ProductCarousel({
+    products,
+    title,
+    shopAllUrl,
+    shopAllText,
+    className,
+}: ProductCarouselProps): ReactNode {
     const { t } = useTranslation('common');
 
     // Safety check for undefined or null products
@@ -77,41 +88,42 @@ export default function ProductCarousel({ products, title, className }: ProductC
     }
 
     return (
-        <div className={cn(className)}>
+        <div className={cn('max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12', className)}>
             {title && (
-                <div className="text-center mb-8">
-                    <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">{title}</h2>
+                <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl md:text-3xl font-normal text-foreground tracking-tight">{title}</h2>
+                    {shopAllUrl && (
+                        <Link
+                            to={shopAllUrl}
+                            className="text-sm font-medium text-primary hover:text-primary/80 transition-colors shrink-0 ml-4">
+                            {shopAllText ?? t('shopAll')} →
+                        </Link>
+                    )}
                 </div>
             )}
 
-            {/* Add horizontal padding to prevent arrows from overlapping products */}
-            {/* px-14 (3.5rem) provides space for navigation arrows positioned at -left-14/-right-14 */}
-            <div className="px-14">
-                <Carousel
-                    className="w-full"
-                    opts={{
-                        align: 'start',
-                    }}
-                    aria-label={title ? `${title} carousel` : t('productCarousel')}>
-                    {/* Passing -ml-4 to the CarouselContent to prevent CLS issues during hydration */}
-                    <CarouselContent className="-ml-4 items-stretch flex-nowrap">
-                        <ProductTileProvider>
-                            {products.map((product) => (
-                                <CarouselItem
-                                    key={product.productId}
-                                    className="basis-1/2 sm:basis-1/3 md:basis-1/4 py-1 flex pl-0 min-w-0">
-                                    <div className="w-full max-w-full min-w-0 flex">
-                                        <ProductTile product={product} className="h-full w-full" />
-                                    </div>
-                                </CarouselItem>
-                            ))}
-                        </ProductTileProvider>
-                    </CarouselContent>
-                    {/* Position arrows outside the product area */}
-                    <CarouselPrevious className="-left-14" />
-                    <CarouselNext className="-right-14" />
-                </Carousel>
-            </div>
+            <Carousel
+                className="w-full"
+                opts={{
+                    align: 'start',
+                }}
+                aria-label={title ? `${title} carousel` : t('productCarousel')}>
+                <CarouselContent className="-ml-4 items-stretch flex-nowrap">
+                    <ProductTileProvider>
+                        {products.map((product) => (
+                            <CarouselItem
+                                key={product.productId}
+                                className="basis-1/2 sm:basis-1/3 md:basis-1/4 py-1 flex pl-4 min-w-0">
+                                <div className="w-full max-w-full min-w-0 flex">
+                                    <ProductTile product={product} className="h-full w-full" />
+                                </div>
+                            </CarouselItem>
+                        ))}
+                    </ProductTileProvider>
+                </CarouselContent>
+                <CarouselPrevious className="flex left-0 -translate-x-1/2 size-9 rounded-lg shadow-md" />
+                <CarouselNext className="flex right-0 translate-x-1/2 size-9 rounded-lg shadow-md" />
+            </Carousel>
         </div>
     );
 }

@@ -40,7 +40,7 @@ export default function CartBadge(): ReactElement {
                 fallback={
                     <Button
                         variant="ghost"
-                        className="pointer-events-none"
+                        className="relative pointer-events-none"
                         aria-label={t('badge.ariaLabel', { count: numberOfItems })}>
                         <CartBadgeIcon numberOfItems={numberOfItems} />
                     </Button>
@@ -48,7 +48,7 @@ export default function CartBadge(): ReactElement {
                 <CartSheet>
                     <Button
                         variant="ghost"
-                        className="cursor-pointer"
+                        className="relative cursor-pointer"
                         aria-label={t('badge.ariaLabel', { count: numberOfItems })}>
                         <CartBadgeIcon numberOfItems={numberOfItems} />
                     </Button>
@@ -60,7 +60,7 @@ export default function CartBadge(): ReactElement {
     return (
         <Button
             variant="ghost"
-            className="cursor-pointer"
+            className="relative cursor-pointer"
             onClick={() => setClicked(true)}
             aria-label={t('badge.ariaLabel', { count: numberOfItems })}>
             <CartBadgeIcon numberOfItems={numberOfItems} />

@@ -1039,7 +1039,8 @@
             }
         },
         "featuredProducts": {
-            "title": "Featured Products"
+            "title": "Featured Products",
+            "shopAll": "Shop all"
         },
         "newArrivals": {
             "title": "New Arrivals",
@@ -1048,6 +1049,7 @@
         },
         "categoryGrid": {
             "title": "Step into Elegance",
+            "description": "At Salesforce Foundations, we believe design should be accessible, innovative, and timeless. Our collections are crafted for the modern individual who values quality, form, and lasting beauty.",
             "shopNowButton": "Shop Now"
         },
         "featuredContent": {

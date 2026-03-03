@@ -137,14 +137,13 @@ describe('ProductCarouselSkeleton', () => {
 
             const card = screen.getByTestId('card');
             const cardContents = screen.getAllByTestId('card-content');
-            const cardFooter = screen.getByTestId('card-footer');
             const cardHeader = screen.getByTestId('card-header');
 
             expect(card).toBeInTheDocument();
-            expect(cardContents).toHaveLength(2);
+            expect(cardContents).toHaveLength(3);
             expect(cardContents[0]).toBeInTheDocument();
             expect(cardContents[1]).toBeInTheDocument();
-            expect(cardFooter).toBeInTheDocument();
+            expect(cardContents[2]).toBeInTheDocument();
             expect(cardHeader).toBeInTheDocument();
         });
     });

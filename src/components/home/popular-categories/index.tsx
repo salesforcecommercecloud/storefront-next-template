@@ -17,7 +17,6 @@ import { Suspense } from 'react';
 import { Await } from 'react-router';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Typography } from '@/components/typography';
 import { Component } from '@/lib/decorators/component';
 import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
 import { RegionDefinition } from '@/lib/decorators';
@@ -25,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 import { loader as loaders } from './loaders';
 import PopularCategory from '@/components/home/popular-category';
 import { type ComponentType, Region } from '@/components/region';
+import { CategoryScrollContainer } from './scroll-container';
 
 interface PopularCategoriesProps {
     categoriesPromise?: Promise<ShopperProducts.schemas['Category'][]>;
@@ -39,13 +39,14 @@ interface PopularCategoriesProps {
 /* v8 ignore start - do not test decorators in unit tests, decorator functionality is tested separately*/
 @Component('popularCategories', {
     name: 'Popular Categories',
-    description: 'Displays a grid of popular category cards with images, titles, descriptions, and shop now buttons',
+    description:
+        'Displays a scrollable row of popular category cards with images, titles, descriptions, and shop now buttons',
 })
 @RegionDefinition([
     {
         id: 'categories',
         name: 'Categories',
-        description: 'Add Popular Category components to display in the grid',
+        description: 'Add Popular Category components to display in the scrollable row',
         maxComponents: 4,
     },
 ])
@@ -65,141 +66,121 @@ export class PopularCategoriesMetadata {
 /* v8 ignore stop */
 
 /**
- * Skeleton component for category grid loading state
+ * Skeleton for individual category cards in the scroll container
  */
-function CategoryGridSkeleton({ paddingX = 'px-4 sm:px-6 lg:px-8' }: { paddingX?: string }) {
+function CategoryCardsSkeleton() {
     return (
-        <div className="w-full">
-            <div className={`text-center mb-8 ${paddingX}`}>
-                <Skeleton className="h-10 w-64 mx-auto" />
-            </div>
-            <div className={`grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 ${paddingX}`}>
-                {Array.from({ length: 4 }, (_, i) => (
-                    <div key={i} className="space-y-4">
-                        <Skeleton className="h-48 w-full rounded-lg" />
-                        <Skeleton className="h-4 w-3/4" />
-                        <Skeleton className="h-4 w-1/2" />
-                        <Skeleton className="h-8 w-full" />
-                    </div>
-                ))}
-            </div>
+        <div className="flex gap-4 md:gap-6 overflow-hidden">
+            {Array.from({ length: 4 }, (_, i) => (
+                <div key={i} className="flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]">
+                    <Skeleton className="aspect-square w-full rounded-xl" />
+                </div>
+            ))}
         </div>
     );
 }
 
 /**
- * Helper function to calculate grid configuration based on component/category count
+ * Title and description header for the category section
  */
-function calculateGridConfig(count: number) {
-    const componentCount = Math.min(Math.max(count || 4, 1), 4);
-    const gridCols = componentCount === 1 ? 'minmax(0, 1fr)' : `repeat(${componentCount}, minmax(0, 1fr))`;
-
-    return {
-        componentCount,
-        gridCols,
-        className: `grid grid-cols-2 gap-4 sm:gap-6 ${componentCount === 1 ? 'lg:grid-cols-[minmax(0,400px)] lg:justify-center' : 'lg:grid-cols-[var(--grid-cols)]'}`,
-        style:
-            componentCount > 1
-                ? ({
-                      '--grid-cols': gridCols,
-                  } as React.CSSProperties)
-                : undefined,
-    };
-}
-
-/**
- * Title component for category grid
- */
-function CategoryGridTitle() {
+function CategorySectionHeader() {
     const { t } = useTranslation('home');
     return (
-        <div className="text-center mb-8">
-            <Typography variant="h2" align="center" className="text-3xl font-extrabold text-foreground sm:text-4xl">
+        <div className="text-center mb-10 md:mb-12">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-light text-foreground mb-4 tracking-tight">
                 {t('categoryGrid.title')}
-            </Typography>
+            </h2>
+            <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+                {t('categoryGrid.description')}
+            </p>
         </div>
     );
 }
 
 /**
- * Helper function to render fallback categories from data or categoriesPromise
+ * Renders category cards as direct children (for use inside scroll container)
  */
-function renderFallbackCategories(
-    data?: ShopperProducts.schemas['Category'][],
-    categoriesPromise?: Promise<ShopperProducts.schemas['Category'][]>,
-    paddingX?: string
-) {
-    // Only use data if it has actual categories (not empty array)
-    if (data && Array.isArray(data) && data.length > 0) {
-        const displayCategories = data.slice(0, 4);
-        const fallbackCount = Math.min(Math.max(displayCategories.length || 4, 1), 4);
-        const fallbackGridConfig = calculateGridConfig(fallbackCount);
-        return (
-            <div className={fallbackGridConfig.className} style={fallbackGridConfig.style}>
-                {displayCategories.map((category) => (
-                    <PopularCategory key={category.id} category={category} />
-                ))}
-            </div>
-        );
-    }
-
-    // Use categoriesPromise if data is not available or empty
-    if (categoriesPromise) {
-        return (
-            <Suspense fallback={<CategoryGridSkeleton paddingX={paddingX} />}>
-                <Await
-                    resolve={categoriesPromise}
-                    errorElement={null} // If API fails, gracefully return null instead of breaking the page
-                >
-                    {(categories) => {
-                        const displayCategories = categories.slice(0, 4);
-                        const fallbackCount = Math.min(Math.max(displayCategories.length || 4, 1), 4);
-                        const fallbackGridConfig = calculateGridConfig(fallbackCount);
-                        return (
-                            <div className={fallbackGridConfig.className} style={fallbackGridConfig.style}>
-                                {displayCategories.map((category) => (
-                                    <PopularCategory key={category.id} category={category} />
-                                ))}
-                            </div>
-                        );
-                    }}
-                </Await>
-            </Suspense>
-        );
-    }
-    return null;
+function CategoryCards({ categories }: { categories: ShopperProducts.schemas['Category'][] }) {
+    return (
+        <>
+            {categories.map((category) => (
+                <PopularCategory key={category.id} category={category} />
+            ))}
+        </>
+    );
 }
 
 /**
- * Content component that renders the category grid
+ * Content component that renders the category scroll section
  * Handles prioritization: Page Designer mode > data > categoriesPromise
  */
 function CategoryGridContent({
     data,
     categoriesPromise,
     component,
-    paddingX,
 }: {
     data?: ShopperProducts.schemas['Category'][];
     categoriesPromise?: Promise<ShopperProducts.schemas['Category'][]>;
     component?: ComponentType;
-    paddingX?: string;
 }) {
     // If component is not provided, show fallback categories
     if (!component) {
-        return (
-            <>
-                <CategoryGridTitle />
-                {renderFallbackCategories(data, categoriesPromise, paddingX)}
-            </>
-        );
+        if (data && Array.isArray(data) && data.length > 0) {
+            return (
+                <>
+                    <CategorySectionHeader />
+                    <CategoryScrollContainer ariaLabel="Step into Elegance">
+                        <CategoryCards categories={data} />
+                    </CategoryScrollContainer>
+                </>
+            );
+        }
+
+        if (categoriesPromise) {
+            return (
+                <>
+                    <CategorySectionHeader />
+                    <Suspense fallback={<CategoryCardsSkeleton />}>
+                        <Await resolve={categoriesPromise} errorElement={null}>
+                            {(categories) => (
+                                <CategoryScrollContainer ariaLabel="Step into Elegance">
+                                    <CategoryCards categories={categories} />
+                                </CategoryScrollContainer>
+                            )}
+                        </Await>
+                    </Suspense>
+                </>
+            );
+        }
+
+        return null;
     }
 
     const hasRegions = component.regions && component.regions.length > 0;
 
     // Show fallback categories if no regions (page exists but is empty)
     if (!hasRegions) {
-        return renderFallbackCategories(data, categoriesPromise, paddingX);
+        if (data && Array.isArray(data) && data.length > 0) {
+            return (
+                <CategoryScrollContainer ariaLabel="Step into Elegance">
+                    <CategoryCards categories={data} />
+                </CategoryScrollContainer>
+            );
+        }
+        if (categoriesPromise) {
+            return (
+                <Suspense fallback={<CategoryCardsSkeleton />}>
+                    <Await resolve={categoriesPromise} errorElement={null}>
+                        {(categories) => (
+                            <CategoryScrollContainer ariaLabel="Step into Elegance">
+                                <CategoryCards categories={categories} />
+                            </CategoryScrollContainer>
+                        )}
+                    </Await>
+                </Suspense>
+            );
+        }
+        return null;
     }
 
     // Regions exist - check if categories region has components
@@ -208,19 +189,36 @@ function CategoryGridContent({
 
     // Show fallback categories if no components in categories region
     if (!hasComponents) {
-        return renderFallbackCategories(data, categoriesPromise, paddingX);
+        if (data && Array.isArray(data) && data.length > 0) {
+            return (
+                <CategoryScrollContainer ariaLabel="Step into Elegance">
+                    <CategoryCards categories={data} />
+                </CategoryScrollContainer>
+            );
+        }
+        if (categoriesPromise) {
+            return (
+                <Suspense fallback={<CategoryCardsSkeleton />}>
+                    <Await resolve={categoriesPromise} errorElement={null}>
+                        {(categories) => (
+                            <CategoryScrollContainer ariaLabel="Step into Elegance">
+                                <CategoryCards categories={categories} />
+                            </CategoryScrollContainer>
+                        )}
+                    </Await>
+                </Suspense>
+            );
+        }
+        return null;
     }
 
-    // Region has components - render them
-    const componentCount = Math.min(Math.max(categoriesRegion?.components?.length || 4, 1), 4);
-    const gridConfig = calculateGridConfig(componentCount);
-
+    // Region has components - render them in scroll container
     return (
         <>
-            <CategoryGridTitle />
-            <div className={gridConfig.className} style={gridConfig.style}>
+            <CategorySectionHeader />
+            <CategoryScrollContainer ariaLabel="Step into Elegance">
                 <Region regionId="categories" component={component} />
-            </div>
+            </CategoryScrollContainer>
         </>
     );
 }
@@ -229,34 +227,20 @@ function CategoryGridContent({
 export const loader = loaders.server;
 
 /**
- * Popular Categories component that displays a grid of category cards
- * Shows the first 4 categories in a responsive grid layout
+ * Popular Categories component that displays a scrollable row of category cards
+ * with gradient overlay, centered title and description.
  *
  * Can be used in multiple ways:
  * 1. With categoriesPromise - receives pre-fetched categories from route loader
  * 2. With data prop - receives categories from Page Designer component loader
  * 3. With parentId - triggers component loader to fetch categories (used in Page Designer)
  */
-export default function PopularCategories({
-    categoriesPromise,
-    data,
-    paddingX = 'px-4 sm:px-6 lg:px-8',
-    component,
-}: PopularCategoriesProps) {
-    const content = (
-        <CategoryGridContent
-            data={data}
-            categoriesPromise={categoriesPromise}
-            component={component}
-            paddingX={paddingX}
-        />
-    );
-
+export default function PopularCategories({ categoriesPromise, data, component }: PopularCategoriesProps) {
     return (
-        <div className="pb-16">
-            <div className={`max-w-screen-2xl mx-auto ${paddingX}`}>
-                {content || <CategoryGridSkeleton paddingX={paddingX} />}
+        <section className="py-12 md:py-16 lg:py-24 bg-muted/50">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <CategoryGridContent data={data} categoriesPromise={categoriesPromise} component={component} />
             </div>
-        </div>
+        </section>
     );
 }

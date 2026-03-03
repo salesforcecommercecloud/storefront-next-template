@@ -120,10 +120,9 @@ Cart badge with empty cart.
         const cartIcon = await canvas.findByTestId('shopping-cart-icon', {}, { timeout: 5000 });
         await expect(cartIcon).toBeInTheDocument();
 
-        // Check for badge showing 0
-        const badge = await canvas.findByTestId('shopping-cart-badge', {}, { timeout: 5000 });
-        await expect(badge).toBeInTheDocument();
-        await expect(badge).toHaveTextContent('0');
+        // Badge should not be present when cart is empty
+        const badge = canvas.queryByTestId('shopping-cart-badge');
+        await expect(badge).not.toBeInTheDocument();
     },
 };
 
