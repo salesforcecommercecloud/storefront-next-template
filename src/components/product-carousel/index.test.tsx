@@ -72,37 +72,37 @@ describe('ProductCarousel Index', () => {
             {
                 description: 'uses default values when no componentData provided',
                 componentData: {},
-                expected: { categoryId: 'mens-clothing-shorts', limit: 12 },
+                expected: { refine: ['cgid=mens-clothing-shorts'], limit: 12 },
             },
             {
                 description: 'uses provided categoryId and limit',
                 componentData: { categoryId: 'womens-shoes', limit: 8 },
-                expected: { categoryId: 'womens-shoes', limit: 8 },
+                expected: { refine: ['cgid=womens-shoes'], limit: 8 },
             },
             {
                 description: 'uses default categoryId when categoryId is falsy',
                 componentData: { categoryId: '', limit: 6 },
-                expected: { categoryId: 'mens-clothing-shorts', limit: 6 },
+                expected: { refine: ['cgid=mens-clothing-shorts'], limit: 6 },
             },
             {
                 description: 'uses default limit when limit is falsy',
                 componentData: { categoryId: 'electronics', limit: 0 },
-                expected: { categoryId: 'electronics', limit: 12 },
+                expected: { refine: ['cgid=electronics'], limit: 12 },
             },
             {
                 description: 'passes through non-string categoryId due to type assertion',
                 componentData: { categoryId: 123, limit: 6 },
-                expected: { categoryId: 123, limit: 6 },
+                expected: { refine: ['cgid=123'], limit: 6 },
             },
             {
                 description: 'passes through non-number limit due to type assertion',
                 componentData: { categoryId: 'electronics', limit: 'invalid' },
-                expected: { categoryId: 'electronics', limit: 'invalid' },
+                expected: { refine: ['cgid=electronics'], limit: 'invalid' },
             },
             {
                 description: 'handles null componentData gracefully',
                 componentData: null as any,
-                expected: { categoryId: 'mens-clothing-shorts', limit: 12 },
+                expected: { refine: ['cgid=mens-clothing-shorts'], limit: 12 },
             },
             {
                 description: 'extracts only categoryId and limit, ignoring other properties',
@@ -113,7 +113,7 @@ describe('ProductCarousel Index', () => {
                     description: 'Some Description',
                     otherProp: 'ignored',
                 },
-                expected: { categoryId: 'test-category', limit: 10 },
+                expected: { refine: ['cgid=test-category'], limit: 10 },
             },
         ];
 

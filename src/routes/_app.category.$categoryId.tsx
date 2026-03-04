@@ -67,6 +67,7 @@ type CategoryPageData = {
     searchResultNonCritical: Promise<ShopperSearch.schemas['ProductSearchResult']>;
     page: Promise<PageWithComponentData>;
     categoryId: string;
+    refine: string[];
     currency: string;
     locale: string;
     categorySchema: Promise<ReturnType<typeof generateCategorySchema> | null>;
@@ -115,22 +116,24 @@ export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData
         throw new Response('Internal Server Error', { status: 500 });
     }
 
+    // Remove eventually existing category refinements (attribute ID = cgid)
+    const effectiveRefine = refine.filter((r) => !r.startsWith('cgid='));
+    effectiveRefine.push(`cgid=${categoryId}`);
+
     const criticalCount = config.search.products.hits.critical ?? 2;
     const searchResultCritical = await fetchSearchProducts(context, {
-        categoryId,
         limit: criticalCount,
         offset,
         sort,
-        refine,
+        refine: effectiveRefine,
         currency,
     });
 
     const searchResultNonCritical = fetchSearchProducts(context, {
-        categoryId,
         limit: limit - criticalCount,
         offset: offset + criticalCount,
         sort,
-        refine,
+        refine: effectiveRefine,
         currency,
     });
 
@@ -172,6 +175,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData
             categoryId,
         }),
         categoryId,
+        refine: effectiveRefine,
         currency,
         locale,
         categorySchema: categorySchemaPromise,
@@ -203,6 +207,7 @@ export default function CategoryPage({
         searchResultNonCritical,
         page,
         categoryId,
+        refine,
         locale,
         currency,
         categorySchema,
@@ -298,7 +303,7 @@ export default function CategoryPage({
 
                     <div className="flex flex-col lg:flex-row gap-8">
                         <div className="hidden lg:block w-64 flex-shrink-0">
-                            <CategoryRefinements result={searchResultCritical} />
+                            <CategoryRefinements result={searchResultCritical} refine={refine} />
                         </div>
 
                         <div className="flex-grow">

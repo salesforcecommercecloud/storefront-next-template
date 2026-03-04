@@ -15,8 +15,8 @@
  */
 'use client';
 
-import { type ReactElement, useCallback, useMemo, useId } from 'react';
-import { useLocation, useNavigate } from 'react-router';
+import { type ReactElement, useCallback, useId, useMemo } from 'react';
+import { useLocation, useNavigate, useNavigation } from 'react-router';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 
 import { NativeSelect } from '@/components/ui/native-select';
@@ -55,7 +55,20 @@ export default function CategorySorting({
 }): ReactElement | null {
     const navigate = useNavigate();
     const location = useLocation();
+    const navigation = useNavigation();
+    const isPending = navigation.state !== 'idle';
     const selectId = useId();
+
+    /**
+     * Optimistic sorting option derived from the in-flight navigation target.
+     *
+     * While a navigation is pending, `navigation.location` holds the target location, allowing us to read the
+     * intended sort param immediately. Once the navigation settles, we fall back to the server-provided value.
+     */
+    const effectiveSortingOption = navigation.location
+        ? new URLSearchParams(navigation.location.search).get(PRODUCT_SEARCH_QUERY_PARAMS.SORT) ||
+          result.selectedSortingOption
+        : result.selectedSortingOption;
 
     const sortingOptions = useMemo(() => result?.sortingOptions || [], [result?.sortingOptions]);
 
@@ -64,7 +77,7 @@ export default function CategorySorting({
             const params = new URLSearchParams(location.search);
             params.set(PRODUCT_SEARCH_QUERY_PARAMS.SORT, sort);
             params.set(PRODUCT_SEARCH_QUERY_PARAMS.OFFSET, '0');
-            return navigate({
+            void navigate({
                 ...location,
                 search: `?${params.toString()}`,
             });
@@ -78,13 +91,14 @@ export default function CategorySorting({
     }
 
     return (
-        <div className="flex items-center space-x-2">
+        <div
+            className={`flex items-center space-x-2${isPending ? ' pointer-events-none opacity-50 transition-opacity' : ''}`}>
             <label htmlFor={selectId} className="text-sm text-muted-foreground">
                 Sort by:
             </label>
             <NativeSelect
                 id={selectId}
-                value={result.selectedSortingOption || ''}
+                value={effectiveSortingOption || ''}
                 onChange={(e) => void navigatePage(e.target.value)}>
                 {sortingOptions.map((option) => (
                     <option key={option.id} value={option.id}>

@@ -17,6 +17,7 @@ import { vi, test, describe, expect, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import RefinePrice from './refine-price';
 
 const mockToggleFilter = vi.fn();
@@ -25,7 +26,7 @@ const mockResult = {
         { productId: '1', price: 25.99 },
         { productId: '2', price: 499.99 },
     ],
-};
+} as ShopperSearch.schemas['ProductSearchResult'];
 
 const renderComponent = (url = '/') => {
     const router = createMemoryRouter(

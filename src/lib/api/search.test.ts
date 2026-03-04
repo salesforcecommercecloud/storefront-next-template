@@ -72,7 +72,7 @@ describe('', () => {
             expect(result).toBe(mockResult);
         });
 
-        it('should build refine from categoryId (and not include duplicates)', async () => {
+        it('should build refine without duplicates', async () => {
             const mockContext = createTestContext({
                 appConfig: {
                     commerce: {
@@ -88,8 +88,7 @@ describe('', () => {
             mockProductSearch.mockResolvedValue({ data: { hits: [] } });
 
             await fetchSearchProducts(mockContext, {
-                categoryId: 'mens',
-                refine: ['cgid=mens', 'color=blue'],
+                refine: ['cgid=mens', 'color=blue', 'cgid=mens'],
                 currency: 'USD',
             });
 
@@ -105,14 +104,13 @@ describe('', () => {
             expect(new Set(refineArg).size).toBe(refineArg.length);
         });
 
-        it('should use default refine when no categoryId or refine provided', async () => {
+        it('should use default refine when refine provided', async () => {
             const mockContext = createTestContext();
             mockProductSearch.mockResolvedValue({ data: { hits: [] } });
 
             await fetchSearchProducts(mockContext, {
                 q: 'dress',
                 refine: [],
-                categoryId: undefined,
                 currency: 'USD',
             });
 
@@ -215,14 +213,28 @@ describe('', () => {
 
             await fetchSearchProducts(mockContext, {
                 q: 'dress',
-                categoryId: 'womens',
                 currency: 'USD',
+            });
+
+            const query = mockProductSearch.mock.calls[0][0].params.query;
+            expect(query).not.toHaveProperty('refine');
+        });
+
+        it('should overwrite orderable_only=false when config has orderableOnly=true', async () => {
+            const mockContext = createTestContext();
+
+            mockProductSearch.mockResolvedValue({ data: { hits: [] } });
+
+            await fetchSearchProducts(mockContext, {
+                q: 'dress',
+                currency: 'USD',
+                refine: ['orderable_only=false'],
             });
 
             expect(mockProductSearch).toHaveBeenCalledWith({
                 params: {
                     query: expect.objectContaining({
-                        refine: ['cgid=womens'], // <-- orderable_only=true not included
+                        refine: ['orderable_only=true'],
                     }),
                 },
             });

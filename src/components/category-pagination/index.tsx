@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { type JSX, useCallback, useMemo } from 'react';
-import { useLocation, useNavigate } from 'react-router';
+import { useLocation, useNavigate, useNavigation } from 'react-router';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getPaginationItems } from '@/lib/pagination-utils';
@@ -30,16 +30,28 @@ export default function CategoryPagination({
 }): JSX.Element | null {
     const navigate = useNavigate();
     const location = useLocation();
+    const navigation = useNavigation();
+    const isPending = navigation.state !== 'idle';
+
+    /**
+     * Optimistic offset derived from the in-flight navigation target.
+     *
+     * While a navigation is pending, `navigation.location` holds the target location, allowing us to read the
+     * intended offset param immediately. Once the navigation settles, we fall back to the server-provided value.
+     */
+    const effectiveOffset = navigation.location
+        ? Number(new URLSearchParams(navigation.location.search).get('offset') || offset)
+        : offset;
 
     const totalPages = Math.ceil(total / limit);
-    const current = Math.floor(offset / limit) + 1;
+    const current = Math.floor(effectiveOffset / limit) + 1;
     const pageNumbers = useMemo(() => getPaginationItems(totalPages, current), [totalPages, current]);
 
     const navigatePage = useCallback(
         (page: number) => {
             const params = new URLSearchParams(location.search);
             params.set('offset', String((page - 1) * limit));
-            return navigate({
+            void navigate({
                 ...location,
                 search: `?${params.toString()}`,
             });
@@ -53,7 +65,9 @@ export default function CategoryPagination({
 
     return (
         <div className="flex justify-center">
-            <nav className="flex items-center space-x-1" aria-label="Pagination">
+            <nav
+                className={`flex items-center space-x-1${isPending ? ' pointer-events-none opacity-50 transition-opacity' : ''}`}
+                aria-label="Pagination">
                 {/* Previous button */}
                 <Button
                     variant="outline"
@@ -66,7 +80,7 @@ export default function CategoryPagination({
 
                 {/* Page numbers */}
                 {pageNumbers.map((item) =>
-                    typeof item === 'object' && item.type === 'ellipsis' ? (
+                    typeof item === 'object' ? (
                         <span key={`ellipsis-${item.key}`} className="px-4 py-2 text-foreground/80">
                             ...
                         </span>

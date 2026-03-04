@@ -27,7 +27,7 @@ const dataLoader = (args: { componentData: { [key: string]: unknown }; context: 
     const limit = (componentData?.limit as number) || 12;
 
     return fetchSearchProducts(routeContext, {
-        categoryId,
+        refine: [`cgid=${categoryId}`],
         limit,
         currency,
     });

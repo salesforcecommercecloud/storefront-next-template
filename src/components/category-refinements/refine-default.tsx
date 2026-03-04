@@ -18,21 +18,14 @@
 import type { ReactElement } from 'react';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { Checkbox } from '@/components/ui/checkbox';
-import type { FilterValue } from './types';
+import type { RefinementProps } from './types';
 
 export default function DefaultRefinement({
     values,
     attributeId,
     isFilterSelected,
     toggleFilter,
-}: {
-    values: FilterValue[];
-    attributeId: string;
-
-    isFilterSelected: (attributeId: string, value: string) => boolean;
-
-    toggleFilter: (attributeId: string, value: string) => void;
-}): ReactElement {
+}: RefinementProps): ReactElement {
     return (
         <div className="space-y-1 mt-2">
             {values.map((value: ShopperSearch.schemas['ProductSearchRefinementValue'], idx) => {

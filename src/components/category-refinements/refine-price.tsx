@@ -15,12 +15,12 @@
  */
 'use client';
 
-import { useState, useMemo, useEffect, type ReactElement } from 'react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import PriceRangeInput from '@/components/price-range-input';
 import DefaultRefinement from './refine-default';
-import type { FilterValue } from './types';
+import type { RefinementProps } from './types';
 
 export default function RefinePrice({
     values,
@@ -28,11 +28,7 @@ export default function RefinePrice({
     isFilterSelected,
     toggleFilter,
     result,
-}: {
-    values: FilterValue[];
-    attributeId: string;
-    isFilterSelected: (attributeId: string, value: string) => boolean;
-    toggleFilter: (attributeId: string, value: string) => void;
+}: RefinementProps & {
     result?: ShopperSearch.schemas['ProductSearchResult'];
 }): ReactElement {
     const location = useLocation();

@@ -72,6 +72,7 @@ describe('forgot-password route', () => {
                 request: mockRequest,
                 params: {},
                 context: mockContext,
+                unstable_pattern: 'forgot-password',
             };
 
             const result = loader(args);
@@ -94,6 +95,7 @@ describe('forgot-password route', () => {
                 request: mockRequest,
                 params: {},
                 context: mockContext,
+                unstable_pattern: 'forgot-password',
             };
 
             const result = loader(args);
@@ -112,6 +114,7 @@ describe('forgot-password route', () => {
                 request: mockRequest,
                 params: {},
                 context: mockContext,
+                unstable_pattern: 'forgot-password',
             };
 
             const result = loader(args);
@@ -137,6 +140,7 @@ describe('forgot-password route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: 'forgot-password',
                 };
 
                 const result = await action(args);
@@ -162,6 +166,7 @@ describe('forgot-password route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: 'forgot-password',
                 };
 
                 const result = await action(args);
@@ -175,7 +180,7 @@ describe('forgot-password route', () => {
         describe('successful password reset request', () => {
             it('should return success with email when reset token is sent', async () => {
                 const mockGetPasswordResetToken = vi.mocked(getPasswordResetToken);
-                mockGetPasswordResetToken.mockResolvedValue(undefined);
+                mockGetPasswordResetToken.mockResolvedValue({ data: undefined, response: Response.json({}) });
 
                 const formData = new URLSearchParams();
                 formData.append('email', 'test@example.com');
@@ -192,6 +197,7 @@ describe('forgot-password route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: 'forgot-password',
                 };
 
                 const result = await action(args);
@@ -207,7 +213,7 @@ describe('forgot-password route', () => {
 
             it('should handle email with special characters', async () => {
                 const mockGetPasswordResetToken = vi.mocked(getPasswordResetToken);
-                mockGetPasswordResetToken.mockResolvedValue(undefined);
+                mockGetPasswordResetToken.mockResolvedValue({ data: undefined, response: Response.json({}) });
 
                 const formData = new URLSearchParams();
                 formData.append('email', 'test+user@example.com');
@@ -224,6 +230,7 @@ describe('forgot-password route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: 'forgot-password',
                 };
 
                 const result = await action(args);
@@ -258,6 +265,7 @@ describe('forgot-password route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: 'forgot-password',
                 };
 
                 const result = await action(args);
@@ -290,6 +298,7 @@ describe('forgot-password route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: 'forgot-password',
                 };
 
                 const result = await action(args);
@@ -319,6 +328,7 @@ describe('forgot-password route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: 'forgot-password',
                 };
 
                 const result = await action(args);
@@ -347,6 +357,7 @@ describe('forgot-password route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: 'forgot-password',
                 };
 
                 await action(args);
@@ -359,7 +370,7 @@ describe('forgot-password route', () => {
 
             it('should handle very long email', async () => {
                 const mockGetPasswordResetToken = vi.mocked(getPasswordResetToken);
-                mockGetPasswordResetToken.mockResolvedValue(undefined);
+                mockGetPasswordResetToken.mockResolvedValue({ data: undefined, response: Response.json({}) });
 
                 const longEmail = `${'a'.repeat(100)}@example.com`;
                 const formData = new URLSearchParams();
@@ -377,6 +388,7 @@ describe('forgot-password route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: 'forgot-password',
                 };
 
                 const result = await action(args);
@@ -389,7 +401,7 @@ describe('forgot-password route', () => {
 
             it('should handle email with unicode characters', async () => {
                 const mockGetPasswordResetToken = vi.mocked(getPasswordResetToken);
-                mockGetPasswordResetToken.mockResolvedValue(undefined);
+                mockGetPasswordResetToken.mockResolvedValue({ data: undefined, response: Response.json({}) });
 
                 const unicodeEmail = 'test@例え.jp';
                 const formData = new URLSearchParams();
@@ -407,6 +419,7 @@ describe('forgot-password route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: 'forgot-password',
                 };
 
                 const result = await action(args);

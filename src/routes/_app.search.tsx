@@ -62,6 +62,7 @@ export type SearchPageData = {
     searchResultCritical: ShopperSearch.schemas['ProductSearchResult'];
     searchResultNonCritical: Promise<ShopperSearch.schemas['ProductSearchResult']>;
     page: Promise<PageWithComponentData>;
+    refine: string[];
     currency: string;
     locale: string;
 };
@@ -112,13 +113,14 @@ export async function loader(args: LoaderFunctionArgs): Promise<SearchPageData> 
         page: fetchPageWithComponentData(args, {
             pageId: 'search',
         }),
+        refine,
         currency,
         locale,
     };
 }
 
 export default function SearchPage({
-    loaderData: { searchTerm, searchResultCritical, searchResultNonCritical, page, currency, locale },
+    loaderData: { searchTerm, searchResultCritical, searchResultNonCritical, page, refine, currency, locale },
 }: {
     loaderData: SearchPageData;
 }) {
@@ -206,7 +208,7 @@ export default function SearchPage({
 
                     <div className="flex flex-col lg:flex-row gap-8">
                         <div className="hidden lg:block w-64 flex-shrink-0">
-                            <CategoryRefinements result={searchResultCritical} />
+                            <CategoryRefinements result={searchResultCritical} refine={refine} />
                         </div>
 
                         <div className="flex-grow">

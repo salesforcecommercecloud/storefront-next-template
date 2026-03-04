@@ -24,10 +24,8 @@ type QueryParameters = Omit<Partial<ShopperSearch.operations['productSearch']['p
 
 export const fetchSearchProducts = (
     context: LoaderFunctionArgs['context'],
-    parameters: QueryParameters & { categoryId?: string }
+    parameters: QueryParameters
 ): Promise<ShopperSearch.schemas['ProductSearchResult']> => {
-    const { categoryId, ...overrides } = parameters || {};
-
     /**
      * Please be very careful when modifying this array. The different expansion values have different, sometimes
      * significant, effects on the caching behavior of the resulting responses. The optional availability expansion
@@ -56,7 +54,7 @@ export const fetchSearchProducts = (
         allImages: true,
         allVariationProperties: true,
         perPricebook: true,
-        ...overrides,
+        ...(parameters || {}),
     };
 
     /**
@@ -66,10 +64,13 @@ export const fetchSearchProducts = (
     const refineSet = new Set<string>(params.refine || []);
     const appConfig = getConfig(context);
     if (appConfig?.search.products.refine?.orderableOnly === true) {
+        // Remove any existing orderable_only refinements to avoid conflicts
+        Array.from(refineSet).forEach((r) => {
+            if (r.startsWith('orderable_only=')) {
+                refineSet.delete(r);
+            }
+        });
         refineSet.add('orderable_only=true');
-    }
-    if (categoryId) {
-        refineSet.add(`cgid=${categoryId}`);
     }
 
     const clients = createApiClients(context);

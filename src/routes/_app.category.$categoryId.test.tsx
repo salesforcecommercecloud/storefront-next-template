@@ -281,19 +281,17 @@ describe('CategoryPage', () => {
 
             expect(fetchCategory).toHaveBeenCalledWith(mockContext, 'electronics', 0);
             expect(fetchSearchProducts).toHaveBeenCalledWith(mockContext, {
-                categoryId: 'electronics',
                 limit: 2,
                 offset: 0,
                 sort: '',
-                refine: [],
+                refine: ['cgid=electronics'],
                 currency: 'GBP',
             });
             expect(fetchSearchProducts).toHaveBeenCalledWith(mockContext, {
-                categoryId: 'electronics',
                 limit: 8,
                 offset: 2,
                 sort: '',
-                refine: [],
+                refine: ['cgid=electronics'],
                 currency: 'GBP',
             });
             expect(fetchPageWithComponentData).toHaveBeenCalledWith(args, {
@@ -320,12 +318,46 @@ describe('CategoryPage', () => {
             expect(fetchSearchProducts).toHaveBeenCalledWith(
                 mockContext,
                 expect.objectContaining({
-                    categoryId: 'electronics',
                     offset: 20,
                     sort: 'price-low-to-high',
-                    refine: ['color:red', 'size:large'],
+                    refine: ['color:red', 'size:large', 'cgid=electronics'],
                 })
             );
+        });
+
+        test('should strip existing cgid refinements and replace with route categoryId', async () => {
+            const args: LoaderFunctionArgs = {
+                request: new Request(
+                    'https://example.com/category/electronics?refine=cgid%3Dwomens&refine=color%3Dblue'
+                ),
+                context: mockContext,
+                params: { categoryId: 'electronics' },
+                unstable_pattern: '/category/:categoryId',
+            };
+
+            const result = await loader(args);
+
+            // The old cgid=womens should be removed and replaced with cgid=electronics
+            expect(fetchSearchProducts).toHaveBeenCalledWith(
+                mockContext,
+                expect.objectContaining({
+                    refine: ['color=blue', 'cgid=electronics'],
+                })
+            );
+            expect(result.refine).toEqual(['color=blue', 'cgid=electronics']);
+        });
+
+        test('should return effectiveRefine as refine in loader result', async () => {
+            const args: LoaderFunctionArgs = {
+                request: new Request('https://example.com/category/electronics'),
+                context: mockContext,
+                params: { categoryId: 'electronics' },
+                unstable_pattern: '/category/:categoryId',
+            };
+
+            const result = await loader(args);
+
+            expect(result.refine).toEqual(['cgid=electronics']);
         });
 
         test('should throw 404 when category fetch fails with ApiError 404', async () => {
@@ -609,19 +641,17 @@ describe('CategoryPage', () => {
 
             expect(fetchSearchProducts).toHaveBeenCalledTimes(2);
             expect(fetchSearchProducts).toHaveBeenNthCalledWith(1, mockContext, {
-                categoryId: 'electronics',
                 limit: 2,
                 offset: 0,
                 sort: '',
-                refine: [],
+                refine: ['cgid=electronics'],
                 currency: 'GBP',
             });
             expect(fetchSearchProducts).toHaveBeenNthCalledWith(2, mockContext, {
-                categoryId: 'electronics',
                 limit: 8,
                 offset: 2,
                 sort: '',
-                refine: [],
+                refine: ['cgid=electronics'],
                 currency: 'GBP',
             });
         });
@@ -674,6 +704,7 @@ describe('CategoryPage', () => {
                 searchResultNonCritical: Promise.resolve(mockSearchResult),
                 page: Promise.resolve({ ...createMockPage(), componentData: {} }),
                 categoryId: 'electronics',
+                refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
                 categorySchema: Promise.resolve({
@@ -709,6 +740,7 @@ describe('CategoryPage', () => {
                 searchResultNonCritical: Promise.resolve(mockSearchResult),
                 page: Promise.resolve({ ...createMockPage(), componentData: {} }),
                 categoryId: 'electronics',
+                refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
                 categorySchema: Promise.resolve(null),
@@ -735,6 +767,7 @@ describe('CategoryPage', () => {
                 searchResultNonCritical: Promise.resolve(searchResultWithoutSorting),
                 page: Promise.resolve({ ...createMockPage(), componentData: {} }),
                 categoryId: 'electronics',
+                refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
                 categorySchema: Promise.resolve(null),
@@ -761,6 +794,7 @@ describe('CategoryPage', () => {
                 searchResultNonCritical: Promise.resolve(searchResultWithOneItem),
                 page: Promise.resolve({ ...createMockPage(), componentData: {} }),
                 categoryId: 'electronics',
+                refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
                 categorySchema: Promise.resolve(null),
@@ -786,6 +820,7 @@ describe('CategoryPage', () => {
                 searchResultNonCritical: Promise.resolve(mockSearchResult),
                 page: Promise.resolve({ ...createMockPage(), componentData: {} }),
                 categoryId: 'electronics',
+                refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
                 categorySchema: Promise.resolve(null),
@@ -825,6 +860,7 @@ describe('CategoryPage', () => {
                 searchResultNonCritical: Promise.resolve(searchResultWithoutHits),
                 page: Promise.resolve({ ...createMockPage(), componentData: {} }),
                 categoryId: 'electronics',
+                refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
                 categorySchema: Promise.resolve(null),
@@ -853,6 +889,7 @@ describe('CategoryPage', () => {
                 searchResultNonCritical: Promise.resolve(mockSearchResult),
                 page: Promise.resolve({ ...createMockPage(), componentData: {} }),
                 categoryId: 'electronics',
+                refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
                 categorySchema: Promise.resolve({
@@ -882,6 +919,7 @@ describe('CategoryPage', () => {
                 searchResultNonCritical: Promise.resolve(mockSearchResult),
                 page: Promise.resolve({ ...createMockPage(), componentData: {} }),
                 categoryId: 'electronics',
+                refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
                 categorySchema: Promise.resolve(null),
@@ -914,6 +952,7 @@ describe('CategoryPage', () => {
                 searchResultNonCritical: Promise.resolve(mockSearchResult),
                 page: Promise.resolve({ ...createMockPage(), componentData: {} }),
                 categoryId: 'electronics',
+                refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
                 categorySchema: Promise.resolve(null),
@@ -951,6 +990,7 @@ describe('CategoryPage', () => {
                 searchResultNonCritical: Promise.resolve(mockSearchResult),
                 page: Promise.resolve({ ...createMockPage(), componentData: {} }),
                 categoryId: 'electronics',
+                refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
                 categorySchema: Promise.resolve(null),

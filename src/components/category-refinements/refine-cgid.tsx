@@ -19,27 +19,23 @@ import type { ReactElement } from 'react';
 import { Button } from '@/components/ui/button';
 import type { RefinementProps } from './types';
 
-export default function RefineSize({
+export default function RefineCategory({
     values,
     attributeId,
     isFilterSelected,
     toggleFilter,
 }: RefinementProps): ReactElement {
     return (
-        <div className="flex flex-wrap gap-2 mt-2">
+        <div className="flex flex-col gap-2 mt-2">
             {values.map((value) => {
                 const isSelected = isFilterSelected(attributeId, value.value);
-
                 return (
                     <Button
                         key={`${attributeId}:${value.value}`}
-                        variant="outline"
+                        variant="link"
                         onClick={() => toggleFilter(attributeId, value.value)}
-                        className={`${isSelected ? 'border-foreground/80' : ''}`}>
+                        className={`justify-start ${isSelected ? 'border-foreground/80' : ''}`}>
                         {value.label || value.value}
-                        {value.hitCount !== undefined && (
-                            <span className="ml-auto text-xs bg-muted/50 px-2 py-1 rounded-full">{value.hitCount}</span>
-                        )}
                     </Button>
                 );
             })}

@@ -197,7 +197,7 @@ The default CategorySorting shows the sort dropdown:
         await expect(label).toBeInTheDocument();
 
         // Test select is present
-        const select = canvas.getByRole('combobox');
+        const select = canvas.getByRole<HTMLSelectElement>('combobox');
         await expect(select).toBeInTheDocument();
 
         // Test changing sort option
@@ -269,7 +269,7 @@ CategorySorting with a pre-selected sort option:
         await waitForStorybookReady(canvasElement);
 
         // Test select is present
-        const select = canvas.getByRole('combobox');
+        const select = canvas.getByRole<HTMLSelectElement>('combobox');
         await expect(select).toBeInTheDocument();
 
         // Test selected option is set
