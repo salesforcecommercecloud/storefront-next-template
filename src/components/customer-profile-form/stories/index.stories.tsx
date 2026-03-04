@@ -233,12 +233,10 @@ Default customer profile form with mock submission.
         );
         await expect(firstNameInput).toBeInTheDocument();
 
-        const emailInput = await canvas.findByPlaceholderText(
-            t('account:profile.emailPlaceholder'),
-            {},
-            { timeout: 5000 }
-        );
+        // Email is read-only (no placeholder) — find by label instead
+        const emailInput = canvas.getByLabelText(t('account:profile.email'));
         await expect(emailInput).toBeInTheDocument();
+        await expect(emailInput).toHaveAttribute('readonly');
     },
 };
 
@@ -399,7 +397,7 @@ Interactive customer profile form for testing user interactions.
         const canvas = within(canvasElement);
         const { t } = getTranslation();
 
-        // Find and interact with form fields
+        // Find and interact with editable form fields
         const firstNameInput = await canvas.findByPlaceholderText(
             t('account:profile.firstNamePlaceholder'),
             {},
@@ -416,13 +414,12 @@ Interactive customer profile form for testing user interactions.
         await userEvent.type(lastNameInput, 'Smith');
         await expect(lastNameInput).toHaveValue('Smith');
 
-        const emailInput = await canvas.findByPlaceholderText(
-            t('account:profile.emailPlaceholder'),
-            {},
-            { timeout: 5000 }
-        );
-        await userEvent.type(emailInput, 'jane.smith@example.com');
-        await expect(emailInput).toHaveValue('jane.smith@example.com');
+        // Email and phone are read-only — verify they exist and are not editable
+        const emailInput = canvas.getByLabelText(t('account:profile.email'));
+        await expect(emailInput).toHaveAttribute('readonly');
+
+        const phoneInput = canvas.getByLabelText(t('account:profile.phoneNumber'));
+        await expect(phoneInput).toHaveAttribute('readonly');
 
         // Select gender
         const genderSelect = canvas.getByRole('combobox', { name: t('account:profile.gender') });

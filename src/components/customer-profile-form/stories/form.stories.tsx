@@ -358,7 +358,7 @@ export const Interactive: Story = {
         const canvas = within(canvasElement);
         const { t } = getTranslation();
 
-        // Find and interact with form fields
+        // Find and interact with editable form fields
         const firstNameInput = await canvas.findByPlaceholderText(
             t('account:profile.firstNamePlaceholder'),
             {},
@@ -371,8 +371,8 @@ export const Interactive: Story = {
         await userEvent.type(lastNameInput, 'Smith');
         await expect(lastNameInput).toHaveValue('Smith');
 
-        const emailInput = canvas.getByPlaceholderText(t('account:profile.emailPlaceholder'));
-        await userEvent.type(emailInput, 'jane.smith@example.com');
-        await expect(emailInput).toHaveValue('jane.smith@example.com');
+        // Email is read-only — verify it exists and is not editable
+        const emailInput = canvas.getByLabelText(t('account:profile.email'));
+        await expect(emailInput).toHaveAttribute('readonly');
     },
 };

@@ -239,11 +239,14 @@ export const Default: Story = {
         const lastNameInput = canvas.getByPlaceholderText(t('account:profile.lastNamePlaceholder'));
         await expect(lastNameInput).toBeInTheDocument();
 
-        const emailInput = canvas.getByPlaceholderText(t('account:profile.emailPlaceholder'));
+        // Email and phone are read-only (no placeholder) — find by label
+        const emailInput = canvas.getByLabelText(t('account:profile.email'));
         await expect(emailInput).toBeInTheDocument();
+        await expect(emailInput).toHaveAttribute('readonly');
 
-        const phoneInput = canvas.getByPlaceholderText(t('account:profile.phonePlaceholder'));
+        const phoneInput = canvas.getByLabelText(t('account:profile.phoneNumber'));
         await expect(phoneInput).toBeInTheDocument();
+        await expect(phoneInput).toHaveAttribute('readonly');
 
         // Verify gender dropdown is present
         const genderSelect = canvas.getByRole('combobox', { name: t('account:profile.gender') });
@@ -463,9 +466,9 @@ export const Interactive: Story = {
         await userEvent.type(lastNameInput, 'Smith');
         await expect(lastNameInput).toHaveValue('Smith');
 
-        const emailInput = canvas.getByPlaceholderText(t('account:profile.emailPlaceholder'));
-        await userEvent.type(emailInput, 'jane.smith@example.com');
-        await expect(emailInput).toHaveValue('jane.smith@example.com');
+        // Email is read-only — verify it exists and is not editable
+        const emailInput = canvas.getByLabelText(t('account:profile.email'));
+        await expect(emailInput).toHaveAttribute('readonly');
 
         // Select gender
         const genderSelect = canvas.getByRole('combobox', { name: t('account:profile.gender') });
@@ -497,11 +500,14 @@ export const Mobile: Story = {
         const lastNameInput = canvas.getByPlaceholderText(t('account:profile.lastNamePlaceholder'));
         await expect(lastNameInput).toBeInTheDocument();
 
-        const emailInput = canvas.getByPlaceholderText(t('account:profile.emailPlaceholder'));
+        // Email and phone are read-only (no placeholder) — find by label
+        const emailInput = canvas.getByLabelText(t('account:profile.email'));
         await expect(emailInput).toBeInTheDocument();
+        await expect(emailInput).toHaveAttribute('readonly');
 
-        const phoneInput = canvas.getByPlaceholderText(t('account:profile.phonePlaceholder'));
+        const phoneInput = canvas.getByLabelText(t('account:profile.phoneNumber'));
         await expect(phoneInput).toBeInTheDocument();
+        await expect(phoneInput).toHaveAttribute('readonly');
 
         // Verify gender dropdown is present
         const genderSelect = canvas.getByRole('combobox', { name: t('account:profile.gender') });
@@ -534,11 +540,14 @@ export const Tablet: Story = {
         const lastNameInput = canvas.getByPlaceholderText(t('account:profile.lastNamePlaceholder'));
         await expect(lastNameInput).toBeInTheDocument();
 
-        const emailInput = canvas.getByPlaceholderText(t('account:profile.emailPlaceholder'));
+        // Email and phone are read-only (no placeholder) — find by label
+        const emailInput = canvas.getByLabelText(t('account:profile.email'));
         await expect(emailInput).toBeInTheDocument();
+        await expect(emailInput).toHaveAttribute('readonly');
 
-        const phoneInput = canvas.getByPlaceholderText(t('account:profile.phonePlaceholder'));
+        const phoneInput = canvas.getByLabelText(t('account:profile.phoneNumber'));
         await expect(phoneInput).toBeInTheDocument();
+        await expect(phoneInput).toHaveAttribute('readonly');
 
         // Verify gender dropdown is present
         const genderSelect = canvas.getByRole('combobox', { name: t('account:profile.gender') });
@@ -571,11 +580,14 @@ export const Desktop: Story = {
         const lastNameInput = canvas.getByPlaceholderText(t('account:profile.lastNamePlaceholder'));
         await expect(lastNameInput).toBeInTheDocument();
 
-        const emailInput = canvas.getByPlaceholderText(t('account:profile.emailPlaceholder'));
+        // Email and phone are read-only (no placeholder) — find by label
+        const emailInput = canvas.getByLabelText(t('account:profile.email'));
         await expect(emailInput).toBeInTheDocument();
+        await expect(emailInput).toHaveAttribute('readonly');
 
-        const phoneInput = canvas.getByPlaceholderText(t('account:profile.phonePlaceholder'));
+        const phoneInput = canvas.getByLabelText(t('account:profile.phoneNumber'));
         await expect(phoneInput).toBeInTheDocument();
+        await expect(phoneInput).toHaveAttribute('readonly');
 
         // Verify gender dropdown is present
         const genderSelect = canvas.getByRole('combobox', { name: t('account:profile.gender') });

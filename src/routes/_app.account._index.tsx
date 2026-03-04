@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useMemo, type ReactElement, Suspense, useState } from 'react';
+import { useEffect, useMemo, type ReactElement, Suspense, useState } from 'react';
 import { useOutletContext, Await, useFetcher, useRevalidator } from 'react-router';
 import { ToggleCard, ToggleCardSummary, ToggleCardEdit } from '@/components/toggle-card';
 import { Card, CardContent } from '@/components/ui/card';
@@ -52,6 +52,13 @@ function AccountDetailsContent({
 }): ReactElement {
     const [isEditingProfile, setIsEditingProfile] = useState(false);
     const [isEditingPassword, setIsEditingPassword] = useState(false);
+    // Optimistic profile values shown after save until the server customer prop refreshes.
+    const [profileOverride, setProfileOverride] = useState<Partial<Customer> | null>(null);
+
+    // Clear the override when server data arrives (e.g. after navigation or revalidation).
+    useEffect(() => {
+        setProfileOverride(null);
+    }, [customer]);
 
     const { addToast } = useToast();
     const loginFetcher = useFetcher();
@@ -78,14 +85,21 @@ function AccountDetailsContent({
         body: { currentPassword: '', password: '' },
     });
 
-    // Extract user info from customer data
+    // Merge server customer with optimistic override so saved values display immediately.
+    const displayCustomer = useMemo((): Customer | null => {
+        if (!customer) return null;
+        if (!profileOverride) return customer;
+        return { ...customer, ...profileOverride };
+    }, [customer, profileOverride]);
+
+    // Extract user info from displayed customer data
     const userInfo = useMemo(
         () => ({
-            fullName: `${customer?.firstName || ''} ${customer?.lastName || ''}`.trim(),
-            email: customer?.email || customer?.login || '',
-            phoneNumber: customer?.phoneHome || customer?.phoneMobile || '',
+            fullName: `${displayCustomer?.firstName || ''} ${displayCustomer?.lastName || ''}`.trim(),
+            email: displayCustomer?.email || displayCustomer?.login || '',
+            phoneNumber: displayCustomer?.phoneHome || displayCustomer?.phoneMobile || '',
         }),
-        [customer]
+        [displayCustomer]
     );
 
     /**
@@ -142,15 +156,8 @@ function AccountDetailsContent({
     /**
      * Handles successful profile update.
      * Called when the customer profile form is successfully submitted.
-     * You can add additional logic here such as:
-     * - Refreshing customer data
-     * - Showing success notifications
-     * - Analytics tracking
-     * - Cache invalidation
-     *
-     * @param formData - The form data that was successfully submitted
      */
-    const handleCustomerProfileSuccess = (_formData: {
+    const handleCustomerProfileSuccess = (formData: {
         firstName: string;
         lastName: string;
         email: string;
@@ -158,29 +165,23 @@ function AccountDetailsContent({
         gender?: string;
         birthday?: string;
     }) => {
-        // Show success toast
         addToast(t('profile.successMessage'), 'success');
-        // Add your additional logic here
-
-        // Close the editing mode
         setIsEditingProfile(false);
+        // Show saved values immediately via optimistic override.
+        // The override is cleared when the server customer prop refreshes.
+        setProfileOverride({
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            gender: formData.gender ? Number(formData.gender) : undefined,
+            birthday: formData.birthday ?? undefined,
+        });
     };
 
     /**
      * Handles profile update errors.
-     * Called when the customer profile form update fails.
-     * You can add additional logic here such as:
-     * - Error logging
-     * - Analytics tracking
-     * - Custom error handling
-     *
-     * @param error - The error that occurred during the update
      */
     const handleCustomerProfileError = (error: string) => {
-        // Show error toast
         addToast(error, 'error');
-        // Add your additional logic here
-        // console.error('Profile update failed:', error);
     };
 
     /**
@@ -231,19 +232,9 @@ function AccountDetailsContent({
 
     /**
      * Handles password update errors.
-     * Called when the password update form update fails.
-     * You can add additional logic here such as:
-     * - Error logging
-     * - Analytics tracking
-     * - Custom error handling
-     *
-     * @param error - The error that occurred during the update
      */
     const handlePasswordError = (error: string) => {
-        // Show error toast
         addToast(error, 'error');
-        // Add your additional logic here
-        // console.error('Password update failed:', error);
     };
 
     /**
@@ -294,13 +285,13 @@ function AccountDetailsContent({
                         <div className="space-y-1">
                             <p className="text-sm text-muted-foreground">{t('profile.firstName')}</p>
                             <p className="text-sm font-medium text-foreground">
-                                {customer?.firstName || t('profile.notProvided')}
+                                {displayCustomer?.firstName || t('profile.notProvided')}
                             </p>
                         </div>
                         <div className="space-y-1">
                             <p className="text-sm text-muted-foreground">{t('profile.lastName')}</p>
                             <p className="text-sm font-medium text-foreground">
-                                {customer?.lastName || t('profile.notProvided')}
+                                {displayCustomer?.lastName || t('profile.notProvided')}
                             </p>
                         </div>
                         <div className="space-y-1">
@@ -318,9 +309,9 @@ function AccountDetailsContent({
                         <div className="space-y-1">
                             <p className="text-sm text-muted-foreground">{t('profile.gender')}</p>
                             <p className="text-sm font-medium text-foreground">
-                                {customer?.gender === 1
+                                {displayCustomer?.gender === 1
                                     ? t('profile.genderOptions.male')
-                                    : customer?.gender === 2
+                                    : displayCustomer?.gender === 2
                                       ? t('profile.genderOptions.female')
                                       : t('profile.notProvided')}
                             </p>
@@ -328,7 +319,8 @@ function AccountDetailsContent({
                         <div className="space-y-1">
                             <p className="text-sm text-muted-foreground">{t('profile.dateOfBirth')}</p>
                             <p className="text-sm font-medium text-foreground">
-                                {formatDateForLocale(customer?.birthday, i18n.language) || t('profile.notProvided')}
+                                {formatDateForLocale(displayCustomer?.birthday, i18n.language) ||
+                                    t('profile.notProvided')}
                             </p>
                         </div>
                     </div>
@@ -337,12 +329,12 @@ function AccountDetailsContent({
                 <ToggleCardEdit>
                     <CustomerProfileForm
                         initialData={{
-                            firstName: customer?.firstName || '',
-                            lastName: customer?.lastName || '',
-                            email: customer?.email || customer?.login || '',
-                            phone: customer?.phoneHome || customer?.phoneMobile || '',
-                            gender: customer?.gender !== undefined ? String(customer.gender) : '',
-                            birthday: customer?.birthday || '',
+                            firstName: displayCustomer?.firstName || '',
+                            lastName: displayCustomer?.lastName || '',
+                            email: displayCustomer?.email || displayCustomer?.login || '',
+                            phone: displayCustomer?.phoneHome || displayCustomer?.phoneMobile || '',
+                            gender: displayCustomer?.gender !== undefined ? String(displayCustomer.gender) : '',
+                            birthday: displayCustomer?.birthday || '',
                         }}
                         updateFetcher={updateProfileFetcher}
                         onSuccess={handleCustomerProfileSuccess}
@@ -412,7 +404,11 @@ function AccountDetailsContent({
 export default function AccountDetails(): ReactElement {
     const { customer: customerPromise, subscriptions: subscriptionsPromise } = useOutletContext<AccountLayoutContext>();
 
-    const dataPromise = Promise.all([customerPromise, subscriptionsPromise]);
+    // Stable promise reference so Await does not reset (unmount children) on every re-render.
+    const dataPromise = useMemo(
+        () => Promise.all([customerPromise, subscriptionsPromise]),
+        [customerPromise, subscriptionsPromise]
+    );
 
     return (
         <Suspense fallback={<AccountDetailSkeleton />}>

@@ -61,9 +61,10 @@ export function loader(args: LoaderFunctionArgs) {
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
-export function shouldRevalidate({ defaultShouldRevalidate, formData }: ShouldRevalidateFunctionArgs) {
-    // Defer revalidation if the password has just been updated allowing the re-login process to complete.
-    if (Object.fromEntries(formData || [])?.currentPassword) {
+export function shouldRevalidate({ defaultShouldRevalidate, formAction }: ShouldRevalidateFunctionArgs) {
+    // Defer revalidation when a fetcher submits to our SCAPI resource route (profile/password update)
+    // so AccountDetailsContent stays mounted and useScapiFetcherEffect can fire its callbacks.
+    if (formAction?.includes('/resource/api/client')) {
         return false;
     }
 
@@ -80,6 +81,9 @@ export function shouldRevalidate({ defaultShouldRevalidate, formData }: ShouldRe
 export default function AccountPage({ loaderData }: { loaderData: AccountPageData }): ReactElement {
     const { t } = useTranslation('account');
     const { customer, subscriptions } = loaderData;
+
+    // Stable context reference so child Await does not get new promise refs on every layout re-render.
+    const outletContext = useMemo(() => ({ customer, subscriptions }), [customer, subscriptions]);
 
     const navigationItems: AccountNavItemData[] = useMemo(
         () => [
@@ -167,7 +171,7 @@ export default function AccountPage({ loaderData }: { loaderData: AccountPageDat
 
                     {/* Main Content - Child routes render here */}
                     <div className="lg:col-span-3">
-                        <Outlet context={{ customer, subscriptions }} />
+                        <Outlet context={outletContext} />
                     </div>
                 </div>
             </div>

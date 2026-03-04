@@ -98,50 +98,52 @@ export function CustomerProfileFields({ form, updateFetcher, onCancel }: Custome
                 />
             </div>
 
-            {/* Email Field */}
-            <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel className="text-sm font-medium text-foreground">{t('profile.email')}</FormLabel>
-                        <FormControl>
-                            <Input
-                                type="email"
-                                autoComplete="email"
-                                placeholder={t('profile.emailPlaceholder')}
-                                className="rounded-md"
-                                {...field}
-                            />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}
-            />
+            {/* Email and Phone Row (both read-only until SLAS email verification is available) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Email Field */}
+                <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="text-sm font-medium text-foreground">{t('profile.email')}</FormLabel>
+                            <FormControl>
+                                <Input
+                                    type="email"
+                                    autoComplete="email"
+                                    readOnly
+                                    tabIndex={-1}
+                                    className="rounded-md bg-muted text-muted-foreground cursor-default focus-visible:ring-0 focus-visible:border-input"
+                                    {...field}
+                                />
+                            </FormControl>
+                        </FormItem>
+                    )}
+                />
 
-            {/* Phone Number Field */}
-            <FormField
-                control={form.control}
-                name="phone"
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel className="text-sm font-medium text-foreground">
-                            {t('profile.phoneNumber')}
-                        </FormLabel>
-                        <FormControl>
-                            <Input
-                                type="tel"
-                                autoComplete="tel"
-                                inputMode="numeric"
-                                placeholder={t('profile.phonePlaceholder')}
-                                className="rounded-md"
-                                {...field}
-                            />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}
-            />
+                {/* Phone Number Field */}
+                <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="text-sm font-medium text-foreground">
+                                {t('profile.phoneNumber')}
+                            </FormLabel>
+                            <FormControl>
+                                <Input
+                                    type="tel"
+                                    autoComplete="tel"
+                                    readOnly
+                                    tabIndex={-1}
+                                    className="rounded-md bg-muted text-muted-foreground cursor-default focus-visible:ring-0 focus-visible:border-input"
+                                    {...field}
+                                />
+                            </FormControl>
+                        </FormItem>
+                    )}
+                />
+            </div>
 
             {/* Gender and Date of Birth Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
