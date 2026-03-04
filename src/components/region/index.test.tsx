@@ -217,13 +217,39 @@ describe('Region', () => {
         });
     });
 
-    it('renders page region without className when not provided', async () => {
-        render(<Region page={mockPage} regionId="test-region" />);
+    it('renders page region without className wrapper when not provided', async () => {
+        const { container } = render(<Region page={mockPage} regionId="test-region" />);
 
-        // RegionWrapper no longer renders a wrapper div with className
-        // Just verify components are rendered (async)
         await waitFor(() => {
             expect(screen.getByTestId('component-component-1')).toBeInTheDocument();
+        });
+
+        // No wrapper div with className should exist
+        expect(container.querySelector('.custom-class')).not.toBeInTheDocument();
+    });
+
+    it('wraps region content in a div with className when provided', async () => {
+        const { container } = render(<Region page={mockPage} regionId="test-region" className="custom-class" />);
+
+        await waitFor(() => {
+            expect(screen.getByTestId('component-component-1')).toBeInTheDocument();
+        });
+
+        // A wrapper div with the className should exist and contain the components
+        const wrapper = container.querySelector('.custom-class');
+        expect(wrapper).toBeInTheDocument();
+        expect(wrapper?.tagName).toBe('DIV');
+        expect(wrapper?.querySelector('[data-testid="component-component-1"]')).toBeInTheDocument();
+    });
+
+    it('does not render className wrapper when region is not found', async () => {
+        const { container } = render(
+            <Region page={mockPage} regionId="non-existent" className="should-not-render" errorElement={<div />} />
+        );
+
+        await waitFor(() => {
+            // errorElement should be rendered, not the className wrapper
+            expect(container.querySelector('.should-not-render')).not.toBeInTheDocument();
         });
     });
 

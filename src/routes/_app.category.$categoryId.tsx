@@ -294,9 +294,7 @@ export default function CategoryPage({
                     </div>
 
                     {/* plpTopFullWidth */}
-                    <div className="mb-8">
-                        <Region page={page} regionId="plpTopFullWidth" errorElement={<div />} />
-                    </div>
+                    <Region className="mb-8" page={page} regionId="plpTopFullWidth" />
 
                     <div className="flex flex-col lg:flex-row gap-8">
                         <div className="hidden lg:block w-64 flex-shrink-0">
@@ -305,9 +303,7 @@ export default function CategoryPage({
 
                         <div className="flex-grow">
                             {/* plpTopContent */}
-                            <div className="mb-8">
-                                <Region page={page} regionId="plpTopContent" errorElement={<div />} />
-                            </div>
+                            <Region className="mb-8" page={page} regionId="plpTopContent" />
 
                             <ProductGrid
                                 critical={searchResultCritical.hits ?? []}
@@ -327,9 +323,7 @@ export default function CategoryPage({
                             )}
 
                             {/* plpBottom */}
-                            <div className="mt-8">
-                                <Region page={page} regionId="plpBottom" errorElement={<div />} />
-                            </div>
+                            <Region className="mt-8" page={page} regionId="plpBottom" />
                         </div>
                     </div>
                 </div>

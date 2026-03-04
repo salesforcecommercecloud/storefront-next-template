@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Suspense, type ReactNode } from 'react';
+import { Suspense, type HTMLAttributes, type ReactNode } from 'react';
 import { Await } from 'react-router';
 import { Component } from './component';
 import { RegionWrapper } from './region-wrapper';
@@ -37,7 +37,7 @@ type PageWithDesignMetadata = PageDecoratorProps<ShopperExperience.schemas['Page
 };
 
 // Props when rendering a page-level region
-interface PageRegionProps extends React.HTMLAttributes<HTMLDivElement> {
+interface PageRegionProps extends HTMLAttributes<HTMLDivElement> {
     page: Promise<PageWithDesignMetadata> | PageWithDesignMetadata;
     component?: never;
     regionId: string;
@@ -48,7 +48,7 @@ interface PageRegionProps extends React.HTMLAttributes<HTMLDivElement> {
 export type ComponentType = ComponentDecoratorProps<ShopperExperience.schemas['Component']>;
 
 // Props when rendering a component-level region (nested)
-interface ComponentRegionProps extends React.HTMLAttributes<HTMLDivElement> {
+interface ComponentRegionProps extends HTMLAttributes<HTMLDivElement> {
     page?: never;
     component: ComponentType;
     regionId: string;
@@ -73,20 +73,21 @@ function renderRegionContent(
     region: ShopperExperience.schemas['Region'],
     regionId: string,
     metadata: RegionDesignMetadata | undefined,
-    className: string,
-    rest: React.HTMLAttributes<HTMLDivElement>
+    className: string | undefined,
+    rest: HTMLAttributes<HTMLDivElement>
 ) {
-    return (
-        <RegionWrapper
-            region={region}
-            className={className}
-            designMetadata={getDesignMetadata(regionId, metadata)}
-            {...rest}>
+    const content = (
+        <RegionWrapper region={region} designMetadata={getDesignMetadata(regionId, metadata)} {...rest}>
             {region.components?.map(
                 (comp) => comp.id && <Component key={comp.id} component={comp as ComponentType} regionId={region.id} />
             )}
         </RegionWrapper>
     );
+
+    if (className) {
+        return <div className={className}>{content}</div>;
+    }
+    return content;
 }
 
 /**
@@ -123,7 +124,7 @@ function renderRegionContent(
  * regions that can contain multiple components managed through the Page Designer interface.
  */
 export function Region(props: RegionProps) {
-    const { regionId, className = '', errorElement, fallbackElement = <div />, ...rest } = props;
+    const { regionId, className, errorElement = <></>, fallbackElement = <></>, ...rest } = props;
     const regionContext = useRegionContext();
     const existingComponentData = useComponentData();
 

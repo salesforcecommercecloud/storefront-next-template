@@ -361,9 +361,7 @@ function ProductDetailView({ loaderData }: { loaderData: ProductPageData }) {
         return (
             <>
                 {/* Promo Content Region - Promotional content above main product */}
-                <div className="mb-8">
-                    <Region page={page} regionId="promoContent" errorElement={<div />} />
-                </div>
+                <Region className="mb-8" page={page} regionId="promoContent" />
 
                 {/* Mobile Product Title - shown on mobile only */}
                 <div className="block md:hidden mb-8">
@@ -381,9 +379,12 @@ function ProductDetailView({ loaderData }: { loaderData: ProductPageData }) {
                 {mainProductContent}
 
                 {/* Engagement Content Region - Shows page content or recommendations */}
-                <div className="mt-16">
-                    <Region page={page} regionId="engagementContent" errorElement={<ProductRecommendationsSection />} />
-                </div>
+                <Region
+                    className="mt-16"
+                    page={page}
+                    regionId="engagementContent"
+                    errorElement={<ProductRecommendationsSection />}
+                />
             </>
         );
     };

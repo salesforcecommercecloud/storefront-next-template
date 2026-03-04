@@ -202,9 +202,7 @@ export default function SearchPage({
                     </div>
 
                     {/* searchTopFullWidth */}
-                    <div className="mb-8">
-                        <Region page={page} regionId="searchTopFullWidth" errorElement={<div />} />
-                    </div>
+                    <Region className="mb-8" page={page} regionId="searchTopFullWidth" />
 
                     <div className="flex flex-col lg:flex-row gap-8">
                         <div className="hidden lg:block w-64 flex-shrink-0">
@@ -213,9 +211,7 @@ export default function SearchPage({
 
                         <div className="flex-grow">
                             {/* searchTopContent */}
-                            <div className="mb-8">
-                                <Region page={page} regionId="searchTopContent" errorElement={<div />} />
-                            </div>
+                            <Region className="mb-8" page={page} regionId="searchTopContent" />
 
                             <ProductGrid
                                 critical={searchResultCritical.hits ?? []}
@@ -235,9 +231,7 @@ export default function SearchPage({
                             )}
 
                             {/* searchBottom */}
-                            <div className="mt-8">
-                                <Region page={page} regionId="searchBottom" errorElement={<div />} />
-                            </div>
+                            <Region className="mt-8" page={page} regionId="searchBottom" />
                         </div>
                     </div>
                 </div>
