@@ -75,7 +75,7 @@ export function loader(args: LoaderFunctionArgs): HomePageData {
             pageId: 'homepage',
         }),
         searchResult: fetchSearchProducts(args.context, {
-            categoryId: 'root',
+            refine: ['cgid=root'],
             limit: getConfig(args.context).pages.home.featuredProductsCount,
             currency: currency ?? undefined,
         }),
