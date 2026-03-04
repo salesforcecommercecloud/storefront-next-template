@@ -167,3 +167,121 @@ export const CustomAction: Story = {
         await expect(canvas.queryByText('More Options')).not.toBeInTheDocument();
     },
 };
+
+// Page Designer Styling Stories
+export const PageDesignerImageCover: Story = {
+    args: {
+        product: mockProductSearchItem,
+        objectFit: 'cover',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText(mockProductSearchItem.productName)).toBeInTheDocument();
+    },
+};
+
+export const PageDesignerBorderRadius: Story = {
+    args: {
+        product: mockProductSearchItem,
+        borderRadius: '2xl',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText(mockProductSearchItem.productName)).toBeInTheDocument();
+    },
+};
+
+export const PageDesignerShadowXL: Story = {
+    args: {
+        product: mockProductSearchItem,
+        boxShadow: 'xl',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText(mockProductSearchItem.productName)).toBeInTheDocument();
+    },
+};
+
+export const PageDesignerPaddingMargin: Story = {
+    args: {
+        product: mockProductSearchItem,
+        padding: '8',
+        margin: '4',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText(mockProductSearchItem.productName)).toBeInTheDocument();
+    },
+};
+
+export const PageDesignerTypography: Story = {
+    args: {
+        product: mockProductSearchItem,
+        fontWeight: 'bold',
+        letterSpacing: 'wide',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText(mockProductSearchItem.productName)).toBeInTheDocument();
+    },
+};
+
+export const PageDesignerHoverScale: Story = {
+    args: {
+        product: mockProductSearchItem,
+        hoverEffect: 'scale',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText(mockProductSearchItem.productName)).toBeInTheDocument();
+    },
+};
+
+export const PageDesignerHoverShadow: Story = {
+    args: {
+        product: mockProductSearchItem,
+        hoverEffect: 'shadow',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText(mockProductSearchItem.productName)).toBeInTheDocument();
+    },
+};
+
+export const PageDesignerHoverLift: Story = {
+    args: {
+        product: mockProductSearchItem,
+        hoverEffect: 'lift',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText(mockProductSearchItem.productName)).toBeInTheDocument();
+    },
+};
+
+export const PageDesignerFullCustomization: Story = {
+    args: {
+        product: mockProductSearchItem,
+        objectFit: 'contain',
+        borderRadius: '2xl',
+        boxShadow: 'lg',
+        padding: '6',
+        margin: '2',
+        fontWeight: 'bold',
+        letterSpacing: 'wide',
+        hoverEffect: 'scale',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText(mockProductSearchItem.productName)).toBeInTheDocument();
+    },
+};

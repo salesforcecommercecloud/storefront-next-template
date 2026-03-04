@@ -19,11 +19,18 @@ import { Link } from 'react-router';
 
 // Types
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ComponentDesignMetadata } from '@salesforce/storefront-next-runtime/design/react';
 
 // Libs & Utils
 import { cn } from '@/lib/utils';
 import { createProductUrl, getDecoratedVariationAttributes } from '@/lib/product-utils';
 import { useProductTileContext } from './context';
+
+// Page Designer Decorators
+import { Component } from '@/lib/decorators/component';
+import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
+import { RegionDefinition } from '@/lib/decorators/region-definition';
+import type { ComponentType } from '@/components/region';
 
 // Components
 import { ProductTileSwatchesSkeleton } from '@/components/category-skeleton';
@@ -47,12 +54,216 @@ interface ProductTileProps extends ComponentProps<'div'> {
     selectedVariantColorValue?: string | null;
     /** Image aspect ratio (width/height). If provided, calculates height based on viewport width. Defaults to 1 (square) */
     imgAspectRatio?: number;
+
+    // Page Designer styling props
+    objectFit?: 'contain' | 'cover' | 'fill' | 'none' | 'scale-down';
+    borderRadius?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+    boxShadow?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+    padding?: '0' | '2' | '4' | '6' | '8';
+    margin?: '0' | '2' | '4' | '6' | '8';
+    fontWeight?: 'normal' | 'medium' | 'semibold' | 'bold';
+    letterSpacing?: 'tighter' | 'tight' | 'normal' | 'wide' | 'wider';
+    hoverEffect?: 'default' | 'scale' | 'shadow' | 'lift';
+
+    // Page Designer system props (need to be filtered)
+    regionId?: string;
+    component?: ComponentType;
+    componentData?: Record<string, Promise<unknown>>;
+    designMetadata?: ComponentDesignMetadata;
+    data?: unknown;
 }
 
 // Configure which attribute to show swatches for and how many to display
 // Change these constants to adapt to different customer needs
 const PRODUCT_TILE_SELECTABLE_ATTRIBUTE_ID = 'color';
 const PRODUCT_TILE_MAX_SWATCHES = 2;
+
+/* v8 ignore start - do not test decorators in unit tests, decorator functionality is tested separately*/
+@Component('productTile', {
+    name: 'Product Tile',
+    description: 'Configurable product tile with customizable styling for images, typography, and hover effects',
+})
+@RegionDefinition([])
+export class ProductTileMetadata {
+    @AttributeDefinition({
+        id: 'objectFit',
+        name: 'Image Object Fit',
+        description: 'How the product image should fit within its container',
+        type: 'enum',
+        values: ['contain', 'cover', 'fill', 'none', 'scale-down'],
+        defaultValue: 'contain',
+    })
+    objectFit?: string;
+
+    @AttributeDefinition({
+        id: 'borderRadius',
+        name: 'Border Radius',
+        description: 'Corner roundness of the tile card',
+        type: 'enum',
+        values: ['none', 'sm', 'md', 'lg', 'xl', '2xl'],
+        defaultValue: 'xl',
+    })
+    borderRadius?: string;
+
+    @AttributeDefinition({
+        id: 'boxShadow',
+        name: 'Box Shadow',
+        description: 'Shadow effect for the tile card',
+        type: 'enum',
+        values: ['none', 'sm', 'md', 'lg', 'xl', '2xl'],
+        defaultValue: 'sm',
+    })
+    boxShadow?: string;
+
+    @AttributeDefinition({
+        id: 'padding',
+        name: 'Padding',
+        description: 'Padding on all sides of the tile',
+        type: 'enum',
+        values: ['0', '2', '4', '6', '8'],
+        defaultValue: '0',
+    })
+    padding?: string;
+
+    @AttributeDefinition({
+        id: 'margin',
+        name: 'Margin',
+        description: 'Margin on all sides of the tile',
+        type: 'enum',
+        values: ['0', '2', '4', '6', '8'],
+        defaultValue: '0',
+    })
+    margin?: string;
+
+    @AttributeDefinition({
+        id: 'fontWeight',
+        name: 'Font Weight',
+        description: 'Weight of the product name text',
+        type: 'enum',
+        values: ['normal', 'medium', 'semibold', 'bold'],
+        defaultValue: 'semibold',
+    })
+    fontWeight?: string;
+
+    @AttributeDefinition({
+        id: 'letterSpacing',
+        name: 'Letter Spacing',
+        description: 'Spacing between letters in product name',
+        type: 'enum',
+        values: ['tighter', 'tight', 'normal', 'wide', 'wider'],
+        defaultValue: 'normal',
+    })
+    letterSpacing?: string;
+
+    @AttributeDefinition({
+        id: 'hoverEffect',
+        name: 'Hover Effect',
+        description: 'Interactive hover effect for the tile',
+        type: 'enum',
+        values: ['default', 'scale', 'shadow', 'lift'],
+        defaultValue: 'default',
+    })
+    hoverEffect?: string;
+}
+/* v8 ignore stop */
+
+// Helper function to map Page Designer attribute values to Tailwind classes
+const getPageDesignerStyleClasses = ({
+    objectFit,
+    borderRadius,
+    boxShadow,
+    padding,
+    margin,
+    fontWeight,
+    letterSpacing,
+    hoverEffect,
+}: Partial<ProductTileProps>) => {
+    const classes: string[] = [];
+
+    // Object fit for images - override existing styles
+    if (objectFit) {
+        const fitMap = {
+            contain: '[&_img]:!object-contain',
+            cover: '[&_img]:!object-cover',
+            fill: '[&_img]:!object-fill',
+            none: '[&_img]:!object-none',
+            'scale-down': '[&_img]:!object-scale-down',
+        };
+        classes.push(fitMap[objectFit]);
+    }
+
+    // Border radius - override default rounded-xl
+    if (borderRadius) {
+        const radiusMap = {
+            none: '!rounded-none',
+            sm: '!rounded-sm',
+            md: '!rounded-md',
+            lg: '!rounded-lg',
+            xl: '!rounded-xl',
+            '2xl': '!rounded-2xl',
+        };
+        classes.push(radiusMap[borderRadius]);
+    }
+
+    // Box shadow - override default shadow-sm and hover:shadow-md
+    if (boxShadow === 'none') {
+        classes.push('!shadow-none hover:!shadow-none');
+    } else if (boxShadow) {
+        const shadowMap = {
+            sm: '!shadow-sm hover:!shadow-sm',
+            md: '!shadow-md hover:!shadow-md',
+            lg: '!shadow-lg hover:!shadow-lg',
+            xl: '!shadow-xl hover:!shadow-xl',
+            '2xl': '!shadow-2xl hover:!shadow-2xl',
+        };
+        classes.push(shadowMap[boxShadow]);
+    }
+
+    // Padding - applied to wrapper
+    if (padding && padding !== '0') {
+        classes.push(`p-${padding}`);
+    }
+
+    // Margin - applied to wrapper
+    if (margin && margin !== '0') {
+        classes.push(`m-${margin}`);
+    }
+
+    // Font weight - apply to product name Link
+    if (fontWeight) {
+        const weightMap = {
+            normal: '[&_a]:!font-normal',
+            medium: '[&_a]:!font-medium',
+            semibold: '[&_a]:!font-semibold',
+            bold: '[&_a]:!font-bold',
+        };
+        classes.push(weightMap[fontWeight]);
+    }
+
+    // Letter spacing - apply to product name Link
+    if (letterSpacing) {
+        const spacingMap = {
+            tighter: '[&_a]:!tracking-tighter',
+            tight: '[&_a]:!tracking-tight',
+            normal: '[&_a]:!tracking-normal',
+            wide: '[&_a]:!tracking-wide',
+            wider: '[&_a]:!tracking-wider',
+        };
+        classes.push(spacingMap[letterSpacing]);
+    }
+
+    // Hover effects - override default hover:shadow-md
+    if (hoverEffect && hoverEffect !== 'default') {
+        const hoverMap = {
+            scale: 'hover:!scale-105 !transition-transform !duration-200 hover:!shadow-md',
+            shadow: 'hover:!shadow-xl !transition-shadow !duration-200',
+            lift: 'hover:!-translate-y-1 hover:!shadow-lg !transition-all !duration-200',
+        };
+        classes.push(hoverMap[hoverEffect]);
+    }
+
+    return classes.join(' ');
+};
 
 const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
     (
@@ -65,6 +276,21 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
             selectedVariantColorValue,
             handleProductClick,
             imgAspectRatio,
+            // Page Designer styling props
+            objectFit,
+            borderRadius,
+            boxShadow,
+            padding,
+            margin,
+            fontWeight,
+            letterSpacing,
+            hoverEffect,
+            // Page Designer system props (filter out)
+            regionId: _regionId,
+            component: _component,
+            componentData: _componentData,
+            designMetadata: _designMetadata,
+            data: _data,
             ...props
         },
         ref
@@ -115,11 +341,24 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
             void navigate(productUrl);
         }, [navigate, product, selectedAttributeValue, handleProductClick]);
 
+        // Apply Page Designer styling if any styling props are provided
+        const pageDesignerStyles = getPageDesignerStyleClasses({
+            objectFit,
+            borderRadius,
+            boxShadow,
+            padding,
+            margin,
+            fontWeight,
+            letterSpacing,
+            hoverEffect,
+        });
+
         return (
             <Card
                 ref={ref}
                 className={cn(
                     'group rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col h-full gap-0 py-0 transition-all duration-200',
+                    pageDesignerStyles,
                     className
                 )}
                 {...props}>

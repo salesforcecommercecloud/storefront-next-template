@@ -238,3 +238,147 @@ describe('ProductTile UI Variants', () => {
         expect(screen.queryByText(/more options/i)).not.toBeInTheDocument();
     });
 });
+
+describe('ProductTile Page Designer Styling', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+        vi.spyOn(ReactRouter, 'useNavigate').mockReturnValue(mockNavigate);
+    });
+
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
+
+    test('applies object-fit styling', () => {
+        const { container } = renderComponent({ objectFit: 'cover' });
+        const card = container.querySelector('.border.rounded-xl');
+        expect(card).toHaveClass('[&_img]:!object-cover');
+    });
+
+    test('applies border radius styling', () => {
+        const { container } = renderComponent({ borderRadius: 'lg' });
+        const card = container.querySelector('.border.rounded-xl');
+        expect(card).toHaveClass('!rounded-lg');
+    });
+
+    test('applies box shadow styling', () => {
+        const { container } = renderComponent({ boxShadow: 'xl' });
+        const card = container.querySelector('.border.rounded-xl');
+        expect(card).toHaveClass('!shadow-xl');
+        expect(card).toHaveClass('hover:!shadow-xl');
+    });
+
+    test('applies box shadow none styling', () => {
+        const { container } = renderComponent({ boxShadow: 'none' });
+        const card = container.querySelector('.border.rounded-xl');
+        expect(card).toHaveClass('!shadow-none');
+        expect(card).toHaveClass('hover:!shadow-none');
+    });
+
+    test('applies padding styling', () => {
+        const { container } = renderComponent({ padding: '4' });
+        const card = container.querySelector('.border.rounded-xl');
+        expect(card).toHaveClass('p-4');
+    });
+
+    test('applies margin styling', () => {
+        const { container } = renderComponent({ margin: '6' });
+        const card = container.querySelector('.border.rounded-xl');
+        expect(card).toHaveClass('m-6');
+    });
+
+    test('applies font weight styling', () => {
+        const { container } = renderComponent({ fontWeight: 'bold' });
+        const card = container.querySelector('.border.rounded-xl');
+        expect(card).toHaveClass('[&_a]:!font-bold');
+    });
+
+    test('applies letter spacing styling', () => {
+        const { container } = renderComponent({ letterSpacing: 'wide' });
+        const card = container.querySelector('.border.rounded-xl');
+        expect(card).toHaveClass('[&_a]:!tracking-wide');
+    });
+
+    test('applies scale hover effect', () => {
+        const { container } = renderComponent({ hoverEffect: 'scale' });
+        const card = container.querySelector('.border.rounded-xl');
+        expect(card).toHaveClass('hover:!scale-105');
+        expect(card).toHaveClass('!transition-transform');
+        expect(card).toHaveClass('!duration-200');
+    });
+
+    test('applies shadow hover effect', () => {
+        const { container } = renderComponent({ hoverEffect: 'shadow' });
+        const card = container.querySelector('.border.rounded-xl');
+        expect(card).toHaveClass('hover:!shadow-xl');
+        expect(card).toHaveClass('!transition-shadow');
+        expect(card).toHaveClass('!duration-200');
+    });
+
+    test('applies lift hover effect', () => {
+        const { container } = renderComponent({ hoverEffect: 'lift' });
+        const card = container.querySelector('.border.rounded-xl');
+        expect(card).toHaveClass('hover:!-translate-y-1');
+        expect(card).toHaveClass('hover:!shadow-lg');
+        expect(card).toHaveClass('!transition-all');
+        expect(card).toHaveClass('!duration-200');
+    });
+
+    test('does not apply hover effect classes when hoverEffect is default', () => {
+        const { container } = renderComponent({ hoverEffect: 'default' });
+        const card = container.querySelector('.border.rounded-xl');
+        expect(card).not.toHaveClass('hover:!scale-105');
+        expect(card).not.toHaveClass('hover:!shadow-xl');
+        expect(card).not.toHaveClass('hover:!-translate-y-1');
+    });
+
+    test('applies multiple Page Designer styles together', () => {
+        const { container } = renderComponent({
+            objectFit: 'contain',
+            borderRadius: '2xl',
+            boxShadow: 'lg',
+            padding: '8',
+            margin: '4',
+            fontWeight: 'semibold',
+            letterSpacing: 'normal',
+            hoverEffect: 'scale',
+        });
+        const card = container.querySelector('.border.rounded-xl');
+
+        expect(card).toHaveClass('[&_img]:!object-contain');
+        expect(card).toHaveClass('!rounded-2xl');
+        expect(card).toHaveClass('!shadow-lg');
+        expect(card).toHaveClass('p-8');
+        expect(card).toHaveClass('m-4');
+        expect(card).toHaveClass('[&_a]:!font-semibold');
+        expect(card).toHaveClass('[&_a]:!tracking-normal');
+        expect(card).toHaveClass('hover:!scale-105');
+        // Note: hoverEffect='scale' adds hover:!shadow-md which overrides the hover:!shadow-lg from boxShadow
+        expect(card).toHaveClass('hover:!shadow-md');
+    });
+
+    test('filters out Page Designer system props', () => {
+        const { container } = renderComponent({
+            regionId: 'test-region',
+            component: { type: 'productTile' },
+            componentData: {},
+            designMetadata: {},
+            data: {},
+        });
+
+        // Component should render without errors
+        expect(container.querySelector('.border.rounded-xl')).toBeInTheDocument();
+    });
+
+    test('does not add padding class when padding is 0', () => {
+        const { container } = renderComponent({ padding: '0' });
+        const card = container.querySelector('.border.rounded-xl');
+        expect(card).not.toHaveClass('p-0');
+    });
+
+    test('does not add margin class when margin is 0', () => {
+        const { container } = renderComponent({ margin: '0' });
+        const card = container.querySelector('.border.rounded-xl');
+        expect(card).not.toHaveClass('m-0');
+    });
+});
