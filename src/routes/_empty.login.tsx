@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import {
     redirect,
     Link,
@@ -26,21 +26,31 @@ import { Card } from '@/components/ui/card';
 import { useTranslation } from 'react-i18next';
 import StandardLoginForm from '@/components/login/standard-login-form';
 import PasswordlessLoginForm from '@/components/login/passwordless-login-form';
+import OtpModal from '@/components/login/otp-modal';
 import { SocialLoginButtons } from '@/components/buttons/social-login-buttons';
 import { getAppOrigin, isAbsoluteURL } from '@/lib/utils';
 import { getConfig } from '@/config';
 import { getTranslation } from '@/lib/i18next';
 
 // services
-import { getAuth, authorizePasswordless } from '@/middlewares/auth.server';
+import {
+    getAuth,
+    authorizePasswordless,
+    getPasswordLessAccessToken,
+    updateAuth as updateAuthServer,
+} from '@/middlewares/auth.server';
 import { loginRegisteredUser } from '@/lib/api/auth/standard-login';
 import { authorizeIDP } from '@/lib/api/auth/social-login';
+import { mergeBasket } from '@/lib/api/basket';
+import { getPasswordlessErrorMessageKey, extractErrorMessage } from '@/lib/auth-error-handler';
 
 type LoginActionResponse = {
     success: boolean;
     error?: string;
     redirectUrl?: string;
     auth?: ReturnType<typeof getAuth>;
+    showOTPForm?: boolean;
+    email?: string;
 };
 
 type LoginLoaderData = {
@@ -53,10 +63,12 @@ type LoginLoaderData = {
     returnUrl?: string | null;
     action?: string | null;
     actionParams?: string | null;
+    showOTPForm?: boolean;
+    otpLength?: number;
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
-export function loader({ request, context }: LoaderFunctionArgs) {
+export async function loader({ request, context }: LoaderFunctionArgs) {
     const session = getAuth(context);
     const url = new URL(request.url);
     const returnUrl = url.searchParams.get('returnUrl');
@@ -74,7 +86,12 @@ export function loader({ request, context }: LoaderFunctionArgs) {
     }
 
     const passwordlessSent = url.searchParams.get('passwordless') === 'sent';
+    const showOTPForm = url.searchParams.get('otp') === 'true';
     const email = url.searchParams.get('email');
+
+    const tokenFromUrl = url.searchParams.get('token');
+    const legacyOtpCode = url.searchParams.get('otpCode');
+    const token = tokenFromUrl ?? legacyOtpCode;
     const pendingAction = url.searchParams.get('action');
     const actionParams = url.searchParams.get('actionParams');
     const error = url.searchParams.get('error');
@@ -86,9 +103,53 @@ export function loader({ request, context }: LoaderFunctionArgs) {
     const isSocialLoginEnabled = Boolean(config.features.socialLogin?.enabled);
     const mode = url.searchParams.get('mode') || (isPasswordlessLoginEnabled ? 'passwordless' : 'password');
 
+    // Auto-verify OTP token if both email and token are provided in URL
+    if (email && token) {
+        try {
+            const tokenResponse = await getPasswordLessAccessToken(context, token);
+
+            // Update session with auth data
+            updateAuthServer(context, tokenResponse);
+            updateAuthServer(context, (prevSession) => ({
+                ...prevSession,
+                userType: 'registered',
+            }));
+
+            // Merge guest basket with registered user basket
+            try {
+                await mergeBasket(context);
+            } catch (basketError) {
+                // eslint-disable-next-line no-console
+                console.error('Failed to merge basket during passwordless login:', basketError);
+                // Continue with login even if basket merge fails
+            }
+
+            return redirect(returnUrl || '/');
+        } catch (verifyError) {
+            // Auto-verification failed - show error with OTP form
+            const errorMessage = extractErrorMessage(verifyError);
+            const errorKey = getPasswordlessErrorMessageKey(errorMessage);
+            const { t } = getTranslation(context);
+
+            return {
+                error: t(errorKey),
+                showOTPForm: true,
+                email,
+                mode,
+                isPasswordlessLoginEnabled,
+                isSocialLoginEnabled,
+                returnUrl,
+                action: pendingAction,
+                actionParams,
+                otpLength: config.auth.otpLength,
+            };
+        }
+    }
+
     return {
         error,
         passwordlessSent,
+        showOTPForm,
         email,
         mode,
         isPasswordlessLoginEnabled,
@@ -96,6 +157,7 @@ export function loader({ request, context }: LoaderFunctionArgs) {
         returnUrl,
         action: pendingAction,
         actionParams,
+        otpLength: config.auth.otpLength,
     };
 }
 
@@ -170,9 +232,9 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
             try {
                 await authorizePasswordless(context, { userid: email, redirectPath: finalRedirectPath });
-                // Passwordless authorization sent - redirect to success page, preserving returnUrl/action
+                // Passwordless authorization sent - redirect to login page with OTP form
                 const params = new URLSearchParams();
-                params.set('passwordless', 'sent');
+                params.set('otp', 'true');
                 params.set('email', email);
                 if (returnUrl) {
                     params.set('returnUrl', returnUrl);
@@ -183,9 +245,12 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                 if (actionParams) {
                     params.set('actionParams', actionParams);
                 }
-                return { success: true, redirectUrl: `/login?${params.toString()}` };
-            } catch {
-                return { success: false, error: genericError };
+                return { success: true, redirectUrl: `/login?${params.toString()}`, showOTPForm: true, email };
+            } catch (error) {
+                const errorMessage = extractErrorMessage(error);
+                const errorKey = getPasswordlessErrorMessageKey(errorMessage);
+
+                return { success: false, error: t(errorKey) };
             }
         } else {
             // Standard password login flow (default case - handles 'password' mode or undefined/null)
@@ -256,31 +321,31 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
         returnUrl,
         action: pendingActionName,
         actionParams,
+        showOTPForm,
+        otpLength,
     } = loaderData;
 
     // Prefer actionData error (from form submission) over loaderData error (from URL params)
     const error = actionData?.error || loaderError || undefined;
+
+    // Check if we should show OTP form from actionData (after email submission) or loaderData (from URL)
+    const shouldShowOTPForm = actionData?.showOTPForm || showOTPForm;
+    const showOTPModal = Boolean(shouldShowOTPForm);
+    const otpEmail = actionData?.email || email;
 
     // Show passwordless success state
     if (passwordlessSent && email) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-md w-full space-y-8">
-                    <div>
-                        <h2 className="mt-6 text-center text-3xl font-extrabold text-foreground">
-                            {t('checkEmailTitle')}
-                        </h2>
-                        <p className="mt-2 text-center text-sm text-muted-foreground">
-                            {t('checkEmailDescription', { email })}
-                        </p>
-                    </div>
-
                     <Card className="p-8">
-                        <div className="space-y-6 text-center">
-                            <Link to="/login">
-                                <button className="w-full inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md text-foreground bg-background hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring cursor-pointer">
-                                    {t('backToLogin')}
-                                </button>
+                        <div className="text-center space-y-4">
+                            <h2 className="text-2xl font-semibold">{t('checkEmailTitle')}</h2>
+                            <p className="text-sm text-muted-foreground">{t('checkEmailDescription', { email })}</p>
+                            <Link
+                                to="/login"
+                                className="inline-flex items-center text-sm text-primary hover:text-primary/80">
+                                {t('backToLogin')}
                             </Link>
                         </div>
                     </Card>
@@ -292,7 +357,13 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
     // Decide which form to render based on mode
     const renderForm = () => {
         if (mode === 'passwordless') {
-            return <PasswordlessLoginForm error={error} isPasswordlessEnabled={isPasswordlessLoginEnabled} />;
+            return (
+                <PasswordlessLoginForm
+                    error={error}
+                    isPasswordlessEnabled={isPasswordlessLoginEnabled}
+                    redirectPath={returnUrl || undefined}
+                />
+            );
         }
         return (
             <StandardLoginForm
@@ -306,18 +377,55 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8">
-                <div>
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-foreground">{t('title')}</h2>
-                    <p className="mt-2 text-center text-sm text-muted-foreground">{t('subtitle')}</p>
-                </div>
+        <>
+            <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-md w-full space-y-8">
+                    <div>
+                        <h2 className="mt-6 text-center text-3xl font-extrabold text-foreground">{t('title')}</h2>
+                        <p className="mt-2 text-center text-sm text-muted-foreground">{t('subtitle')}</p>
+                    </div>
 
-                <Card className="p-8">
-                    {renderForm()}
-                    {isSocialLoginEnabled ? <SocialLoginButtons /> : null}
-                </Card>
+                    <Card className="p-8">
+                        {renderForm()}
+                        {isSocialLoginEnabled ? <SocialLoginButtons /> : null}
+                    </Card>
+                </div>
             </div>
-        </div>
+
+            {/* OTP Modal - appears over the login page */}
+            <OtpModal
+                isOpen={showOTPModal}
+                otpLength={otpLength}
+                initialError={loaderError}
+                onClose={() => {
+                    // Navigate back to login without OTP modal
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete('otp');
+                    url.searchParams.delete('error');
+                    url.searchParams.delete('token');
+                    url.searchParams.delete('email');
+                    window.history.replaceState({}, '', url.toString());
+                    window.location.reload();
+                }}
+                email={otpEmail || ''}
+                onSuccess={() => {
+                    // Redirect to return URL or home after successful login
+                    window.location.href = returnUrl || '/';
+                }}
+                onResendCode={async () => {
+                    // Resend the OTP code
+                    const formData = new FormData();
+                    formData.append('email', otpEmail || '');
+                    formData.append('loginMode', 'passwordless');
+                    if (returnUrl) {
+                        formData.append('redirectPath', returnUrl);
+                    }
+                    await fetch(window.location.pathname, {
+                        method: 'POST',
+                        body: formData,
+                    });
+                }}
+            />
+        </>
     );
 }

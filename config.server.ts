@@ -218,17 +218,24 @@ export default defineConfig({
             enabled: false,
             legacyRoutes: [],
         },
+        // Authentication configuration shared across all auth features
+        // See CONFIG-OPTIONS.md#auth for detailed documentation
+        auth: {
+            otpLength: 8,
+        },
         // Feature flags for enabling/disabling functionality
         // See CONFIG-OPTIONS.md#features for detailed documentation
         features: {
             passwordlessLogin: {
                 enabled: false,
+                mode: 'email',
                 callbackUri: '/passwordless-login-callback',
-                landingUri: '/passwordless-login-landing',
+                landingUri: '/login',
             },
             resetPassword: {
                 callbackUri: '/reset-password-callback',
                 landingUri: '/reset-password-landing',
+                mode: 'email',
             },
             socialLogin: {
                 enabled: false,

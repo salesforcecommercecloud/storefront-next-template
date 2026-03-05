@@ -124,6 +124,14 @@ export interface LogoutOptions {
 }
 
 /**
+ * Delivery modes for passwordless login and password reset.
+ * - 'callback': SLAS calls your callback URL with the token (requires Marketing Cloud for email)
+ * - 'sms': SLAS sends an SMS with the code directly
+ * - 'email': SLAS sends an email with the OTP code directly (no Marketing Cloud needed)
+ */
+export type PasswordActionMode = 'callback' | 'sms' | 'email';
+
+/**
  * Options for initiating passwordless login.
  */
 export interface PasswordlessAuthorizeOptions {
@@ -133,8 +141,22 @@ export interface PasswordlessAuthorizeOptions {
     callbackUri?: string;
     /** Unique Shopper Identifier to link to a previous session */
     usid?: string;
-    /** Login mode: 'callback' for magic link, 'sms' for SMS code */
-    mode?: 'callback' | 'sms';
+    /** Method to receive OTP */
+    mode: PasswordActionMode;
+    /** Locale of the template */
+    locale?: string;
+    /** When true, creates a new customer profile if one doesn't exist */
+    registerCustomer?: boolean;
+    /** User's last name (required when registerCustomer is true) */
+    lastName?: string;
+    /** User's email address (required when registerCustomer is true and userId is not an email) */
+    email?: string;
+    /** User's first name (optional when registerCustomer is true) */
+    firstName?: string;
+    /** User's phone number (optional when registerCustomer is true) */
+    phoneNumber?: string;
+    /** Customer number to assign (optional when registerCustomer is true) */
+    customerNo?: string;
 }
 
 /**
@@ -156,9 +178,12 @@ export interface PasswordRequestResetOptions {
     /** User's email address */
     userId: string;
     /** Callback URI for the password reset link */
-    callbackUri: string;
+    callbackUri?: string;
+    /** Locale of the template */
+    locale?: string;
+    /** Method to receive OTP */
+    mode: PasswordActionMode;
 }
-
 /**
  * Options for resetting a password with a token.
  */

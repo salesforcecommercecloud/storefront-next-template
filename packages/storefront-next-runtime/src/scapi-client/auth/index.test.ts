@@ -628,6 +628,7 @@ describe('createAuthHelpers', () => {
                 await auth.passwordless.authorize({
                     userId: 'user@example.com',
                     callbackUri: 'https://example.com/passwordless-callback',
+                    mode: 'callback',
                 });
 
                 expect(mockShopperLoginClient.authorizePasswordlessCustomer).toHaveBeenCalledWith({
@@ -678,6 +679,7 @@ describe('createAuthHelpers', () => {
                 await expect(
                     auth.passwordless.authorize({
                         userId: 'user@example.com',
+                        mode: 'email',
                     })
                 ).rejects.toThrow('Client secret is required for passwordless login');
             });
@@ -697,6 +699,7 @@ describe('createAuthHelpers', () => {
                 await auth.passwordless.authorize({
                     userId: 'user@example.com',
                     usid: 'session-usid',
+                    mode: 'email',
                 });
 
                 expect(mockShopperLoginClient.authorizePasswordlessCustomer).toHaveBeenCalledWith(
@@ -706,6 +709,93 @@ describe('createAuthHelpers', () => {
                         }),
                     })
                 );
+            });
+
+            it('should include locale when provided', async () => {
+                const config: AuthConfig = {
+                    ...baseConfig,
+                    clientSecret: 'test-secret',
+                };
+
+                mockShopperLoginClient.authorizePasswordlessCustomer.mockResolvedValue({
+                    data: { status: 'ok' },
+                    response: new Response(),
+                });
+
+                const auth = createAuthHelpers(config);
+                await auth.passwordless.authorize({
+                    userId: 'user@example.com',
+                    mode: 'email',
+                    locale: 'en-US',
+                });
+
+                expect(mockShopperLoginClient.authorizePasswordlessCustomer).toHaveBeenCalledWith(
+                    expect.objectContaining({
+                        body: expect.objectContaining({
+                            locale: 'en-US',
+                        }),
+                    })
+                );
+            });
+
+            it('should include register_customer query and email/lastName in body when registerCustomer is true', async () => {
+                const config: AuthConfig = {
+                    ...baseConfig,
+                    clientSecret: 'test-secret',
+                };
+
+                mockShopperLoginClient.authorizePasswordlessCustomer.mockResolvedValue({
+                    data: { status: 'ok' },
+                    response: new Response(),
+                });
+
+                const auth = createAuthHelpers(config);
+                await auth.passwordless.authorize({
+                    userId: 'user@example.com',
+                    registerCustomer: true,
+                    email: 'user@example.com',
+                    lastName: 'Doe',
+                    mode: 'email',
+                });
+
+                expect(mockShopperLoginClient.authorizePasswordlessCustomer).toHaveBeenCalledWith({
+                    params: {
+                        header: {
+                            Authorization: expect.stringContaining('Basic'),
+                        },
+                        query: { register_customer: 'true' },
+                    },
+                    headers: FORM_URLENCODED_HEADER,
+                    body: expect.objectContaining({
+                        user_id: 'user@example.com',
+                        mode: 'email',
+                        channel_id: 'RefArch',
+                        email: 'user@example.com',
+                        last_name: 'Doe',
+                    }),
+                });
+            });
+
+            it('should not include register_customer query when registerCustomer is false', async () => {
+                const config: AuthConfig = {
+                    ...baseConfig,
+                    clientSecret: 'test-secret',
+                };
+
+                mockShopperLoginClient.authorizePasswordlessCustomer.mockResolvedValue({
+                    data: { status: 'ok' },
+                    response: new Response(),
+                });
+
+                const auth = createAuthHelpers(config);
+                await auth.passwordless.authorize({
+                    userId: 'user@example.com',
+                    registerCustomer: false,
+                    mode: 'email',
+                });
+
+                const call = mockShopperLoginClient.authorizePasswordlessCustomer.mock.calls[0][0];
+                expect(call.params?.query).toBeUndefined();
             });
         });
 
@@ -818,6 +908,7 @@ describe('createAuthHelpers', () => {
                 await auth.password.requestReset({
                     userId: 'user@example.com',
                     callbackUri: 'https://example.com/reset-password',
+                    mode: 'callback',
                 });
 
                 expect(mockShopperLoginClient.getPasswordResetToken).toHaveBeenCalledWith({
@@ -849,6 +940,7 @@ describe('createAuthHelpers', () => {
                 await auth.password.requestReset({
                     userId: 'user@example.com',
                     callbackUri: 'https://example.com/reset-password',
+                    mode: 'callback',
                 });
 
                 expect(mockShopperLoginClient.getPasswordResetToken).toHaveBeenCalledWith({

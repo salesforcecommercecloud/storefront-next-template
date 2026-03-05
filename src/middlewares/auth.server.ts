@@ -49,7 +49,7 @@ import { createApiClients } from '@/lib/api-clients';
 import { performanceTimerContext, PERFORMANCE_MARKS } from '@/middlewares/performance-metrics';
 import { getConfig } from '@/config';
 import { createCookie, getCookieConfig, getCookieNameWithSiteId, parseAllCookies } from '@/lib/cookie-utils';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation, i18nextContext } from '@/lib/i18next';
 import { TrackingConsent, trackingConsentToBoolean } from '@/types/tracking-consent';
 import { SHOPPER_CONTEXT_COOKIE_NAME_BASE, SOURCE_CODE_COOKIE_NAME_BASE } from '@/lib/shopper-context-constants';
 
@@ -177,19 +177,28 @@ export async function authorizePasswordless(
 
     const appConfig = getConfig(context);
     const passwordlessCallback = appConfig.features.passwordlessLogin.callbackUri;
+    const mode = appConfig.features.passwordlessLogin.mode;
 
-    const passwordlessLoginCallbackUri = isAbsoluteURL(passwordlessCallback)
-        ? passwordlessCallback
-        : `${getAppOrigin()}${passwordlessCallback}`;
+    let baseCallbackUri: string | undefined;
 
-    const callbackUri = parameters.callbackUri || passwordlessLoginCallbackUri;
+    if (parameters.callbackUri) {
+        baseCallbackUri = parameters.callbackUri;
+    } else if (passwordlessCallback) {
+        baseCallbackUri = isAbsoluteURL(passwordlessCallback)
+            ? passwordlessCallback
+            : `${getAppOrigin()}${passwordlessCallback}`;
+    }
 
-    const finalCallbackUri = parameters.redirectPath
-        ? `${callbackUri}?redirectUrl=${encodeURIComponent(parameters.redirectPath)}`
-        : callbackUri;
+    const finalCallbackUri =
+        baseCallbackUri && parameters.redirectPath
+            ? `${baseCallbackUri}?redirectUrl=${encodeURIComponent(parameters.redirectPath)}`
+            : baseCallbackUri;
 
     const usid = session.usid;
-    const mode = finalCallbackUri ? 'callback' : 'sms';
+
+    // Get locale from i18next context for email/SMS template localization
+    const i18nextData = context.get(i18nextContext);
+    const locale = i18nextData?.getLocale();
 
     return await clients.auth.passwordless
         .authorize({
@@ -197,6 +206,7 @@ export async function authorizePasswordless(
             callbackUri: finalCallbackUri,
             usid: usid ? String(usid) : undefined,
             mode,
+            ...(locale && { locale }),
         })
         .finally(() => {
             performanceTimer?.mark(PERFORMANCE_MARKS.authAuthorizePasswordless, 'end');
@@ -218,18 +228,25 @@ export async function getPasswordResetToken(
     const clients = createApiClients(context);
     const appConfig = getConfig(context);
     const resetPasswordCallbackUri = appConfig.features.resetPassword.callbackUri;
+    const mode = appConfig.features.resetPassword.mode;
     const callbackUri = isAbsoluteURL(resetPasswordCallbackUri)
         ? resetPasswordCallbackUri
         : `${getAppOrigin()}${resetPasswordCallbackUri}`;
 
-    return await clients.auth.password
-        .requestReset({
+    // Get locale from i18next context for email/SMS template localization
+    const i18nextData = context.get(i18nextContext);
+    const locale = i18nextData?.getLocale();
+
+    try {
+        return await clients.auth.password.requestReset({
             userId: parameters.email,
             callbackUri,
-        })
-        .finally(() => {
-            performanceTimer?.mark(PERFORMANCE_MARKS.authGetPasswordResetToken, 'end');
+            mode,
+            ...(locale && { locale }),
         });
+    } finally {
+        performanceTimer?.mark(PERFORMANCE_MARKS.authGetPasswordResetToken, 'end');
+    }
 }
 
 /**

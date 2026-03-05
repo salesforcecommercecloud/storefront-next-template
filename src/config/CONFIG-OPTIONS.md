@@ -11,6 +11,7 @@ This reference provides detailed documentation for all configuration options ava
   - [commerce](#commerce) - Commerce Cloud API details
   - [siteAliasMap](#sitealiasmap) - Site alias mapping configuration
   - [hybrid](#hybrid) - Hybrid mode configuration
+  - [auth](#auth) - Authentication configuration shared across all auth features
   - [features](#features) - Feature flags
   - [i18n](#i18n) - Internationalization settings
   - [global](#global) - Global UI and component settings
@@ -521,6 +522,27 @@ PUBLIC__app__hybrid__legacyRoutes='["/account", "/checkout"]'
 
 ---
 
+## auth
+
+Authentication configuration shared across all auth features. These settings apply to passwordless login, password reset, WebAuthn, passkey, and any other authentication methods that use OTP (One-Time Password) verification.
+
+### auth.otpLength
+
+Type: `number` | Default: `8`
+
+The length of the OTP (One-Time Password) code used for authentication. This value is set by SLAS (Shopper Login and API Access Service) and is shared across all authentication features including passwordless login, password reset, WebAuthn, and passkey authentication.
+
+**Important:** This is a global setting that affects all authentication flows. SLAS enforces a single OTP length for all auth features, so this value should remain consistent across your application.
+
+Example:
+```bash
+PUBLIC__app__auth__otpLength=8
+```
+
+**Usage:** When implementing new authentication features (e.g., passkey login), use `config.auth.otpLength` instead of defining a separate `otpLength` property in the feature configuration. This ensures consistency and prevents configuration drift.
+
+---
+
 ## features
 
 Site feature flags that enable or disable specific functionality.
@@ -538,6 +560,22 @@ PUBLIC__app__features__passwordlessLogin__enabled=true
 
 ---
 
+### features.passwordlessLogin.mode
+
+Type: `'email' | 'callback'` | Default: `'email'`
+
+Determines how passwordless login links are delivered to users.
+
+- **`'email'`** (default): The system sends the passwordless login link email directly to the user.
+- **`'callback'`**: Uses a callback flow where the system calls your server's callback endpoint with the token and user information. This mode requires the `callbackUri` to be configured and registered for your SLAS client and is useful when using an external email or SMS provider.
+
+Example:
+```bash
+PUBLIC__app__features__passwordlessLogin__mode="email"
+```
+
+---
+
 ### features.passwordlessLogin.callbackUri
 
 Type: `string` | Default: `'/passwordless-login-callback'`
@@ -548,9 +586,9 @@ The URI path where users are redirected after clicking the passwordless login li
 
 ### features.passwordlessLogin.landingUri
 
-Type: `string` | Default: `'/passwordless-login-landing'`
+Type: `string` | Default: `'/login'`
 
-The URI path where users land after successful passwordless authentication.
+The URI path of the magic link. A magic link is a single-use URL that contains the TOTP and that shoppers click to log into the storefront.
 
 ---
 

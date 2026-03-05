@@ -21,8 +21,6 @@ import {
     handlePasswordlessLanding,
     resetMarketingCloudTokenCache,
 } from './passwordless-login';
-import { updateAuth, getPasswordLessAccessToken } from '@/middlewares/auth.server';
-import { mergeBasket } from '@/lib/api/basket';
 import { getAppOrigin, getErrorMessage } from '@/lib/utils';
 import { getTranslation } from '@/lib/i18next';
 
@@ -118,9 +116,6 @@ const mockRedirect = vi.mocked(redirect);
 const mockDecodeJwt = vi.mocked(decodeJwt);
 const mockCreateRemoteJWKSet = vi.mocked(createRemoteJWKSet);
 const mockJwtVerify = vi.mocked(jwtVerify);
-const mockGetPasswordLessAccessToken = vi.mocked(getPasswordLessAccessToken);
-const mockUpdateAuth = vi.mocked(updateAuth);
-const mockMergeBasket = vi.mocked(mergeBasket);
 const mockGetAppOrigin = vi.mocked(getAppOrigin);
 const mockGetErrorMessage = vi.mocked(getErrorMessage);
 
@@ -372,167 +367,60 @@ describe('passwordless-login', () => {
     });
 
     describe('handlePasswordlessLanding', () => {
-        describe('successful passwordless login landing', () => {
-            it('should handle successful landing with valid token', async () => {
-                const mockRequest = {
-                    url: 'https://example.com/passwordless-landing?token=valid-token',
-                } as any;
+        it('should pass through token and email to /login', () => {
+            const mockRequest = {
+                url: 'https://example.com/passwordless-landing?token=valid-token&email=user%40example.com',
+            } as any;
 
-                const mockTokenResponse = {
-                    access_token: 'access-token-123',
-                    id_token: 'id-token-123',
-                    refresh_token: 'refresh-token-456',
-                    expires_in: 3600,
-                    refresh_token_expires_in: 7200,
-                    token_type: 'Bearer' as const,
-                    usid: 'usid-123',
-                    customer_id: 'customer-789',
-                    enc_user_id: 'enc-user-id-123',
-                    idp_access_token: 'idp-token-123',
-                };
+            mockRedirect.mockReturnValue('redirect-response' as any);
 
-                mockGetPasswordLessAccessToken.mockResolvedValue(mockTokenResponse);
-                mockMergeBasket.mockResolvedValue({} as any);
-                mockRedirect.mockReturnValue('redirect-response' as any);
-
-                const result = await handlePasswordlessLanding({
-                    request: mockRequest,
-                    context: mockContext,
-                    params: {},
-                    unstable_pattern: {} as any,
-                });
-
-                expect(mockGetPasswordLessAccessToken).toHaveBeenCalledWith(mockContext, 'valid-token');
-                expect(mockUpdateAuth).toHaveBeenCalledWith(mockContext, mockTokenResponse);
-                expect(mockUpdateAuth).toHaveBeenCalledWith(mockContext, expect.any(Function));
-                expect(mockMergeBasket).toHaveBeenCalledWith(mockContext);
-                expect(mockRedirect).toHaveBeenCalledWith('/account');
-                expect(result).toBe('redirect-response');
+            const result = handlePasswordlessLanding({
+                request: mockRequest,
+                context: mockContext,
+                params: {},
+                unstable_pattern: {} as any,
             });
 
-            it('should handle landing with redirect URL', async () => {
-                const mockRequest = {
-                    url: 'https://example.com/passwordless-landing?token=valid-token&redirectUrl=%2Fdashboard',
-                } as any;
-
-                const mockTokenResponse = {
-                    access_token: 'access-token-123',
-                    id_token: 'id-token-123',
-                    refresh_token: 'refresh-token-456',
-                    expires_in: 3600,
-                    refresh_token_expires_in: 7200,
-                    token_type: 'Bearer' as const,
-                    usid: 'usid-123',
-                    customer_id: 'customer-789',
-                    enc_user_id: 'enc-user-id-123',
-                    idp_access_token: 'idp-token-123',
-                };
-
-                mockGetPasswordLessAccessToken.mockResolvedValue(mockTokenResponse);
-                mockMergeBasket.mockResolvedValue({} as any);
-                mockRedirect.mockReturnValue('redirect-response' as any);
-
-                const result = await handlePasswordlessLanding({
-                    request: mockRequest,
-                    context: mockContext,
-                    params: {},
-                    unstable_pattern: {} as any,
-                });
-
-                expect(mockRedirect).toHaveBeenCalledWith('/dashboard');
-                expect(result).toBe('redirect-response');
-            });
-
-            it('should continue even if basket merge fails', async () => {
-                const mockRequest = {
-                    url: 'https://example.com/passwordless-landing?token=valid-token',
-                } as any;
-
-                const mockTokenResponse = {
-                    access_token: 'access-token-123',
-                    id_token: 'id-token-123',
-                    refresh_token: 'refresh-token-456',
-                    expires_in: 3600,
-                    refresh_token_expires_in: 7200,
-                    token_type: 'Bearer' as const,
-                    usid: 'usid-123',
-                    customer_id: 'customer-789',
-                    enc_user_id: 'enc-user-id-123',
-                    idp_access_token: 'idp-token-123',
-                };
-
-                mockGetPasswordLessAccessToken.mockResolvedValue(mockTokenResponse);
-                mockMergeBasket.mockRejectedValue(new Error('Basket merge failed'));
-                mockRedirect.mockReturnValue('redirect-response' as any);
-
-                // Mock console.error to avoid test output noise
-                const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
-                const result = await handlePasswordlessLanding({
-                    request: mockRequest,
-                    context: mockContext,
-                    params: {},
-                    unstable_pattern: {} as any,
-                });
-
-                expect(consoleSpy).toHaveBeenCalledWith(
-                    '[Passwordless Login] Failed to merge basket:',
-                    expect.any(Error)
-                );
-                expect(mockRedirect).toHaveBeenCalledWith('/account');
-                expect(result).toBe('redirect-response');
-
-                consoleSpy.mockRestore();
-            });
+            expect(mockRedirect).toHaveBeenCalledWith('/login?token=valid-token&email=user%40example.com');
+            expect(result).toBe('redirect-response');
         });
 
-        describe('error handling', () => {
-            it('should redirect to login when token is missing', async () => {
-                const mockRequest = {
-                    url: 'https://example.com/passwordless-landing', // No token
-                } as any;
+        it('should pass through redirectUrl as returnUrl', () => {
+            const mockRequest = {
+                url: 'https://example.com/passwordless-landing?token=valid-token&email=user%40example.com&redirectUrl=%2Fdashboard',
+            } as any;
 
-                mockRedirect.mockReturnValue('redirect-response' as any);
+            mockRedirect.mockReturnValue('redirect-response' as any);
 
-                const result = await handlePasswordlessLanding({
-                    request: mockRequest,
-                    context: mockContext,
-                    params: {},
-                    unstable_pattern: {} as any,
-                });
-
-                // Should redirect with error in URL parameter
-                const errorMessage = t('errors:passwordless.missingToken');
-                expect(mockRedirect).toHaveBeenCalledWith(`/login?error=${encodeURIComponent(errorMessage)}`);
-                expect(result).toBe('redirect-response');
+            const result = handlePasswordlessLanding({
+                request: mockRequest,
+                context: mockContext,
+                params: {},
+                unstable_pattern: {} as any,
             });
 
-            it('should handle token validation errors', async () => {
-                const mockRequest = {
-                    url: 'https://example.com/passwordless-landing?token=invalid-token',
-                } as any;
+            expect(mockRedirect).toHaveBeenCalledWith(
+                '/login?token=valid-token&email=user%40example.com&returnUrl=%2Fdashboard'
+            );
+            expect(result).toBe('redirect-response');
+        });
 
-                const mockError = new Error('Invalid token');
-                mockGetPasswordLessAccessToken.mockRejectedValue(mockError);
-                mockRedirect.mockReturnValue('redirect-response' as any);
+        it('should redirect to /login with empty token when token is missing', () => {
+            const mockRequest = {
+                url: 'https://example.com/passwordless-landing',
+            } as any;
 
-                // Mock console.error to avoid test output noise
-                const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+            mockRedirect.mockReturnValue('redirect-response' as any);
 
-                const result = await handlePasswordlessLanding({
-                    request: mockRequest,
-                    context: mockContext,
-                    params: {},
-                    unstable_pattern: {} as any,
-                });
-
-                // Should redirect with error in URL parameter
-                const errorMessage = t('errors:genericTryAgain');
-                expect(mockRedirect).toHaveBeenCalledWith(`/login?error=${encodeURIComponent(errorMessage)}`);
-                expect(result).toBe('redirect-response');
-
-                consoleSpy.mockRestore();
+            const result = handlePasswordlessLanding({
+                request: mockRequest,
+                context: mockContext,
+                params: {},
+                unstable_pattern: {} as any,
             });
+
+            expect(mockRedirect).toHaveBeenCalledWith('/login?token=&email=');
+            expect(result).toBe('redirect-response');
         });
     });
 });

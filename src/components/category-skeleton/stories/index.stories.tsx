@@ -21,7 +21,7 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 const meta: Meta<typeof ProductTileSkeleton> = {
     title: 'LOADING/Category Skeleton',
     component: ProductTileSkeleton,
-    tags: ['autodocs'],
+    tags: ['autodocs', 'interaction'],
     parameters: {
         layout: 'centered',
         docs: {
@@ -57,6 +57,39 @@ export const Default: Story = {
     },
 };
 
+export const MobileView: Story = {
+    globals: {
+        viewport: 'mobile2',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const card = canvasElement.querySelector('[data-slot="card"]');
+        await expect(card).toBeInTheDocument();
+    },
+};
+
+export const TabletView: Story = {
+    globals: {
+        viewport: 'tablet',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const card = canvasElement.querySelector('[data-slot="card"]');
+        await expect(card).toBeInTheDocument();
+    },
+};
+
+export const DesktopView: Story = {
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const card = canvasElement.querySelector('[data-slot="card"]');
+        await expect(card).toBeInTheDocument();
+    },
+};
+
 export const SwatchesOnly: StoryObj<typeof ProductTileSwatchesSkeleton> = {
     render: (args) => <ProductTileSwatchesSkeleton {...args} />,
     args: {
@@ -74,6 +107,13 @@ export const SwatchesOnly: StoryObj<typeof ProductTileSwatchesSkeleton> = {
             description: 'Number of swatch skeletons to display',
             control: { type: 'number', min: 1, max: 8 },
         },
+    },
+};
+
+export const ManySwatches: StoryObj<typeof ProductTileSwatchesSkeleton> = {
+    render: (args) => <ProductTileSwatchesSkeleton {...args} />,
+    args: {
+        count: 5,
     },
 };
 

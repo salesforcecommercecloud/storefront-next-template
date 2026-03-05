@@ -18,14 +18,17 @@ import { createRoutesStub, type LoaderFunctionArgs, type ActionFunctionArgs } fr
 import Login, { loader, action } from './_empty.login';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { getAuth, authorizePasswordless } from '@/middlewares/auth.server';
+import { getAuth, authorizePasswordless, getPasswordLessAccessToken, updateAuth } from '@/middlewares/auth.server';
 import { loginRegisteredUser } from '@/lib/api/auth/standard-login';
 import { authorizeIDP } from '@/lib/api/auth/social-login';
+import { mergeBasket } from '@/lib/api/basket';
 import { getAppOrigin, isAbsoluteURL, extractResponseError } from '@/lib/utils';
 
 vi.mock('@/middlewares/auth.server', () => ({
     getAuth: vi.fn(),
     authorizePasswordless: vi.fn(),
+    getPasswordLessAccessToken: vi.fn(),
+    updateAuth: vi.fn(),
 }));
 
 vi.mock('@/lib/api/auth/standard-login', () => ({
@@ -34,6 +37,10 @@ vi.mock('@/lib/api/auth/standard-login', () => ({
 
 vi.mock('@/lib/api/auth/social-login', () => ({
     authorizeIDP: vi.fn(),
+}));
+
+vi.mock('@/lib/api/basket', () => ({
+    mergeBasket: vi.fn(),
 }));
 
 vi.mock('@/lib/utils', () => ({
@@ -58,6 +65,9 @@ vi.mock('@/components/buttons/social-login-buttons', () => ({
 
 vi.mock('@/config', () => ({
     getConfig: vi.fn(() => ({
+        auth: {
+            otpLength: 8,
+        },
         features: {
             passwordlessLogin: {
                 enabled: true,
@@ -94,6 +104,9 @@ const mockGetAuth = vi.mocked(getAuth);
 const mockLoginRegisteredUser = vi.mocked(loginRegisteredUser);
 const mockAuthorizeIDP = vi.mocked(authorizeIDP);
 const mockAuthorizePasswordless = vi.mocked(authorizePasswordless);
+const mockGetPasswordLessAccessToken = vi.mocked(getPasswordLessAccessToken);
+const mockUpdateAuth = vi.mocked(updateAuth);
+const mockMergeBasket = vi.mocked(mergeBasket);
 const mockGetAppOrigin = vi.mocked(getAppOrigin);
 const mockIsAbsoluteURL = vi.mocked(isAbsoluteURL);
 const mockExtractResponseError = vi.mocked(extractResponseError);
@@ -111,7 +124,7 @@ describe('Login Route', () => {
     });
 
     describe('loader', () => {
-        it('should redirect to home if user is already logged in', () => {
+        it('should redirect to home if user is already logged in', async () => {
             mockGetAuth.mockReturnValue({
                 accessToken: 'valid-token',
                 accessTokenExpiry: Date.now() + 10000,
@@ -127,7 +140,7 @@ describe('Login Route', () => {
                 context: mockContext,
             } as any;
 
-            const result = loader(args);
+            const result = await loader(args);
 
             expect(result).toHaveProperty('status', 302);
             expect(result).toHaveProperty('headers');
@@ -136,7 +149,7 @@ describe('Login Route', () => {
             }
         });
 
-        it('should redirect to returnUrl if user is already logged in and returnUrl is provided', () => {
+        it('should redirect to returnUrl if user is already logged in and returnUrl is provided', async () => {
             mockGetAuth.mockReturnValue({
                 accessToken: 'valid-token',
                 accessTokenExpiry: Date.now() + 10000,
@@ -152,7 +165,7 @@ describe('Login Route', () => {
                 context: mockContext,
             } as any;
 
-            const result = loader(args);
+            const result = await loader(args);
 
             expect(result).toHaveProperty('status', 302);
             if (result instanceof Response) {
@@ -160,7 +173,7 @@ describe('Login Route', () => {
             }
         });
 
-        it('should return loader data for guest user', () => {
+        it('should return loader data for guest user', async () => {
             mockGetAuth.mockReturnValue({
                 userType: 'guest',
             });
@@ -173,7 +186,7 @@ describe('Login Route', () => {
                 context: mockContext,
             } as any;
 
-            const result = loader(args);
+            const result = await loader(args);
 
             // Check if result is not a Response (redirect)
             if (!(result instanceof Response)) {
@@ -182,7 +195,7 @@ describe('Login Route', () => {
             }
         });
 
-        it('should parse passwordless sent state from URL', () => {
+        it('should parse passwordless sent state from URL', async () => {
             mockGetAuth.mockReturnValue({ userType: 'guest' });
 
             const mockRequest = new Request('http://localhost:5173/login?passwordless=sent&email=test@example.com');
@@ -193,7 +206,7 @@ describe('Login Route', () => {
                 context: mockContext,
             } as any;
 
-            const result = loader(args);
+            const result = await loader(args);
 
             if (!(result instanceof Response)) {
                 expect(result.passwordlessSent).toBe(true);
@@ -201,7 +214,7 @@ describe('Login Route', () => {
             }
         });
 
-        it('should parse mode from URL query parameter', () => {
+        it('should parse mode from URL query parameter', async () => {
             mockGetAuth.mockReturnValue({ userType: 'guest' });
 
             const mockRequest = new Request('http://localhost:5173/login?mode=passwordless');
@@ -212,14 +225,14 @@ describe('Login Route', () => {
                 context: mockContext,
             } as any;
 
-            const result = loader(args);
+            const result = await loader(args);
 
             if (!(result instanceof Response)) {
                 expect(result.mode).toBe('passwordless');
             }
         });
 
-        it('should include isSocialLoginEnabled in loader data', () => {
+        it('should include isSocialLoginEnabled in loader data', async () => {
             mockGetAuth.mockReturnValue({ userType: 'guest' });
 
             const mockRequest = new Request('http://localhost:5173/login');
@@ -230,11 +243,192 @@ describe('Login Route', () => {
                 context: mockContext,
             } as any;
 
-            const result = loader(args);
+            const result = await loader(args);
 
             if (!(result instanceof Response)) {
                 expect(result.isSocialLoginEnabled).toBe(true);
             }
+        });
+
+        describe('Auto-verification with email link', () => {
+            it('should auto-verify token and merge basket when email and token are in URL', async () => {
+                mockGetAuth.mockReturnValue({ userType: 'guest' });
+                mockGetPasswordLessAccessToken.mockResolvedValue({
+                    access_token: 'new-token',
+                    id_token: 'id-token',
+                    refresh_token: 'new-refresh',
+                    token_type: 'Bearer',
+                    expires_in: 1800,
+                    refresh_token_expires_in: 86400,
+                    usid: 'test-usid',
+                    customer_id: 'customer-123',
+                    enc_user_id: 'enc-user-123',
+                    idp_access_token: 'idp-token',
+                } as any);
+                mockUpdateAuth.mockImplementation(() => {});
+                mockMergeBasket.mockResolvedValue(undefined);
+
+                const mockRequest = new Request(
+                    'http://localhost:5173/login?email=test@example.com&token=otp-token-123'
+                );
+                const mockContext = { get: vi.fn(), set: vi.fn() };
+                const args: LoaderFunctionArgs = {
+                    request: mockRequest,
+                    params: {},
+                    context: mockContext,
+                } as any;
+
+                const result = await loader(args);
+
+                expect(mockGetPasswordLessAccessToken).toHaveBeenCalledWith(mockContext, 'otp-token-123');
+                expect(mockUpdateAuth).toHaveBeenCalled();
+                expect(mockMergeBasket).toHaveBeenCalledWith(mockContext);
+
+                if (!(result instanceof Response) && 'redirectTo' in result) {
+                    expect(result.redirectTo).toBe('/account');
+                }
+            });
+
+            it('should continue login even if basket merge fails', async () => {
+                mockGetAuth.mockReturnValue({ userType: 'guest' });
+                mockGetPasswordLessAccessToken.mockResolvedValue({
+                    access_token: 'new-token',
+                    id_token: 'id-token',
+                    refresh_token: 'new-refresh',
+                    token_type: 'Bearer',
+                    expires_in: 1800,
+                    refresh_token_expires_in: 86400,
+                    usid: 'test-usid',
+                    customer_id: 'customer-123',
+                    enc_user_id: 'enc-user-123',
+                    idp_access_token: 'idp-token',
+                } as any);
+                mockUpdateAuth.mockImplementation(() => {});
+                mockMergeBasket.mockRejectedValue(new Error('Basket merge failed'));
+
+                const mockRequest = new Request(
+                    'http://localhost:5173/login?email=test@example.com&token=otp-token-123'
+                );
+                const mockContext = { get: vi.fn(), set: vi.fn() };
+                const args: LoaderFunctionArgs = {
+                    request: mockRequest,
+                    params: {},
+                    context: mockContext,
+                } as any;
+
+                const result = await loader(args);
+
+                expect(mockGetPasswordLessAccessToken).toHaveBeenCalledWith(mockContext, 'otp-token-123');
+                expect(mockMergeBasket).toHaveBeenCalledWith(mockContext);
+
+                // Should still redirect successfully despite basket merge failure
+                if (!(result instanceof Response) && 'redirectTo' in result) {
+                    expect(result.redirectTo).toBe('/account');
+                }
+            });
+
+            it('should show OTP form with error when token verification fails', async () => {
+                mockGetAuth.mockReturnValue({ userType: 'guest' });
+                mockGetPasswordLessAccessToken.mockRejectedValue(new Error('Invalid token'));
+
+                const mockRequest = new Request(
+                    'http://localhost:5173/login?email=test@example.com&token=invalid-token&otp=true'
+                );
+                const mockContext = { get: vi.fn(), set: vi.fn() };
+                const args: LoaderFunctionArgs = {
+                    request: mockRequest,
+                    params: {},
+                    context: mockContext,
+                } as any;
+
+                const result = await loader(args);
+
+                expect(mockGetPasswordLessAccessToken).toHaveBeenCalledWith(mockContext, 'invalid-token');
+                expect(mockMergeBasket).not.toHaveBeenCalled();
+
+                if (!(result instanceof Response) && 'error' in result) {
+                    expect(result.error).toBeDefined();
+                    if ('showOTPForm' in result) {
+                        expect(result.showOTPForm).toBe(true);
+                    }
+                    if ('email' in result) {
+                        expect(result.email).toBe('test@example.com');
+                    }
+                }
+            });
+
+            it('should redirect to returnUrl after successful auto-verification', async () => {
+                mockGetAuth.mockReturnValue({ userType: 'guest' });
+                mockGetPasswordLessAccessToken.mockResolvedValue({
+                    access_token: 'new-token',
+                    id_token: 'id-token',
+                    refresh_token: 'new-refresh',
+                    token_type: 'Bearer',
+                    expires_in: 1800,
+                    refresh_token_expires_in: 86400,
+                    usid: 'test-usid',
+                    customer_id: 'customer-123',
+                    enc_user_id: 'enc-user-123',
+                    idp_access_token: 'idp-token',
+                } as any);
+                mockUpdateAuth.mockImplementation(() => {});
+                mockMergeBasket.mockResolvedValue(undefined);
+
+                const mockRequest = new Request(
+                    'http://localhost:5173/login?email=test@example.com&token=otp-token-123&returnUrl=/checkout'
+                );
+                const mockContext = { get: vi.fn(), set: vi.fn() };
+                const args: LoaderFunctionArgs = {
+                    request: mockRequest,
+                    params: {},
+                    context: mockContext,
+                } as any;
+
+                const result = await loader(args);
+
+                expect(mockMergeBasket).toHaveBeenCalledWith(mockContext);
+
+                if (!(result instanceof Response) && 'redirectTo' in result) {
+                    expect(result.redirectTo).toBe('/checkout');
+                }
+            });
+
+            it('should use legacy otpCode parameter if token is not present', async () => {
+                mockGetAuth.mockReturnValue({ userType: 'guest' });
+                mockGetPasswordLessAccessToken.mockResolvedValue({
+                    access_token: 'new-token',
+                    id_token: 'id-token',
+                    refresh_token: 'new-refresh',
+                    token_type: 'Bearer',
+                    expires_in: 1800,
+                    refresh_token_expires_in: 86400,
+                    usid: 'test-usid',
+                    customer_id: 'customer-123',
+                    enc_user_id: 'enc-user-123',
+                    idp_access_token: 'idp-token',
+                } as any);
+                mockUpdateAuth.mockImplementation(() => {});
+                mockMergeBasket.mockResolvedValue(undefined);
+
+                const mockRequest = new Request(
+                    'http://localhost:5173/login?email=test@example.com&otpCode=legacy-otp-123'
+                );
+                const mockContext = { get: vi.fn(), set: vi.fn() };
+                const args: LoaderFunctionArgs = {
+                    request: mockRequest,
+                    params: {},
+                    context: mockContext,
+                } as any;
+
+                const result = await loader(args);
+
+                expect(mockGetPasswordLessAccessToken).toHaveBeenCalledWith(mockContext, 'legacy-otp-123');
+                expect(mockMergeBasket).toHaveBeenCalledWith(mockContext);
+
+                if (!(result instanceof Response) && 'redirectTo' in result) {
+                    expect(result.redirectTo).toBe('/account');
+                }
+            });
         });
     });
 
@@ -588,7 +782,9 @@ describe('Login Route', () => {
 
             const result = await action(args);
 
-            expect(result.redirectUrl).toBe('/login?passwordless=sent&email=test%40example.com');
+            expect(result.success).toBe(true);
+            expect(result.redirectUrl).toContain('/login?otp=true');
+            expect(result.redirectUrl).toContain('email=test%40example.com');
             expect(mockAuthorizePasswordless).toHaveBeenCalledWith(
                 mockContext,
                 expect.objectContaining({

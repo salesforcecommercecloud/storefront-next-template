@@ -795,6 +795,13 @@ export function createExpressResponse(
 
         initializeResponse(this);
 
+        // MRT requires at least one write call to the body stream
+        // before ending it, even for responses with no body (e.g. 3xx redirects).
+        // Without this, the stream terminates abnormally and MRT returns 502.
+        if (isNullOrUndefined(chunk) && statusCode >= 300 && statusCode < 400) {
+            writeChunk(Buffer.alloc(0));
+        }
+
         // Chunks can be falsy ('', 0, etc.) but not null or undefined
         if (!isNullOrUndefined(chunk)) {
             const result = writeChunk(chunk);

@@ -444,14 +444,14 @@ import type { AuthData, AuthStorageData } from '@/middlewares/auth.utils';
 
 // AuthData includes:
 interface AuthData {
-    access_token?: string;
-    refresh_token?: string;
-    access_token_expiry?: number;
-    refresh_token_expiry?: number;
+    accessToken?: string;
+    accessTokenExpiry?: number;
     usid?: string;
-    customer_id?: string;
+    refreshToken?: string;
+    refreshTokenExpiry?: number;
+    idpAccessToken?: string;
+    customerId?: string;
     userType?: 'guest' | 'registered';
-    idp_access_token?: string;
     codeVerifier?: string;
 }
 ```

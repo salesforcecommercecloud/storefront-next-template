@@ -248,7 +248,7 @@ export function createCommerceApiClients(config: CommerceApiClientConfig): Clien
             ...clientOptions,
         }),
         shopperLoginOps,
-        globalParams,
+        globalParamsWithoutLocale, // API does not accept locale parameter
         createClientOptions
     );
     const shopperOrders = createClient(

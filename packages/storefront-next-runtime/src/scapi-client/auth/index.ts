@@ -47,7 +47,7 @@ const FORM_URLENCODED_HEADER = { 'Content-Type': 'application/x-www-form-urlenco
 const COOKIE_DWSID = 'dwsid';
 
 // Re-export types for convenience
-export type { AuthConfig, AuthNamespace, AuthResponse, TokenResponse } from './types';
+export type { AuthConfig, AuthNamespace, AuthResponse, TokenResponse, PasswordActionMode } from './types';
 export type { LoginAsGuestOptions, LoginWithCredentialsOptions, RefreshTokenOptions, LogoutOptions } from './types';
 export type { PasswordlessAuthorizeOptions, PasswordlessExchangeTokenOptions } from './types';
 export type { PasswordRequestResetOptions, PasswordResetOptions } from './types';
@@ -415,26 +415,55 @@ export function createAuthHelpers(config: AuthConfig): AuthNamespace {
          */
         passwordless: {
             authorize: async (options: PasswordlessAuthorizeOptions) => {
-                const { userId, callbackUri, usid, mode = 'callback' } = options;
+                const {
+                    userId,
+                    callbackUri,
+                    usid,
+                    mode = 'email',
+                    locale,
+                    registerCustomer,
+                    lastName,
+                    email,
+                    firstName,
+                    phoneNumber,
+                    customerNo,
+                } = options;
 
                 if (!clientSecret) {
                     throw new Error('Client secret is required for passwordless login');
                 }
+
+                if (mode === 'callback' && !callbackUri) {
+                    throw new Error('callbackUri is required for callback mode');
+                }
+
+                const requestBody = {
+                    user_id: userId,
+                    mode,
+                    channel_id: siteId,
+                    ...(callbackUri && { callback_uri: callbackUri }),
+                    ...(usid && { usid }),
+                    ...(locale && { locale }),
+                    ...(registerCustomer && lastName && { last_name: lastName }),
+                    ...(registerCustomer && email && { email }),
+                    ...(registerCustomer && firstName && { first_name: firstName }),
+                    ...(phoneNumber && { phone_number: phoneNumber }),
+                    ...(customerNo && { customer_no: customerNo }),
+                };
 
                 return shopperLoginClient.authorizePasswordlessCustomer({
                     params: {
                         header: {
                             Authorization: createBasicAuthHeader(clientId, clientSecret),
                         },
+                        ...(registerCustomer === true && {
+                            query: {
+                                register_customer: 'true',
+                            },
+                        }),
                     },
                     headers: FORM_URLENCODED_HEADER,
-                    body: {
-                        user_id: userId,
-                        mode,
-                        channel_id: siteId,
-                        ...(callbackUri && { callback_uri: callbackUri }),
-                        ...(usid && { usid }),
-                    },
+                    body: requestBody,
                 });
             },
 
@@ -473,7 +502,11 @@ export function createAuthHelpers(config: AuthConfig): AuthNamespace {
          */
         password: {
             requestReset: async (options: PasswordRequestResetOptions) => {
-                const { userId, callbackUri } = options;
+                const { userId, callbackUri, mode = 'email', locale } = options;
+
+                if (mode === 'callback' && !callbackUri) {
+                    throw new Error('callbackUri is required when mode is "callback"');
+                }
 
                 const headers: Record<string, string> = {
                     ...FORM_URLENCODED_HEADER,
@@ -489,11 +522,12 @@ export function createAuthHelpers(config: AuthConfig): AuthNamespace {
                     headers,
                     body: {
                         user_id: userId,
-                        mode: 'callback',
+                        mode,
                         channel_id: siteId,
                         client_id: clientId,
-                        callback_uri: callbackUri,
+                        ...(callbackUri && { callback_uri: callbackUri }),
                         hint: 'cross_device',
+                        ...(locale && { locale }),
                     },
                 });
             },

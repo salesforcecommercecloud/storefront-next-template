@@ -20,6 +20,7 @@ import {
     generateCodeChallenge,
     getCodeAndUsidFromUrl,
     createBasicAuthHeader,
+    extractCookieFromResponse,
 } from './utils';
 
 describe('auth/utils', () => {
@@ -184,6 +185,42 @@ describe('auth/utils', () => {
             const decoded = atob(encoded);
 
             expect(decoded).toBe('client:with:colons:secret+with+plus');
+        });
+    });
+
+    describe('extractCookieFromResponse', () => {
+        const createMockResponse = (setCookieHeader?: string | null) => {
+            const headers = {
+                get: (name: string) => (name.toLowerCase() === 'set-cookie' ? (setCookieHeader ?? null) : null),
+            } as unknown as Headers;
+
+            return {
+                headers,
+            } as unknown as Response;
+        };
+
+        it('should return undefined when Set-Cookie header is missing', () => {
+            const response = createMockResponse(undefined);
+
+            const result = extractCookieFromResponse(response, 'dwsid');
+
+            expect(result).toBeUndefined();
+        });
+
+        it('should return undefined when cookie is not present in header', () => {
+            const response = createMockResponse('other=value; Path=/; HttpOnly');
+
+            const result = extractCookieFromResponse(response, 'dwsid');
+
+            expect(result).toBeUndefined();
+        });
+
+        it('should return cookie value when present in header', () => {
+            const response = createMockResponse('dwsid=my-cookie-value; Path=/; HttpOnly');
+
+            const result = extractCookieFromResponse(response, 'dwsid');
+
+            expect(result).toBe('my-cookie-value');
         });
     });
 });

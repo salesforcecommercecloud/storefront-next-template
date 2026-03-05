@@ -16,8 +16,6 @@
 import { type ActionFunctionArgs, type LoaderFunctionArgs, redirect, type RouterContextProvider } from 'react-router';
 import { getAppOrigin, getErrorMessage } from '@/lib/utils';
 import { getConfig } from '@/config';
-import { getPasswordLessAccessToken, updateAuth } from '@/middlewares/auth.server';
-import { mergeBasket } from '@/lib/api/basket';
 import {
     resetMarketingCloudTokenCache,
     sendMarketingCloudEmail,
@@ -108,48 +106,16 @@ export async function handlePasswordlessCallback({ request, context }: ActionFun
  * Handles passwordless login landing page
  * Processes magic link token and authenticates user
  */
-export async function handlePasswordlessLanding({ request, context }: LoaderFunctionArgs) {
-    const { t } = getTranslation(context);
+export function handlePasswordlessLanding({ request }: LoaderFunctionArgs) {
+    const url = new URL(request.url);
+    const token = url.searchParams.get('token') || '';
+    const email = url.searchParams.get('email') || '';
+    const redirectUrl = url.searchParams.get('redirectUrl') || '';
 
-    try {
-        const url = new URL(request.url);
-        const token = url.searchParams.get('token');
-        const redirectUrl = url.searchParams.get('redirectUrl');
+    const params = new URLSearchParams();
+    params.set('token', token);
+    params.set('email', email);
+    if (redirectUrl) params.set('returnUrl', redirectUrl);
 
-        if (!token) {
-            const errorMessage = t('errors:passwordless.missingToken');
-            return redirect(`/login?error=${encodeURIComponent(errorMessage)}`);
-        }
-
-        const tokenResponse = await getPasswordLessAccessToken(context, decodeURIComponent(token));
-
-        // Update session with auth data using updateAuth (similar to standard login)
-        updateAuth(context, tokenResponse);
-        updateAuth(context, (session) => ({
-            ...session,
-            userType: 'registered',
-        }));
-
-        // Merge basket after authentication (server-side for passwordless callback)
-        // Note: Unlike standard login which uses clientAction to merge on the client, we do the
-        // merge on the server here because this is a callback route designed to authenticate and
-        // redirect immediately. Adding clientLoader/clientAction would require returning data
-        // instead of redirect(), which complicates the route unnecessarily. Server-side merge
-        // keeps this callback route simple and focused on its purpose.
-        try {
-            await mergeBasket(context);
-        } catch (error) {
-            // Log but don't block redirect - user can still access their registered basket
-            // eslint-disable-next-line no-console
-            console.error('[Passwordless Login] Failed to merge basket:', error);
-        }
-
-        const redirectTo = redirectUrl ? decodeURIComponent(redirectUrl) : '/account';
-        return redirect(redirectTo);
-    } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('[Passwordless Login] Error during login:', error);
-        const errorMessage = t('errors:genericTryAgain');
-        return redirect(`/login?error=${encodeURIComponent(errorMessage)}`);
-    }
+    return redirect(`/login?${params.toString()}`);
 }

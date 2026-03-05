@@ -93,15 +93,20 @@ export type Config = {
             enabled: boolean;
             legacyRoutes?: string[];
         };
+        auth: {
+            otpLength: 6 | 8;
+        };
         features: {
             passwordlessLogin: {
                 enabled: boolean;
-                callbackUri: string;
-                landingUri: string;
+                callbackUri?: string;
+                landingUri?: string;
+                mode: 'callback' | 'email' | 'sms';
             };
             resetPassword: {
                 callbackUri: string;
                 landingUri: string;
+                mode: 'callback' | 'email' | 'sms';
             };
             socialLogin: {
                 enabled: boolean;

@@ -42,8 +42,8 @@ function extractPathname(uri: string): string {
             return uri;
         }
     }
-    // Already a relative path
-    return uri;
+    // MRT environment variable doesn't allow slash, so add it if it's missing
+    return uri.startsWith('/') ? uri : `/${uri}`;
 }
 
 /**
@@ -55,15 +55,25 @@ function getLoaderHandler(pathname: string, context: Readonly<RouterContextProvi
     // Use extractPathname to support both relative paths and absolute URLs in config.
     // When comparing against the incoming request's pathname, we need to extract just
     // the pathname component from potentially absolute URLs (e.g., "https://example.com/callback" -> "/callback")
-    if (pathname === extractPathname(config.features.passwordlessLogin.landingUri)) {
+    if (
+        config.features.passwordlessLogin.landingUri &&
+        pathname === extractPathname(config.features.passwordlessLogin.landingUri)
+    ) {
         return handlePasswordlessLanding;
     }
 
-    if (pathname === extractPathname(config.features.resetPassword.landingUri)) {
+    if (
+        config.features.resetPassword.landingUri &&
+        pathname === extractPathname(config.features.resetPassword.landingUri)
+    ) {
         return handleResetPasswordLanding;
     }
 
-    if (config.features.socialLogin.enabled && pathname === extractPathname(config.features.socialLogin.callbackUri)) {
+    if (
+        config.features.socialLogin.enabled &&
+        config.features.socialLogin.callbackUri &&
+        pathname === extractPathname(config.features.socialLogin.callbackUri)
+    ) {
         return handleSocialLoginLanding;
     }
 
@@ -78,7 +88,10 @@ function getActionHandler(pathname: string, context: Readonly<RouterContextProvi
     // Use extractPathname to support both relative paths and absolute URLs in config.
     // When comparing against the incoming request's pathname, we need to extract just
     // the pathname component from potentially absolute URLs (e.g., "https://example.com/callback" -> "/callback")
-    if (pathname === extractPathname(config.features.passwordlessLogin.callbackUri)) {
+    if (
+        config.features.passwordlessLogin.callbackUri &&
+        pathname === extractPathname(config.features.passwordlessLogin.callbackUri)
+    ) {
         return handlePasswordlessCallback;
     }
 
