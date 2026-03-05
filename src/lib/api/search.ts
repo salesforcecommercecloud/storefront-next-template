@@ -64,13 +64,11 @@ export const fetchSearchProducts = (
     const refineSet = new Set<string>(params.refine || []);
     const appConfig = getConfig(context);
     if (appConfig?.search.products.refine?.orderableOnly === true) {
-        // Remove any existing orderable_only refinements to avoid conflicts
-        Array.from(refineSet).forEach((r) => {
-            if (r.startsWith('orderable_only=')) {
-                refineSet.delete(r);
-            }
-        });
-        refineSet.add('orderable_only=true');
+        // Make sure we don't accidentally overwrite any existing orderable_only refinements to avoid conflicts
+        const orderableOnly = [...refineSet].find((r: string) => r.startsWith('orderable_only='));
+        if (!orderableOnly) {
+            refineSet.add('orderable_only=true');
+        }
     }
 
     const clients = createApiClients(context);

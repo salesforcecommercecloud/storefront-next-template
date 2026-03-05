@@ -220,7 +220,7 @@ describe('', () => {
             expect(query).not.toHaveProperty('refine');
         });
 
-        it('should overwrite orderable_only=false when config has orderableOnly=true', async () => {
+        it('should not overwrite orderable_only=false when config has orderableOnly=true', async () => {
             const mockContext = createTestContext();
 
             mockProductSearch.mockResolvedValue({ data: { hits: [] } });
@@ -234,7 +234,7 @@ describe('', () => {
             expect(mockProductSearch).toHaveBeenCalledWith({
                 params: {
                     query: expect.objectContaining({
-                        refine: ['orderable_only=true'],
+                        refine: ['orderable_only=false'],
                     }),
                 },
             });

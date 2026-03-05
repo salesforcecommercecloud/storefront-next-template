@@ -16,7 +16,7 @@
 'use client';
 
 import { useCallback, useMemo, type JSX } from 'react';
-import { useLocation, useNavigate } from 'react-router';
+import { useLocation, useNavigate, useNavigation } from 'react-router';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { Button } from '@/components/ui/button';
 import { X as Close } from 'lucide-react';
@@ -57,14 +57,25 @@ export default function CategoryFilters({
 }): JSX.Element | null {
     const navigate = useNavigate();
     const location = useLocation();
+    const navigation = useNavigation();
+    const isPending = navigation.state !== 'idle';
     const refinements = useMemo(() => result?.refinements || [], [result]);
+
+    /**
+     * Optimistic search string derived from the in-flight navigation target.
+     *
+     * While a navigation is pending, `navigation.location` holds the target location, allowing us to read the
+     * intended refinements immediately. Once the navigation settles, we fall back to the current location.
+     */
+    const effectiveSearch = navigation.location ? navigation.location.search : location.search;
+
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
     const selectedStoreInfo = useStoreLocator((s) => s.selectedStoreInfo);
     const { t: tBopis } = useTranslation('extBopis');
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     const activeFilters = useMemo(() => {
-        const params = new URLSearchParams(location.search);
+        const params = new URLSearchParams(effectiveSearch);
         const refines = params.getAll('refine');
         const filters: Array<{
             attributeId: string;
@@ -96,7 +107,7 @@ export default function CategoryFilters({
         }
         return filters;
     }, [
-        location,
+        effectiveSearch,
         refinements,
         // @sfdc-extension-block-start SFDC_EXT_BOPIS
         selectedStoreInfo,
@@ -142,7 +153,7 @@ export default function CategoryFilters({
     }
 
     return (
-        <div className="mb-4 border-b">
+        <div className={`mb-4 border-b${isPending ? ' pointer-events-none opacity-50 transition-opacity' : ''}`}>
             <p className="mb-2 font-medium">Active filters:</p>
             <div className="mb-2 flex flex-wrap items-center gap-2">
                 {activeFilters.map(({ attributeId, value, valueLabel }) => (
