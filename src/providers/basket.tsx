@@ -27,6 +27,7 @@ import {
 } from 'react';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import type { BasketSnapshot } from '@/middlewares/basket.server';
+import { useTranslation } from 'react-i18next';
 import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
 import { useScapiFetcherEffect } from '@/hooks/use-scapi-fetcher-effect';
 
@@ -84,10 +85,16 @@ const BasketUpdaterContext = createContext<BasketUpdater | undefined>(undefined)
  * </BasketProvider>
  * ```
  */
-const BasketProvider = (
-    props: PropsWithChildren<{ basket?: ShopperBasketsV2.schemas['Basket']; snapshot?: BasketSnapshot | null }>
-) => {
-    const { basket, snapshot, children } = props;
+type BasketProviderProps = PropsWithChildren<{
+    basket?: ShopperBasketsV2.schemas['Basket'];
+    snapshot?: BasketSnapshot | null;
+    /** Promise from root loader to hydrate basket when snapshot has id; only sets current when resolved has basketId */
+    promise?: Promise<ShopperBasketsV2.schemas['Basket'] | null>;
+}>;
+
+const BasketProvider = (props: BasketProviderProps) => {
+    const { basket, snapshot, promise: basketPromise, children } = props;
+    const { t } = useTranslation('errors');
 
     // Providers internal state management.
     const [state, setState] = useState<BasketProviderValue | undefined>(() => {
@@ -122,6 +129,38 @@ const BasketProvider = (
         }),
         [state]
     );
+
+    // Resolve basket promise from root loader; only set current when resolved value has basketId.
+    const cancelledRef = useRef(false);
+    useEffect(() => {
+        if (!basketPromise) return;
+        cancelledRef.current = false;
+        basketPromise
+            .then((resolved) => {
+                if (cancelledRef.current) return;
+                if (resolved?.basketId) {
+                    setState((prev) => ({
+                        snapshot: prev?.snapshot,
+                        current: resolved,
+                        hydrated: true,
+                        error: null,
+                    }));
+                }
+            })
+            .catch((err) => {
+                if (cancelledRef.current) return;
+                const message = err instanceof Error ? err.message : t('api.basketLoadFailed');
+                setState((prev) => ({
+                    snapshot: prev?.snapshot,
+                    current: prev?.current,
+                    hydrated: true,
+                    error: [message],
+                }));
+            });
+        return () => {
+            cancelledRef.current = true;
+        };
+    }, [basketPromise, t]);
 
     // Update the internal state when the props change.
     useEffect(() => {

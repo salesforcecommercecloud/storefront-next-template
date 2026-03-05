@@ -186,6 +186,7 @@
         "api": {
             "orderNotFound": "Ordine non trovato. Controlli il numero d'ordine e riprovi.",
             "basketNotFound": "Carrello non trovato. Aggiorni la pagina e riprovi.",
+            "basketLoadFailed": "Impossibile caricare il carrello.",
             "basketQuotaExceeded": "Numero massimo di carrelli superato. Utilizzi il Suo carrello esistente.",
             "paymentFailed": "Pagamento non riuscito. Controlli le Sue informazioni di pagamento e riprovi.",
             "paymentInformationRequired": "Le informazioni di pagamento sono necessarie per completare l'ordine.",

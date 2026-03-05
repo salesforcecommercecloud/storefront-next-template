@@ -45,7 +45,11 @@ import { SiteProvider } from '@salesforce/storefront-next-runtime/multi-site';
 // Middlewares
 import authMiddlewareServer, { getAuth as getAuthServer } from '@/middlewares/auth.server';
 import { getPublicSessionData } from '@/middlewares/auth.utils';
-import createBasketMiddleware, { basketResourceContext, type BasketSnapshot } from '@/middlewares/basket.server';
+import createBasketMiddleware, {
+    basketResourceContext,
+    getBasket,
+    type BasketSnapshot,
+} from '@/middlewares/basket.server';
 import shopperContextMiddlewareServer from '@/middlewares/shopper-context.server';
 import legacyRoutesMiddlewareClient from '@/middlewares/legacy-routes.client';
 import {
@@ -80,6 +84,7 @@ import { useExecutePendingAction } from '@/hooks/use-execute-pending-action';
 
 // Lib/Utils
 import type { PublicSessionData } from '@/lib/api/types';
+import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import { i18nextContext } from '@/lib/i18next';
 import { initI18next } from '@/lib/i18next.client';
 import { PageViewTracker } from '@/lib/analytics/page-view-tracker';
@@ -151,6 +156,7 @@ export const loader = ({
     clientAuth: PublicSessionData;
     appConfig: AppConfig;
     basketSnapshot: BasketSnapshot | null;
+    basketPromise?: Promise<ShopperBasketsV2.schemas['Basket'] | null>;
     maintenance: Maintenance;
     locale: string;
     currency: string;
@@ -183,6 +189,8 @@ export const loader = ({
     // unnecessary resource usage in the form of basket creations.
     const basketSnapshot = context.get(basketResourceContext)?.snapshot ?? null;
 
+    const basketPromise = basketSnapshot?.basketId ? getBasket(context).then((r) => r.current ?? null) : undefined;
+
     // Get correlation ID from middleware for request tracing
     const correlationId = context.get(correlationContext);
 
@@ -195,6 +203,7 @@ export const loader = ({
     return {
         appConfig,
         basketSnapshot,
+        basketPromise,
         locale,
         currency,
         correlationId,
@@ -291,7 +300,7 @@ export function ErrorBoundary({ error }: { error: unknown }) {
 }
 
 export default function App({
-    loaderData: { clientAuth, basketSnapshot, getI18next, currency, correlationId, pageDesignerMode },
+    loaderData: { clientAuth, basketSnapshot, basketPromise, getI18next, currency, correlationId, pageDesignerMode },
 }: {
     loaderData: LoaderData;
 }) {
@@ -329,11 +338,11 @@ export default function App({
                 [SiteProvider, { value: appConfig.commerce.sites[0] }],
                 [CurrencyProvider, { value: currency }],
                 [AuthProvider, { value: clientAuth }],
-                [BasketProvider, { snapshot: basketSnapshot }],
+                [BasketProvider, { snapshot: basketSnapshot, promise: basketPromise }],
                 [RecommendersProvider, { adapterName: EINSTEIN_ADAPTER_NAME }],
                 [CorrelationProvider, { value: correlationId }],
             ] as const,
-        [correlationId, i18next, appConfig, currency, clientAuth, basketSnapshot]
+        [correlationId, i18next, appConfig, currency, clientAuth, basketSnapshot, basketPromise]
     );
 
     // App config "hybrid" (site.hybrid.enabled); hybrid-proxy adds its check in extension block below
