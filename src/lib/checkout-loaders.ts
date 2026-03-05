@@ -505,31 +505,13 @@ async function handleBasketPrefill(
     }
 }
 
-/**
- * Client loader function for React Router
- *
- * IMPORTANT: This loader is async for a critical reason:
- *
- * For returning customers, we MUST prefill the basket before checking for shipping methods. The sequence is:
- * 1. Fetch customer profile (await - needed to get saved addresses)
- * 2. Prefill basket with saved address (await - updates basket.shipments[0].shippingAddress)
- * 3. Check if basket has shipping address. This is necessary to fetch applicable shipping methods for this address
- * 4. Fetch shipping methods for the prefilled address
- *
- * Performance trade-off:
- * Although it blocks for some time in the returning/registered shoppers case (profile fetch + basket prefill), this is
- * necessary to compute shippingMethods. Shipping methods and products still stream after loader returns.
- * Alternative options (such as promise chaining) have additional complexity and they don't improve performance either
- *
- * @returns CheckoutPageData with promises for streaming (shippingMethods, customerProfile, productMap)
- */
+/** Checkout route loader: fetches basket, profile (registered), shipping methods; returns promises for streaming. */
 export async function loader(args: LoaderFunctionArgs): Promise<CheckoutPageData> {
     try {
         const { context } = args;
         const userIsRegistered = isRegisteredCustomer(context);
         const session = getAuth(context);
 
-        // Load the basket if it's not already loaded.
         const basket = (await getBasket(context)).current ?? null;
 
         const productMapPromise = fetchProductsInBasket(context, basket?.productItems ?? []);
@@ -538,14 +520,12 @@ export async function loader(args: LoaderFunctionArgs): Promise<CheckoutPageData
 
         let shippingDefaultSet = Promise.resolve(undefined);
         // @sfdc-extension-block-start SFDC_EXT_BOPIS
-        // Check if this is a BOPIS order and fetch store details if so
         let storesByStoreId: Map<string, ShopperStores.schemas['Store']> | undefined;
         const pickupShipment = getPickupShipment(basket);
         if (pickupShipment) {
             storesByStoreId = await fetchStoresForBasket(context, basket);
             const store = storesByStoreId?.get(pickupShipment.c_fromStoreId as string);
             if (store) {
-                // Check if address is already set to avoid unnecessary calls
                 const addressAlreadySet = isPickupAddressSet(pickupShipment.shippingAddress, store, context);
 
                 if (!addressAlreadySet) {
@@ -563,25 +543,16 @@ export async function loader(args: LoaderFunctionArgs): Promise<CheckoutPageData
         }
         // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
-        // IMPORTANT: For returning shopper must prefill basket before fetching shipping methods
         if (userIsRegistered && session.customerId) {
-            // Step 1: Fetch customer profile (await for saved addresses)
             const customerProfile = await getCustomerProfileForCheckout(context, session.customerId).catch(() => null);
 
             if (customerProfile) {
                 // @sfdc-extension-block-start SFDC_EXT_BOPIS
-                // Avoid basket race condition when both BOPIS and returning customer
-                // Wait for BOPIS address setup to complete before prefilling basket
                 await shippingDefaultSet;
                 // @sfdc-extension-block-end SFDC_EXT_BOPIS
-                // Step 2: Prefill basket with saved address (await for basket update)
-                // If we don't wait, basket.shipments[0].shippingAddress is still undefined
                 const updatedBasket = await handleBasketPrefill(context, customerProfile);
-
-                // Step 3: Fetch shipping methods for all shipments
                 const shippingMethodsMapPromise = fetchShippingMethodsForAllShipments(context, updatedBasket);
 
-                // Return with promises for streaming
                 return {
                     shippingMethodsMap: shippingMethodsMapPromise,
                     customerProfile: Promise.resolve(customerProfile),
@@ -595,7 +566,6 @@ export async function loader(args: LoaderFunctionArgs): Promise<CheckoutPageData
             }
         }
 
-        // For guest users, basket might already have shipping address from previous steps
         const shippingMethodsMapPromise = fetchShippingMethodsForAllShipments(context, basket);
 
         return {
@@ -608,7 +578,6 @@ export async function loader(args: LoaderFunctionArgs): Promise<CheckoutPageData
             ...(storesByStoreId && { storesByStoreId }),
         };
     } catch {
-        // Fallback to empty data on any error
         return {
             shippingMethodsMap: Promise.resolve({}),
             productMap: Promise.resolve({}),

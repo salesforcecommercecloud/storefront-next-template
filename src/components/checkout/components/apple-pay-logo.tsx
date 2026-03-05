@@ -28,6 +28,8 @@ export default function ApplePayLogo({ className }: { className?: string }) {
         <img
             src={applePayLogo}
             alt={t('expressPayments.applePayLabel') || 'Apple Pay'}
+            width="48"
+            height="16"
             className={`${className || ''} h-4 w-auto`}
             style={{
                 objectFit: 'contain',

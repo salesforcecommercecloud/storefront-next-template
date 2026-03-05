@@ -233,7 +233,9 @@ export default function ExpressPayments({
                     <img
                         src="https://m.media-amazon.com/images/G/01/AmazonPay/ux/squid_ink_pwa.svg"
                         alt={amazonPayLabel}
-                        className="h-5 w-auto"
+                        width="62"
+                        height="20"
+                        className="h-5"
                         style={{ objectFit: 'contain' }}
                     />
                 </Button>

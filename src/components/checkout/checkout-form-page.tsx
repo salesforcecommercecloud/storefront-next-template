@@ -54,6 +54,18 @@ const OrderSummary = lazy(() => import('@/components/order-summary'));
 const MyCart = lazy(() => import('@/components/my-cart'));
 const ExpressPayments = lazy(() => import('./components/express-payments'));
 
+// Import skeleton components for accurate loading states
+import {
+    ContactInfoSkeleton,
+    ExpressPaymentsSkeleton,
+    MyCartSkeleton,
+    OrderSummarySkeleton,
+    PaymentSkeleton,
+    PickupSkeleton,
+    ShippingAddressSkeleton,
+    ShippingOptionsSkeleton,
+} from './components/checkout-skeletons';
+
 interface GuestAccountCreationProps {
     cart: ShopperBasketsV2.schemas['Basket'];
     customerProfile: ReturnType<typeof useCustomerProfile>;
@@ -370,8 +382,7 @@ export default function CheckoutFormPage({
                                 <div className="px-4 pb-4 space-y-6">
                                     <Card className="shadow-none border border-border">
                                         <CardContent className="p-4">
-                                            <Suspense
-                                                fallback={<div className="h-56 bg-muted animate-pulse rounded" />}>
+                                            <Suspense fallback={<OrderSummarySkeleton />}>
                                                 <OrderSummary
                                                     basket={cart}
                                                     showCartItems={false}
@@ -383,7 +394,7 @@ export default function CheckoutFormPage({
                                         </CardContent>
                                     </Card>
 
-                                    <Suspense fallback={<div className="h-48 bg-muted animate-pulse rounded" />}>
+                                    <Suspense fallback={<MyCartSkeleton itemCount={cart?.productItems?.length || 2} />}>
                                         <MyCartWithData
                                             basket={cart}
                                             productMapPromise={productMapPromise}
@@ -402,7 +413,7 @@ export default function CheckoutFormPage({
                         <UITarget targetId="checkout.mainContent.before" />
                         {/* Express Payments - Apple Pay, Google Pay, Amazon Pay, PayPal & Venmo (mobile only) */}
                         <UITarget targetId="checkout.expressPayments.header.before" />
-                        <Suspense fallback={<div className="h-20 bg-muted animate-pulse rounded" />}>
+                        <Suspense fallback={<ExpressPaymentsSkeleton />}>
                             <UITarget targetId="checkout.expressPayments.before" />
                             <UITarget targetId="checkout.expressPayments">
                                 <ExpressPayments separatorText={t('expressPayments.separator')} />
@@ -411,7 +422,7 @@ export default function CheckoutFormPage({
                         </Suspense>
 
                         <UITarget targetId="checkout.contactInfo.header.before" />
-                        <Suspense fallback={<div className="h-32 bg-muted animate-pulse rounded" />}>
+                        <Suspense fallback={<ContactInfoSkeleton />}>
                             <UITarget targetId="checkout.contactInfo.before" />
                             <UITarget targetId="checkout.contactInfo">
                                 <ContactInfo
@@ -427,7 +438,7 @@ export default function CheckoutFormPage({
                         {/* @sfdc-extension-block-start SFDC_EXT_BOPIS */}
                         {/* Store Pickup Information */}
                         {hasPickupItems && (
-                            <Suspense fallback={<div className="h-32 bg-muted animate-pulse rounded" />}>
+                            <Suspense fallback={<PickupSkeleton />}>
                                 <CheckoutPickupWithData
                                     cart={cart}
                                     productMapPromise={productMapPromise}
@@ -445,14 +456,14 @@ export default function CheckoutFormPage({
                         {showAddressAndOptions && (
                             <>
                                 <UITarget targetId="checkout.shippingAddress.header.before" />
-                                <Suspense fallback={<div className="h-32 bg-muted animate-pulse rounded" />}>
+                                <Suspense fallback={<ShippingAddressSkeleton />}>
                                     <UITarget targetId="checkout.shippingAddress.before" />
                                     <UITarget targetId="checkout.shippingAddress">{shippingAddressComponent}</UITarget>
                                     <UITarget targetId="checkout.shippingAddress.after" />
                                 </Suspense>
 
                                 <UITarget targetId="checkout.shippingOptions.header.before" />
-                                <Suspense fallback={<div className="h-32 bg-muted animate-pulse rounded" />}>
+                                <Suspense fallback={<ShippingOptionsSkeleton />}>
                                     <UITarget targetId="checkout.shippingOptions.before" />
                                     <UITarget targetId="checkout.shippingOptions">{shippingOptionsComponent}</UITarget>
                                     <UITarget targetId="checkout.shippingOptions.after" />
@@ -461,7 +472,7 @@ export default function CheckoutFormPage({
                         )}
 
                         <UITarget targetId="checkout.payment.header.before" />
-                        <Suspense fallback={<div className="h-32 bg-muted animate-pulse rounded" />}>
+                        <Suspense fallback={<PaymentSkeleton />}>
                             <UITarget targetId="checkout.payment.before" />
                             <UITarget targetId="checkout.payment">
                                 <Payment
@@ -539,7 +550,7 @@ export default function CheckoutFormPage({
                                 <CardContent>
                                     <UITarget targetId="checkout.orderSummary.before" />
                                     <UITarget targetId="checkout.orderSummary">
-                                        <Suspense fallback={<div className="h-96 bg-muted animate-pulse rounded" />}>
+                                        <Suspense fallback={<OrderSummarySkeleton />}>
                                             <OrderSummary
                                                 basket={cart}
                                                 showCartItems={false}
@@ -555,7 +566,7 @@ export default function CheckoutFormPage({
 
                             <UITarget targetId="checkout.myCart.before" />
                             <UITarget targetId="checkout.myCart">
-                                <Suspense fallback={<div className="h-64 bg-muted animate-pulse rounded" />}>
+                                <Suspense fallback={<MyCartSkeleton itemCount={cart?.productItems?.length || 2} />}>
                                     <MyCartWithData
                                         basket={cart}
                                         productMapPromise={productMapPromise}

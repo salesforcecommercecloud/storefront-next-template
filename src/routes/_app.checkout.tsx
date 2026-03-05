@@ -30,15 +30,9 @@ import { action as submitShippingAddress } from '@/lib/actions/action.submit-shi
 import { action as submitShippingOptions } from '@/lib/actions/action.submit-shipping-options.server';
 import { action as submitPayment } from '@/lib/actions/action.submit-payment.server';
 
-// Re-export the comprehensive loader from checkout-loaders
-// It handles: basket loading, product map, promotions, customer profile prefill, shipping methods
 // eslint-disable-next-line react-refresh/only-export-components
 export { loader };
 
-/**
- * Unified action handler for all checkout form submissions.
- * Routes to the appropriate server action based on the 'intent' field.
- */
 // eslint-disable-next-line react-refresh/only-export-components
 export async function action({ request, context }: ActionFunctionArgs) {
     const formData = await request.formData();
@@ -58,20 +52,14 @@ export async function action({ request, context }: ActionFunctionArgs) {
     }
 }
 
-/**
- * Skeleton loader for checkout sections
- * Uses the project's standardized Skeleton component for consistent styling
- */
 function CheckoutSkeleton() {
     return (
         <div className="space-y-6">
-            {/* Header skeleton */}
             <div className="space-y-2">
                 <Skeleton className="h-8 w-64" />
                 <Skeleton className="h-4 w-96" />
             </div>
 
-            {/* Progress indicator skeleton */}
             <div className="flex space-x-4">
                 {Array.from({ length: 4 }, (_, index) => (
                     <div key={`progress-item-${index}`} className="flex items-center space-x-2">
@@ -81,7 +69,6 @@ function CheckoutSkeleton() {
                 ))}
             </div>
 
-            {/* Form sections skeleton */}
             <div className="space-y-6">
                 {Array.from({ length: 3 }, (_, index) => (
                     <div key={`form-section-item-${index}`} className="rounded-lg border p-6">
@@ -98,13 +85,6 @@ function CheckoutSkeleton() {
     );
 }
 
-/**
- * Checkout view component that handles parallel data loading with clean error boundaries.
- *
- * Streaming strategy:
- * - customerProfile & shippingMethodsMap: Resolved here (needed for form setup)
- * - productMap: Passed as Promise to allow MyCart to stream independently
- */
 function CheckoutView({
     loaderData: {
         customerProfile,
@@ -116,8 +96,6 @@ function CheckoutView({
         storesByStoreId,
     },
 }: RouteComponentProps<CheckoutPageData>) {
-    // Handle each promise individually, only calling use() if the promise exists
-    // React automatically parallelizes multiple use() calls in the same component
     const customerProfileData = customerProfile ? use(customerProfile) : null;
     const shippingMethodsMapData = shippingMethodsMap ? use(shippingMethodsMap) : {};
 
@@ -139,17 +117,11 @@ function CheckoutView({
     finalContent = <PickupProvider initialPickupStores={storesByStoreId}>{content}</PickupProvider>;
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
-    // Wrap with GoogleCloudApiProvider for access to Google Cloud Platform APIs
     finalContent = <GoogleCloudApiProvider>{finalContent}</GoogleCloudApiProvider>;
 
     return finalContent;
 }
 
-/**
- * Checkout page component that displays the checkout form with customer profile, shipping methods, and basket data.
- * Uses createPage HOC for consistency with other pages and optimal streaming performance.
- * Wrapped with ErrorBoundary for graceful error handling.
- */
 const CheckoutPageWithErrorBoundary = createPage({
     component: CheckoutView,
     fallback: <CheckoutSkeleton />,

@@ -19,8 +19,10 @@ exports[`ExpressPayments stories snapshot > CustomSeparatorText story renders an
         <img
           alt="Apple Pay"
           class="flex-shrink-0 h-4 w-auto"
+          height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain; filter: brightness(0) invert(1);"
+          width="48"
         />
       </button>
       <button
@@ -33,8 +35,10 @@ exports[`ExpressPayments stories snapshot > CustomSeparatorText story renders an
         <img
           alt="Google Pay"
           class="flex-shrink-0 h-4 w-auto"
+          height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain;"
+          width="48"
         />
       </button>
       <button
@@ -46,9 +50,11 @@ exports[`ExpressPayments stories snapshot > CustomSeparatorText story renders an
       >
         <img
           alt="Amazon Pay"
-          class="h-5 w-auto"
+          class="h-5"
+          height="20"
           src="https://m.media-amazon.com/images/G/01/AmazonPay/ux/squid_ink_pwa.svg"
           style="object-fit: contain;"
+          width="62"
         />
       </button>
       <button
@@ -118,8 +124,10 @@ exports[`ExpressPayments stories snapshot > Default story renders and matches sn
         <img
           alt="Apple Pay"
           class="flex-shrink-0 h-4 w-auto"
+          height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain; filter: brightness(0) invert(1);"
+          width="48"
         />
       </button>
       <button
@@ -132,8 +140,10 @@ exports[`ExpressPayments stories snapshot > Default story renders and matches sn
         <img
           alt="Google Pay"
           class="flex-shrink-0 h-4 w-auto"
+          height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain;"
+          width="48"
         />
       </button>
       <button
@@ -145,9 +155,11 @@ exports[`ExpressPayments stories snapshot > Default story renders and matches sn
       >
         <img
           alt="Amazon Pay"
-          class="h-5 w-auto"
+          class="h-5"
+          height="20"
           src="https://m.media-amazon.com/images/G/01/AmazonPay/ux/squid_ink_pwa.svg"
           style="object-fit: contain;"
+          width="62"
         />
       </button>
       <button
@@ -218,8 +230,10 @@ exports[`ExpressPayments stories snapshot > Disabled story renders and matches s
         <img
           alt="Apple Pay"
           class="flex-shrink-0 h-4 w-auto"
+          height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain; filter: brightness(0) invert(1);"
+          width="48"
         />
       </button>
       <button
@@ -233,8 +247,10 @@ exports[`ExpressPayments stories snapshot > Disabled story renders and matches s
         <img
           alt="Google Pay"
           class="flex-shrink-0 h-4 w-auto"
+          height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain;"
+          width="48"
         />
       </button>
       <button
@@ -247,9 +263,11 @@ exports[`ExpressPayments stories snapshot > Disabled story renders and matches s
       >
         <img
           alt="Amazon Pay"
-          class="h-5 w-auto"
+          class="h-5"
+          height="20"
           src="https://m.media-amazon.com/images/G/01/AmazonPay/ux/squid_ink_pwa.svg"
           style="object-fit: contain;"
+          width="62"
         />
       </button>
       <button
@@ -336,8 +354,10 @@ exports[`ExpressPayments stories snapshot > SeparatorAtTop story renders and mat
         <img
           alt="Apple Pay"
           class="flex-shrink-0 h-4 w-auto"
+          height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain; filter: brightness(0) invert(1);"
+          width="48"
         />
       </button>
       <button
@@ -350,8 +370,10 @@ exports[`ExpressPayments stories snapshot > SeparatorAtTop story renders and mat
         <img
           alt="Google Pay"
           class="flex-shrink-0 h-4 w-auto"
+          height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain;"
+          width="48"
         />
       </button>
       <button
@@ -363,9 +385,11 @@ exports[`ExpressPayments stories snapshot > SeparatorAtTop story renders and mat
       >
         <img
           alt="Amazon Pay"
-          class="h-5 w-auto"
+          class="h-5"
+          height="20"
           src="https://m.media-amazon.com/images/G/01/AmazonPay/ux/squid_ink_pwa.svg"
           style="object-fit: contain;"
+          width="62"
         />
       </button>
       <button
@@ -420,8 +444,10 @@ exports[`ExpressPayments stories snapshot > VenmoEligibility story renders and m
         <img
           alt="Apple Pay"
           class="flex-shrink-0 h-4 w-auto"
+          height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain; filter: brightness(0) invert(1);"
+          width="48"
         />
       </button>
       <button
@@ -434,8 +460,10 @@ exports[`ExpressPayments stories snapshot > VenmoEligibility story renders and m
         <img
           alt="Google Pay"
           class="flex-shrink-0 h-4 w-auto"
+          height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain;"
+          width="48"
         />
       </button>
       <button
@@ -447,9 +475,11 @@ exports[`ExpressPayments stories snapshot > VenmoEligibility story renders and m
       >
         <img
           alt="Amazon Pay"
-          class="h-5 w-auto"
+          class="h-5"
+          height="20"
           src="https://m.media-amazon.com/images/G/01/AmazonPay/ux/squid_ink_pwa.svg"
           style="object-fit: contain;"
+          width="62"
         />
       </button>
       <button
@@ -519,8 +549,10 @@ exports[`ExpressPayments stories snapshot > VerticalLayout story renders and mat
         <img
           alt="Apple Pay"
           class="flex-shrink-0 h-4 w-auto"
+          height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain; filter: brightness(0) invert(1);"
+          width="48"
         />
       </button>
       <button
@@ -533,8 +565,10 @@ exports[`ExpressPayments stories snapshot > VerticalLayout story renders and mat
         <img
           alt="Google Pay"
           class="flex-shrink-0 h-4 w-auto"
+          height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain;"
+          width="48"
         />
       </button>
       <button
@@ -546,9 +580,11 @@ exports[`ExpressPayments stories snapshot > VerticalLayout story renders and mat
       >
         <img
           alt="Amazon Pay"
-          class="h-5 w-auto"
+          class="h-5"
+          height="20"
           src="https://m.media-amazon.com/images/G/01/AmazonPay/ux/squid_ink_pwa.svg"
           style="object-fit: contain;"
+          width="62"
         />
       </button>
       <button
@@ -633,8 +669,10 @@ exports[`ExpressPayments stories snapshot > VerticalWithTopSeparator story rende
         <img
           alt="Apple Pay"
           class="flex-shrink-0 h-4 w-auto"
+          height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain; filter: brightness(0) invert(1);"
+          width="48"
         />
       </button>
       <button
@@ -647,8 +685,10 @@ exports[`ExpressPayments stories snapshot > VerticalWithTopSeparator story rende
         <img
           alt="Google Pay"
           class="flex-shrink-0 h-4 w-auto"
+          height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain;"
+          width="48"
         />
       </button>
       <button
@@ -660,9 +700,11 @@ exports[`ExpressPayments stories snapshot > VerticalWithTopSeparator story rende
       >
         <img
           alt="Amazon Pay"
-          class="h-5 w-auto"
+          class="h-5"
+          height="20"
           src="https://m.media-amazon.com/images/G/01/AmazonPay/ux/squid_ink_pwa.svg"
           style="object-fit: contain;"
+          width="62"
         />
       </button>
       <button
@@ -717,8 +759,10 @@ exports[`ExpressPayments stories snapshot > WithPayPalSDKError story renders and
         <img
           alt="Apple Pay"
           class="flex-shrink-0 h-4 w-auto"
+          height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain; filter: brightness(0) invert(1);"
+          width="48"
         />
       </button>
       <button
@@ -731,8 +775,10 @@ exports[`ExpressPayments stories snapshot > WithPayPalSDKError story renders and
         <img
           alt="Google Pay"
           class="flex-shrink-0 h-4 w-auto"
+          height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain;"
+          width="48"
         />
       </button>
       <button
@@ -744,9 +790,11 @@ exports[`ExpressPayments stories snapshot > WithPayPalSDKError story renders and
       >
         <img
           alt="Amazon Pay"
-          class="h-5 w-auto"
+          class="h-5"
+          height="20"
           src="https://m.media-amazon.com/images/G/01/AmazonPay/ux/squid_ink_pwa.svg"
           style="object-fit: contain;"
+          width="62"
         />
       </button>
       <button
@@ -816,8 +864,10 @@ exports[`ExpressPayments stories snapshot > WithPayPalSDKLoading story renders a
         <img
           alt="Apple Pay"
           class="flex-shrink-0 h-4 w-auto"
+          height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain; filter: brightness(0) invert(1);"
+          width="48"
         />
       </button>
       <button
@@ -830,8 +880,10 @@ exports[`ExpressPayments stories snapshot > WithPayPalSDKLoading story renders a
         <img
           alt="Google Pay"
           class="flex-shrink-0 h-4 w-auto"
+          height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain;"
+          width="48"
         />
       </button>
       <button
@@ -843,9 +895,11 @@ exports[`ExpressPayments stories snapshot > WithPayPalSDKLoading story renders a
       >
         <img
           alt="Amazon Pay"
-          class="h-5 w-auto"
+          class="h-5"
+          height="20"
           src="https://m.media-amazon.com/images/G/01/AmazonPay/ux/squid_ink_pwa.svg"
           style="object-fit: contain;"
+          width="62"
         />
       </button>
       <button

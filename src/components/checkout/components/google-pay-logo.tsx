@@ -28,6 +28,8 @@ export default function GooglePayLogo({ className }: { className?: string }) {
         <img
             src={googlePayLogo}
             alt={t('expressPayments.googlePayLabel') || 'Google Pay'}
+            width="48"
+            height="16"
             className={`${className || ''} h-4 w-auto`}
             style={{ objectFit: 'contain' }}
         />
