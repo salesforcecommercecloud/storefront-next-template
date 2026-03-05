@@ -63,7 +63,12 @@
         "signingOut": "Disconnessione in corso...",
         "cartTitle": "Il mio carrello",
         "checkout": "Procedere al pagamento",
-        "continueShopping": "Continua lo shopping"
+        "continueShopping": "Continua lo shopping",
+        "openMenu": "Apri menu",
+        "closeMenu": "Chiudi menu",
+        "mobileNavigation": "Menu di navigazione mobile",
+        "expandCategory": "Espandi {{category}}",
+        "collapseCategory": "Comprimi {{category}}"
     },
     "login": {
         "title": "Accedi al Suo account",

@@ -32,10 +32,10 @@ export default function UserActions(): ReactElement {
 
     const accountLink = isAuthenticated ? '/account/overview' : '/login';
     const ariaLabel = isAuthenticated ? tAccount('myAccount') : t('signIn');
-    const icon = isAuthenticated ? <User className="size-6" /> : <LogIn className="size-6" />;
+    const icon = isAuthenticated ? <User className="size-5" /> : <LogIn className="size-5" />;
 
     const trigger = (
-        <Button variant="ghost" className="cursor-pointer" asChild>
+        <Button variant="ghost" className="cursor-pointer lg:px-4 px-1" asChild>
             <Link to={accountLink} aria-label={ariaLabel}>
                 {icon}
             </Link>

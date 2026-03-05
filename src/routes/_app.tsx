@@ -19,7 +19,7 @@ import { type ShopperProducts } from '@salesforce/storefront-next-runtime/scapi'
 import { fetchCategory } from '@/lib/api/categories';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
-import CategoryNavigationMenuMega from '@/components/navigation-menu-mega';
+import ResponsiveNavigationMenu from '@/components/navigation-menu-mega';
 
 type LoaderData = {
     root: Promise<ShopperProducts.schemas['Category']>;
@@ -99,7 +99,7 @@ export default function DefaultLayout({ loaderData: { root, subs } }: { loaderDa
     return (
         <>
             <Header>
-                <CategoryNavigationMenuMega resolve={refRoot.current} defer={refSubs.current} />
+                <ResponsiveNavigationMenu resolve={refRoot.current} defer={refSubs.current} />
             </Header>
             <main className="grow pt-8">
                 <Outlet />

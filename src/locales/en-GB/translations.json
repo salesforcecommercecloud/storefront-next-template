@@ -71,6 +71,11 @@
         "cartTitle": "My Cart",
         "checkout": "Checkout",
         "continueShopping": "Continue Shopping",
+        "openMenu": "Open menu",
+        "closeMenu": "Close menu",
+        "mobileNavigation": "Mobile navigation menu",
+        "expandCategory": "Expand {{category}}",
+        "collapseCategory": "Collapse {{category}}",
         "menu": {
             "yourLists": "Your Lists",
             "yourAccount": "Your Account",

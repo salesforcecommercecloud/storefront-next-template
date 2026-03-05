@@ -171,7 +171,7 @@ export default function SearchBar(): ReactElement {
                             role="combobox"
                         />
                     </PopoverTrigger>
-                    <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2" />
+                    <SearchIcon className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2" />
                 </div>
             </form>
             <PopoverContent

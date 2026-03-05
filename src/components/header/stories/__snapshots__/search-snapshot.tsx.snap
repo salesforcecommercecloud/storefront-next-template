@@ -26,7 +26,7 @@ exports[`Search stories snapshot > Default story renders and matches snapshot 1`
         />
         <svg
           aria-hidden="true"
-          class="lucide lucide-search pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2"
+          class="lucide lucide-search pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2"
           fill="none"
           height="24"
           stroke="currentColor"
@@ -78,7 +78,7 @@ exports[`Search stories snapshot > Interactive story renders and matches snapsho
         />
         <svg
           aria-hidden="true"
-          class="lucide lucide-search pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2"
+          class="lucide lucide-search pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2"
           fill="none"
           height="24"
           stroke="currentColor"
@@ -130,7 +130,7 @@ exports[`Search stories snapshot > WithQuery story renders and matches snapshot 
         />
         <svg
           aria-hidden="true"
-          class="lucide lucide-search pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2"
+          class="lucide lucide-search pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2"
           fill="none"
           height="24"
           stroke="currentColor"

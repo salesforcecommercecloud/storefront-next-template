@@ -13,13 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ComponentPropsWithoutRef } from 'react';
+'use client';
+
+import { createContext, useContext, useState, type ComponentPropsWithoutRef, type ReactElement } from 'react';
 import { NavLink } from 'react-router';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
-import { NavigationMenuLink } from '@/components/ui/navigation-menu';
 import CategoryNavigationMenu, { WithCategoryNavigationMenu } from '@/components/navigation-menu';
+import { Button } from '@/components/ui/button';
+import { Menu, X, ChevronDown } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { toImageUrl } from '@/lib/dynamic-image';
 import { useConfig } from '@/config';
+import { NavigationMenuLink } from '@/components/ui/navigation-menu';
+import { cn } from '@/lib/utils';
+
+interface MobileMenuContextType {
+    isOpen: boolean;
+    toggle: () => void;
+    close: () => void;
+    categories: ShopperProducts.schemas['Category'][];
+}
+
+const MobileMenuContext = createContext<MobileMenuContextType | null>(null);
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function useMobileMenu() {
+    return useContext(MobileMenuContext);
+}
 
 function hasBanner(category?: ShopperProducts.schemas['Category']): category is ShopperProducts.schemas['Category'] {
     return typeof category?.c_headerMenuBanner === 'string' && category?.c_headerMenuBanner?.length > 0;
@@ -32,15 +52,6 @@ function isVertical(category?: ShopperProducts.schemas['Category']): category is
     );
 }
 
-/**
- * This is a demo implementation of a category banner. Our default B2C Commerce demo instance provides specific custom
- * attributes/data already to define the banner content as well as its orientation. Unfortunately, that data is provided
- * in the form of a content asset, i.e., a string of HTML. This implementation uses the {@link DOMParser} to parse the
- * HTML and extract the image URL from it. It then takes the image URL, extracts the `pathname` from it, and uses that
- * information to build a new URL pointing to the Dynamic Imaging Service (DIS), appending scaling and compression
- * query parameters to it as well.
- * @see {@link https://help.salesforce.com/s/articleView?id=cc.b2c_image_transformation_service.htm}
- */
 function CategoryBanner({
     category,
     ...props
@@ -66,90 +77,234 @@ function CategoryBanner({
     );
 }
 
+function hasSubcategories(category: ShopperProducts.schemas['Category']): boolean {
+    return (
+        typeof category.onlineSubCategoriesCount === 'number' &&
+        category.onlineSubCategoriesCount > 0 &&
+        Array.isArray(category.categories) &&
+        category.categories.length > 0
+    );
+}
+
 /**
- * The implementation of a mega menu using the generic navigation menu component.
- *
- * **Note:** This component is right now considered to be an example as the final UX is likely to change a little.
+ * MobileMenuDropdown - Renders the mobile menu dropdown content with expandable subcategories
+ * Uses absolute positioning (relative to header) to automatically appear below the header
+ * regardless of header height changes. No hardcoded values needed.
  */
-export default function CategoryNavigationMenuMega({
+export function MobileMenuDropdown(): ReactElement | null {
+    const context = useMobileMenu();
+    const { t } = useTranslation('header');
+    const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+
+    if (!context) return null;
+
+    const toggleCategory = (categoryId: string) => {
+        setExpandedCategories((prev) => {
+            const next = new Set(prev);
+            if (next.has(categoryId)) {
+                next.delete(categoryId);
+            } else {
+                next.add(categoryId);
+            }
+            return next;
+        });
+    };
+
+    return (
+        <div
+            className={cn(
+                'lg:hidden absolute left-0 right-0 top-full bg-background border-b border-border shadow-lg z-40 max-h-[70vh] overflow-y-auto',
+                { hidden: !context.isOpen }
+            )}
+            aria-hidden={!context.isOpen}>
+            <nav className="px-4 py-4" aria-label={t('mobileNavigation', 'Mobile navigation menu')}>
+                <ul className="space-y-1">
+                    {context.categories.map((category) => {
+                        const colorClass = category.id === 'top-seller' ? '!text-primary' : '';
+                        const hasChildren = hasSubcategories(category);
+                        const isExpanded = expandedCategories.has(category.id);
+
+                        return (
+                            <li key={category.id}>
+                                <div className="flex items-center justify-between">
+                                    {/* Parent category link */}
+                                    <NavLink
+                                        to={`/category/${category.id}`}
+                                        onClick={context.close}
+                                        className={cn(
+                                            'flex-1 py-3 text-base font-medium hover:text-primary',
+                                            colorClass
+                                        )}>
+                                        {category.name}
+                                    </NavLink>
+
+                                    {/* Expand/collapse button for categories with subcategories */}
+                                    {hasChildren && (
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => toggleCategory(category.id)}
+                                            className="ml-2 p-2 h-auto shrink-0"
+                                            aria-label={
+                                                isExpanded
+                                                    ? t('collapseCategory', `Collapse ${category.name}`)
+                                                    : t('expandCategory', `Expand ${category.name}`)
+                                            }
+                                            aria-expanded={isExpanded}>
+                                            <ChevronDown
+                                                className={cn('size-5 transition-transform duration-200', {
+                                                    'rotate-180': isExpanded,
+                                                })}
+                                            />
+                                        </Button>
+                                    )}
+                                </div>
+
+                                {/* Subcategories list */}
+                                {hasChildren && isExpanded && (
+                                    <ul className="pl-4 pb-2 space-y-1">
+                                        {category.categories?.map((subcategory) => (
+                                            <li key={subcategory.id}>
+                                                <NavLink
+                                                    to={`/category/${subcategory.id}`}
+                                                    onClick={context.close}
+                                                    className="block py-2 text-sm hover:text-primary">
+                                                    {subcategory.name}
+                                                </NavLink>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </li>
+                        );
+                    })}
+                </ul>
+            </nav>
+        </div>
+    );
+}
+
+/**
+ * ResponsiveNavigationMenu - A unified responsive navigation component
+ *
+ * This component uses CSS and Tailwind to adapt the same navigation structure
+ * for both mobile and desktop:
+ * - On mobile (< 1024px): Hamburger button with expandable vertical menu
+ * - On desktop (>= 1024px): Horizontal mega menu with dropdown navigation
+ *
+ * The component renders a single navigation structure with responsive classes
+ * controlling layout, visibility, and interaction patterns. This minimizes DOM bloat
+ * while maintaining SSR compatibility.
+ *
+ * @param props - Component props
+ * @param props.resolve - Promise resolving to root categories and first-level subcategories
+ * @param props.defer - Promise resolving to deeper subcategory data for prefetch
+ * @returns A responsive navigation component with CSS-controlled responsive behavior
+ */
+export default function ResponsiveNavigationMenu({
     resolve,
     defer,
-}: ComponentPropsWithoutRef<typeof WithCategoryNavigationMenu>) {
+}: ComponentPropsWithoutRef<typeof WithCategoryNavigationMenu>): ReactElement {
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const { t } = useTranslation('header');
+
     const defaultListStyle = {
         width: '100%',
         maxWidth: '100%',
     };
 
     return (
-        <div className="hidden lg:flex items-center h-full">
-            <WithCategoryNavigationMenu resolve={resolve} defer={defer}>
-                {({ categories }) => (
-                    <CategoryNavigationMenu
-                        categories={categories}
-                        className="mx-auto max-w-7xl px-4"
-                        // We need to override the viewport's `style` property in order to impact its final display/
-                        // positioning.  The reason for this is that shadcn/ui's viewport component creates an
-                        // uncustomizable wrapper around Radix's underlying viewport component, so we need to use
-                        // element-level styles to gain higher specificity.
-                        propsViewport={() => ({
-                            className: 'mt-0 rounded-none border-0 border-b border-border shadow-lg',
-                            style: {
-                                position: 'fixed',
-                                left: 0,
-                                width: '100vw',
-                                maxWidth: '100vw',
-                            },
-                        })}
-                        propsContentContainer={() => ({
-                            style: {
-                                width: '90vw',
-                                maxWidth: '90vw',
-                                marginLeft: '5vw',
-                            },
-                        })}
-                        propsContent={({ category }) => ({
-                            className: hasBanner(category)
-                                ? isVertical(category)
-                                    ? 'grid md:grid-cols-[1fr_.3fr] items-start'
-                                    : 'grid md:grid-cols-[1fr_.6fr] items-start'
-                                : undefined,
-                        })}
-                        propsList={({ parent, categories: subCategories, level }) => {
-                            if (level === 1) {
-                                if (hasBanner(parent) && isVertical(parent)) {
-                                    return {
-                                        style: defaultListStyle,
-                                    };
-                                }
-                                return {
-                                    style: defaultListStyle,
-                                    className: `grid grid-cols-${subCategories.length}`,
-                                };
-                            }
-                        }}
-                        // Showcase styling the "top-seller" category with primary color
-                        propsElement={({ category, level }) => {
-                            const colorClass = level === 0 && category.id === 'top-seller' ? 'text-primary' : '';
-                            const sizeClass =
-                                level === 0
-                                    ? 'text-sm font-medium'
-                                    : level === 1
-                                      ? 'text-base font-bold'
-                                      : 'text-base font-medium';
-                            return { className: `${colorClass} ${sizeClass}` };
-                        }}
-                        renderSlotListAfter={({ level, parent }) => {
-                            if (level === 1 && hasBanner(parent)) {
-                                return (
-                                    <aside className="self-stretch">
-                                        <CategoryBanner category={parent} />
-                                    </aside>
-                                );
-                            }
-                        }}
-                    />
-                )}
-            </WithCategoryNavigationMenu>
-        </div>
+        <WithCategoryNavigationMenu resolve={resolve} defer={defer}>
+            {({ categories }) => {
+                const mobileMenuContext: MobileMenuContextType = {
+                    isOpen: mobileMenuOpen,
+                    toggle: () => setMobileMenuOpen(!mobileMenuOpen),
+                    close: () => setMobileMenuOpen(false),
+                    categories,
+                };
+
+                return (
+                    <MobileMenuContext.Provider value={mobileMenuContext}>
+                        {/* Mobile: Hamburger button */}
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={mobileMenuContext.toggle}
+                            className="lg:hidden"
+                            aria-label={mobileMenuOpen ? t('closeMenu', 'Close menu') : t('openMenu', 'Open menu')}
+                            aria-expanded={mobileMenuOpen}>
+                            {mobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+                        </Button>
+
+                        {/* Desktop: Mega menu (always rendered, hidden on mobile with CSS) */}
+                        <div className="hidden lg:flex items-center h-full">
+                            <CategoryNavigationMenu
+                                categories={categories}
+                                className="mx-auto max-w-7xl px-4"
+                                propsViewport={() => ({
+                                    className: 'mt-0 rounded-none border-0 border-b border-border shadow-lg',
+                                    style: {
+                                        position: 'fixed',
+                                        left: 0,
+                                        width: '100vw',
+                                        maxWidth: '100vw',
+                                    },
+                                })}
+                                propsContentContainer={() => ({
+                                    className: 'mx-auto max-w-7xl px-4 sm:px-6 lg:px-8',
+                                })}
+                                propsContent={({ category }) => ({
+                                    className: hasBanner(category)
+                                        ? isVertical(category)
+                                            ? 'grid md:grid-cols-[1fr_.3fr] items-start'
+                                            : 'grid md:grid-cols-[1fr_.6fr] items-start'
+                                        : undefined,
+                                })}
+                                propsList={({ parent, categories: subCategories, level }) => {
+                                    if (level === 1) {
+                                        if (hasBanner(parent) && isVertical(parent)) {
+                                            return {
+                                                style: defaultListStyle,
+                                            };
+                                        }
+                                        return {
+                                            style: {
+                                                ...defaultListStyle,
+                                                display: 'grid',
+                                                gridTemplateColumns: `repeat(${subCategories.length}, minmax(0, 1fr))`,
+                                            },
+                                        };
+                                    }
+                                    return undefined;
+                                }}
+                                propsElement={({ category, level }) => {
+                                    const colorClass =
+                                        level === 0 && category.id === 'top-seller' ? 'text-primary' : '';
+                                    const sizeClass =
+                                        level === 0
+                                            ? 'text-sm font-medium'
+                                            : level === 1
+                                              ? 'text-base font-bold'
+                                              : 'text-base font-medium';
+                                    return { className: `${colorClass} ${sizeClass}` };
+                                }}
+                                renderSlotListAfter={({ level, parent }) => {
+                                    if (level === 1 && hasBanner(parent)) {
+                                        return (
+                                            <aside className="self-stretch">
+                                                <CategoryBanner category={parent} />
+                                            </aside>
+                                        );
+                                    }
+                                }}
+                            />
+                        </div>
+
+                        {/* Mobile: Menu dropdown (rendered here to be inside provider) */}
+                        <MobileMenuDropdown />
+                    </MobileMenuContext.Provider>
+                );
+            }}
+        </WithCategoryNavigationMenu>
     );
 }
