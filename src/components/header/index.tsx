@@ -27,7 +27,7 @@ export default function Header({ children }: PropsWithChildren): ReactElement {
     const location = useLocation();
 
     return (
-        <header className="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50 relative">
+        <header className="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50 relative [--header-height:theme(spacing.16)]">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/*
                  * Responsive flex layout with explicit ordering:

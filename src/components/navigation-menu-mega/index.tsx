@@ -240,52 +240,49 @@ export default function ResponsiveNavigationMenu({
                         <div className="hidden lg:flex items-center h-full">
                             <CategoryNavigationMenu
                                 categories={categories}
-                                className="mx-auto max-w-7xl px-4"
                                 propsViewport={() => ({
-                                    className: 'mt-0 rounded-none border-0 border-b border-border shadow-lg',
+                                    className: 'rounded-none border-0 border-b border-border shadow-lg',
                                     style: {
                                         position: 'fixed',
+                                        top: 'var(--header-height)',
                                         left: 0,
                                         width: '100vw',
                                         maxWidth: '100vw',
                                     },
                                 })}
                                 propsContentContainer={() => ({
-                                    className: 'mx-auto max-w-7xl px-4 sm:px-6 lg:px-8',
+                                    className: '!p-0 !left-auto !right-auto !w-full md:!w-full',
                                 })}
                                 propsContent={({ category }) => ({
-                                    className: hasBanner(category)
-                                        ? isVertical(category)
-                                            ? 'grid md:grid-cols-[1fr_.3fr] items-start'
-                                            : 'grid md:grid-cols-[1fr_.6fr] items-start'
-                                        : undefined,
+                                    className: cn(
+                                        'mx-auto max-w-7xl px-4 sm:px-6 lg:px-8',
+                                        hasBanner(category) &&
+                                            (isVertical(category)
+                                                ? 'grid md:grid-cols-[1fr_.3fr] items-start'
+                                                : 'grid md:grid-cols-[1fr_.6fr] items-start')
+                                    ),
                                 })}
                                 propsList={({ parent, categories: subCategories, level }) => {
                                     if (level === 1) {
                                         if (hasBanner(parent) && isVertical(parent)) {
                                             return {
                                                 style: defaultListStyle,
+                                                className: 'p-0 -mx-2 -mt-2',
                                             };
                                         }
                                         return {
                                             style: {
                                                 ...defaultListStyle,
-                                                display: 'grid',
                                                 gridTemplateColumns: `repeat(${subCategories.length}, minmax(0, 1fr))`,
                                             },
+                                            className: 'grid p-0 -mx-2 -mt-2',
                                         };
                                     }
-                                    return undefined;
                                 }}
                                 propsElement={({ category, level }) => {
                                     const colorClass =
                                         level === 0 && category.id === 'top-seller' ? 'text-primary' : '';
-                                    const sizeClass =
-                                        level === 0
-                                            ? 'text-sm font-medium'
-                                            : level === 1
-                                              ? 'text-base font-bold'
-                                              : 'text-base font-medium';
+                                    const sizeClass = 'text-sm font-medium';
                                     return { className: `${colorClass} ${sizeClass}` };
                                 }}
                                 renderSlotListAfter={({ level, parent }) => {

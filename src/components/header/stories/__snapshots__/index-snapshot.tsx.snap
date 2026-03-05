@@ -6,7 +6,7 @@ exports[`Header stories snapshot > Authenticated story renders and matches snaps
     class="min-h-screen bg-background"
   >
     <header
-      class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50 relative"
+      class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50 relative [--header-height:theme(spacing.16)]"
     >
       <div
         class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
@@ -196,7 +196,7 @@ exports[`Header stories snapshot > Guest story renders and matches snapshot 1`] 
     class="min-h-screen bg-background"
   >
     <header
-      class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50 relative"
+      class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50 relative [--header-height:theme(spacing.16)]"
     >
       <div
         class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
@@ -387,7 +387,7 @@ exports[`Header stories snapshot > MobileView story renders and matches snapshot
     class="min-h-screen bg-background"
   >
     <header
-      class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50 relative"
+      class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50 relative [--header-height:theme(spacing.16)]"
     >
       <div
         class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
@@ -581,7 +581,7 @@ exports[`Header stories snapshot > StickyWithContent story renders and matches s
       class="min-h-screen"
     >
       <header
-        class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50 relative"
+        class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50 relative [--header-height:theme(spacing.16)]"
       >
         <div
           class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
@@ -961,7 +961,7 @@ exports[`Header stories snapshot > WithNavigation story renders and matches snap
     class="min-h-screen bg-background"
   >
     <header
-      class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50 relative"
+      class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50 relative [--header-height:theme(spacing.16)]"
     >
       <div
         class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
@@ -1176,7 +1176,7 @@ exports[`Header stories snapshot > WithNavigationAuthenticated story renders and
     class="min-h-screen bg-background"
   >
     <header
-      class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50 relative"
+      class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50 relative [--header-height:theme(spacing.16)]"
     >
       <div
         class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
