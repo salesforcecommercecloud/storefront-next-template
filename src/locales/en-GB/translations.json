@@ -204,7 +204,6 @@
         "api": {
             "orderNotFound": "Order not found. Check the order number and try again.",
             "basketNotFound": "Shopping basket not found. Refresh the page and try again.",
-            "basketLoadFailed": "Failed to load basket.",
             "basketQuotaExceeded": "Maximum number of baskets exceeded. Use your existing basket.",
             "paymentFailed": "Payment failed. Check your payment information and try again.",
             "paymentInformationRequired": "Payment information is required to complete your order.",
