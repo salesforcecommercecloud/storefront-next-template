@@ -44,16 +44,16 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
           </div>
         </div>
         <details
-          class="group mt-6"
+          class="group border-b border-border mt-6"
           open=""
         >
           <summary
-            class="flex items-center justify-between gap-4 py-3 text-sm font-semibold text-foreground cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-accent transition-colors rounded-md"
+            class="flex items-center justify-between gap-4 py-4 text-base font-medium text-foreground cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground transition-colors"
           >
             Description:
             <svg
               aria-hidden="true"
-              class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180"
+              class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-5 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180"
               fill="none"
               height="24"
               stroke="currentColor"
@@ -644,16 +644,16 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
           </div>
         </div>
         <details
-          class="group mt-6"
+          class="group border-b border-border mt-6"
           open=""
         >
           <summary
-            class="flex items-center justify-between gap-4 py-3 text-sm font-semibold text-foreground cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-accent transition-colors rounded-md"
+            class="flex items-center justify-between gap-4 py-4 text-base font-medium text-foreground cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground transition-colors"
           >
             Description:
             <svg
               aria-hidden="true"
-              class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180"
+              class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-5 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180"
               fill="none"
               height="24"
               stroke="currentColor"

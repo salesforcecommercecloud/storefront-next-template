@@ -1,0 +1,131 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CollapsibleSection stories snapshot > Default story renders and matches snapshot 1`] = `
+<details
+  class="group border-b border-border"
+  open=""
+>
+  <summary
+    class="flex items-center justify-between gap-4 py-4 text-base font-medium text-foreground cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground transition-colors"
+  >
+    Description:
+    <svg
+      aria-hidden="true"
+      class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-5 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180"
+      fill="none"
+      height="24"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      viewBox="0 0 24 24"
+      width="24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="m6 9 6 6 6-6"
+      />
+    </svg>
+  </summary>
+  <p>
+    This is the collapsible body content.
+  </p>
+</details>
+`;
+
+exports[`CollapsibleSection stories snapshot > OpenByDefault story renders and matches snapshot 1`] = `
+<details
+  class="group border-b border-border"
+  open=""
+>
+  <summary
+    class="flex items-center justify-between gap-4 py-4 text-base font-medium text-foreground cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground transition-colors"
+  >
+    Details:
+    <svg
+      aria-hidden="true"
+      class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-5 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180"
+      fill="none"
+      height="24"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      viewBox="0 0 24 24"
+      width="24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="m6 9 6 6 6-6"
+      />
+    </svg>
+  </summary>
+  <p>
+    This content is visible on load.
+  </p>
+</details>
+`;
+
+exports[`CollapsibleSection stories snapshot > ToggleInteraction story renders and matches snapshot 1`] = `
+<details
+  class="group border-b border-border"
+>
+  <summary
+    class="flex items-center justify-between gap-4 py-4 text-base font-medium text-foreground cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground transition-colors"
+  >
+    Click to expand:
+    <svg
+      aria-hidden="true"
+      class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-5 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180"
+      fill="none"
+      height="24"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      viewBox="0 0 24 24"
+      width="24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="m6 9 6 6 6-6"
+      />
+    </svg>
+  </summary>
+  <p>
+    Expanded body content.
+  </p>
+</details>
+`;
+
+exports[`CollapsibleSection stories snapshot > WithCustomClass story renders and matches snapshot 1`] = `
+<details
+  class="group border-border mt-6 border rounded-md px-4"
+>
+  <summary
+    class="flex items-center justify-between gap-4 py-4 text-base font-medium text-foreground cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground transition-colors"
+  >
+    Specifications:
+    <svg
+      aria-hidden="true"
+      class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-5 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180"
+      fill="none"
+      height="24"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      viewBox="0 0 24 24"
+      width="24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="m6 9 6 6 6-6"
+      />
+    </svg>
+  </summary>
+  <p>
+    Custom-styled collapsible content.
+  </p>
+</details>
+`;
