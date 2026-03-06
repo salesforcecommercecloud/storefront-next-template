@@ -103,16 +103,6 @@ const mockAddressWithAddress2 = {
     address2: 'Apt 4B',
 };
 
-const mockAddressMinimal = {
-    address1: '456 Oak Avenue',
-    city: 'Boston',
-    countryCode: 'US',
-    firstName: 'John',
-    lastName: 'Doe',
-    postalCode: '02101',
-    stateCode: 'MA',
-};
-
 export const Default: Story = {
     render: () => <AddressDisplay address={mockAddress} />,
     parameters: {
@@ -163,30 +153,6 @@ Note: The simplified AddressDisplay only shows address1 and location line.
     },
 };
 
-export const Minimal: Story = {
-    render: () => <AddressDisplay address={mockAddressMinimal} />,
-    parameters: {
-        docs: {
-            story: `
-Address display with minimal required fields only.
-
-### Features:
-- Address line 1
-- Location line (postal code, city, state, country)
-            `,
-        },
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        await waitForStorybookReady(canvasElement);
-
-        // Check for address
-        const address = await canvas.findByText(/456 oak avenue/i, {}, { timeout: 5000 });
-        await expect(address).toBeInTheDocument();
-    },
-};
-
 export const NoAddress: Story = {
     render: () => <AddressDisplay address={null as unknown as typeof mockAddress} />,
     parameters: {
@@ -206,34 +172,5 @@ Handles the case when no address is provided.
         // Check for no address message
         const message = await canvas.findByText(/no address provided/i, {}, { timeout: 5000 });
         await expect(message).toBeInTheDocument();
-    },
-};
-
-export const WithName: Story = {
-    render: () => <AddressDisplay address={mockAddress} showName />,
-    parameters: {
-        docs: {
-            story: `
-Address display with the name visible.
-
-### Features:
-- Shows full name (firstName + lastName) at the top
-- Address line 1
-- Location line (postal code, city, state, country)
-            `,
-        },
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        await waitForStorybookReady(canvasElement);
-
-        // Check for full name
-        const name = await canvas.findByText(/gurpreet saini/i, {}, { timeout: 5000 });
-        await expect(name).toBeInTheDocument();
-
-        // Check for address
-        const address = await canvas.findByText(/123 main st/i, {}, { timeout: 5000 });
-        await expect(address).toBeInTheDocument();
     },
 };

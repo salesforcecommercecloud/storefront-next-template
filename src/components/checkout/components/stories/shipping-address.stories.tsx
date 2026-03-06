@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { allModes } from '../../../../../.storybook/modes';
 import { expect, within } from 'storybook/test';
 import { action } from 'storybook/actions';
 import { waitForStorybookReady } from '@storybook/test-utils';
@@ -391,6 +392,12 @@ const meta: Meta<typeof ShippingAddress> = {
     tags: ['autodocs', 'interaction'],
     parameters: {
         layout: 'padded',
+        chromatic: {
+            modes: {
+                mobile: allModes.mobile,
+                desktop: allModes.desktop,
+            },
+        },
         docs: {
             description: {
                 component: `
@@ -807,131 +814,6 @@ export const DisabledState: Story = {
         void expect(inputs.length).toBe(0);
 
         // Verify component renders in disabled state
-        void expect(canvasElement).toBeInTheDocument();
-    },
-};
-
-export const MobileView: Story = {
-    args: {
-        onSubmit: () => {
-            action('submit-shipping-address')();
-        },
-        onEdit: () => {
-            action('edit-shipping-address')();
-        },
-        isLoading: false,
-        isCompleted: false,
-        isEditing: true,
-        actionData: undefined,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Shows the component optimized for mobile viewport.',
-            },
-        },
-    },
-    globals: {
-        viewport: 'mobile2',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test MobileView story: Verify mobile-optimized layout
-        const inputs = canvas.queryAllByRole('textbox');
-        const buttons = canvas.queryAllByRole('button');
-
-        // Standard 7 textboxes in mobile layout (stateCode is combobox)
-        void expect(inputs.length).toBe(7);
-        void expect(buttons.length).toBeGreaterThan(0);
-
-        // Test mobile-specific responsive behavior
-        void expect(canvas.getByText('First Name')).toBeInTheDocument();
-
-        // Verify mobile layout renders properly
-        void expect(canvasElement).toBeInTheDocument();
-    },
-};
-
-export const TabletView: Story = {
-    args: {
-        onSubmit: () => {
-            action('submit-shipping-address')();
-        },
-        onEdit: () => {
-            action('edit-shipping-address')();
-        },
-        isLoading: false,
-        isCompleted: false,
-        isEditing: true,
-        actionData: undefined,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Shows the component optimized for tablet viewport.',
-            },
-        },
-    },
-    globals: {
-        viewport: 'tablet',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test TabletView story: Verify tablet-optimized layout
-        const inputs = canvas.queryAllByRole('textbox');
-        const buttons = canvas.queryAllByRole('button');
-
-        // Standard 7 textboxes in tablet layout (stateCode is combobox)
-        void expect(inputs.length).toBe(7);
-        void expect(buttons.length).toBeGreaterThan(0);
-
-        // Test tablet-specific responsive behavior
-        void expect(canvas.getByText('First Name')).toBeInTheDocument();
-
-        // Verify tablet layout renders properly
-        void expect(canvasElement).toBeInTheDocument();
-    },
-};
-
-export const DesktopView: Story = {
-    args: {
-        onSubmit: () => {
-            action('submit-shipping-address')();
-        },
-        onEdit: () => {
-            action('edit-shipping-address')();
-        },
-        isLoading: false,
-        isCompleted: true,
-        isEditing: false,
-        actionData: undefined,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Shows the component optimized for desktop viewport in completed state.',
-            },
-        },
-    },
-    globals: {
-        viewport: 'desktop',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test DesktopView story: Verify desktop layout in completed state
-        const inputs = canvas.queryAllByRole('textbox');
-
-        // In completed state on desktop, should show summary without form inputs
-        void expect(inputs.length).toBe(0);
-
-        // Summary shows address when basket has one; with mock basket undefined it may be empty
-        // Verify desktop completed state renders properly
         void expect(canvasElement).toBeInTheDocument();
     },
 };

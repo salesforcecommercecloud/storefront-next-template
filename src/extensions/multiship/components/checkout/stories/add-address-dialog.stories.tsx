@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { allModes } from '../../../../../../.storybook/modes';
 import { expect, within } from 'storybook/test';
 import { action } from 'storybook/actions';
 import { waitForStorybookReady } from '@storybook/test-utils';
@@ -72,6 +73,11 @@ const meta: Meta<typeof AddAddressDialog> = {
     tags: ['autodocs', 'interaction'],
     parameters: {
         layout: 'centered',
+        chromatic: {
+            modes: {
+                desktop: allModes.desktop,
+            },
+        },
         docs: {
             description: {
                 component: `
@@ -355,69 +361,5 @@ Add address dialog with international address (non-US).
         // Verify the selected option text shows "Canada"
         const selectedOption = countrySelect.options[countrySelect.selectedIndex];
         await expect(selectedOption?.textContent).toMatch(/canada/i);
-    },
-};
-
-export const Mobile: Story = {
-    ...Default,
-    globals: {
-        viewport: 'mobile2',
-    },
-    play: async () => {
-        const documentBody = within(document.body);
-
-        await waitForStorybookReady(document.body);
-
-        // Check for dialog
-        const dialog = await documentBody.findByRole('dialog', {}, { timeout: 5000 });
-        await expect(dialog).toBeInTheDocument();
-
-        // Check for title
-        const title = await documentBody.findByText(/add address/i, {}, { timeout: 5000 });
-        await expect(title).toBeInTheDocument();
-
-        // Check for form fields
-        const firstNameInput = await documentBody.findByPlaceholderText(/first name/i, {}, { timeout: 5000 });
-        await expect(firstNameInput).toBeInTheDocument();
-    },
-};
-
-export const Tablet: Story = {
-    ...Default,
-    globals: {
-        viewport: 'tablet',
-    },
-    play: async () => {
-        const documentBody = within(document.body);
-
-        await waitForStorybookReady(document.body);
-
-        // Check for dialog
-        const dialog = await documentBody.findByRole('dialog', {}, { timeout: 5000 });
-        await expect(dialog).toBeInTheDocument();
-
-        // Check for title
-        const title = await documentBody.findByText(/add address/i, {}, { timeout: 5000 });
-        await expect(title).toBeInTheDocument();
-    },
-};
-
-export const Desktop: Story = {
-    ...Default,
-    globals: {
-        viewport: 'desktop',
-    },
-    play: async () => {
-        const documentBody = within(document.body);
-
-        await waitForStorybookReady(document.body);
-
-        // Check for dialog
-        const dialog = await documentBody.findByRole('dialog', {}, { timeout: 5000 });
-        await expect(dialog).toBeInTheDocument();
-
-        // Check for title
-        const title = await documentBody.findByText(/add address/i, {}, { timeout: 5000 });
-        await expect(title).toBeInTheDocument();
     },
 };

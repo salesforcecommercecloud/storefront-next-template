@@ -1,5 +1,115 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`Typography stories snapshot > AllVariants story renders and matches snapshot 1`] = `
+<div>
+  <div
+    data-typography="root"
+  >
+    <div
+      class="space-y-6"
+      data-typography="showcase"
+    >
+      <h1
+        class="text-4xl font-bold tracking-tight text-left"
+        data-typography="h1"
+      >
+        Heading 1
+      </h1>
+      <h2
+        class="text-3xl font-semibold tracking-tight text-left"
+        data-typography="h2"
+      >
+        Heading 2
+      </h2>
+      <h3
+        class="text-2xl font-semibold tracking-tight text-left"
+        data-typography="h3"
+      >
+        Heading 3
+      </h3>
+      <h4
+        class="text-xl font-semibold tracking-tight text-left"
+        data-typography="h4"
+      >
+        Heading 4
+      </h4>
+      <h5
+        class="text-lg font-semibold tracking-tight text-left"
+        data-typography="h5"
+      >
+        Heading 5
+      </h5>
+      <h6
+        class="text-base font-semibold tracking-tight text-left"
+        data-typography="h6"
+      >
+        Heading 6
+      </h6>
+      <p
+        class="leading-7 [&:not(:first-child)]:mt-6 text-left"
+        data-typography="p"
+      >
+        Paragraph text with regular styling.
+      </p>
+      <p
+        class="text-xl text-muted-foreground text-left"
+        data-typography="lead"
+      >
+        Lead paragraph with larger text.
+      </p>
+      <p
+        class="text-lg font-semibold text-left"
+        data-typography="large"
+      >
+        Large text
+      </p>
+      <p
+        class="text-sm font-medium leading-none text-left"
+        data-typography="small"
+      >
+        Small text
+      </p>
+      <p
+        class="text-sm text-muted-foreground text-left"
+        data-typography="muted"
+      >
+        Muted text
+      </p>
+      <blockquote
+        class="mt-6 border-l-2 pl-6 italic text-left"
+        data-typography="blockquote"
+      >
+        Blockquote
+      </blockquote>
+      <code
+        class="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-medium text-left"
+        data-typography="inline-code"
+      >
+        inline code
+      </code>
+      <h3
+        class="text-lg font-medium text-foreground leading-tight text-left"
+        data-typography="product-title"
+      >
+        Product Title
+      </h3>
+      <p
+        class="text-base font-semibold text-foreground text-left"
+        data-typography="product-price"
+      >
+        $29.99
+      </p>
+      <p
+        class="text-sm text-muted-foreground leading-relaxed text-left"
+        data-typography="product-description"
+      >
+        Product description text
+      </p>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`Typography stories snapshot > AsChildButton story renders and matches snapshot 1`] = `
 <div>
   <div
@@ -28,20 +138,6 @@ exports[`Typography stories snapshot > AsChildLink story renders and matches sna
     >
       Typography Link
     </a>
-  </div>
-</div>
-`;
-
-exports[`Typography stories snapshot > Blockquote story renders and matches snapshot 1`] = `
-<div>
-  <div
-    data-typography="root"
-  >
-    <blockquote
-      class="mt-6 border-l-2 pl-6 italic text-left"
-    >
-      This is a blockquote that highlights important text with special styling and indentation.
-    </blockquote>
   </div>
 </div>
 `;
@@ -88,202 +184,6 @@ exports[`Typography stories snapshot > CustomStyling story renders and matches s
 </div>
 `;
 
-exports[`Typography stories snapshot > Heading1 story renders and matches snapshot 1`] = `
-<div>
-  <div
-    data-typography="root"
-  >
-    <h1
-      class="text-4xl font-bold tracking-tight text-left"
-    >
-      Heading 1 - Main Title
-    </h1>
-  </div>
-</div>
-`;
-
-exports[`Typography stories snapshot > Heading2 story renders and matches snapshot 1`] = `
-<div>
-  <div
-    data-typography="root"
-  >
-    <h2
-      class="text-3xl font-semibold tracking-tight text-left"
-    >
-      Heading 2 - Section Title
-    </h2>
-  </div>
-</div>
-`;
-
-exports[`Typography stories snapshot > Heading3 story renders and matches snapshot 1`] = `
-<div>
-  <div
-    data-typography="root"
-  >
-    <h3
-      class="text-2xl font-semibold tracking-tight text-left"
-    >
-      Heading 3 - Subsection Title
-    </h3>
-  </div>
-</div>
-`;
-
-exports[`Typography stories snapshot > Heading4 story renders and matches snapshot 1`] = `
-<div>
-  <div
-    data-typography="root"
-  >
-    <h4
-      class="text-xl font-semibold tracking-tight text-left"
-    >
-      Heading 4 - Minor Title
-    </h4>
-  </div>
-</div>
-`;
-
-exports[`Typography stories snapshot > Heading5 story renders and matches snapshot 1`] = `
-<div>
-  <div
-    data-typography="root"
-  >
-    <h5
-      class="text-lg font-semibold tracking-tight text-left"
-    >
-      Heading 5 - Small Title
-    </h5>
-  </div>
-</div>
-`;
-
-exports[`Typography stories snapshot > Heading6 story renders and matches snapshot 1`] = `
-<div>
-  <div
-    data-typography="root"
-  >
-    <h6
-      class="text-base font-semibold tracking-tight text-left"
-    >
-      Heading 6 - Smallest Title
-    </h6>
-  </div>
-</div>
-`;
-
-exports[`Typography stories snapshot > InlineCode story renders and matches snapshot 1`] = `
-<div>
-  <div
-    data-typography="root"
-  >
-    <code
-      class="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-medium text-left"
-    >
-      const example = "inline code";
-    </code>
-  </div>
-</div>
-`;
-
-exports[`Typography stories snapshot > Large story renders and matches snapshot 1`] = `
-<div>
-  <div
-    data-typography="root"
-  >
-    <p
-      class="text-lg font-semibold text-left"
-    >
-      Large text for emphasis
-    </p>
-  </div>
-</div>
-`;
-
-exports[`Typography stories snapshot > Lead story renders and matches snapshot 1`] = `
-<div>
-  <div
-    data-typography="root"
-  >
-    <p
-      class="text-xl text-muted-foreground text-left"
-    >
-      This is a lead paragraph that stands out with larger text and muted color to introduce important content.
-    </p>
-  </div>
-</div>
-`;
-
-exports[`Typography stories snapshot > Muted story renders and matches snapshot 1`] = `
-<div>
-  <div
-    data-typography="root"
-  >
-    <p
-      class="text-sm text-muted-foreground text-left"
-    >
-      Muted text for secondary information
-    </p>
-  </div>
-</div>
-`;
-
-exports[`Typography stories snapshot > Paragraph story renders and matches snapshot 1`] = `
-<div>
-  <div
-    data-typography="root"
-  >
-    <p
-      class="leading-7 [&:not(:first-child)]:mt-6 text-left"
-    >
-      This is a paragraph with regular text. It demonstrates the default paragraph styling with proper line height and spacing.
-    </p>
-  </div>
-</div>
-`;
-
-exports[`Typography stories snapshot > ProductDescription story renders and matches snapshot 1`] = `
-<div>
-  <div
-    data-typography="root"
-  >
-    <p
-      class="text-sm text-muted-foreground leading-relaxed text-left"
-    >
-      Made from 100% organic cotton, this comfortable t-shirt features a classic fit and is perfect for everyday wear.
-    </p>
-  </div>
-</div>
-`;
-
-exports[`Typography stories snapshot > ProductPrice story renders and matches snapshot 1`] = `
-<div>
-  <div
-    data-typography="root"
-  >
-    <p
-      class="text-base font-semibold text-foreground text-left"
-    >
-      $29.99
-    </p>
-  </div>
-</div>
-`;
-
-exports[`Typography stories snapshot > ProductTitle story renders and matches snapshot 1`] = `
-<div>
-  <div
-    data-typography="root"
-  >
-    <h3
-      class="text-lg font-medium text-foreground leading-tight text-left"
-    >
-      Premium Cotton T-Shirt
-    </h3>
-  </div>
-</div>
-`;
-
 exports[`Typography stories snapshot > RightAligned story renders and matches snapshot 1`] = `
 <div>
   <div
@@ -294,130 +194,6 @@ exports[`Typography stories snapshot > RightAligned story renders and matches sn
     >
       Right aligned paragraph text
     </p>
-  </div>
-</div>
-`;
-
-exports[`Typography stories snapshot > Small story renders and matches snapshot 1`] = `
-<div>
-  <div
-    data-typography="root"
-  >
-    <p
-      class="text-sm font-medium leading-none text-left"
-    >
-      Small text for captions and labels
-    </p>
-  </div>
-</div>
-`;
-
-exports[`Typography stories snapshot > TypographyShowcase story renders and matches snapshot 1`] = `
-<div>
-  <div
-    data-typography="root"
-  >
-    <div
-      class="space-y-6"
-      data-typography="showcase"
-    >
-      <h1
-        class="text-4xl font-bold tracking-tight text-left"
-        data-typography="h1"
-      >
-        Typography Showcase
-      </h1>
-      <h2
-        class="text-3xl font-semibold tracking-tight text-left"
-        data-typography="h2"
-      >
-        Typography Showcase
-      </h2>
-      <h3
-        class="text-2xl font-semibold tracking-tight text-left"
-        data-typography="h3"
-      >
-        Typography Showcase
-      </h3>
-      <h4
-        class="text-xl font-semibold tracking-tight text-left"
-        data-typography="h4"
-      >
-        Typography Showcase
-      </h4>
-      <h5
-        class="text-lg font-semibold tracking-tight text-left"
-        data-typography="h5"
-      >
-        Typography Showcase
-      </h5>
-      <h6
-        class="text-base font-semibold tracking-tight text-left"
-        data-typography="h6"
-      >
-        Typography Showcase
-      </h6>
-      <p
-        class="leading-7 [&:not(:first-child)]:mt-6 text-left"
-        data-typography="p"
-      >
-        Typography Showcase
-      </p>
-      <blockquote
-        class="mt-6 border-l-2 pl-6 italic text-left"
-        data-typography="blockquote"
-      >
-        Typography Showcase
-      </blockquote>
-      <code
-        class="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-medium text-left"
-        data-typography="inline-code"
-      >
-        Typography Showcase
-      </code>
-      <p
-        class="text-xl text-muted-foreground text-left"
-        data-typography="lead"
-      >
-        Typography Showcase
-      </p>
-      <p
-        class="text-lg font-semibold text-left"
-        data-typography="large"
-      >
-        Typography Showcase
-      </p>
-      <p
-        class="text-sm font-medium leading-none text-left"
-        data-typography="small"
-      >
-        Typography Showcase
-      </p>
-      <p
-        class="text-sm text-muted-foreground text-left"
-        data-typography="muted"
-      >
-        Typography Showcase
-      </p>
-      <h3
-        class="text-lg font-medium text-foreground leading-tight text-left"
-        data-typography="product-title"
-      >
-        Typography Showcase
-      </h3>
-      <p
-        class="text-base font-semibold text-foreground text-left"
-        data-typography="product-price"
-      >
-        Typography Showcase
-      </p>
-      <p
-        class="text-sm text-muted-foreground leading-relaxed text-left"
-        data-typography="product-description"
-      >
-        Typography Showcase
-      </p>
-    </div>
   </div>
 </div>
 `;

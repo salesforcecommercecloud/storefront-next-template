@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { allModes } from '../../../../.storybook/modes';
 import ProductCartActions from '../index';
 // @ts-expect-error mock file is JS
 import { mockStandardProductOrderable } from '../../__mocks__/standard-product';
@@ -73,6 +74,7 @@ const meta: Meta<typeof ProductCartActions> = {
     component: ProductCartActions,
     tags: ['autodocs', 'interaction'],
     parameters: {
+        chromatic: { modes: { desktop: allModes.desktop } },
         layout: 'centered',
     },
     decorators: [

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { allModes } from '../../../../.storybook/modes';
 import RecentSearches from '../recent-searches';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
@@ -56,6 +57,7 @@ const meta: Meta<typeof RecentSearches> = {
     title: 'Search/RecentSearches',
     component: RecentSearches,
     parameters: {
+        chromatic: { modes: { desktop: allModes.desktop } },
         layout: 'centered',
         docs: {
             description: {

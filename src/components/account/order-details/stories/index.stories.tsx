@@ -77,7 +77,7 @@ const order: ShopperOrders.schemas['Order'] = {
 
 const productsById: Record<string, ShopperProducts.schemas['Product'] | undefined> = {
     '701643108633M': productFixture('701643108633M', 'First Product', [
-        { viewType: 'small', images: [{ link: '', alt: 'First Product' }] },
+        { viewType: 'small', images: [{ link: 'https://example.com/product.jpg', alt: 'First Product' }] },
     ]),
 };
 

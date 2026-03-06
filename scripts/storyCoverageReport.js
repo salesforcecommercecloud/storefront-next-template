@@ -64,6 +64,19 @@ const EXCLUDED_COMPONENTS = new Set([
     'region/component-data-context',
     'region/index',
     'region/region-wrapper',
+    // These are basically wrappers around other components, so no value in having storybook stories for them
+    'checkout/components/checkout-skeletons',
+    'customer-address-form/customer-address-fields',
+    'customer-profile-form/form',
+    'customer-profile-form/index',
+    'forgot-password-form/form',
+    'header/cart-badge-icon',
+    'header/user-actions/user-menu',
+    'password-requirements/index',
+    'password-update-form/form',
+    'password-update-form/index',
+    'promo-code-form/index',
+    'signup-form/form',
 ]);
 // Ensure OUTPUT DIR exists
 if (!fs.existsSync(OUTPUT_DIR)) {
@@ -413,13 +426,14 @@ ${
     // Exit non-zero for CI enforcement if thresholds not met
     let exitCode = 0;
     if (!storyCoverageMet) {
+        const MAX_MISSING_WARNINGS = 10;
         console.error(`\n❌ Story coverage threshold not met: ${percent}% < ${STORY_COVERAGE_THRESHOLD}%`);
         console.error(`   Missing stories for ${missing.length} component(s):`);
-        missing.slice(0, 10).forEach((m) => {
+        missing.slice(0, MAX_MISSING_WARNINGS).forEach((m) => {
             console.error(`   - ${m.name}`);
         });
-        if (missing.length > 10) {
-            console.error(`   ... and ${missing.length - 10} more (see report for full list)`);
+        if (missing.length > MAX_MISSING_WARNINGS) {
+            console.error(`   ... and ${missing.length - MAX_MISSING_WARNINGS} more (see report for full list)`);
         }
         exitCode = 1;
     }

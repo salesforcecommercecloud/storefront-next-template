@@ -19,7 +19,7 @@ import ProductItemsList from '../index';
 import { mockStandardProductOrderable } from '../../__mocks__/standard-product';
 import { ConfigProvider } from '@/config/context';
 import { mockConfig } from '@/test-utils/config';
-import { expect, within } from 'storybook/test';
+import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { action } from 'storybook/actions';
@@ -156,5 +156,37 @@ export const WithActions: Story = {
         const canvas = within(canvasElement);
         await expect(canvas.getByText('Remove item-1')).toBeInTheDocument();
         await expect(canvas.getByText('Remove item-2')).toBeInTheDocument();
+    },
+};
+
+/**
+ * Interaction tests - quantity change and button clicks
+ */
+export const Interactive: Story = {
+    args: {
+        productItems: basketItems,
+        productsByItemId,
+        primaryAction: (item) => (
+            <button type="button" data-testid={`remove-${item.itemId}`}>
+                Remove {item.itemId}
+            </button>
+        ),
+        secondaryActions: (_item) => (
+            <button type="button" data-testid="edit-item">
+                Edit
+            </button>
+        ),
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const removeButton = canvas.getByTestId('remove-item-1');
+        await expect(removeButton).toBeInTheDocument();
+        await userEvent.click(removeButton);
+
+        const editButtons = canvas.getAllByTestId('edit-item');
+        await expect(editButtons.length).toBeGreaterThanOrEqual(1);
+        await userEvent.click(editButtons[0]);
     },
 };

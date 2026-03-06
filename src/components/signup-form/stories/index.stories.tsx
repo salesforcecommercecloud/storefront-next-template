@@ -240,3 +240,40 @@ Interactive signup form for testing user interactions.
         await expect(confirmPasswordInput).toHaveValue('SecurePass123!');
     },
 };
+
+/**
+ * Confirm password mismatch - triggers error state on confirm password input
+ */
+export const ConfirmPasswordMismatch: Story = {
+    render: () => <SignupForm />,
+    parameters: {
+        docs: {
+            story: `
+Confirm password mismatch - typing different value in confirm password triggers error state.
+            `,
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const { t } = getTranslation();
+
+        const passwordInput = await canvas.findByPlaceholderText(
+            t('signup:form.passwordPlaceholder'),
+            {},
+            { timeout: 5000 }
+        );
+        await userEvent.type(passwordInput, 'SecurePass123!');
+
+        const confirmPasswordInput = await canvas.findByPlaceholderText(
+            t('signup:form.confirmPasswordPlaceholder'),
+            {},
+            { timeout: 5000 }
+        );
+        await userEvent.type(confirmPasswordInput, 'DifferentPass456!');
+
+        await expect(confirmPasswordInput).toHaveAttribute('aria-invalid', 'true');
+        const errorMessage = await canvas.findByText(t('signup:passwordsDoNotMatch'), {}, { timeout: 5000 });
+        await expect(errorMessage).toBeInTheDocument();
+    },
+};

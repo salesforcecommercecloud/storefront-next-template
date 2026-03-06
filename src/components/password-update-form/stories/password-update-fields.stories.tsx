@@ -19,7 +19,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { action } from 'storybook/actions';
-import { expect, within, userEvent } from 'storybook/test';
+import { expect, within, userEvent, waitFor } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { Form } from '@/components/ui/form';
 import {
@@ -82,7 +82,6 @@ function ActionLogger({ children }: { children: ReactNode }): ReactElement {
             if (!(form instanceof HTMLFormElement) || !isInsideHarness(form)) return;
 
             event.preventDefault();
-            event.stopImmediatePropagation?.();
 
             logSubmit({});
         };
@@ -147,7 +146,7 @@ function createMockFetcher<TData = unknown>(
  * PasswordUpdateFields component that renders the form fields for changing password.
  */
 const meta: Meta<typeof PasswordUpdateFields> = {
-    title: 'ACCOUNT/Password Update Form/Password Update Fields',
+    title: 'ACCOUNT/Password Update Form',
     component: PasswordUpdateFields,
     tags: ['autodocs', 'interaction'],
     parameters: {
@@ -469,5 +468,81 @@ export const Interactive: Story = {
         );
         await userEvent.type(confirmPasswordInput, 'NewPassword123!', { delay: 10 });
         await expect(confirmPasswordInput).toHaveValue('NewPassword123!');
+    },
+};
+
+/**
+ * Password mismatch error state - New Password and Confirm New Password do not match
+ */
+export const PasswordMismatchError: Story = {
+    render: function PasswordMismatchErrorStory() {
+        const { t } = getTranslation();
+        const passwordUpdateFormSchema = createPasswordUpdateFormSchema(t);
+        const form = useForm<PasswordUpdateFormData>({
+            resolver: zodResolver(passwordUpdateFormSchema),
+            defaultValues: {
+                currentPassword: '',
+                password: '',
+                confirmPassword: '',
+            },
+        });
+
+        const updateFetcher = createMockFetcher<PasswordUpdateFetcherData>('idle');
+
+        const handleSubmit = form.handleSubmit(() => {});
+
+        return (
+            <Form {...form}>
+                <form onSubmit={(e) => void handleSubmit(e)} data-testid="password-update-fields-form">
+                    <PasswordUpdateFields form={form} updateFetcher={updateFetcher} />
+                </form>
+            </Form>
+        );
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const { t } = getTranslation();
+
+        const currentPasswordInput = await canvas.findByPlaceholderText(
+            t('account:password.currentPasswordPlaceholder'),
+            {},
+            { timeout: 5000 }
+        );
+        await userEvent.type(currentPasswordInput, 'OldPassword123', { delay: 10 });
+
+        const passwordInput = await canvas.findByPlaceholderText(
+            t('account:password.newPasswordPlaceholder'),
+            {},
+            { timeout: 5000 }
+        );
+        await userEvent.type(passwordInput, 'NewPassword123!', { delay: 10 });
+
+        const confirmPasswordInput = await canvas.findByPlaceholderText(
+            t('account:password.confirmPasswordPlaceholder'),
+            {},
+            { timeout: 5000 }
+        );
+        await userEvent.type(confirmPasswordInput, 'DifferentPassword123!', { delay: 10 });
+
+        const submitButton = await canvas.findByRole(
+            'button',
+            { name: t('account:password.saveButton') },
+            { timeout: 5000 }
+        );
+        await userEvent.click(submitButton);
+
+        // Wait for validation to run and error to appear
+        await waitFor(
+            async () => {
+                await expect(confirmPasswordInput).toHaveAttribute('aria-invalid', 'true');
+                const formMessages = canvasElement.querySelectorAll('[data-slot="form-message"]');
+                const hasPasswordError = Array.from(formMessages).some((el) =>
+                    /don't match|non corrispondono|passwordsDoNotMatch/i.test(el.textContent ?? '')
+                );
+                expect(hasPasswordError).toBe(true);
+            },
+            { timeout: 5000 }
+        );
     },
 };

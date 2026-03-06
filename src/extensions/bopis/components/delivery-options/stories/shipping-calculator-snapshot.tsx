@@ -79,7 +79,7 @@ vi.mock('react-router', () => ({
 
 import { composeStories } from '@storybook/react-vite';
 import * as ShippingCalculatorStories from './shipping-calculator.stories';
-import { render, cleanup } from '@testing-library/react';
+import { render, cleanup, act } from '@testing-library/react';
 import { StoryTestWrapper } from '../../../../../../.storybook/test-wrapper';
 
 const composed = composeStories(ShippingCalculatorStories);
@@ -93,12 +93,16 @@ describe('ShippingCalculator stories snapshot', () => {
         // Skip interaction test stories from snapshots
         if (Story?.parameters?.snapshot === false || /interactiontests?/i.test(storyName)) continue;
 
-        test(`${storyName} story renders and matches snapshot`, () => {
-            const { container } = render(
-                <StoryTestWrapper>
-                    <Story />
-                </StoryTestWrapper>
-            );
+        test(`${storyName} story renders and matches snapshot`, async () => {
+            let result: ReturnType<typeof render>;
+            await act(async () => {
+                result = render(
+                    <StoryTestWrapper>
+                        <Story />
+                    </StoryTestWrapper>
+                );
+            });
+            const { container } = result!;
             expect(container.firstChild).toMatchSnapshot();
         });
     }

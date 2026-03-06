@@ -203,57 +203,6 @@ export const Hidden: Story = {
 };
 
 /**
- * Single suggestion
- */
-export const SingleSuggestion: Story = {
-    args: {
-        suggestions: [mockSuggestions[0]],
-        isVisible: true,
-        isLoading: false,
-        onClose: action('onClose'),
-        onSelectSuggestion: action('onSelectSuggestion'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Verify the dropdown renders with one suggestion
-        const dropdown = canvas.getByTestId('address-suggestion-dropdown');
-        await expect(dropdown).toBeInTheDocument();
-
-        await expect(canvas.getByText('123 Main Street, New York, NY 10001, USA')).toBeInTheDocument();
-    },
-};
-
-/**
- * Using structured formatting when description is not available
- */
-export const StructuredFormatting: Story = {
-    args: {
-        suggestions: [
-            {
-                place_id: 'ChIJd8BlQ2BZwokRNTq_mLNULnw',
-                structured_formatting: {
-                    main_text: '123 Main Street',
-                    secondary_text: 'New York, NY 10001, USA',
-                },
-            },
-        ],
-        isVisible: true,
-        isLoading: false,
-        onClose: action('onClose'),
-        onSelectSuggestion: action('onSelectSuggestion'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Should combine main_text and secondary_text
-        await expect(canvas.getByText('123 Main Street, New York, NY 10001, USA')).toBeInTheDocument();
-    },
-};
-
-/**
  * Close button interaction
  */
 export const CloseButtonInteraction: Story = {
@@ -272,6 +221,34 @@ export const CloseButtonInteraction: Story = {
         const closeButton = canvas.getByRole('button', { name: /close/i });
         await expect(closeButton).toBeInTheDocument();
         await userEvent.click(closeButton);
+    },
+};
+
+/**
+ * Focused interaction test - focus first suggestion and verify keyboard/click interaction
+ */
+export const FocusedInteraction: Story = {
+    args: {
+        suggestions: mockSuggestions,
+        isVisible: true,
+        isLoading: false,
+        onClose: action('onClose'),
+        onSelectSuggestion: action('onSelectSuggestion'),
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const firstSuggestion = canvas.getByText('123 Main Street, New York, NY 10001, USA');
+        await expect(firstSuggestion).toBeInTheDocument();
+
+        const suggestionButton = firstSuggestion.closest('button');
+        await expect(suggestionButton).toBeInTheDocument();
+        if (suggestionButton) {
+            (suggestionButton as HTMLElement).focus();
+            await expect(suggestionButton).toHaveFocus();
+            await userEvent.click(suggestionButton);
+        }
     },
 };
 

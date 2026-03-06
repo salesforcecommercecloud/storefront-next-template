@@ -61,24 +61,6 @@ export const Default: Story = {
 };
 
 /**
- * 100% - All reviews have this rating
- */
-export const OneHundredPercent: Story = {
-    args: {
-        rating: 5,
-        reviewCount: 200,
-        totalReviews: 200,
-    },
-    decorators: [
-        (Story) => (
-            <div className="w-80">
-                <Story />
-            </div>
-        ),
-    ],
-};
-
-/**
  * High percentage (90%)
  */
 export const HighPercentage: Story = {
@@ -158,42 +140,6 @@ export const ZeroReviews: Story = {
         rating: 3,
         reviewCount: 0,
         totalReviews: 200,
-    },
-    decorators: [
-        (Story) => (
-            <div className="w-80">
-                <Story />
-            </div>
-        ),
-    ],
-};
-
-/**
- * Large review count (1,234 reviews)
- */
-export const LargeReviewCount: Story = {
-    args: {
-        rating: 5,
-        reviewCount: 1234,
-        totalReviews: 5000,
-    },
-    decorators: [
-        (Story) => (
-            <div className="w-80">
-                <Story />
-            </div>
-        ),
-    ],
-};
-
-/**
- * Very large review count (12,345 reviews)
- */
-export const VeryLargeReviewCount: Story = {
-    args: {
-        rating: 4,
-        reviewCount: 12345,
-        totalReviews: 50000,
     },
     decorators: [
         (Story) => (

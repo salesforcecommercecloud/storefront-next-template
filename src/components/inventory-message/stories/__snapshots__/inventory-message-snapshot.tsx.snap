@@ -1,70 +1,38 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`InventoryMessage stories snapshot > BackOrder story renders and matches snapshot 1`] = `
+exports[`InventoryMessage stories snapshot > AllVariants story renders and matches snapshot 1`] = `
 <div>
   <div
     class="p-8"
   >
     <div
-      class="inline-flex items-center px-3 py-1.5 rounded-md border text-sm font-medium text-warning bg-warning/10 border-warning/20"
+      class="flex flex-wrap gap-4"
     >
-      Available for back order
-    </div>
-  </div>
-</div>
-`;
-
-exports[`InventoryMessage stories snapshot > InStock story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="p-8"
-  >
-    <div
-      class="inline-flex items-center px-3 py-1.5 rounded-md border text-sm font-medium text-success bg-success/10 border-success/20"
-    >
-      In stock
-    </div>
-  </div>
-</div>
-`;
-
-exports[`InventoryMessage stories snapshot > OutOfStock story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="p-8"
-  >
-    <div
-      class="inline-flex items-center px-3 py-1.5 rounded-md border text-sm font-medium text-destructive bg-destructive/10 border-destructive/20"
-    >
-      Out of stock
-    </div>
-  </div>
-</div>
-`;
-
-exports[`InventoryMessage stories snapshot > PreOrder story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="p-8"
-  >
-    <div
-      class="inline-flex items-center px-3 py-1.5 rounded-md border text-sm font-medium text-info bg-info/10 border-info/20"
-    >
-      Available for pre-order
-    </div>
-  </div>
-</div>
-`;
-
-exports[`InventoryMessage stories snapshot > UnknownVisible story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="p-8"
-  >
-    <div
-      class="inline-flex items-center px-3 py-1.5 rounded-md border text-sm font-medium text-muted-foreground bg-muted border-border"
-    >
-      Inventory unavailable
+      <div
+        class="inline-flex items-center px-3 py-1.5 rounded-md border text-sm font-medium text-success bg-success/10 border-success/20"
+      >
+        In stock
+      </div>
+      <div
+        class="inline-flex items-center px-3 py-1.5 rounded-md border text-sm font-medium text-info bg-info/10 border-info/20"
+      >
+        Available for pre-order
+      </div>
+      <div
+        class="inline-flex items-center px-3 py-1.5 rounded-md border text-sm font-medium text-warning bg-warning/10 border-warning/20"
+      >
+        Available for back order
+      </div>
+      <div
+        class="inline-flex items-center px-3 py-1.5 rounded-md border text-sm font-medium text-destructive bg-destructive/10 border-destructive/20"
+      >
+        Out of stock
+      </div>
+      <div
+        class="inline-flex items-center px-3 py-1.5 rounded-md border text-sm font-medium text-muted-foreground bg-muted border-border"
+      >
+        Inventory unavailable
+      </div>
     </div>
   </div>
 </div>

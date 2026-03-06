@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { allModes } from '../../../../.storybook/modes';
 import Features from '../features';
 import { action } from 'storybook/actions';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
@@ -45,6 +46,7 @@ const meta: Meta<typeof Features> = {
     component: Features,
     tags: ['autodocs', 'interaction'],
     parameters: {
+        chromatic: { modes: { desktop: allModes.desktop } },
         layout: 'fullscreen',
         docs: {
             description: {

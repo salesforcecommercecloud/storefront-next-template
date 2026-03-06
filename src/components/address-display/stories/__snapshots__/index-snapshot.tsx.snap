@@ -24,30 +24,6 @@ exports[`AddressDisplay stories snapshot > Default story renders and matches sna
 </div>
 `;
 
-exports[`AddressDisplay stories snapshot > Minimal story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="space-y-1"
-  >
-    <p
-      class="leading-7 [&:not(:first-child)]:mt-6 text-left font-medium"
-    >
-      John Doe
-    </p>
-    <p
-      class="text-sm font-medium leading-none text-left text-muted-foreground"
-    >
-      456 Oak Avenue
-    </p>
-    <p
-      class="text-sm font-medium leading-none text-left text-muted-foreground"
-    >
-      02101, Boston, Massachusetts, United States
-    </p>
-  </div>
-</div>
-`;
-
 exports[`AddressDisplay stories snapshot > NoAddress story renders and matches snapshot 1`] = `
 <div>
   <p
@@ -59,30 +35,6 @@ exports[`AddressDisplay stories snapshot > NoAddress story renders and matches s
 `;
 
 exports[`AddressDisplay stories snapshot > WithAddress2 story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="space-y-1"
-  >
-    <p
-      class="leading-7 [&:not(:first-child)]:mt-6 text-left font-medium"
-    >
-      Gurpreet Saini
-    </p>
-    <p
-      class="text-sm font-medium leading-none text-left text-muted-foreground"
-    >
-      123 Main St
-    </p>
-    <p
-      class="text-sm font-medium leading-none text-left text-muted-foreground"
-    >
-      84095, South Jordan, Utah, United States
-    </p>
-  </div>
-</div>
-`;
-
-exports[`AddressDisplay stories snapshot > WithName story renders and matches snapshot 1`] = `
 <div>
   <div
     class="space-y-1"

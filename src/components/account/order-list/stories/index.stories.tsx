@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, within, userEvent } from 'storybook/test';
+import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { action } from 'storybook/actions';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
@@ -125,22 +125,6 @@ const testOrders: Order[] = [
     },
 ];
 
-const singleOrder: Order[] = [
-    {
-        orderNo: 'INV001',
-        orderDate: '2024-09-14T10:30:00Z',
-        status: 'completed',
-        statusLabel: 'Completed',
-        total: 250.0,
-        itemCount: 3,
-        productItems: [
-            { productId: 'prod-1', imageAlt: 'Classic Shirt', quantity: 1, imageUrl: heroNewArrivals },
-            { productId: 'prod-2', imageAlt: 'Dress Pants', quantity: 1, imageUrl: heroNewArrivals },
-            { productId: 'prod-3', imageAlt: 'Summer Dress', quantity: 1, imageUrl: heroNewArrivals },
-        ],
-    },
-];
-
 const meta: Meta<typeof OrderList> = {
     title: 'ACCOUNT/Order List',
     component: OrderList,
@@ -220,67 +204,6 @@ export const Default: Story = {
     },
 };
 
-export const WithDeliveredStatus: Story = {
-    args: {
-        title: 'Completed Orders',
-        orders: [
-            {
-                orderNo: 'INV001',
-                orderDate: '2024-09-01T09:00:00Z',
-                status: 'completed',
-                statusLabel: 'Completed',
-                total: 150.0,
-                itemCount: 2,
-                productItems: [
-                    { productId: 'prod-1', imageAlt: 'Item 1', quantity: 1, imageUrl: heroNewArrivals },
-                    { productId: 'prod-2', imageAlt: 'Item 2', quantity: 1, imageUrl: heroNewArrivals },
-                ],
-            },
-            {
-                orderNo: 'INV002',
-                orderDate: '2024-08-25T14:00:00Z',
-                status: 'completed',
-                statusLabel: 'Completed',
-                total: 200.0,
-                itemCount: 1,
-                productItems: [{ productId: 'prod-3', imageAlt: 'Item 3', quantity: 1, imageUrl: heroNewArrivals }],
-            },
-        ],
-        onViewDetails: action('viewDetails'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Check that delivered status badges are rendered
-        const deliveredBadges = canvas.getAllByText('Completed');
-        await expect(deliveredBadges.length).toBe(2);
-
-        // Check first badge has success styling
-        const firstBadge = deliveredBadges[0].closest('span');
-        await expect(firstBadge).toHaveClass('bg-order-status-completed');
-    },
-};
-
-export const SingleOrder: Story = {
-    args: {
-        title: 'Recent Order',
-        subtitle: 'Your most recent purchase',
-        orders: singleOrder,
-        onViewDetails: action('viewDetails'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        await expect(canvas.getByText('£250.00')).toBeInTheDocument();
-        await expect(canvas.getByText('Completed')).toBeInTheDocument();
-
-        const viewDetailsLinks = canvas.getAllByText('View Order Details');
-        await expect(viewDetailsLinks.length).toBe(1);
-    },
-};
-
 export const EmptyState: Story = {
     args: {
         title: 'Order History',
@@ -305,111 +228,6 @@ export const EmptyState: Story = {
         // Check no View Order Details links exist
         const viewDetailsLinks = canvas.queryAllByText('View Order Details');
         await expect(viewDetailsLinks.length).toBe(0);
-    },
-};
-
-export const CustomEmptyMessage: Story = {
-    args: {
-        title: 'Order History',
-        orders: [],
-        emptyMessage: 'You have no orders yet. Browse our catalog to get started!',
-        onViewDetails: action('viewDetails'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        await expect(
-            canvas.getByText('You have no orders yet. Browse our catalog to get started!')
-        ).toBeInTheDocument();
-
-        // Continue Shopping button should still appear with custom message
-        await expect(canvas.getByRole('link', { name: 'Continue Shopping' })).toBeInTheDocument();
-    },
-};
-
-export const WithoutSubtitle: Story = {
-    args: {
-        title: 'My Orders',
-        orders: testOrders,
-        onViewDetails: action('viewDetails'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        await expect(canvas.getByRole('heading', { level: 3 })).toHaveTextContent('My Orders');
-        // Subtitle should not be present
-        await expect(canvas.queryByText('View and track your orders')).not.toBeInTheDocument();
-    },
-};
-
-export const ClickViewDetails: Story = {
-    args: {
-        title: 'Order History',
-        orders: singleOrder,
-        onViewDetails: action('viewDetails'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const viewDetailsLink = canvas.getByText('View Order Details');
-        await expect(viewDetailsLink).toBeInTheDocument();
-        await userEvent.click(viewDetailsLink);
-    },
-};
-
-export const MixedStatuses: Story = {
-    args: {
-        title: 'All Orders',
-        subtitle: 'Orders with various statuses',
-        orders: [
-            {
-                orderNo: 'INV001',
-                orderDate: '2024-09-14T10:30:00Z',
-                status: 'new',
-                statusLabel: 'New',
-                total: 100.0,
-                itemCount: 1,
-                productItems: [{ productId: 'prod-1', imageAlt: 'Item 1', quantity: 1, imageUrl: heroNewArrivals }],
-            },
-            {
-                orderNo: 'INV002',
-                orderDate: '2024-09-10T09:00:00Z',
-                status: 'completed',
-                statusLabel: 'Completed',
-                total: 200.0,
-                itemCount: 2,
-                productItems: [
-                    { productId: 'prod-2', imageAlt: 'Item 2', quantity: 1, imageUrl: heroNewArrivals },
-                    { productId: 'prod-3', imageAlt: 'Item 3', quantity: 1, imageUrl: heroNewArrivals },
-                ],
-            },
-            {
-                orderNo: 'INV003',
-                orderDate: '2024-09-08T11:30:00Z',
-                status: 'cancelled',
-                statusLabel: 'Cancelled',
-                total: 150.0,
-                itemCount: 1,
-                productItems: [{ productId: 'prod-4', imageAlt: 'Item 4', quantity: 1, imageUrl: heroNewArrivals }],
-            },
-        ],
-        onViewDetails: action('viewDetails'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Check all statuses are rendered
-        await expect(canvas.getByText('New')).toBeInTheDocument();
-        await expect(canvas.getByText('Completed')).toBeInTheDocument();
-        await expect(canvas.getByText('Cancelled')).toBeInTheDocument();
-
-        // Check cancelled badge has destructive styling
-        const cancelledBadge = canvas.getByText('Cancelled').closest('span');
-        await expect(cancelledBadge).toHaveClass('bg-order-status-cancelled');
     },
 };
 

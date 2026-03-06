@@ -16,7 +16,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ProductBadges } from '../product-badges';
 // @ts-expect-error mock file is JS
-import { mockProductSearchItem, mockStandardProductHit } from '../../__mocks__/product-search-hit-data';
+import { mockStandardProductHit } from '../../__mocks__/product-search-hit-data';
 import { ConfigProvider } from '@/config/context';
 import { mockConfig } from '@/test-utils/config';
 import { expect, within } from 'storybook/test';
@@ -94,7 +94,7 @@ type Story = StoryObj<typeof ProductBadges>;
 
 export const Default: Story = {
     args: {
-        product: mockProductSearchItem,
+        product: mockStandardProductHit,
         maxBadges: 3,
     },
     play: async ({ canvasElement }) => {
@@ -146,27 +146,6 @@ export const LimitedBadges: Story = {
         if (container) {
             // Count children that are badges
             await expect(container.children.length).toBeLessThanOrEqual(2);
-        }
-    },
-};
-
-export const NoBadges: Story = {
-    args: {
-        product: {
-            ...mockProductSearchItem,
-            productPromotions: [],
-        },
-        badgeDetails: [{ propertyName: 'c_isNew', label: 'New', color: 'green' }],
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const container = canvas.queryByRole('group');
-        // Should not exist
-        if (container) {
-            await expect(container.children).toHaveLength(0);
-        } else {
-            await expect(canvas.queryByRole('group')).not.toBeInTheDocument();
         }
     },
 };

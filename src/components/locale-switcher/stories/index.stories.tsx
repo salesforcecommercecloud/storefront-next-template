@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { allModes } from '../../../../.storybook/modes';
 import { expect, within, userEvent, waitFor, fn } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import i18next from 'i18next';
@@ -62,6 +63,7 @@ const meta: Meta<typeof LocaleSwitcherMock> = {
     title: 'Components/LocaleSwitcher',
     component: LocaleSwitcherMock,
     parameters: {
+        chromatic: { modes: { desktop: allModes.desktop } },
         layout: 'centered',
         docs: {
             description: {

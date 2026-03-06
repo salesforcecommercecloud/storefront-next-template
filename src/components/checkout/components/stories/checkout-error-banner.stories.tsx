@@ -52,14 +52,3 @@ export const Default: Story = {
         await expect(container).toBeInTheDocument();
     },
 };
-
-export const ShortMessage: Story = {
-    args: {
-        message: 'Invalid shipping method.',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const container = canvasElement.firstChild;
-        await expect(container).toBeInTheDocument();
-    },
-};

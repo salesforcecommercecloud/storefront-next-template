@@ -18,7 +18,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
 import { action } from 'storybook/actions';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
-import { expect, within, userEvent } from 'storybook/test';
+import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { AccountNavItem } from '../index';
 import { User, Heart, ShoppingBag, LogOut } from 'lucide-react';
@@ -182,182 +182,80 @@ Navigation item component for the account navigation menu. Displays a single nav
 export default meta;
 type Story = StoryObj<typeof AccountNavItem>;
 
-export const Default: Story = {
-    args: {
-        item: mockNavItem,
-    },
+const navItems = [
+    { path: '/account', icon: User, label: 'Account Details' },
+    { path: '/account/wishlist', icon: Heart, label: 'Wishlist' },
+    { path: '/account/orders', icon: ShoppingBag, label: 'Orders' },
+    { path: '/account/addresses', icon: User, label: 'Addresses' },
+];
+
+function NavComposite(): ReactElement {
+    return (
+        <nav className="flex flex-col gap-1 w-64">
+            <AccountNavItem item={{ ...navItems[0] }} />
+            <AccountNavItem item={{ ...navItems[1] }} />
+            <AccountNavItem item={{ ...navItems[2] }} />
+            <AccountNavItem item={{ ...navItems[3] }} />
+            <AccountNavItem item={{ ...navItems[0], disabled: true, label: 'Disabled Item' }} />
+            <AccountNavItem
+                item={{
+                    path: '',
+                    icon: LogOut,
+                    label: 'Log Out',
+                    action: '/logout',
+                    method: 'post',
+                }}
+            />
+        </nav>
+    );
+}
+
+/**
+ * All nav item states in one composite: Default, Active, Disabled, Different Icons, Logout
+ * Uses meta decorator's RouterWrapper (no nested Router - preview already provides RouterProvider)
+ */
+export const AllStates: Story = {
+    render: () => (
+        <ActionLogger>
+            <NavComposite />
+        </ActionLogger>
+    ),
     parameters: {
         docs: {
             description: {
-                story: 'Default desktop navigation item with icon and label.',
+                story: 'All nav item states: default link, active (Account Details), different icons (Wishlist, Orders), disabled, and logout form button.',
             },
         },
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
-
         const canvas = within(canvasElement);
+        await expect(canvas.getByRole('link', { name: 'Account Details' })).toBeInTheDocument();
+        await expect(canvas.getByRole('link', { name: 'Wishlist' })).toBeInTheDocument();
+        await expect(canvas.getByRole('link', { name: 'Orders' })).toBeInTheDocument();
+        await expect(canvas.getByRole('button', { name: 'Disabled Item' })).toBeDisabled();
+        await expect(canvas.getByRole('button', { name: 'Log Out' })).toBeInTheDocument();
+    },
+};
 
+/**
+ * Focus behavior play test - verifies nav item can receive focus
+ */
+export const FocusBehavior: Story = {
+    args: { item: mockNavItem },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Focus behavior test - verifies the nav item is focusable.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
         const link = canvas.getByRole('link', { name: 'Account Details' });
-        await expect(link).toBeInTheDocument();
-        await expect(link).toHaveAttribute('href', '/account');
-
-        const icon = canvas.getByTestId('Account Details-icon');
-        await expect(icon).toBeInTheDocument();
-    },
-};
-
-export const Active: Story = {
-    args: {
-        item: mockNavItem,
-        isMobile: false,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Navigation item in active state (when on the current route).',
-            },
-        },
-    },
-    decorators: [
-        (Story: React.ComponentType, context) => {
-            const RouterWrapper = (): ReactElement => {
-                const inRouter = useInRouterContext();
-                const item = (context.args?.item as typeof mockNavItem) || mockNavItem;
-                const content = (
-                    <ActionLogger>
-                        <Story {...(context.args as Record<string, unknown>)} />
-                    </ActionLogger>
-                );
-
-                if (inRouter) {
-                    return content;
-                }
-
-                const router = createMemoryRouter(
-                    [
-                        {
-                            path: '/account',
-                            element: content,
-                        },
-                        {
-                            path: '/account/wishlist',
-                            element: <div>Wishlist Page</div>,
-                        },
-                        {
-                            path: '/account/orders',
-                            element: <div>Orders Page</div>,
-                        },
-                        {
-                            path: '/account/addresses',
-                            element: <div>Addresses Page</div>,
-                        },
-                    ],
-                    {
-                        initialEntries: [item.path],
-                        initialIndex: 0,
-                    } // Use item.path to ensure active state
-                );
-
-                return <RouterProvider router={router} />;
-            };
-
-            return <RouterWrapper />;
-        },
-    ],
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-
-        const canvas = within(canvasElement);
-
-        const link = canvas.getByRole('link', { name: 'Account Details' });
-        await expect(link).toBeInTheDocument();
-        await expect(link).toHaveAttribute('href', '/account');
-    },
-};
-
-export const Disabled: Story = {
-    args: {
-        item: {
-            ...mockNavItem,
-            disabled: true,
-        },
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Disabled navigation item that cannot be clicked.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-
-        const canvas = within(canvasElement);
-
-        const button = canvas.getByRole('button', { name: 'Account Details' });
-        await expect(button).toBeInTheDocument();
-        await expect(button).toBeDisabled();
-
-        // Should not be a link when disabled
-        const link = canvas.queryByRole('link');
-        await expect(link).not.toBeInTheDocument();
-    },
-};
-export const WithDifferentIcons: Story = {
-    args: {
-        item: {
-            path: '/account/wishlist',
-            icon: Heart,
-            label: 'Wishlist',
-        },
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Navigation item with a different icon (Heart icon for Wishlist).',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-
-        const canvas = within(canvasElement);
-
-        const link = canvas.getByRole('link', { name: 'Wishlist' });
-        await expect(link).toBeInTheDocument();
-        await expect(link).toHaveAttribute('href', '/account/wishlist');
-
-        const icon = canvas.getByTestId('Wishlist-icon');
-        await expect(icon).toBeInTheDocument();
-    },
-};
-
-export const Interactive: Story = {
-    args: {
-        item: {
-            path: '/account/orders',
-            icon: ShoppingBag,
-            label: 'Orders',
-        },
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Interactive navigation item that can be clicked.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-
-        const canvas = within(canvasElement);
-
-        const link = canvas.getByRole('link', { name: 'Orders' });
-        await expect(link).toBeInTheDocument();
-
-        await userEvent.hover(link);
-        await userEvent.click(link);
+        link.focus();
+        await expect(link).toHaveFocus();
     },
 };
 

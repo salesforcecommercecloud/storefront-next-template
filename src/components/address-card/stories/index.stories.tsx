@@ -15,6 +15,7 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { allModes } from '../../../../.storybook/modes';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import AddressCard from '../index';
@@ -67,6 +68,12 @@ const meta: Meta<typeof AddressCard> = {
     component: AddressCard,
     parameters: {
         layout: 'padded',
+        chromatic: {
+            modes: {
+                mobile: allModes.mobile,
+                desktop: allModes.desktop,
+            },
+        },
         docs: {
             description: {
                 component: `
@@ -228,48 +235,63 @@ export const PreferredAddress: Story = {
 };
 
 /**
- * Billing address card
+ * Billing and Shipping address cards (combined - no visual difference, only address ID changes)
  */
-export const BillingAddress: Story = {
-    args: {
-        address: {
-            addressId: 'billing-address-1',
-            firstName: 'John',
-            lastName: 'Doe',
-            address1: '123 Main Street',
-            address2: 'Apt 4B',
-            city: 'New York',
-            stateCode: 'NY',
-            postalCode: '10001',
-            countryCode: 'US',
-            phone: '555-123-4567',
-        } as ShopperCustomers.schemas['CustomerAddress'],
-        onEdit: action('onEdit'),
-        onRemove: action('onRemove'),
-        isPreferred: false,
+export const BillingAndShipping: Story = {
+    render: () => (
+        <div className="flex flex-col gap-4">
+            <AddressCard
+                address={
+                    {
+                        addressId: 'billing-address-1',
+                        firstName: 'John',
+                        lastName: 'Doe',
+                        address1: '123 Main Street',
+                        address2: 'Apt 4B',
+                        city: 'New York',
+                        stateCode: 'NY',
+                        postalCode: '10001',
+                        countryCode: 'US',
+                        phone: '555-123-4567',
+                    } as ShopperCustomers.schemas['CustomerAddress']
+                }
+                onEdit={action('onEdit')}
+                onRemove={action('onRemove')}
+                isPreferred={false}
+            />
+            <AddressCard
+                address={
+                    {
+                        addressId: 'shipping-address-1',
+                        firstName: 'John',
+                        lastName: 'Doe',
+                        address1: '123 Main Street',
+                        address2: 'Apt 4B',
+                        city: 'New York',
+                        stateCode: 'NY',
+                        postalCode: '10001',
+                        countryCode: 'US',
+                        phone: '555-123-4567',
+                    } as ShopperCustomers.schemas['CustomerAddress']
+                }
+                onEdit={action('onEdit')}
+                onRemove={action('onRemove')}
+                isPreferred={false}
+            />
+        </div>
+    ),
+    parameters: {
+        docs: {
+            description: {
+                story: 'Billing and Shipping address cards - identical layout, only addressId differs.',
+            },
+        },
     },
-};
-
-/**
- * Shipping address card
- */
-export const ShippingAddress: Story = {
-    args: {
-        address: {
-            addressId: 'shipping-address-1',
-            firstName: 'John',
-            lastName: 'Doe',
-            address1: '123 Main Street',
-            address2: 'Apt 4B',
-            city: 'New York',
-            stateCode: 'NY',
-            postalCode: '10001',
-            countryCode: 'US',
-            phone: '555-123-4567',
-        } as ShopperCustomers.schemas['CustomerAddress'],
-        onEdit: action('onEdit'),
-        onRemove: action('onRemove'),
-        isPreferred: false,
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const addressTitles = canvas.getAllByText('John Doe');
+        await expect(addressTitles.length).toBe(2);
     },
 };
 

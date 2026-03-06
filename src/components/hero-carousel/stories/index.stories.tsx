@@ -186,6 +186,7 @@ Standard hero carousel with 3 example slides and auto-play enabled.
 export const WithoutAutoPlay: Story = {
     render: () => <HeroCarousel slides={mockSlides} autoPlay={false} />,
     parameters: {
+        chromatic: { disableSnapshot: true },
         docs: {
             description: {
                 story: `
@@ -213,6 +214,7 @@ Hero carousel with auto-play disabled.
 export const WithoutNavigation: Story = {
     render: () => <HeroCarousel slides={mockSlides} showNavigation={false} />,
     parameters: {
+        chromatic: { disableSnapshot: true },
         docs: {
             description: {
                 story: `

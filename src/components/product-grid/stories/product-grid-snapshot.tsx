@@ -150,7 +150,7 @@ vi.mock('@/config', () => ({
 import { composeStories } from '@storybook/react-vite';
 
 import * as ProductGridStories from './index.stories';
-import { render, cleanup, waitFor } from '@testing-library/react';
+import { render, cleanup, waitFor, act } from '@testing-library/react';
 
 const composed = composeStories(ProductGridStories);
 
@@ -161,7 +161,11 @@ afterEach(() => {
 describe('ProductGrid stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
         test(`${storyName} story renders and matches snapshot`, async () => {
-            const { container } = render(<Story />);
+            let result: ReturnType<typeof render>;
+            await act(async () => {
+                result = render(<Story />);
+            });
+            const { container } = result!;
             // Wait for lazy-loaded swatches to resolve through <Suspense/>
             await waitFor(() => {
                 expect(container.querySelector('.product-tile-skeleton')).toBeNull();

@@ -42,13 +42,3 @@ exports[`PromoCallout Snapshots > HtmlContent snapshot 1`] = `
   </div>
 </div>
 `;
-
-exports[`PromoCallout Snapshots > NoPromo snapshot 1`] = `
-<div>
-  <div>
-    <div
-      class="p-4 border border-dashed"
-    />
-  </div>
-</div>
-`;

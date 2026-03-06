@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { allModes } from '../../../../.storybook/modes';
 import { ResetPasswordForm } from '../index';
 import { action } from 'storybook/actions';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
@@ -63,6 +64,7 @@ const meta: Meta<typeof ResetPasswordForm> = {
     component: ResetPasswordForm,
     tags: ['autodocs', 'interaction'],
     parameters: {
+        chromatic: { modes: { desktop: allModes.desktop } },
         layout: 'centered',
         docs: {
             description: {
@@ -233,5 +235,45 @@ Interactive reset password form for testing user interactions.
         );
         await userEvent.type(confirmPasswordInput, 'NewSecurePass123!');
         await expect(confirmPasswordInput).toHaveValue('NewSecurePass123!');
+    },
+};
+
+/**
+ * Input error state validation - password mismatch triggers error on confirm password field
+ */
+export const InputErrorValidation: Story = {
+    args: {
+        token: 'reset-token-12345',
+        email: 'user@example.com',
+    },
+    parameters: {
+        docs: {
+            story: `
+Input error state validation - typing mismatched confirm password triggers error state on the input.
+            `,
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const { t } = getTranslation();
+
+        const newPasswordInput = await canvas.findByPlaceholderText(
+            t('resetPassword:newPasswordPlaceholder') || t('signup:form.passwordPlaceholder'),
+            {},
+            { timeout: 5000 }
+        );
+        await userEvent.type(newPasswordInput, 'NewSecurePass123!');
+
+        const confirmPasswordInput = await canvas.findByPlaceholderText(
+            t('resetPassword:confirmPasswordPlaceholder') || t('signup:form.confirmPasswordPlaceholder'),
+            {},
+            { timeout: 5000 }
+        );
+        await userEvent.type(confirmPasswordInput, 'DifferentPassword123!');
+
+        await expect(confirmPasswordInput).toHaveAttribute('aria-invalid', 'true');
+        const errorMessage = await canvas.findByText(t('resetPassword:passwordsMustMatch'), {}, { timeout: 5000 });
+        await expect(errorMessage).toBeInTheDocument();
     },
 };

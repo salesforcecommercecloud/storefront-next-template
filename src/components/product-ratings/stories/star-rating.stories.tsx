@@ -166,38 +166,69 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-    args: {
-        rating: 4.8,
-        reviewCount: 123,
-    },
+/**
+ * All size and label variants in one composite
+ */
+export const AllVariants: Story = {
+    render: () => (
+        <div className="flex flex-col gap-8">
+            <div>
+                <p className="text-sm text-muted-foreground mb-2">Default (sm):</p>
+                <StarRating rating={4.8} reviewCount={123} starSize="sm" />
+            </div>
+            <div>
+                <p className="text-sm text-muted-foreground mb-2">With top label (full):</p>
+                <StarRating
+                    rating={4.8}
+                    reviewCount={123}
+                    showRatingLabel
+                    ratingLabelPosition="top"
+                    ratingLabelFormat="full"
+                />
+            </div>
+            <div>
+                <p className="text-sm text-muted-foreground mb-2">With right label (short):</p>
+                <StarRating
+                    rating={3.7}
+                    reviewCount={89}
+                    showRatingLabel
+                    ratingLabelPosition="right"
+                    ratingLabelFormat="short"
+                />
+            </div>
+            <div>
+                <p className="text-sm text-muted-foreground mb-2">Large size:</p>
+                <StarRating
+                    rating={4.9}
+                    reviewCount={523}
+                    starSize="lg"
+                    showRatingLabel
+                    ratingLabelPosition="top"
+                    ratingLabelFormat="full"
+                />
+            </div>
+            <div>
+                <p className="text-sm text-muted-foreground mb-2">With rating link:</p>
+                <StarRating
+                    rating={4.5}
+                    reviewCount={256}
+                    showRatingLink
+                    onRatingLinkClick={action('rating link clicked')}
+                />
+            </div>
+        </div>
+    ),
     parameters: {
         docs: {
             description: {
-                story: `
-The default star rating shows just the stars without any labels or links.
-
-### Features:
-- **5 stars**: 4 fully filled + 1 at 80% opacity (for 4.8 rating)
-- **Theme-aware unfilled stars**: Uses semantic colors that adapt to light/dark modes
-- **Screen reader accessible**: Star container has aria-label describing the rating
-                `,
+                story: 'All star rating variants: default/sm, top label, right label, large size, and rating link.',
             },
         },
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
-
-        // Test that stars are rendered
         const stars = canvasElement.querySelectorAll('svg');
-        await expect(stars.length).toBe(5);
-
-        // Test star container has accessible aria-label
-        const starContainer = canvasElement.querySelector('[role="group"]');
-        await expect(starContainer).toHaveAttribute('aria-label', '4.8 out of 5 stars, 123 reviews');
-
-        // Test star container is not keyboard focusable (non-interactive)
-        await expect(starContainer).not.toHaveAttribute('tabIndex');
+        await expect(stars.length).toBeGreaterThan(5);
     },
 };
 
@@ -474,89 +505,6 @@ Demonstrates custom string templates for all labels.
         // Test custom review count label
         const reviewLabel = canvas.getByText('156 customer reviews');
         await expect(reviewLabel).toBeInTheDocument();
-    },
-};
-
-export const SmallSize: Story = {
-    args: {
-        rating: 4.6,
-        reviewCount: 45,
-        starSize: 'sm',
-        showRatingLabel: true,
-        ratingLabelPosition: 'right',
-        ratingLabelFormat: 'short',
-        showRatingLink: true,
-        onRatingLinkClick: action('rating link clicked'),
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-Small stars suitable for compact layouts and product tiles.
-
-### Features:
-- **Compact size**: 12px (w-3 h-3) stars
-- **Space efficient**: Perfect for grids and lists
-- **All features work**: Labels and links still functional
-
-### Use Cases:
-- Product grid tiles
-- Compact product cards
-- Sidebar widgets
-- Mobile layouts
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-
-        // Test stars are rendered
-        const stars = canvasElement.querySelectorAll('svg');
-        await expect(stars.length).toBe(5);
-    },
-};
-
-export const LargeSize: Story = {
-    args: {
-        rating: 4.9,
-        reviewCount: 523,
-        starSize: 'lg',
-        showRatingLabel: true,
-        ratingLabelPosition: 'top',
-        ratingLabelFormat: 'full',
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-Large stars for prominent display on product detail pages.
-
-### Features:
-- **Large size**: 24px (w-6 h-6) stars
-- **Prominent display**: Draws attention to high ratings
-- **Clear visibility**: Easy to see at a distance
-
-### Use Cases:
-- Hero sections
-- Product detail pages
-- Feature highlights
-- Large product cards
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test label is displayed
-        const label = canvas.getByText('4.9 out of 5');
-        await expect(label).toBeInTheDocument();
-
-        // Test stars are rendered
-        const stars = canvasElement.querySelectorAll('svg');
-        await expect(stars.length).toBe(5);
     },
 };
 

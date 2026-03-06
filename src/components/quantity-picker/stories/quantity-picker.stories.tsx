@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { allModes } from '../../../../.storybook/modes';
 import { useEffect, useRef, type ReactElement, type ReactNode, useState } from 'react';
 import { action } from 'storybook/actions';
 import { expect, within, userEvent } from 'storybook/test';
@@ -78,6 +79,7 @@ const meta: Meta<typeof QuantityPicker> = {
     title: 'FORMS/QuantityPicker',
     component: QuantityPicker,
     parameters: {
+        chromatic: { modes: { desktop: allModes.desktop } },
         layout: 'centered',
         docs: {
             description: {

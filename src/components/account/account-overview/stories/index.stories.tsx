@@ -20,6 +20,8 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 import { MemoryRouter } from 'react-router';
 import { ConfigProvider } from '@/config/context';
 import { mockConfig } from '@/test-utils/config';
+import { CurrencyProvider } from '@/providers/currency';
+import RecommendersProvider from '@/providers/recommenders';
 import {
     AccountOverview,
     AccountOverviewSkeleton,
@@ -73,9 +75,13 @@ This component is typically rendered as the default view when users navigate to 
     decorators: [
         (Story) => (
             <ConfigProvider config={mockConfig}>
-                <MemoryRouter>
-                    <Story />
-                </MemoryRouter>
+                <CurrencyProvider value="GBP">
+                    <RecommendersProvider>
+                        <MemoryRouter>
+                            <Story />
+                        </MemoryRouter>
+                    </RecommendersProvider>
+                </CurrencyProvider>
             </ConfigProvider>
         ),
     ],
@@ -132,15 +138,6 @@ export const GuestUser: Story = {
     },
 };
 
-/**
- * Mobile viewport
- */
-/**
- * Tablet viewport
- */
-/**
- * Desktop viewport
- */
 // Welcome Section Stories
 export const WelcomeSectionDefault: StoryObj<typeof WelcomeSection> = {
     render: (args) => <WelcomeSection {...args} />,

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { allModes } from '../../../../../.storybook/modes';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { action } from 'storybook/actions';
@@ -57,6 +58,7 @@ const meta: Meta<typeof InterestsPreferencesSection> = {
     title: 'ACCOUNT/Interests & Preferences',
     component: InterestsPreferencesSection,
     parameters: {
+        chromatic: { modes: { desktop: allModes.desktop } },
         layout: 'padded',
         docs: {
             description: {
@@ -209,8 +211,8 @@ export const OpenInterestsDialog: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Wait for loading to complete
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        // Wait for loading to complete (adapter init + data fetch)
+        await new Promise((resolve) => setTimeout(resolve, 1500));
 
         // Click Edit button
         const editButton = canvas.getByRole('button', { name: /edit/i });
@@ -219,9 +221,14 @@ export const OpenInterestsDialog: Story = {
         // Verify Edit button worked - now we should see Save button
         await expect(canvas.getByRole('button', { name: /save/i })).toBeInTheDocument();
 
-        // Verify Add more buttons are visible in edit mode
-        const addMoreButtons = canvas.getAllByText(/\+ Add more/i);
-        await expect(addMoreButtons.length).toBeGreaterThanOrEqual(1);
+        // Click "+ Add more" for interests to open the dialog (use testid for reliability)
+        const addMoreButton = await canvas.findByTestId('interests-add-more-button', {}, { timeout: 5000 });
+        await userEvent.click(addMoreButton);
+
+        // Dialog renders in a portal (document.body) - search there
+        const documentBody = within(document.body);
+        const dialog = await documentBody.findByRole('dialog', {}, { timeout: 5000 });
+        await expect(dialog).toBeInTheDocument();
     },
 };
 

@@ -92,7 +92,7 @@ export function ProductItemVariantImage({
                 'bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden',
                 className
             )}>
-            {image ? (
+            {image && optimizedImageUrl ? (
                 <img
                     src={optimizedImageUrl}
                     alt={image?.alt || imageAltFallback}

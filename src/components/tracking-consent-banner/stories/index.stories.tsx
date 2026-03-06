@@ -383,6 +383,7 @@ export const WithCustomCallback: Story = {
         },
     },
     parameters: {
+        chromatic: { disableSnapshot: true },
         docs: {
             description: {
                 story: 'Demonstrates using the onConsentChange callback for custom analytics integration.',

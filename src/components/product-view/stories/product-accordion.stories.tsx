@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { allModes } from '../../../../.storybook/modes';
 import ProductAccordion from '../product-accordion';
 // @ts-expect-error mock file is JS
 import { mockStandardProductOrderable } from '../../__mocks__/standard-product';
@@ -64,6 +65,7 @@ const meta: Meta<typeof ProductAccordion> = {
     component: ProductAccordion,
     tags: ['autodocs', 'interaction'],
     parameters: {
+        chromatic: { modes: { desktop: allModes.desktop } },
         layout: 'padded',
     },
     decorators: [

@@ -272,6 +272,33 @@ export const Empty: Story = {
 };
 
 /**
+ * Field error validation - submit empty form and verify validation errors appear
+ */
+export const FieldErrorValidation: Story = {
+    args: {
+        initialData: {},
+        updateFetcher: createMockFetcher<ShopperCustomers.schemas['CustomerAddress']>('idle'),
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const form = canvasElement.querySelector('[data-testid="customer-address-form"]');
+        if (!form) {
+            await expect(canvasElement).toBeInTheDocument();
+            return;
+        }
+
+        const saveButton = canvas.getByRole('button', { name: /save/i });
+        await userEvent.click(saveButton);
+
+        // Validation shows multiple errors (addressId, firstName, etc.) - use getAllByText
+        const errors = canvas.getAllByText(/(address title|first name).*required/i);
+        await expect(errors.length).toBeGreaterThanOrEqual(1);
+    },
+};
+
+/**
  * Form with Canadian address
  */
 export const CanadianAddress: Story = {

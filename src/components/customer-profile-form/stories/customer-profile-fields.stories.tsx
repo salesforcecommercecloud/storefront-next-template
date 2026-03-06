@@ -16,6 +16,7 @@
 
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { allModes } from '../../../../.storybook/modes';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { action } from 'storybook/actions';
@@ -149,6 +150,12 @@ const meta: Meta<typeof CustomerProfileFields> = {
     tags: ['autodocs', 'interaction'],
     parameters: {
         layout: 'centered',
+        chromatic: {
+            modes: {
+                mobile: allModes.mobile,
+                desktop: allModes.desktop,
+            },
+        },
         docs: {
             description: {
                 component: `
@@ -480,125 +487,5 @@ export const Interactive: Story = {
         await userEvent.clear(birthdayInput);
         await userEvent.type(birthdayInput, '1995-08-20');
         await expect(birthdayInput).toHaveValue('1995-08-20');
-    },
-};
-
-export const Mobile: Story = {
-    ...Default,
-    globals: {
-        viewport: 'mobile2',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const { t } = getTranslation();
-
-        // Verify form fields are present
-        const firstNameInput = canvas.getByPlaceholderText(t('account:profile.firstNamePlaceholder'));
-        await expect(firstNameInput).toBeInTheDocument();
-
-        const lastNameInput = canvas.getByPlaceholderText(t('account:profile.lastNamePlaceholder'));
-        await expect(lastNameInput).toBeInTheDocument();
-
-        // Email and phone are read-only (no placeholder) — find by label
-        const emailInput = canvas.getByLabelText(t('account:profile.email'));
-        await expect(emailInput).toBeInTheDocument();
-        await expect(emailInput).toHaveAttribute('readonly');
-
-        const phoneInput = canvas.getByLabelText(t('account:profile.phoneNumber'));
-        await expect(phoneInput).toBeInTheDocument();
-        await expect(phoneInput).toHaveAttribute('readonly');
-
-        // Verify gender dropdown is present
-        const genderSelect = canvas.getByRole('combobox', { name: t('account:profile.gender') });
-        await expect(genderSelect).toBeInTheDocument();
-
-        // Verify date of birth field is present
-        const birthdayInput = canvas.getByLabelText(t('account:profile.dateOfBirth'));
-        await expect(birthdayInput).toBeInTheDocument();
-
-        // Verify submit button
-        const submitButton = canvas.getByRole('button', { name: t('account:profile.saveButton') });
-        await expect(submitButton).toBeInTheDocument();
-    },
-};
-
-export const Tablet: Story = {
-    ...Default,
-    globals: {
-        viewport: 'tablet',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const { t } = getTranslation();
-
-        // Verify form fields are present
-        const firstNameInput = canvas.getByPlaceholderText(t('account:profile.firstNamePlaceholder'));
-        await expect(firstNameInput).toBeInTheDocument();
-
-        const lastNameInput = canvas.getByPlaceholderText(t('account:profile.lastNamePlaceholder'));
-        await expect(lastNameInput).toBeInTheDocument();
-
-        // Email and phone are read-only (no placeholder) — find by label
-        const emailInput = canvas.getByLabelText(t('account:profile.email'));
-        await expect(emailInput).toBeInTheDocument();
-        await expect(emailInput).toHaveAttribute('readonly');
-
-        const phoneInput = canvas.getByLabelText(t('account:profile.phoneNumber'));
-        await expect(phoneInput).toBeInTheDocument();
-        await expect(phoneInput).toHaveAttribute('readonly');
-
-        // Verify gender dropdown is present
-        const genderSelect = canvas.getByRole('combobox', { name: t('account:profile.gender') });
-        await expect(genderSelect).toBeInTheDocument();
-
-        // Verify date of birth field is present
-        const birthdayInput = canvas.getByLabelText(t('account:profile.dateOfBirth'));
-        await expect(birthdayInput).toBeInTheDocument();
-
-        // Verify submit button
-        const submitButton = canvas.getByRole('button', { name: t('account:profile.saveButton') });
-        await expect(submitButton).toBeInTheDocument();
-    },
-};
-
-export const Desktop: Story = {
-    ...Default,
-    globals: {
-        viewport: 'desktop',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const { t } = getTranslation();
-
-        // Verify form fields are present
-        const firstNameInput = canvas.getByPlaceholderText(t('account:profile.firstNamePlaceholder'));
-        await expect(firstNameInput).toBeInTheDocument();
-
-        const lastNameInput = canvas.getByPlaceholderText(t('account:profile.lastNamePlaceholder'));
-        await expect(lastNameInput).toBeInTheDocument();
-
-        // Email and phone are read-only (no placeholder) — find by label
-        const emailInput = canvas.getByLabelText(t('account:profile.email'));
-        await expect(emailInput).toBeInTheDocument();
-        await expect(emailInput).toHaveAttribute('readonly');
-
-        const phoneInput = canvas.getByLabelText(t('account:profile.phoneNumber'));
-        await expect(phoneInput).toBeInTheDocument();
-        await expect(phoneInput).toHaveAttribute('readonly');
-
-        // Verify gender dropdown is present
-        const genderSelect = canvas.getByRole('combobox', { name: t('account:profile.gender') });
-        await expect(genderSelect).toBeInTheDocument();
-
-        // Verify date of birth field is present
-        const birthdayInput = canvas.getByLabelText(t('account:profile.dateOfBirth'));
-        await expect(birthdayInput).toBeInTheDocument();
-
-        // Verify submit button
-        const submitButton = canvas.getByRole('button', { name: t('account:profile.saveButton') });
-        await expect(submitButton).toBeInTheDocument();
     },
 };

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { allModes } from '../../../../.storybook/modes';
 import CategorySorting from '../index';
 import { action } from 'storybook/actions';
 import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'react';
@@ -74,6 +75,7 @@ const meta: Meta<typeof CategorySorting> = {
     component: CategorySorting,
     tags: ['autodocs', 'interaction'],
     parameters: {
+        chromatic: { modes: { desktop: allModes.desktop } },
         layout: 'centered',
         docs: {
             description: {

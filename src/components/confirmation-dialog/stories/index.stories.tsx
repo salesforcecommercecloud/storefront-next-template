@@ -154,54 +154,6 @@ Standard confirmation dialog for delete actions.
     },
 };
 
-export const RemoveItem: Story = {
-    render: () => <RemoveItemDialog />,
-    parameters: {
-        docs: {
-            story: `
-Confirmation dialog for removing items from cart.
-
-### Features:
-- Different button text
-- Less destructive action
-            `,
-        },
-    },
-    play: async () => {
-        const documentBody = within(document.body);
-
-        // Check for dialog
-        const dialog = await documentBody.findByRole('alertdialog', {}, { timeout: 5000 });
-        await expect(dialog).toBeInTheDocument();
-
-        // Check for remove button
-        const removeButton = await documentBody.findByRole('button', { name: /remove/i }, { timeout: 5000 });
-        await expect(removeButton).toBeInTheDocument();
-    },
-};
-
-function RemoveItemDialog() {
-    const [open, setOpen] = useState(true);
-    return (
-        <ConfirmationDialog
-            open={open}
-            onOpenChange={setOpen}
-            title="Remove from Cart"
-            description="This item will be removed from your shopping cart. You can add it back later if needed."
-            cancelButtonText="Keep Item"
-            confirmButtonText="Remove"
-            onCancel={() => {
-                action('keep-item-clicked')();
-                setOpen(false);
-            }}
-            onConfirm={() => {
-                action('remove-item-clicked')();
-                setOpen(false);
-            }}
-        />
-    );
-}
-
 function DisabledConfirmDialog() {
     const [open, setOpen] = useState(true);
     return (

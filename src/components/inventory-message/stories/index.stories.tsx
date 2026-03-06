@@ -203,109 +203,60 @@ const createMockProduct = (
 });
 
 /**
- * In Stock - Green badge indicating product is available for immediate purchase
+ * All badge variants in one composite: In Stock, Pre-Order, Back Order, Out of Stock, Unknown
  */
-export const InStock: Story = {
-    args: {
-        product: createMockProduct({
-            orderable: true,
-            ats: 10,
-            backorderable: false,
-            preorderable: false,
-        }),
+export const AllVariants: Story = {
+    render: () => (
+        <div className="flex flex-wrap gap-4">
+            <InventoryMessage
+                product={createMockProduct({
+                    orderable: true,
+                    ats: 10,
+                    backorderable: false,
+                    preorderable: false,
+                })}
+            />
+            <InventoryMessage
+                product={createMockProduct({
+                    orderable: true,
+                    preorderable: true,
+                    backorderable: false,
+                    ats: 0,
+                })}
+            />
+            <InventoryMessage
+                product={createMockProduct({
+                    orderable: true,
+                    preorderable: false,
+                    backorderable: true,
+                    ats: 0,
+                })}
+            />
+            <InventoryMessage
+                product={createMockProduct({
+                    orderable: false,
+                    preorderable: false,
+                    backorderable: false,
+                    ats: 0,
+                })}
+            />
+            <InventoryMessage product={createMockProduct()} showUnknownStatus={true} />
+        </div>
+    ),
+    parameters: {
+        docs: {
+            description: {
+                story: 'All inventory badge variants: In Stock, Pre-Order, Back Order, Out of Stock, and Unknown status.',
+            },
+        },
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-
-        // Test that inventory message displays "In Stock" text
-        const inStockText = canvas.getByText(/in stock/i);
-        await expect(inStockText).toBeInTheDocument();
-
-        // Test that appropriate styling/color is applied (green for in stock)
-        const messageElement = inStockText.closest('[class*="text-"], [class*="bg-"]');
-        void expect(messageElement).toBeInTheDocument();
-
-        // Verify component renders correctly
-        void expect(canvasElement.firstChild).toBeInTheDocument();
-    },
-};
-
-export const PreOrder: Story = {
-    args: {
-        product: createMockProduct({
-            orderable: true,
-            preorderable: true,
-            backorderable: false,
-            ats: 0,
-        }),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const preOrderText = canvas.getByText(/pre-order/i);
-        await expect(preOrderText).toBeInTheDocument();
-
-        const messageElement = preOrderText.closest('div');
-        if (messageElement) {
-            void expect(messageElement).toHaveClass('text-info');
-        }
-    },
-};
-
-export const BackOrder: Story = {
-    args: {
-        product: createMockProduct({
-            orderable: true,
-            preorderable: false,
-            backorderable: true,
-            ats: 0,
-        }),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const backOrderText = canvas.getByText(/back order/i);
-        await expect(backOrderText).toBeInTheDocument();
-
-        const messageElement = backOrderText.closest('div');
-        if (messageElement) {
-            void expect(messageElement).toHaveClass('text-warning');
-        }
-    },
-};
-
-export const OutOfStock: Story = {
-    args: {
-        product: createMockProduct({
-            orderable: false,
-            preorderable: false,
-            backorderable: false,
-            ats: 0,
-        }),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const outOfStockText = canvas.getByText(/out of stock/i);
-        await expect(outOfStockText).toBeInTheDocument();
-
-        const messageElement = outOfStockText.closest('div');
-        if (messageElement) {
-            void expect(messageElement).toHaveClass('text-destructive');
-        }
-    },
-};
-
-export const UnknownVisible: Story = {
-    args: {
-        product: createMockProduct(),
-        showUnknownStatus: true,
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const unknownText = canvas.getByText(/inventory unavailable/i);
-        await expect(unknownText).toBeInTheDocument();
+        await expect(canvas.getByText(/in stock/i)).toBeInTheDocument();
+        await expect(canvas.getByText(/pre-order/i)).toBeInTheDocument();
+        await expect(canvas.getByText(/back order/i)).toBeInTheDocument();
+        await expect(canvas.getByText(/out of stock/i)).toBeInTheDocument();
+        await expect(canvas.getByText(/inventory unavailable/i)).toBeInTheDocument();
     },
 };

@@ -1,13 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`AccountNavItem stories snapshot > Active story renders and matches snapshot 1`] = `null`;
+exports[`AccountNavItem stories snapshot > AllStates story renders and matches snapshot 1`] = `null`;
 
-exports[`AccountNavItem stories snapshot > Default story renders and matches snapshot 1`] = `null`;
-
-exports[`AccountNavItem stories snapshot > Disabled story renders and matches snapshot 1`] = `null`;
-
-exports[`AccountNavItem stories snapshot > Interactive story renders and matches snapshot 1`] = `null`;
+exports[`AccountNavItem stories snapshot > FocusBehavior story renders and matches snapshot 1`] = `null`;
 
 exports[`AccountNavItem stories snapshot > Logout story renders and matches snapshot 1`] = `null`;
-
-exports[`AccountNavItem stories snapshot > WithDifferentIcons story renders and matches snapshot 1`] = `null`;

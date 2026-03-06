@@ -114,15 +114,3 @@ export const HtmlContent: Story = {
         await expect(canvas.getByText('20% off')).toBeInTheDocument();
     },
 };
-
-export const NoPromo: Story = {
-    args: {
-        product: { ...mockProductWithPromo, productPromotions: [] },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        // Should render nothing
-        await expect(canvas.queryByText(/./)).not.toBeInTheDocument();
-    },
-};

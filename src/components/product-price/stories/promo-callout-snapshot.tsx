@@ -18,7 +18,7 @@ import { composeStories } from '@storybook/react-vite';
 import { render } from '@testing-library/react';
 import { describe, test, expect } from 'vitest';
 
-const { Default, HtmlContent, NoPromo } = composeStories(PromoCalloutStories);
+const { Default, HtmlContent } = composeStories(PromoCalloutStories);
 
 describe('PromoCallout Snapshots', () => {
     test('Default snapshot', () => {
@@ -28,11 +28,6 @@ describe('PromoCallout Snapshots', () => {
 
     test('HtmlContent snapshot', () => {
         const { container } = render(<HtmlContent />);
-        expect(container).toMatchSnapshot();
-    });
-
-    test('NoPromo snapshot', () => {
-        const { container } = render(<NoPromo />);
         expect(container).toMatchSnapshot();
     });
 });

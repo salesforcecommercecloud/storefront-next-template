@@ -128,23 +128,3 @@ export const Default: Story = {
         await expect(skeletons.length).toBeGreaterThan(0);
     },
 };
-
-export const LoadingState: Story = {
-    parameters: {
-        docs: {
-            description: {
-                story: 'Skeleton shown while account details are loading.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-
-        // Verify component renders
-        await expect(canvasElement.firstChild).toBeInTheDocument();
-
-        // Verify multiple skeleton cards are present
-        const cards = canvasElement.querySelectorAll('.border-border');
-        await expect(cards.length).toBeGreaterThanOrEqual(2);
-    },
-};

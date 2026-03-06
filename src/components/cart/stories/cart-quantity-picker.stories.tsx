@@ -439,6 +439,7 @@ export const WithCustomDebounce: Story = {
         debounceDelay: 500,
     },
     parameters: {
+        chromatic: { disableSnapshot: true },
         docs: {
             description: {
                 story: `

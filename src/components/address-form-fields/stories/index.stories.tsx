@@ -20,8 +20,11 @@ import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { action } from 'storybook/actions';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
 import { AddressFormFields } from '../index';
+import { createShippingAddressSchema } from '@/lib/checkout-schemas';
+import { getTranslation } from '@/lib/i18next';
 
 /**
  * The AddressFormFields component provides shared address form fields with Google Maps
@@ -148,6 +151,37 @@ function ShippingAddressFormWrapper({
                     className={className}
                     countryCode="US"
                 />
+            </form>
+        </Form>
+    );
+}
+
+// Wrapper with validation for FieldErrorValidation story
+function ShippingAddressFormWrapperWithValidation() {
+    const { t } = getTranslation();
+    const schema = createShippingAddressSchema(t);
+    const form = useForm<ShippingFormData>({
+        resolver: zodResolver(schema),
+        defaultValues: {
+            firstName: '',
+            lastName: '',
+            address1: '',
+            address2: '',
+            city: '',
+            stateCode: '',
+            postalCode: '',
+            phone: '',
+        },
+    });
+
+    return (
+        <Form {...form}>
+            <form
+                data-testid="address-form-fields-form"
+                className="space-y-4"
+                onSubmit={(e) => void form.handleSubmit(() => {})(e)}>
+                <AddressFormFields form={form} showPhone={true} countryCode="US" />
+                <button type="submit">Save</button>
             </form>
         </Form>
     );
@@ -446,6 +480,30 @@ export const Interactive: Story = {
 };
 
 /**
+ * Field error validation - submit empty form and verify validation errors appear
+ */
+export const FieldErrorValidation: Story = {
+    render: () => <ShippingAddressFormWrapperWithValidation />,
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const form = canvasElement.querySelector('[data-testid="address-form-fields-form"]');
+        if (!form) {
+            await expect(canvasElement).toBeInTheDocument();
+            return;
+        }
+
+        const saveButton = canvas.getByRole('button', { name: /save/i });
+        await userEvent.click(saveButton);
+
+        // Validation shows multiple errors (firstName, lastName, address1, city) - use getAllByText
+        const errors = canvas.getAllByText(/(first name|last name|address|city).*required/i);
+        await expect(errors.length).toBeGreaterThanOrEqual(1);
+    },
+};
+
+/**
  * Form with custom className
  */
 export const WithCustomClassName: Story = {
@@ -458,13 +516,3 @@ export const WithCustomClassName: Story = {
         await expect(container).toBeInTheDocument();
     },
 };
-
-/**
- * Mobile viewport
- */
-/**
- * Tablet viewport
- */
-/**
- * Desktop viewport
- */

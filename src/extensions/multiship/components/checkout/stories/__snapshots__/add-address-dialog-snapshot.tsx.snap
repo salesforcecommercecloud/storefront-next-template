@@ -10,12 +10,6 @@ exports[`AddAddressDialog stories snapshot > Closed story renders and matches sn
 
 exports[`AddAddressDialog stories snapshot > Default story renders and matches snapshot 1`] = `<div />`;
 
-exports[`AddAddressDialog stories snapshot > Desktop story renders and matches snapshot 1`] = `<div />`;
-
 exports[`AddAddressDialog stories snapshot > InternationalAddress story renders and matches snapshot 1`] = `<div />`;
-
-exports[`AddAddressDialog stories snapshot > Mobile story renders and matches snapshot 1`] = `<div />`;
-
-exports[`AddAddressDialog stories snapshot > Tablet story renders and matches snapshot 1`] = `<div />`;
 
 exports[`AddAddressDialog stories snapshot > WithDefaultValues story renders and matches snapshot 1`] = `<div />`;

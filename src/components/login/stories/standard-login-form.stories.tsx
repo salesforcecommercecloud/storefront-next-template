@@ -17,7 +17,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { action } from 'storybook/actions';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
 
-import { expect, within } from 'storybook/test';
+import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import StandardLoginForm from '../standard-login-form';
 
@@ -646,5 +646,41 @@ This story highlights the security aspects of the password field:
         const submitButton = canvas.getByRole('button', { name: /sign in/i });
         await expect(submitButton).toBeInTheDocument();
         await expect(submitButton).not.toBeDisabled();
+    },
+};
+
+/**
+ * Input interactions and validation - types in fields and verifies validation/error states
+ */
+export const InputInteractions: Story = {
+    args: {
+        error: undefined,
+        isPasswordlessEnabled: true,
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: `
+Input interactions and validation - tests typing in email/password fields and form validation behavior.
+            `,
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const emailInput = canvas.getByLabelText(/email/i);
+        const passwordInput = canvas.getByLabelText(/password/i);
+
+        await userEvent.type(emailInput, 'user@example.com');
+        await expect(emailInput).toHaveValue('user@example.com');
+
+        await userEvent.type(passwordInput, 'SecurePass123!');
+        await expect(passwordInput).toHaveValue('SecurePass123!');
+
+        const submitButton = canvas.getByRole('button', { name: /sign in/i });
+        await expect(submitButton).toBeInTheDocument();
+        await userEvent.click(submitButton);
     },
 };
