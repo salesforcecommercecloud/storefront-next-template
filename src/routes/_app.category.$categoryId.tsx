@@ -23,6 +23,7 @@ import { getConfig, useConfig } from '@/config';
 import { currencyContext } from '@/lib/currency';
 import CategoryBreadcrumbs from '@/components/category-breadcrumbs';
 import CategoryPagination from '@/components/category-pagination';
+import ActiveFilters from '@/components/category-refinements/active-filters';
 import CategoryRefinements from '@/components/category-refinements';
 import CategorySorting from '@/components/category-sorting';
 import ProductGrid from '@/components/product-grid';
@@ -307,6 +308,8 @@ export default function CategoryPage({
                         </div>
 
                         <div className="flex-grow">
+                            <ActiveFilters result={searchResultCritical} />
+
                             {/* plpTopContent */}
                             <Region className="mb-8" page={page} regionId="plpTopContent" />
 

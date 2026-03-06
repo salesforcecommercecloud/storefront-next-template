@@ -20,9 +20,9 @@ import { useLocation, useNavigate, useNavigation } from 'react-router';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { Button } from '@/components/ui/button';
 import { X as Close } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { useStoreLocator } from '@/extensions/store-locator/providers/store-locator';
-import { useTranslation } from 'react-i18next';
 import { type TFunction } from 'i18next';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
@@ -55,6 +55,7 @@ export default function CategoryFilters({
 }: {
     result: ShopperSearch.schemas['ProductSearchResult'];
 }): JSX.Element | null {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();
     const navigation = useNavigation();
@@ -154,26 +155,23 @@ export default function CategoryFilters({
 
     return (
         <div className={`mb-4 border-b${isPending ? ' pointer-events-none opacity-50 transition-opacity' : ''}`}>
-            <p className="mb-2 font-medium">Active filters:</p>
-            <div className="mb-2 flex flex-wrap items-center gap-2">
+            <div className="mb-4 flex flex-wrap items-center gap-2">
+                <span className="font-medium uppercase">{t('categoryRefinements:appliedFilters')}</span>
                 {activeFilters.map(({ attributeId, value, valueLabel }) => (
                     <Button
                         key={`${attributeId}:${value}`}
                         variant="outline"
                         className="cursor-pointer"
                         onClick={() => void removeFilter(attributeId, value)}>
+                        <span className="mr-1">{valueLabel}</span>
                         <Close className="size-3" />
-                        <span className="ml-1">{valueLabel}</span>
                     </Button>
                 ))}
-            </div>
-
-            <div className="mb-4">
                 <Button
                     variant="link"
-                    className="m-0 p-0 cursor-pointer underline text-sm text-destructive hover:text-destructive/75 font-bold"
+                    className="m-0 p-0 cursor-pointer underline text-sm text-muted-foreground hover:text-foreground"
                     onClick={clearAllFilters}>
-                    Clear all
+                    {t('categoryRefinements:clearAll')}
                 </Button>
             </div>
         </div>

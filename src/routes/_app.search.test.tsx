@@ -130,6 +130,10 @@ vi.mock('@/components/category-refinements', () => ({
     default: () => <div data-testid="category-refinements" />,
 }));
 
+vi.mock('@/components/category-refinements/active-filters', () => ({
+    default: () => <div data-testid="active-filters" />,
+}));
+
 vi.mock('@/components/category-sorting', () => ({
     default: () => <div data-testid="category-sorting" />,
 }));
@@ -319,6 +323,7 @@ describe('SearchPage', () => {
             );
 
             await waitFor(() => {
+                expect(screen.getByTestId('active-filters')).toBeInTheDocument();
                 expect(screen.getByText('shoes (10)')).toBeInTheDocument();
                 expect(screen.getByTestId('product-grid')).toBeInTheDocument();
             });

@@ -20,7 +20,6 @@ import { useLocation, useNavigate, useNavigation } from 'react-router';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import type { FilterValue, RefinementProps } from './types';
-import ActiveFilters from './active-filters';
 import RefineDefault from './refine-default';
 import RefineColor from './refine-color';
 import RefineSize from './refine-size';
@@ -165,9 +164,6 @@ export default function CategoryRefinements({
 
     return (
         <>
-            {/* The currently active filters section */}
-            <ActiveFilters result={result} />
-
             {/*  @sfdc-extension-line SFDC_EXT_BOPIS */}
             <RefineInventory isFilterSelected={isFilterSelected} toggleFilter={toggleFilter} />
 

@@ -3,6 +3,10 @@
         "edit": "Modifica",
         "remove": "Rimuovi"
     },
+    "categoryRefinements": {
+        "appliedFilters": "Filtri attivi:",
+        "clearAll": "Cancella tutto"
+    },
     "common": {
         "loading": "Caricamento",
         "loadingMore": "Caricamento in corso...",
