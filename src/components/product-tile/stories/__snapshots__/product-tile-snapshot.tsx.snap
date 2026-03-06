@@ -60,6 +60,7 @@ exports[`ProductTile stories snapshot > CustomAction story renders and matches s
                   />
                   <img
                     alt="Charcoal Single Pleat Wool Suit, Charcoal, medium"
+                    class="object-cover"
                     fetchpriority="auto"
                     loading="lazy"
                     src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.jpg"
@@ -262,6 +263,7 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
                   />
                   <img
                     alt="Charcoal Single Pleat Wool Suit, Charcoal, medium"
+                    class="object-cover"
                     fetchpriority="auto"
                     loading="lazy"
                     src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.jpg"
@@ -467,6 +469,7 @@ exports[`ProductTile stories snapshot > MasterProductWithSwatches story renders 
                   />
                   <img
                     alt="Long Sleeve Embellished Boat Neck Top, Grey Heather, medium"
+                    class="object-cover"
                     fetchpriority="auto"
                     loading="lazy"
                     src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwc9ce7da9/images/medium/PG.10217069.JJ908XX.PZ.jpg"
@@ -672,6 +675,7 @@ exports[`ProductTile stories snapshot > PageDesignerBorderRadius story renders a
                   />
                   <img
                     alt="Charcoal Single Pleat Wool Suit, Charcoal, medium"
+                    class="object-cover"
                     fetchpriority="auto"
                     loading="lazy"
                     src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.jpg"
@@ -877,6 +881,7 @@ exports[`ProductTile stories snapshot > PageDesignerFullCustomization story rend
                   />
                   <img
                     alt="Charcoal Single Pleat Wool Suit, Charcoal, medium"
+                    class="object-cover"
                     fetchpriority="auto"
                     loading="lazy"
                     src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.jpg"
@@ -1082,6 +1087,7 @@ exports[`ProductTile stories snapshot > PageDesignerHoverLift story renders and 
                   />
                   <img
                     alt="Charcoal Single Pleat Wool Suit, Charcoal, medium"
+                    class="object-cover"
                     fetchpriority="auto"
                     loading="lazy"
                     src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.jpg"
@@ -1287,6 +1293,7 @@ exports[`ProductTile stories snapshot > PageDesignerHoverScale story renders and
                   />
                   <img
                     alt="Charcoal Single Pleat Wool Suit, Charcoal, medium"
+                    class="object-cover"
                     fetchpriority="auto"
                     loading="lazy"
                     src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.jpg"
@@ -1492,6 +1499,7 @@ exports[`ProductTile stories snapshot > PageDesignerHoverShadow story renders an
                   />
                   <img
                     alt="Charcoal Single Pleat Wool Suit, Charcoal, medium"
+                    class="object-cover"
                     fetchpriority="auto"
                     loading="lazy"
                     src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.jpg"
@@ -1697,6 +1705,7 @@ exports[`ProductTile stories snapshot > PageDesignerImageCover story renders and
                   />
                   <img
                     alt="Charcoal Single Pleat Wool Suit, Charcoal, medium"
+                    class="object-cover"
                     fetchpriority="auto"
                     loading="lazy"
                     src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.jpg"
@@ -1902,6 +1911,7 @@ exports[`ProductTile stories snapshot > PageDesignerPaddingMargin story renders 
                   />
                   <img
                     alt="Charcoal Single Pleat Wool Suit, Charcoal, medium"
+                    class="object-cover"
                     fetchpriority="auto"
                     loading="lazy"
                     src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.jpg"
@@ -2107,6 +2117,7 @@ exports[`ProductTile stories snapshot > PageDesignerShadowXL story renders and m
                   />
                   <img
                     alt="Charcoal Single Pleat Wool Suit, Charcoal, medium"
+                    class="object-cover"
                     fetchpriority="auto"
                     loading="lazy"
                     src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.jpg"
@@ -2312,6 +2323,7 @@ exports[`ProductTile stories snapshot > PageDesignerTypography story renders and
                   />
                   <img
                     alt="Charcoal Single Pleat Wool Suit, Charcoal, medium"
+                    class="object-cover"
                     fetchpriority="auto"
                     loading="lazy"
                     src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.jpg"
@@ -2517,6 +2529,7 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
                   />
                   <img
                     alt="Charcoal Single Pleat Wool Suit, Charcoal, medium"
+                    class="object-cover"
                     fetchpriority="auto"
                     loading="lazy"
                     src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.jpg"

@@ -18,6 +18,20 @@ import { render, screen } from '@testing-library/react';
 import { mockConfig } from '@/test-utils/config';
 import { isServer } from '@/lib/utils';
 import { useDynamicImageContext } from '@/providers/dynamic-image';
+
+// Mock decorators (minimal mocking to avoid testing them)
+vi.mock('@/lib/decorators/component', () => ({
+    Component: () => (target: any) => target,
+}));
+
+vi.mock('@/lib/decorators/region-definition', () => ({
+    RegionDefinition: () => (target: any) => target,
+}));
+
+vi.mock('@/lib/decorators/attribute-definition', () => ({
+    AttributeDefinition: () => () => {},
+}));
+
 import { DynamicImage } from './index';
 
 const src =
@@ -589,6 +603,113 @@ describe('Dynamic Image Component', () => {
             render(<DynamicImage src={src} alt="Test image" widths={[200]} />);
 
             expect(preloadMock).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('Page Designer Styling Props', () => {
+        test('applies objectFit class to image', () => {
+            render(<DynamicImage src={src} alt="Test" objectFit="contain" />);
+            const img = screen.getByRole('img');
+            expect(img.className).toContain('object-contain');
+        });
+
+        test('applies borderRadius class to wrapper', () => {
+            render(<DynamicImage src={src} alt="Test" borderRadius="lg" />);
+            const wrapper = screen.getByRole('img').parentElement;
+            expect(wrapper?.className).toContain('rounded-lg');
+        });
+
+        test('applies boxShadow class to wrapper', () => {
+            render(<DynamicImage src={src} alt="Test" boxShadow="xl" />);
+            const wrapper = screen.getByRole('img').parentElement;
+            expect(wrapper?.className).toContain('shadow-xl');
+        });
+
+        test('applies padding class to wrapper', () => {
+            render(<DynamicImage src={src} alt="Test" padding="4" />);
+            const wrapper = screen.getByRole('img').parentElement;
+            expect(wrapper?.className).toContain('p-4');
+        });
+
+        test('applies margin class to wrapper', () => {
+            render(<DynamicImage src={src} alt="Test" margin="2" />);
+            const wrapper = screen.getByRole('img').parentElement;
+            expect(wrapper?.className).toContain('m-2');
+        });
+
+        test('applies hoverEffect class to wrapper', () => {
+            render(<DynamicImage src={src} alt="Test" hoverEffect="scale" />);
+            const wrapper = screen.getByRole('img').parentElement;
+            expect(wrapper?.className).toContain('hover:scale-105');
+        });
+
+        test('includes overflow-hidden only when borderRadius is applied', () => {
+            // Without borderRadius, should not have overflow-hidden
+            const { rerender } = render(<DynamicImage src={src} alt="Test" />);
+            let wrapper = screen.getByRole('img').parentElement;
+            expect(wrapper?.className).not.toContain('overflow-hidden');
+
+            // With borderRadius, should have overflow-hidden
+            rerender(<DynamicImage src={src} alt="Test" borderRadius="lg" />);
+            wrapper = screen.getByRole('img').parentElement;
+            expect(wrapper?.className).toContain('overflow-hidden');
+        });
+
+        test('applies multiple styling props correctly', () => {
+            render(
+                <DynamicImage
+                    src={src}
+                    alt="Test"
+                    objectFit="contain"
+                    borderRadius="xl"
+                    boxShadow="lg"
+                    padding="4"
+                    margin="2"
+                    hoverEffect="scale"
+                />
+            );
+
+            const wrapper = screen.getByRole('img').parentElement;
+            const img = screen.getByRole('img');
+
+            // Wrapper styles
+            expect(wrapper?.className).toContain('rounded-xl');
+            expect(wrapper?.className).toContain('shadow-lg');
+            expect(wrapper?.className).toContain('p-4');
+            expect(wrapper?.className).toContain('m-2');
+            expect(wrapper?.className).toContain('hover:scale-105');
+            expect(wrapper?.className).toContain('overflow-hidden');
+
+            // Image styles
+            expect(img.className).toContain('object-contain');
+        });
+
+        test('parses widths string from Page Designer', () => {
+            render(<DynamicImage src={src} alt="Test" widths="400,800,1200" />);
+            // The component should render without errors
+            const img = screen.getByRole('img');
+            expect(img).toBeInTheDocument();
+        });
+
+        test('does not pass Page Designer props to DOM', () => {
+            render(
+                <DynamicImage
+                    src={src}
+                    alt="Test"
+                    regionId="test-region"
+                    component={{} as any}
+                    componentData={{}}
+                    designMetadata={{} as any}
+                    data={{}}
+                />
+            );
+
+            const wrapper = screen.getByRole('img').parentElement;
+            expect(wrapper).not.toHaveAttribute('regionId');
+            expect(wrapper).not.toHaveAttribute('component');
+            expect(wrapper).not.toHaveAttribute('componentData');
+            expect(wrapper).not.toHaveAttribute('designMetadata');
+            expect(wrapper).not.toHaveAttribute('data');
         });
     });
 });

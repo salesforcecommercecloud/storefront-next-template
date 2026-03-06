@@ -34,6 +34,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                 />
                 <img
                   alt="Men's Classic Deer Gloves, , large"
+                  class="object-cover"
                   fetchpriority="high"
                   loading="eager"
                   src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5f194ed3/images/large/TG508_206.webp?sfrm=jpg&q=70"
@@ -633,6 +634,7 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
                 />
                 <img
                   alt="Men's Classic Deer Gloves, , large"
+                  class="object-cover"
                   fetchpriority="high"
                   loading="eager"
                   src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5f194ed3/images/large/TG508_206.webp?sfrm=jpg&q=70"

@@ -50,6 +50,7 @@ exports[`ProductImage stories snapshot > CustomAspectRatio story renders and mat
             />
             <img
               alt="Laptop Briefcase with wheels (37L), , medium"
+              class="object-cover"
               fetchpriority="auto"
               loading="lazy"
               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwcc8912f4/images/medium/P0048_001.jpg"
@@ -111,6 +112,7 @@ exports[`ProductImage stories snapshot > Default story renders and matches snaps
             />
             <img
               alt="Laptop Briefcase with wheels (37L), , medium"
+              class="object-cover"
               fetchpriority="auto"
               loading="lazy"
               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwcc8912f4/images/medium/P0048_001.jpg"
@@ -172,6 +174,7 @@ exports[`ProductImage stories snapshot > WithColorVariant story renders and matc
             />
             <img
               alt="Long Sleeve Embellished Boat Neck Top, Begonia Pink, medium"
+              class="object-cover"
               fetchpriority="auto"
               loading="lazy"
               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwed56b2da/images/medium/PG.10217069.JJ5QZXX.PZ.jpg"

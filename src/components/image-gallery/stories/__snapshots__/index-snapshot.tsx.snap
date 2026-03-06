@@ -25,6 +25,7 @@ exports[`ImageGallery stories snapshot > Default story renders and matches snaps
           />
           <img
             alt="Laptop Briefcase with wheels (37L), , large"
+            class="object-cover"
             fetchpriority="auto"
             loading="lazy"
             src="https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwbeefee44/images/large/P0048_001.jpg"
@@ -61,6 +62,7 @@ exports[`ImageGallery stories snapshot > EagerLoading story renders and matches 
           />
           <img
             alt="Laptop Briefcase with wheels (37L), , large"
+            class="object-cover"
             fetchpriority="high"
             loading="eager"
             src="https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwbeefee44/images/large/P0048_001.jpg"
@@ -118,6 +120,7 @@ exports[`ImageGallery stories snapshot > SingleImage story renders and matches s
           />
           <img
             alt="Laptop Briefcase with wheels (37L), , large"
+            class="object-cover"
             fetchpriority="auto"
             loading="lazy"
             src="https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwbeefee44/images/large/P0048_001.jpg"

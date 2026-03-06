@@ -74,6 +74,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                     />
                     <img
                       alt="Turquoise and Gold Bracelet, Gold, large"
+                      class="object-cover"
                       fetchpriority="auto"
                       loading="lazy"
                       src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sfrm=jpg&q=70"
@@ -206,6 +207,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                     />
                     <img
                       alt="Turquoise and Gold Necklace, Gold, large"
+                      class="object-cover"
                       fetchpriority="auto"
                       loading="lazy"
                       src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwdc5f4721/images/large/PG.60119236.JJ887XX.PZ.webp?sfrm=jpg&q=70"
@@ -338,6 +340,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                     />
                     <img
                       alt="Turquoise and Gold Hoop Earring, Gold, large"
+                      class="object-cover"
                       fetchpriority="auto"
                       loading="lazy"
                       src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd316e8d4/images/large/PG.60119235.JJ887XX.PZ.webp?sfrm=jpg&q=70"
@@ -713,6 +716,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                     />
                     <img
                       alt="Quilted Jacket, , large"
+                      class="object-cover"
                       fetchpriority="auto"
                       loading="lazy"
                       src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd9ed0401/images/large/PG.10205921.JJ5FUXX.PZ.webp?sfrm=jpg&q=70"
@@ -1162,6 +1166,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                     />
                     <img
                       alt="Pull On Pant, , large"
+                      class="object-cover"
                       fetchpriority="auto"
                       loading="lazy"
                       src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw4702e758/images/large/PG.10218785.JJ2XNXX.PZ.webp?sfrm=jpg&q=70"
@@ -1630,6 +1635,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                     />
                     <img
                       alt="Zerrick, , large"
+                      class="object-cover"
                       fetchpriority="auto"
                       loading="lazy"
                       src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw9c2ea908/images/large/PG.CJZERRICK.BLACKLE.PZ.webp?sfrm=jpg&q=70"

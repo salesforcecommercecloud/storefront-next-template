@@ -71,6 +71,7 @@ exports[`ChildProductCard stories snapshot > Controlled story renders and matche
                   />
                   <img
                     alt="Turquoise and Gold Bracelet, Gold, large"
+                    class="object-cover"
                     fetchpriority="auto"
                     loading="lazy"
                     src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sfrm=jpg&q=70"
@@ -212,6 +213,7 @@ exports[`ChildProductCard stories snapshot > Default story renders and matches s
                   />
                   <img
                     alt="Turquoise and Gold Bracelet, Gold, large"
+                    class="object-cover"
                     fetchpriority="auto"
                     loading="lazy"
                     src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sfrm=jpg&q=70"

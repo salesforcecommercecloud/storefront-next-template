@@ -11,6 +11,7 @@ exports[`ProductImage Snapshots > Default snapshot 1`] = `
       >
         <img
           alt="Placeholder Image"
+          class="object-cover"
           fetchpriority="auto"
           loading="lazy"
           src="https://via.placeholder.com/300"
@@ -32,6 +33,7 @@ exports[`ProductImage Snapshots > ErrorFallback snapshot 1`] = `
       >
         <img
           alt="Broken Image"
+          class="object-cover"
           fetchpriority="auto"
           loading="lazy"
           src="https://invalid-url.example.com/image.jpg"
