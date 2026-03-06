@@ -145,4 +145,130 @@ describe('SelectBonusProductsCard', () => {
         const button = screen.getByRole('button', { name: /Select bonus products in Cart/i });
         expect(button).toBeInTheDocument();
     });
+
+    it('button can be clicked multiple times', async () => {
+        const user = userEvent.setup();
+        const onSelectClick = vi.fn();
+
+        renderWithRouter(<SelectBonusProductsCard promotion={mockPromotion} onSelectClick={onSelectClick} />);
+
+        const button = screen.getByRole('button', { name: /Select bonus products in Cart/i });
+        await user.click(button);
+        await user.click(button);
+        await user.click(button);
+
+        expect(onSelectClick).toHaveBeenCalledTimes(3);
+    });
+
+    it('handles promotion ids with various characters', () => {
+        // Test that promotionId is safely rendered in data-testid
+        // without causing rendering errors or DOM issues
+        const testCases = ['promo-buy-1-get-2-free!', 'promo_with_underscores', 'promo.with.dots', 'promo-123-abc'];
+
+        testCases.forEach((promotionId) => {
+            const { unmount } = renderWithRouter(
+                <SelectBonusProductsCard promotion={{ ...mockPromotion, promotionId }} onSelectClick={vi.fn()} />
+            );
+
+            expect(screen.getByTestId(`select-bonus-products-card-${promotionId}`)).toBeInTheDocument();
+            expect(screen.getByTestId(`select-bonus-products-button-${promotionId}`)).toBeInTheDocument();
+
+            unmount();
+        });
+    });
+
+    describe('Accessibility', () => {
+        it('button is keyboard accessible with Enter key', async () => {
+            const user = userEvent.setup();
+            const onSelectClick = vi.fn();
+
+            renderWithRouter(<SelectBonusProductsCard promotion={mockPromotion} onSelectClick={onSelectClick} />);
+
+            const button = screen.getByRole('button');
+            button.focus();
+
+            expect(button).toHaveFocus();
+
+            await user.keyboard('{Enter}');
+            expect(onSelectClick).toHaveBeenCalledTimes(1);
+        });
+
+        it('button is keyboard accessible with Space key', async () => {
+            const user = userEvent.setup();
+            const onSelectClick = vi.fn();
+
+            renderWithRouter(<SelectBonusProductsCard promotion={mockPromotion} onSelectClick={onSelectClick} />);
+
+            const button = screen.getByRole('button');
+            button.focus();
+
+            expect(button).toHaveFocus();
+
+            await user.keyboard(' ');
+            expect(onSelectClick).toHaveBeenCalledTimes(1);
+        });
+
+        it('button has appropriate role', () => {
+            renderWithRouter(<SelectBonusProductsCard promotion={mockPromotion} onSelectClick={vi.fn()} />);
+
+            expect(screen.getByRole('button')).toBeInTheDocument();
+        });
+    });
+
+    describe('Promotion state variations', () => {
+        it('renders correctly when all slots are filled (does not hide)', () => {
+            const fullPromotion: BonusPromotionInfo = {
+                ...mockPromotion,
+                selectedItems: 2,
+                remainingCapacity: 0,
+            };
+
+            const { container } = renderWithRouter(
+                <SelectBonusProductsCard promotion={fullPromotion} onSelectClick={vi.fn()} />
+            );
+
+            // Component still renders the button even when remainingCapacity is 0
+            // This verifies there's no early-return logic based on remainingCapacity
+            const button = screen.getByRole('button', { name: /Select bonus products in Cart/i });
+            expect(button).toBeInTheDocument();
+            expect(container.firstChild).not.toBeEmptyDOMElement();
+        });
+
+        it('renders correctly when partially selected', () => {
+            const partialPromotion: BonusPromotionInfo = {
+                ...mockPromotion,
+                selectedItems: 1,
+                remainingCapacity: 1,
+            };
+
+            renderWithRouter(<SelectBonusProductsCard promotion={partialPromotion} onSelectClick={vi.fn()} />);
+
+            const button = screen.getByRole('button', { name: /Select bonus products in Cart/i });
+            expect(button).toBeInTheDocument();
+        });
+    });
+
+    describe('Rerender behavior', () => {
+        it('updates testids when promotion changes', () => {
+            const { rerender } = renderWithRouter(
+                <SelectBonusProductsCard promotion={mockPromotion} onSelectClick={vi.fn()} />
+            );
+
+            expect(screen.getByTestId('select-bonus-products-card-promo-buy-one-get-tie')).toBeInTheDocument();
+
+            const newPromotion: BonusPromotionInfo = {
+                ...mockPromotion,
+                promotionId: 'promo-different',
+            };
+
+            rerender(
+                <ConfigProvider config={mockConfig}>
+                    <SelectBonusProductsCard promotion={newPromotion} onSelectClick={vi.fn()} />
+                </ConfigProvider>
+            );
+
+            expect(screen.getByTestId('select-bonus-products-card-promo-different')).toBeInTheDocument();
+            expect(screen.queryByTestId('select-bonus-products-card-promo-buy-one-get-tie')).not.toBeInTheDocument();
+        });
+    });
 });
