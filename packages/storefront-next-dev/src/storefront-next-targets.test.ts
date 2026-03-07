@@ -21,13 +21,16 @@ describe('storefrontNextTargets', () => {
     // - Removing most count assertions and checking for specific plugin names instead
     // - Only testing order if plugin order actually matters for functionality
     // - Testing presence/absence of specific plugins rather than exact counts
+    // Base plugin count without SCAPI_PROXY_HOST (workspace plugin excluded):
+    // managedRuntimeBundle, fixReactRouterManifestUrls, patchReactRouter,
+    // platformEntry, transformTargetPlaceholder, watchConfigFiles, buildMiddlewareRegistry,
+    // eventInstrumentationValidator
+    const BASE_PLUGIN_COUNT = 8;
+
     it('should return an array of targets with default config', () => {
         const targets = storefrontNextTargets();
         expect(Array.isArray(targets)).toBe(true);
-        // Base targets: workspace, managedRuntimeBundle, fixReactRouterManifestUrls, patchReactRouter,
-        // platformEntry, transformTargetPlaceholder, watchConfigFiles, buildMiddlewareRegistry,
-        // eventInstrumentationValidator
-        expect(targets.length).toBe(9);
+        expect(targets.length).toBe(BASE_PLUGIN_COUNT);
         targets.forEach((target) => {
             expect(target).toHaveProperty('name');
         });
@@ -36,19 +39,35 @@ describe('storefrontNextTargets', () => {
     it('should return an array of targets with empty config', () => {
         const targets = storefrontNextTargets({});
         expect(Array.isArray(targets)).toBe(true);
-        expect(targets.length).toBe(9);
+        expect(targets.length).toBe(BASE_PLUGIN_COUNT);
+    });
+
+    it('should include workspace plugin when SCAPI_PROXY_HOST is set', () => {
+        process.env.SCAPI_PROXY_HOST = 'https://scw:25010';
+        const targets = storefrontNextTargets();
+        expect(targets.length).toBe(BASE_PLUGIN_COUNT + 1);
+        const targetNames = targets.map((t) => t.name);
+        expect(targetNames).toContain('storefront-next-workspace');
+        delete process.env.SCAPI_PROXY_HOST;
+    });
+
+    it('should not include workspace plugin when SCAPI_PROXY_HOST is not set', () => {
+        delete process.env.SCAPI_PROXY_HOST;
+        const targets = storefrontNextTargets();
+        const targetNames = targets.map((t) => t.name);
+        expect(targetNames).not.toContain('storefront-next-workspace');
     });
 
     it('should not include readableChunkFileNames when readableChunkNames is false', () => {
         const targets = storefrontNextTargets({ readableChunkNames: false });
-        expect(targets.length).toBe(9);
+        expect(targets.length).toBe(BASE_PLUGIN_COUNT);
         const targetNames = targets.map((t) => t.name);
         expect(targetNames).not.toContain('odyssey:readable-chunk-file-names');
     });
 
     it('should include readableChunkFileNames when readableChunkNames is true', () => {
         const targets = storefrontNextTargets({ readableChunkNames: true });
-        expect(targets.length).toBe(10); // Should have 10 targets when readableChunkNames is enabled
+        expect(targets.length).toBe(BASE_PLUGIN_COUNT + 1);
         const targetNames = targets.map((t) => t.name);
         expect(targetNames).toContain('odyssey:readable-chunk-file-names');
     });
@@ -57,17 +76,16 @@ describe('storefrontNextTargets', () => {
         const targets = storefrontNextTargets({ readableChunkNames: true });
         const targetNames = targets.map((t) => t.name);
 
-        // Check order and presence
-        expect(targetNames[0]).toBe('storefront-next-workspace');
-        expect(targetNames[1]).toBe('odyssey:managed-runtime-bundle');
-        expect(targetNames[2]).toBe('odyssey:fix-react-router-manifest-urls');
-        expect(targetNames[3]).toBe('odyssey:patch-react-router');
-        expect(targetNames[4]).toBe('odyssey:platform-entry');
-        expect(targetNames[5]).toBe('odyssey:transform-target-placeholder');
-        expect(targetNames[6]).toBe('odyssey:watch-config-files');
-        expect(targetNames[7]).toBe('odyssey:build-middleware-registry');
-        expect(targetNames[8]).toBe('storefrontnext:event-instrumentation-validator');
-        expect(targetNames[9]).toBe('odyssey:readable-chunk-file-names');
+        // Check order and presence (workspace plugin excluded without SCAPI_PROXY_HOST)
+        expect(targetNames[0]).toBe('odyssey:managed-runtime-bundle');
+        expect(targetNames[1]).toBe('odyssey:fix-react-router-manifest-urls');
+        expect(targetNames[2]).toBe('odyssey:patch-react-router');
+        expect(targetNames[3]).toBe('odyssey:platform-entry');
+        expect(targetNames[4]).toBe('odyssey:transform-target-placeholder');
+        expect(targetNames[5]).toBe('odyssey:watch-config-files');
+        expect(targetNames[6]).toBe('odyssey:build-middleware-registry');
+        expect(targetNames[7]).toBe('storefrontnext:event-instrumentation-validator');
+        expect(targetNames[8]).toBe('odyssey:readable-chunk-file-names');
     });
 
     it('should accept StorefrontNextTargetsConfig type with readableChunkNames', () => {
@@ -75,12 +93,12 @@ describe('storefrontNextTargets', () => {
             readableChunkNames: true,
         };
         const targets = storefrontNextTargets(config);
-        expect(targets.length).toBe(10);
+        expect(targets.length).toBe(BASE_PLUGIN_COUNT + 1);
     });
 
     it('should not include eventInstrumentationValidator when explicitly disabled', () => {
         const targets = storefrontNextTargets({ eventInstrumentationValidator: false });
-        expect(targets.length).toBe(8); // One less than default
+        expect(targets.length).toBe(BASE_PLUGIN_COUNT - 1);
         const targetNames = targets.map((t) => t.name);
         expect(targetNames).not.toContain('storefrontnext:event-instrumentation-validator');
     });
@@ -92,7 +110,7 @@ describe('storefrontNextTargets', () => {
                 registryPath: '/path/to/registry',
             },
         });
-        expect(targets.length).toBe(10); // 9 base + staticRegistry
+        expect(targets.length).toBe(BASE_PLUGIN_COUNT + 1);
         const targetNames = targets.map((t) => t.name);
         expect(targetNames).toContain('storefrontnext:static-registry');
     });
@@ -103,7 +121,7 @@ describe('storefrontNextTargets', () => {
                 componentPath: '/path/to/components',
             } as any,
         });
-        expect(targets.length).toBe(9); // Only base targets
+        expect(targets.length).toBe(BASE_PLUGIN_COUNT);
         const targetNames = targets.map((t) => t.name);
         expect(targetNames).not.toContain('storefrontnext:static-registry');
     });
@@ -114,7 +132,7 @@ describe('storefrontNextTargets', () => {
                 registryPath: '/path/to/registry',
             } as any,
         });
-        expect(targets.length).toBe(9); // Only base targets
+        expect(targets.length).toBe(BASE_PLUGIN_COUNT);
         const targetNames = targets.map((t) => t.name);
         expect(targetNames).not.toContain('storefrontnext:static-registry');
     });

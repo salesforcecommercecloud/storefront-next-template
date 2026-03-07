@@ -1216,6 +1216,11 @@ function platformEntryPlugin() {
 * - `PUBLIC__app__images__enableDis` — (Auto-set) Set to `'false'` when SCAPI_PROXY_HOST
 *    is present, unless already explicitly configured. Controls whether the template
 *    uses DIS for image format conversion and responsive srcsets.
+*
+* In workspace dev mode, this plugin also configures `optimizeDeps.entries` to scan all
+* source files upfront. Without this, Vite discovers deps lazily per-route and invalidates
+* the SSR module cache mid-session, leaving React in a partially-initialized state:
+*   TypeError: Cannot read properties of null (reading 'useContext'/'useMemo')
 */
 const workspacePlugin = () => {
 	return {
@@ -1226,14 +1231,23 @@ const workspacePlugin = () => {
 			process.env.PUBLIC__app__images__enableDis ??= "false";
 			if (mode !== "development") return;
 			const jwebTarget = process.env.JWEB_TARGET;
-			return { server: {
-				allowedHosts: true,
-				proxy: Object.fromEntries(["/dw/image", "/on/demandware.static"].map((path$2) => [path$2, {
-					target: jwebTarget || scapiProxyHost,
-					changeOrigin: true,
-					secure: false
-				}]))
-			} };
+			return {
+				server: {
+					allowedHosts: true,
+					proxy: Object.fromEntries(["/dw/image", "/on/demandware.static"].map((path$2) => [path$2, {
+						target: jwebTarget || scapiProxyHost,
+						changeOrigin: true,
+						secure: false
+					}]))
+				},
+				optimizeDeps: { entries: [
+					"./src/**/*.{ts,tsx}",
+					"!./src/**/*.{test,spec}.{ts,tsx}",
+					"!./src/**/*.stories.{ts,tsx}",
+					"!./src/**/*-snapshot.tsx",
+					"!./src/**/*.d.ts"
+				] }
+			};
 		}
 	};
 };
@@ -1271,7 +1285,7 @@ function storefrontNextTargets(config = {}) {
 		verbose: false
 	} } = config;
 	const plugins = [
-		workspacePlugin(),
+		...process.env.SCAPI_PROXY_HOST ? [workspacePlugin()] : [],
 		managedRuntimeBundlePlugin(),
 		fixReactRouterManifestUrlsPlugin(),
 		patchReactRouterPlugin(),

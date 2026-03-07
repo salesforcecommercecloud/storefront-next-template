@@ -13,7 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { Plugin } from 'vite';
+import type { Server as HttpServer } from 'node:http';
+import type { Plugin, HmrOptions } from 'vite';
+
+/**
+ * Returns workspace-specific HMR configuration when running behind a workspace proxy.
+ *
+ * In workspace environments the OAuth2 proxy for the dev server's port is already
+ * authenticated, so routing HMR WebSocket through the same HTTP server means it
+ * shares the same proxy port and OAuth2 session. A separate port (e.g. port-8000)
+ * would require its own OAuth2 login and return a 302 redirect that WebSocket
+ * clients cannot follow.
+ *
+ * This is exported separately from the plugin because it requires the `httpServer`
+ * reference created in `dev.ts`.
+ *
+ * @param httpServer - The Node HTTP server to attach the HMR WebSocket to.
+ *
+ * Environment variables:
+ * - `EXTERNAL_DOMAIN_NAME` — The external hostname for the workspace proxy.
+ *    When it does not start with "localhost", workspace proxy mode is assumed.
+ */
+export function getWorkspaceHmrConfig(httpServer: HttpServer): HmrOptions | undefined {
+    const externalDomain = process.env.EXTERNAL_DOMAIN_NAME;
+    if (!externalDomain || externalDomain.startsWith('localhost')) return undefined;
+
+    return {
+        protocol: 'wss',
+        host: externalDomain,
+        clientPort: 443,
+        server: httpServer,
+    };
+}
 
 /**
  * Vite plugin that automatically configures workspace-specific settings when
@@ -33,6 +64,11 @@ import type { Plugin } from 'vite';
  * - `PUBLIC__app__images__enableDis` — (Auto-set) Set to `'false'` when SCAPI_PROXY_HOST
  *    is present, unless already explicitly configured. Controls whether the template
  *    uses DIS for image format conversion and responsive srcsets.
+ *
+ * In workspace dev mode, this plugin also configures `optimizeDeps.entries` to scan all
+ * source files upfront. Without this, Vite discovers deps lazily per-route and invalidates
+ * the SSR module cache mid-session, leaving React in a partially-initialized state:
+ *   TypeError: Cannot read properties of null (reading 'useContext'/'useMemo')
  */
 export const workspacePlugin = (): Plugin => {
     return {
@@ -59,6 +95,22 @@ export const workspacePlugin = (): Plugin => {
                             { target: jwebTarget || scapiProxyHost, changeOrigin: true, secure: false },
                         ])
                     ),
+                },
+                optimizeDeps: {
+                    // Scan all source files at startup so Vite pre-bundles every client dep
+                    // before serving requests. Without this, Vite discovers deps lazily per
+                    // route and invalidates the SSR module cache mid-session, causing React
+                    // context errors (TypeError: Cannot read properties of null).
+                    // Test files, stories, snapshots and .d.ts files are excluded because
+                    // they import Node.js-only packages (e.g. msw/node) that can't be
+                    // pre-bundled for the browser.
+                    entries: [
+                        './src/**/*.{ts,tsx}',
+                        '!./src/**/*.{test,spec}.{ts,tsx}',
+                        '!./src/**/*.stories.{ts,tsx}',
+                        '!./src/**/*-snapshot.tsx',
+                        '!./src/**/*.d.ts',
+                    ],
                 },
             };
         },

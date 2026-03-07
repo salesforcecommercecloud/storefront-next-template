@@ -77,11 +77,20 @@ async function addToCart(
                 error: error.body?.detail || error.statusText,
             };
         }
-        const { responseMessage } = await extractResponseError(error);
-        return {
-            success: false,
-            error: responseMessage,
-        };
+        // extractResponseError only handles errors that have a `response` property
+        // (i.e. HTTP errors from the SCAPI client). For plain errors (network failures,
+        // basket context errors, etc.) it re-throws, which would escape the action and
+        // cause React Router's single-fetch middleware path to produce a non-Response
+        // result that crashes in parseResponseBody. Fall back to the error message.
+        try {
+            const { responseMessage } = await extractResponseError(error);
+            return { success: false, error: responseMessage };
+        } catch {
+            return {
+                success: false,
+                error: error instanceof Error ? error.message : 'An unexpected error occurred',
+            };
+        }
     }
 }
 
@@ -108,13 +117,18 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
         return Response.json(result);
     } catch (error) {
-        const { responseMessage, status_code } = await extractResponseError(error);
-        return data(
-            {
-                success: false,
-                error: responseMessage,
-            },
-            { status: Number(status_code) }
-        );
+        // extractResponseError re-throws for plain errors (no `response` property).
+        // If it throws, the action would propagate an unhandled error through React Router's
+        // single-fetch + middleware path, which produces a non-Response that crashes in
+        // parseResponseBody. Always return a Response from the action.
+        try {
+            const { responseMessage, status_code } = await extractResponseError(error);
+            return data({ success: false, error: responseMessage }, { status: Number(status_code) });
+        } catch {
+            return Response.json(
+                { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred' },
+                { status: 500 }
+            );
+        }
     }
 }

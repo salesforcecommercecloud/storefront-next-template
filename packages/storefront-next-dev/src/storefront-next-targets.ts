@@ -115,7 +115,7 @@ export function storefrontNextTargets(config: StorefrontNextTargetsConfig = {}):
     } = config;
 
     const plugins: Plugin[] = [
-        workspacePlugin(),
+        ...(process.env.SCAPI_PROXY_HOST ? [workspacePlugin()] : []),
         managedRuntimeBundlePlugin(),
         fixReactRouterManifestUrlsPlugin(),
         patchReactRouterPlugin(),

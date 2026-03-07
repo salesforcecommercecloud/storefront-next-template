@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 import path from 'path';
+import { createServer as createNodeHttpServer } from 'node:http';
 import { createServer as createViteServer } from 'vite';
 import { createServer } from '../server/index';
 import { loadProjectConfig } from '../server/config';
 import { printServerInfo, printServerConfig, printShutdownMessage } from '../utils/logger';
 import { loadEnvFile } from '../utils';
 import { getCommerceCloudApiUrl } from '../utils/paths';
+import { getWorkspaceHmrConfig } from '../plugins/workspace';
 
 export interface DevOptions {
     projectDirectory?: string;
@@ -36,17 +38,27 @@ export async function dev(options: DevOptions = {}): Promise<void> {
 
     // Set NODE_ENV to development
     process.env.NODE_ENV = process.env.NODE_ENV ?? 'development';
-    process.env.EXTERNAL_DOMAIN_NAME = process.env.EXTERNAL_DOMAIN_NAME ?? `localhost:${port}`;
 
-    // Load .env file early
+    // Load .env file before reading EXTERNAL_DOMAIN_NAME so values in .env take precedence
+    // over the localhost default set below.
     loadEnvFile(projectDir);
 
+    // Set fallback only after .env has been loaded
+    process.env.EXTERNAL_DOMAIN_NAME = process.env.EXTERNAL_DOMAIN_NAME ?? `localhost:${port}`;
+
     const config = await loadProjectConfig(projectDir);
+
+    // Create the HTTP server before Vite so it can be passed to the workspace
+    // HMR config (which attaches the WebSocket to the same port).
+    const httpServer = createNodeHttpServer();
+
+    const hmr = getWorkspaceHmrConfig(httpServer);
 
     const vite = await createViteServer({
         root: projectDir,
         server: {
             middlewareMode: true,
+            ...(hmr && { hmr }),
         },
     });
 
@@ -59,8 +71,9 @@ export async function dev(options: DevOptions = {}): Promise<void> {
         vite,
     });
 
-    // Start server
-    const server = app.listen(port, () => {
+    // Attach Express to the HTTP server and start listening
+    httpServer.on('request', app);
+    httpServer.listen(port, () => {
         printServerInfo('development', port, startTime, projectDir);
 
         // Print server configuration after startup banner
@@ -83,7 +96,7 @@ export async function dev(options: DevOptions = {}): Promise<void> {
     ['SIGTERM', 'SIGINT'].forEach((signal) => {
         process.once(signal, () => {
             printShutdownMessage();
-            server?.close(() => {
+            httpServer.close(() => {
                 void vite.close();
                 process.exit(0);
             });

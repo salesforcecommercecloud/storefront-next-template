@@ -20,6 +20,24 @@ import type { ViteDevServer } from 'vite';
 import type { ServerConfig } from '../server/config';
 import { pathsEqual } from '../test-utils';
 
+// Mock node:http — created before Vite so it can be passed as hmr.server
+const mockHttpServer = {
+    on: vi.fn(),
+    listen: vi.fn((port: number, callback?: () => void) => {
+        if (callback) callback();
+        return mockHttpServer;
+    }),
+    close: vi.fn((cb?: () => void) => {
+        if (cb) cb();
+    }),
+};
+
+const mockCreateNodeHttpServer = vi.fn(() => mockHttpServer);
+
+vi.mock('node:http', () => ({
+    createServer: mockCreateNodeHttpServer,
+}));
+
 // Mock dependencies
 const mockViteServer = {
     middlewares: vi.fn(),
@@ -32,16 +50,7 @@ vi.mock('vite', () => ({
     createServer: mockCreateViteServer,
 }));
 
-const mockApp = {
-    listen: vi.fn((port: number, callback?: () => void) => {
-        if (callback) callback();
-        return {
-            close: vi.fn((cb?: () => void) => {
-                if (cb) cb();
-            }),
-        };
-    }),
-} as unknown as Express;
+const mockApp = {} as unknown as Express;
 
 const mockCreateServer = vi.fn(() => mockApp);
 
@@ -96,6 +105,7 @@ describe('dev command', () => {
         vi.clearAllMocks();
         process.env = { ...originalEnv };
         delete process.env.NODE_ENV;
+        delete process.env.EXTERNAL_DOMAIN_NAME;
     });
 
     afterEach(() => {
@@ -109,7 +119,7 @@ describe('dev command', () => {
 
             await dev();
 
-            // Verify Vite server was created
+            // Verify Vite server was created with no HMR config (localhost = no workspace proxy)
             expect(mockCreateViteServer).toHaveBeenCalledWith({
                 root: expect.any(String),
                 server: {
@@ -132,8 +142,11 @@ describe('dev command', () => {
                 vite: mockViteServer,
             });
 
-            // Verify server.listen was called
-            expect(mockApp.listen).toHaveBeenCalledWith(5173, expect.anything());
+            // Verify Express app was attached to the HTTP server
+            expect(mockHttpServer.on).toHaveBeenCalledWith('request', mockApp);
+
+            // Verify the HTTP server was started on the correct port
+            expect(mockHttpServer.listen).toHaveBeenCalledWith(5173, expect.anything());
 
             // Verify printServerInfo was called
             expect(mockPrintServerInfo).toHaveBeenCalledWith(
@@ -164,7 +177,6 @@ describe('dev command', () => {
 
             await dev({ port: 3000 });
 
-            // Verify createServer was called with custom port
             expect(mockCreateServer).toHaveBeenCalledWith({
                 mode: 'development',
                 projectDirectory: expect.any(String),
@@ -173,8 +185,7 @@ describe('dev command', () => {
                 vite: mockViteServer,
             });
 
-            // Verify server.listen was called with custom port
-            expect(mockApp.listen).toHaveBeenCalledWith(3000, expect.anything());
+            expect(mockHttpServer.listen).toHaveBeenCalledWith(3000, expect.anything());
         });
 
         it('should start the development server with custom project directory', async () => {
@@ -183,7 +194,6 @@ describe('dev command', () => {
             const customDir = '/custom/project/dir';
             await dev({ projectDirectory: customDir });
 
-            // Verify Vite server was created with custom directory
             expect(mockCreateViteServer).toHaveBeenCalled();
             const viteCall = (
                 mockCreateViteServer.mock.calls[0] as unknown as [{ root: string; server: { middlewareMode: boolean } }]
@@ -191,17 +201,14 @@ describe('dev command', () => {
             expect(pathsEqual(viteCall.root, customDir)).toBe(true);
             expect(viteCall.server).toEqual({ middlewareMode: true });
 
-            // Verify loadEnvFile was called with custom directory
             expect(mockLoadEnvFile).toHaveBeenCalled();
             const envFileCall = mockLoadEnvFile.mock.calls[0] as unknown as [string];
             expect(pathsEqual(envFileCall[0], customDir)).toBe(true);
 
-            // Verify loadProjectConfig was called with custom directory
             expect(mockLoadProjectConfig).toHaveBeenCalled();
             const configCall = mockLoadProjectConfig.mock.calls[0] as unknown as [string];
             expect(pathsEqual(configCall[0], customDir)).toBe(true);
 
-            // Verify createServer was called with custom directory
             expect(mockCreateServer).toHaveBeenCalled();
             const serverCall = (
                 mockCreateServer.mock.calls[0] as unknown as [
@@ -251,91 +258,71 @@ describe('dev command', () => {
             expect(process.env.EXTERNAL_DOMAIN_NAME).toBe('custom-domain.com');
         });
 
-        it('should handle SIGTERM signal for graceful shutdown', async () => {
+        it('should configure HMR through the main server when using a workspace proxy', async () => {
             const { dev } = await import('./dev');
 
-            const mockServerClose = vi.fn((cb) => cb());
-            const mockListen = vi.fn((port: number, callback?: () => void) => {
-                if (callback) callback();
-                return { close: mockServerClose };
+            process.env.EXTERNAL_DOMAIN_NAME = 'i-abc123-port-5173.dataplane.example.aws.sfdc.cl';
+            await dev();
+
+            expect(mockCreateViteServer).toHaveBeenCalledWith({
+                root: expect.any(String),
+                server: {
+                    middlewareMode: true,
+                    hmr: {
+                        protocol: 'wss',
+                        host: 'i-abc123-port-5173.dataplane.example.aws.sfdc.cl',
+                        clientPort: 443,
+                        server: mockHttpServer,
+                    },
+                },
             });
+        });
 
-            const mockAppWithClose = {
-                listen: mockListen,
-            } as unknown as Express;
-
-            mockCreateServer.mockReturnValueOnce(mockAppWithClose);
+        it('should handle SIGTERM signal for graceful shutdown', async () => {
+            const { dev } = await import('./dev');
 
             const processOnce = vi.spyOn(process, 'once');
             const processExit = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);
 
             await dev();
 
-            // Get the SIGTERM handler
             const sigtermCall = processOnce.mock.calls.find((call) => call[0] === 'SIGTERM');
             const sigtermHandler = sigtermCall?.[1];
             expect(sigtermHandler).toBeDefined();
 
-            // Call the handler
             if (sigtermHandler && typeof sigtermHandler === 'function') {
                 sigtermHandler();
             }
 
-            // Verify printShutdownMessage was called
             expect(mockPrintShutdownMessage).toHaveBeenCalled();
+            expect(mockHttpServer.close).toHaveBeenCalled();
 
-            // Verify server.close was called
-            expect(mockServerClose).toHaveBeenCalled();
-
-            // Verify vite.close was called
             const viteClose = mockViteServer.close as ReturnType<typeof vi.fn>;
             expect(viteClose).toHaveBeenCalled();
-
-            // Verify process.exit was called
             expect(processExit).toHaveBeenCalledWith(0);
         });
 
         it('should handle SIGINT signal for graceful shutdown', async () => {
             const { dev } = await import('./dev');
 
-            const mockServerClose = vi.fn((cb) => cb());
-            const mockListen = vi.fn((port: number, callback?: () => void) => {
-                if (callback) callback();
-                return { close: mockServerClose };
-            });
-
-            const mockAppWithClose = {
-                listen: mockListen,
-            } as unknown as Express;
-
-            mockCreateServer.mockReturnValueOnce(mockAppWithClose);
-
             const processOnce = vi.spyOn(process, 'once');
             const processExit = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);
 
             await dev();
 
-            // Get the SIGINT handler
             const sigintCall = processOnce.mock.calls.find((call) => call[0] === 'SIGINT');
             const sigintHandler = sigintCall?.[1];
             expect(sigintHandler).toBeDefined();
 
-            // Call the handler
             if (sigintHandler && typeof sigintHandler === 'function') {
                 sigintHandler();
             }
 
-            // Verify printShutdownMessage was called
             expect(mockPrintShutdownMessage).toHaveBeenCalled();
+            expect(mockHttpServer.close).toHaveBeenCalled();
 
-            // Verify server.close was called
-            expect(mockServerClose).toHaveBeenCalled();
-
-            // Verify vite.close was called
             const viteClose = mockViteServer.close as ReturnType<typeof vi.fn>;
             expect(viteClose).toHaveBeenCalled();
-
-            // Verify process.exit was called
             expect(processExit).toHaveBeenCalledWith(0);
         });
 
@@ -346,7 +333,6 @@ describe('dev command', () => {
 
             await dev({});
 
-            // Verify loadProjectConfig was called with current working directory
             expect(mockLoadProjectConfig).toHaveBeenCalled();
             const firstCall = mockLoadProjectConfig.mock.calls[0] as unknown as [string];
             expect(pathsEqual(firstCall[0], '/mock/cwd')).toBe(true);

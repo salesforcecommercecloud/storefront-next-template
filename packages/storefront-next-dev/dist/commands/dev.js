@@ -1,11 +1,43 @@
 import { a as printServerInfo, i as printServerConfig, o as printShutdownMessage } from "../logger.js";
 import { c as loadEnvFile } from "../utils.js";
-import { n as getCommerceCloudApiUrl, r as loadProjectConfig, t as createServer$1 } from "../server.js";
+import { n as getCommerceCloudApiUrl, r as loadProjectConfig, t as createServer$2 } from "../server.js";
 import { t as commonFlags } from "../flags.js";
 import { Command, Flags } from "@oclif/core";
 import path from "path";
-import { createServer } from "vite";
+import { createServer } from "node:http";
+import { createServer as createServer$1 } from "vite";
 
+//#region src/plugins/workspace.ts
+/**
+* Returns workspace-specific HMR configuration when running behind a workspace proxy.
+*
+* In workspace environments the OAuth2 proxy for the dev server's port is already
+* authenticated, so routing HMR WebSocket through the same HTTP server means it
+* shares the same proxy port and OAuth2 session. A separate port (e.g. port-8000)
+* would require its own OAuth2 login and return a 302 redirect that WebSocket
+* clients cannot follow.
+*
+* This is exported separately from the plugin because it requires the `httpServer`
+* reference created in `dev.ts`.
+*
+* @param httpServer - The Node HTTP server to attach the HMR WebSocket to.
+*
+* Environment variables:
+* - `EXTERNAL_DOMAIN_NAME` — The external hostname for the workspace proxy.
+*    When it does not start with "localhost", workspace proxy mode is assumed.
+*/
+function getWorkspaceHmrConfig(httpServer) {
+	const externalDomain = process.env.EXTERNAL_DOMAIN_NAME;
+	if (!externalDomain || externalDomain.startsWith("localhost")) return void 0;
+	return {
+		protocol: "wss",
+		host: externalDomain,
+		clientPort: 443,
+		server: httpServer
+	};
+}
+
+//#endregion
 //#region src/lib/dev.ts
 /**
 * Start the development server with Vite in middleware mode
@@ -15,20 +47,27 @@ async function dev(options = {}) {
 	const projectDir = path.resolve(options.projectDirectory || process.cwd());
 	const port = options.port || 5173;
 	process.env.NODE_ENV = process.env.NODE_ENV ?? "development";
-	process.env.EXTERNAL_DOMAIN_NAME = process.env.EXTERNAL_DOMAIN_NAME ?? `localhost:${port}`;
 	loadEnvFile(projectDir);
+	process.env.EXTERNAL_DOMAIN_NAME = process.env.EXTERNAL_DOMAIN_NAME ?? `localhost:${port}`;
 	const config = await loadProjectConfig(projectDir);
-	const vite = await createServer({
+	const httpServer = createServer();
+	const hmr = getWorkspaceHmrConfig(httpServer);
+	const vite = await createServer$1({
 		root: projectDir,
-		server: { middlewareMode: true }
+		server: {
+			middlewareMode: true,
+			...hmr && { hmr }
+		}
 	});
-	const server = (await createServer$1({
+	const app = await createServer$2({
 		mode: "development",
 		projectDirectory: projectDir,
 		config,
 		port,
 		vite
-	})).listen(port, () => {
+	});
+	httpServer.on("request", app);
+	httpServer.listen(port, () => {
 		printServerInfo("development", port, startTime, projectDir);
 		printServerConfig({
 			mode: "development",
@@ -47,7 +86,7 @@ async function dev(options = {}) {
 	["SIGTERM", "SIGINT"].forEach((signal) => {
 		process.once(signal, () => {
 			printShutdownMessage();
-			server?.close(() => {
+			httpServer.close(() => {
 				vite.close();
 				process.exit(0);
 			});
