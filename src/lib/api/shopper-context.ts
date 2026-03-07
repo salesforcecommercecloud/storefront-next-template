@@ -16,19 +16,14 @@
 import type { RouterContextProvider } from 'react-router';
 import { getConfig } from '@/config';
 import { createApiClients } from '@/lib/api-clients';
-import type { ShopperContext as ShopperContextSchema } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperContext as ShopperContextNamespace } from '@salesforce/storefront-next-runtime/scapi';
 
 /**
- * ShopperContext type
- * Supports sourceCode and customQualifiers per Salesforce Commerce Cloud API
+ * ShopperContext request body type — uses the API schema directly.
+ * Which qualifiers are sent is controlled by SHOPPER_CONTEXT_SEARCH_PARAMS in shopper-context-constants.
  * @see https://developer.salesforce.com/docs/commerce/commerce-api/references/shopper-context?meta=createShopperContext
  */
-export type ShopperContext = {
-    sourceCode?: ShopperContextSchema.schemas['ShopperContext']['sourceCode'];
-    customQualifiers?: ShopperContextSchema.schemas['ShopperContext']['customQualifiers'];
-    assignmentQualifiers?: ShopperContextSchema.schemas['ShopperContext']['assignmentQualifiers'];
-    couponCodes?: string[] | null;
-};
+export type ShopperContext = ShopperContextNamespace.schemas['ShopperContext'];
 
 /**
  * Create or replace shopper context using PUT API

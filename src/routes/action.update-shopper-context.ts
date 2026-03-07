@@ -37,7 +37,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         return Response.json(
             {
                 success: false,
-                error: t('Usid is not available for updating shopper context.'),
+                error: t("Usid isn't available for updating shopper context."),
             },
             { status: 401 }
         );
@@ -90,7 +90,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         return response;
     } catch (error) {
         const statusCode = extractStatusCode(error) ? Number(extractStatusCode(error)) : 500;
-        const errorMessage = error instanceof Error ? error.message : t('Shopper context failed to update');
+        const errorMessage = error instanceof Error ? error.message : t('Shopper context failed to update.');
         return Response.json(
             {
                 success: false,

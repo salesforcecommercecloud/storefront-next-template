@@ -68,12 +68,19 @@ export const SHOPPER_CONTEXT_SEARCH_PARAMS: {
         [QUALIFIER_MAPPING_PARAM_NAME]: 'src',
         [QUALIFIER_MAPPING_API_FIELD_NAME]: 'sourceCode',
     },
+    effectiveDateTime: {
+        [QUALIFIER_MAPPING_PARAM_NAME]: 'effectiveDateTime',
+        [QUALIFIER_MAPPING_API_FIELD_NAME]: 'effectiveDateTime',
+    },
+    customerGroupIds: {
+        [QUALIFIER_MAPPING_PARAM_NAME]: 'customerGroupIds',
+        [QUALIFIER_MAPPING_API_FIELD_NAME]: 'customerGroupIds',
+    },
     customQualifiers: {
         // Add custom qualifiers here
         // Each qualifier maps a URL query parameter to a customQualifiers field in the Shopper Context API
-        // Example:
-        device: {
-            [QUALIFIER_MAPPING_PARAM_NAME]: 'device',
+        deviceType: {
+            [QUALIFIER_MAPPING_PARAM_NAME]: 'deviceType',
             [QUALIFIER_MAPPING_API_FIELD_NAME]: 'deviceType',
             [QUALIFIER_MAPPING_CATEGORY]: CUSTOM_QUALIFIERS_CATEGORY,
         },
