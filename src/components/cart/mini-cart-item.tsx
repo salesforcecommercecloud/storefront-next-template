@@ -17,7 +17,7 @@
 'use client';
 
 // React
-import { type ReactElement, type ChangeEvent, useMemo, useState } from 'react';
+import { type ReactElement, useMemo } from 'react';
 
 // React Router
 import { Link } from 'react-router';
@@ -39,6 +39,11 @@ import { toImageUrl } from '@/lib/dynamic-image';
 import ProductPrice from '@/components/product-price';
 import PromoCallout from '@/components/product-price/promo-callout';
 import { Typography } from '@/components/typography';
+import QuantityPicker from '@/components/quantity-picker/quantity-picker';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { formatCurrency } from '@/lib/currency';
+import { ShoppingCart } from 'lucide-react';
 
 /**
  * Basket item data enriched with product details for mini cart display
@@ -96,8 +101,7 @@ interface MiniCartItemProps {
  */
 export default function MiniCartItem({ product, onRemove, bonusProductSlot }: MiniCartItemProps): ReactElement {
     const config = useConfig();
-    const { t: tMiniCart } = useTranslation('miniCart');
-    const { t: tActionCard } = useTranslation('actionCard');
+    const { t: tMiniCart, i18n } = useTranslation('miniCart');
     const { t: tRemoveItem } = useTranslation('removeItem');
     const currency = useCurrency();
     const productAltFallback = tMiniCart('productAltFallback') || 'Product';
@@ -127,113 +131,41 @@ export default function MiniCartItem({ product, onRemove, bonusProductSlot }: Mi
         [product?.variationAttributes, product?.variationValues]
     );
 
-    // State for custom quantity input mode
-    const [isCustomInput, setIsCustomInput] = useState(false);
-    const [customValue, setCustomValue] = useState('');
-
-    /**
-     * Handle quantity change from dropdown
-     * Switches to custom input mode when "Custom" option is selected
-     */
-    const handleSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
-        const value = e.target.value;
-
-        if (value === 'custom') {
-            setIsCustomInput(true);
-            setCustomValue(String(quantity));
-            return;
-        }
-
-        const newQuantity = parseInt(value, 10);
-        handleQuantityChange(String(newQuantity), newQuantity);
-    };
-
-    /**
-     * Handle click to enter custom input mode when quantity is already > 10
-     * This allows users to edit their custom quantity value directly
-     */
-    const handleEnterCustomMode = () => {
-        setIsCustomInput(true);
-        setCustomValue(String(quantity));
-    };
-
-    /**
-     * Handle custom input value change
-     */
-    const handleCustomInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setCustomValue(e.target.value);
-    };
-
-    /**
-     * Handle custom input blur - validates and applies the custom quantity
-     */
-    const handleCustomInputBlur = () => {
-        const newQuantity = parseInt(customValue, 10);
-
-        // Validate input
-        if (isNaN(newQuantity) || newQuantity < 1) {
-            // Reset to current quantity on invalid input
-            setCustomValue(String(quantity));
-            setIsCustomInput(false);
-            return;
-        }
-
-        handleQuantityChange(String(newQuantity), newQuantity);
-        setIsCustomInput(false);
-    };
-
-    /**
-     * Handle keyboard events in custom input
-     * Enter - Apply the value
-     * Escape - Cancel and return to dropdown
-     */
-    const handleCustomInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
-            handleCustomInputBlur();
-        } else if (e.key === 'Escape') {
-            setCustomValue(String(quantity));
-            setIsCustomInput(false);
-        }
-    };
-
-    // Generate quantity options (1-10)
-    const maxQuantity = config.pages.cart.maxQuantityPerItem || 10;
-    const quantityOptions = Array.from({ length: Math.min(maxQuantity, 10) }, (_, i) => i + 1);
-
     // Build product URL for linking to PDP
     const productUrl = product.productId ? `/product/${product.productId}` : undefined;
 
     return (
         <div className="flex gap-4" data-testid="mini-cart-item">
             {/* Product Image */}
-            <div className="flex-shrink-0 w-20 h-20 bg-muted rounded">
+            <div className="flex-shrink-0 w-20 h-20 md:w-24 md:h-24 bg-muted rounded-lg overflow-hidden transition-all duration-500">
                 {image ? (
                     productUrl ? (
                         <Link to={productUrl} className="block w-full h-full">
                             <img
                                 src={optimizedImageUrl}
                                 alt={image.alt || product?.productName || productAltFallback}
-                                className="w-full h-full object-cover rounded"
+                                className="w-full h-full object-cover"
                             />
                         </Link>
                     ) : (
                         <img
                             src={optimizedImageUrl}
                             alt={image.alt || product?.productName || productAltFallback}
-                            className="w-full h-full object-cover rounded"
+                            className="w-full h-full object-cover"
                         />
                     )
                 ) : (
-                    <div className="w-full h-full bg-muted rounded flex items-center justify-center text-muted-foreground text-xs">
+                    <div className="w-full h-full bg-muted rounded-lg flex items-center justify-center text-muted-foreground text-xs">
                         {tMiniCart('noImage')}
                     </div>
                 )}
             </div>
 
-            {/* Left side content */}
+            {/* Product details */}
             <div className="flex-1 min-w-0 flex flex-col">
-                <div className="flex gap-4 justify-between mb-2">
-                    <div className="flex-1 min-w-0">
+                {/* Product name + Delivery badge */}
+                <div className="flex items-start justify-between gap-2 mb-1">
+                    <div className="min-w-0">
                         {productUrl ? (
                             <Link to={productUrl} className="hover:underline">
                                 <h3 className="text-base font-semibold text-foreground line-clamp-2">
@@ -259,92 +191,55 @@ export default function MiniCartItem({ product, onRemove, bonusProductSlot }: Mi
                             </div>
                         )}
                     </div>
-
-                    {/* Right side content */}
-                    <div className="flex-shrink-0 text-right">
-                        <ProductPrice
-                            product={product}
-                            currency={currency}
-                            quantity={1}
-                            type="unit"
-                            labelForA11y={product.productName || productAltFallback}
-                            currentPriceProps={{
-                                className: 'text-base font-semibold text-foreground',
-                            }}
-                            listPriceProps={{
-                                className: 'text-base',
-                            }}
-                            promoCalloutProps={{
-                                className: 'hidden',
-                            }}
-                            className="flex flex-col items-end"
-                        />
-                    </div>
+                    <Badge variant="outline" className="shrink-0 gap-1 text-xs">
+                        <ShoppingCart className="w-3 h-3" />
+                        {tMiniCart('delivery')}
+                    </Badge>
                 </div>
 
-                {/* Quantity Selector */}
+                {/* Price + Savings */}
                 <div className="mb-2">
-                    <label htmlFor={`quantity-${product.itemId}`} className="block text-sm text-foreground mb-1">
+                    <ProductPrice
+                        product={product}
+                        currency={currency}
+                        quantity={1}
+                        type="unit"
+                        labelForA11y={product.productName || productAltFallback}
+                        currentPriceProps={{
+                            className: 'text-base font-semibold text-foreground',
+                        }}
+                        listPriceProps={{
+                            className: 'text-base',
+                        }}
+                        promoCalloutProps={{
+                            className: 'hidden',
+                        }}
+                    />
+                    {(() => {
+                        const discount = product.priceAdjustments?.reduce((acc, adj) => acc + (adj.price ?? 0), 0) ?? 0;
+                        return discount < 0 ? (
+                            <Badge className="mt-1 bg-primary/10 text-primary border-transparent text-xs">
+                                {tMiniCart('saved', {
+                                    amount: formatCurrency(discount, i18n.language, currency),
+                                })}
+                            </Badge>
+                        ) : null;
+                    })()}
+                </div>
+
+                {/* Quantity Picker */}
+                <div className="mb-2 flex items-center gap-2">
+                    <Label
+                        htmlFor={`quantity-${product.itemId}`}
+                        className="text-sm font-normal text-foreground shrink-0">
                         {tMiniCart('quantityLabel')}
-                    </label>
-                    {isCustomInput ? (
-                        <input
-                            type="number"
-                            value={customValue}
-                            onChange={handleCustomInputChange}
-                            onBlur={handleCustomInputBlur}
-                            onKeyDown={handleCustomInputKeyDown}
-                            min="1"
-                            className="w-full border border-border rounded px-2 py-1.5 text-sm bg-background focus:outline-none focus:border-border"
-                            aria-label={tMiniCart('customQuantityAriaLabel')}
-                            autoFocus
-                        />
-                    ) : Number(quantity) > 10 ? (
-                        // Show custom quantity display with edit button when quantity > 10
-                        <div className="flex items-center gap-2">
-                            <div className="flex-1 border border-border rounded px-2 py-1.5 text-sm bg-background">
-                                {quantity}
-                            </div>
-                            <button
-                                type="button"
-                                onClick={handleEnterCustomMode}
-                                className="text-sm text-primary hover:underline"
-                                aria-label={tMiniCart('editQuantityAriaLabel')}>
-                                {tActionCard('edit')}
-                            </button>
-                        </div>
-                    ) : (
-                        <div className="relative">
-                            <select
-                                id={`quantity-${product.itemId}`}
-                                value={quantity}
-                                onChange={handleSelectChange}
-                                className="w-full border border-border rounded px-2 py-1.5 pr-8 text-sm bg-background focus:outline-none focus:border-border appearance-none cursor-pointer"
-                                aria-label={tMiniCart('quantityAriaLabel')}>
-                                {quantityOptions.map((num) => (
-                                    <option key={num} value={num}>
-                                        {num}
-                                    </option>
-                                ))}
-                                <option value="custom">{tMiniCart('customOption')}</option>
-                            </select>
-                            {/* Custom dropdown arrow */}
-                            <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                                <svg
-                                    className="w-4 h-4 text-muted-foreground"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M8 9l4-4 4 4m0 6l-4 4-4-4"
-                                    />
-                                </svg>
-                            </div>
-                        </div>
-                    )}
+                    </Label>
+                    <QuantityPicker
+                        value={String(quantity)}
+                        onChange={handleQuantityChange}
+                        min={1}
+                        productName={product.productName}
+                    />
                 </div>
 
                 {/* Show promotional message after quantity */}
@@ -355,7 +250,7 @@ export default function MiniCartItem({ product, onRemove, bonusProductSlot }: Mi
 
                 <button
                     onClick={onRemove}
-                    className="text-sm text-primary hover:underline text-left mt-2"
+                    className="text-sm text-primary hover:underline text-left"
                     type="button"
                     aria-label={tMiniCart('removeItemAriaLabel')}>
                     {tRemoveItem('button')}

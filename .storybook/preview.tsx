@@ -82,6 +82,24 @@ const RouterWrapper = ({ Story }: { Story: ComponentType }) => {
                         path: '/action/verify-otp',
                         action: async () => ({ success: false, error: 'Mock OTP verification action' }),
                     },
+                    {
+                        // Mock action route for cart item quantity updates
+                        // Used by useCartQuantityUpdate hook via fetcher.submit()
+                        path: '/action/cart-item-update',
+                        action: () => ({ success: true }),
+                    },
+                    {
+                        // Mock action route for cart item removal
+                        // Used by useCartQuantityUpdate hook for remove operations
+                        path: '/action/cart-item-remove',
+                        action: () => ({ success: true }),
+                    },
+                    {
+                        // Mock action route for bonus product addition
+                        // Used by useBonusProductAdd hook via fetcher.submit()
+                        path: '/action/bonus-product-add',
+                        action: () => ({ success: true }),
+                    },
                 ],
                 {
                     initialEntries: ['/'],

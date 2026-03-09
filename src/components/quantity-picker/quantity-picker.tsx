@@ -19,10 +19,6 @@
 // React
 import { type ReactElement } from 'react';
 
-// Components
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-
 // Hooks
 import { useQuantityPicker } from '@/hooks/use-quantity-picker';
 
@@ -92,21 +88,19 @@ export default function QuantityPicker({
     });
 
     return (
-        <div className="flex items-center space-x-1">
+        <div className="inline-flex items-center border border-input rounded-lg">
             {/* Decrement Button */}
-            <Button
-                variant="outline"
-                size="icon"
+            <button
                 onClick={handleDecrement}
                 disabled={disabled || isDecrementDisabled}
-                className="h-8 w-8 p-0"
+                className="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label={tQuantity('decreaseQuantityForProduct', { productName: productName || tCommon('product') })}
                 data-testid="quantity-decrement">
-                <span className="text-sm">−</span>
-            </Button>
+                −
+            </button>
 
             {/* Input Field */}
-            <Input
+            <input
                 ref={inputRef}
                 type="number"
                 min={min}
@@ -119,23 +113,21 @@ export default function QuantityPicker({
                 onKeyDown={handleKeyDown}
                 disabled={disabled}
                 className={cn(
-                    'h-8 w-11 text-center text-sm',
+                    'w-10 text-center text-sm text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed',
                     '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                 )}
                 aria-label={tQuantity('quantity')}
             />
 
             {/* Increment Button */}
-            <Button
-                variant="outline"
-                size="icon"
+            <button
                 onClick={handleIncrement}
                 disabled={disabled || isIncrementDisabled}
-                className="h-8 w-8 p-0"
+                className="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label={tQuantity('increaseQuantityForProduct', { productName: productName || tCommon('product') })}
                 data-testid="quantity-increment">
-                <span className="text-sm">+</span>
-            </Button>
+                +
+            </button>
         </div>
     );
 }

@@ -81,7 +81,7 @@ describe('CartItemEditButton', () => {
 
         const editButton = screen.getByTestId('edit-item-test-item-123');
         expect(editButton).toHaveTextContent(t('actionCard:edit'));
-        expect(editButton).toHaveAttribute('title', t('actionCard:edit'));
+        expect(editButton).toHaveAttribute('aria-label', `${t('actionCard:edit')} `);
     });
 
     test('applies custom className to button', () => {

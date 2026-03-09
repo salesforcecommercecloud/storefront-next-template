@@ -64,7 +64,7 @@ export default function CartTitle({ basket }: CartTitleProps): ReactElement {
     };
 
     return (
-        <Typography variant="h2" as="h1" className="my-6">
+        <Typography variant="h2" as="h1" className="my-6 !text-lg !tracking-normal truncate">
             {getItemCountText(totalItems)}
         </Typography>
     );

@@ -293,15 +293,15 @@
     "cart": {
         "title": "Cart",
         "itemCount": {
-            "zero": "Cart (0 items)",
-            "one": "Cart (1 item)",
-            "other": "Cart ({{count}} items)"
+            "zero": "My Cart (0 items)",
+            "one": "My Cart (1 item)",
+            "other": "My Cart ({{count}} items)"
         },
         "empty": {
-            "title": "Your cart is empty.",
-            "registeredMessage": "Continue shopping to add items to your cart.",
-            "guestMessage": "Sign in to retrieve your saved items or continue shopping.",
-            "continueShopping": "Continue Shopping",
+            "title": "Your cart is empty",
+            "registeredMessage": "Start shopping to add items to your cart",
+            "guestMessage": "Start shopping to add items to your cart",
+            "continueShopping": "Start Shopping",
             "signIn": "Sign In"
         },
         "summary": {
@@ -380,7 +380,10 @@
             "selectBonusProducts": "Select bonus products in Cart",
             "addedToCart": "Bonus product added to cart",
             "failedToAdd": "Failed to add bonus product: {{error}}",
-            "missingRequiredInfo": "Missing required information"
+            "missingRequiredInfo": "Missing required information",
+            "defaultTitle": "Bonus Products Available",
+            "selectionCount": " ({{selected}} of {{max}} selected)",
+            "freeBadge": "Free"
         }
     },
     "checkout": {
@@ -1276,8 +1279,13 @@
         "promotionApplied": "Promotion Applied",
         "removeItemAriaLabel": "Remove item from cart",
         "emptyCart": "Your cart is empty",
+        "emptyTitle": "Your cart is empty",
+        "emptyMessage": "Looks like you haven't added anything to your cart yet. Start shopping to fill it up with amazing products!",
+        "startShopping": "Start Shopping",
         "loading": "Loading...",
-        "viewCart": "View Cart"
+        "viewCart": "View Cart",
+        "delivery": "Delivery",
+        "saved": "Saved {{amount}}"
     },
     "trackingConsent": {
         "title": "Tracking Consent",

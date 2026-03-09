@@ -34,7 +34,7 @@ function ActionLogger({ children }: { children: ReactNode }): ReactElement {
         const logClick = action('cart-empty-click');
         const logHover = action('cart-empty-hover');
 
-        const STOP_PROPAGATION_LABELS = new Set<string>([t('cart:empty.continueShopping'), t('cart:empty.signIn')]);
+        const STOP_PROPAGATION_LABELS = new Set<string>([t('cart:empty.continueShopping')]);
 
         const isInsideHarness = (element: HTMLElement) => root.contains(element);
 
@@ -136,28 +136,27 @@ const meta: Meta<typeof EmptyCart> = {
         docs: {
             description: {
                 component: `
-The EmptyCart component displays when the shopping cart has no items. It provides a user-friendly empty state with appropriate messaging and call-to-action buttons.
+The EmptyCart component displays when the shopping cart has no items. It provides a clean, centered empty state with a shopping bag icon, messaging, and a single "Start Shopping" call-to-action.
 
 ## Features
 
-- **Empty State Display**: Shows shopping cart icon and empty cart message
-- **User Context Awareness**: Different messages for registered vs guest users
-- **Action Buttons**: Continue shopping and sign-in options
-- **Responsive Design**: Adapts to different screen sizes
-- **Accessibility**: Proper semantic markup and ARIA attributes
+- **Shopping Bag Icon**: Inline SVG (w-24 h-24) with light muted stroke (strokeWidth 1.5)
+- **Empty State Messaging**: "Your cart is empty" heading with subtitle
+- **Single CTA**: "Start Shopping" button linking back to the homepage
+- **Responsive Padding**: p-8 on mobile, md:p-16 on larger screens
+- **Accessibility**: aria-hidden icon, semantic heading, proper link markup
 
-## User States
+## Props
 
-- **Guest Users**: Shows sign-in button to encourage account creation
-- **Registered Users**: Shows only continue shopping button
-- **Consistent Messaging**: Clear, helpful text for both user types
+- \`isRegistered\` (boolean, default: false) — Controls subtitle text. Both states show "Start shopping to add items to your cart" and the same single button.
 
 ## Layout
 
-- **Centered Card**: Maximum width container with centered card layout
-- **Icon Display**: Shopping cart icon in muted background circle
-- **Button Actions**: Full-width buttons with proper spacing
-- **Responsive Spacing**: Appropriate padding and margins for all screen sizes
+- **Outer Container**: Full-width muted background with max-w-7xl centered content
+- **Card**: \`bg-background rounded-lg shadow-md\` with generous responsive padding
+- **Icon**: 96×96px inline SVG shopping bag with \`text-muted-foreground/30\`
+- **Typography**: h2 heading (text-xl font-semibold) with mb-2, subtitle (text-sm) with mb-8
+- **Button**: Centered "Start Shopping" button (not full-width)
                 `,
             },
         },
@@ -211,10 +210,9 @@ export const Default: Story = {
                 story: `
 Default empty cart state for guest users. Shows:
 
-- Shopping cart icon in muted circle
+- Shopping bag icon with muted styling
 - Empty cart title and guest-specific message
-- Continue shopping button (primary action)
-- Sign in button (secondary action) to encourage account creation
+- Start Shopping button (primary action)
 
 This is the most common empty cart state for new or anonymous users.
                 `,
@@ -250,12 +248,9 @@ export const GuestUser: Story = {
                 story: `
 Empty cart state specifically for guest users. This story demonstrates:
 
-- Guest-specific messaging encouraging sign-in
-- Both continue shopping and sign-in buttons
-- Clear call-to-action for account creation
-- Helpful guidance for anonymous users
-
-Use this state when you want to encourage guest users to create an account.
+- Guest-specific messaging
+- Start Shopping button
+- Clean, simple empty state for anonymous users
                 `,
             },
         },
@@ -290,9 +285,8 @@ export const RegisteredUser: Story = {
 Empty cart state for registered/logged-in users. This story shows:
 
 - Registered user-specific messaging
-- Only continue shopping button (no sign-in needed)
-- Cleaner, simpler interface for authenticated users
-- Focus on getting back to shopping
+- Start Shopping button
+- Same clean interface for authenticated users
 
 This state is shown when a logged-in user has an empty cart.
                 `,

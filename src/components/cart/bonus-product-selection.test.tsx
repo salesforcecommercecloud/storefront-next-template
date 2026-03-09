@@ -37,6 +37,11 @@ vi.mock('react-i18next', () => ({
     },
 }));
 
+// Mock currency provider
+vi.mock('@/providers/currency', () => ({
+    useCurrency: () => 'USD',
+}));
+
 // Mock useFetcher from react-router - will be spied on in beforeEach
 const mockSubmit = vi.fn();
 const mockFetcher = {
@@ -54,10 +59,10 @@ vi.mock('@/components/toast', () => ({
 }));
 
 // Mock bonus-product-utils
-// Default: all slots filled so accordion is collapsed by default (for existing tests)
+// Default: all slots filled (for existing tests)
 vi.mock('@/lib/bonus-product-utils', () => ({
     getBonusProductCountsForPromotion: vi.fn(() => ({
-        selectedBonusItems: 3, // Equal to max so accordion starts collapsed
+        selectedBonusItems: 3,
         maxBonusItems: 3,
     })),
 }));
@@ -227,10 +232,6 @@ describe('BonusProductSelection', () => {
             const props = getDefaultProps();
             renderWithRouter(<BonusProductSelection {...props} />);
 
-            // Click accordion to expand
-            const trigger = screen.getByRole('button', { name: /buy one get one free/i });
-            fireEvent.click(trigger);
-
             await waitFor(() => {
                 // Check carousel renders
                 const carousel = screen.getByRole('region', { name: '' });
@@ -260,26 +261,19 @@ describe('BonusProductSelection', () => {
 
             renderWithRouter(<BonusProductSelection {...props} />);
 
-            // Click accordion to expand
-            const trigger = screen.getByRole('button', { name: /buy one get one free/i });
-            fireEvent.click(trigger);
-
             // Should not have carousel items
             const carouselItems = screen.queryAllByTestId('carousel-item');
             expect(carouselItems).toHaveLength(0);
         });
 
-        test('displays "No image" placeholder when product has no image', async () => {
+        test('displays "No image available" placeholder when product has no image', async () => {
             mockGetPrimaryProductImageUrl.mockReturnValue(undefined);
             const props = getDefaultProps();
 
             renderWithRouter(<BonusProductSelection {...props} />);
 
-            // Click accordion to expand
-            fireEvent.click(screen.getByRole('button', { name: /buy one get one free/i }));
-
             await waitFor(() => {
-                const placeholders = screen.getAllByText('No image');
+                const placeholders = screen.getAllByText('No image available');
                 expect(placeholders).toHaveLength(2);
             });
         });
@@ -299,7 +293,7 @@ describe('BonusProductSelection', () => {
 
             // Check title with count (mocked as 1 of 3)
             expect(screen.getByText('Summer Sale Bonus')).toBeInTheDocument();
-            expect(screen.getByText(/\(1 of 3 added to cart\)/)).toBeInTheDocument();
+            expect(screen.getByText(/\(1 of 3 selected\)/)).toBeInTheDocument();
         });
 
         test('displays fallback title when promotionName is not provided', () => {
@@ -312,17 +306,9 @@ describe('BonusProductSelection', () => {
         });
 
         test('carousel items are left-aligned with justify-start class', async () => {
-            // Override mock to have slots available so accordion expands by default
-            const { getBonusProductCountsForPromotion } = await import('@/lib/bonus-product-utils');
-            vi.mocked(getBonusProductCountsForPromotion).mockReturnValue({
-                selectedBonusItems: 0,
-                maxBonusItems: 3,
-            });
-
             const props = getDefaultProps();
             renderWithRouter(<BonusProductSelection {...props} />);
 
-            // Accordion should be expanded by default
             await waitFor(() => {
                 const carouselContent = screen.getByTestId('carousel-content');
                 // Check that justify-start class is applied (via className prop)
@@ -375,7 +361,6 @@ describe('BonusProductSelection', () => {
 
             renderWithRouter(<BonusProductSelection {...props} />);
 
-            // Accordion should be expanded by default since slots are available (0/3)
             const selectButtons = await screen.findAllByRole('button', { name: /select/i });
 
             // Click variant product (first button)
@@ -414,7 +399,6 @@ describe('BonusProductSelection', () => {
 
             renderWithRouter(<BonusProductSelection {...props} />);
 
-            // Accordion should be expanded by default since slots are available (0/3)
             const selectButtons = await screen.findAllByRole('button', { name: /select/i });
             await user.click(selectButtons[0]);
 
@@ -439,8 +423,6 @@ describe('BonusProductSelection', () => {
 
             renderWithRouter(<BonusProductSelection {...props} />);
 
-            // Accordion should be expanded by default since slots are available (0/3)
-            // Click first Select button
             const selectButtons = await screen.findAllByRole('button', { name: /select/i });
             await user.click(selectButtons[0]);
 
@@ -501,7 +483,6 @@ describe('BonusProductSelection', () => {
 
         test('button is disabled during submission and when max items reached', async () => {
             const props = getDefaultProps();
-            const user = userEvent.setup();
 
             // Mock max items reached
             const { getBonusProductCountsForPromotion } = await import('@/lib/bonus-product-utils');
@@ -511,9 +492,6 @@ describe('BonusProductSelection', () => {
             });
 
             renderWithRouter(<BonusProductSelection {...props} />);
-
-            // Expand accordion
-            await user.click(screen.getByRole('button', { name: /buy one get one free/i }));
 
             // Check buttons are disabled when max reached
             const selectButtons = await screen.findAllByRole('button', { name: /select/i });
@@ -527,9 +505,6 @@ describe('BonusProductSelection', () => {
             const props = getDefaultProps();
 
             renderWithRouter(<BonusProductSelection {...props} />);
-
-            // Expand accordion
-            fireEvent.click(screen.getByRole('button', { name: /buy one get one free/i }));
 
             await waitFor(() => {
                 const addingButtons = screen.getAllByRole('button', { name: /adding\.\.\./i });
@@ -553,8 +528,6 @@ describe('BonusProductSelection', () => {
 
             renderWithRouter(<BonusProductSelection {...props} />);
 
-            // Accordion should be expanded by default since slots are available (0/3)
-            // Wait for Select buttons to be visible
             const selectButtons = await screen.findAllByRole('button', { name: /select/i });
             fireEvent.click(selectButtons[0]);
 
@@ -588,8 +561,6 @@ describe('BonusProductSelection', () => {
 
             renderWithRouter(<BonusProductSelection {...props} />);
 
-            // Accordion should be expanded by default since slots are available (0/3)
-            // Wait for Select buttons to be visible
             const selectButtons = await screen.findAllByRole('button', { name: /select/i });
             fireEvent.click(selectButtons[0]);
 
@@ -606,49 +577,6 @@ describe('BonusProductSelection', () => {
             // Should NOT submit to fetcher
             expect(mockSubmit).not.toHaveBeenCalled();
         });
-
-        test('accordion expands when slots available, collapses when full', async () => {
-            const { getBonusProductCountsForPromotion } = await import('@/lib/bonus-product-utils');
-
-            // Test case 1: Slots available (1 of 2) - should be expanded by default
-            vi.mocked(getBonusProductCountsForPromotion).mockReturnValue({
-                selectedBonusItems: 1,
-                maxBonusItems: 2,
-            });
-
-            const props1 = getDefaultProps();
-            const { unmount } = renderWithRouter(<BonusProductSelection {...props1} />);
-
-            // Accordion should be expanded by default - content should be visible without clicking
-            await waitFor(() => {
-                const carouselItems = screen.queryAllByTestId('carousel-item');
-                expect(carouselItems.length).toBeGreaterThan(0);
-            });
-
-            unmount();
-
-            // Test case 2: Slots full (2 of 2) - should be collapsed by default
-            vi.mocked(getBonusProductCountsForPromotion).mockReturnValue({
-                selectedBonusItems: 2,
-                maxBonusItems: 2,
-            });
-
-            const props2 = getDefaultProps();
-            renderWithRouter(<BonusProductSelection {...props2} />);
-
-            // Accordion should be collapsed by default - content should NOT be visible
-            const carouselItems = screen.queryAllByTestId('carousel-item');
-            expect(carouselItems).toHaveLength(0);
-
-            // Verify we can still manually expand it
-            const trigger = screen.getByRole('button', { name: /buy one get one free/i });
-            fireEvent.click(trigger);
-
-            await waitFor(() => {
-                const expandedCarouselItems = screen.queryAllByTestId('carousel-item');
-                expect(expandedCarouselItems.length).toBeGreaterThan(0);
-            });
-        });
     });
 
     // ========================================================================
@@ -662,9 +590,6 @@ describe('BonusProductSelection', () => {
             delete props.bonusProductsById['product-2'];
 
             renderWithRouter(<BonusProductSelection {...props} />);
-
-            // Expand accordion
-            fireEvent.click(screen.getByRole('button', { name: /buy one get one free/i }));
 
             await waitFor(() => {
                 // Should only render 1 product card (product-1)
@@ -692,9 +617,6 @@ describe('BonusProductSelection', () => {
 
             renderWithRouter(<BonusProductSelection {...props} />);
 
-            // Expand accordion
-            fireEvent.click(screen.getByRole('button', { name: /buy one get one free/i }));
-
             await waitFor(() => {
                 expect(screen.getByText('Name From Product Data')).toBeInTheDocument();
             });
@@ -712,9 +634,6 @@ describe('BonusProductSelection', () => {
             };
 
             renderWithRouter(<BonusProductSelection {...props} />);
-
-            // Expand accordion
-            fireEvent.click(screen.getByRole('button', { name: /buy one get one free/i }));
 
             await waitFor(() => {
                 expect(screen.getByText('Product')).toBeInTheDocument();
@@ -763,7 +682,6 @@ describe('BonusProductSelection', () => {
 
             renderWithRouter(<BonusProductSelection {...props} />);
 
-            // Should be expanded by default since slots are available
             await waitFor(() => {
                 expect(screen.getByText('Rule Based Product 1')).toBeInTheDocument();
                 expect(screen.getByText('Rule Based Product 2')).toBeInTheDocument();
@@ -889,9 +807,6 @@ describe('BonusProductSelection', () => {
 
             renderWithRouter(<BonusProductSelection {...props} />);
 
-            // Expand accordion
-            fireEvent.click(screen.getByRole('button', { name: /buy one get one free/i }));
-
             // Should render without crashing, but no products
             const carouselItems = screen.queryAllByTestId('carousel-item');
             expect(carouselItems).toHaveLength(0);
@@ -1006,7 +921,7 @@ describe('BonusProductSelection', () => {
 
             await waitFor(() => {
                 expect(screen.getByText('Rule Product without image')).toBeInTheDocument();
-                expect(screen.getByText('No image')).toBeInTheDocument();
+                expect(screen.getByText('No image available')).toBeInTheDocument();
             });
         });
 

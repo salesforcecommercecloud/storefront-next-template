@@ -3,9 +3,9 @@
 exports[`CartTitle stories snapshot > EmptyCart story renders and matches snapshot 1`] = `
 <div>
   <h1
-    class="text-3xl font-semibold tracking-tight text-left my-6"
+    class="text-3xl font-semibold tracking-tight text-left my-6 !text-lg !tracking-normal truncate"
   >
-    Cart (0 items)
+    My Cart (0 items)
   </h1>
 </div>
 `;
@@ -13,9 +13,9 @@ exports[`CartTitle stories snapshot > EmptyCart story renders and matches snapsh
 exports[`CartTitle stories snapshot > LargeItemCount story renders and matches snapshot 1`] = `
 <div>
   <h1
-    class="text-3xl font-semibold tracking-tight text-left my-6"
+    class="text-3xl font-semibold tracking-tight text-left my-6 !text-lg !tracking-normal truncate"
   >
-    Cart (99 items)
+    My Cart (99 items)
   </h1>
 </div>
 `;
@@ -32,9 +32,9 @@ exports[`CartTitle stories snapshot > SingleAndMultipleItems story renders and m
         Single item:
       </p>
       <h1
-        class="text-3xl font-semibold tracking-tight text-left my-6"
+        class="text-3xl font-semibold tracking-tight text-left my-6 !text-lg !tracking-normal truncate"
       >
-        Cart (1 item)
+        My Cart (1 item)
       </h1>
     </div>
     <div>
@@ -44,9 +44,9 @@ exports[`CartTitle stories snapshot > SingleAndMultipleItems story renders and m
         Multiple items:
       </p>
       <h1
-        class="text-3xl font-semibold tracking-tight text-left my-6"
+        class="text-3xl font-semibold tracking-tight text-left my-6 !text-lg !tracking-normal truncate"
       >
-        Cart (3 items)
+        My Cart (3 items)
       </h1>
     </div>
   </div>

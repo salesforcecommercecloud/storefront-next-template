@@ -26,7 +26,7 @@ vi.mock('@/providers/basket', () => ({
 
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
-        t: (_key: string, options?: { count?: number }) => `Cart (${options?.count ?? 0})`,
+        t: (_key: string, options?: { count?: number }) => `My Cart (${options?.count ?? 0})`,
     }),
 }));
 
@@ -50,7 +50,7 @@ describe('CartBadge', () => {
 
         render(<CartBadge />);
 
-        expect(screen.getByRole('button', { name: 'Cart (2)' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'My Cart (2)' })).toBeInTheDocument();
         expect(screen.getByTestId('shopping-cart-badge')).toHaveTextContent('2');
     });
 
@@ -59,7 +59,7 @@ describe('CartBadge', () => {
 
         render(<CartBadge />);
 
-        expect(screen.getByRole('button', { name: 'Cart (0)' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'My Cart (0)' })).toBeInTheDocument();
         expect(screen.queryByTestId('shopping-cart-badge')).not.toBeInTheDocument();
     });
 
@@ -73,9 +73,9 @@ describe('CartBadge', () => {
         render(<CartBadge />);
 
         const user = userEvent.setup();
-        await user.click(screen.getByRole('button', { name: 'Cart (1)' }));
+        await user.click(screen.getByRole('button', { name: 'My Cart (1)' }));
 
         expect(await screen.findByTestId('cart-sheet')).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Cart (1)' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'My Cart (1)' })).toBeInTheDocument();
     });
 });

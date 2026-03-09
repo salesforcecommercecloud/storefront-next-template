@@ -190,9 +190,9 @@ The CartTitle component displays the cart item count with proper pluralization a
 
 ## Text Variations
 
-- **Zero Items**: "Cart (0 items)"
-- **One Item**: "Cart (1 item)" 
-- **Multiple Items**: "Cart (X items)" where X is the total count
+- **Zero Items**: "My Cart (0 items)"
+- **One Item**: "My Cart (1 item)" 
+- **Multiple Items**: "My Cart (X items)" where X is the total count
 
 ## Edge Cases Handled
 
@@ -227,7 +227,7 @@ This component is typically used at the top of cart pages to provide users with 
         await waitForStorybookReady(canvasElement);
 
         // Verify cart title with zero quantity items displays correctly
-        const cartTitle = await canvas.findByText('Cart (0 items)');
+        const cartTitle = await canvas.findByText('My Cart (0 items)');
         await expect(cartTitle).toBeInTheDocument();
         await expect(cartTitle.tagName.toLowerCase()).toBe('h1');
     },
@@ -253,7 +253,7 @@ export const EmptyCart: Story = {
                 story: `
 Empty cart state showing zero items. This demonstrates:
 
-- "Cart (0 items)" text display
+- "My Cart (0 items)" text display
 - Proper handling of empty productItems array
 - Zero count pluralization
 - Clean, minimal appearance for empty state
@@ -267,7 +267,7 @@ Empty cart state showing zero items. This demonstrates:
         await waitForStorybookReady(canvasElement);
 
         // Verify empty cart title displays correctly
-        const cartTitle = await canvas.findByText('Cart (0 items)');
+        const cartTitle = await canvas.findByText('My Cart (0 items)');
         await expect(cartTitle).toBeInTheDocument();
         void expect(cartTitle.tagName.toLowerCase()).toBe('h1');
     },
@@ -293,7 +293,7 @@ export const SingleAndMultipleItems: Story = {
         docs: {
             description: {
                 story: `
-Single item ("Cart (1 item)") and multiple items ("Cart (X items)") - demonstrates pluralization for both states.
+Single item ("My Cart (1 item)") and multiple items ("My Cart (X items)") - demonstrates pluralization for both states.
                 `,
             },
         },
@@ -303,8 +303,8 @@ Single item ("Cart (1 item)") and multiple items ("Cart (X items)") - demonstrat
 
         await waitForStorybookReady(canvasElement);
 
-        await expect(canvas.getByText('Cart (1 item)')).toBeInTheDocument();
-        const multiTitle = canvas.getByText(/Cart \(\d+ items\)/);
+        await expect(canvas.getByText('My Cart (1 item)')).toBeInTheDocument();
+        const multiTitle = canvas.getByText(/My Cart \(\d+ items\)/);
         await expect(multiTitle).toBeInTheDocument();
     },
 };
@@ -327,7 +327,7 @@ export const LargeItemCount: Story = {
                 story: `
 Cart with a large item count. This shows:
 
-- "Cart (99 items)" text display
+- "My Cart (99 items)" text display
 - Proper handling of large numbers
 - Correct pluralization for high quantities
 - Typography scaling with longer text
@@ -341,7 +341,7 @@ Cart with a large item count. This shows:
         await waitForStorybookReady(canvasElement);
 
         // Verify cart title with large item count displays correctly
-        const cartTitle = await canvas.findByText('Cart (99 items)');
+        const cartTitle = await canvas.findByText('My Cart (99 items)');
         await expect(cartTitle).toBeInTheDocument();
         void expect(cartTitle.tagName.toLowerCase()).toBe('h1');
     },

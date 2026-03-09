@@ -47,7 +47,6 @@ function ActionLogger({ children }: { children: ReactNode }): ReactElement {
         const logRemoveDialogConfirm = action('remove-item-confirm');
         const logRemoveDialogCancel = action('remove-item-cancel');
         const logEmptyContinue = action('empty-continue-shopping');
-        const logEmptySignIn = action('empty-sign-in');
         const logPromoToggle = action('order-promo-toggle');
 
         const handleClick = (event: Event) => {
@@ -112,13 +111,6 @@ function ActionLogger({ children }: { children: ReactNode }): ReactElement {
                     event.preventDefault();
                     event.stopImmediatePropagation();
                     logEmptyContinue({ href: '/' });
-                    return;
-                }
-                const signInLink = target.closest('a[href="/account"]');
-                if (signInLink) {
-                    event.preventDefault();
-                    event.stopImmediatePropagation();
-                    logEmptySignIn({ href: '/account' });
                 }
             }
         };

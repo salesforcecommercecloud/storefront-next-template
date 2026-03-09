@@ -10,9 +10,9 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
       class="max-w-7xl mx-auto px-6"
     >
       <h1
-        class="text-3xl font-semibold tracking-tight text-left my-6"
+        class="text-3xl font-semibold tracking-tight text-left my-6 !text-lg !tracking-normal truncate"
       >
-        Cart (1 item)
+        My Cart (1 item)
       </h1>
       <div
         class="md:hidden mb-3"
@@ -182,12 +182,12 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                                     Remove
                                   </button>
                                   <button
-                                    class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold pl-0"
-                                    data-size="sm"
+                                    aria-label="Edit Button Front Jacket"
+                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs md:text-sm hover:text-primary/80 hover:no-underline h-auto p-0 pl-0"
+                                    data-size="default"
                                     data-slot="button"
                                     data-testid="edit-item-2a54fe1a10d9d9bbbeea6f205f"
                                     data-variant="link"
-                                    title="Edit"
                                   >
                                     Edit
                                   </button>
@@ -268,34 +268,26 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                               </button>
                               <div>
                                 <label
-                                  class="items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground mb-2 block"
+                                  class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground mb-2 block text-right"
                                   data-slot="label"
                                   for="quantity"
                                 >
                                   Quantity:
                                 </label>
                                 <div
-                                  class="flex items-center space-x-1"
+                                  class="inline-flex items-center border border-input rounded-lg"
                                 >
                                   <button
                                     aria-label="Decrement Quantity for the product"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                                    data-size="icon"
-                                    data-slot="button"
+                                    class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-decrement"
-                                    data-variant="outline"
                                     disabled=""
                                   >
-                                    <span
-                                      class="text-sm"
-                                    >
-                                      −
-                                    </span>
+                                    −
                                   </button>
                                   <input
                                     aria-label="Quantity:"
-                                    class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                    data-slot="input"
+                                    class="w-10 text-center text-sm text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                     min="0"
                                     step="1"
                                     type="number"
@@ -303,17 +295,10 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                                   />
                                   <button
                                     aria-label="Increment Quantity for the product"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                                    data-size="icon"
-                                    data-slot="button"
+                                    class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-increment"
-                                    data-variant="outline"
                                   >
-                                    <span
-                                      class="text-sm"
-                                    >
-                                      +
-                                    </span>
+                                    +
                                   </button>
                                 </div>
                               </div>
@@ -772,9 +757,9 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
       class="max-w-7xl mx-auto px-6"
     >
       <h1
-        class="text-3xl font-semibold tracking-tight text-left my-6"
+        class="text-3xl font-semibold tracking-tight text-left my-6 !text-lg !tracking-normal truncate"
       >
-        Cart (3 items)
+        My Cart (3 items)
       </h1>
       <div
         class="md:hidden mb-3"
@@ -939,12 +924,12 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                     Remove
                                   </button>
                                   <button
-                                    class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold pl-0"
-                                    data-size="sm"
+                                    aria-label="Edit Solid Silk Tie"
+                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs md:text-sm hover:text-primary/80 hover:no-underline h-auto p-0 pl-0"
+                                    data-size="default"
                                     data-slot="button"
                                     data-testid="edit-item-4b1d10f5f04a55b91b10d2cd02"
                                     data-variant="link"
-                                    title="Edit"
                                   >
                                     Edit
                                   </button>
@@ -1032,33 +1017,25 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                               </button>
                               <div>
                                 <label
-                                  class="items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground mb-2 block"
+                                  class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground mb-2 block text-right"
                                   data-slot="label"
                                   for="quantity"
                                 >
                                   Quantity:
                                 </label>
                                 <div
-                                  class="flex items-center space-x-1"
+                                  class="inline-flex items-center border border-input rounded-lg"
                                 >
                                   <button
                                     aria-label="Decrement Quantity for the product"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                                    data-size="icon"
-                                    data-slot="button"
+                                    class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-decrement"
-                                    data-variant="outline"
                                   >
-                                    <span
-                                      class="text-sm"
-                                    >
-                                      −
-                                    </span>
+                                    −
                                   </button>
                                   <input
                                     aria-label="Quantity:"
-                                    class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                    data-slot="input"
+                                    class="w-10 text-center text-sm text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                     min="0"
                                     step="1"
                                     type="number"
@@ -1066,17 +1043,10 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                   />
                                   <button
                                     aria-label="Increment Quantity for the product"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                                    data-size="icon"
-                                    data-slot="button"
+                                    class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-increment"
-                                    data-variant="outline"
                                   >
-                                    <span
-                                      class="text-sm"
-                                    >
-                                      +
-                                    </span>
+                                    +
                                   </button>
                                 </div>
                               </div>
@@ -1220,12 +1190,12 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                     Remove
                                   </button>
                                   <button
-                                    class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold pl-0"
-                                    data-size="sm"
+                                    aria-label="Edit Floral Ruffle Top"
+                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs md:text-sm hover:text-primary/80 hover:no-underline h-auto p-0 pl-0"
+                                    data-size="default"
                                     data-slot="button"
                                     data-testid="edit-item-2e97471059696f517030b6895b"
                                     data-variant="link"
-                                    title="Edit"
                                   >
                                     Edit
                                   </button>
@@ -1315,34 +1285,26 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                               </button>
                               <div>
                                 <label
-                                  class="items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground mb-2 block"
+                                  class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground mb-2 block text-right"
                                   data-slot="label"
                                   for="quantity"
                                 >
                                   Quantity:
                                 </label>
                                 <div
-                                  class="flex items-center space-x-1"
+                                  class="inline-flex items-center border border-input rounded-lg"
                                 >
                                   <button
                                     aria-label="Decrement Quantity for the product"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                                    data-size="icon"
-                                    data-slot="button"
+                                    class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-decrement"
-                                    data-variant="outline"
                                     disabled=""
                                   >
-                                    <span
-                                      class="text-sm"
-                                    >
-                                      −
-                                    </span>
+                                    −
                                   </button>
                                   <input
                                     aria-label="Quantity:"
-                                    class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                    data-slot="input"
+                                    class="w-10 text-center text-sm text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                     min="0"
                                     step="1"
                                     type="number"
@@ -1350,17 +1312,10 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                   />
                                   <button
                                     aria-label="Increment Quantity for the product"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                                    data-size="icon"
-                                    data-slot="button"
+                                    class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-increment"
-                                    data-variant="outline"
                                   >
-                                    <span
-                                      class="text-sm"
-                                    >
-                                      +
-                                    </span>
+                                    +
                                   </button>
                                 </div>
                               </div>
@@ -1828,9 +1783,9 @@ exports[`CartContent stories snapshot > DesktopLayout story renders and matches 
       class="max-w-7xl mx-auto px-6"
     >
       <h1
-        class="text-3xl font-semibold tracking-tight text-left my-6"
+        class="text-3xl font-semibold tracking-tight text-left my-6 !text-lg !tracking-normal truncate"
       >
-        Cart (3 items)
+        My Cart (3 items)
       </h1>
       <div
         class="md:hidden mb-3"
@@ -1995,12 +1950,12 @@ exports[`CartContent stories snapshot > DesktopLayout story renders and matches 
                                     Remove
                                   </button>
                                   <button
-                                    class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold pl-0"
-                                    data-size="sm"
+                                    aria-label="Edit Solid Silk Tie"
+                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs md:text-sm hover:text-primary/80 hover:no-underline h-auto p-0 pl-0"
+                                    data-size="default"
                                     data-slot="button"
                                     data-testid="edit-item-4b1d10f5f04a55b91b10d2cd02"
                                     data-variant="link"
-                                    title="Edit"
                                   >
                                     Edit
                                   </button>
@@ -2088,33 +2043,25 @@ exports[`CartContent stories snapshot > DesktopLayout story renders and matches 
                               </button>
                               <div>
                                 <label
-                                  class="items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground mb-2 block"
+                                  class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground mb-2 block text-right"
                                   data-slot="label"
                                   for="quantity"
                                 >
                                   Quantity:
                                 </label>
                                 <div
-                                  class="flex items-center space-x-1"
+                                  class="inline-flex items-center border border-input rounded-lg"
                                 >
                                   <button
                                     aria-label="Decrement Quantity for the product"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                                    data-size="icon"
-                                    data-slot="button"
+                                    class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-decrement"
-                                    data-variant="outline"
                                   >
-                                    <span
-                                      class="text-sm"
-                                    >
-                                      −
-                                    </span>
+                                    −
                                   </button>
                                   <input
                                     aria-label="Quantity:"
-                                    class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                    data-slot="input"
+                                    class="w-10 text-center text-sm text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                     min="0"
                                     step="1"
                                     type="number"
@@ -2122,17 +2069,10 @@ exports[`CartContent stories snapshot > DesktopLayout story renders and matches 
                                   />
                                   <button
                                     aria-label="Increment Quantity for the product"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                                    data-size="icon"
-                                    data-slot="button"
+                                    class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-increment"
-                                    data-variant="outline"
                                   >
-                                    <span
-                                      class="text-sm"
-                                    >
-                                      +
-                                    </span>
+                                    +
                                   </button>
                                 </div>
                               </div>
@@ -2276,12 +2216,12 @@ exports[`CartContent stories snapshot > DesktopLayout story renders and matches 
                                     Remove
                                   </button>
                                   <button
-                                    class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold pl-0"
-                                    data-size="sm"
+                                    aria-label="Edit Floral Ruffle Top"
+                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs md:text-sm hover:text-primary/80 hover:no-underline h-auto p-0 pl-0"
+                                    data-size="default"
                                     data-slot="button"
                                     data-testid="edit-item-2e97471059696f517030b6895b"
                                     data-variant="link"
-                                    title="Edit"
                                   >
                                     Edit
                                   </button>
@@ -2371,34 +2311,26 @@ exports[`CartContent stories snapshot > DesktopLayout story renders and matches 
                               </button>
                               <div>
                                 <label
-                                  class="items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground mb-2 block"
+                                  class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground mb-2 block text-right"
                                   data-slot="label"
                                   for="quantity"
                                 >
                                   Quantity:
                                 </label>
                                 <div
-                                  class="flex items-center space-x-1"
+                                  class="inline-flex items-center border border-input rounded-lg"
                                 >
                                   <button
                                     aria-label="Decrement Quantity for the product"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                                    data-size="icon"
-                                    data-slot="button"
+                                    class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-decrement"
-                                    data-variant="outline"
                                     disabled=""
                                   >
-                                    <span
-                                      class="text-sm"
-                                    >
-                                      −
-                                    </span>
+                                    −
                                   </button>
                                   <input
                                     aria-label="Quantity:"
-                                    class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                    data-slot="input"
+                                    class="w-10 text-center text-sm text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                     min="0"
                                     step="1"
                                     type="number"
@@ -2406,17 +2338,10 @@ exports[`CartContent stories snapshot > DesktopLayout story renders and matches 
                                   />
                                   <button
                                     aria-label="Increment Quantity for the product"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                                    data-size="icon"
-                                    data-slot="button"
+                                    class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-increment"
-                                    data-variant="outline"
                                   >
-                                    <span
-                                      class="text-sm"
-                                    >
-                                      +
-                                    </span>
+                                    +
                                   </button>
                                 </div>
                               </div>
@@ -2884,107 +2809,41 @@ exports[`CartContent stories snapshot > EmptyCart story renders and matches snap
       class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-14"
     >
       <div
-        class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm max-w-md mx-auto"
-        data-slot="card"
+        class="bg-background rounded-lg shadow-md p-8 md:p-16 text-center"
       >
-        <div
-          class="p-8 text-center"
-          data-slot="card-content"
+        <svg
+          aria-hidden="true"
+          class="w-24 h-24 text-muted-foreground/30 mx-auto mb-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          <div
-            class="space-y-6"
-          >
-            <div
-              class="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center"
-            >
-              <svg
-                aria-hidden="true"
-                class="lucide lucide-shopping-cart w-8 h-8 text-muted-foreground"
-                fill="none"
-                height="24"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle
-                  cx="8"
-                  cy="21"
-                  r="1"
-                />
-                <circle
-                  cx="19"
-                  cy="21"
-                  r="1"
-                />
-                <path
-                  d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"
-                />
-              </svg>
-            </div>
-            <div
-              class="space-y-2"
-            >
-              <h2
-                class="tracking-tight text-xl text-center font-semibold text-foreground"
-              >
-                Your cart is empty.
-              </h2>
-              <p
-                class="text-muted-foreground"
-              >
-                Sign in to retrieve your saved items or continue shopping.
-              </p>
-            </div>
-            <div
-              class="space-y-3"
-            >
-              <a
-                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
-                data-size="default"
-                data-slot="button"
-                data-variant="default"
-                href="/"
-              >
-                Continue Shopping
-              </a>
-              <a
-                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 w-full flex items-center justify-center gap-2"
-                data-size="default"
-                data-slot="button"
-                data-variant="outline"
-                href="/account"
-              >
-                <svg
-                  aria-hidden="true"
-                  class="lucide lucide-user w-4 h-4"
-                  fill="none"
-                  height="24"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"
-                  />
-                  <circle
-                    cx="12"
-                    cy="7"
-                    r="4"
-                  />
-                </svg>
-                Sign In
-              </a>
-            </div>
-          </div>
-        </div>
+          <path
+            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+          />
+        </svg>
+        <h2
+          class="tracking-tight text-xl text-center font-semibold text-foreground mb-2"
+        >
+          Your cart is empty
+        </h2>
+        <p
+          class="text-sm text-muted-foreground mb-8"
+        >
+          Start shopping to add items to your cart
+        </p>
+        <a
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+          href="/"
+        >
+          Start Shopping
+        </a>
       </div>
     </div>
   </div>
@@ -3001,9 +2860,9 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
       class="max-w-7xl mx-auto px-6"
     >
       <h1
-        class="text-3xl font-semibold tracking-tight text-left my-6"
+        class="text-3xl font-semibold tracking-tight text-left my-6 !text-lg !tracking-normal truncate"
       >
-        Cart (10 items)
+        My Cart (10 items)
       </h1>
       <div
         class="md:hidden mb-3"
@@ -3173,12 +3032,12 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                                     Remove
                                   </button>
                                   <button
-                                    class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold pl-0"
-                                    data-size="sm"
+                                    aria-label="Edit Button Front Jacket"
+                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs md:text-sm hover:text-primary/80 hover:no-underline h-auto p-0 pl-0"
+                                    data-size="default"
                                     data-slot="button"
                                     data-testid="edit-item-2a54fe1a10d9d9bbbeea6f205f"
                                     data-variant="link"
-                                    title="Edit"
                                   >
                                     Edit
                                   </button>
@@ -3280,33 +3139,25 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                               </button>
                               <div>
                                 <label
-                                  class="items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground mb-2 block"
+                                  class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground mb-2 block text-right"
                                   data-slot="label"
                                   for="quantity"
                                 >
                                   Quantity:
                                 </label>
                                 <div
-                                  class="flex items-center space-x-1"
+                                  class="inline-flex items-center border border-input rounded-lg"
                                 >
                                   <button
                                     aria-label="Decrement Quantity for the product"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                                    data-size="icon"
-                                    data-slot="button"
+                                    class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-decrement"
-                                    data-variant="outline"
                                   >
-                                    <span
-                                      class="text-sm"
-                                    >
-                                      −
-                                    </span>
+                                    −
                                   </button>
                                   <input
                                     aria-label="Quantity:"
-                                    class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                    data-slot="input"
+                                    class="w-10 text-center text-sm text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                     min="0"
                                     step="1"
                                     type="number"
@@ -3314,17 +3165,10 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                                   />
                                   <button
                                     aria-label="Increment Quantity for the product"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                                    data-size="icon"
-                                    data-slot="button"
+                                    class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-increment"
-                                    data-variant="outline"
                                   >
-                                    <span
-                                      class="text-sm"
-                                    >
-                                      +
-                                    </span>
+                                    +
                                   </button>
                                 </div>
                               </div>
@@ -3804,9 +3648,9 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
       class="max-w-7xl mx-auto px-6"
     >
       <h1
-        class="text-3xl font-semibold tracking-tight text-left my-6"
+        class="text-3xl font-semibold tracking-tight text-left my-6 !text-lg !tracking-normal truncate"
       >
-        Cart (3 items)
+        My Cart (3 items)
       </h1>
       <div
         class="md:hidden mb-3"
@@ -3971,12 +3815,12 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                     Remove
                                   </button>
                                   <button
-                                    class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold pl-0"
-                                    data-size="sm"
+                                    aria-label="Edit Solid Silk Tie"
+                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs md:text-sm hover:text-primary/80 hover:no-underline h-auto p-0 pl-0"
+                                    data-size="default"
                                     data-slot="button"
                                     data-testid="edit-item-4b1d10f5f04a55b91b10d2cd02"
                                     data-variant="link"
-                                    title="Edit"
                                   >
                                     Edit
                                   </button>
@@ -4064,33 +3908,25 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                               </button>
                               <div>
                                 <label
-                                  class="items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground mb-2 block"
+                                  class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground mb-2 block text-right"
                                   data-slot="label"
                                   for="quantity"
                                 >
                                   Quantity:
                                 </label>
                                 <div
-                                  class="flex items-center space-x-1"
+                                  class="inline-flex items-center border border-input rounded-lg"
                                 >
                                   <button
                                     aria-label="Decrement Quantity for the product"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                                    data-size="icon"
-                                    data-slot="button"
+                                    class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-decrement"
-                                    data-variant="outline"
                                   >
-                                    <span
-                                      class="text-sm"
-                                    >
-                                      −
-                                    </span>
+                                    −
                                   </button>
                                   <input
                                     aria-label="Quantity:"
-                                    class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                    data-slot="input"
+                                    class="w-10 text-center text-sm text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                     min="0"
                                     step="1"
                                     type="number"
@@ -4098,17 +3934,10 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   />
                                   <button
                                     aria-label="Increment Quantity for the product"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                                    data-size="icon"
-                                    data-slot="button"
+                                    class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-increment"
-                                    data-variant="outline"
                                   >
-                                    <span
-                                      class="text-sm"
-                                    >
-                                      +
-                                    </span>
+                                    +
                                   </button>
                                 </div>
                               </div>
@@ -4252,12 +4081,12 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                     Remove
                                   </button>
                                   <button
-                                    class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold pl-0"
-                                    data-size="sm"
+                                    aria-label="Edit Floral Ruffle Top"
+                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs md:text-sm hover:text-primary/80 hover:no-underline h-auto p-0 pl-0"
+                                    data-size="default"
                                     data-slot="button"
                                     data-testid="edit-item-2e97471059696f517030b6895b"
                                     data-variant="link"
-                                    title="Edit"
                                   >
                                     Edit
                                   </button>
@@ -4347,34 +4176,26 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                               </button>
                               <div>
                                 <label
-                                  class="items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground mb-2 block"
+                                  class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground mb-2 block text-right"
                                   data-slot="label"
                                   for="quantity"
                                 >
                                   Quantity:
                                 </label>
                                 <div
-                                  class="flex items-center space-x-1"
+                                  class="inline-flex items-center border border-input rounded-lg"
                                 >
                                   <button
                                     aria-label="Decrement Quantity for the product"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                                    data-size="icon"
-                                    data-slot="button"
+                                    class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-decrement"
-                                    data-variant="outline"
                                     disabled=""
                                   >
-                                    <span
-                                      class="text-sm"
-                                    >
-                                      −
-                                    </span>
+                                    −
                                   </button>
                                   <input
                                     aria-label="Quantity:"
-                                    class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                    data-slot="input"
+                                    class="w-10 text-center text-sm text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                     min="0"
                                     step="1"
                                     type="number"
@@ -4382,17 +4203,10 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   />
                                   <button
                                     aria-label="Increment Quantity for the product"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                                    data-size="icon"
-                                    data-slot="button"
+                                    class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-increment"
-                                    data-variant="outline"
                                   >
-                                    <span
-                                      class="text-sm"
-                                    >
-                                      +
-                                    </span>
+                                    +
                                   </button>
                                 </div>
                               </div>
@@ -4860,9 +4674,9 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
       class="max-w-7xl mx-auto px-6"
     >
       <h1
-        class="text-3xl font-semibold tracking-tight text-left my-6"
+        class="text-3xl font-semibold tracking-tight text-left my-6 !text-lg !tracking-normal truncate"
       >
-        Cart (1 item)
+        My Cart (1 item)
       </h1>
       <div
         class="md:hidden mb-3"
@@ -5013,12 +4827,12 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                                     Remove
                                   </button>
                                   <button
-                                    class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold pl-0"
-                                    data-size="sm"
+                                    aria-label="Edit Very Long Product Name That Should Wrap Properly In The Cart Display Area"
+                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs md:text-sm hover:text-primary/80 hover:no-underline h-auto p-0 pl-0"
+                                    data-size="default"
                                     data-slot="button"
                                     data-testid="edit-item-2a54fe1a10d9d9bbbeea6f205f"
                                     data-variant="link"
-                                    title="Edit"
                                   >
                                     Edit
                                   </button>
@@ -5099,34 +4913,26 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                               </button>
                               <div>
                                 <label
-                                  class="items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground mb-2 block"
+                                  class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground mb-2 block text-right"
                                   data-slot="label"
                                   for="quantity"
                                 >
                                   Quantity:
                                 </label>
                                 <div
-                                  class="flex items-center space-x-1"
+                                  class="inline-flex items-center border border-input rounded-lg"
                                 >
                                   <button
                                     aria-label="Decrement Quantity for the product"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                                    data-size="icon"
-                                    data-slot="button"
+                                    class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-decrement"
-                                    data-variant="outline"
                                     disabled=""
                                   >
-                                    <span
-                                      class="text-sm"
-                                    >
-                                      −
-                                    </span>
+                                    −
                                   </button>
                                   <input
                                     aria-label="Quantity:"
-                                    class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                    data-slot="input"
+                                    class="w-10 text-center text-sm text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                     min="0"
                                     step="1"
                                     type="number"
@@ -5134,17 +4940,10 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                                   />
                                   <button
                                     aria-label="Increment Quantity for the product"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                                    data-size="icon"
-                                    data-slot="button"
+                                    class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-increment"
-                                    data-variant="outline"
                                   >
-                                    <span
-                                      class="text-sm"
-                                    >
-                                      +
-                                    </span>
+                                    +
                                   </button>
                                 </div>
                               </div>
@@ -5603,9 +5402,9 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
       class="max-w-7xl mx-auto px-6"
     >
       <h1
-        class="text-3xl font-semibold tracking-tight text-left my-6"
+        class="text-3xl font-semibold tracking-tight text-left my-6 !text-lg !tracking-normal truncate"
       >
-        Cart (1 item)
+        My Cart (1 item)
       </h1>
       <div
         class="md:hidden mb-3"
@@ -5756,12 +5555,12 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                                     Remove
                                   </button>
                                   <button
-                                    class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold pl-0"
-                                    data-size="sm"
+                                    aria-label="Edit Button Front Jacket"
+                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs md:text-sm hover:text-primary/80 hover:no-underline h-auto p-0 pl-0"
+                                    data-size="default"
                                     data-slot="button"
                                     data-testid="edit-item-2a54fe1a10d9d9bbbeea6f205f"
                                     data-variant="link"
-                                    title="Edit"
                                   >
                                     Edit
                                   </button>
@@ -5842,34 +5641,26 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                               </button>
                               <div>
                                 <label
-                                  class="items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground mb-2 block"
+                                  class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground mb-2 block text-right"
                                   data-slot="label"
                                   for="quantity"
                                 >
                                   Quantity:
                                 </label>
                                 <div
-                                  class="flex items-center space-x-1"
+                                  class="inline-flex items-center border border-input rounded-lg"
                                 >
                                   <button
                                     aria-label="Decrement Quantity for the product"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                                    data-size="icon"
-                                    data-slot="button"
+                                    class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-decrement"
-                                    data-variant="outline"
                                     disabled=""
                                   >
-                                    <span
-                                      class="text-sm"
-                                    >
-                                      −
-                                    </span>
+                                    −
                                   </button>
                                   <input
                                     aria-label="Quantity:"
-                                    class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                    data-slot="input"
+                                    class="w-10 text-center text-sm text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                     min="0"
                                     step="1"
                                     type="number"
@@ -5877,17 +5668,10 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                                   />
                                   <button
                                     aria-label="Increment Quantity for the product"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                                    data-size="icon"
-                                    data-slot="button"
+                                    class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-increment"
-                                    data-variant="outline"
                                   >
-                                    <span
-                                      class="text-sm"
-                                    >
-                                      +
-                                    </span>
+                                    +
                                   </button>
                                 </div>
                               </div>
@@ -6346,9 +6130,9 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
       class="max-w-7xl mx-auto px-6"
     >
       <h1
-        class="text-3xl font-semibold tracking-tight text-left my-6"
+        class="text-3xl font-semibold tracking-tight text-left my-6 !text-lg !tracking-normal truncate"
       >
-        Cart (1 item)
+        My Cart (1 item)
       </h1>
       <div
         class="md:hidden mb-3"
@@ -6518,12 +6302,12 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                                     Remove
                                   </button>
                                   <button
-                                    class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold pl-0"
-                                    data-size="sm"
+                                    aria-label="Edit Button Front Jacket"
+                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs md:text-sm hover:text-primary/80 hover:no-underline h-auto p-0 pl-0"
+                                    data-size="default"
                                     data-slot="button"
                                     data-testid="edit-item-2a54fe1a10d9d9bbbeea6f205f"
                                     data-variant="link"
-                                    title="Edit"
                                   >
                                     Edit
                                   </button>
@@ -6604,34 +6388,26 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                               </button>
                               <div>
                                 <label
-                                  class="items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground mb-2 block"
+                                  class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground mb-2 block text-right"
                                   data-slot="label"
                                   for="quantity"
                                 >
                                   Quantity:
                                 </label>
                                 <div
-                                  class="flex items-center space-x-1"
+                                  class="inline-flex items-center border border-input rounded-lg"
                                 >
                                   <button
                                     aria-label="Decrement Quantity for the product"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                                    data-size="icon"
-                                    data-slot="button"
+                                    class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-decrement"
-                                    data-variant="outline"
                                     disabled=""
                                   >
-                                    <span
-                                      class="text-sm"
-                                    >
-                                      −
-                                    </span>
+                                    −
                                   </button>
                                   <input
                                     aria-label="Quantity:"
-                                    class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                    data-slot="input"
+                                    class="w-10 text-center text-sm text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                     min="0"
                                     step="1"
                                     type="number"
@@ -6639,17 +6415,10 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                                   />
                                   <button
                                     aria-label="Increment Quantity for the product"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                                    data-size="icon"
-                                    data-slot="button"
+                                    class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-increment"
-                                    data-variant="outline"
                                   >
-                                    <span
-                                      class="text-sm"
-                                    >
-                                      +
-                                    </span>
+                                    +
                                   </button>
                                 </div>
                               </div>

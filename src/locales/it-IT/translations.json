@@ -275,9 +275,9 @@
     "cart": {
         "title": "Carrello",
         "itemCount": {
-            "zero": "Carrello (0 articoli)",
-            "one": "Carrello (1 articolo)",
-            "other": "Carrello ({{count}} articoli)"
+            "zero": "Il Mio Carrello (0 articoli)",
+            "one": "Il Mio Carrello (1 articolo)",
+            "other": "Il Mio Carrello ({{count}} articoli)"
         },
         "empty": {
             "title": "Il Suo carrello è vuoto.",
@@ -362,7 +362,10 @@
             "selectBonusProducts": "Seleziona prodotti bonus nel carrello",
             "addedToCart": "Prodotto bonus aggiunto al carrello",
             "failedToAdd": "Impossibile aggiungere il prodotto bonus: {{error}}",
-            "missingRequiredInfo": "Informazioni richieste mancanti"
+            "missingRequiredInfo": "Informazioni richieste mancanti",
+            "defaultTitle": "Prodotti Bonus Disponibili",
+            "selectionCount": " ({{selected}} di {{max}} selezionati)",
+            "freeBadge": "Gratis"
         }
     },
     "checkout": {
@@ -1096,7 +1099,9 @@
         "removeItemAriaLabel": "Rimuovi articolo dal carrello",
         "emptyCart": "Il Suo carrello è vuoto",
         "loading": "Caricamento in corso...",
-        "viewCart": "Visualizza carrello"
+        "viewCart": "Visualizza carrello",
+        "delivery": "Consegna",
+        "saved": "Risparmiato {{amount}}"
     },
     "trackingConsent": {
         "title": "Consenso al tracciamento",

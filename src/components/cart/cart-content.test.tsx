@@ -88,7 +88,6 @@ describe('CartContent', () => {
         expect(screen.getByText(t('cart:empty.title'))).toBeInTheDocument();
         expect(screen.getByText(t('cart:empty.guestMessage'))).toBeInTheDocument();
         expect(screen.getByText(t('cart:empty.continueShopping'))).toBeInTheDocument();
-        expect(screen.getByText(t('cart:empty.signIn'))).toBeInTheDocument();
         expect(screen.queryByTestId('sf-cart-container')).not.toBeInTheDocument();
     });
 
@@ -115,8 +114,8 @@ describe('CartContent', () => {
         expect(screen.getByTestId('sf-cart-container')).toBeInTheDocument();
         expect(screen.queryByTestId('sf-cart-empty')).not.toBeInTheDocument();
 
-        // Verify cart title is rendered (it's an h1 with "Cart (3 items)" text)
-        expect(screen.getByText('Cart (3 items)')).toBeInTheDocument();
+        // Verify cart title is rendered (it's an h1 with "My Cart (3 items)" text)
+        expect(screen.getByText('My Cart (3 items)')).toBeInTheDocument();
 
         // Verify product items are rendered (they have individual test IDs)
         expect(screen.getByTestId('sf-product-item-product-1')).toBeInTheDocument();
