@@ -250,6 +250,54 @@ describe('Dynamic Image Component', () => {
         });
     });
 
+    describe('Page Designer image object src', () => {
+        test('resolves src from absURL property', () => {
+            render(<DynamicImage src={{ absURL: src, url: 'ignored' } as unknown as string} alt="Test image" />);
+            const img = screen.getByRole('img');
+            expect(img.getAttribute('src')).toContain('absURL' in { absURL: src } ? src.split('/').pop() : '');
+            expect(img).toBeInTheDocument();
+        });
+
+        test('resolves src from url property when absURL is absent', () => {
+            render(<DynamicImage src={{ url: src } as unknown as string} alt="Test image" />);
+            const img = screen.getByRole('img');
+            expect(img).toBeInTheDocument();
+            expect(img.getAttribute('src')).toBeTruthy();
+        });
+
+        test('resolves src from disBaseLink property when absURL and url are absent', () => {
+            render(<DynamicImage src={{ disBaseLink: src } as unknown as string} alt="Test image" />);
+            const img = screen.getByRole('img');
+            expect(img).toBeInTheDocument();
+            expect(img.getAttribute('src')).toBeTruthy();
+        });
+
+        test('resolves src from link property as last resort', () => {
+            render(<DynamicImage src={{ link: src } as unknown as string} alt="Test image" />);
+            const img = screen.getByRole('img');
+            expect(img).toBeInTheDocument();
+            expect(img.getAttribute('src')).toBeTruthy();
+        });
+
+        test('renders without crashing when image object has no recognized URL property', () => {
+            render(<DynamicImage src={{ _type: 'image' } as unknown as string} alt="Test image" />);
+            const img = screen.getByRole('img');
+            expect(img).toBeInTheDocument();
+            // No recognized URL property resolves to empty string — React omits the src attribute
+            expect(img.getAttribute('src')).toBeNull();
+        });
+
+        test('does not throw when src is a plain string', () => {
+            expect(() => render(<DynamicImage src={src} alt="Test image" />)).not.toThrow();
+            expect(screen.getByRole('img')).toBeInTheDocument();
+        });
+
+        test('does not throw when src is undefined', () => {
+            expect(() => render(<DynamicImage src={undefined as unknown as string} alt="Test image" />)).not.toThrow();
+            expect(screen.getByRole('img')).toBeInTheDocument();
+        });
+    });
+
     describe('image format conversion', () => {
         test('converts non-jpg image to picture with webp sources and jpg fallback', () => {
             const pngSrc = 'https://example.com/image.png?sw=300&q=60';
