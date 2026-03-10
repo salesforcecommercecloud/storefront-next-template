@@ -24,7 +24,7 @@
  * plugin or customer code.
  *
  * Current platform behaviors:
- * - Adds a handler-level instrumentation for request lifecycle tracing
+ * - OpenTelemetry instrumentation for request lifecycle tracing
  *
  * Future additions:
  * - loadContext enrichment (correlation IDs, platform metadata)
@@ -32,26 +32,8 @@
  * - Default error handling with platform error reporting
  */
 
-import type { ServerEntryModule, unstable_ServerInstrumentation } from 'react-router';
-
-/**
- * Platform-level handler instrumentation.
- *
- * Uses React Router's unstable_ServerInstrumentation API to observe the
- * request lifecycle at the handler level. This runs around ALL requests
- * (document + data) and provides a hook for platform-level tracing.
- *
- * @see https://reactrouter.com/how-to/instrumentation
- */
-const platformInstrumentation: unstable_ServerInstrumentation = {
-    handler(handler) {
-        handler.instrument({
-            async request(handleRequest) {
-                await handleRequest();
-            },
-        });
-    },
-};
+import type { ServerEntryModule } from 'react-router';
+import { platformInstrumentation } from '../otel/instrumentation';
 
 /**
  * Composes a server entry module with platform-level features.

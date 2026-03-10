@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 import { describe, it, expect, vi } from 'vitest';
+
+vi.mock('../otel/instrumentation', () => ({
+    platformInstrumentation: { handler: vi.fn(), route: vi.fn() },
+}));
+
 import { composeServerEntry } from './server';
 import type { ServerEntryModule, EntryContext, AppLoadContext } from 'react-router';
 
