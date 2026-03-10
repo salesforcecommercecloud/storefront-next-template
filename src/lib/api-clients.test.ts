@@ -458,7 +458,7 @@ describe('createApiClients', () => {
                 expect(result.url).toBe(mockRequest.url);
             });
 
-            it('should skip adding headers for SLAS auth endpoints', async () => {
+            it('should skip Authorization but inject sfdc_dwsid for SLAS auth endpoints', async () => {
                 const mockRequest = new Request(
                     'https://api.example.com/shopper/auth/v1/organizations/test/oauth2/token'
                 );
@@ -475,7 +475,26 @@ describe('createApiClients', () => {
 
                 const result = await authMiddleware.onRequest({ request: mockRequest });
 
-                // Headers should not be added for SLAS auth endpoints
+                expect(result.headers.get('Authorization')).toBeNull();
+                expect(result.headers.get('sfdc_dwsid')).toBe('test-dwsid');
+            });
+
+            it('should not inject sfdc_dwsid for SLAS auth endpoints when session has no dwsid', async () => {
+                const mockRequest = new Request(
+                    'https://api.example.com/shopper/auth/v1/organizations/test/oauth2/token'
+                );
+                const mockSession: SessionData = {
+                    accessToken: 'test-token',
+                    customerId: 'test-customer',
+                    userType: 'registered',
+                };
+
+                mockContextProvider.set(authContext, {
+                    ref: Promise.resolve(mockSession),
+                });
+
+                const result = await authMiddleware.onRequest({ request: mockRequest });
+
                 expect(result.headers.get('Authorization')).toBeNull();
                 expect(result.headers.get('sfdc_dwsid')).toBeNull();
             });

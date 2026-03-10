@@ -493,7 +493,12 @@ export function createActiveDataAdapter(config: ActiveDataConfig): EngagementAda
             const params = extractActiveDataParamsFromEvent(event);
             const urls = createActiveDataUrls(activeDataEndpoint, params, config);
             for (const url of urls) {
-                navigator.sendBeacon(url);
+                // Route through the server-side proxy so the dwsid cookie is forwarded
+                // to ECOM. Direct cross-origin sendBeacon calls don't include the
+                // storefront's dwsid cookie, causing ECOM to create duplicate sessions
+                // when hybrid auth is enabled.
+                const proxyUrl = `/resource/analytics-proxy?url=${encodeURIComponent(url)}`;
+                navigator.sendBeacon(proxyUrl);
             }
 
             return Promise.resolve({});

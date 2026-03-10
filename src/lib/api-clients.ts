@@ -100,27 +100,31 @@ export function createApiClients(context: RouterContextProvider | Readonly<Route
         proxyHost: scapiProxyHost, // SDK handles org ID rewriting and auth flow selection internally
     } as Parameters<typeof createCommerceApiClients>[0]);
 
-    // Add authentication middleware - inject Bearer token from auth context
+    // Add authentication middleware - inject Bearer token and sfdc_dwsid from auth context
     const authMiddleware: Middleware = {
         async onRequest({ request }) {
-            // Skip auth header injection for SLAS auth endpoints
-            // These endpoints handle their own auth (Basic auth or no auth for PKCE)
             const url = new URL(request.url);
             const isSlasAuthEndpoint = SLAS_AUTH_ENDPOINTS.some((path) => url.pathname.includes(path));
-            if (isSlasAuthEndpoint) {
-                return request;
-            }
 
             // Get the auth session from context
             const authPromise = context.get(authContext);
             const session = await authPromise.ref;
-            if (!session) {
-                throw new Error('No session found');
-            }
-            request.headers.set('Authorization', `Bearer ${session.accessToken}`);
-            if (session.dwsid) {
+
+            // Always inject sfdc_dwsid when available — for SCAPI it maintains app-server
+            // affinity, and for SLAS it reuses the existing ECOM session instead of triggering
+            // an unnecessary session bridge call.
+            if (session?.dwsid) {
                 request.headers.set(DWSID_HEADER, session.dwsid);
             }
+
+            // SLAS auth endpoints handle their own Authorization header (Basic auth or PKCE)
+            if (!isSlasAuthEndpoint) {
+                if (!session) {
+                    throw new Error('No session found');
+                }
+                request.headers.set('Authorization', `Bearer ${session.accessToken}`);
+            }
+
             return request;
         },
     };

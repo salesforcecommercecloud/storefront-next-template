@@ -52,7 +52,9 @@ export const action: ActionFunction = async ({ request, context }) => {
     const userType: 'guest' | 'registered' = currentAuth.userType || 'guest';
 
     if (refreshToken) {
-        // Standard flow: refresh the SLAS token with tracking consent embedded (DNT claim)
+        // Standard flow: refresh the SLAS token with tracking consent embedded (DNT claim).
+        // The authMiddleware in api-clients.ts automatically injects the sfdc_dwsid header
+        // on SLAS requests, so SLAS reuses the existing ECOM session.
         const tokenResponse = await refreshAccessToken(context, refreshToken, {
             trackingConsent,
         });
@@ -60,7 +62,7 @@ export const action: ActionFunction = async ({ request, context }) => {
         // Update the auth context with the new token response
         updateAuth(context, tokenResponse);
 
-        // Restore userType and set the new tracking consent value
+        // Restore userType and set tracking consent.
         updateAuth(context, (session) => ({
             ...session,
             userType,

@@ -45,6 +45,17 @@ type ActiveDataAdapter = {
     sendEvent: (event: AnalyticsEvent) => Promise<unknown>;
 };
 
+/**
+ * Extract the original Active Data URL from the proxy wrapper.
+ * sendBeacon calls go through /resource/analytics-proxy?url=<encoded-url>,
+ * so we need to unwrap to test the underlying analytics URL.
+ */
+function getActiveDataUrl(sendBeaconCall: unknown[]): string {
+    const proxyUrl = sendBeaconCall[0] as string;
+    const parsed = new URL(proxyUrl, 'https://localhost');
+    return parsed.searchParams.get('url') ?? proxyUrl;
+}
+
 const mockConfig: ActiveDataConfig = {
     enabled: true,
     siteId: 'test-site-id',
@@ -279,12 +290,15 @@ describe('Active Data Adapter', () => {
             expect(mockSendBeacon).not.toHaveBeenCalled();
         });
 
-        it('should send view_page event with base params and context params', async () => {
+        it('should send view_page event through the analytics proxy', async () => {
             const adapter = createActiveDataAdapter(mockConfig) as ActiveDataAdapter;
             await adapter.sendEvent(mockPageViewEvent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
-            const url = mockSendBeacon.mock.calls[0][0] as string;
+            const rawUrl = mockSendBeacon.mock.calls[0][0] as string;
+            expect(rawUrl).toMatch(/^\/resource\/analytics-proxy\?url=/);
+
+            const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
 
             // Check base URL
             expect(url).toContain(
@@ -315,7 +329,7 @@ describe('Active Data Adapter', () => {
             await adapter.sendEvent(mockProductViewEvent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
-            const url = mockSendBeacon.mock.calls[0][0] as string;
+            const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
 
             // Check pcat parameter
             expect(url).toMatch(/[?&]pcat=test-category-id/);
@@ -330,7 +344,7 @@ describe('Active Data Adapter', () => {
             await adapter.sendEvent(mockSearchEvent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
-            const url = mockSendBeacon.mock.calls[0][0] as string;
+            const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
 
             // Check search params
             expect(url).toMatch(/[?&]pst-q=/);
@@ -356,7 +370,7 @@ describe('Active Data Adapter', () => {
             await adapter.sendEvent(mockCategoryEvent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
-            const url = mockSendBeacon.mock.calls[0][0] as string;
+            const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
 
             // Check pcat parameter
             expect(url).toMatch(/[?&]pcat=test-category-id/);
@@ -376,7 +390,7 @@ describe('Active Data Adapter', () => {
             await adapter.sendEvent(mockRecommenderEvent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
-            const url = mockSendBeacon.mock.calls[0][0] as string;
+            const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
 
             // Check product data with evr4 for recommendations
             expect(url).toMatch(/[?&]pid-0=/);
@@ -393,7 +407,7 @@ describe('Active Data Adapter', () => {
             await adapter.sendEvent(searchEventNoResults);
 
             expect(mockSendBeacon).toHaveBeenCalled();
-            const url = mockSendBeacon.mock.calls[0][0] as string;
+            const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
 
             expect(url).toMatch(/[?&]pst-show=false/);
             // Should not have product data
@@ -413,7 +427,7 @@ describe('Active Data Adapter', () => {
             await adapter.sendEvent(productEvent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
-            const url = mockSendBeacon.mock.calls[0][0] as string;
+            const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
 
             // pcat should be empty string
             expect(url).toMatch(/[?&]pcat=/);
@@ -426,7 +440,7 @@ describe('Active Data Adapter', () => {
             await adapter.sendEvent(mockPageViewEvent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
-            const url = mockSendBeacon.mock.calls[0][0] as string;
+            const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
 
             expect(url).toMatch(/[?&]dw_dnt=1/);
         });
@@ -438,7 +452,7 @@ describe('Active Data Adapter', () => {
             await adapter.sendEvent(mockPageViewEvent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
-            const url = mockSendBeacon.mock.calls[0][0] as string;
+            const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
 
             expect(url).not.toMatch(/[?&]dw_dnt=/);
         });
@@ -450,7 +464,7 @@ describe('Active Data Adapter', () => {
             await adapter.sendEvent(mockPageViewEvent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
-            const url = mockSendBeacon.mock.calls[0][0] as string;
+            const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
 
             // dw_dnt=0 should still be added (it's a valid value)
             expect(url).toMatch(/[?&]dw_dnt=0/);
@@ -476,7 +490,7 @@ describe('Active Data Adapter', () => {
 
             // All URLs should have context params
             mockSendBeacon.mock.calls.forEach((call) => {
-                const url = call[0] as string;
+                const url = getActiveDataUrl(call);
                 expect(url).toMatch(/[?&]dwac=/);
                 expect(url).toMatch(/[?&]cmpn=/);
             });
@@ -495,7 +509,7 @@ describe('Active Data Adapter', () => {
             await adapter.sendEvent(mockPageViewEvent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
-            const url = mockSendBeacon.mock.calls[0][0] as string;
+            const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
 
             expect(url).toMatch(/[?&]cmpn=custom-source/);
             expect(url).toMatch(/[?&]pcc=EUR/);
@@ -510,7 +524,7 @@ describe('Active Data Adapter', () => {
             await adapter.sendEvent(mockPageViewEvent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
-            const url = mockSendBeacon.mock.calls[0][0] as string;
+            const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
 
             // Should default to GBP
             expect(url).toMatch(/[?&]pcc=GBP/);
@@ -530,7 +544,7 @@ describe('Active Data Adapter', () => {
             await adapter.sendEvent(multiProductEvent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
-            const url = mockSendBeacon.mock.calls[0][0] as string;
+            const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
 
             // Should have pid-0, pid-1, pid-2
             expect(url).toMatch(/[?&]pid-0=/);
@@ -555,7 +569,7 @@ describe('Active Data Adapter', () => {
             await adapter.sendEvent(productEvent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
-            const url = mockSendBeacon.mock.calls[0][0] as string;
+            const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
 
             // Should not have product data
             expect(url).not.toMatch(/[?&]pid-/);
@@ -571,7 +585,7 @@ describe('Active Data Adapter', () => {
             await adapter.sendEvent(searchEventNoRefinements);
 
             expect(mockSendBeacon).toHaveBeenCalled();
-            const url = mockSendBeacon.mock.calls[0][0] as string;
+            const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
 
             // pst-refs should be empty string (followed by & or end of string)
             expect(url).toMatch(/[?&]pst-refs=(?=&|$)/);
