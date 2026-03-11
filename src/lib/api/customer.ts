@@ -773,13 +773,11 @@ export async function savePaymentMethodToCustomer(
             paymentMethodId: paymentInstrument.paymentMethodId,
             paymentCard: paymentInstrument.paymentCard
                 ? {
-                      // Only include writable properties for customer payment instruments
                       cardType: paymentInstrument.paymentCard.cardType,
                       number: paymentInstrument.paymentCard.number,
                       expirationMonth: paymentInstrument.paymentCard.expirationMonth,
                       expirationYear: paymentInstrument.paymentCard.expirationYear,
                       holder: paymentInstrument.paymentCard.holder,
-                      // Exclude read-only properties: maskedNumber, issuerNumber, etc.
                   }
                 : undefined,
             default: paymentInstrument.default,

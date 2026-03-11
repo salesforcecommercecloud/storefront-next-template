@@ -179,7 +179,9 @@ export function hasValidPaymentCard(
 
     if (isSavedPaymentMethod) {
         // For saved payment methods, verify we have basic card info
-        return !!(paymentInstrument.paymentMethodId === 'CREDIT_CARD' && paymentInstrument.paymentCard?.cardType);
+        return !!(
+            paymentInstrument.paymentMethodId?.startsWith('CREDIT_CARD') && paymentInstrument.paymentCard?.cardType
+        );
     }
 
     // For new payment methods, check if any form of masked card number exists

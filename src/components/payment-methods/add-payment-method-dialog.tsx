@@ -138,7 +138,7 @@ export function AddPaymentMethodDialog({
         }
 
         const cardNumber = (formData.cardNumber || '').replace(/\s/g, '');
-        const cardType = detectCardType(cardNumber).toLowerCase().replace(/\s+/g, '_');
+        const cardType = detectCardType(cardNumber);
         const formDataToSend = new FormData();
         formDataToSend.append('cardNumber', cardNumber);
         formDataToSend.append('cardholderName', formData.cardholderName || '');

@@ -287,20 +287,45 @@ async function fetchPromotionsForBasket(
 }
 
 /**
- * Determines if a basket needs to be prefilled with customer data
+ * Determines if a basket needs to be prefilled with customer data.
+ * For registered shoppers, we prefill:
+ * - Email: always when missing (customer.login is the email)
+ * - Shipping address: when missing and customer has saved addresses
  */
 function shouldPrefillBasket(
     basket: ShopperBasketsV2.schemas['Basket'] | undefined,
     customerProfile: CustomerProfile
 ): boolean {
-    if (!customerProfile?.customer || !customerProfile?.addresses?.length) {
+    if (!customerProfile?.customer) {
         return false;
     }
 
     const missingEmail = !basket?.customerInfo?.email;
+    const basketCustomerId = basket?.customerInfo?.customerId;
+    const profileCustomerId = customerProfile.customer.customerId;
+    const customerMismatch = !basketCustomerId || basketCustomerId !== profileCustomerId;
     const missingShippingAddress = isAddressEmpty(basket?.shipments?.[0]?.shippingAddress);
+    const hasAddresses = !!customerProfile.addresses?.length;
 
-    return missingEmail || missingShippingAddress;
+    /**
+     * Based is always tied baskets to the session (e.g. usid), not to a customer ID. customerMismatch may happen when:
+     *
+     * Guest adds items to cart → basket is created with no customerId.
+     * User logs in.
+     * The basket is still the same session’s basket, but it was created as a guest and hasn’t been updated with the new customer yet.
+     * We need to update this basket with the logged‑in customer’s info so createOrder can succeed.
+     * basketCustomerId !== profileCustomerId: This is an edge case: the basket has a customerId that doesn’t match the logged‑in user.
+     * Can happen if the basket was created/updated before login and the transfer/merge hasn’t completed yet, or there’s a brief race.
+     */
+    if (missingEmail || customerMismatch) {
+        return true;
+    }
+    // Prefill shipping address when missing and customer has saved addresses
+    if (missingShippingAddress && hasAddresses) {
+        return true;
+    }
+
+    return false;
 }
 
 /**
@@ -327,8 +352,13 @@ export async function initializeBasketForReturningCustomer(
         let updatedBasket = basket;
         let hasUpdates = false;
 
-        // Set customer email if missing
-        if (!updatedBasket.customerInfo?.email && customerProfile.customer.login) {
+        const basketCustomerId = updatedBasket.customerInfo?.customerId;
+        const profileCustomerId = customerProfile.customer.customerId;
+        const needsCustomerAssociation =
+            !updatedBasket.customerInfo?.email || !basketCustomerId || basketCustomerId !== profileCustomerId;
+
+        // Set customer info when missing or when basket customer doesn't match
+        if (needsCustomerAssociation && customerProfile.customer.login) {
             const { data } = await clients.shopperBasketsV2.updateCustomerForBasket({
                 params: {
                     path: {

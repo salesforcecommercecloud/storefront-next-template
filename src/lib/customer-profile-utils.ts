@@ -26,7 +26,8 @@ export function getContactInfoFromCustomer(customerProfile?: CustomerProfile) {
 
     const customer = customerProfile.customer;
     return {
-        email: customer.email || '',
+        // SCAPI Customer uses login as the email/username identifier
+        email: customer.login || customer.email || '',
         firstName: customer.firstName || '',
         lastName: customer.lastName || '',
         phone: customer.phoneHome || customer.phoneBusiness || customer.phoneMobile || '',
@@ -237,7 +238,11 @@ export function hasCustomerDataForPrefill(customerProfile?: CustomerProfile): {
     hasPaymentMethods: boolean;
     hasAnyData: boolean;
 } {
-    const hasContactInfo = !!(customerProfile?.customer?.email || customerProfile?.customer?.firstName);
+    const hasContactInfo = !!(
+        customerProfile?.customer?.login ||
+        customerProfile?.customer?.email ||
+        customerProfile?.customer?.firstName
+    );
     const hasAddresses = !!(customerProfile?.addresses && customerProfile.addresses.length > 0);
     const hasPaymentMethods = !!(customerProfile?.paymentInstruments && customerProfile.paymentInstruments.length > 0);
 

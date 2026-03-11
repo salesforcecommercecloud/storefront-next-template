@@ -427,12 +427,16 @@ export default function CheckoutFormPage({
                         <Suspense fallback={<ContactInfoSkeleton />}>
                             <UITarget targetId="checkout.contactInfo.before" />
                             <UITarget targetId="checkout.contactInfo">
-                                <ContactInfo
-                                    onSubmit={handleContactSubmit}
-                                    isLoading={isSubmitting('contact')}
-                                    actionData={contactFetcher.data}
-                                    {...contactInfoState}
-                                />
+                                {!cart ? (
+                                    <ContactInfoSkeleton />
+                                ) : (
+                                    <ContactInfo
+                                        onSubmit={handleContactSubmit}
+                                        isLoading={isSubmitting('contact')}
+                                        actionData={contactFetcher.data}
+                                        {...contactInfoState}
+                                    />
+                                )}
                             </UITarget>
                             <UITarget targetId="checkout.contactInfo.after" />
                         </Suspense>

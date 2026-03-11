@@ -502,11 +502,11 @@ describe('Checkout Loaders', () => {
             expect(result).toBeTruthy();
         });
 
-        it('should skip prefill when basket already has email and shipping address', async () => {
+        it('should skip prefill when basket already has email, matching customerId, and shipping address', async () => {
             const { getBasket } = await import('@/middlewares/basket.server');
             const mockBasket = {
                 basketId: 'test-basket',
-                customerInfo: { email: 'test@example.com' },
+                customerInfo: { email: 'test@example.com', customerId: 'cust-123' },
                 shipments: [
                     {
                         shipmentId: 'me',
@@ -518,7 +518,7 @@ describe('Checkout Loaders', () => {
             vi.mocked(getBasket).mockResolvedValue({ current: mockBasket } as any);
 
             const mockCustomerProfile = {
-                customer: { login: 'test@example.com' },
+                customer: { login: 'test@example.com', customerId: 'cust-123' },
                 addresses: [{ addressId: 'addr-1', countryCode: 'US', lastName: 'Doe' }],
                 paymentInstruments: [],
             } as CustomerProfile;

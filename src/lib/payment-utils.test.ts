@@ -135,6 +135,14 @@ describe('hasValidPaymentCard', () => {
                 paymentCard: { cardType: 'Visa' },
             } as any)
         ).toBe(true);
+        // CREDIT_CARD (visa) from customer profile - accepted via startsWith
+        expect(
+            hasValidPaymentCard({
+                paymentInstrumentId: 'id',
+                paymentMethodId: 'CREDIT_CARD (visa)',
+                paymentCard: { cardType: 'Visa' },
+            } as any)
+        ).toBe(true);
         // missing card type
         expect(
             hasValidPaymentCard({ paymentInstrumentId: 'id', paymentMethodId: 'CREDIT_CARD', paymentCard: {} } as any)
