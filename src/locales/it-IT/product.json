@@ -156,6 +156,8 @@
         "currentPriceFrom": "Prezzo corrente da {{price}}",
         "currentPrice": "Prezzo corrente: {{price}}",
         "from": "Da {{price}}",
+        "range": "{{min}} – {{max}}",
+        "rangeA11y": "Fascia di prezzo da {{min}} a {{max}}",
         "listPriceFrom": "Prezzo di listino da {{price}}",
         "listPrice": "Prezzo di listino: {{price}}"
     }

@@ -56,32 +56,36 @@ vi.mock('@/providers/dynamic-image', async (importOriginal) => {
     };
 });
 
-vi.mock('@/lib/product-utils', () => ({
-    createProductUrl: vi.fn(() => '/product/test-product'),
-    getImagesForColor: vi.fn((product, color) => {
-        const colorSuffix = color || 'default';
-        return [
-            {
-                link: `https://example.com/${product.productId}-${colorSuffix}.jpg`,
-                disBaseLink: `https://example.com/${product.productId}-${colorSuffix}.jpg`,
-                alt: `${product.productName} Image`,
-            },
-        ];
-    }),
-    getDecoratedVariationAttributes: vi.fn(() => [
-        {
-            id: 'color',
-            name: 'Colour',
-            values: [
+vi.mock('@/lib/product-utils', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/lib/product-utils')>();
+    return {
+        ...actual,
+        createProductUrl: vi.fn(() => '/product/test-product'),
+        getImagesForColor: vi.fn((product: { productId: string; productName: string }, color: string) => {
+            const colorSuffix = color || 'default';
+            return [
                 {
-                    value: 'navy',
-                    name: 'Navy',
-                    swatch: { link: 'https://example.com/navy.jpg', disBaseLink: 'https://example.com/navy.jpg' },
+                    link: `https://example.com/${product.productId}-${colorSuffix}.jpg`,
+                    disBaseLink: `https://example.com/${product.productId}-${colorSuffix}.jpg`,
+                    alt: `${product.productName} Image`,
                 },
-            ],
-        },
-    ]),
-}));
+            ];
+        }),
+        getDecoratedVariationAttributes: vi.fn(() => [
+            {
+                id: 'color',
+                name: 'Colour',
+                values: [
+                    {
+                        value: 'navy',
+                        name: 'Navy',
+                        swatch: { link: 'https://example.com/navy.jpg', disBaseLink: 'https://example.com/navy.jpg' },
+                    },
+                ],
+            },
+        ]),
+    };
+});
 
 vi.mock('@/lib/currency', () => ({
     formatCurrency: vi.fn((price) => `$${price}`),

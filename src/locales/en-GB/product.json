@@ -160,6 +160,8 @@
         "currentPriceFrom": "Current price from {{price}}",
         "currentPrice": "Current price: {{price}}",
         "from": "From {{price}}",
+        "range": "{{min}} – {{max}}",
+        "rangeA11y": "Price range from {{min}} to {{max}}",
         "listPriceFrom": "List price from {{price}}",
         "listPrice": "List price: {{price}}"
     }

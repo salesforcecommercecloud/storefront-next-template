@@ -27,49 +27,53 @@ import { type ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { ConfigWrapper } from '@/test-utils/config';
 import { CurrencyProvider } from '@/providers/currency';
 
-vi.mock('@/lib/product-utils', () => ({
-    createProductUrl: vi.fn(() => '/product/test-product'),
-    getImagesForColor: vi.fn(() => [
-        {
-            link: 'https://example.com/default1.jpg',
-            disBaseLink: 'https://example.com/default1.jpg',
-            alt: 'Default Image 1',
-        },
-        {
-            link: 'https://example.com/default2.jpg',
-            disBaseLink: 'https://example.com/default2.jpg',
-            alt: 'Default Image 2',
-        },
-    ]),
-    getDecoratedVariationAttributes: vi.fn(() => [
-        {
-            id: 'color',
-            name: 'Colour',
-            values: [
-                {
-                    value: 'navy',
-                    name: 'Navy',
-                    swatch: { link: 'https://example.com/navy.jpg', disBaseLink: 'https://example.com/navy.jpg' },
-                },
-                {
-                    value: 'red',
-                    name: 'Red',
-                    swatch: { link: 'https://example.com/red.jpg', disBaseLink: 'https://example.com/red.jpg' },
-                },
-                {
-                    value: 'blue',
-                    name: 'Blue',
-                    swatch: { link: 'https://example.com/blue.jpg', disBaseLink: 'https://example.com/blue.jpg' },
-                },
-                {
-                    value: 'black',
-                    name: 'Black',
-                    swatch: { link: 'https://example.com/black.jpg', disBaseLink: 'https://example.com/black.jpg' },
-                },
-            ],
-        },
-    ]),
-}));
+vi.mock('@/lib/product-utils', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/lib/product-utils')>();
+    return {
+        ...actual,
+        createProductUrl: vi.fn(() => '/product/test-product'),
+        getImagesForColor: vi.fn(() => [
+            {
+                link: 'https://example.com/default1.jpg',
+                disBaseLink: 'https://example.com/default1.jpg',
+                alt: 'Default Image 1',
+            },
+            {
+                link: 'https://example.com/default2.jpg',
+                disBaseLink: 'https://example.com/default2.jpg',
+                alt: 'Default Image 2',
+            },
+        ]),
+        getDecoratedVariationAttributes: vi.fn(() => [
+            {
+                id: 'color',
+                name: 'Colour',
+                values: [
+                    {
+                        value: 'navy',
+                        name: 'Navy',
+                        swatch: { link: 'https://example.com/navy.jpg', disBaseLink: 'https://example.com/navy.jpg' },
+                    },
+                    {
+                        value: 'red',
+                        name: 'Red',
+                        swatch: { link: 'https://example.com/red.jpg', disBaseLink: 'https://example.com/red.jpg' },
+                    },
+                    {
+                        value: 'blue',
+                        name: 'Blue',
+                        swatch: { link: 'https://example.com/blue.jpg', disBaseLink: 'https://example.com/blue.jpg' },
+                    },
+                    {
+                        value: 'black',
+                        name: 'Black',
+                        swatch: { link: 'https://example.com/black.jpg', disBaseLink: 'https://example.com/black.jpg' },
+                    },
+                ],
+            },
+        ]),
+    };
+});
 
 vi.mock('@/lib/currency', () => ({
     formatCurrency: vi.fn((price) => `$${price}`),

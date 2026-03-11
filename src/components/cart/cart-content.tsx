@@ -15,7 +15,7 @@
  */
 'use client';
 
-import { useState, useEffect, type ReactElement } from 'react';
+import { useState, useEffect, lazy, Suspense, type ReactElement } from 'react';
 
 // Commerce SDK
 import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@salesforce/storefront-next-runtime/scapi';
@@ -28,8 +28,10 @@ import CartEmpty from './cart-empty';
 import CartTitle from './cart-title';
 import OrderSummary from '@/components/order-summary';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { BonusProductModal } from '@/components/bonus-product-modal';
-import BonusProductSelection from '@/components/cart/bonus-product-selection';
+const LazyBonusProductSelection = lazy(() => import('@/components/cart/bonus-product-selection'));
+const LazyBonusProductModal = lazy(() =>
+    import('@/components/bonus-product-modal').then((m) => ({ default: m.BonusProductModal }))
+);
 import { useTranslation } from 'react-i18next';
 import { useBasketUpdater } from '@/providers/basket';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -251,43 +253,40 @@ export default function CartContent({
                     </div>
                 </div>
 
-                {/* Bonus Product Carousels - one per bonusDiscountLineItem */}
-                {bonusDiscountItems.length > 0 &&
-                    bonusDiscountItems.map((bonusItem, index) => {
-                        // Skip if no bonus products available for selection
-                        const isRuleBased = isRuleBasedPromotion(bonusItem);
-                        if (!isRuleBased && (!bonusItem.bonusProducts || bonusItem.bonusProducts.length === 0)) {
-                            return null;
-                        }
-
-                        // Get promotion name from promotions map
-                        const promotion = bonusItem.promotionId ? promotions?.[bonusItem.promotionId] : undefined;
-                        const promotionName = promotion?.calloutMsg || promotion?.name;
-
-                        return (
-                            <div key={bonusItem.id || index} className="mt-6">
-                                <BonusProductSelection
-                                    bonusDiscountLineItem={bonusItem}
-                                    bonusProductsById={bonusProductsById}
-                                    basket={basket}
-                                    promotionName={promotionName}
-                                    onProductSelect={(productId, productName, requiresModal) => {
-                                        if (requiresModal) {
-                                            // Open modal with variant selection
-                                            handleBonusProductSelect(
-                                                productId,
-                                                productName,
-                                                bonusItem.promotionId || '',
-                                                bonusItem.id || '',
-                                                bonusItem.maxBonusItems || 0
-                                            );
-                                        }
-                                        // Direct add-to-cart is handled inside BonusProductSelection
-                                    }}
-                                />
-                            </div>
-                        );
-                    })}
+                {/* Bonus Product Carousels - one per bonusDiscountLineItem (lazy chunks reduce cart script size for Lighthouse) */}
+                {bonusDiscountItems.length > 0 && (
+                    <Suspense fallback={null}>
+                        {bonusDiscountItems.map((bonusItem, index) => {
+                            const isRuleBased = isRuleBasedPromotion(bonusItem);
+                            if (!isRuleBased && (!bonusItem.bonusProducts || bonusItem.bonusProducts.length === 0)) {
+                                return null;
+                            }
+                            const promotion = bonusItem.promotionId ? promotions?.[bonusItem.promotionId] : undefined;
+                            const promotionName = promotion?.calloutMsg || promotion?.name;
+                            return (
+                                <div key={bonusItem.id || index} className="mt-6">
+                                    <LazyBonusProductSelection
+                                        bonusDiscountLineItem={bonusItem}
+                                        bonusProductsById={bonusProductsById}
+                                        basket={basket}
+                                        promotionName={promotionName}
+                                        onProductSelect={(productId, productName, requiresModal) => {
+                                            if (requiresModal) {
+                                                handleBonusProductSelect(
+                                                    productId,
+                                                    productName,
+                                                    bonusItem.promotionId || '',
+                                                    bonusItem.id || '',
+                                                    bonusItem.maxBonusItems || 0
+                                                );
+                                            }
+                                        }}
+                                    />
+                                </div>
+                            );
+                        })}
+                    </Suspense>
+                )}
 
                 {selectedBonusProduct &&
                     (() => {
@@ -322,16 +321,18 @@ export default function CartContent({
                         );
 
                         return (
-                            <BonusProductModal
-                                open={bonusModalOpen}
-                                onOpenChange={setBonusModalOpen}
-                                productId={selectedBonusProduct.productId}
-                                productName={selectedBonusProduct.productName}
-                                promotionId={selectedBonusProduct.promotionId}
-                                bonusDiscountLineItemId={selectedBonusProduct.bonusDiscountLineItemId}
-                                bonusDiscountSlots={bonusDiscountSlots}
-                                maxQuantity={totalMaxQuantity}
-                            />
+                            <Suspense fallback={null}>
+                                <LazyBonusProductModal
+                                    open={bonusModalOpen}
+                                    onOpenChange={setBonusModalOpen}
+                                    productId={selectedBonusProduct.productId}
+                                    productName={selectedBonusProduct.productName}
+                                    promotionId={selectedBonusProduct.promotionId}
+                                    bonusDiscountLineItemId={selectedBonusProduct.bonusDiscountLineItemId}
+                                    bonusDiscountSlots={bonusDiscountSlots}
+                                    maxQuantity={totalMaxQuantity}
+                                />
+                            </Suspense>
                         );
                     })()}
             </div>

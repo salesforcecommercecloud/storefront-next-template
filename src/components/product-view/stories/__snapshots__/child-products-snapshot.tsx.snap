@@ -631,11 +631,11 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             class="items-center gap-2"
           >
             <span
-              aria-label="Current price from £110.99"
+              aria-label="Current price: £110.99"
               aria-live="polite"
               class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
             >
-              From £110.99
+              £110.99
             </span>
             <span
               aria-atomic="true"
@@ -643,7 +643,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               class="sr-only"
             >
               Quilted Jacket
-              Current price from £110.99
+              Current price: £110.99
             </span>
              
             <span
@@ -1080,11 +1080,11 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             class="items-center gap-2"
           >
             <span
-              aria-label="Current price from £69.00"
+              aria-label="Current price: £69.00"
               aria-live="polite"
               class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
             >
-              From £69.00
+              £69.00
             </span>
             <span
               aria-atomic="true"
@@ -1092,7 +1092,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               class="sr-only"
             >
               Pull On Pant
-              Current price from £69.00
+              Current price: £69.00
             </span>
              
           </div>
@@ -1534,11 +1534,11 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             class="items-center gap-2"
           >
             <span
-              aria-label="Current price from £99.00"
+              aria-label="Current price: £99.00"
               aria-live="polite"
               class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
             >
-              From £99.00
+              £99.00
             </span>
             <span
               aria-atomic="true"
@@ -1546,7 +1546,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               class="sr-only"
             >
               Zerrick
-              Current price from £99.00
+              Current price: £99.00
             </span>
              
           </div>

@@ -24,6 +24,8 @@ import type { ComponentDesignMetadata } from '@salesforce/storefront-next-runtim
 // Libs & Utils
 import { cn } from '@/lib/utils';
 import { createProductUrl, getDecoratedVariationAttributes } from '@/lib/product-utils';
+import { getProductBrand, getProductShortDescription, getProductRating } from '@/lib/product-utils-plp';
+import { getBadgeVariant } from '@/config';
 import { useProductTileContext } from './context';
 
 // Page Designer Decorators
@@ -39,8 +41,12 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
 import { ProductImageContainer } from '@/components/product-image';
 import ProductPrice from '@/components/product-price';
+import { StarRating } from '@/components/product-ratings/star-rating';
 
 const LazySwatches = lazy(() => import('./swatches'));
+
+/** Max length for short description on PLP card */
+const PRODUCT_TILE_DESCRIPTION_MAX_LENGTH = 80;
 
 interface ProductTileProps extends ComponentProps<'div'> {
     product: ShopperSearch.schemas['ProductSearchHit'];
@@ -300,6 +306,12 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
     ) => {
         const { navigate, config, t, currency, swatchMode, getBadges } = useProductTileContext();
         const { hasBadges, badges } = useMemo(() => getBadges(product), [getBadges, product]);
+        const brand = useMemo(() => getProductBrand(product), [product]);
+        const description = useMemo(
+            () => getProductShortDescription(product, PRODUCT_TILE_DESCRIPTION_MAX_LENGTH),
+            [product]
+        );
+        const ratingData = useMemo(() => getProductRating(product), [product]);
 
         // Use config default if imgAspectRatio is not provided
         const effectiveImgAspectRatio = imgAspectRatio ?? config.global.productListing.defaultProductTileImgAspectRatio;
@@ -379,13 +391,13 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                             showNavigationArrows={showNavigationArrows}
                         />
 
-                        {/* Badges overlaid top-left */}
+                        {/* Badges overlaid top-left — use config color for promotion tags */}
                         {hasBadges && (
                             <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
                                 {badges.map((badge) => (
                                     <Badge
                                         key={badge.label}
-                                        variant="default"
+                                        variant={getBadgeVariant(badge.color)}
                                         className="text-xs leading-3 font-medium">
                                         {badge.label}
                                     </Badge>
@@ -412,8 +424,9 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                     )}
                 </CardContent>
 
-                {/* Product name */}
+                {/* Brand (optional) + Product name */}
                 <CardContent className="px-4 pt-2 pb-0">
+                    {brand && <p className="text-muted-foreground text-xs leading-snug mb-0.5">{brand}</p>}
                     <Link
                         to={createProductUrl(product.productId)}
                         className="text-card-foreground font-semibold text-sm leading-snug hover:underline line-clamp-2 block"
@@ -422,15 +435,39 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                         }}>
                         {product.productName}
                     </Link>
+                    {/* SKU */}
+                    {product.productId && (
+                        <p className="text-muted-foreground text-xs mt-1" data-testid="product-tile-sku">
+                            {t('sku')} {product.productId}
+                        </p>
+                    )}
+                    {/* Short description */}
+                    {description && (
+                        <p
+                            className="text-muted-foreground text-xs leading-snug mt-1 line-clamp-2"
+                            data-testid="product-tile-description">
+                            {description}
+                        </p>
+                    )}
                 </CardContent>
 
-                {/* Price + promo callout */}
+                {/* Ratings — display only (not clickable on PLP card) */}
+                <CardContent className="px-4 pt-2 pb-0">
+                    <StarRating
+                        rating={ratingData.rating}
+                        reviewCount={ratingData.reviewCount}
+                        starSize="sm"
+                        className="text-muted-foreground"
+                    />
+                </CardContent>
+
+                {/* Price + promo callout (price range shown when product has variants/set) */}
                 <CardContent className="px-4 pt-2 pb-0">
                     <ProductPrice
                         type="unit"
                         product={product}
-                        currency={currency}
-                        labelForA11y={product?.productName}
+                        currency={currency ?? config.commerce.sites?.[0]?.defaultCurrency ?? ''}
+                        labelForA11y={(product?.productName ?? product?.productId) || ''}
                         currentPriceProps={{
                             className: 'text-card-foreground font-semibold text-sm leading-none',
                         }}

@@ -23,6 +23,8 @@ interface CurrentPriceProps {
     price: number;
     as?: 'span' | 'div' | 'p';
     isRange?: boolean;
+    /** When set with isRange, display as "min – max" price range */
+    maxPrice?: number;
     currency: string;
     className?: string;
 }
@@ -42,6 +44,7 @@ export default function CurrentPrice({
     price,
     as = 'span',
     isRange = false,
+    maxPrice,
     currency,
     className,
 }: CurrentPriceProps) {
@@ -49,12 +52,14 @@ export default function CurrentPrice({
 
     // Format currency using i18next's current language
     const currentPriceText = formatCurrency(price, i18n.language, currency);
+    const showMinMax = isRange && maxPrice != null && maxPrice > price;
+    const maxPriceText = showMinMax ? formatCurrency(maxPrice, i18n.language, currency) : '';
 
-    const ariaLabel = isRange
-        ? t('price.currentPriceFrom', { price: currentPriceText })
+    const ariaLabel = showMinMax
+        ? t('price.rangeA11y', { min: currentPriceText, max: maxPriceText })
         : t('price.currentPrice', { price: currentPriceText });
 
-    const displayText = isRange ? t('price.from', { price: currentPriceText }) : currentPriceText;
+    const displayText = showMinMax ? t('price.range', { min: currentPriceText, max: maxPriceText }) : currentPriceText;
 
     return (
         <>

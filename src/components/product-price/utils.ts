@@ -119,6 +119,25 @@ export const findLowestPrice = (product: Product): LowestPriceResult | undefined
 };
 
 /**
+ * Find the highest effective (selling) price among variants for a master product.
+ * Used to display price range (min–max) when product.priceMax is not in the response.
+ */
+function findHighestPrice(product: Product): number | undefined {
+    const isMaster = product?.hitType === 'master' || !!product?.type?.master;
+    if (!isMaster || !product?.variants?.length) return undefined;
+    const array = product.variants;
+    let max = -Infinity;
+    for (const data of array) {
+        const promotions = (data as { productPromotions?: ProductPromotion[] }).productPromotions || [];
+        const [smallestPromo] = getSmallestValByProperty(promotions, 'promotionalPrice');
+        const dataPrice = (data as { price?: number }).price ?? 0;
+        const effectivePrice = smallestPromo !== Infinity && smallestPromo < dataPrice ? smallestPromo : dataPrice;
+        if (effectivePrice > max) max = effectivePrice;
+    }
+    return max === -Infinity ? undefined : max;
+}
+
+/**
  * This function extract the price information of a given product
  * If a product is a master,
  *  currentPrice: get the lowest price (including promotional prices) among variants
@@ -194,6 +213,12 @@ export const getPriceData = (product: Product, opts: { quantity?: number } = {})
     // Use priceMax as listPrice when there's a price range, otherwise use the calculated listPrice
     const finalListPrice = hasPriceRange ? product.priceMax : listPrice;
 
+    // For master with multiple variants: use API priceMax when present, else compute max from variants
+    const variantCount = product?.variants?.length ?? 0;
+    const computedMaxForMaster =
+        isMaster && variantCount > 1 && !product?.priceMax ? findHighestPrice(product) : undefined;
+    const maxPrice = product?.priceMax ?? computedMaxForMaster ?? maxTieredPrice;
+
     return {
         currentPrice,
         listPrice: finalListPrice,
@@ -205,9 +230,8 @@ export const getPriceData = (product: Product, opts: { quantity?: number } = {})
         // For a master product, when it has more than 2 variants, we use the lowest priced variant, so it is  considered a range price
         //      but for master that has one variant, it is not considered range
         // For standard products, if priceMax is different from price, it should be considered a range
-        isRange: (isMaster && (product?.variants?.length || 0) > 1) || isASet || hasPriceRange || false,
-        // priceMax is for product set
+        isRange: (isMaster && variantCount > 1) || isASet || hasPriceRange || false,
         tieredPrice: closestTieredPrice && 'price' in closestTieredPrice ? closestTieredPrice.price : undefined,
-        maxPrice: product?.priceMax || maxTieredPrice,
+        maxPrice,
     };
 };
