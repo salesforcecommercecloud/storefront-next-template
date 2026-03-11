@@ -67,15 +67,7 @@ describe('ShippingAddress Integration Tests', () => {
 
     describe('Basic Rendering', () => {
         test('renders shipping address form in editing mode', () => {
-            render(
-                <ShippingAddress
-                    enableMultiAddress={false}
-                    handleToggleShippingAddressMode={function (): void {
-                        throw new Error('Function not implemented.');
-                    }}
-                    {...createDefaultProps()}
-                />
-            );
+            render(<ShippingAddress {...createDefaultProps()} />);
 
             expect(screen.getByText('Shipping Address')).toBeInTheDocument();
             expect(screen.getByPlaceholderText(/first name/i)).toBeInTheDocument();
@@ -83,15 +75,7 @@ describe('ShippingAddress Integration Tests', () => {
         });
 
         test('displays summary when not editing', () => {
-            render(
-                <ShippingAddress
-                    enableMultiAddress={false}
-                    handleToggleShippingAddressMode={function (): void {
-                        throw new Error('Function not implemented.');
-                    }}
-                    {...createDefaultProps({ isEditing: false, isCompleted: true })}
-                />
-            );
+            render(<ShippingAddress {...createDefaultProps({ isEditing: false, isCompleted: true })} />);
 
             expect(screen.queryByPlaceholderText(/first name/i)).not.toBeInTheDocument();
         });
@@ -99,15 +83,7 @@ describe('ShippingAddress Integration Tests', () => {
 
     describe('Form Fields', () => {
         test('renders all required address fields', () => {
-            render(
-                <ShippingAddress
-                    enableMultiAddress={false}
-                    handleToggleShippingAddressMode={function (): void {
-                        throw new Error('Function not implemented.');
-                    }}
-                    {...createDefaultProps()}
-                />
-            );
+            render(<ShippingAddress {...createDefaultProps()} />);
 
             expect(screen.getByPlaceholderText(/first name/i)).toBeInTheDocument();
             expect(screen.getByPlaceholderText(/last name/i)).toBeInTheDocument();
@@ -120,15 +96,7 @@ describe('ShippingAddress Integration Tests', () => {
 
         test('allows entering address data', async () => {
             const user = userEvent.setup();
-            render(
-                <ShippingAddress
-                    enableMultiAddress={false}
-                    handleToggleShippingAddressMode={function (): void {
-                        throw new Error('Function not implemented.');
-                    }}
-                    {...createDefaultProps()}
-                />
-            );
+            render(<ShippingAddress {...createDefaultProps()} />);
 
             const firstNameInput = screen.getByPlaceholderText(/first name/i);
             await user.type(firstNameInput, 'John');
@@ -145,15 +113,7 @@ describe('ShippingAddress Integration Tests', () => {
                 })
             );
 
-            render(
-                <ShippingAddress
-                    enableMultiAddress={false}
-                    handleToggleShippingAddressMode={function (): void {
-                        throw new Error('Function not implemented.');
-                    }}
-                    {...createDefaultProps()}
-                />
-            );
+            render(<ShippingAddress {...createDefaultProps()} />);
 
             const phoneInput = screen.getByPlaceholderText('(555) 123-4567');
             expect(phoneInput).toHaveValue('5551234567');
@@ -206,15 +166,7 @@ describe('ShippingAddress Integration Tests', () => {
                 },
             });
 
-            render(
-                <ShippingAddress
-                    enableMultiAddress={false}
-                    handleToggleShippingAddressMode={function (): void {
-                        throw new Error('Function not implemented.');
-                    }}
-                    {...createDefaultProps()}
-                />
-            );
+            render(<ShippingAddress {...createDefaultProps()} />);
 
             // With saved addresses we show SavedAddressesList (no form), so assert list is shown
             expect(screen.getByRole('radiogroup', { name: /select a saved address/i })).toBeInTheDocument();
@@ -240,15 +192,7 @@ describe('ShippingAddress Integration Tests', () => {
                 })
             );
 
-            render(
-                <ShippingAddress
-                    enableMultiAddress={false}
-                    handleToggleShippingAddressMode={function (): void {
-                        throw new Error('Function not implemented.');
-                    }}
-                    {...createDefaultProps()}
-                />
-            );
+            render(<ShippingAddress {...createDefaultProps()} />);
 
             expect(screen.getByPlaceholderText(/first name/i)).toHaveValue('Jane');
             expect(screen.getByPlaceholderText(/last name/i)).toHaveValue('Doe');
@@ -263,15 +207,7 @@ describe('ShippingAddress Integration Tests', () => {
                 email: 'alice@example.com',
             });
 
-            render(
-                <ShippingAddress
-                    enableMultiAddress={false}
-                    handleToggleShippingAddressMode={function (): void {
-                        throw new Error('Function not implemented.');
-                    }}
-                    {...createDefaultProps()}
-                />
-            );
+            render(<ShippingAddress {...createDefaultProps()} />);
 
             // Component renders successfully with customer profile
             expect(screen.getByPlaceholderText(/first name/i)).toBeInTheDocument();
@@ -299,15 +235,7 @@ describe('ShippingAddress Integration Tests', () => {
                 })
             );
 
-            render(
-                <ShippingAddress
-                    enableMultiAddress={false}
-                    handleToggleShippingAddressMode={function (): void {
-                        throw new Error('Function not implemented.');
-                    }}
-                    {...createDefaultProps({ isEditing: false, isCompleted: true })}
-                />
-            );
+            render(<ShippingAddress {...createDefaultProps({ isEditing: false, isCompleted: true })} />);
 
             expect(screen.getByText('John Doe')).toBeInTheDocument();
             expect(screen.getByText(/123 Main St/)).toBeInTheDocument();
@@ -315,15 +243,7 @@ describe('ShippingAddress Integration Tests', () => {
         });
 
         test('shows empty summary when no address', () => {
-            render(
-                <ShippingAddress
-                    enableMultiAddress={false}
-                    handleToggleShippingAddressMode={function (): void {
-                        throw new Error('Function not implemented.');
-                    }}
-                    {...createDefaultProps({ isEditing: false })}
-                />
-            );
+            render(<ShippingAddress {...createDefaultProps({ isEditing: false })} />);
 
             // ShippingAddressDisplay renders nothing when address is empty
             expect(screen.queryByText(/not provided yet/i)).not.toBeInTheDocument();
@@ -332,29 +252,13 @@ describe('ShippingAddress Integration Tests', () => {
 
     describe('Form Interaction', () => {
         test('renders submit button', () => {
-            render(
-                <ShippingAddress
-                    enableMultiAddress={false}
-                    handleToggleShippingAddressMode={function (): void {
-                        throw new Error('Function not implemented.');
-                    }}
-                    {...createDefaultProps()}
-                />
-            );
+            render(<ShippingAddress {...createDefaultProps()} />);
 
             expect(screen.getByRole('button', { name: /continue to shipping options/i })).toBeInTheDocument();
         });
 
         test('shows loading state when submitting', () => {
-            render(
-                <ShippingAddress
-                    enableMultiAddress={false}
-                    handleToggleShippingAddressMode={function (): void {
-                        throw new Error('Function not implemented.');
-                    }}
-                    {...createDefaultProps({ isLoading: true })}
-                />
-            );
+            render(<ShippingAddress {...createDefaultProps({ isLoading: true })} />);
 
             const submitButton = screen.getByRole('button', { name: /submitting/i });
             expect(submitButton).toBeDisabled();
@@ -364,20 +268,51 @@ describe('ShippingAddress Integration Tests', () => {
             const user = userEvent.setup();
             const handleEdit = vi.fn();
 
-            render(
-                <ShippingAddress
-                    enableMultiAddress={false}
-                    handleToggleShippingAddressMode={function (): void {
-                        throw new Error('Function not implemented.');
-                    }}
-                    {...createDefaultProps({ isEditing: false, onEdit: handleEdit })}
-                />
-            );
+            render(<ShippingAddress {...createDefaultProps({ isEditing: false, onEdit: handleEdit })} />);
 
             const editButton = screen.getByRole('button', { name: /edit/i });
             await user.click(editButton);
 
             expect(handleEdit).toHaveBeenCalled();
+        });
+
+        test('opens Add Address modal when Add New Address is clicked (saved addresses path)', async () => {
+            const user = userEvent.setup();
+            useCustomerProfile.mockReturnValue({
+                customer: { email: 'test@example.com' },
+                addresses: [
+                    {
+                        addressId: 'addr-1',
+                        firstName: 'Jane',
+                        lastName: 'Doe',
+                        address1: '123 Main St',
+                        city: 'San Francisco',
+                        stateCode: 'CA',
+                        postalCode: '94102',
+                        countryCode: 'US',
+                        preferred: true,
+                    },
+                ],
+                preferredShippingAddress: {
+                    addressId: 'addr-1',
+                    firstName: 'Jane',
+                    lastName: 'Doe',
+                    address1: '123 Main St',
+                    city: 'San Francisco',
+                    stateCode: 'CA',
+                    postalCode: '94102',
+                    countryCode: 'US',
+                },
+            });
+
+            render(<ShippingAddress {...createDefaultProps()} />);
+
+            expect(screen.getByRole('radiogroup', { name: /select a saved address/i })).toBeInTheDocument();
+            const addNewButton = screen.getByRole('button', { name: /add new address/i });
+            await user.click(addNewButton);
+
+            expect(screen.getByRole('dialog')).toBeInTheDocument();
+            expect(screen.getByRole('heading', { name: 'Add Address' })).toBeInTheDocument();
         });
     });
 
@@ -385,10 +320,6 @@ describe('ShippingAddress Integration Tests', () => {
         test('displays field errors from action data', () => {
             render(
                 <ShippingAddress
-                    enableMultiAddress={false}
-                    handleToggleShippingAddressMode={function (): void {
-                        throw new Error('Function not implemented.');
-                    }}
                     {...createDefaultProps({
                         actionData: {
                             success: false,
@@ -410,15 +341,7 @@ describe('ShippingAddress Integration Tests', () => {
         test('uses contactInfoPhone fallback when no shipping address phone', () => {
             // Mock state with contactInfo phone but no shipping address phone
             const defaultProps = createDefaultProps();
-            render(
-                <ShippingAddress
-                    enableMultiAddress={false}
-                    handleToggleShippingAddressMode={function (): void {
-                        throw new Error('Function not implemented.');
-                    }}
-                    {...defaultProps}
-                />
-            );
+            render(<ShippingAddress {...defaultProps} />);
 
             expect(screen.getByRole('button', { name: /continue/i })).toBeInTheDocument();
         });
@@ -446,15 +369,7 @@ describe('ShippingAddress Integration Tests', () => {
             // Mock customer profile with no phone
             useCustomerProfile.mockReturnValue(null);
 
-            render(
-                <ShippingAddress
-                    enableMultiAddress={false}
-                    handleToggleShippingAddressMode={function (): void {
-                        throw new Error('Function not implemented.');
-                    }}
-                    {...createDefaultProps()}
-                />
-            );
+            render(<ShippingAddress {...createDefaultProps()} />);
 
             expect(screen.getByRole('button', { name: /continue/i })).toBeInTheDocument();
         });
@@ -481,15 +396,7 @@ describe('ShippingAddress Integration Tests', () => {
             };
             useBasket.mockReturnValue(basketWithAddress2);
 
-            render(
-                <ShippingAddress
-                    enableMultiAddress={false}
-                    handleToggleShippingAddressMode={function (): void {
-                        throw new Error('Function not implemented.');
-                    }}
-                    {...createDefaultProps({ isEditing: false, isCompleted: true })}
-                />
-            );
+            render(<ShippingAddress {...createDefaultProps({ isEditing: false, isCompleted: true })} />);
 
             expect(screen.getByText(/apt 5b/i)).toBeInTheDocument();
         });
@@ -513,15 +420,7 @@ describe('ShippingAddress Integration Tests', () => {
             };
             useBasket.mockReturnValue(basketWithPhone);
 
-            render(
-                <ShippingAddress
-                    enableMultiAddress={false}
-                    handleToggleShippingAddressMode={function (): void {
-                        throw new Error('Function not implemented.');
-                    }}
-                    {...createDefaultProps({ isEditing: false, isCompleted: true })}
-                />
-            );
+            render(<ShippingAddress {...createDefaultProps({ isEditing: false, isCompleted: true })} />);
 
             expect(screen.queryByText(/555/)).not.toBeInTheDocument();
         });
@@ -546,15 +445,7 @@ describe('ShippingAddress Integration Tests', () => {
             };
             useBasket.mockReturnValue(basketWithoutPhone);
 
-            render(
-                <ShippingAddress
-                    enableMultiAddress={false}
-                    handleToggleShippingAddressMode={function (): void {
-                        throw new Error('Function not implemented.');
-                    }}
-                    {...createDefaultProps({ isEditing: false, isCompleted: true })}
-                />
-            );
+            render(<ShippingAddress {...createDefaultProps({ isEditing: false, isCompleted: true })} />);
 
             expect(screen.queryByText(/3332221111/)).not.toBeInTheDocument();
         });

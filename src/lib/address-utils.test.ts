@@ -15,7 +15,8 @@
  */
 import { describe, expect, it } from 'vitest';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
-import { isAddressEmpty, orderAddressToCustomerAddress } from './address-utils';
+import { isAddressEmpty, orderAddressToCustomerAddress, findMatchingSavedAddressId } from './address-utils';
+import type { AddressBookItem } from './customer-profile-utils';
 
 describe('address-utils', () => {
     describe('isAddressEmpty', () => {
@@ -267,6 +268,92 @@ describe('address-utils', () => {
             expect(result2.addressId).toMatch(/^shipping_\d+$/);
             // addressIds should be different (assuming calls happen at different timestamps)
             // Note: In rare cases they might be the same if calls happen in the same millisecond
+        });
+    });
+
+    describe('findMatchingSavedAddressId', () => {
+        const savedAddresses: AddressBookItem[] = [
+            {
+                id: 'addr-home',
+                firstName: 'John',
+                lastName: 'Doe',
+                address1: '123 Main St',
+                city: 'Springfield',
+                stateCode: 'IL',
+                postalCode: '62701',
+                countryCode: 'US',
+                preferred: true,
+            },
+            {
+                id: 'addr-work',
+                firstName: 'John',
+                lastName: 'Doe',
+                address1: '456 Oak Ave',
+                city: 'Portland',
+                stateCode: 'OR',
+                postalCode: '97201',
+                countryCode: 'US',
+            },
+        ];
+
+        it('returns the matching address id when shipping address matches a saved address', () => {
+            const shippingAddress: ShopperBasketsV2.schemas['OrderAddress'] = {
+                firstName: 'John',
+                lastName: 'Doe',
+                address1: '456 Oak Ave',
+                city: 'Portland',
+                stateCode: 'OR',
+                postalCode: '97201',
+            };
+
+            expect(findMatchingSavedAddressId(shippingAddress, savedAddresses)).toBe('addr-work');
+        });
+
+        it('returns undefined when no saved address matches', () => {
+            const shippingAddress: ShopperBasketsV2.schemas['OrderAddress'] = {
+                firstName: 'Jane',
+                lastName: 'Smith',
+                address1: '789 Elm St',
+                city: 'Seattle',
+                stateCode: 'WA',
+                postalCode: '98101',
+            };
+
+            expect(findMatchingSavedAddressId(shippingAddress, savedAddresses)).toBeUndefined();
+        });
+
+        it('returns undefined when shipping address is null', () => {
+            expect(findMatchingSavedAddressId(null, savedAddresses)).toBeUndefined();
+        });
+
+        it('returns undefined when shipping address is undefined', () => {
+            expect(findMatchingSavedAddressId(undefined, savedAddresses)).toBeUndefined();
+        });
+
+        it('returns undefined when saved addresses list is empty', () => {
+            const shippingAddress: ShopperBasketsV2.schemas['OrderAddress'] = {
+                firstName: 'John',
+                lastName: 'Doe',
+                address1: '123 Main St',
+                city: 'Springfield',
+                stateCode: 'IL',
+                postalCode: '62701',
+            };
+
+            expect(findMatchingSavedAddressId(shippingAddress, [])).toBeUndefined();
+        });
+
+        it('treats undefined and empty string fields as equivalent', () => {
+            const shippingAddress: ShopperBasketsV2.schemas['OrderAddress'] = {
+                firstName: 'John',
+                lastName: 'Doe',
+                address1: '123 Main St',
+                city: 'Springfield',
+                stateCode: 'IL',
+                postalCode: '62701',
+            };
+
+            expect(findMatchingSavedAddressId(shippingAddress, savedAddresses)).toBe('addr-home');
         });
     });
 });

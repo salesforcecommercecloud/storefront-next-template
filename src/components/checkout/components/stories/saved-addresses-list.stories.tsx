@@ -107,9 +107,8 @@ const meta: Meta<typeof SavedAddressesList> = {
         onValueChange: {
             description: 'Callback when selection changes',
         },
-        'aria-label': {
-            control: 'text',
-            description: 'Accessible label for the radio group',
+        onAddNewAddress: {
+            description: 'Called when "Add New Address" is clicked; when provided, the button is shown in the list',
         },
     },
 };

@@ -59,7 +59,7 @@ import {
 } from '@/extensions/multiship/lib/multi-address';
 import { getAddressKey } from '@/extensions/multiship/lib/address-utils';
 import { formatAddress } from '@/lib/address-utils';
-import { AddAddressDialog } from '@/extensions/multiship/components/checkout/add-address-dialog';
+import { AddressModal } from '@/components/checkout/components/address-modal';
 import { useCheckoutContext } from '@/hooks/use-checkout';
 import type { CheckoutActionData } from '@/components/checkout/types';
 import CheckoutErrorBanner from '@/components/checkout/components/checkout-error-banner';
@@ -510,11 +510,19 @@ export default function ShippingMultiAddress({
                 </ToggleCardSummary>
             </ToggleCard>
 
-            <AddAddressDialog
+            <AddressModal
                 open={addAddressDialogOpen}
                 onOpenChange={setAddAddressDialogOpen}
                 onSave={handleAddAddress}
-                hideAddressId={!customerProfile?.customer?.customerId}
+                showAddressId={!!customerProfile?.customer?.customerId}
+                showPhone={true}
+                strictValidation={true}
+                generateAddressId={(firstName, lastName) =>
+                    tMultiship('checkout.addressForm.deliveryAddressIdFallback', {
+                        firstName: firstName.trim(),
+                        lastName: lastName.trim(),
+                    }).trim()
+                }
             />
         </>
     );

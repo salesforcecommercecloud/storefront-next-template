@@ -135,6 +135,29 @@ export function customerAddressToOrderAddress(
 }
 
 /**
+ * Finds the saved address that matches a basket/order shipping address by comparing
+ * core address fields. Returns the matching address ID, or undefined if no match.
+ */
+export function findMatchingSavedAddressId(
+    shippingAddress: ShopperBasketsV2.schemas['OrderAddress'] | undefined | null,
+    savedAddresses: AddressBookItem[]
+): string | undefined {
+    if (!shippingAddress || savedAddresses.length === 0) return undefined;
+
+    const match = savedAddresses.find(
+        (saved) =>
+            normalize(saved.firstName) === normalize(shippingAddress.firstName) &&
+            normalize(saved.lastName) === normalize(shippingAddress.lastName) &&
+            normalize(saved.address1) === normalize(shippingAddress.address1) &&
+            normalize(saved.city) === normalize(shippingAddress.city) &&
+            normalize(saved.stateCode) === normalize(shippingAddress.stateCode) &&
+            normalize(saved.postalCode) === normalize(shippingAddress.postalCode)
+    );
+
+    return match?.id;
+}
+
+/**
  * Converts an address book item to FormData for shipping address form submission.
  */
 export function addressToFormData(address: AddressBookItem): FormData {

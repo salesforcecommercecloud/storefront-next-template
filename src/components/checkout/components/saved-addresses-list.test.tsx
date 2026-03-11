@@ -112,8 +112,23 @@ describe('SavedAddressesList', () => {
         expect(screen.queryByText(/alice/i)).not.toBeInTheDocument();
     });
 
-    test('uses custom aria-label when provided', () => {
-        render(<SavedAddressesList addresses={[address1]} aria-label="Choose your delivery address" />);
-        expect(screen.getByRole('radiogroup', { name: 'Choose your delivery address' })).toBeInTheDocument();
+    test('uses default aria-label for the radio group', () => {
+        render(<SavedAddressesList addresses={[address1]} />);
+        expect(screen.getByRole('radiogroup', { name: 'Select a saved address' })).toBeInTheDocument();
+    });
+
+    test('shows Add New Address button when onAddNewAddress is provided and calls it on click', async () => {
+        const user = userEvent.setup();
+        const onAddNewAddress = vi.fn();
+        render(<SavedAddressesList addresses={[address1, address2]} onAddNewAddress={onAddNewAddress} />);
+        const addButton = screen.getByRole('button', { name: /add new address/i });
+        expect(addButton).toBeInTheDocument();
+        await user.click(addButton);
+        expect(onAddNewAddress).toHaveBeenCalledTimes(1);
+    });
+
+    test('does not show Add New Address button when onAddNewAddress is not provided', () => {
+        render(<SavedAddressesList addresses={[address1]} />);
+        expect(screen.queryByRole('button', { name: /add new address/i })).not.toBeInTheDocument();
     });
 });

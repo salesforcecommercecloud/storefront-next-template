@@ -33,8 +33,8 @@ export type SavedAddressesListProps = {
     value?: string;
     /** Callback when selection changes */
     onValueChange?: (value: string) => void;
-    /** Accessible label for the radio group */
-    'aria-label'?: string;
+    /** Called when "Add New Address" is clicked */
+    onAddNewAddress?: () => void;
 };
 
 /**
@@ -46,7 +46,7 @@ export function SavedAddressesList({
     maxVisible = DEFAULT_MAX_VISIBLE,
     value,
     onValueChange,
-    'aria-label': ariaLabel,
+    onAddNewAddress,
 }: SavedAddressesListProps): ReactElement {
     const { t } = useTranslation('checkout');
     const [showAll, setShowAll] = useState(false);
@@ -67,7 +67,7 @@ export function SavedAddressesList({
                 value={selectedId}
                 onValueChange={onValueChange}
                 className="space-y-2"
-                aria-label={ariaLabel ?? t('shippingAddress.selectSavedAddress')}>
+                aria-label={t('shippingAddress.selectSavedAddress')}>
                 {visibleAddresses.map((addr) => {
                     const isSelected = selectedId === addr.id;
                     return (
@@ -93,29 +93,40 @@ export function SavedAddressesList({
                     );
                 })}
             </RadioGroup>
-            {hasMore && !showAll && (
-                <Button
-                    type="button"
-                    variant="ghost"
-                    size="default"
-                    className="text-foreground"
-                    onClick={() => setShowAll(true)}
-                    aria-expanded={false}
-                    aria-label={t('shippingAddress.viewAllLink')}>
-                    {t('shippingAddress.viewAllLink')} {t('shippingAddress.viewAllMore', { count: moreCount })}
-                </Button>
-            )}
-            {hasMore && showAll && (
-                <Button
-                    type="button"
-                    variant="ghost"
-                    size="default"
-                    className="text-foreground"
-                    onClick={() => setShowAll(false)}
-                    aria-expanded={true}>
-                    {t('shippingAddress.viewLessAddresses')}
-                </Button>
-            )}
+            <div className="flex gap-3 items-center flex-wrap">
+                {hasMore && !showAll && (
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="default"
+                        onClick={() => setShowAll(true)}
+                        aria-expanded={false}
+                        aria-label={t('shippingAddress.viewAllLink')}>
+                        {t('shippingAddress.viewAllLink')} {t('shippingAddress.viewAllMore', { count: moreCount })}
+                    </Button>
+                )}
+                {hasMore && showAll && (
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="default"
+                        onClick={() => setShowAll(false)}
+                        aria-expanded={true}
+                        aria-label={t('shippingAddress.viewLessAddresses')}>
+                        {t('shippingAddress.viewLessAddresses')}
+                    </Button>
+                )}
+                {onAddNewAddress && (
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        size="default"
+                        onClick={onAddNewAddress}
+                        aria-label={t('shippingAddress.addNewAddressButton')}>
+                        {t('shippingAddress.addNewAddressButton')}
+                    </Button>
+                )}
+            </div>
         </div>
     );
 }

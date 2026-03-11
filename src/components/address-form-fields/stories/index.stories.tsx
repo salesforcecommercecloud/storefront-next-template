@@ -498,7 +498,7 @@ export const FieldErrorValidation: Story = {
         await userEvent.click(saveButton);
 
         // Validation shows multiple errors (firstName, lastName, address1, city) - use getAllByText
-        const errors = canvas.getAllByText(/(first name|last name|address|city).*required/i);
+        const errors = canvas.getAllByText(/please enter your (first name|last name|address|city)/i);
         await expect(errors.length).toBeGreaterThanOrEqual(1);
     },
 };

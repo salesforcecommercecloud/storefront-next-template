@@ -15,12 +15,14 @@
  */
 import type { RouterContextProvider } from 'react-router';
 import { ensureBasketId, getBasket, updateBasketResource } from '@/middlewares/basket.server';
+import { getAuth } from '@/middlewares/auth.server';
 import { createApiClients } from '@/lib/api-clients';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 import { extractResponseError } from '@/lib/utils';
 import { createShippingAddressSchema, parseShippingAddressFromFormData } from '@/lib/checkout-schemas';
 import { getTranslation } from '@/lib/i18next';
 import { fetchShippingMethodsMapForBasket } from '@/lib/checkout-loaders';
+import { saveShippingAddressToCustomer } from '@/lib/api/customer';
 // @sfdc-extension-block-start SFDC_EXT_MULTISHIP
 import { handleMultiShipShippingAddress } from '@/extensions/multiship/lib/actions/checkout-submit-multi-address';
 import { assignProductsToDefaultShipment } from '@/extensions/multiship/lib/api/basket';
@@ -114,6 +116,12 @@ export async function action(formData: FormData, context: RouterContextProvider)
         // Update local basket state with API response
         // For shipping address updates, the API should preserve existing basket data
         updateBasketResource(context, updatedBasket);
+
+        // Save address to customer profile as a logged in user
+        const auth = getAuth(context);
+        if (auth?.customerId) {
+            await saveShippingAddressToCustomer(context, auth.customerId, addressDataWithExtras);
+        }
     } catch (error) {
         let errorMessage = t('errors:checkout.addressValidationFailed');
         if (error instanceof ApiError) {

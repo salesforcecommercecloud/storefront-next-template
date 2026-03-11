@@ -747,17 +747,17 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_18_-form-item"
+                for="_r_1q_-form-item"
               >
                 First Name
               </label>
               <input
-                aria-describedby="_r_18_-form-item-description"
+                aria-describedby="_r_1q_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping given-name"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_18_-form-item"
+                id="_r_1q_-form-item"
                 name="firstName"
                 placeholder="First name"
                 value=""
@@ -771,17 +771,17 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_19_-form-item"
+                for="_r_1r_-form-item"
               >
                 Last Name
               </label>
               <input
-                aria-describedby="_r_19_-form-item-description"
+                aria-describedby="_r_1r_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping family-name"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_19_-form-item"
+                id="_r_1r_-form-item"
                 name="lastName"
                 placeholder="Last name"
                 value=""
@@ -799,17 +799,17 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_1a_-form-item"
+                for="_r_1s_-form-item"
               >
                 Address
               </label>
               <input
-                aria-describedby="_r_1a_-form-item-description"
+                aria-describedby="_r_1s_-form-item-description"
                 aria-invalid="false"
                 autocomplete="off"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_1a_-form-item"
+                id="_r_1s_-form-item"
                 name="address1"
                 placeholder="Street address"
                 value=""
@@ -827,17 +827,17 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_1b_-form-item"
+                for="_r_1t_-form-item"
               >
                 Address Line 2
               </label>
               <input
-                aria-describedby="_r_1b_-form-item-description"
+                aria-describedby="_r_1t_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping address-line2"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_1b_-form-item"
+                id="_r_1t_-form-item"
                 name="address2"
                 placeholder="Apartment, suite, etc. (optional)"
                 value=""
@@ -855,17 +855,17 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_1c_-form-item"
+                for="_r_1u_-form-item"
               >
                 Postal Code
               </label>
               <input
-                aria-describedby="_r_1c_-form-item-description"
+                aria-describedby="_r_1u_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping postal-code"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_1c_-form-item"
+                id="_r_1u_-form-item"
                 name="postalCode"
                 placeholder="Postal code"
                 value=""
@@ -879,17 +879,17 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_1d_-form-item"
+                for="_r_1v_-form-item"
               >
                 City
               </label>
               <input
-                aria-describedby="_r_1d_-form-item-description"
+                aria-describedby="_r_1v_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping address-level2"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_1d_-form-item"
+                id="_r_1v_-form-item"
                 name="city"
                 placeholder="City"
                 value=""
@@ -903,7 +903,7 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_1e_-form-item"
+                for="_r_20_-form-item"
               >
                 State/Province
               </label>
@@ -912,13 +912,13 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
                 data-slot="native-select-wrapper"
               >
                 <select
-                  aria-describedby="_r_1e_-form-item-description"
+                  aria-describedby="_r_20_-form-item-description"
                   aria-invalid="false"
                   autocomplete="shipping address-level1"
                   class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 min-w-0 appearance-none rounded-md bg-transparent px-3 pr-9 shadow-xs outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-sm text-foreground font-normal py-1 leading-normal border-2 focus:border-primary transition-colors w-full [font-family:inherit]"
                   data-size="default"
                   data-slot="form-control"
-                  id="_r_1e_-form-item"
+                  id="_r_20_-form-item"
                   name="stateCode"
                 >
                   <option
@@ -1263,17 +1263,17 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
               class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
               data-error="false"
               data-slot="form-label"
-              for="_r_1f_-form-item"
+              for="_r_21_-form-item"
             >
               Phone Number
             </label>
             <input
-              aria-describedby="_r_1f_-form-item-description"
+              aria-describedby="_r_21_-form-item-description"
               aria-invalid="false"
               autocomplete="tel"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
               data-slot="form-control"
-              id="_r_1f_-form-item"
+              id="_r_21_-form-item"
               name="phone"
               placeholder="(555) 123-4567"
               type="tel"
@@ -1347,17 +1347,17 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_g_-form-item"
+                for="_r_m_-form-item"
               >
                 First Name
               </label>
               <input
-                aria-describedby="_r_g_-form-item-description"
+                aria-describedby="_r_m_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping given-name"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_g_-form-item"
+                id="_r_m_-form-item"
                 name="firstName"
                 placeholder="First name"
                 value=""
@@ -1371,17 +1371,17 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_h_-form-item"
+                for="_r_n_-form-item"
               >
                 Last Name
               </label>
               <input
-                aria-describedby="_r_h_-form-item-description"
+                aria-describedby="_r_n_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping family-name"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_h_-form-item"
+                id="_r_n_-form-item"
                 name="lastName"
                 placeholder="Last name"
                 value=""
@@ -1399,17 +1399,17 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_i_-form-item"
+                for="_r_o_-form-item"
               >
                 Address
               </label>
               <input
-                aria-describedby="_r_i_-form-item-description"
+                aria-describedby="_r_o_-form-item-description"
                 aria-invalid="false"
                 autocomplete="off"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_i_-form-item"
+                id="_r_o_-form-item"
                 name="address1"
                 placeholder="Street address"
                 value=""
@@ -1427,17 +1427,17 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_j_-form-item"
+                for="_r_p_-form-item"
               >
                 Address Line 2
               </label>
               <input
-                aria-describedby="_r_j_-form-item-description"
+                aria-describedby="_r_p_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping address-line2"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_j_-form-item"
+                id="_r_p_-form-item"
                 name="address2"
                 placeholder="Apartment, suite, etc. (optional)"
                 value=""
@@ -1455,17 +1455,17 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_k_-form-item"
+                for="_r_q_-form-item"
               >
                 Postal Code
               </label>
               <input
-                aria-describedby="_r_k_-form-item-description"
+                aria-describedby="_r_q_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping postal-code"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_k_-form-item"
+                id="_r_q_-form-item"
                 name="postalCode"
                 placeholder="Postal code"
                 value=""
@@ -1479,17 +1479,17 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_l_-form-item"
+                for="_r_r_-form-item"
               >
                 City
               </label>
               <input
-                aria-describedby="_r_l_-form-item-description"
+                aria-describedby="_r_r_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping address-level2"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_l_-form-item"
+                id="_r_r_-form-item"
                 name="city"
                 placeholder="City"
                 value=""
@@ -1503,7 +1503,7 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_m_-form-item"
+                for="_r_s_-form-item"
               >
                 State/Province
               </label>
@@ -1512,13 +1512,13 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
                 data-slot="native-select-wrapper"
               >
                 <select
-                  aria-describedby="_r_m_-form-item-description"
+                  aria-describedby="_r_s_-form-item-description"
                   aria-invalid="false"
                   autocomplete="shipping address-level1"
                   class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 min-w-0 appearance-none rounded-md bg-transparent px-3 pr-9 shadow-xs outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-sm text-foreground font-normal py-1 leading-normal border-2 focus:border-primary transition-colors w-full [font-family:inherit]"
                   data-size="default"
                   data-slot="form-control"
-                  id="_r_m_-form-item"
+                  id="_r_s_-form-item"
                   name="stateCode"
                 >
                   <option
@@ -1863,17 +1863,17 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
               class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
               data-error="false"
               data-slot="form-label"
-              for="_r_n_-form-item"
+              for="_r_t_-form-item"
             >
               Phone Number
             </label>
             <input
-              aria-describedby="_r_n_-form-item-description"
+              aria-describedby="_r_t_-form-item-description"
               aria-invalid="false"
               autocomplete="tel"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
               data-slot="form-control"
-              id="_r_n_-form-item"
+              id="_r_t_-form-item"
               name="phone"
               placeholder="(555) 123-4567"
               type="tel"
@@ -1959,17 +1959,17 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_8_-form-item"
+                for="_r_b_-form-item"
               >
                 First Name
               </label>
               <input
-                aria-describedby="_r_8_-form-item-description"
+                aria-describedby="_r_b_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping given-name"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_8_-form-item"
+                id="_r_b_-form-item"
                 name="firstName"
                 placeholder="First name"
                 value=""
@@ -1983,17 +1983,17 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_9_-form-item"
+                for="_r_c_-form-item"
               >
                 Last Name
               </label>
               <input
-                aria-describedby="_r_9_-form-item-description"
+                aria-describedby="_r_c_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping family-name"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_9_-form-item"
+                id="_r_c_-form-item"
                 name="lastName"
                 placeholder="Last name"
                 value=""
@@ -2011,17 +2011,17 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_a_-form-item"
+                for="_r_d_-form-item"
               >
                 Address
               </label>
               <input
-                aria-describedby="_r_a_-form-item-description"
+                aria-describedby="_r_d_-form-item-description"
                 aria-invalid="false"
                 autocomplete="off"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_a_-form-item"
+                id="_r_d_-form-item"
                 name="address1"
                 placeholder="Street address"
                 value=""
@@ -2039,17 +2039,17 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_b_-form-item"
+                for="_r_e_-form-item"
               >
                 Address Line 2
               </label>
               <input
-                aria-describedby="_r_b_-form-item-description"
+                aria-describedby="_r_e_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping address-line2"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_b_-form-item"
+                id="_r_e_-form-item"
                 name="address2"
                 placeholder="Apartment, suite, etc. (optional)"
                 value=""
@@ -2067,17 +2067,17 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_c_-form-item"
+                for="_r_f_-form-item"
               >
                 Postal Code
               </label>
               <input
-                aria-describedby="_r_c_-form-item-description"
+                aria-describedby="_r_f_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping postal-code"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_c_-form-item"
+                id="_r_f_-form-item"
                 name="postalCode"
                 placeholder="Postal code"
                 value=""
@@ -2091,17 +2091,17 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_d_-form-item"
+                for="_r_g_-form-item"
               >
                 City
               </label>
               <input
-                aria-describedby="_r_d_-form-item-description"
+                aria-describedby="_r_g_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping address-level2"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_d_-form-item"
+                id="_r_g_-form-item"
                 name="city"
                 placeholder="City"
                 value=""
@@ -2115,7 +2115,7 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_e_-form-item"
+                for="_r_h_-form-item"
               >
                 State/Province
               </label>
@@ -2124,13 +2124,13 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
                 data-slot="native-select-wrapper"
               >
                 <select
-                  aria-describedby="_r_e_-form-item-description"
+                  aria-describedby="_r_h_-form-item-description"
                   aria-invalid="false"
                   autocomplete="shipping address-level1"
                   class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 min-w-0 appearance-none rounded-md bg-transparent px-3 pr-9 shadow-xs outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-sm text-foreground font-normal py-1 leading-normal border-2 focus:border-primary transition-colors w-full [font-family:inherit]"
                   data-size="default"
                   data-slot="form-control"
-                  id="_r_e_-form-item"
+                  id="_r_h_-form-item"
                   name="stateCode"
                 >
                   <option
@@ -2475,17 +2475,17 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
               class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
               data-error="false"
               data-slot="form-label"
-              for="_r_f_-form-item"
+              for="_r_i_-form-item"
             >
               Phone Number
             </label>
             <input
-              aria-describedby="_r_f_-form-item-description"
+              aria-describedby="_r_i_-form-item-description"
               aria-invalid="false"
               autocomplete="tel"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
               data-slot="form-control"
-              id="_r_f_-form-item"
+              id="_r_i_-form-item"
               name="phone"
               placeholder="(555) 123-4567"
               type="tel"
@@ -2566,17 +2566,17 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_o_-form-item"
+                for="_r_14_-form-item"
               >
                 First Name
               </label>
               <input
-                aria-describedby="_r_o_-form-item-description"
+                aria-describedby="_r_14_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping given-name"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_o_-form-item"
+                id="_r_14_-form-item"
                 name="firstName"
                 placeholder="First name"
                 value=""
@@ -2590,17 +2590,17 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_p_-form-item"
+                for="_r_15_-form-item"
               >
                 Last Name
               </label>
               <input
-                aria-describedby="_r_p_-form-item-description"
+                aria-describedby="_r_15_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping family-name"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_p_-form-item"
+                id="_r_15_-form-item"
                 name="lastName"
                 placeholder="Last name"
                 value=""
@@ -2618,17 +2618,17 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_q_-form-item"
+                for="_r_16_-form-item"
               >
                 Address
               </label>
               <input
-                aria-describedby="_r_q_-form-item-description"
+                aria-describedby="_r_16_-form-item-description"
                 aria-invalid="false"
                 autocomplete="off"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_q_-form-item"
+                id="_r_16_-form-item"
                 name="address1"
                 placeholder="Street address"
                 value=""
@@ -2646,17 +2646,17 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_r_-form-item"
+                for="_r_17_-form-item"
               >
                 Address Line 2
               </label>
               <input
-                aria-describedby="_r_r_-form-item-description"
+                aria-describedby="_r_17_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping address-line2"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_r_-form-item"
+                id="_r_17_-form-item"
                 name="address2"
                 placeholder="Apartment, suite, etc. (optional)"
                 value=""
@@ -2674,17 +2674,17 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_s_-form-item"
+                for="_r_18_-form-item"
               >
                 Postal Code
               </label>
               <input
-                aria-describedby="_r_s_-form-item-description"
+                aria-describedby="_r_18_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping postal-code"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_s_-form-item"
+                id="_r_18_-form-item"
                 name="postalCode"
                 placeholder="Postal code"
                 value=""
@@ -2698,17 +2698,17 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_t_-form-item"
+                for="_r_19_-form-item"
               >
                 City
               </label>
               <input
-                aria-describedby="_r_t_-form-item-description"
+                aria-describedby="_r_19_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping address-level2"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_t_-form-item"
+                id="_r_19_-form-item"
                 name="city"
                 placeholder="City"
                 value=""
@@ -2722,7 +2722,7 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_u_-form-item"
+                for="_r_1a_-form-item"
               >
                 State/Province
               </label>
@@ -2731,13 +2731,13 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
                 data-slot="native-select-wrapper"
               >
                 <select
-                  aria-describedby="_r_u_-form-item-description"
+                  aria-describedby="_r_1a_-form-item-description"
                   aria-invalid="false"
                   autocomplete="shipping address-level1"
                   class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 min-w-0 appearance-none rounded-md bg-transparent px-3 pr-9 shadow-xs outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-sm text-foreground font-normal py-1 leading-normal border-2 focus:border-primary transition-colors w-full [font-family:inherit]"
                   data-size="default"
                   data-slot="form-control"
-                  id="_r_u_-form-item"
+                  id="_r_1a_-form-item"
                   name="stateCode"
                 >
                   <option
@@ -3082,17 +3082,17 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
               class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
               data-error="false"
               data-slot="form-label"
-              for="_r_v_-form-item"
+              for="_r_1b_-form-item"
             >
               Phone Number
             </label>
             <input
-              aria-describedby="_r_v_-form-item-description"
+              aria-describedby="_r_1b_-form-item-description"
               aria-invalid="false"
               autocomplete="tel"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
               data-slot="form-control"
-              id="_r_v_-form-item"
+              id="_r_1b_-form-item"
               name="phone"
               placeholder="(555) 123-4567"
               type="tel"
@@ -3198,17 +3198,17 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_10_-form-item"
+                for="_r_1f_-form-item"
               >
                 First Name
               </label>
               <input
-                aria-describedby="_r_10_-form-item-description"
+                aria-describedby="_r_1f_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping given-name"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_10_-form-item"
+                id="_r_1f_-form-item"
                 name="firstName"
                 placeholder="First name"
                 value=""
@@ -3222,17 +3222,17 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_11_-form-item"
+                for="_r_1g_-form-item"
               >
                 Last Name
               </label>
               <input
-                aria-describedby="_r_11_-form-item-description"
+                aria-describedby="_r_1g_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping family-name"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_11_-form-item"
+                id="_r_1g_-form-item"
                 name="lastName"
                 placeholder="Last name"
                 value=""
@@ -3250,17 +3250,17 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_12_-form-item"
+                for="_r_1h_-form-item"
               >
                 Address
               </label>
               <input
-                aria-describedby="_r_12_-form-item-description"
+                aria-describedby="_r_1h_-form-item-description"
                 aria-invalid="false"
                 autocomplete="off"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_12_-form-item"
+                id="_r_1h_-form-item"
                 name="address1"
                 placeholder="Street address"
                 value=""
@@ -3278,17 +3278,17 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_13_-form-item"
+                for="_r_1i_-form-item"
               >
                 Address Line 2
               </label>
               <input
-                aria-describedby="_r_13_-form-item-description"
+                aria-describedby="_r_1i_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping address-line2"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_13_-form-item"
+                id="_r_1i_-form-item"
                 name="address2"
                 placeholder="Apartment, suite, etc. (optional)"
                 value=""
@@ -3306,17 +3306,17 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_14_-form-item"
+                for="_r_1j_-form-item"
               >
                 Postal Code
               </label>
               <input
-                aria-describedby="_r_14_-form-item-description"
+                aria-describedby="_r_1j_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping postal-code"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_14_-form-item"
+                id="_r_1j_-form-item"
                 name="postalCode"
                 placeholder="Postal code"
                 value=""
@@ -3330,17 +3330,17 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_15_-form-item"
+                for="_r_1k_-form-item"
               >
                 City
               </label>
               <input
-                aria-describedby="_r_15_-form-item-description"
+                aria-describedby="_r_1k_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping address-level2"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
                 data-slot="form-control"
-                id="_r_15_-form-item"
+                id="_r_1k_-form-item"
                 name="city"
                 placeholder="City"
                 value=""
@@ -3354,7 +3354,7 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
                 class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_16_-form-item"
+                for="_r_1l_-form-item"
               >
                 State/Province
               </label>
@@ -3363,13 +3363,13 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
                 data-slot="native-select-wrapper"
               >
                 <select
-                  aria-describedby="_r_16_-form-item-description"
+                  aria-describedby="_r_1l_-form-item-description"
                   aria-invalid="false"
                   autocomplete="shipping address-level1"
                   class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 min-w-0 appearance-none rounded-md bg-transparent px-3 pr-9 shadow-xs outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-sm text-foreground font-normal py-1 leading-normal border-2 focus:border-primary transition-colors w-full [font-family:inherit]"
                   data-size="default"
                   data-slot="form-control"
-                  id="_r_16_-form-item"
+                  id="_r_1l_-form-item"
                   name="stateCode"
                 >
                   <option
@@ -3714,17 +3714,17 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
               class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
               data-error="false"
               data-slot="form-label"
-              for="_r_17_-form-item"
+              for="_r_1m_-form-item"
             >
               Phone Number
             </label>
             <input
-              aria-describedby="_r_17_-form-item-description"
+              aria-describedby="_r_1m_-form-item-description"
               aria-invalid="false"
               autocomplete="tel"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
               data-slot="form-control"
-              id="_r_17_-form-item"
+              id="_r_1m_-form-item"
               name="phone"
               placeholder="(555) 123-4567"
               type="tel"

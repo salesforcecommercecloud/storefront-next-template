@@ -25,13 +25,15 @@ import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import { getShippingAddressFromCustomer, getAddressBookFromCustomer } from '@/lib/customer-profile-utils';
 import { AddressFormFields } from '@/components/address-form-fields';
 import SavedAddressesList from './saved-addresses-list';
+import AddressModal from './address-modal';
 import type { CheckoutActionData } from '../types';
-import { addressToFormData } from '@/lib/address-utils';
+import { addressToFormData, findMatchingSavedAddressId } from '@/lib/address-utils';
 import CheckoutErrorBanner from './checkout-error-banner';
 import { getCheckoutDisplayError } from './checkout-display-error';
 import ShippingAddressDisplay from './shipping-address-display';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
+import { DEFAULT_COUNTRY_CODE } from '@/components/customer-address-form/constants';
 
 interface ShippingAddressProps {
     onSubmit: (formData: FormData) => void;
@@ -95,11 +97,26 @@ export default function ShippingAddress({
         },
     });
 
-    const savedAddresses = getAddressBookFromCustomer(customerProfile);
-    const hasSavedAddresses = savedAddresses.length > 0;
-    const defaultSelectedId = savedAddresses.find((a) => a.preferred)?.id ?? savedAddresses[0]?.id ?? '';
+    const rawSavedAddresses = getAddressBookFromCustomer(customerProfile);
+    const hasSavedAddresses = rawSavedAddresses.length > 0;
+
+    const currentAddressId = findMatchingSavedAddressId(shippingAddress, rawSavedAddresses);
+    const defaultSelectedId =
+        currentAddressId ?? rawSavedAddresses.find((a) => a.preferred)?.id ?? rawSavedAddresses[0]?.id ?? '';
+
+    const savedAddresses = useMemo(() => {
+        if (!currentAddressId) return rawSavedAddresses;
+        const idx = rawSavedAddresses.findIndex((a) => a.id === currentAddressId);
+        if (idx <= 0) return rawSavedAddresses;
+        const reordered = [...rawSavedAddresses];
+        const [match] = reordered.splice(idx, 1);
+        reordered.unshift(match);
+        return reordered;
+    }, [rawSavedAddresses, currentAddressId]);
+
     const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
     const effectiveSelectedId = selectedAddressId ?? defaultSelectedId;
+    const [addNewAddressModalOpen, setAddNewAddressModalOpen] = useState(false);
 
     const handleFormSubmit = (data: ShippingAddressData) => {
         const formData = new FormData();
@@ -151,6 +168,7 @@ export default function ShippingAddress({
                             addresses={savedAddresses}
                             value={effectiveSelectedId}
                             onValueChange={setSelectedAddressId}
+                            onAddNewAddress={() => setAddNewAddressModalOpen(true)}
                         />
                         <div className="flex justify-end pt-4">
                             <Button
@@ -174,7 +192,12 @@ export default function ShippingAddress({
                                     ))}
                                 </div>
                             )}
-                            <AddressFormFields form={form} showPhone={true} autoFocus={isEditing} countryCode="US" />
+                            <AddressFormFields
+                                form={form}
+                                showPhone={true}
+                                autoFocus={isEditing}
+                                countryCode={DEFAULT_COUNTRY_CODE}
+                            />
                             <div className="flex justify-end pt-4">
                                 <Button
                                     type="submit"
@@ -194,6 +217,18 @@ export default function ShippingAddress({
                     <ShippingAddressDisplay address={shippingAddress} />
                 </div>
             </ToggleCardSummary>
+            <AddressModal
+                open={addNewAddressModalOpen}
+                onOpenChange={setAddNewAddressModalOpen}
+                countryCode={DEFAULT_COUNTRY_CODE}
+                onSave={(data) => {
+                    const formData = new FormData();
+                    for (const [key, value] of Object.entries(data)) {
+                        if (value != null) formData.append(key, String(value));
+                    }
+                    onSubmit(formData);
+                }}
+            />
         </ToggleCard>
     );
 }

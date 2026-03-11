@@ -497,10 +497,11 @@ export async function saveCustomerAddress(
 export async function saveShippingAddressToCustomer(
     context: ActionFunctionArgs['context'],
     customerId: string,
-    address: ShopperBasketsV2.schemas['OrderAddress']
+    address: ShopperBasketsV2.schemas['OrderAddress'],
+    preferred: boolean = false
 ): Promise<boolean> {
     // Convert OrderAddress to CustomerAddress and delegate to saveCustomerAddress
-    const customerAddress = orderAddressToCustomerAddress(address, true);
+    const customerAddress = orderAddressToCustomerAddress(address, preferred);
     return saveCustomerAddress(context, customerId, customerAddress);
 }
 
